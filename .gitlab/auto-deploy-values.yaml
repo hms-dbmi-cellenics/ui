@@ -4,8 +4,8 @@ application:
   tier: frontend
 
 service:
-  externalPort: 3000
-  internalPort: 3000
+  externalPort: 5000
+  internalPort: 5000
 
 prometheus:
   metrics: true
