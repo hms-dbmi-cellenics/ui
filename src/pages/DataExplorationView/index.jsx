@@ -193,7 +193,7 @@ class ExplorationViewPage extends React.Component {
               {process.env.NODE_ENV}
               {' '}
               GITLAB_ENVIRONMENT_NAME:
-              {process.env.NODE_ENV}
+              {process.env.GITLAB_ENVIRONMENT_NAME}
               {' '}
               REACT_APP_API_URL:
               {process.env.REACT_APP_API_URL}
