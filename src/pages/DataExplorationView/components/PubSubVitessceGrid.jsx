@@ -28,9 +28,6 @@ function Block(props) {
     need to wait for outside resources.
   */
   return (
-    /*
-      You may want to use a stylesheet, but for a demo this is more clear.
-    */
     <div style={{ height: '100%', width: '100%', border: '2px solid black' }}>
       <div className={handleClass}>drag-me</div>
       <div>{text}</div>
@@ -63,10 +60,6 @@ const PubSubVitessceGrid = () => (
       console.warn('onAllReady!');
     }}
     reactGridLayoutProps={{
-      /*
-          Use this to pass through to react-grid-layout.
-          See https://github.com/STRML/react-grid-layout#grid-layout-props
-        */
       onDragStop: () => { console.warn('Wrapped onDragStop works!'); },
     }}
   />
