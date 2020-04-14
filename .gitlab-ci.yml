@@ -1,6 +1,6 @@
 stages:
-    - build
     - test
+    - build
     - deploy  # dummy stage to follow the template guidelines
     - review
     - dast
@@ -22,7 +22,7 @@ variables:
   
 install_dependencies:
   image: node:latest
-  stage: build
+  stage: test
   script:
     - yarn install
   artifacts:
