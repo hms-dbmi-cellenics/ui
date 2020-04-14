@@ -14,29 +14,28 @@ stages:
     - performance
     - cleanup
   
-  variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-    ROLLOUT_RESOURCE_TYPE: deployment
-    STAGING_ENABLED: "true"
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  ROLLOUT_RESOURCE_TYPE: deployment
+  STAGING_ENABLED: "true"
   
-  install_dependencies:
-    image: node:latest
-    stage: build
-    script:
-      - yarn install
-    artifacts:
-      paths:
-        - yarn.lock
-        - node_modules/
-  
-  testing:
-    image: node:latest
-    stage: test
-    script:
-    - yarn test
-  
-  include:
-    - template: Jobs/Build.gitlab-ci.yml
-    - template: Jobs/Deploy.gitlab-ci.yml
-  
+install_dependencies:
+  image: node:latest
+  stage: build
+  script:
+    - yarn install
+  artifacts:
+    paths:
+      - yarn.lock
+      - node_modules/
+
+testing:
+  image: node:latest
+  stage: test
+  script:
+  - yarn test
+
+include:
+  - template: Jobs/Build.gitlab-ci.yml
+  - template: Jobs/Deploy.gitlab-ci.yml
