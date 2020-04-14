@@ -1,0 +1,20 @@
+replicaCount: 1
+
+application:
+  tier: frontend
+
+service:
+  externalPort: 3000
+  internalPort: 3000
+
+prometheus:
+  metrics: true
+
+postgresql:
+  enabled: false
+
+readinessProbe:
+  path: "/exploration"
+
+livenessProbe:
+  path: "/exploration"

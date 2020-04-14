@@ -189,8 +189,13 @@ class ExplorationViewPage extends React.Component {
         <Row>
           <Col span={16}>
             <div>
+              NODE_ENV:
               {process.env.NODE_ENV}
               {' '}
+              GITLAB_ENVIRONMENT_NAME:
+              {process.env.NODE_ENV}
+              {' '}
+              REACT_APP_API_URL:
               {process.env.REACT_APP_API_URL}
             </div>
           </Col>
