@@ -8,7 +8,7 @@ import {
 import './App.less';
 
 import ContentWrapper from './components/ContentWrapper';
-import Home from './pages/Home';
+import DataExplorationView from './pages/DataExplorationView';
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
       <ContentWrapper>
         <Switch>
           <Route exact path="/">
-            <Home />
+            <DataExplorationView />
           </Route>
           <Route path="/about">
             <About />
