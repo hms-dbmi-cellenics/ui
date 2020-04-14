@@ -19,22 +19,17 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   ROLLOUT_RESOURCE_TYPE: deployment
   STAGING_ENABLED: "true"
-  
-install_dependencies:
-  image: node:latest
-  stage: test
-  script:
-    - yarn install
-  artifacts:
-    paths:
-      - yarn.lock
-      - node_modules/
 
 testing:
   image: node:latest
   stage: test
   script:
+  - yarn install
   - yarn test
+  artifacts:
+    paths:
+      - yarn.lock
+      - node_modules/
 
 include:
   - template: Jobs/Build.gitlab-ci.yml
