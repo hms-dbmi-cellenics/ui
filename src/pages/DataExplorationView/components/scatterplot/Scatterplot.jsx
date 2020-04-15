@@ -9,7 +9,7 @@ import { ScatterplotLayer } from '@deck.gl/layers';
 //   },
 // ];
 
-const DATA_URL = 'https://gitlab.com/biomage/ui/-/tree/master/src/pages/DataExplorationView/components/scatterplot/data.json';
+const DATA_URL = 'https://gitlab.com/biomage/ui/-/raw/master/src/pages/DataExplorationView/components/scatterplot/data.json';
 
 // import data from './data.json';
 
