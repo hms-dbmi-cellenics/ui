@@ -12,6 +12,7 @@ import {
 import CellSetsTool from './components/CellSetsTool';
 import DraggableGrid from './components/DraggableGrid';
 import Scatterplot from './components/scatterplot/Scatterplot';
+import MyFancyMap from './components/scatterplot/MyFancyMap';
 
 const { Text } = Typography;
 const { Search } = Input;
@@ -179,30 +180,7 @@ class ExplorationViewPage extends React.Component {
 
     return (
       <>
-        <Row>
-          <Col>
-            <PageHeader
-              className="site-page-header"
-              title="Exploration"
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={16}>
-            <DraggableGrid />
-          </Col>
-          <Col span={8}>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Dropdown
-                overlay={menu}
-                trigger={['click']}
-              >
-                <Search placeholder="Search or browse tools..." onChange={(e) => this.filterTools(e.target.value)} />
-              </Dropdown>
-              {this.renderToolbar()}
-            </Space>
-          </Col>
-        </Row>
+        <Scatterplot />
       </>
     );
   }
