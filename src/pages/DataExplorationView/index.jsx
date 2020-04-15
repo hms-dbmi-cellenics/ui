@@ -180,7 +180,30 @@ class ExplorationViewPage extends React.Component {
 
     return (
       <>
-        <Scatterplot />
+        <Row>
+          <Col>
+            <PageHeader
+              className="site-page-header"
+              title="Exploration"
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col span={16}>
+            <Scatterplot />
+          </Col>
+          <Col span={8}>
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Dropdown
+                overlay={menu}
+                trigger={['click']}
+              >
+                <Search placeholder="Search or browse tools..." onChange={(e) => this.filterTools(e.target.value)} />
+              </Dropdown>
+              {this.renderToolbar()}
+            </Space>
+          </Col>
+        </Row>
       </>
     );
   }
