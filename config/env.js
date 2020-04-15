@@ -8,7 +8,7 @@ const paths = require('./paths');
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve('./paths')];
 
-const { NODE_ENV, GITLAB_ENVIRONMENT_NAME } = process.env;
+const { NODE_ENV, CI_ENVIRONMENT_NAME } = process.env;
 if (!NODE_ENV) {
   throw new Error(
     'The NODE_ENV environment variable is required but was not specified.',
@@ -18,7 +18,7 @@ if (!NODE_ENV) {
 // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
 const dotenvFiles = [
   `${paths.dotenv}.${NODE_ENV}.local`,
-  GITLAB_ENVIRONMENT_NAME && `${paths.dotenv}.gitlab-${GITLAB_ENVIRONMENT_NAME}`,
+  CI_ENVIRONMENT_NAME && `${paths.dotenv}.gitlab-${CI_ENVIRONMENT_NAME}`,
   `${paths.dotenv}.${NODE_ENV}`,
   // Don't include `.env.local` for `test` environment
   // since normally you expect tests to produce the same

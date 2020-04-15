@@ -20,6 +20,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   ROLLOUT_RESOURCE_TYPE: deployment
   STAGING_ENABLED: "true"
+  AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS: --build-arg=CI_ENVIRONMENT_NAME=$CI_ENVIRONMENT_NAME
   
 install_dependencies:
   image: node:latest
