@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer } from '@deck.gl/layers';
-import { StaticMap } from 'react-map-gl';
 
 
 // const data = [
@@ -10,7 +9,9 @@ import { StaticMap } from 'react-map-gl';
 //   },
 // ];
 
-const DATA_URL = 'https://raw.githubusercontent.com/uber-common/deck.gl-data/master/examples/scatterplot/manhattan.json'; // eslint-disable-line
+const DATA_URL = 'https://gitlab.com/biomage/ui/-/tree/master/src/pages/DataExplorationView/components/scatterplot/data.json';
+
+// import data from './data.json';
 
 const INITIAL_VIEW_STATE = {
   longitude: -74,
@@ -21,7 +22,6 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
-const MAPBOX_TOKEN = process.env.MapboxAccessToken; // eslint-disable-line
 const MALE_COLOR = [0, 128, 255];
 const FEMALE_COLOR = [255, 0, 128];
 
@@ -59,16 +59,9 @@ class Scatterplot extends Component {
   }
 
   render() {
-    const { mapStyle = 'mapbox://styles/mapbox/light-v9' } = this.props;
+    console.log(data);
     return (
-      <DeckGL layers={this.renderLayers()} initialViewState={INITIAL_VIEW_STATE} controller>
-        <StaticMap
-          reuseMaps
-          mapStyle={mapStyle}
-          preventStyleDiffing
-          mapboxApiAccessToken={MAPBOX_TOKEN}
-        />
-      </DeckGL>
+      <DeckGL layers={this.renderLayers()} initialViewState={INITIAL_VIEW_STATE} controller />
     );
   }
 }

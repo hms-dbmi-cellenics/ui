@@ -24,19 +24,19 @@ const layout = {
   },
   components: [
     {
-      component: 'fancyMap',
+      component: 'scatterplot',
       props: { text: 'header' },
       x: 0,
       y: 0,
       w: 2,
     },
-    {
-      component: 'fancyMap',
-      props: { text: 'body, left' },
-      x: 0,
-      y: 1,
-      w: 2,
-    },
+    // {
+    //   component: 'scatterplot',
+    //   props: { text: 'body, left' },
+    //   x: 0,
+    //   y: 1,
+    //   w: 2,
+    // },
   ],
 };
 
@@ -71,12 +71,9 @@ const handleClass = 'drag-around';
 
 function getComponent(name) {
   const component = registry[name];
-  /* eslint-disable no-console */
-  console.log('^^^^^^ ', name);
   if (component === undefined) {
     throw new Error(`Could not find definition for "${name}" in registry.`);
   }
-  console.log(registry[name]);
   return registry[name];
 }
 
