@@ -1,0 +1,42 @@
+stages:
+    - install
+    - test
+    - build
+    - deploy  # dummy stage to follow the template guidelines
+    - review
+    - dast
+    - staging
+    - canary
+    - production
+    - incremental rollout 10%
+    - incremental rollout 25%
+    - incremental rollout 50%
+    - incremental rollout 100%
+    - performance
+    - cleanup
+  
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  ROLLOUT_RESOURCE_TYPE: deployment
+  STAGING_ENABLED: "true"
+  
+install_dependencies:
+  image: node:latest
+  stage: install
+  script:
+  - yarn install
+  artifacts:
+    paths:
+      - yarn.lock
+      - node_modules/
+
+testing:
+  image: node:latest
+  stage: test
+  script:
+  - yarn test
+
+include:
+  - template: Jobs/Build.gitlab-ci.yml
+  - template: Jobs/Deploy.gitlab-ci.yml

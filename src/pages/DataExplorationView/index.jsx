@@ -189,7 +189,16 @@ class ExplorationViewPage extends React.Component {
         </Row>
         <Row>
           <Col span={16}>
-            <DraggableGrid />
+            <div>
+              NODE_ENV:
+              {process.env.NODE_ENV}
+              {' '}
+              GITLAB_ENVIRONMENT_NAME:
+              {process.env.GITLAB_ENVIRONMENT_NAME}
+              {' '}
+              REACT_APP_API_URL:
+              {process.env.REACT_APP_API_URL}
+            </div>
           </Col>
           <Col span={8}>
             <Space direction="vertical" style={{ width: '100%' }}>
