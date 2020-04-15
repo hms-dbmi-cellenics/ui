@@ -10,7 +10,8 @@ import {
 } from '@ant-design/icons';
 
 import CellSetsTool from './components/CellSetsTool';
-import PubSubVitessceGrid from './components/PubSubVitessceGrid';
+import DraggableGrid from './components/DraggableGrid';
+import Scatterplot from './components/scatterplot/Scatterplot';
 
 const { Text } = Typography;
 const { Search } = Input;
@@ -188,11 +189,7 @@ class ExplorationViewPage extends React.Component {
         </Row>
         <Row>
           <Col span={16}>
-            <div>
-              {process.env.NODE_ENV}
-              {' '}
-              {process.env.REACT_APP_API_URL}
-            </div>
+            <DraggableGrid />
           </Col>
           <Col span={8}>
             <Space direction="vertical" style={{ width: '100%' }}>
