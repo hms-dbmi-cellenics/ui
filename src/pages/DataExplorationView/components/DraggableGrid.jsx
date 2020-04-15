@@ -7,9 +7,9 @@ import './index.css';
 */
 
 import VitessceGrid from 'vitessce-grid';
-import Scatterplot from './scatterplot/Scatterplot';
-import MyFancyMap from './scatterplot/MyFancyMap';
-
+import MyScatterplot from './myPlots/MyScatterplot';
+import MyFancyMap from './myPlots/MyFancyMap';
+import Scatterplot from './vitessce/Scatterplot';
 /*
   After installing from NPM, you'll use "from 'vitessce-grid'" instead.
 */
@@ -42,6 +42,7 @@ const layout = {
 
 const registry = {
   fancyMap: MyFancyMap,
+  myScatterplot: MyScatterplot,
   scatterplot: Scatterplot,
 };
 

@@ -11,8 +11,6 @@ import {
 
 import CellSetsTool from './components/CellSetsTool';
 import DraggableGrid from './components/DraggableGrid';
-import Scatterplot from './components/scatterplot/Scatterplot';
-import MyFancyMap from './components/scatterplot/MyFancyMap';
 
 const { Text } = Typography;
 const { Search } = Input;
@@ -190,7 +188,7 @@ class ExplorationViewPage extends React.Component {
         </Row>
         <Row>
           <Col span={16}>
-            <Scatterplot />
+            <DraggableGrid />
           </Col>
           <Col span={8}>
             <Space direction="vertical" style={{ width: '100%' }}>
