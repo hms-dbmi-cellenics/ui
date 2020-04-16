@@ -140,8 +140,8 @@ class Scatterplot extends React.Component {
     // up-to-date viewport instance (to perform projections).
     this.viewInfo.viewport = (new OrthographicView()).makeViewport({
       viewState,
-      width: this.width,
-      height: this.height,
+      // width: this.width,
+      // height: this.height,
     });
     updateViewInfo(this.viewInfo);
   }
@@ -152,8 +152,8 @@ class Scatterplot extends React.Component {
     } = viewProps;
     // Capture the viewport, width, and height values from DeckGL instantiation to be used later.
     this.viewInfo.viewport = viewport;
-    this.viewInfo.width = width;
-    this.viewInfo.height = height;
+    this.viewInfo.width = 100;
+    this.viewInfo.height = 100;
     const {
       updateViewInfo = () => {
         console.warn('AbstractSelectableComponent updateViewInfo from renderImagesFromView');
@@ -182,6 +182,7 @@ class Scatterplot extends React.Component {
       // gl needs to be initialized for us to use it in Texture creation
       layers: this.renderLayers(),
       initialViewState: this.getInitialViewState(),
+
     };
     console.log("%%% ", deckProps);
     if (tool) {
@@ -200,17 +201,35 @@ class Scatterplot extends React.Component {
 
     console.log(this.props);
     console.log(this.state);
+
+    const deckGl = (<>
+      <DeckGL
+        glOptions={{ webgl2: true }}
+        ref={this.deckRef}
+        onWebGLInitialized={this.onWebGLInitialized}
+        {...deckProps}
+      >
+        {this.initializeViewInfo}
+      </DeckGL>
+    </>
+    )
     return (
-      <>
-        <DeckGL
-          glOptions={{ webgl2: true }}
-          ref={this.deckRef}
-          onWebGLInitialized={this.onWebGLInitialized}
-          {...deckProps}
+      <div>
+        <div
+          className="drag-around"
+          style={{ backgroundColor: "#000000", color: "#ffffff" }}
         >
-          {this.initializeViewInfo}
-        </DeckGL>
-      </>
+          My beautiful scatterplot
+        <span>
+            <span>
+              {/* <ClosePaneButton removeGridComponent={removeGridComponent} /> */}
+            </span>
+          </span>
+        </div>
+        <div>
+          {deckGl}
+        </div>
+      </div >
     );
   }
 

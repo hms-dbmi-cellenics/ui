@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
 import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer } from '@deck.gl/layers';
+import { OrthographicView } from '@deck.gl/core';
 
-
-import myData from './data.json';
+import myData from './tsne_data.json';
 
 const INITIAL_VIEW_STATE = {
-  longitude: 0,
-  latitude: 0,
+  target: [0, 0, 0],
   zoom: 1,
+  minZoom: 1,
   maxZoom: 40,
-  pitch: 0,
-  bearing: 0,
 };
 
 class MyScatterplot extends Component {
@@ -23,7 +21,7 @@ class MyScatterplot extends Component {
       opacity: 0.8,
       stroked: true,
       filled: true,
-      radiusScale: 300,
+      radiusScale: 1,
       radiusMinPixels: 1,
       radiusMaxPixels: 100,
       lineWidthMinPixels: 1,
@@ -31,6 +29,7 @@ class MyScatterplot extends Component {
       getRadius: (d) => Math.sqrt(d.exits),
       getFillColor: (d) => [255, 140, 0],
       getLineColor: (d) => [0, 0, 0],
+      wrapLongitude: false,
     });
     return [
       layer1,
@@ -38,10 +37,40 @@ class MyScatterplot extends Component {
   }
 
   render() {
+    const viewport = {
+      height: '100%',
+      width: '100%',
+    };
+
+    const myDeckGl = (
+      <DeckGL {...viewport} layers={this.renderLayers()} initialViewState={INITIAL_VIEW_STATE} views={new OrthographicView({ controller: true })} />
+    );
+
     return (
-      <DeckGL layers={this.renderLayers()} initialViewState={INITIAL_VIEW_STATE} controller />
+      <>
+        <div
+          className="drag-around"
+          style={{
+            backgroundColor: '#000000', color: '#ffffff',
+          }}
+        >
+          My beautiful scatterplot
+          <span>
+            <span>
+              {/* <ClosePaneButton removeGridComponent={removeGridComponent} /> */}
+            </span>
+          </span>
+        </div>
+        <div style={{
+          position: 'relative', display: 'flex', flexDirection: 'column', flex: '1 1 auto',
+        }}
+        >
+          {myDeckGl}
+        </div>
+      </>
     );
   }
 }
+
 
 export default MyScatterplot;
