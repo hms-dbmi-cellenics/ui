@@ -3,6 +3,7 @@ import { ScatterplotLayer } from '@deck.gl/layers';
 import DeckGL, { OrthographicView, COORDINATE_SYSTEM } from 'deck.gl';
 
 import cells from '../myPlots/data.json';
+// import cells from '../myPlots/linnarsson.cells.json';
 
 const DEFAULT_COLOR = [0, 128, 255];
 
@@ -20,7 +21,7 @@ function cellLayerDefaultProps(updateStatus, updateCellsHover, uuid) {
       if (info.object) {
         const [cellId, cellInfo] = info.object;
         const { factors = {}, xy, mappings = {} } = cellInfo;
-        updateStatus(makeCellStatusMessage(factors));
+        updateStatus("Hovered on a cell");
         updateCellsHover({
           cellId,
           mappings: { xy, ...mappings },
@@ -90,22 +91,20 @@ class Scatterplot extends React.Component {
 
   renderLayers() {
     const {
-      cells = undefined,
+      // cells = undefined,
       mapping,
       updateStatus = (message) => {
-        console.warn(`Scatterplot updateStatus: ${message}`);
+        // console.warn(`Scatterplot updateStatus: ${message}`);
       },
       updateCellsSelection = (cellsSelection) => {
         console.warn(`Scatterplot updateCellsSelection: ${cellsSelection}`);
       },
       updateCellsHover = (hoverInfo) => {
-        console.warn(`Scatterplot updateCellsHover: ${hoverInfo.cellId}`);
+        console.warn(`Scatterplot updateCellsHover: ${hoverInfo}`);
       },
       uuid = null,
       clearPleaseWait,
     } = this.props;
-
-    console.log("*****", this.props, this.cells);
 
     const { tool } = this.state;
 
@@ -117,52 +116,17 @@ class Scatterplot extends React.Component {
           id: 'scatterplot',
           // No radiusMin, so texture remains open even zooming out.
           radiusMaxPixels: 1,
-          getPosition: (cellEntry) => {
-            const { mappings } = cellEntry[1];
-            if (!(mapping in mappings)) {
-              const available = Object.keys(mappings).map(s => `"${s}"`).join(', ');
-              throw new Error(`Expected to find "${mapping}", but available mappings are: ${available}`);
-            }
-            const mappedCell = mappings[mapping];
-            return [mappedCell[0], mappedCell[1], 0];
-          },
-          getColor: cellEntry => (
+          getPosition: (c) => c,
+          // getPosition: (d) => d,
+          getFillColor: cellEntry => (
             (this.props.cellColors && this.props.cellColors[cellEntry[0]]) || DEFAULT_COLOR
           ),
-          onClick: (info) => {
-            if (tool) {
-              // If using a tool, prevent individual cell selection.
-              // Let SelectionLayer handle the clicks instead.
-              return;
-            }
-            const cellId = info.object[0];
-          },
           ...cellLayerDefaultProps(updateStatus, updateCellsHover, "uuid-1"),
         }),
       );
     }
 
-    const myLayer = new ScatterplotLayer({
-      id: 'scatterplot-layer',
-      data: cells,
-      pickable: true,
-      opacity: 0.8,
-      stroked: true,
-      filled: true,
-      radiusScale: 300,
-      radiusMinPixels: 1,
-      radiusMaxPixels: 100,
-      lineWidthMinPixels: 1,
-      getPosition: (d) => d,
-      getRadius: (d) => Math.sqrt(d.exits),
-      getFillColor: (d) => [255, 140, 0],
-      getLineColor: (d) => [0, 0, 0],
-    });
-
-    // layers.push(myLayer);
-
-    // return layers;
-    return [myLayer];
+    return layers;
   }
 
   onViewStateChange({ viewState }) {

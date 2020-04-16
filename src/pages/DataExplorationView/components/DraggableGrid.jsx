@@ -30,13 +30,13 @@ const layout = {
       y: 0,
       w: 2,
     },
-    // {
-    //   component: 'scatterplot',
-    //   props: { text: 'body, left' },
-    //   x: 0,
-    //   y: 1,
-    //   w: 2,
-    // },
+    {
+      component: 'scatterplot',
+      props: { text: 'body, left' },
+      x: 0,
+      y: 1,
+      w: 2,
+    },
   ],
 };
 
