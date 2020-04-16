@@ -48,18 +48,8 @@ class MyScatterplot extends Component {
 
     return (
       <>
-        <div
-          className="drag-around"
-          style={{
-            backgroundColor: '#000000', color: '#ffffff',
-          }}
-        >
+        <div className="drag-around ant-card ant-card-bordered ant-card-header">
           My beautiful scatterplot
-          <span>
-            <span>
-              {/* <ClosePaneButton removeGridComponent={removeGridComponent} /> */}
-            </span>
-          </span>
         </div>
         <div style={{
           position: 'relative', display: 'flex', flexDirection: 'column', flex: '1 1 auto',
