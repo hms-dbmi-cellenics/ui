@@ -4,6 +4,7 @@ import { ScatterplotLayer } from '@deck.gl/layers';
 import { OrthographicView } from '@deck.gl/core';
 
 import myData from './tsne_data.json';
+import CloseWindow from '../../../../components/CloseWindow';
 
 const INITIAL_VIEW_STATE = {
   target: [0, 0, 0],
@@ -36,6 +37,10 @@ class MyScatterplot extends Component {
     ];
   }
 
+  closePlot(key) {
+    console.log('I am about to be closed! ', key);
+  }
+
   render() {
     const viewport = {
       height: '100%',
@@ -50,6 +55,7 @@ class MyScatterplot extends Component {
       <>
         <div className="drag-around ant-card ant-card-bordered ant-card-header">
           My beautiful scatterplot
+          <CloseWindow params={['bla']} action={this.closePlot} style={{ float: 'right' }} />
         </div>
         <div style={{
           position: 'relative', display: 'flex', flexDirection: 'column', flex: '1 1 auto',
