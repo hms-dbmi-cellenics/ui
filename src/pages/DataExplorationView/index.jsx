@@ -176,6 +176,8 @@ class ExplorationViewPage extends React.Component {
           <Col span={16}>
             my url:
             {process.env.REACT_APP_API_URL}
+
+            <DraggableGrid />
           </Col>
           <Col span={8}>
             <Space direction="vertical" style={{ width: '100%' }}>
