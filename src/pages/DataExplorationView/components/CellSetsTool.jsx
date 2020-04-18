@@ -15,7 +15,7 @@ const CellSetsTool = (props) => {
   const { experimentID } = props;
 
   const { data } = useSWR(
-    `${process.env.API_URL}/experiments/${experimentID}/cell-sets`,
+    `${process.env.REACT_APP_API_URL}/experiments/${experimentID}/cell-sets`,
     (url) => fetch(url)
       .then((res) => res.json()),
   );

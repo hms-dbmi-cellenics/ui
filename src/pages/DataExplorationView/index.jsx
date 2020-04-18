@@ -10,8 +10,6 @@ import {
 } from '@ant-design/icons';
 
 import CellSetsTool from './components/CellSetsTool';
-import DraggableGrid from './components/DraggableGrid';
-import Scatterplot from './components/scatterplot/Scatterplot';
 
 const { Text } = Typography;
 const { Search } = Input;
@@ -189,7 +187,8 @@ class ExplorationViewPage extends React.Component {
         </Row>
         <Row>
           <Col span={16}>
-            <DraggableGrid />
+            my url:
+            {process.env.REACT_APP_API_URL}
           </Col>
           <Col span={8}>
             <Space direction="vertical" style={{ width: '100%' }}>
