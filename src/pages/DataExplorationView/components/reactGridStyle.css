@@ -1,0 +1,4 @@
+.react-grid-item {
+    display: flex !important;
+    flex-direction: column !important;
+}

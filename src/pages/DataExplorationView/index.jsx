@@ -5,11 +5,9 @@ import {
   Typography, Empty,
 } from 'antd';
 
-import {
-  CloseOutlined,
-} from '@ant-design/icons';
-
 import CellSetsTool from './components/CellSetsTool';
+import DraggableGrid from './components/DraggableGrid';
+import CloseWindow from '../../components/CloseWindow';
 
 const { Text } = Typography;
 const { Search } = Input;
@@ -60,17 +58,6 @@ class ExplorationViewPage extends React.Component {
     this.closeTool = this.closeTool.bind(this);
     this.openTool = this.openTool.bind(this);
     this.filterTools = this.filterTools.bind(this);
-  }
-
-  getCloser(key) {
-    return (
-      <CloseOutlined
-        onClick={(event) => {
-          this.closeTool(key);
-          event.stopPropagation();
-        }}
-      />
-    );
   }
 
   closeTool(key) {
@@ -146,7 +133,7 @@ class ExplorationViewPage extends React.Component {
       <Collapse>
         {
           openedTools.map((tool) => (
-            <Panel header={tool.name} key={tool.key} extra={this.getCloser(tool.key)}>
+            <Panel header={tool.name} key={tool.key} extra={<CloseWindow params={tool.key} action={this.closeTool} />}>
               {tool.renderer()}
             </Panel>
           ))
