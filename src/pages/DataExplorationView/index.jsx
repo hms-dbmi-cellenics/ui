@@ -2,7 +2,7 @@ import React from 'react';
 
 import {
   PageHeader, Row, Col, Input, Space, Dropdown, Menu,
-  Typography, Empty,
+  Typography, Empty, Collapse,
 } from 'antd';
 
 import { Scatterplot } from 'vitessce/es/production/scatterplot.min.js';
@@ -15,6 +15,7 @@ import 'vitessce/es/production/static/css/index.css';
 
 const { Text } = Typography;
 const { Search } = Input;
+const { Panel } = Collapse;
 
 class ExplorationViewPage extends React.Component {
   constructor(props) {

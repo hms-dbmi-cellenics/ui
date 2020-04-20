@@ -6,10 +6,13 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Collapse, Space } from 'antd';
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 
+import styles from './test.module.css';
 
 const { Panel } = Collapse;
 
 const DraggableList = (props) => {
+  console.log('styles', styles);
+
   const { plots } = props;
   const [items, setItems] = useState(plots);
 
@@ -17,7 +20,7 @@ const DraggableList = (props) => {
     // some basic styles to make the items look a bit nicer
     userSelect: 'none',
 
-    margin: '0 0 8px 0',
+    margin: '0 0 19px 0',
 
     // styles we need to apply on draggables
     ...draggableStyle,
@@ -57,23 +60,15 @@ const DraggableList = (props) => {
     setItems(newItems);
   };
 
-  const renderExtras = (item, provided) => (
-    <Space>
-      <CloseOutlined onClick={(event) => {
-        const newItems = items.filter((obj) => obj.key !== item.key);
+  const renderExtras = (item) => (
+    <CloseOutlined onClick={(event) => {
+      const newItems = items.filter((obj) => obj.key !== item.key);
 
-        setItems(newItems);
-        props.onChange(newItems);
-        event.stopPropagation();
-      }}
-      />
-      <MenuOutlined
-        onClick={(event) => (event.stopPropagation()
-        )}
-        style={{ cursor: 'grab' }}
-        {...provided.dragHandleProps}
-      />
-    </Space>
+      setItems(newItems);
+      props.onChange(newItems);
+      event.stopPropagation();
+    }}
+    />
   );
 
   const renderDraggables = (item, index) => (
@@ -82,6 +77,7 @@ const DraggableList = (props) => {
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
+          className={styles.container}
           style={getItemStyle(
             snapshot.isDragging,
             provided.draggableProps.style,
@@ -89,7 +85,12 @@ const DraggableList = (props) => {
         >
           <Collapse defaultActiveKey={[item.key]}>
             <Panel
-              header={item.name}
+              headStyle={{ display: 'flex' }}
+              header={(
+                <div style={{ display: 'flex', flexGrow: 1 }} {...provided.dragHandleProps}>
+                  {item.name}
+                </div>
+              )}
               key={item.key}
               extra={renderExtras(item, provided)}
             >
