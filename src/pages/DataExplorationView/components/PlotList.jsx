@@ -13,25 +13,27 @@ const PlotList = (props) => {
   const { plots } = props;
   const [items, setItems] = useState(plots);
 
-  const grid = 8;
-
   console.log(styles);
 
   const getItemStyle = (isDragging, draggableStyle) => ({
     // some basic styles to make the items look a bit nicer
     userSelect: 'none',
 
-    margin: `0 0 ${grid}px 0`,
+    margin: '0 0 8px 0',
 
     // styles we need to apply on draggables
     ...draggableStyle,
   });
 
-  const getListStyle = (isDraggingOver) => ({
-    background: isDraggingOver ? '#cfe6e5' : 'lightgrey',
-    padding: grid,
-    width: '100%',
-  });
+  const getListStyle = (isDraggingOver) => {
+    let res = { width: '100%' };
+
+    if (isDraggingOver) {
+      res = { ...res, background: '#cfe6e5' };
+    }
+
+    return res;
+  };
 
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);

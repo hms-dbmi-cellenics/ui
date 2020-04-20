@@ -291,7 +291,7 @@ class ExplorationViewPage extends React.Component {
             />
           </Col>
         </Row>
-        <Row>
+        <Row gutter={16}>
           <Col span={16}>
             my url:
             {process.env.REACT_APP_API_URL}
