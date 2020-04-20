@@ -9,7 +9,6 @@ import { Scatterplot } from 'vitessce/es/production/scatterplot.min.js';
 import CellSetsTool from './components/CellSetsTool';
 import DraggableList from '../../components/DraggableList';
 
-// eslint-disable-next-line import/extensions
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'vitessce/es/production/static/css/index.css';
 
@@ -135,14 +134,14 @@ class ExplorationViewPage extends React.Component {
         const cellColors = null;
         const mapping = 'PCA';
         const selectedCellIds = new Set();
-        const updateCellsHover = (hoverInfo) => { };
-        const updateCellsSelection = (selectedIds) => { };
+        const updateCellsHover = (hoverInfo) => { console.log(hoverInfo); };
+        const updateCellsSelection = (selectedIds) => { console.log(selectedIds); };
         const updateStatus = (message) => { };
         const updateViewInfo = (viewInfo) => { };
         const clearPleaseWait = (layerName) => { };
 
         return (
-          <div style={{ height: '50vh', position: 'relative' }}>
+          <div className="vitessce-container vitessce-theme-light" style={{ height: '50vh', position: 'relative' }}>
             <Scatterplot
               uuid={uuid}
               view={view}
