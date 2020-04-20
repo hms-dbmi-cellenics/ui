@@ -1,20 +1,20 @@
 import React from 'react';
 
 import {
-  PageHeader, Row, Col, Input, Collapse, Space, Dropdown, Menu,
+  PageHeader, Row, Col, Input, Space, Dropdown, Menu,
   Typography, Empty,
 } from 'antd';
 
 import { Scatterplot } from 'vitessce/es/production/scatterplot.min.js';
 import CellSetsTool from './components/CellSetsTool';
-import PlotList from './components/PlotList';
-import CloseWindow from '../../components/CloseWindow';
+import DraggableList from '../../components/DraggableList';
 
+// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/no-extraneous-dependencies
 import 'vitessce/es/production/static/css/index.css';
 
 const { Text } = Typography;
 const { Search } = Input;
-const { Panel } = Collapse;
 
 class ExplorationViewPage extends React.Component {
   constructor(props) {
@@ -170,14 +170,8 @@ class ExplorationViewPage extends React.Component {
       renderer: () => (<span>asdsa</span>),
     }];
 
-    this.closeTool = this.closeTool.bind(this);
     this.openTool = this.openTool.bind(this);
     this.filterTools = this.filterTools.bind(this);
-  }
-
-  closeTool(key) {
-    const { openedTools } = this.state;
-    this.setState({ openedTools: openedTools.filter((obj) => obj.key !== key) });
   }
 
   openTool(key) {
@@ -245,19 +239,10 @@ class ExplorationViewPage extends React.Component {
     }
 
     return (
-      <Collapse>
-        {
-          openedTools.map((tool) => (
-            <Panel
-              header={tool.name}
-              key={tool.key}
-              extra={<CloseWindow params={tool.key} action={this.closeTool} />}
-            >
-              {tool.renderer()}
-            </Panel>
-          ))
-        }
-      </Collapse>
+      <DraggableList
+        plots={openedTools}
+        onChange={(newList) => this.setState({ openedTools: newList })}
+      />
     );
   }
 
@@ -296,7 +281,7 @@ class ExplorationViewPage extends React.Component {
             my url:
             {process.env.REACT_APP_API_URL}
 
-            <PlotList plots={this.plots} />
+            <DraggableList plots={this.plots} />
           </Col>
           <Col span={8}>
             <Space direction="vertical" style={{ width: '100%' }}>

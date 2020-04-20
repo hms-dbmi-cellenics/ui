@@ -1,19 +1,17 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Collapse } from 'antd';
-import { MenuOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
 
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import * as styles from '!!../../../utils/less-var-loader!../../../App.less';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Collapse, Space } from 'antd';
+import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
+
 
 const { Panel } = Collapse;
 
-const PlotList = (props) => {
+const DraggableList = (props) => {
   const { plots } = props;
   const [items, setItems] = useState(plots);
-
-  console.log(styles);
 
   const getItemStyle = (isDragging, draggableStyle) => ({
     // some basic styles to make the items look a bit nicer
@@ -55,8 +53,28 @@ const PlotList = (props) => {
       result.destination.index,
     );
 
+    props.onChange(newItems);
     setItems(newItems);
   };
+
+  const renderExtras = (item, provided) => (
+    <Space>
+      <CloseOutlined onClick={(event) => {
+        const newItems = items.filter((obj) => obj.key !== item.key);
+
+        setItems(newItems);
+        props.onChange(newItems);
+        event.stopPropagation();
+      }}
+      />
+      <MenuOutlined
+        onClick={(event) => (event.stopPropagation()
+        )}
+        style={{ cursor: 'grab' }}
+        {...provided.dragHandleProps}
+      />
+    </Space>
+  );
 
   const renderDraggables = (item, index) => (
     <Draggable key={item.key} draggableId={item.key} index={index}>
@@ -69,11 +87,11 @@ const PlotList = (props) => {
             provided.draggableProps.style,
           )}
         >
-          <Collapse>
+          <Collapse defaultActiveKey={[item.key]}>
             <Panel
               header={item.name}
               key={item.key}
-              extra={<MenuOutlined style={{ cursor: 'grab' }} {...provided.dragHandleProps} />}
+              extra={renderExtras(item, provided)}
             >
               {item.renderer()}
             </Panel>
@@ -101,4 +119,14 @@ const PlotList = (props) => {
   );
 };
 
-export default PlotList;
+
+DraggableList.defaultProps = {
+  onChange: () => null,
+};
+
+DraggableList.propTypes = {
+  onChange: PropTypes.func,
+
+};
+
+export default DraggableList;
