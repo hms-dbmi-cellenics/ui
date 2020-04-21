@@ -1,31 +1,21 @@
 import React from 'react';
 
 import {
-  PageHeader, Row, Col, Input, Space, Dropdown, Menu,
-  Typography, Empty, Collapse,
+  PageHeader, Row, Col, Input, Space, Menu, Empty,
 } from 'antd';
 
-import { Scatterplot } from 'vitessce/es/production/scatterplot.min.js';
 import CellSetsTool from './components/CellSetsTool';
 import DraggableList from '../../components/DraggableList';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import 'vitessce/es/production/static/css/index.css';
-
-const { Text } = Typography;
-const { Search } = Input;
-const { Panel } = Collapse;
+import EmbeddingScatterplot from './components/EmbeddingScatterplot';
+import HeatmapPlot from './components/HeatmapPlot';
+import SearchMenu from '../../components/SearchMenu';
 
 class ExplorationViewPage extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      openedTools: [],
-      filteredTools: [],
-    };
-
-    this.availableTools = [
+    this.tools = [
       {
         name: 'Cell set',
         description: 'Create and manage categories of cells.',
@@ -60,118 +50,29 @@ class ExplorationViewPage extends React.Component {
 
     this.plots = [{
       key: 'item-1',
+      description: '',
       name: 'tSNE plot',
-      renderer: () => {
-        const uuid = 'my-scatterplot';
-        const view = { target: [0, 0, 0], zoom: 0.75 };
-        const cells = {
-          1: {
-            mappings: {
-              PCA: [2, 1],
-            },
-          },
-          2: {
-            mappings: {
-              PCA: [5, 1],
-            },
-          },
-          3: {
-            mappings: {
-              PCA: [6.5, 4],
-            },
-          },
-          4: {
-            mappings: {
-              PCA: [6, 4.5],
-            },
-          },
-          5: {
-            mappings: {
-              PCA: [5.5, 5],
-            },
-          },
-          6: {
-            mappings: {
-              PCA: [0.5, 4],
-            },
-          },
-          7: {
-            mappings: {
-              PCA: [1, 4.5],
-            },
-          },
-          8: {
-            mappings: {
-              PCA: [1.5, 5],
-            },
-          },
-          9: {
-            mappings: {
-              PCA: [2, 5.25],
-            },
-          },
-          10: {
-            mappings: {
-              PCA: [5, 5.25],
-            },
-          },
-          11: {
-            mappings: {
-              PCA: [4.5, 5.35],
-            },
-          },
-          12: {
-            mappings: {
-              PCA: [3.5, 5.45],
-            },
-          },
-          13: {
-            mappings: {
-              PCA: [2.5, 5.35],
-            },
-          },
-        };
-        const cellColors = null;
-        const mapping = 'PCA';
-        const selectedCellIds = new Set();
-        const updateCellsHover = (hoverInfo) => { console.log(hoverInfo); };
-        const updateCellsSelection = (selectedIds) => { console.log(selectedIds); };
-        const updateStatus = (message) => { };
-        const updateViewInfo = (viewInfo) => { };
-        const clearPleaseWait = (layerName) => { };
-
-        return (
-          <div className="vitessce-container vitessce-theme-light" style={{ height: '50vh', position: 'relative' }}>
-            <Scatterplot
-              uuid={uuid}
-              view={view}
-              cells={cells}
-              mapping={mapping}
-              selectedCellIds={selectedCellIds}
-              cellColors={cellColors}
-              updateStatus={updateStatus}
-              updateCellsSelection={updateCellsSelection}
-              updateCellsHover={updateCellsHover}
-              updateViewInfo={updateViewInfo}
-              clearPleaseWait={clearPleaseWait}
-            />
-          </div>
-        );
-      },
+      renderer: () => (<EmbeddingScatterplot />),
     },
     {
       key: 'item-2',
-      name: 'PCA plot',
-      renderer: () => (<span>asdsa</span>),
+      description: '',
+      name: 'Heatmap plot',
+      renderer: () => (<HeatmapPlot />),
     },
     {
       key: 'item-3',
+      description: '',
       name: 'booboo plot',
       renderer: () => (<span>asdsa</span>),
     }];
 
+    this.state = {
+      openedTools: [],
+      openedPlots: [this.plots[0]],
+    };
+
     this.openTool = this.openTool.bind(this);
-    this.filterTools = this.filterTools.bind(this);
   }
 
   openTool(key) {
@@ -181,49 +82,26 @@ class ExplorationViewPage extends React.Component {
       return;
     }
 
-    const toolToRender = this.availableTools.find((obj) => obj.key === key);
+    const toolToRender = this.tools.find((obj) => obj.key === key);
 
     openedTools.unshift(toolToRender);
 
     this.setState({ openedTools });
   }
 
-  filterTools(text) {
-    let { filteredTools } = this.state;
+  openPlot(key) {
+    const { openedPlots } = this.state;
 
-    filteredTools = [];
-
-    this.availableTools.forEach((tool) => {
-      if (tool.name.toLowerCase().includes(text.toLowerCase())
-        || tool.description.toLowerCase().includes(text.toLowerCase())) {
-        filteredTools.push(tool);
-      }
-    });
-
-    this.setState({ filteredTools });
-  }
-
-  renderMenu() {
-    const { filteredTools: optionsToRender } = this.state;
-    if (optionsToRender.length > 0) {
-      return (
-        <Menu>
-          {
-            optionsToRender.map((t) => this.renderMenuItem(t.name, t.description, t.key))
-          }
-        </Menu>
-      );
+    if (openedPlots.find((obj) => obj.key === key)) {
+      return;
     }
-    return (
-      <Menu>
-        {
-          this.availableTools.map((t) => this.renderMenuItem(t.name, t.description, t.key))
-        }
-      </Menu>
-    );
+
+    const plotToRender = this.plots.find((obj) => obj.key === key);
+    openedPlots.unshift(plotToRender);
+    this.setState({ openedPlots });
   }
 
-  renderToolbar() {
+  renderTools() {
     const { openedTools } = this.state;
 
     if (openedTools.length === 0) {
@@ -246,25 +124,40 @@ class ExplorationViewPage extends React.Component {
     );
   }
 
-  renderMenuItem(primaryText, secondaryText, key) {
+  renderPlots() {
+    const { openedPlots } = this.state;
+    let { plots } = this;
+
+    if (openedPlots.length > 0) {
+      plots = openedPlots;
+    }
+
     return (
-      <Menu.Item
-        key={key}
-        onClick={() => {
-          this.openTool(key);
-        }}
-      >
-        <div>
-          <Text strong>{primaryText}</Text>
-          <br />
-          <Text type="secondary">{secondaryText}</Text>
-        </div>
-      </Menu.Item>
+      <DraggableList
+        plots={plots}
+        onChange={(newList) => this.setState({ openedPlots: newList })}
+      />
     );
   }
 
   render() {
-    const menu = this.renderMenu();
+    const searchMenuTools = (
+      <SearchMenu
+        options={this.tools}
+        onSelect={(key) => {
+          this.openTool(key);
+        }}
+      />
+    );
+
+    const searchMenuPlots = (
+      <SearchMenu
+        options={this.plots}
+        onSelect={(key) => {
+          this.openPlot(key);
+        }}
+      />
+    );
 
     return (
       <>
@@ -278,20 +171,17 @@ class ExplorationViewPage extends React.Component {
         </Row>
         <Row gutter={16}>
           <Col span={16}>
-            my url:
-            {process.env.REACT_APP_API_URL}
-
-            <DraggableList plots={this.plots} />
+            <Space direction="vertical" style={{ width: '100%' }}>
+              {/* my url:
+            {process.env.REACT_APP_API_URL} */}
+              {searchMenuPlots}
+              {this.renderPlots()}
+            </Space>
           </Col>
           <Col span={8}>
             <Space direction="vertical" style={{ width: '100%' }}>
-              <Dropdown
-                overlay={menu}
-                trigger={['click']}
-              >
-                <Search placeholder="Search or browse tools..." onChange={(e) => this.filterTools(e.target.value)} />
-              </Dropdown>
-              {this.renderToolbar()}
+              {searchMenuTools}
+              {this.renderTools()}
             </Space>
           </Col>
         </Row>

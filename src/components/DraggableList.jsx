@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Collapse, Space } from 'antd';
-import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
+import { Collapse } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 
 import styles from './test.module.css';
 
