@@ -50,19 +50,16 @@ class ExplorationViewPage extends React.Component {
 
     this.plots = [{
       key: 'item-1',
-      description: '',
       name: 'tSNE plot',
       renderer: () => (<EmbeddingScatterplot />),
     },
     {
       key: 'item-2',
-      description: '',
       name: 'Heatmap plot',
       renderer: () => (<HeatmapPlot />),
     },
     {
       key: 'item-3',
-      description: '',
       name: 'booboo plot',
       renderer: () => (<span>asdsa</span>),
     }];

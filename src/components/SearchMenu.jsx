@@ -16,10 +16,10 @@ const SearchMenu = (props) => {
 
   const search = (text) => {
     const newFiltered = [];
-    // todo: refactor this to search in values for each key, not have hardcoded key names
     options.forEach((tool) => {
-      if (tool.name.toLowerCase().includes(text.toLowerCase())
-        || tool.description.toLowerCase().includes(text.toLowerCase())) {
+      const keys = Object.keys(tool);
+      const contains = keys.filter((k) => tool[k].toString().toLowerCase().includes(text.toLowerCase()));
+      if (contains.length > 0) {
         newFiltered.push(tool);
       }
     });
