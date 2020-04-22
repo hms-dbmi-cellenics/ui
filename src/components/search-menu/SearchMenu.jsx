@@ -18,8 +18,8 @@ const SearchMenu = (props) => {
     const newFiltered = [];
     options.forEach((tool) => {
       const keys = Object.keys(tool);
-      const contains = keys.filter((k) => tool[k].toString().toLowerCase().includes(text.toLowerCase()));
-      if (contains.length > 0) {
+      const containsText = keys.filter((k) => tool[k].toString().toLowerCase().includes(text.toLowerCase()));
+      if (containsText.length > 0) {
         newFiltered.push(tool);
       }
     });

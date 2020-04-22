@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  PageHeader, Row, Col, Input, Space, Menu, Empty,
+  PageHeader, Row, Col, Space, Empty,
 } from 'antd';
 
 import CellSetsTool from './components/CellSetsTool';
@@ -9,7 +9,7 @@ import DraggableList from '../../components/DraggableList';
 
 import EmbeddingScatterplot from './components/EmbeddingScatterplot';
 import HeatmapPlot from './components/HeatmapPlot';
-import SearchMenu from '../../components/SearchMenu';
+import SearchMenu from '../../components/search-menu/SearchMenu';
 
 class ExplorationViewPage extends React.Component {
   constructor(props) {

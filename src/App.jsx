@@ -7,7 +7,7 @@ import {
 
 import './App.less';
 
-import ContentWrapper from './components/ContentWrapper';
+import ContentWrapper from './components/content-wrapper/ContentWrapper';
 import DataExplorationView from './pages/DataExplorationView';
 
 function App() {

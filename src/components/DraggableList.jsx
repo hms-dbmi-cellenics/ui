@@ -11,8 +11,6 @@ import styles from './test.module.css';
 const { Panel } = Collapse;
 
 const DraggableList = (props) => {
-  console.log('styles', styles);
-
   const { plots } = props;
   const [items, setItems] = useState(plots);
 
@@ -127,6 +125,7 @@ DraggableList.defaultProps = {
 
 DraggableList.propTypes = {
   onChange: PropTypes.func,
+  plots: PropTypes.arrayOf(PropTypes.object).isRequired,
 
 };
 
