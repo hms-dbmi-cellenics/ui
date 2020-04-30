@@ -5,7 +5,7 @@ import {
 } from 'antd';
 
 import CellSetsTool from './components/CellSetsTool';
-import DraggableList from '../../components/DraggableList';
+import DraggableList from '../../components/draggable-list/DraggableList';
 
 import EmbeddingScatterplot from './components/EmbeddingScatterplot';
 import HeatmapPlot from './components/HeatmapPlot';

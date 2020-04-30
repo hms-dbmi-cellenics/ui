@@ -13,8 +13,11 @@ const HeatmapPlot = () => {
   const uuid = 'my-heatmap';
   const cellColors = null;
   const selectedCellIds = new Set();
-  const updateCellsHover = (hoverInfo) => { console.log(hoverInfo); };
+  // eslint-disable-next-line no-unused-vars
+  const updateCellsHover = (hoverInfo) => { };
+  // eslint-disable-next-line no-unused-vars
   const updateStatus = (message) => { };
+  // eslint-disable-next-line no-unused-vars
   const clearPleaseWait = (layerName) => { };
 
   return (

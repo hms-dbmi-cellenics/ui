@@ -18,3 +18,7 @@ As per instructions in: https://jestjs.io/docs/en/troubleshooting
         node --inspect-brk node_modules/.bin/jest --runInBand
 
 3. Open your browser and go to chrome://inspect and click on "Open Dedicated DevTools for Node".
+
+# Test coverage
+
+Test coverage is not enabled yet, because it breaks tests, see this bug report: https://github.com/facebook/jest/issues/9723

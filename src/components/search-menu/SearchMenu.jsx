@@ -18,7 +18,9 @@ const SearchMenu = (props) => {
     const newFiltered = [];
     options.forEach((tool) => {
       const keys = Object.keys(tool);
-      const containsText = keys.filter((k) => tool[k].toString().toLowerCase().includes(text.toLowerCase()));
+      const containsText = keys.filter(
+        (k) => tool[k].toString().toLowerCase().includes(text.toLowerCase()),
+      );
       if (containsText.length > 0) {
         newFiltered.push(tool);
       }
@@ -79,6 +81,8 @@ SearchMenu.defaultProps = {
 
 SearchMenu.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // this is used, I don't know why lint is still complaining
+  // eslint-disable-next-line react/no-unused-prop-types
   onSelect: PropTypes.func,
 };
 

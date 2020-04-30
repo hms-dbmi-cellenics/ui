@@ -79,10 +79,15 @@ const EmbeddingScatterplot = () => {
   const cellColors = null;
   const mapping = 'PCA';
   const selectedCellIds = new Set();
-  const updateCellsHover = (hoverInfo) => { console.log(hoverInfo); };
-  const updateCellsSelection = (selectedIds) => { console.log(selectedIds); };
+  // eslint-disable-next-line no-unused-vars
+  const updateCellsHover = (hoverInfo) => { };
+  // eslint-disable-next-line no-unused-vars
+  const updateCellsSelection = (selectedIds) => { };
+  // eslint-disable-next-line no-unused-vars
   const updateStatus = (message) => { };
+  // eslint-disable-next-line no-unused-vars
   const updateViewInfo = (viewInfo) => { };
+  // eslint-disable-next-line no-unused-vars
   const clearPleaseWait = (layerName) => { };
 
   return (
