@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Space, Tree } from 'antd';
 import { transform, cloneDeep } from 'lodash';
 import EditableField from '../../../components/EditableField';
-import ColorPicker from '../../../components/ColorPicker';
+import ColorPicker from '../../../components/color-picker/ColorPicker';
 
 const HierarchicalTree = (props) => {
   // eslint-disable-next-line react/destructuring-assignment

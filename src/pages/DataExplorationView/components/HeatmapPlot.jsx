@@ -1,9 +1,9 @@
 import React from 'react';
 
 // eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
-import { Heatmap } from 'vitessce/es/production/heatmap.min.js';
+import { Heatmap } from 'vitessce/build-lib/es/production/heatmap.min.js';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import 'vitessce/es/production/static/css/index.css';
+import 'vitessce/build-lib/es/production/static/css/index.css';
 
 import cells from './linnarsson.cells.json';
 import clusters from './linnarsson.clusters.json';

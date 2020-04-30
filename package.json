@@ -72,6 +72,7 @@
     "terser-webpack-plugin": "2.3.5",
     "ts-pnp": "1.1.6",
     "url-loader": "2.3.0",
+    "vitessce": "^0.1.0",
     "vitessce-grid": "^0.0.6",
     "webpack": "4.42.0",
     "webpack-dev-server": "3.10.3",

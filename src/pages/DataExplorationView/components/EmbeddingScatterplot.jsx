@@ -1,9 +1,9 @@
 import React from 'react';
 
 // eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
-import { Scatterplot } from 'vitessce/es/production/scatterplot.min.js';
+import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import 'vitessce/es/production/static/css/index.css';
+import 'vitessce/build-lib/es/production/static/css/index.css';
 
 
 const EmbeddingScatterplot = () => {
