@@ -3,7 +3,11 @@ FROM node:13.12.0-alpine
 
 ARG CI_ENVIRONMENT_NAME
 
+RUN echo "asdad"
+
 RUN echo ${CI_ENVIRONMENT_NAME}
+
+RUN echo "fghhh"
 
 # set working directory
 WORKDIR /app
