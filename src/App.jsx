@@ -5,10 +5,12 @@ import {
   Route,
 } from 'react-router-dom';
 
-import './App.less';
-
 import ContentWrapper from './components/content-wrapper/ContentWrapper';
 import DataExplorationView from './pages/DataExplorationView';
+
+import './App.less';
+
+let socket;
 
 function App() {
   return (
@@ -47,3 +49,4 @@ function Dashboard() {
 }
 
 export default App;
+export const io = socket;

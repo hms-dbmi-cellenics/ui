@@ -12,9 +12,26 @@ import {
   BarsOutlined,
 } from '@ant-design/icons';
 
+import socketIOClient from 'socket.io-client';
+
 const { Content, Sider } = Layout;
 
+let io;
 
+function connectionPromise() {
+  return new Promise((resolve) => {
+    if (io && io.connected) {
+      resolve(io);
+    } else {
+      io = socketIOClient(process.env.REACT_APP_API_URL);
+      io.on('connect', () => {
+        resolve(io);
+      });
+    }
+  });
+}
+
+// eslint-disable-next-line import/no-mutable-exports
 class ContentWrapper extends React.Component {
   constructor(props) {
     super(props);
@@ -76,3 +93,5 @@ class ContentWrapper extends React.Component {
 }
 
 export default ContentWrapper;
+
+export { connectionPromise };
