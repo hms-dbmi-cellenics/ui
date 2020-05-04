@@ -31,6 +31,7 @@ install_dependencies:
   image: node:latest
   stage: install
   script:
+  - echo $GITLAB_ENVIRONMENT_NAME
   - echo $AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS
   - yarn install
 
