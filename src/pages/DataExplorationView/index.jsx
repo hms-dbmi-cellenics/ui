@@ -15,8 +15,6 @@ class ExplorationViewPage extends React.Component {
   constructor(props) {
     super(props);
 
-    console.log(process.env);
-
     this.tools = [
       {
         name: 'Cell set',
