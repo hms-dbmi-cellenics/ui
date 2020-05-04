@@ -3,6 +3,8 @@ FROM node:13.12.0-alpine
 
 ARG CI_ENVIRONMENT_NAME
 
+RUN echo ${CI_ENVIRONMENT_NAME}
+
 # set working directory
 WORKDIR /app
 

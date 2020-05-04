@@ -31,12 +31,6 @@ install_dependencies:
   image: node:latest
   stage: install
   script:
-  - echo blah
-  - echo $CI_PROJECT_NAME
-  - echo $K8S_APP_NAME
-  - echo $CI_ENVIRONMENT_NAME
-  - echo $GITLAB_ENVIRONMENT_NAME
-  - echo $CI_ENVIRONMENT_SLUG
   - yarn install
 
 testing:
