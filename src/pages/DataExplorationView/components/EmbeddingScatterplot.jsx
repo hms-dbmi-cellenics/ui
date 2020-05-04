@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
 import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'vitessce/build-lib/es/production/static/css/index.css';
 
+import { v4 as uuidv4 } from 'uuid';
+import { connectionPromise } from '../../../components/content-wrapper/ContentWrapper';
 
 const EmbeddingScatterplot = () => {
   const uuid = 'my-scatterplot';
@@ -89,6 +91,29 @@ const EmbeddingScatterplot = () => {
   const updateViewInfo = (viewInfo) => { };
   // eslint-disable-next-line no-unused-vars
   const clearPleaseWait = (layerName) => { };
+
+  useEffect(() => {
+    connectionPromise().then((io) => {
+      const requestUuid = uuidv4();
+
+      const request = {
+        uuid: requestUuid,
+        socketId: io.id,
+        experimentId: '5e959f9c9f4b120771249001',
+        timeout: '2021-01-01T00:00:00Z',
+        body: {
+          name: 'GetEmbedding',
+          type: 'pca',
+        },
+      };
+
+      io.emit('WorkRequest', request);
+
+      io.on(`WorkResponse-${requestUuid}`, (res) => {
+        console.log(res);
+      });
+    });
+  });
 
   return (
     <div className="vitessce-container vitessce-theme-light" style={{ height: '50vh', position: 'relative' }}>
