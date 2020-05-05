@@ -107,6 +107,7 @@ const EmbeddingScatterplot = () => {
         },
       };
 
+      console.log('request sending...');
       io.emit('WorkRequest', request);
 
       io.on(`WorkResponse-${requestUuid}`, (res) => {
