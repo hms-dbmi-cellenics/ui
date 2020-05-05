@@ -64,12 +64,14 @@ const SearchMenu = (props) => {
     );
   };
 
+  const { placeholder } = props;
+
   return (
     <Dropdown
       overlay={renderMenu()}
       trigger={['click']}
     >
-      <Search placeholder="Search or browse tools..." onChange={(e) => search(e.target.value)} />
+      <Search placeholder={placeholder} onChange={(e) => search(e.target.value)} />
     </Dropdown>
   );
 };
@@ -84,6 +86,7 @@ SearchMenu.propTypes = {
   // this is used, I don't know why lint is still complaining
   // eslint-disable-next-line react/no-unused-prop-types
   onSelect: PropTypes.func,
+  placeholder: PropTypes.string.isRequired,
 };
 
 export default SearchMenu;

@@ -6,6 +6,7 @@ import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js
 import 'vitessce/build-lib/es/production/static/css/index.css';
 
 import { v4 as uuidv4 } from 'uuid';
+import { Spin } from 'antd';
 import { connectionPromise } from '../../../components/content-wrapper/ContentWrapper';
 
 const EmbeddingScatterplot = () => {
@@ -20,7 +21,7 @@ const EmbeddingScatterplot = () => {
   // eslint-disable-next-line no-unused-vars
   const updateCellsHover = (hoverInfo) => { };
   // eslint-disable-next-line no-unused-vars
-  const updateCellsSelection = (selectedIds) => { };
+  const updateCellsSelection = (selectedIds) => { console.log(selectedIds); };
   // eslint-disable-next-line no-unused-vars
   const updateStatus = (message) => { };
   // eslint-disable-next-line no-unused-vars
@@ -39,12 +40,14 @@ const EmbeddingScatterplot = () => {
       };
     });
 
-    console.log(data);
-
     return data;
   };
 
   useEffect(() => {
+    if (cells.length !== 0) {
+      return;
+    }
+
     connectionPromise().then((io) => {
       const requestUuid = uuidv4();
 
@@ -59,21 +62,19 @@ const EmbeddingScatterplot = () => {
         },
       };
 
-      console.log('request sending...');
       io.emit('WorkRequest', request);
 
-      /*
       io.on(`WorkResponse-${requestUuid}`, (res) => {
-        console.log(res);
         let embedding = JSON.parse(res.results[0].body);
-        console.log(embedding);
         embedding = convertData(embedding);
-        console.log(embedding);
         setCells(embedding);
       });
-      */
     });
   });
+
+  if (cells.length === 0) {
+    return (<center><Spin size="large" /></center>);
+  }
 
   return (
     <div className="vitessce-container vitessce-theme-light" style={{ height: '50vh', position: 'relative' }}>

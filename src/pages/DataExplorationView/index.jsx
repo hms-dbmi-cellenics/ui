@@ -144,6 +144,7 @@ class ExplorationViewPage extends React.Component {
         onSelect={(key) => {
           this.openTool(key);
         }}
+        placeholder="Search or browse tools..."
       />
     );
 
@@ -153,6 +154,7 @@ class ExplorationViewPage extends React.Component {
         onSelect={(key) => {
           this.openPlot(key);
         }}
+        placeholder="Search or browse plots..."
       />
     );
 
@@ -164,13 +166,6 @@ class ExplorationViewPage extends React.Component {
               className="site-page-header"
               title="Exploration"
             />
-
-            CIENV:
-            {' '}
-            {process.env.CI_ENVIRONMENT_NAME}
-            NODEENV:
-            {' '}
-            {process.env.NODE_ENV}
           </Col>
         </Row>
         <Row gutter={16}>
