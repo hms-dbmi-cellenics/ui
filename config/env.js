@@ -18,7 +18,11 @@ if (!NODE_ENV) {
 // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
 const dotenvFiles = [
   `${paths.dotenv}.${NODE_ENV}.local`,
+
+  // NOTE: this is broken, CI_ENVIRONMENT_NAME never gets passed into build
+  // unless environment is set as a yaml prop in .gitlab-ci.yml
   CI_ENVIRONMENT_NAME && `${paths.dotenv}.gitlab-${CI_ENVIRONMENT_NAME}`,
+
   `${paths.dotenv}.${NODE_ENV}`,
   // Don't include `.env.local` for `test` environment
   // since normally you expect tests to produce the same
@@ -96,7 +100,6 @@ function getClientEnvironment(publicUrl) {
       return env;
     }, {}),
   };
-
   return { raw, stringified };
 }
 

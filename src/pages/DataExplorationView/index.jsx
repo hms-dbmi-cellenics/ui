@@ -164,6 +164,13 @@ class ExplorationViewPage extends React.Component {
               className="site-page-header"
               title="Exploration"
             />
+
+            CIENV:
+            {' '}
+            {process.env.CI_ENVIRONMENT_NAME}
+            NODEENV:
+            {' '}
+            {process.env.NODE_ENV}
           </Col>
         </Row>
         <Row gutter={16}>
