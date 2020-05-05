@@ -62,6 +62,7 @@ const EmbeddingScatterplot = () => {
       console.log('request sending...');
       io.emit('WorkRequest', request);
 
+      /*
       io.on(`WorkResponse-${requestUuid}`, (res) => {
         console.log(res);
         let embedding = JSON.parse(res.results[0].body);
@@ -70,6 +71,7 @@ const EmbeddingScatterplot = () => {
         console.log(embedding);
         setCells(embedding);
       });
+      */
     });
   });
 
