@@ -31,7 +31,7 @@ install_dependencies:
   image: node:latest
   stage: install
   script:
-  - yarn install --pure-lockfile --cache-folder .yarn
+  - yarn install
 
 testing:
   image: node:latest
