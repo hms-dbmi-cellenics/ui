@@ -38,11 +38,13 @@ const DraggableList = (props) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
-
+    console.log('***', result);
     return result;
   };
 
   const onDragEnd = (result) => {
+    debugger;
+    console.log('*', result, items);
     // dropped outside the list
     if (!result.destination) {
       return;

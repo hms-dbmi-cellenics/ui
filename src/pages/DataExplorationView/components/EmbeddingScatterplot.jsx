@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
 import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
@@ -11,73 +11,9 @@ import { connectionPromise } from '../../../components/content-wrapper/ContentWr
 const EmbeddingScatterplot = () => {
   const uuid = 'my-scatterplot';
   const view = { target: [0, 0, 0], zoom: 0.75 };
-  const cells = {
-    1: {
-      mappings: {
-        PCA: [2, 1],
-      },
-    },
-    2: {
-      mappings: {
-        PCA: [5, 1],
-      },
-    },
-    3: {
-      mappings: {
-        PCA: [6.5, 4],
-      },
-    },
-    4: {
-      mappings: {
-        PCA: [6, 4.5],
-      },
-    },
-    5: {
-      mappings: {
-        PCA: [5.5, 5],
-      },
-    },
-    6: {
-      mappings: {
-        PCA: [0.5, 4],
-      },
-    },
-    7: {
-      mappings: {
-        PCA: [1, 4.5],
-      },
-    },
-    8: {
-      mappings: {
-        PCA: [1.5, 5],
-      },
-    },
-    9: {
-      mappings: {
-        PCA: [2, 5.25],
-      },
-    },
-    10: {
-      mappings: {
-        PCA: [5, 5.25],
-      },
-    },
-    11: {
-      mappings: {
-        PCA: [4.5, 5.35],
-      },
-    },
-    12: {
-      mappings: {
-        PCA: [3.5, 5.45],
-      },
-    },
-    13: {
-      mappings: {
-        PCA: [2.5, 5.35],
-      },
-    },
-  };
+
+  const [cells, setCells] = useState([]);
+
   const cellColors = null;
   const mapping = 'PCA';
   const selectedCellIds = new Set();
@@ -91,6 +27,22 @@ const EmbeddingScatterplot = () => {
   const updateViewInfo = (viewInfo) => { };
   // eslint-disable-next-line no-unused-vars
   const clearPleaseWait = (layerName) => { };
+
+  const convertData = (results) => {
+    const data = {};
+
+    results.forEach((result, i) => {
+      data[i] = {
+        mappings: {
+          PCA: result,
+        },
+      };
+    });
+
+    console.log(data);
+
+    return data;
+  };
 
   useEffect(() => {
     connectionPromise().then((io) => {
@@ -112,6 +64,11 @@ const EmbeddingScatterplot = () => {
 
       io.on(`WorkResponse-${requestUuid}`, (res) => {
         console.log(res);
+        let embedding = JSON.parse(res.results[0].body);
+        console.log(embedding);
+        embedding = convertData(embedding);
+        console.log(embedding);
+        setCells(embedding);
       });
     });
   });
