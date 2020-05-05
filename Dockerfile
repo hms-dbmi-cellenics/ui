@@ -19,7 +19,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
 COPY yarn.lock ./
 
-RUN yarn install
+RUN yarn install --pure-lockfile --cache-folder .yarn
 
 # add app
 COPY . ./
