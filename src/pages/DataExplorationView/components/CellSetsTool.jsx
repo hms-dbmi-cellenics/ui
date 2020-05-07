@@ -20,8 +20,10 @@ const CellSetsTool = (props) => {
       .then((res) => res.json()),
   );
 
-  if (data !== undefined && data.cell_sets !== cellSetData) {
-    setCellSetData(data.cell_sets);
+  console.log(data);
+
+  if (data !== undefined && data.cellSets !== cellSetData) {
+    setCellSetData(data.cellSets);
   }
 
   const onCheck = (keys) => setCheckedKeys(keys);
