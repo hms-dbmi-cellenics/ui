@@ -84,7 +84,7 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js --coverage"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -116,8 +116,7 @@
       "<rootDir>/src"
     ],
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!src/**/*.d.ts"
+      "**/*.jsx"
     ],
     "setupFiles": [
       "react-app-polyfill/jsdom"
