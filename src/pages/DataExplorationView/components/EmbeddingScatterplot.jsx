@@ -64,7 +64,10 @@ const EmbeddingScatterplot = () => {
 
       io.emit('WorkRequest', request);
 
+      console.log('emitted!!!');
+
       io.on(`WorkResponse-${requestUuid}`, (res) => {
+        console.log('response!');
         let embedding = JSON.parse(res.results[0].body);
         embedding = convertData(embedding);
         setCells(embedding);

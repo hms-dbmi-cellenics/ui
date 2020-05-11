@@ -18,13 +18,13 @@ class ExplorationViewPage extends React.Component {
     this.tools = [
       {
         name: 'Cell set',
-        description: 'Create and manage categories of cells.',
+        description: 'Create and manage interesting groupings of cells.',
         key: '1',
         renderer: () => <CellSetsTool experimentID="5e959f9c9f4b120771249001" />,
       },
       {
         name: 'Gene set',
-        description: 'Create and manage categories of genes.',
+        description: 'Find, organize, and annotate genes in your data set.',
         key: '2',
         renderer: () => <CellSetsTool experimentID="5e959f9c9f4b120771249001" />,
       },
@@ -34,34 +34,19 @@ class ExplorationViewPage extends React.Component {
         key: '3',
         renderer: () => <CellSetsTool experimentID="5e959f9c9f4b120771249001" />,
       },
-      {
-        name: 'bobooo set',
-        description: 'Everything is awesome!',
-        key: '4',
-        renderer: () => <CellSetsTool experimentID="5e959f9c9f4b120771249001" />,
-      },
-      {
-        name: 'banana set',
-        description: 'Create and manage categories of bananas.',
-        key: '5',
-        renderer: () => <CellSetsTool experimentID="5e959f9c9f4b120771249001" />,
-      },
     ];
 
     this.plots = [{
       key: 'item-1',
-      name: 'tSNE plot',
+      name: 'Embeddings',
+      description: 'Visualize cells clustered by genetic expression using various embeddings.',
       renderer: () => (<EmbeddingScatterplot />),
     },
     {
       key: 'item-2',
-      name: 'Heatmap plot',
+      name: 'Heatmaps',
+      description: 'Gain a high-level understanding of expression levels across large groups of genes and cells.',
       renderer: () => (<HeatmapPlot />),
-    },
-    {
-      key: 'item-3',
-      name: 'booboo plot',
-      renderer: () => (<span>asdsa</span>),
     }];
 
     this.state = {
@@ -164,7 +149,8 @@ class ExplorationViewPage extends React.Component {
           <Col>
             <PageHeader
               className="site-page-header"
-              title="Exploration"
+              title="Investigator"
+              subTitle="Powerful data exploration"
             />
           </Col>
         </Row>
