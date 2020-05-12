@@ -1,3 +1,26 @@
+# How to run the code locally
+
+### Running without getting data from the backend
+
+ Simply do:
+
+    yarn run start
+
+### Running with data coming from the backend
+
+First, you will need to port-forward data from the api to the UI by executing the following command:
+
+    kubectl port-forward services/staging-auto-deploy 3000:3000 -n api-18445709-staging
+
+Make sure that you have kubectl installed and you have access to the cluster by following the instructions in here: https://gitlab.com/biomage/iac.
+
+Next, run the UI by doing:
+
+    yarn run start
+
+Make sure that when prompted, you choose port different from 3000, since the backend is already on 3000.
+
+
 # How to run tests in debug mode
 
 As per instructions in: https://jestjs.io/docs/en/troubleshooting
