@@ -14,7 +14,13 @@
 			"editor.detectIndentation": false,
 			"editor.formatOnPaste": true,
 			"editor.formatOnSave": true
+		},
+		"[javascript]": {
+			"editor.tabSize": 2,
+			"editor.insertSpaces": true,
+			"editor.detectIndentation": false,
+			"editor.formatOnPaste": true,
+			"editor.formatOnSave": true
 		}
-
 	}
 }
