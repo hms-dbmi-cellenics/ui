@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import {
+  useSelector, useDispatch,
+} from 'react-redux';
+import PropTypes from 'prop-types';
 
 // eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
 import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'vitessce/build-lib/es/production/static/css/index.css';
 
-import { v4 as uuidv4 } from 'uuid';
 import { Spin } from 'antd';
-import { connectionPromise } from '../../../components/content-wrapper/ContentWrapper';
+import { loadCells } from '../../../actions';
 
-const EmbeddingScatterplot = () => {
+const EmbeddingScatterplot = (props) => {
+  const { experimentID } = props;
   const uuid = 'my-scatterplot';
   const view = { target: [0, 0, 0], zoom: 0.75 };
-
-  const [cells, setCells] = useState([]);
-
   const cellColors = null;
   const mapping = 'PCA';
   const selectedCellIds = new Set();
@@ -29,53 +30,12 @@ const EmbeddingScatterplot = () => {
   // eslint-disable-next-line no-unused-vars
   const clearPleaseWait = (layerName) => { };
 
-  const convertData = (results) => {
-    const data = {};
+  const dispatch = useDispatch();
+  const cells = useSelector((state) => state.cells.data);
 
-    results.forEach((result, i) => {
-      data[i] = {
-        mappings: {
-          PCA: result,
-        },
-      };
-    });
+  dispatch(loadCells(experimentID));
 
-    return data;
-  };
-
-  useEffect(() => {
-    if (cells.length !== 0) {
-      return;
-    }
-
-    connectionPromise().then((io) => {
-      const requestUuid = uuidv4();
-
-      const request = {
-        uuid: requestUuid,
-        socketId: io.id,
-        experimentId: '5e959f9c9f4b120771249001',
-        timeout: '2021-01-01T00:00:00Z',
-        body: {
-          name: 'GetEmbedding',
-          type: 'pca',
-        },
-      };
-
-      io.emit('WorkRequest', request);
-
-      console.log('emitted!!!');
-
-      io.on(`WorkResponse-${requestUuid}`, (res) => {
-        console.log('response!');
-        let embedding = JSON.parse(res.results[0].body);
-        embedding = convertData(embedding);
-        setCells(embedding);
-      });
-    });
-  });
-
-  if (cells.length === 0) {
+  if (cells == null) {
     return (<center><Spin size="large" /></center>);
   }
 
@@ -97,5 +57,9 @@ const EmbeddingScatterplot = () => {
     </div>
   );
 };
+EmbeddingScatterplot.defaultProps = {};
 
+EmbeddingScatterplot.propTypes = {
+  experimentID: PropTypes.string.isRequired,
+};
 export default EmbeddingScatterplot;

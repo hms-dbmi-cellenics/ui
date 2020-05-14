@@ -15,24 +15,25 @@ class ExplorationViewPage extends React.Component {
   constructor(props) {
     super(props);
 
+    const experimentId = '5e959f9c9f4b120771249001';
     this.tools = [
       {
         name: 'Cell set',
         description: 'Create and manage interesting groupings of cells.',
         key: '1',
-        renderer: () => <CellSetsTool experimentID="5e959f9c9f4b120771249001" />,
+        renderer: () => <CellSetsTool experimentID={experimentId} />,
       },
       {
         name: 'Gene set',
         description: 'Find, organize, and annotate genes in your data set.',
         key: '2',
-        renderer: () => <CellSetsTool experimentID="5e959f9c9f4b120771249001" />,
+        renderer: () => <CellSetsTool experimentID={experimentId} />,
       },
       {
         name: 'Differential expression (simple)',
         description: 'Find and explore the most characteristic genes in a set of cells.',
         key: '3',
-        renderer: () => <CellSetsTool experimentID="5e959f9c9f4b120771249001" />,
+        renderer: () => <CellSetsTool experimentID={experimentId} />,
       },
     ];
 
@@ -40,7 +41,7 @@ class ExplorationViewPage extends React.Component {
       key: 'item-1',
       name: 'Embeddings',
       description: 'Visualize cells clustered by genetic expression using various embeddings.',
-      renderer: () => (<EmbeddingScatterplot />),
+      renderer: () => (<EmbeddingScatterplot experimentID={experimentId} />),
     },
     {
       key: 'item-2',
