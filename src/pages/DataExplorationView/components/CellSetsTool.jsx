@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
@@ -10,22 +10,18 @@ import {
 } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import HierarchicalTree from './HierarchicalTree';
-import { fetchCellSetAction } from '../../../actions';
+import { loadCellSets } from '../../../actions';
 
 const CellSetsTool = (props) => {
-  const [, setCheckedKeys] = useState([]);
   const { experimentID } = props;
-
-  // const { data } = useSWR(
-  //   `${process.env.REACT_APP_API_URL}/v1/experiments/${experimentID}/cellSets`,
-  //   (url) => fetch(url)
-  //     .then((res) => res.json()),
-  // );
-
   const dispatch = useDispatch();
-  dispatch(fetchCellSetAction(experimentID));
   const data = useSelector((state) => state.cellSets.data);
-  const onCheck = (keys) => setCheckedKeys(keys);
+
+  dispatch(loadCellSets(experimentID));
+
+  const onCheck = (keys) => {
+    console.log('I am gonna check: ', keys);
+  };
 
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
@@ -61,7 +57,6 @@ CellSetsTool.defaultProps = {};
 
 CellSetsTool.propTypes = {
   experimentID: PropTypes.string.isRequired,
-  fetchCellSet: PropTypes.func.isRequired,
 };
 
 export default CellSetsTool;
