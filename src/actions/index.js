@@ -16,7 +16,7 @@ const loadCellSets = (experimentId) => function (dispatch, getState) {
       type: LOAD_CELL_SETS,
       data: json.cellSets,
     }),
-  );
+  ).catch((e) => console.log('Error when trying to get cell sets data: ', e));
 };
 
 // eslint-disable-next-line func-names
