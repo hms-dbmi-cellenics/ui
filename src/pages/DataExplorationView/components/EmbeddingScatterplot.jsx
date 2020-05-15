@@ -33,18 +33,37 @@ const EmbeddingScatterplot = (props) => {
   const dispatch = useDispatch();
   const cells = useSelector((state) => state.cells.data);
 
-  dispatch(loadCells(experimentID));
+  const requestBody = {
+    name: 'GetEmbedding',
+    type: 'pca',
+  };
+
+  dispatch(loadCells(experimentID, requestBody));
 
   if (cells == null) {
     return (<center><Spin size="large" /></center>);
   }
+
+  const convertData = (results) => {
+    const data = {};
+
+    results.forEach((result, i) => {
+      data[i] = {
+        mappings: {
+          PCA: result,
+        },
+      };
+    });
+
+    return data;
+  };
 
   return (
     <div className="vitessce-container vitessce-theme-light" style={{ height: '50vh', position: 'relative' }}>
       <Scatterplot
         uuid={uuid}
         view={view}
-        cells={cells}
+        cells={convertData(cells)}
         mapping={mapping}
         selectedCellIds={selectedCellIds}
         cellColors={cellColors}

@@ -19,26 +19,12 @@ const loadCellSets = (experimentId) => function (dispatch, getState) {
   );
 };
 
-const convertData = (results) => {
-  const data = {};
-
-  results.forEach((result, i) => {
-    data[i] = {
-      mappings: {
-        PCA: result,
-      },
-    };
-  });
-
-  return data;
-};
-
 // eslint-disable-next-line func-names
-const loadCells = (experimentId) => function (dispatch, getState) {
+const loadCells = (experimentId, requestBody) => function (dispatch, getState) {
   if (getState().cells.data) {
     return Promise.resolve();
   }
-  connectionPromise().then((io) => {
+  return connectionPromise().then((io) => {
     const requestUuid = uuidv4();
 
     const request = {
@@ -46,10 +32,7 @@ const loadCells = (experimentId) => function (dispatch, getState) {
       socketId: io.id,
       experimentId,
       timeout: '2021-01-01T00:00:00Z',
-      body: {
-        name: 'GetEmbedding',
-        type: 'pca',
-      },
+      body: requestBody,
     };
 
     io.emit('WorkRequest', request);
@@ -57,9 +40,8 @@ const loadCells = (experimentId) => function (dispatch, getState) {
     console.log('emitted!!!');
 
     io.on(`WorkResponse-${requestUuid}`, (res) => {
-      let embedding = JSON.parse(res.results[0].body);
-      embedding = convertData(embedding);
-      console.log('response! ', embedding);
+      const embedding = JSON.parse(res.results[0].body);
+      console.log('response! ');
       return dispatch({
         type: LOAD_CELLS,
         data: embedding,
