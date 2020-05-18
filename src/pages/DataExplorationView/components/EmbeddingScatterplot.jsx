@@ -55,6 +55,8 @@ const EmbeddingScatterplot = (props) => {
       };
     });
 
+    console.log('****** ** ', data);
+
     return data;
   };
 
@@ -69,19 +71,21 @@ const EmbeddingScatterplot = (props) => {
   };
 
   const getColour = () => {
-    const colours = {};
+    const colors = {};
 
     if (cellColors) {
-      console.log('**** ', cellColors);
       cellColors.forEach((cellSet) => {
-        const rgbColour = hexToRgb(cellSet.color);
-        cellSet.cellIds.forEach((cell) => {
-          colours[cell] = rgbColour;
-        });
+        if (cellSet.children) {
+          cellSet.children.forEach((cluster) => {
+            const rgbColour = hexToRgb(cluster.color);
+            cluster.cellIds.forEach((cell) => { colors[cell] = rgbColour; });
+          });
+        }
       });
+      console.log(colors);
     }
 
-    return colours;
+    return colors;
   };
 
   return (

@@ -20,7 +20,6 @@ const CellSetsTool = (props) => {
   dispatch(loadCellSets(experimentID));
 
   const onTreeUpdate = (newState) => {
-    console.log('updating the tree! ', newState);
     dispatch(cellSetsColour(newState));
   };
 
