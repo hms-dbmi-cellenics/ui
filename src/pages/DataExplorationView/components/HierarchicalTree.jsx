@@ -2,18 +2,14 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Space, Tree } from 'antd';
 import { transform, cloneDeep } from 'lodash';
-import { useDispatch } from 'react-redux';
 import EditableField from '../../../components/EditableField';
 import ColorPicker from '../../../components/color-picker/ColorPicker';
-import { cellSetsColour } from '../../../actions';
 
 
 const HierarchicalTree = (props) => {
   // eslint-disable-next-line react/destructuring-assignment
   const [treeData, setTreeData] = useState(props.data);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-
-  const dispatch = useDispatch();
 
   const onExpand = () => {
     setAutoExpandParent(false);
@@ -197,8 +193,7 @@ const HierarchicalTree = (props) => {
               onColorChange={((e) => {
                 const newState = findAndUpdateTreeDataState(treeData, modified.key, { color: e });
                 setTreeData(newState);
-                props.onTreeUpdate(treeData);
-                dispatch(cellSetsColour(modified.key, e));
+                props.onTreeUpdate(newState);
               })}
             />
           );

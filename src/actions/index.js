@@ -51,12 +51,12 @@ const loadCells = (experimentId, requestBody) => function (dispatch, getState) {
 };
 
 // eslint-disable-next-line func-names
-const cellSetsColour = (key, colour) => function (dispatch, getState) {
-  console.log('in the action');
+const cellSetsColour = (newState) => function (dispatch, getState) {
+  console.log('in the action: ', newState);
   if (getState().cells.data) {
     return dispatch({
       type: CELL_SETS_COLOUR,
-      data: { key, colour },
+      data: newState,
     });
   }
 };

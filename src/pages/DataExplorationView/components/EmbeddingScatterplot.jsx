@@ -47,10 +47,10 @@ const EmbeddingScatterplot = (props) => {
   const convertData = (results) => {
     const data = {};
 
-    results.forEach((result, i) => {
-      data[i] = {
+    Object.entries(results).forEach(([key, value]) => {
+      data[key] = {
         mappings: {
-          PCA: result,
+          PCA: value,
         },
       };
     });
@@ -72,9 +72,12 @@ const EmbeddingScatterplot = (props) => {
     const colours = {};
 
     if (cellColors) {
-      const rgbColour = hexToRgb(cellColors.colour);
-      cells.forEach((cell, i) => {
-        colours[i] = rgbColour;
+      console.log('**** ', cellColors);
+      cellColors.forEach((cellSet) => {
+        const rgbColour = hexToRgb(cellSet.color);
+        cellSet.cellIds.forEach((cell) => {
+          colours[cell] = rgbColour;
+        });
       });
     }
 
