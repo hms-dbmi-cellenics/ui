@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { LOAD_CELL_SETS, LOAD_CELLS } from './actionType';
+import { LOAD_CELL_SETS, LOAD_CELLS, CELL_SETS_COLOUR } from './actionType';
 import { connectionPromise } from '../components/content-wrapper/ContentWrapper';
 
 
@@ -50,5 +50,16 @@ const loadCells = (experimentId, requestBody) => function (dispatch, getState) {
   });
 };
 
+// eslint-disable-next-line func-names
+const cellSetsColour = (newState) => function (dispatch, getState) {
+  console.log('in the action: ', newState);
+  if (getState().cells.data) {
+    return dispatch({
+      type: CELL_SETS_COLOUR,
+      data: newState,
+    });
+  }
+};
+
 // eslint-disable-next-line import/prefer-default-export
-export { loadCellSets, loadCells };
+export { loadCellSets, loadCells, cellSetsColour };

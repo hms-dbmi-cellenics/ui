@@ -10,7 +10,7 @@ import {
 } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import HierarchicalTree from './HierarchicalTree';
-import { loadCellSets } from '../../../actions';
+import { loadCellSets, cellSetsColour } from '../../../actions';
 
 const CellSetsTool = (props) => {
   const { experimentID } = props;
@@ -18,6 +18,11 @@ const CellSetsTool = (props) => {
   const data = useSelector((state) => state.cellSets.data);
 
   dispatch(loadCellSets(experimentID));
+
+  const onTreeUpdate = (newState) => {
+    console.log('updating the tree! ', newState);
+    dispatch(cellSetsColour(newState));
+  };
 
   const onCheck = (keys) => {
     console.log('I am gonna check: ', keys);
@@ -45,6 +50,7 @@ const CellSetsTool = (props) => {
           <HierarchicalTree
             data={data}
             onCheck={onCheck}
+            onTreeUpdate={onTreeUpdate}
           />
         )
         : <Skeleton active />}

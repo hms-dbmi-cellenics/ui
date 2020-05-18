@@ -5,11 +5,11 @@ import { transform, cloneDeep } from 'lodash';
 import EditableField from '../../../components/EditableField';
 import ColorPicker from '../../../components/color-picker/ColorPicker';
 
+
 const HierarchicalTree = (props) => {
   // eslint-disable-next-line react/destructuring-assignment
   const [treeData, setTreeData] = useState(props.data);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-
 
   const onExpand = () => {
     setAutoExpandParent(false);
@@ -193,7 +193,7 @@ const HierarchicalTree = (props) => {
               onColorChange={((e) => {
                 const newState = findAndUpdateTreeDataState(treeData, modified.key, { color: e });
                 setTreeData(newState);
-                props.onTreeUpdate(treeData);
+                props.onTreeUpdate(newState);
               })}
             />
           );

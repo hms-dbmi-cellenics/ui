@@ -16,7 +16,6 @@ const EmbeddingScatterplot = (props) => {
   const { experimentID } = props;
   const uuid = 'my-scatterplot';
   const view = { target: [0, 0, 0], zoom: 0.75 };
-  const cellColors = null;
   const mapping = 'PCA';
   const selectedCellIds = new Set();
   // eslint-disable-next-line no-unused-vars
@@ -32,6 +31,7 @@ const EmbeddingScatterplot = (props) => {
 
   const dispatch = useDispatch();
   const cells = useSelector((state) => state.cells.data);
+  const cellColors = useSelector((state) => state.cellSetsColour.data);
 
   const requestBody = {
     name: 'GetEmbedding',
@@ -47,15 +47,41 @@ const EmbeddingScatterplot = (props) => {
   const convertData = (results) => {
     const data = {};
 
-    results.forEach((result, i) => {
-      data[i] = {
+    Object.entries(results).forEach(([key, value]) => {
+      data[key] = {
         mappings: {
-          PCA: result,
+          PCA: value,
         },
       };
     });
 
     return data;
+  };
+
+  const hexToRgb = (hex) => {
+    if (hex) {
+      return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i,
+        (m, r, g, b) => `#${r}${r}${g}${g}${b}${b}`)
+        .substring(1).match(/.{2}/g)
+        .map((x) => parseInt(x, 16));
+    }
+    return null;
+  };
+
+  const getColour = () => {
+    const colours = {};
+
+    if (cellColors) {
+      console.log('**** ', cellColors);
+      cellColors.forEach((cellSet) => {
+        const rgbColour = hexToRgb(cellSet.color);
+        cellSet.cellIds.forEach((cell) => {
+          colours[cell] = rgbColour;
+        });
+      });
+    }
+
+    return colours;
   };
 
   return (
@@ -66,7 +92,7 @@ const EmbeddingScatterplot = (props) => {
         cells={convertData(cells)}
         mapping={mapping}
         selectedCellIds={selectedCellIds}
-        cellColors={cellColors}
+        cellColors={getColour()}
         updateStatus={updateStatus}
         updateCellsSelection={updateCellsSelection}
         updateCellsHover={updateCellsHover}
