@@ -50,7 +50,7 @@ const SearchMenu = (props) => {
       return (
         <Menu>
           {
-            filteredOptions.map((t) => renderMenuItem(t.name, t.description, [t.key, 'menu'].join('-')))
+            filteredOptions.map((t) => renderMenuItem(t.name, t.description, t.key))
           }
         </Menu>
       );
