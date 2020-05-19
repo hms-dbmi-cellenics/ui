@@ -64,9 +64,9 @@ class ContentWrapper extends React.Component {
         >
           <div style={{
             display: 'flex',
-            'flex-direction': 'column',
+            flexDirection: 'column',
             height: '100%',
-            'justify-content': 'space-between',
+            justifyContent: 'space-between',
           }}
           >
             <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">

@@ -15,7 +15,7 @@ const HierarchicalTree = (props) => {
     setAutoExpandParent(false);
   };
 
-  const onCheck = (keys) => { console.log('i am inside hierarchical tree'); props.onCheck(keys); };
+  const onCheck = (keys) => { props.onCheck(keys); };
 
   const onSelect = (keys) => { props.onSelect(keys); };
 
