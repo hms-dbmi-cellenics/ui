@@ -9,7 +9,7 @@ describe('SearchMenu', () => {
   configure({ adapter: new Adapter() });
   test('renders correctly with no options', () => {
     const options = [{}];
-    const component = mount(<SearchMenu options={options} />);
+    const component = mount(<SearchMenu options={options} placeholder="Search things" />);
     const dropdown = component.find('Dropdown');
     expect(dropdown.length).toEqual(1);
 
@@ -30,7 +30,7 @@ describe('SearchMenu', () => {
         name: 'item 2',
       },
     ];
-    const component = shallow(<SearchMenu options={options} />);
+    const component = shallow(<SearchMenu options={options} placeholder="Search things" />);
     const menuItems = component.getElement().props.overlay.props.children;
     expect(menuItems.length).toEqual(2);
     const expectedKeys = Object.keys(options);
@@ -58,7 +58,7 @@ describe('SearchMenu', () => {
       },
     ];
     const text1 = 'banana';
-    const component = shallow(<SearchMenu options={options} />);
+    const component = shallow(<SearchMenu options={options} placeholder="Search things" />);
     const s = component.find('Dropdown').find('Search').getElement();
     const actualKeys = s.props.onChange({ target: { value: text1 } });
     expect(actualKeys[0].key).toEqual(options[2].key);

@@ -31,7 +31,7 @@ const EmbeddingScatterplot = (props) => {
 
   const dispatch = useDispatch();
   const cells = useSelector((state) => state.cells.data);
-  const cellColors = useSelector((state) => state.cellSetsColour.data);
+  const colorData = useSelector((state) => state.cellSetsColor.data);
 
   const requestBody = {
     name: 'GetEmbedding',
@@ -55,8 +55,6 @@ const EmbeddingScatterplot = (props) => {
       };
     });
 
-    console.log('****** ** ', data);
-
     return data;
   };
 
@@ -70,19 +68,15 @@ const EmbeddingScatterplot = (props) => {
     return null;
   };
 
-  const getColour = () => {
+  const converColorData = () => {
     const colors = {};
-
-    if (cellColors) {
-      cellColors.forEach((cellSet) => {
-        if (cellSet.children) {
-          cellSet.children.forEach((cluster) => {
-            const rgbColour = hexToRgb(cluster.color);
-            cluster.cellIds.forEach((cell) => { colors[cell] = rgbColour; });
-          });
-        }
+    if (colorData) {
+      colorData.forEach((cellSet) => {
+        const rgbColor = hexToRgb(cellSet.color);
+        cellSet.cellIds.forEach((cell) => {
+          colors[cell] = rgbColor;
+        });
       });
-      console.log(colors);
     }
 
     return colors;
@@ -96,7 +90,7 @@ const EmbeddingScatterplot = (props) => {
         cells={convertData(cells)}
         mapping={mapping}
         selectedCellIds={selectedCellIds}
-        cellColors={getColour()}
+        cellColors={converColorData()}
         updateStatus={updateStatus}
         updateCellsSelection={updateCellsSelection}
         updateCellsHover={updateCellsHover}

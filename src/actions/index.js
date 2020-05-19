@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import { LOAD_CELL_SETS, LOAD_CELLS, CELL_SETS_COLOUR } from './actionType';
+import {
+  LOAD_CELL_SETS, UPDATE_CELL_SETS, LOAD_CELLS, CELL_SETS_COLOR,
+} from './actionType';
 import { connectionPromise } from '../components/content-wrapper/ContentWrapper';
 
 
@@ -17,6 +19,17 @@ const loadCellSets = (experimentId) => function (dispatch, getState) {
       data: json.cellSets,
     }),
   ).catch((e) => console.log('Error when trying to get cell sets data: ', e));
+};
+
+const updateCellSets = (newState) => function (dispatch, getState) {
+  if (getState().cellSets.data === newState) {
+    return Promise.resolve();
+  }
+
+  return dispatch({
+    type: UPDATE_CELL_SETS,
+    data: newState,
+  });
 };
 
 // eslint-disable-next-line func-names
@@ -51,15 +64,17 @@ const loadCells = (experimentId, requestBody) => function (dispatch, getState) {
 };
 
 // eslint-disable-next-line func-names
-const cellSetsColour = (newState) => function (dispatch, getState) {
-  console.log('in the action: ', newState);
+const cellSetsColor = (colorData) => function (dispatch, getState) {
   if (getState().cells.data) {
     return dispatch({
-      type: CELL_SETS_COLOUR,
-      data: newState,
+      type: CELL_SETS_COLOR,
+      data: colorData,
     });
   }
+  return Promise.resolve();
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { loadCellSets, loadCells, cellSetsColour };
+export {
+  loadCellSets, updateCellSets, loadCells, cellSetsColor,
+};

@@ -10,7 +10,9 @@ import {
 } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import HierarchicalTree from './HierarchicalTree';
-import { loadCellSets, cellSetsColour } from '../../../actions';
+import { loadCellSets, updateCellSets, cellSetsColor } from '../../../actions';
+
+let checkedKeys = [];
 
 const CellSetsTool = (props) => {
   const { experimentID } = props;
@@ -19,12 +21,36 @@ const CellSetsTool = (props) => {
 
   dispatch(loadCellSets(experimentID));
 
+  const getChangedData = (keys) => {
+    const colorData = [];
+    data.forEach((cellSet) => {
+      if (cellSet.children) {
+        cellSet.children.forEach((child) => {
+          if (keys.includes(child.key)) {
+            colorData.push({
+              color: child.color,
+              cellIds: child.cellIds,
+            });
+          }
+        });
+      }
+    });
+    return colorData;
+  };
+
+  const updateCellSetsColors = (keys) => {
+    const colorData = getChangedData(keys);
+    dispatch(cellSetsColor(colorData));
+  };
+
   const onTreeUpdate = (newState) => {
-    dispatch(cellSetsColour(newState));
+    dispatch(updateCellSets(newState));
+    updateCellSetsColors(checkedKeys);
   };
 
   const onCheck = (keys) => {
-    console.log('I am gonna check: ', keys);
+    checkedKeys = keys;
+    updateCellSetsColors(keys);
   };
 
   return (
