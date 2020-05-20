@@ -32,9 +32,6 @@ install_dependencies:
     key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
     paths:
     - node_modules/
-  only:
-    changes:
-      - yarn.lock
 
 testing:
   image: node:latest
