@@ -31,7 +31,6 @@ const HierarchicalTree = (props) => {
     const dragKey = info.dragNode.props.eventKey;
     const dropKey = info.node.props.eventKey;
 
-    console.log('*** DROPPING ', info, dragKey, dropKey);
     /**
      * Variable to determine if the state should be set to the new one.
      * If we encounter an illegal drop, we will not update the state

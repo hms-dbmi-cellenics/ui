@@ -1,7 +1,6 @@
 stages:
     - install
     - test
-    - build-app
     - build
     - deploy  # dummy stage to follow the template guidelines
     - review
@@ -34,26 +33,16 @@ install_dependencies:
     paths:
     - node_modules/
 
-test:
+test_and_build:
   image: node:latest
   stage: test
   script:
   - yarn test
-  cache: 
-    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
-    paths:
-      - node_modules/
-    policy: pull
-
-build-app:
-  image: node:latest
-  stage: build-app
-  script:
   - yarn run build
   cache: 
     key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
     paths:
-      - build/
+      - node_modules/
     policy: pull
   artifacts:
     paths:

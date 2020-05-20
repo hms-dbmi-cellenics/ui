@@ -11,7 +11,7 @@ const loadCellSets = (experimentId) => function (dispatch, getState) {
     return Promise.resolve();
   }
 
-  fetch(`${process.env.REACT_APP_API_URL}/v1/experiments/${experimentId}/cellSets`).then(
+  return fetch(`${process.env.REACT_APP_API_URL}/v1/experiments/${experimentId}/cellSets`).then(
     (response) => response.json(),
   ).then(
     (json) => dispatch({

@@ -21,7 +21,7 @@ const EmbeddingScatterplot = (props) => {
   // eslint-disable-next-line no-unused-vars
   const updateCellsHover = (hoverInfo) => { };
   // eslint-disable-next-line no-unused-vars
-  const updateCellsSelection = (selectedIds) => { console.log(selectedIds); };
+  const updateCellsSelection = (selectedIds) => { console.warn(selectedIds); };
   // eslint-disable-next-line no-unused-vars
   const updateStatus = (message) => { };
   // eslint-disable-next-line no-unused-vars
