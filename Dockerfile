@@ -11,7 +11,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
 COPY yarn.lock ./
 
-RUN yarn install --prod
+RUN yarn install --prod --frozen-lockfile
 
 # add app
 COPY . ./
