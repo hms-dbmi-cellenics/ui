@@ -37,9 +37,6 @@ testing:
   stage: test
   script:
   - yarn test
-  cache:
-    paths:
-    - node_modules/
 
 include:
   - template: Jobs/Build.gitlab-ci.yml
