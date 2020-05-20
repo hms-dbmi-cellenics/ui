@@ -52,7 +52,10 @@ build_app:
   cache: 
     key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
     paths:
-      - node_modules/
+      - build/
+    policy: pull
+  artifacts:
+    paths:
       - build/
 
 build_image:
@@ -60,6 +63,8 @@ build_image:
   image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image:v0.2.2"
   variables:
     DOCKER_TLS_CERTDIR: ""
+  dependencies: 
+    - build_app
   services:
     - docker:19.03.8-dind
   script:
