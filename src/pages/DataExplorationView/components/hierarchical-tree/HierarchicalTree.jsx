@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Space, Tree } from 'antd';
 import { transform, cloneDeep } from 'lodash';
-import EditableField from '../../../components/EditableField';
-import ColorPicker from '../../../components/color-picker/ColorPicker';
+import EditableField from '../../../../components/editable-field/EditableField';
+import ColorPicker from '../../../../components/color-picker/ColorPicker';
 
 
 const HierarchicalTree = (props) => {
@@ -31,6 +31,7 @@ const HierarchicalTree = (props) => {
     const dragKey = info.dragNode.props.eventKey;
     const dropKey = info.node.props.eventKey;
 
+    console.log('*** DROPPING ', info, dragKey, dropKey);
     /**
      * Variable to determine if the state should be set to the new one.
      * If we encounter an illegal drop, we will not update the state
@@ -181,43 +182,43 @@ const HierarchicalTree = (props) => {
     return updated;
   };
 
+  const renderEditableField = (modified) => (
+    <EditableField
+      defaultText={modified.name}
+      onEdit={(e) => {
+        const newState = findAndUpdateTreeDataState(treeData, modified.key, { name: e });
+        setTreeData(newState);
+        props.onTreeUpdate(newState);
+      }}
+    >
+      {modified.name}
+    </EditableField>
+  );
+
+  const renderColorPicker = (modified) => {
+    if (modified.color) {
+      return (
+        <ColorPicker
+          color={modified.color || '#ffffff'}
+          onColorChange={((e) => {
+            const newState = findAndUpdateTreeDataState(treeData, modified.key, { color: e });
+            setTreeData(newState);
+            props.onTreeUpdate(newState);
+          })}
+        />
+      );
+    }
+    return (<></>);
+  };
+
   const renderTitlesRecursive = (source) => {
     const toRender = source.map((d) => {
       const modified = d;
 
-      const renderColorPicker = () => {
-        if (modified.color) {
-          return (
-            <ColorPicker
-              color={modified.color || '#ffffff'}
-              onColorChange={((e) => {
-                const newState = findAndUpdateTreeDataState(treeData, modified.key, { color: e });
-                setTreeData(newState);
-                props.onTreeUpdate(newState);
-              })}
-            />
-          );
-        }
-        return (<></>);
-      };
-
-      const renderEditableField = () => (
-        <EditableField
-          defaultText={modified.name}
-          onEdit={(e) => {
-            const newState = findAndUpdateTreeDataState(treeData, modified.key, { name: e });
-            setTreeData(newState);
-            props.onTreeUpdate(newState);
-          }}
-        >
-          {modified.name}
-        </EditableField>
-      );
-
       modified.title = (
         <Space>
-          {renderEditableField()}
-          {renderColorPicker()}
+          {renderEditableField(modified)}
+          {renderColorPicker(modified)}
         </Space>
       );
 

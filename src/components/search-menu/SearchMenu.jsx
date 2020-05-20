@@ -32,7 +32,7 @@ const SearchMenu = (props) => {
 
   const renderMenuItem = (primaryText, secondaryText, key) => (
     <Menu.Item
-      key={key}
+      key={[key, 'item'].join('-')}
       onClick={() => {
         props.onSelect(key);
       }}

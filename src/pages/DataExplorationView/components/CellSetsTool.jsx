@@ -9,7 +9,7 @@ import {
   Space, Button, Tooltip, Skeleton,
 } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import HierarchicalTree from './HierarchicalTree';
+import HierarchicalTree from './hierarchical-tree/HierarchicalTree';
 import { loadCellSets, updateCellSets, cellSetsColor } from '../../../actions';
 
 let checkedKeys = [];

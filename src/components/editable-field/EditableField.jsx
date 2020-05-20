@@ -62,21 +62,18 @@ class EditableField extends React.Component {
     super(props);
 
     this.onPopoverVisibilityChange = this.onPopoverVisibilityChange.bind(this);
-    this.onDoneCallback = this.onDoneCallback.bind(this);
+    this.closePopover = this.closePopover.bind(this);
 
     this.state = {
       visible: false,
-      key: 0,
     };
   }
 
   onPopoverVisibilityChange(v) {
-    const { key } = this.state;
-
-    this.setState({ visible: v, key: key + 1 });
+    this.setState({ visible: v });
   }
 
-  onDoneCallback(newText) {
+  closePopover(newText) {
     const { onEdit, defaultText } = this.props;
 
     if (newText !== defaultText) {
@@ -88,12 +85,23 @@ class EditableField extends React.Component {
 
   render() {
     const { children, defaultText } = this.props;
-    const { visible, key } = this.state;
+    const { visible } = this.state;
 
     return (
       <>
         {children}
-        <Popover visible={visible} onVisibleChange={this.onPopoverVisibilityChange} content={<EditablePopoverContent key={key} defaultText={defaultText} onDone={this.onDoneCallback} />} placement="bottom" trigger="click">
+        <Popover
+          visible={visible}
+          onVisibleChange={this.onPopoverVisibilityChange}
+          content={(
+            <EditablePopoverContent
+              defaultText={defaultText}
+              onDone={this.closePopover}
+            />
+          )}
+          placement="bottom"
+          trigger="click"
+        >
           <Button type="link" size="small">
             <EditOutlined />
           </Button>
