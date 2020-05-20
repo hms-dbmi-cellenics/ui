@@ -7,20 +7,11 @@ WORKDIR /app
 # add `/app/node_modules/.bin` to $PATH
 ENV PATH /app/node_modules/.bin:$PATH
 
-# install app dependencies
-COPY package.json yarn.lock ./
-COPY node_modules/ ./
-
-RUN yarn install --frozen-lockfile
-
-# add app
-COPY . ./
-
-# build app
-RUN yarn build
-
-# install a production server
+# add production web server
 RUN yarn global add serve
+
+# add built image
+COPY /app/build .
 
 # start app
 CMD ["serve", "-s", "build"]
