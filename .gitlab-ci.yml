@@ -29,14 +29,23 @@ install_dependencies:
   script:
   - yarn install --frozen-lockfile
   cache:
+    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
     paths:
     - node_modules/
+  only:
+    changes:
+      - package-lock.json
 
 testing:
   image: node:latest
   stage: test
   script:
   - yarn test
+  cache: 
+    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+    paths:
+      - node_modules/
+    policy: pull
 
 include:
   - template: Jobs/Build.gitlab-ci.yml
