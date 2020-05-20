@@ -22,22 +22,24 @@ variables:
   STAGING_ENABLED: "true"
   POSTGRES_ENABLED: "false"
   AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS: --build-arg=CI_ENVIRONMENT_NAME=$CI_ENVIRONMENT_NAME
-  
-cache:
-  paths:
-  - node_modules/
-  
+
 install_dependencies:
   image: node:latest
   stage: install
   script:
-  - yarn install
+  - yarn install --frozen-lockfile
+  cache:
+    paths:
+    - node_modules/
 
 testing:
   image: node:latest
   stage: test
   script:
   - yarn test
+  cache:
+    paths:
+    - node_modules/
 
 include:
   - template: Jobs/Build.gitlab-ci.yml
