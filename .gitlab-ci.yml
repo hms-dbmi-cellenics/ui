@@ -34,7 +34,7 @@ install_dependencies:
     - node_modules/
   only:
     changes:
-      - package-lock.json
+      - yarn.lock
 
 testing:
   image: node:latest
