@@ -11,7 +11,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 RUN yarn global add serve
 
 # add built image
-COPY /app/build .
+COPY ./build .
 
 # start app
 CMD ["serve", "-s", "build"]
