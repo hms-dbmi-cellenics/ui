@@ -14,10 +14,10 @@ postgresql:
   enabled: false
 
 readinessProbe:
-  path: "/exploration"
+  path: "/"
 
 livenessProbe:
-  path: "/exploration"
+  path: "/"
 
 ingress:
   tls:
