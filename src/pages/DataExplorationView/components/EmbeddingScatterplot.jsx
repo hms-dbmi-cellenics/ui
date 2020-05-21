@@ -3,21 +3,23 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Spin } from 'antd';
 
 // eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
 import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'vitessce/build-lib/es/production/static/css/index.css';
 
-import { Spin } from 'antd';
+
 import { loadCells } from '../../../actions';
 
 const EmbeddingScatterplot = (props) => {
-  const { experimentID } = props;
+  const { experimentID, embeddingType } = props;
   const uuid = 'my-scatterplot';
   const view = { target: [0, 0, 0], zoom: 0.75 };
-  const mapping = 'PCA';
+  const mapping = embeddingType.toUpperCase();
   const selectedCellIds = new Set();
+
   // eslint-disable-next-line no-unused-vars
   const updateCellsHover = (hoverInfo) => { };
   // eslint-disable-next-line no-unused-vars
@@ -33,12 +35,12 @@ const EmbeddingScatterplot = (props) => {
   const cells = useSelector((state) => state.cells.data);
   const colorData = useSelector((state) => state.cellSetsColor.data);
 
-  const requestBody = {
+  const getEmbeddingRequest = {
     name: 'GetEmbedding',
-    type: 'pca',
+    type: embeddingType,
   };
 
-  dispatch(loadCells(experimentID, requestBody));
+  dispatch(loadCells(experimentID, getEmbeddingRequest));
 
   if (cells == null) {
     return (<center><Spin size="large" /></center>);
@@ -104,5 +106,6 @@ EmbeddingScatterplot.defaultProps = {};
 
 EmbeddingScatterplot.propTypes = {
   experimentID: PropTypes.string.isRequired,
+  embeddingType: PropTypes.string.isRequired,
 };
 export default EmbeddingScatterplot;

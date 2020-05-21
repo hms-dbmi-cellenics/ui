@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import React from 'react';
-import { shallow, mount, configure } from 'enzyme';
+import { shallow, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import HierarchicalTree from './HierarchicalTree';
 
@@ -12,11 +12,18 @@ describe('HierarchicalTree', () => {
       {
         key: '1',
         name: 'my element',
-        rootNode: true,
+        rootNode: false,
+        color: '#000000',
       },
     ];
-    const component = shallow(<HierarchicalTree data={data} />);
-    expect(component.getElement().props.treeData).toEqual(data);
+
+    const componentElement = shallow(<HierarchicalTree data={data} />).getElement();
+    expect(componentElement.props.treeData).toMatchObject(data);
+
+    const componentChildren = componentElement.props.treeData[0].title.props.children;
+    expect(componentChildren.length).toEqual(2);
+    expect(componentChildren[0].type.name).toEqual('EditableField');
+    expect(componentChildren[1].type.name).toEqual('ColorPicker');
   });
 
   test('can drag first component at the last position', () => {
@@ -134,6 +141,52 @@ describe('HierarchicalTree', () => {
   });
 
   test("Can't drop parent inside node", () => {
+    const firstParent = {
+      key: '1',
+      name: 'parent 1',
+      rootNode: true,
+      children: [],
+    };
 
+    const secondParent = {
+      key: '2',
+      name: 'parent 2',
+      rootNode: true,
+      children: [],
+    };
+
+    const data = [
+      firstParent,
+      secondParent,
+    ];
+
+    const dropInfo = {
+      dragNode: {
+        ...secondParent,
+        props: { eventKey: secondParent.key },
+      },
+      dragNodesKeys: [secondParent.key],
+      dropPosition: 1,
+      dropToGap: false,
+      node: {
+        ...firstParent,
+        props: { eventKey: firstParent.key },
+      },
+    };
+
+    const component = shallow(<HierarchicalTree data={data} />);
+    const componentElement = component.getElement();
+
+    const oldTreeData = componentElement.props.treeData;
+    expect(oldTreeData.length).toEqual(2);
+    expect(oldTreeData[0].children.length).toEqual(0);
+    expect(oldTreeData[1].children.length).toEqual(0);
+
+    componentElement.props.onDrop(dropInfo);
+
+    const newTreeData = component.getElement().props.treeData;
+    expect(newTreeData.length).toEqual(2);
+    expect(newTreeData[0].children.length).toEqual(0);
+    expect(newTreeData[1].children.length).toEqual(0);
   });
 });

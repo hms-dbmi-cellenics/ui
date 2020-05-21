@@ -39,9 +39,9 @@ class ExplorationViewPage extends React.Component {
 
     this.plots = [{
       key: 'item-1',
-      name: 'Embeddings',
-      description: 'Visualize cells clustered by genetic expression using various embeddings.',
-      renderer: () => (<EmbeddingScatterplot experimentID={experimentId} />),
+      name: 'PCA Embedding',
+      description: 'Visualize cells clustered by genetic expression using a PCA embedding.',
+      renderer: () => (<EmbeddingScatterplot experimentID={experimentId} embeddingType="pca" />),
     },
     {
       key: 'item-2',

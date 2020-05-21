@@ -35,7 +35,6 @@ class EditablePopoverContent extends React.Component {
 
   render() {
     const { currentText } = this.state;
-
     return (
       <Space>
         <Input

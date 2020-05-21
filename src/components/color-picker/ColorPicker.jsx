@@ -30,7 +30,7 @@ class ColorPicker extends React.Component {
       onColorChange(hex);
     };
 
-    this.picker = <CompactPicker color={props.color} onChange={this.handleColorChange} />;
+    this.picker = <CompactPicker color={props.color} onChangeComplete={this.handleColorChange} />;
   }
 
   render() {
