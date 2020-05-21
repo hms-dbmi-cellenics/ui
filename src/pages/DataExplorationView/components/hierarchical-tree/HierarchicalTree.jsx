@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Space, Tree } from 'antd';
 import { transform, cloneDeep } from 'lodash';
+import {
+  useSelector,
+} from 'react-redux';
 import EditableField from '../../../../components/editable-field/EditableField';
 import ColorPicker from '../../../../components/color-picker/ColorPicker';
 
-
 const HierarchicalTree = (props) => {
   // eslint-disable-next-line react/destructuring-assignment
-  const [treeData, setTreeData] = useState(props.data);
+  const treeData = useSelector((state) => { console.log(state); return state.cellSets.data; });
+
   const [autoExpandParent, setAutoExpandParent] = useState(true);
 
   const onExpand = () => {
@@ -158,7 +161,6 @@ const HierarchicalTree = (props) => {
     }
 
     if (shouldUpdateState) {
-      setTreeData(newTreeData);
       props.onTreeUpdate(treeData);
     }
   };
@@ -186,7 +188,6 @@ const HierarchicalTree = (props) => {
       defaultText={modified.name}
       onEdit={(e) => {
         const newState = findAndUpdateTreeDataState(treeData, modified.key, { name: e });
-        setTreeData(newState);
         props.onTreeUpdate(newState);
       }}
     >
@@ -201,7 +202,6 @@ const HierarchicalTree = (props) => {
           color={modified.color || '#ffffff'}
           onColorChange={((e) => {
             const newState = findAndUpdateTreeDataState(treeData, modified.key, { color: e });
-            setTreeData(newState);
             props.onTreeUpdate(newState);
           })}
         />
@@ -254,7 +254,6 @@ HierarchicalTree.defaultProps = {
 };
 
 HierarchicalTree.propTypes = {
-  data: PropTypes.arrayOf(Object).isRequired,
   onCheck: PropTypes.func,
   onSelect: PropTypes.func,
   onTreeUpdate: PropTypes.func,

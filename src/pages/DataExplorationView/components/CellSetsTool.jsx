@@ -17,9 +17,10 @@ let checkedKeys = [];
 const CellSetsTool = (props) => {
   const { experimentID } = props;
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.cellSets.data);
 
   dispatch(loadCellSets(experimentID));
+
+  const data = useSelector((state) => state.cellSets.data);
 
   const getChangedData = (keys) => {
     const colorData = [];
@@ -53,6 +54,18 @@ const CellSetsTool = (props) => {
     updateCellSetsColors(keys);
   };
 
+  const renderHierarchicalTree = () => {
+    if (typeof data !== 'undefined') {
+      return (
+        <HierarchicalTree
+          onCheck={onCheck}
+          onTreeUpdate={onTreeUpdate}
+        />
+      );
+    }
+    return (<Skeleton active />);
+  };
+
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Space>
@@ -70,15 +83,9 @@ const CellSetsTool = (props) => {
         </Tooltip>
       </Space>
 
-      {data
-        ? (
-          <HierarchicalTree
-            data={data}
-            onCheck={onCheck}
-            onTreeUpdate={onTreeUpdate}
-          />
-        )
-        : <Skeleton active />}
+      {console.log('*** ++++ *** ', data)}
+
+      {renderHierarchicalTree()}
     </Space>
   );
 };
