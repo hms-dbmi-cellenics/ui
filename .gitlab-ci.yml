@@ -38,7 +38,7 @@ test_and_build:
   stage: test
   script:
   - yarn test
-  - yarn run build
+  - CI=false yarn run build
   cache: 
     key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
     paths:
@@ -54,7 +54,7 @@ build-image:
   variables:
     DOCKER_TLS_CERTDIR: ""
   services:
-    - docker:19.03.8-dind
+t    - docker:19.03.8-dind
   script:
     - |
       if [[ -z "$CI_COMMIT_TAG" ]]; then
