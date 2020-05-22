@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { combineReducers } from 'redux';
 import {
-  LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CELL_SET, LOAD_CELLS, CELL_SETS_COLOR,
+  LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CLUSTER, LOAD_CELLS, CELL_SETS_COLOR,
 } from '../actions/actionType';
 
 
@@ -13,7 +13,7 @@ const cellSetsReducer = (state = {}, action) => {
     case UPDATE_CELL_SETS:
       state.data = action.data;
       return state;
-    case CREATE_CELL_SET:
+    case CREATE_CLUSTER:
       // for now, if cell set tool is not opened yet, we do nothing on create cell set action
       // in the future, we will need to handle that case too
       if (typeof state.data !== 'undefined') {

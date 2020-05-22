@@ -34,6 +34,11 @@ const CellSetsTool = (props) => {
             });
           }
         });
+      } else if (keys.includes(cellSet.key)) {
+        colorData.push({
+          color: cellSet.color,
+          cellIds: cellSet.cellIds,
+        });
       }
     });
     return colorData;
@@ -82,9 +87,6 @@ const CellSetsTool = (props) => {
           <Button icon={<DeleteOutlined />} />
         </Tooltip>
       </Space>
-
-      {console.log('*** ++++ *** ', data)}
-
       {renderHierarchicalTree()}
     </Space>
   );

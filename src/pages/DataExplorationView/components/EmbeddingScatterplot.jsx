@@ -3,14 +3,19 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Spin, Popover, Button } from 'antd';
+import {
+  Spin, Popover, Button,
+} from 'antd';
 
 // eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
 import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'vitessce/build-lib/es/production/static/css/index.css';
 
-import { loadCells, createCellSet } from '../../../actions';
+import EditableField from '../../../components/editable-field/EditableField';
+import ColorPicker from '../../../components/color-picker/ColorPicker';
+
+import { loadCells, createCluster } from '../../../actions';
 
 const EmbeddingScatterplot = (props) => {
   const { experimentID, embeddingType } = props;
@@ -24,32 +29,54 @@ const EmbeddingScatterplot = (props) => {
   const updateCellsHover = (hoverInfo) => { };
 
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
-  const [shouldPopover, setShouldPopover] = useState(false);
+  const [createClusterPopoup, setCreateClusterPopoup] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [clusterName, setClusterName] = useState('new cluster');
+  const [clusterColor, setClusterColor] = useState('#0000FF');
+
+  const handleCreateCluster = () => {
+    setCreateClusterPopoup(false);
+    dispatch(createCluster(selectedIds, clusterName, clusterColor));
+  };
+
 
   const renderCellSetPopover = () => {
     const content = (
       <div>
-        <p>Content</p>
-        <p>Content</p>
+        <EditableField
+          defaultText="cluster name"
+          onEdit={(e) => {
+            setClusterName(e);
+          }}
+        >
+          {clusterName}
+        </EditableField>
+        <ColorPicker
+          color={clusterColor}
+          onColorChange={((e) => {
+            setClusterColor(e);
+          })}
+        />
+        <div>
+          <Button type="primary" size="small" onClick={((e) => handleCreateCluster())}>Create</Button>
+          <Button size="small" onClick={((e) => setCreateClusterPopoup(false))}>Cancel</Button>
+        </div>
       </div>
     );
 
-    if (shouldPopover) {
+    if (createClusterPopoup) {
       return (
         <div style={{ position: 'absolute', left: hoverPosition.x + 20, top: hoverPosition.y + 20 }}>
-          <Popover content={content} title="Title">
-            <Button type="primary" onClick={console.log('I am clicked')}>Hover me</Button>
-          </Popover>
+          <Popover content={content} visible={createClusterPopoup} />
         </div>
       );
     }
   };
 
   // eslint-disable-next-line no-unused-vars
-  const updateCellsSelection = (selectedIds) => {
-    dispatch(createCellSet(selectedIds));
-    setShouldPopover(true);
-    console.log('++++ ', selectedIds);
+  const updateCellsSelection = (selection) => {
+    setCreateClusterPopoup(true);
+    setSelectedIds(selection);
   };
   // eslint-disable-next-line no-unused-vars
   const updateStatus = (message) => { };
@@ -115,7 +142,7 @@ const EmbeddingScatterplot = (props) => {
       className="vitessce-container vitessce-theme-light"
       style={{ height: '50vh', position: 'relative' }}
       onMouseMove={(e) => {
-        if (!shouldPopover) {
+        if (!createClusterPopoup) {
           setHoverPosition({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY });
         }
       }}
