@@ -10,7 +10,7 @@ import ColorPicker from '../../../../components/color-picker/ColorPicker';
 
 const HierarchicalTree = (props) => {
   // eslint-disable-next-line react/destructuring-assignment
-  const treeData = useSelector((state) => { console.log(state); return state.cellSets.data; });
+  const treeData = useSelector((state) => state.cellSets.data);
 
   const [autoExpandParent, setAutoExpandParent] = useState(true);
 

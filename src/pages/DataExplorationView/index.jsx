@@ -7,7 +7,7 @@ import {
 import CellSetsTool from './components/CellSetsTool';
 import DraggableList from '../../components/draggable-list/DraggableList';
 
-import EmbeddingScatterplot from './components/EmbeddingScatterplot';
+import Embedding from './components/embedding/Embedding';
 import HeatmapPlot from './components/HeatmapPlot';
 import SearchMenu from '../../components/search-menu/SearchMenu';
 
@@ -41,7 +41,7 @@ class ExplorationViewPage extends React.Component {
       key: 'item-1',
       name: 'PCA Embedding',
       description: 'Visualize cells clustered by genetic expression using a PCA embedding.',
-      renderer: () => (<EmbeddingScatterplot experimentID={experimentId} embeddingType="pca" />),
+      renderer: () => (<Embedding experimentID={experimentId} embeddingType="pca" />),
     },
     {
       key: 'item-2',

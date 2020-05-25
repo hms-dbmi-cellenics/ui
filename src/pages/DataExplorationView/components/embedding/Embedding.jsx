@@ -13,9 +13,9 @@ import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js
 import 'vitessce/build-lib/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 
-import { loadCells, createCluster } from '../../../actions';
+import { loadCells, createCluster } from '../../../../actions';
 
-const EmbeddingScatterplot = (props) => {
+const Embedding = (props) => {
   const { experimentID, embeddingType } = props;
   const uuid = 'my-scatterplot';
   const view = { target: [0, 0, 0], zoom: 0.75 };
@@ -26,21 +26,6 @@ const EmbeddingScatterplot = (props) => {
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-
-  // eslint-disable-next-line no-unused-vars
-  const updateCellsHover = (hoverInfo) => { };
-
-  // eslint-disable-next-line no-unused-vars
-  const updateCellsSelection = (selection) => {
-    setCreateClusterPopover(true);
-    setSelectedIds(selection);
-  };
-  // eslint-disable-next-line no-unused-vars
-  const updateStatus = (message) => { };
-  // eslint-disable-next-line no-unused-vars
-  const updateViewInfo = (viewInfo) => { };
-  // eslint-disable-next-line no-unused-vars
-  const clearPleaseWait = (layerName) => { };
 
   const cells = useSelector((state) => state.cells.data);
   const colorData = useSelector((state) => state.cellSetsColor.data);
@@ -56,7 +41,18 @@ const EmbeddingScatterplot = (props) => {
     return (<center><Spin size="large" /></center>);
   }
 
-  const convertData = (results) => {
+  const hexToRgb = (hex) => {
+    if (hex) {
+      return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i,
+        (m, r, g, b) => `#${r}${r}${g}${g}${b}${b}`)
+        .substring(1).match(/.{2}/g)
+        .map((x) => parseInt(x, 16));
+    }
+    return null;
+  };
+
+  const convertCellsData = (results) => {
+    console.log('++++++ ', results);
     const data = {};
 
     Object.entries(results).forEach(([key, value]) => {
@@ -68,16 +64,6 @@ const EmbeddingScatterplot = (props) => {
     });
 
     return data;
-  };
-
-  const hexToRgb = (hex) => {
-    if (hex) {
-      return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i,
-        (m, r, g, b) => `#${r}${r}${g}${g}${b}${b}`)
-        .substring(1).match(/.{2}/g)
-        .map((x) => parseInt(x, 16));
-    }
-    return null;
   };
 
   const converColorData = () => {
@@ -94,14 +80,29 @@ const EmbeddingScatterplot = (props) => {
     return colors;
   };
 
-  const onCreate = (clusterName, clusterColor) => {
+  const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
     dispatch(createCluster(selectedIds, clusterName, clusterColor));
   };
 
-  const onCancel = () => {
+  const onCancelCreateCluster = () => {
     setCreateClusterPopover(false);
   };
+
+  // eslint-disable-next-line no-unused-vars
+  const updateCellsHover = (hoverInfo) => { };
+
+  // eslint-disable-next-line no-unused-vars
+  const updateCellsSelection = (selection) => {
+    setCreateClusterPopover(true);
+    setSelectedIds(selection);
+  };
+  // eslint-disable-next-line no-unused-vars
+  const updateStatus = (message) => { };
+  // eslint-disable-next-line no-unused-vars
+  const updateViewInfo = (viewInfo) => { };
+  // eslint-disable-next-line no-unused-vars
+  const clearPleaseWait = (layerName) => { };
 
   return (
     <div
@@ -116,7 +117,7 @@ const EmbeddingScatterplot = (props) => {
       <Scatterplot
         uuid={uuid}
         view={view}
-        cells={convertData(cells)}
+        cells={convertCellsData(cells)}
         mapping={mapping}
         selectedCellIds={selectedCellIds}
         cellColors={converColorData()}
@@ -129,18 +130,18 @@ const EmbeddingScatterplot = (props) => {
       {createClusterPopover
         ? (
           <ClusterPopover
-            hoverPosition={hoverPosition}
-            onCreate={onCreate}
-            onCancel={onCancel}
+            popoverPosition={hoverPosition}
+            onCreate={onCreateCluster}
+            onCancel={onCancelCreateCluster}
           />
         ) : <></>}
     </div>
   );
 };
-EmbeddingScatterplot.defaultProps = {};
+Embedding.defaultProps = {};
 
-EmbeddingScatterplot.propTypes = {
+Embedding.propTypes = {
   experimentID: PropTypes.string.isRequired,
   embeddingType: PropTypes.string.isRequired,
 };
-export default EmbeddingScatterplot;
+export default Embedding;
