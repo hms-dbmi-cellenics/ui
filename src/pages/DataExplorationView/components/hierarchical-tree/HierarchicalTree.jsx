@@ -161,7 +161,7 @@ const HierarchicalTree = (props) => {
     }
 
     if (shouldUpdateState) {
-      props.onTreeUpdate(treeData);
+      props.onTreeUpdate(newTreeData);
     }
   };
 
