@@ -8,21 +8,13 @@ import {
 
 import EditableField from '../../../components/editable-field/EditableField';
 import ColorPicker from '../../../components/color-picker/ColorPicker';
-import { createCluster } from '../../../actions';
 
 
 const ClusterPopover = (props) => {
-  const { hoverPosition, cellIds } = props;
+  const { hoverPosition, onCreate, onCancel } = props;
   const [clusterName, setClusterName] = useState('new cluster');
   const [clusterColor, setClusterColor] = useState('#0000FF');
   const [isVisible, setVisible] = useState(true);
-  const dispatch = useDispatch();
-
-
-  const handleCreateCluster = () => {
-    setVisible(false);
-    dispatch(createCluster(cellIds, clusterName, clusterColor));
-  };
 
   const renderCellSetPopover = () => {
     const content = (
@@ -42,15 +34,22 @@ const ClusterPopover = (props) => {
           })}
         />
         <div>
-          <Button type="primary" size="small" onClick={((e) => handleCreateCluster())}>Create</Button>
-          <Button size="small" onClick={((e) => setVisible(false))}>Cancel</Button>
+          <Button
+            type="primary"
+            size="small"
+            onClick={((e) => onCreate(clusterName, clusterColor))}
+          >
+            Create
+
+          </Button>
+          <Button size="small" onClick={((e) => onCancel())}>Cancel</Button>
         </div>
       </div>
     );
 
     return (
       <div style={{ position: 'absolute', left: hoverPosition.x + 20, top: hoverPosition.y + 20 }}>
-        <Popover title="Creating a new cluster" content={content} visible={isVisible} />
+        <Popover title="Creating a new cluster" content={content} visible />
       </div>
     );
   };
@@ -58,6 +57,15 @@ const ClusterPopover = (props) => {
   return renderCellSetPopover();
 };
 
-ClusterPopover.defaultProps = {};
+ClusterPopover.defaultProps = {
+  onCreate: () => null,
+  onCancel: () => null,
+
+};
+
+ClusterPopover.propTypes = {
+  onCreate: PropTypes.func,
+  onCancel: PropTypes.func,
+};
 
 export default ClusterPopover;

@@ -13,7 +13,7 @@ import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js
 import 'vitessce/build-lib/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 
-import { loadCells } from '../../../actions';
+import { loadCells, createCluster } from '../../../actions';
 
 const EmbeddingScatterplot = (props) => {
   const { experimentID, embeddingType } = props;
@@ -94,6 +94,15 @@ const EmbeddingScatterplot = (props) => {
     return colors;
   };
 
+  const onCreate = (clusterName, clusterColor) => {
+    setCreateClusterPopover(false);
+    dispatch(createCluster(selectedIds, clusterName, clusterColor));
+  };
+
+  const onCancel = () => {
+    setCreateClusterPopover(false);
+  };
+
   return (
     <div
       className="vitessce-container vitessce-theme-light"
@@ -118,7 +127,13 @@ const EmbeddingScatterplot = (props) => {
         clearPleaseWait={clearPleaseWait}
       />
       {createClusterPopover
-        ? <ClusterPopover hoverPosition={hoverPosition} cellIds={selectedIds} /> : <></>}
+        ? (
+          <ClusterPopover
+            hoverPosition={hoverPosition}
+            onCreate={onCreate}
+            onCancel={onCancel}
+          />
+        ) : <></>}
     </div>
   );
 };
