@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import React from 'react';
-import { shallow, configure } from 'enzyme';
+import { shallow, mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -21,14 +21,24 @@ describe('Embedding', () => {
           celld: [57, 3],
         },
       },
+      cellSetsColor: {
+        data: [
+          {
+            color: '#ff0000',
+            cellIds: ['1', '2', '3'],
+          },
+        ],
+      },
     });
 
-    const component = shallow(
+    const component = mount(
       <Provider store={store}>
         <Embedding experimentID="1234" embeddingType="pca" />
       </Provider>,
     );
 
+
+    debugger;
     expect(component.find('Embedding').length).toEqual(1);
   });
 });

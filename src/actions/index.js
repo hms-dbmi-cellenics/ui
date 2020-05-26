@@ -33,8 +33,9 @@ const updateCellSets = (newState) => function (dispatch, getState) {
 };
 
 const createCluster = (cellSetInfo, clusterName, color) => function (dispatch, getState) {
+  const clusterKey = uuidv4();
   const newCluster = {
-    key: [clusterName, 'key'].join('-'),
+    key: clusterKey,
     name: clusterName,
     color,
     cellIds: Array.from(cellSetInfo),

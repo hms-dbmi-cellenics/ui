@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Popover, Button,
+  Popover, Button, Space,
 } from 'antd';
 
 
@@ -11,25 +11,26 @@ import ColorPicker from '../../../../components/color-picker/ColorPicker';
 
 const ClusterPopover = (props) => {
   const { popoverPosition, onCreate, onCancel } = props;
-  const [clusterName, setClusterName] = useState('new cluster');
+  const [clusterName, setClusterName] = useState('New Cluster');
   const [clusterColor, setClusterColor] = useState('#0000FF');
 
   const getContent = () => (
-    <div>
-      <EditableField
-        defaultText="cluster name"
-        onEdit={(e) => {
-          setClusterName(e);
-        }}
-      >
-        {clusterName}
-      </EditableField>
-      <ColorPicker
-        color={clusterColor}
-        onColorChange={((e) => {
-          setClusterColor(e);
-        })}
-      />
+    <Space direction="vertical" style={{ width: '100%' }}>
+      <div>
+        <EditableField
+          onEdit={(e) => {
+            setClusterName(e);
+          }}
+        >
+          {clusterName}
+        </EditableField>
+        <ColorPicker
+          color={clusterColor}
+          onColorChange={((e) => {
+            setClusterColor(e);
+          })}
+        />
+      </div>
       <div>
         <Button
           type="primary"
@@ -39,9 +40,16 @@ const ClusterPopover = (props) => {
           Create
 
         </Button>
-        <Button size="small" onClick={((e) => onCancel())}>Cancel</Button>
+        <Button
+          type="default"
+          size="small"
+          onClick={((e) => onCancel())}
+        >
+          Cancel
+
+        </Button>
       </div>
-    </div>
+    </Space>
   );
 
   const content = getContent();

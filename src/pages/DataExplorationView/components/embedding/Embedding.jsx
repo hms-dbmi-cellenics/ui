@@ -52,7 +52,6 @@ const Embedding = (props) => {
   };
 
   const convertCellsData = (results) => {
-    console.log('++++++ ', results);
     const data = {};
 
     Object.entries(results).forEach(([key, value]) => {

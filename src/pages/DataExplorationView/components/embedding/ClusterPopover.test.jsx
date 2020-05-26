@@ -13,28 +13,28 @@ describe('ClusterPopover', () => {
 
     expect(component.find('Popover').length).toEqual(1);
 
-    const popoverContent = component.find('Popover').props().content.props.children;
+    // const popoverContent = component.find('Popover').props().content.props.children;
+    const popoverContent = shallow(component.find('Popover').props().content);
 
-    expect(popoverContent.length).toEqual(3);
-    expect(popoverContent[0].type.name).toEqual('EditableField');
-    expect(popoverContent[1].type.name).toEqual('ColorPicker');
-    expect(popoverContent[2].type).toEqual('div');
-    expect(popoverContent[2].props.children.length).toEqual(2);
-    expect(popoverContent[2].props.children[0].type.displayName).toEqual('Button');
-    expect(popoverContent[2].props.children[1].type.displayName).toEqual('Button');
+    expect(popoverContent.length).toEqual(1);
+
+    expect(popoverContent.find('EditableField').length).toEqual(1);
+    expect(popoverContent.find('ColorPicker').length).toEqual(1);
+    expect(popoverContent.find('Button').length).toEqual(2);
+    expect(popoverContent.find('Button[type="primary"]').length).toEqual(1);
   });
 
-  test.skip('default cluster name and cluster color get passed in on create', () => {
+  test('default cluster name and cluster color get passed in on create', () => {
     const mockCreate = jest.fn();
     const popoverPosition = { x: 0, y: 0 };
     const component = shallow(<ClusterPopover popoverPosition={popoverPosition} onCreate={mockCreate} />);
 
     const popoverContent = shallow(component.find('Popover').props().content);
-    const createButton = popoverContent.find('div div Button:first-child');
+    const createButton = popoverContent.find('Button[type="primary"]');
 
     createButton.simulate('click');
     expect(mockCreate).toBeCalledTimes(1);
-    expect(mockCreate).toBeCalledWith('new cluster', '#0000FF');
+    expect(mockCreate).toBeCalledWith('New Cluster', '#0000FF');
   });
 
   test('updated cluster name and color get passed in on create', () => {
@@ -42,26 +42,29 @@ describe('ClusterPopover', () => {
     const popoverPosition = { x: 0, y: 0 };
     const component = shallow(<ClusterPopover popoverPosition={popoverPosition} onCreate={mockCreate} />);
 
-    const popoverContent = shallow(component.find('Popover').props().content);
-    const editableField = popoverContent.find('div EditableField');
-    const colorPicker = popoverContent.find('div ColorPicker');
+    let popoverContent = shallow(component.find('Popover').props().content);
+    const editableField = popoverContent.find('EditableField');
+    const colorPicker = popoverContent.find('ColorPicker');
 
     editableField.prop('onEdit')('updated cluster name');
     colorPicker.prop('onColorChange')('#999999');
-    component.update();
+    popoverContent = shallow(component.find('Popover').props().content);
 
-    const createButton = shallow(component.find('Popover').props().content).find('div div Button:first-child');
+    const createButton = popoverContent.find('Button[type="primary"]');
     createButton.simulate('click');
     expect(mockCreate).toBeCalledTimes(1);
     expect(mockCreate).toBeCalledWith('updated cluster name', '#999999');
   });
+
 
   test('popover can be canceled', () => {
     const mockCancel = jest.fn();
     const popoverPosition = { x: 0, y: 0 };
 
     const component = shallow(<ClusterPopover popoverPosition={popoverPosition} onCancel={mockCancel} />);
-    const cancelButton = shallow(component.find('Popover').props().content).find('div div').childAt(1);
+    const popoverContent = shallow(component.find('Popover').props().content);
+    const cancelButton = popoverContent.find('Button[type="default"]');
+
     cancelButton.simulate('click');
     expect(mockCancel).toBeCalledTimes(1);
   });
