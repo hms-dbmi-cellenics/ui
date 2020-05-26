@@ -13,7 +13,6 @@ describe('ClusterPopover', () => {
 
     expect(component.find('Popover').length).toEqual(1);
 
-    // const popoverContent = component.find('Popover').props().content.props.children;
     const popoverContent = shallow(component.find('Popover').props().content);
 
     expect(popoverContent.length).toEqual(1);

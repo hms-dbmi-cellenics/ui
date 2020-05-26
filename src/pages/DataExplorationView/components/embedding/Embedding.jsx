@@ -1,3 +1,4 @@
+// eslint-disable-file import/no-extraneous-dependencies
 import React, { useState } from 'react';
 import {
   useSelector, useDispatch,
@@ -7,9 +8,8 @@ import {
   Spin,
 } from 'antd';
 
-// eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
+// eslint-disable-next-line import/extensions
 import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import 'vitessce/build-lib/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 
@@ -88,20 +88,14 @@ const Embedding = (props) => {
     setCreateClusterPopover(false);
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const updateCellsHover = (hoverInfo) => { };
-
-  // eslint-disable-next-line no-unused-vars
+  const updateCellsHover = () => { };
   const updateCellsSelection = (selection) => {
     setCreateClusterPopover(true);
     setSelectedIds(selection);
   };
-  // eslint-disable-next-line no-unused-vars
-  const updateStatus = (message) => { };
-  // eslint-disable-next-line no-unused-vars
-  const updateViewInfo = (viewInfo) => { };
-  // eslint-disable-next-line no-unused-vars
-  const clearPleaseWait = (layerName) => { };
+  const updateStatus = () => { };
+  const updateViewInfo = () => { };
+  const clearPleaseWait = () => { };
 
   return (
     <div
