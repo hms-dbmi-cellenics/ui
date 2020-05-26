@@ -103,34 +103,6 @@ const Embedding = (props) => {
   // eslint-disable-next-line no-unused-vars
   const clearPleaseWait = (layerName) => { };
 
-  // return (
-  //   <ScatterplotSubscriber>
-  //     <CellTooltip2DSubscriber>
-  //       {/* Tooltip subscriber listens for CELLS_HOVER and VIEW_INFO events published by ScatterplotSubscriber */}
-  //       <CellTooltip2D
-  //         hoveredCellInfo={hoveredCellInfo}
-  //         mapping={mapping}
-  //         viewInfo={viewInfo}
-  //         uuid={uuid}
-  //       />
-  //     </CellTooltip2DSubscriber>
-  //     {/* Scatterplot subscriber publishes CELLS_HOVER and VIEW_INFO events. */}
-  //     <Scatterplot
-  //       uuid={uuid}
-  //       view={view}
-  //       cells={convertCellsData(cells)}
-  //       mapping={mapping}
-  //       selectedCellIds={selectedCellIds}
-  //       cellColors={converColorData()}
-  //       updateStatus={updateStatus}
-  //       updateCellsSelection={updateCellsSelection}
-  //       updateCellsHover={updateCellsHover}
-  //       updateViewInfo={updateViewInfo}
-  //       clearPleaseWait={clearPleaseWait}
-  //     />
-  //   </ScatterplotSubscriber>
-  // );
-
   return (
     <div
       className="vitessce-container vitessce-theme-light"
