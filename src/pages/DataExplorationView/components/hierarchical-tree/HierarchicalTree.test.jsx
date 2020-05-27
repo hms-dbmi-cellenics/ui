@@ -35,13 +35,6 @@ describe('HierarchicalTree', () => {
     expect(tree.getElement().props.treeData).toEqual(store.getState().cellSets.data);
   });
 
-  /**
-   * The following set iof tests used to be working up until I made the tree data come through redux. Now they don't,
-   * because I can't find a way to simulate an onDrop event. I am leaving these in here disabled, we have to either
-   * remove them or add tests to somehow test that file.
-   *
-   */
-
   test('can drag first component at the last position', () => {
     const firstChild = {
       key: '1a',
