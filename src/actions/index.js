@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-  LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CELL_SET, LOAD_CELLS, CELL_SETS_COLOR,
+  LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CLUSTER, LOAD_CELLS, CELL_SETS_COLOR,
 } from './actionType';
 import { connectionPromise } from '../components/content-wrapper/ContentWrapper';
 
@@ -32,17 +32,18 @@ const updateCellSets = (newState) => function (dispatch, getState) {
   });
 };
 
-const createCellSet = (cellSetInfo) => function (dispatch, getState) {
-  const newCellSet = {
-    key: 'random-key',
-    name: 'my new cluster',
-    color: '#00FF00',
+const createCluster = (cellSetInfo, clusterName, color) => function (dispatch, getState) {
+  const clusterKey = uuidv4();
+  const newCluster = {
+    key: clusterKey,
+    name: clusterName,
+    color,
     cellIds: Array.from(cellSetInfo),
   };
 
   return dispatch({
-    type: CREATE_CELL_SET,
-    data: newCellSet,
+    type: CREATE_CLUSTER,
+    data: newCluster,
   });
 };
 
@@ -90,5 +91,5 @@ const cellSetsColor = (colorData) => function (dispatch, getState) {
 
 // eslint-disable-next-line import/prefer-default-export
 export {
-  loadCellSets, updateCellSets, createCellSet, loadCells, cellSetsColor,
+  loadCellSets, updateCellSets, createCluster, loadCells, cellSetsColor,
 };
