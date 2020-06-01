@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
@@ -10,15 +10,16 @@ import {
 } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import HierarchicalTree from './hierarchical-tree/HierarchicalTree';
-import { loadCellSets, updateCellSets, cellSetsColor } from '../../../actions';
+import { loadCellSets, updateCellSets, cellSetsColor } from '../../../redux/actions';
 
 let checkedKeys = [];
 
 const CellSetsTool = (props) => {
   const { experimentID } = props;
   const dispatch = useDispatch();
-
-  dispatch(loadCellSets(experimentID));
+  useEffect(() => {
+    dispatch(loadCellSets(experimentID));
+  });
 
   const data = useSelector((state) => state.cellSets.data);
 
@@ -72,18 +73,18 @@ const CellSetsTool = (props) => {
   };
 
   return (
-    <Space direction="vertical" style={{ width: '100%' }}>
+    <Space direction='vertical' style={{ width: '100%' }}>
       <Space>
-        <Tooltip placement="bottom" title="Compute intersection">
+        <Tooltip placement='bottom' title='Compute intersection'>
           <Button>AND</Button>
         </Tooltip>
-        <Tooltip placement="bottom" title="Compute union">
+        <Tooltip placement='bottom' title='Compute union'>
           <Button>OR</Button>
         </Tooltip>
-        <Tooltip placement="bottom" title="Compute complement">
+        <Tooltip placement='bottom' title='Compute complement'>
           <Button>NOT</Button>
         </Tooltip>
-        <Tooltip placement="bottom" title="Remove selected">
+        <Tooltip placement='bottom' title='Remove selected'>
           <Button icon={<DeleteOutlined />} />
         </Tooltip>
       </Space>

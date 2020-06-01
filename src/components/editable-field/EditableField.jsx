@@ -39,13 +39,13 @@ class EditablePopoverContent extends React.Component {
       <Space>
         <Input
           autoFocus
-          size="small"
+          size='small'
           value={currentText}
           onChange={(e) => { this.setState({ currentText: e.target.value }); }}
           onPressEnter={this.onEditCallback}
         />
-        <Button type="primary" size="small" onClick={this.onEditCallback}>Edit</Button>
-        <Button size="small" onClick={this.onCancelCallback}>Cancel</Button>
+        <Button type='primary' size='small' onClick={this.onEditCallback}>Edit</Button>
+        <Button size='small' onClick={this.onCancelCallback}>Cancel</Button>
       </Space>
     );
   }
@@ -98,10 +98,10 @@ class EditableField extends React.Component {
               onDone={this.closePopover}
             />
           )}
-          placement="bottom"
-          trigger="click"
+          placement='bottom'
+          trigger='click'
         >
-          <Button type="link" size="small">
+          <Button type='link' size='small'>
             <EditOutlined />
           </Button>
         </Popover>

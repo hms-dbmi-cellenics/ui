@@ -40,7 +40,7 @@ const SearchMenu = (props) => {
       <div>
         <Text strong>{primaryText}</Text>
         <br />
-        <Text type="secondary">{secondaryText}</Text>
+        <Text type='secondary'>{secondaryText}</Text>
       </div>
     </Menu.Item>
   );

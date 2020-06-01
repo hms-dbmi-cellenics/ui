@@ -41,7 +41,7 @@ class ExplorationViewPage extends React.Component {
       key: 'item-1',
       name: 'PCA Embedding',
       description: 'Visualize cells clustered by genetic expression using a PCA embedding.',
-      renderer: () => (<Embedding experimentID={experimentId} embeddingType="pca" />),
+      renderer: () => (<Embedding experimentID={experimentId} embeddingType='pca' />),
     },
     {
       key: 'item-2',
@@ -130,7 +130,7 @@ class ExplorationViewPage extends React.Component {
         onSelect={(key) => {
           this.openTool(key);
         }}
-        placeholder="Search or browse tools..."
+        placeholder='Search or browse tools...'
       />
     );
 
@@ -140,7 +140,7 @@ class ExplorationViewPage extends React.Component {
         onSelect={(key) => {
           this.openPlot(key);
         }}
-        placeholder="Search or browse plots..."
+        placeholder='Search or browse plots...'
       />
     );
 
@@ -149,15 +149,15 @@ class ExplorationViewPage extends React.Component {
         <Row>
           <Col>
             <PageHeader
-              className="site-page-header"
-              title="Investigator"
-              subTitle="Powerful data exploration"
+              className='site-page-header'
+              title='Investigator'
+              subTitle='Powerful data exploration'
             />
           </Col>
         </Row>
         <Row gutter={16}>
           <Col span={16}>
-            <Space direction="vertical" style={{ width: '100%' }}>
+            <Space direction='vertical' style={{ width: '100%' }}>
               {/* my url:
             {process.env.REACT_APP_API_URL} */}
               {searchMenuPlots}
@@ -165,7 +165,7 @@ class ExplorationViewPage extends React.Component {
             </Space>
           </Col>
           <Col span={8}>
-            <Space direction="vertical" style={{ width: '100%' }}>
+            <Space direction='vertical' style={{ width: '100%' }}>
               {searchMenuTools}
               {this.renderTools()}
             </Space>

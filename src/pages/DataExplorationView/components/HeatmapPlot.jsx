@@ -1,12 +1,13 @@
 import React from 'react';
-
-// eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
-import { Heatmap } from 'vitessce/build-lib/es/production/heatmap.min.js';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import 'vitessce/build-lib/es/production/static/css/index.css';
-
+import dynamic from 'next/dynamic';
 import cells from './linnarsson.cells.json';
 import clusters from './linnarsson.clusters.json';
+import 'vitessce/build-lib/es/production/static/css/index.css';
+
+const Heatmap = dynamic(
+  () => import('vitessce/build-lib/es/production/heatmap.min.js').then((mod) => mod.Heatmap),
+  { ssr: false },
+);
 
 
 const HeatmapPlot = () => {
@@ -21,7 +22,7 @@ const HeatmapPlot = () => {
   const clearPleaseWait = (layerName) => { };
 
   return (
-    <div className="vitessce-container vitessce-theme-light" style={{ width: '100%', position: 'relative' }}>
+    <div className='vitessce-container vitessce-theme-light' style={{ width: '100%', position: 'relative' }}>
       <Heatmap
         uuid={uuid}
         cells={cells}

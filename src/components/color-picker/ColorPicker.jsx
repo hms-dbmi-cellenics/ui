@@ -36,8 +36,8 @@ class ColorPicker extends React.Component {
   render() {
     const { colorPicked } = this.state;
     return (
-      <Popover content={this.picker} placement="bottom" trigger="click">
-        <Button type="dashed" size="small">
+      <Popover content={this.picker} placement='bottom' trigger='click'>
+        <Button type='dashed' size='small'>
           <Swatch color={colorPicked} />
         </Button>
       </Popover>
