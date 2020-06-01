@@ -1,5 +1,6 @@
 // eslint-disable-file import/no-extraneous-dependencies
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
@@ -7,13 +8,14 @@ import PropTypes from 'prop-types';
 import {
   Spin,
 } from 'antd';
-
-// eslint-disable-next-line import/extensions
-import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
 import 'vitessce/build-lib/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
+import { loadCells, createCluster } from '../../../../redux/actions';
 
-import { loadCells, createCluster } from '../../../../actions';
+const Scatterplot = dynamic(
+  () => import('vitessce/build-lib/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
+  { ssr: false },
+);
 
 const Embedding = (props) => {
   const { experimentID, embeddingType } = props;
@@ -35,10 +37,14 @@ const Embedding = (props) => {
     type: embeddingType,
   };
 
-  dispatch(loadCells(experimentID, getEmbeddingRequest));
+  useEffect(() => {
+    if (!cells) {
+      dispatch(loadCells(experimentID, getEmbeddingRequest));
+    }
+  });
 
-  if (cells == null) {
-    return (<center><Spin size="large" /></center>);
+  if (!cells) {
+    return (<center><Spin size='large' /></center>);
   }
 
   const hexToRgb = (hex) => {
@@ -99,7 +105,7 @@ const Embedding = (props) => {
 
   return (
     <div
-      className="vitessce-container vitessce-theme-light"
+      className='vitessce-container vitessce-theme-light'
       style={{ height: '50vh', position: 'relative' }}
       onMouseMove={(e) => {
         if (!createClusterPopover) {

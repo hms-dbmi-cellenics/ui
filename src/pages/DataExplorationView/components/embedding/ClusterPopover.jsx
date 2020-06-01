@@ -15,7 +15,7 @@ const ClusterPopover = (props) => {
   const [clusterColor, setClusterColor] = useState('#0000FF');
 
   const getContent = () => (
-    <Space direction="vertical" style={{ width: '100%' }}>
+    <Space direction='vertical' style={{ width: '100%' }}>
       <div>
         <EditableField
           onEdit={(e) => {
@@ -33,17 +33,17 @@ const ClusterPopover = (props) => {
       </div>
       <div>
         <Button
-          type="primary"
-          size="small"
-          onClick={((e) => { onCreate(clusterName, clusterColor); })}
+          type='primary'
+          size='small'
+          onClick={(() => { onCreate(clusterName, clusterColor); })}
         >
           Create
 
         </Button>
         <Button
-          type="default"
-          size="small"
-          onClick={((e) => onCancel())}
+          type='default'
+          size='small'
+          onClick={(() => onCancel())}
         >
           Cancel
 
@@ -56,7 +56,7 @@ const ClusterPopover = (props) => {
 
   return (
     <div style={{ position: 'absolute', left: popoverPosition.x + 20, top: popoverPosition.y + 20 }}>
-      <Popover title="Creating a new cluster" content={content} visible />
+      <Popover title='Creating a new cluster' content={content} visible />
     </div>
   );
 };

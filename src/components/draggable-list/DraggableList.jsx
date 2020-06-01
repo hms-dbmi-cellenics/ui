@@ -101,7 +101,7 @@ const DraggableList = (props) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable">
+      <Droppable droppableId='droppable'>
         {(provided, snapshot) => (
           <div
             {...provided.droppableProps}

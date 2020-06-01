@@ -46,7 +46,10 @@ test_and_build:
     policy: pull
   artifacts:
     paths:
-      - build/
+      - .next/
+      - package.json
+      - server.js
+      - public/
 
 build-image:
   stage: build
@@ -67,6 +70,11 @@ build-image:
     - /build/build.sh
   rules:
     - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
+  cache: 
+    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+    paths:
+      - node_modules/
+    policy: pull
   needs:
     - job: test_and_build
       artifacts: true
