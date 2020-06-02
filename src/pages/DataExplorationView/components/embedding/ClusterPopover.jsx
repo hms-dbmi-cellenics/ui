@@ -21,6 +21,7 @@ const ClusterPopover = (props) => {
           onEdit={(e) => {
             setClusterName(e);
           }}
+          showDelete={false}
         >
           {clusterName}
         </EditableField>

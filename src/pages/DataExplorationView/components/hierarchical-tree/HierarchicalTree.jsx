@@ -165,16 +165,16 @@ const HierarchicalTree = (props) => {
     }
   };
 
-  const findAndUpdateTreeDataState = (haystack, needle, newState) => {
-    const updated = haystack.map((d) => {
+  const updateTree = (tree, node, newState) => {
+    const updated = tree.map((d) => {
       let modified = d;
 
-      if (modified.key === needle) {
+      if (modified.key === node) {
         modified = { ...modified, ...newState };
       }
 
       if (modified.children) {
-        modified.children = findAndUpdateTreeDataState(modified.children, needle, newState);
+        modified.children = updateTree(modified.children, node, newState);
       }
 
       return modified;
@@ -183,17 +183,14 @@ const HierarchicalTree = (props) => {
     return updated;
   };
 
-  const renderEditableField = (modified) => (
-    <EditableField
-      defaultText={modified.name}
-      onEdit={(e) => {
-        const newState = findAndUpdateTreeDataState(treeData, modified.key, { name: e });
-        props.onTreeUpdate(newState);
-      }}
-    >
-      {modified.name}
-    </EditableField>
-  );
+  const filterTree = (tree, node) => tree.filter((n) => {
+    if (n.key !== node.key) {
+      if (n.children) {
+        n.children = filterTree(n.children, node);
+      }
+      return n;
+    }
+  });
 
   const renderColorPicker = (modified) => {
     if (modified.color) {
@@ -201,7 +198,7 @@ const HierarchicalTree = (props) => {
         <ColorPicker
           color={modified.color || '#ffffff'}
           onColorChange={((e) => {
-            const newState = findAndUpdateTreeDataState(treeData, modified.key, { color: e });
+            const newState = updateTree(treeData, modified.key, { color: e });
             props.onTreeUpdate(newState);
           })}
         />
@@ -210,15 +207,33 @@ const HierarchicalTree = (props) => {
     return (<></>);
   };
 
+  const renderEditableField = (modified) => (
+    <>
+      <EditableField
+        defaultText={modified.name}
+        onEdit={(e) => {
+          const newState = updateTree(treeData, modified.key, { name: e });
+          props.onTreeUpdate(newState);
+        }}
+        onDelete={(e) => {
+          const newState = filterTree(treeData, modified);
+          props.onTreeUpdate(newState);
+        }}
+      >
+        {modified.name}
+      </EditableField>
+    </>
+  );
+
   const renderTitlesRecursive = (source) => {
     const toRender = source.map((d) => {
       const modified = d;
 
       modified.title = (
-        <Space>
+        <div>
           {renderEditableField(modified)}
           {renderColorPicker(modified)}
-        </Space>
+        </div>
       );
 
       if (modified.children) {
@@ -237,6 +252,7 @@ const HierarchicalTree = (props) => {
     <Tree
       checkable
       draggable
+      selectable
       onExpand={onExpand}
       autoExpandParent={autoExpandParent}
       onCheck={onCheck}

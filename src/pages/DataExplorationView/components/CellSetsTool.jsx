@@ -5,10 +5,7 @@ import {
 
 import PropTypes from 'prop-types';
 
-import {
-  Space, Button, Tooltip, Skeleton,
-} from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Skeleton } from 'antd';
 import HierarchicalTree from './hierarchical-tree/HierarchicalTree';
 import { loadCellSets, updateCellSets, cellSetsColor } from '../../../redux/actions';
 
@@ -73,23 +70,7 @@ const CellSetsTool = (props) => {
   };
 
   return (
-    <Space direction='vertical' style={{ width: '100%' }}>
-      <Space>
-        <Tooltip placement='bottom' title='Compute intersection'>
-          <Button>AND</Button>
-        </Tooltip>
-        <Tooltip placement='bottom' title='Compute union'>
-          <Button>OR</Button>
-        </Tooltip>
-        <Tooltip placement='bottom' title='Compute complement'>
-          <Button>NOT</Button>
-        </Tooltip>
-        <Tooltip placement='bottom' title='Remove selected'>
-          <Button icon={<DeleteOutlined />} />
-        </Tooltip>
-      </Space>
-      {renderHierarchicalTree()}
-    </Space>
+    renderHierarchicalTree()
   );
 };
 

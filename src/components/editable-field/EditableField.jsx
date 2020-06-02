@@ -1,124 +1,112 @@
 /* eslint-disable max-classes-per-file */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Popover, Button, Input, Space,
+  Popover, Button, Input, Space, Tooltip,
 } from 'antd';
 
 import {
-  EditOutlined,
+  EditOutlined, DeleteOutlined,
 } from '@ant-design/icons';
 
-class EditablePopoverContent extends React.Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      currentText: props.defaultText,
-    };
+const EditablePopoverContent = (props) => {
+  const { defaultText } = props;
+  const [text, setText] = useState(defaultText);
 
-    this.onEditCallback = this.onEditCallback.bind(this);
-    this.onCancelCallback = this.onCancelCallback.bind(this);
-  }
+  const onEditCallback = () => {
+    props.onDone(text);
+  };
 
-  onEditCallback() {
-    const { onDone } = this.props;
-    const { currentText } = this.state;
-    onDone(currentText);
-  }
+  const onCancelCallback = () => {
+    props.onDone(text);
+  };
 
-  onCancelCallback() {
-    const { onDone, defaultText } = this.props;
-
-    onDone(defaultText);
-  }
-
-  render() {
-    const { currentText } = this.state;
-    return (
-      <Space>
-        <Input
-          autoFocus
-          size='small'
-          value={currentText}
-          onChange={(e) => { this.setState({ currentText: e.target.value }); }}
-          onPressEnter={this.onEditCallback}
-        />
-        <Button type='primary' size='small' onClick={this.onEditCallback}>Edit</Button>
-        <Button size='small' onClick={this.onCancelCallback}>Cancel</Button>
-      </Space>
-    );
-  }
-}
+  return (
+    <Space>
+      <Input
+        autoFocus
+        size='small'
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onPressEnter={onEditCallback}
+      />
+      <Tooltip placement='bottom' title='Change color' mouseEnterDelay={0} mouseLeaveDelay={0}>
+        <Button type='primary' size='small' onClick={onEditCallback}>Edit</Button>
+      </Tooltip>
+      <Tooltip placement='bottom' title='Change color' mouseEnterDelay={0} mouseLeaveDelay={0}>
+        <Button size='small' onClick={onCancelCallback}>Cancel</Button>
+      </Tooltip>
+    </Space>
+  );
+};
 
 EditablePopoverContent.propTypes = {
   defaultText: PropTypes.string.isRequired,
   onDone: PropTypes.func.isRequired,
 };
 
-class EditableField extends React.Component {
-  constructor(props) {
-    super(props);
+const EditableField = (props) => {
+  const { children, defaultText, showDelete } = props;
+  const [showPopover, setShowPopover] = useState(false);
 
-    this.onPopoverVisibilityChange = this.onPopoverVisibilityChange.bind(this);
-    this.closePopover = this.closePopover.bind(this);
+  const renderPopover = () => {
+    setShowPopover(true);
+  };
 
-    this.state = {
-      visible: false,
-    };
-  }
-
-  onPopoverVisibilityChange(v) {
-    this.setState({ visible: v });
-  }
-
-  closePopover(newText) {
-    const { onEdit, defaultText } = this.props;
-
+  const closePopover = (newText) => {
     if (newText !== defaultText) {
-      onEdit(newText);
+      props.onEdit(newText);
     }
 
-    this.setState({ visible: false });
-  }
+    setShowPopover(false);
+  };
 
-  render() {
-    const { children, defaultText } = this.props;
-    const { visible } = this.state;
+  const deleteEditableField = () => {
+    props.onDelete();
+  };
 
-    return (
-      <>
-        {children}
-        <Popover
-          visible={visible}
-          onVisibleChange={this.onPopoverVisibilityChange}
-          content={(
-            <EditablePopoverContent
-              defaultText={defaultText}
-              onDone={this.closePopover}
-            />
-          )}
-          placement='bottom'
-          trigger='click'
-        >
-          <Button type='link' size='small'>
-            <EditOutlined />
-          </Button>
-        </Popover>
-      </>
-    );
-  }
-}
+  return (
+    <Space>
+      {children}
+      <Popover
+        visible={showPopover}
+        content={(
+          <EditablePopoverContent
+            defaultText={defaultText}
+            onDone={closePopover}
+          />
+        )}
+        placement='bottom'
+        trigger='click'
+      >
+        <Tooltip placement='bottom' title='Edit' mouseLeaveDelay={0}>
+          <Button size='small' shape='circle' icon={<EditOutlined />} onClick={renderPopover} />
+        </Tooltip>
+        {showDelete
+          ? (
+            <Tooltip placement='bottom' title='Delete' mouseLeaveDelay={0}>
+              <Button size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
+            </Tooltip>
+          ) : <></>}
+      </Popover>
+    </Space>
+  );
+};
 
 EditableField.defaultProps = {
   onEdit: () => null,
+  onDelete: () => null,
+  showDelete: true,
   defaultText: '',
 };
 
 EditableField.propTypes = {
   children: PropTypes.node.isRequired,
   onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
   defaultText: PropTypes.string,
+  showDelete: PropTypes.bool,
 };
 
 export default EditableField;

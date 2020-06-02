@@ -8,12 +8,12 @@ import PropTypes from 'prop-types';
 import {
   Spin,
 } from 'antd';
-import 'vitessce/build-lib/es/production/static/css/index.css';
+import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import { loadCells, createCluster } from '../../../../redux/actions';
 
 const Scatterplot = dynamic(
-  () => import('vitessce/build-lib/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
+  () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
   { ssr: false },
 );
 
@@ -76,9 +76,11 @@ const Embedding = (props) => {
     if (colorData) {
       colorData.forEach((cellSet) => {
         const rgbColor = hexToRgb(cellSet.color);
-        cellSet.cellIds.forEach((cell) => {
-          colors[cell] = rgbColor;
-        });
+        if (cellSet.cellIds) {
+          cellSet.cellIds.forEach((cell) => {
+            colors[cell] = rgbColor;
+          });
+        }
       });
     }
 
