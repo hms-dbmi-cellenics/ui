@@ -1,16 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Popover, Button } from 'antd';
+import { Popover, Button, Tooltip } from 'antd';
 import { CompactPicker } from 'react-color';
-import styled from 'styled-components';
-
-const Swatch = styled.div`
-  width: 16px;
-  height: 16px;
-  background: ${(props) => props.color};
-  float: left;
-  text-shadow: 2px 2px;
-`;
 
 class ColorPicker extends React.Component {
   constructor(props) {
@@ -20,11 +11,12 @@ class ColorPicker extends React.Component {
 
     this.state = {
       colorPicked: color,
+      visible: false,
     };
 
     this.handleColorChange = (newColor) => {
       const { hex } = newColor;
-      this.setState({ colorPicked: hex });
+      this.setState({ colorPicked: hex, visible: false });
 
       const { onColorChange } = this.props;
       onColorChange(hex);
@@ -34,11 +26,19 @@ class ColorPicker extends React.Component {
   }
 
   render() {
-    const { colorPicked } = this.state;
+    const { colorPicked, visible } = this.state;
     return (
-      <Popover content={this.picker} placement='bottom' trigger='click'>
-        <Button type='dashed' size='small'>
-          <Swatch color={colorPicked} />
+      <Popover content={this.picker} placement='bottom' trigger='click' visible={visible}>
+        <Button
+          size='small'
+          shape='circle'
+          style={{ backgroundColor: colorPicked }}
+          onClick={(() => this.setState({ visible: true }))}
+        >
+          <Tooltip placement='bottom' title='Change color' mouseEnterDelay={0} mouseLeaveDelay={0}>
+            <span>&nbsp;</span>
+          </Tooltip>
+
         </Button>
       </Popover>
     );

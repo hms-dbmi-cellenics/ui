@@ -9,13 +9,12 @@ describe('ColorPicker', () => {
   configure({ adapter: new Adapter() });
   test('renders correctly', () => {
     const expectedColor = '#ff00ff';
-    const component = shallow(<ColorPicker color={expectedColor} />).getElement();
-    const d = component.props.children.props;
-
-    expect(component.props.trigger).toEqual('click');
-    expect(d.htmlType).toEqual('button');
-    expect(d.type).toEqual('dashed');
-    expect(d.children.props.color).toEqual(expectedColor);
+    const component = shallow(<ColorPicker color={expectedColor} />);
+    const button = component.find('Button');
+    expect(component.getElement().props.trigger).toEqual('click');
+    expect(button.length).toEqual(1);
+    expect(button.getElement().props.style.backgroundColor).toEqual(expectedColor);
+    expect(button.find('Tooltip').length).toEqual(1);
   });
 
   test('color can be changed', () => {

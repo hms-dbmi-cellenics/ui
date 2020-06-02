@@ -76,9 +76,11 @@ const Embedding = (props) => {
     if (colorData) {
       colorData.forEach((cellSet) => {
         const rgbColor = hexToRgb(cellSet.color);
-        cellSet.cellIds.forEach((cell) => {
-          colors[cell] = rgbColor;
-        });
+        if (cellSet.cellIds) {
+          cellSet.cellIds.forEach((cell) => {
+            colors[cell] = rgbColor;
+          });
+        }
       });
     }
 
