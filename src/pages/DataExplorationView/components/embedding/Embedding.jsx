@@ -8,12 +8,12 @@ import PropTypes from 'prop-types';
 import {
   Spin,
 } from 'antd';
-import 'vitessce/dist/es/production/static/css/index.css';
+import 'vitessce/build-lib/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import { loadCells, createCluster } from '../../../../redux/actions';
 
 const Scatterplot = dynamic(
-  () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
+  () => import('vitessce/build-lib/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
   { ssr: false },
 );
 

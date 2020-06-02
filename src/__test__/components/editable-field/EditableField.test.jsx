@@ -4,7 +4,8 @@
 import React from 'react';
 import { shallow, mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import EditableField from './EditableField';
+import EditableField from '../../../components/editable-field/EditableField';
+
 
 describe('EditableField', () => {
   configure({ adapter: new Adapter() });
