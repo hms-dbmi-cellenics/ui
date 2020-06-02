@@ -4,7 +4,8 @@ import {
   PageHeader, Row, Col, Space, Empty,
 } from 'antd';
 
-import CellSetsTool from './components/CellSetsTool';
+import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
+import GeneListTool from './components/gene-list-tool/GeneListTool';
 import DraggableList from '../../components/draggable-list/DraggableList';
 
 import Embedding from './components/embedding/Embedding';
@@ -27,7 +28,7 @@ class ExplorationViewPage extends React.Component {
         name: 'Gene set',
         description: 'Find, organize, and annotate genes in your data set.',
         key: '2',
-        renderer: () => <CellSetsTool experimentID={experimentId} />,
+        renderer: () => <GeneListTool experimentID={experimentId} />,
       },
       {
         name: 'Differential expression (simple)',

@@ -34,14 +34,9 @@ const Embedding = (props) => {
   const cells = useSelector((state) => state.cells.data);
   const colorData = useSelector((state) => state.cellSetsColor.data);
 
-  const getEmbeddingRequest = {
-    name: 'GetEmbedding',
-    type: embeddingType,
-  };
-
   useEffect(() => {
     if (!cells) {
-      dispatch(loadCells(experimentID, getEmbeddingRequest));
+      dispatch(loadCells(experimentID, embeddingType));
     }
   });
 

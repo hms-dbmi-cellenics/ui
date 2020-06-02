@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { shallow, mount, configure } from 'enzyme';
+import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import preloadAll from "jest-next-dynamic";
+import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
 import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
 import Embedding from '../../../../../pages/DataExplorationView/components/embedding/Embedding';
@@ -45,7 +45,7 @@ describe('Embedding', () => {
 
     component = mount(
       <Provider store={store}>
-        <Embedding experimentID="1234" embeddingType="pca" />
+        <Embedding experimentID='1234' embeddingType='pca' />
       </Provider>,
     );
   });

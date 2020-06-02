@@ -6,8 +6,9 @@ import {
 import PropTypes from 'prop-types';
 
 import { Skeleton } from 'antd';
-import HierarchicalTree from './hierarchical-tree/HierarchicalTree';
-import { loadCellSets, updateCellSets, cellSetsColor } from '../../../redux/actions';
+import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
+import { loadCellSets, updateCellSets, cellSetsColor } from '../../../../redux/actions';
+
 
 let checkedKeys = [];
 
