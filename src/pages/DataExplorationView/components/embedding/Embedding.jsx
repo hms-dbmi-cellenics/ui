@@ -1,5 +1,5 @@
 // eslint-disable-file import/no-extraneous-dependencies
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
@@ -11,6 +11,8 @@ import {
 import 'vitessce/build-lib/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import { loadCells, createCluster } from '../../../../redux/actions';
+
+const _ = require('lodash');
 
 const Scatterplot = dynamic(
   () => import('vitessce/build-lib/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
@@ -25,7 +27,7 @@ const Embedding = (props) => {
   const selectedCellIds = new Set();
   const dispatch = useDispatch();
 
-  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+  const hoverPosition = useRef({ x: 0, y: 0 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
 
@@ -105,14 +107,21 @@ const Embedding = (props) => {
   const updateViewInfo = () => { };
   const clearPleaseWait = () => { };
 
+  const updateCursorPosition = (e) => {
+    if (!createClusterPopover) {
+      hoverPosition.current = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
+    }
+  };
+
+  const onMouseUpdate = _.throttle(updateCursorPosition, 1000);
+
   return (
     <div
       className='vitessce-container vitessce-theme-light'
       style={{ height: '50vh', position: 'relative' }}
       onMouseMove={(e) => {
-        if (!createClusterPopover) {
-          setHoverPosition({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY });
-        }
+        e.persist();
+        onMouseUpdate(e);
       }}
     >
       <Scatterplot
@@ -131,7 +140,7 @@ const Embedding = (props) => {
       {createClusterPopover
         ? (
           <ClusterPopover
-            popoverPosition={hoverPosition}
+            popoverPosition={hoverPosition.current}
             onCreate={onCreateCluster}
             onCancel={onCancelCreateCluster}
           />
