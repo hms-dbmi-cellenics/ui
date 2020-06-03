@@ -27,31 +27,36 @@ class ColorPicker extends React.Component {
 
   render() {
     const { colorPicked, visible } = this.state;
+    const { zIndex } = this.props;
     return (
-      <Popover content={this.picker} placement='bottom' trigger='click' visible={visible}>
-        <Button
-          size='small'
-          shape='circle'
-          style={{ backgroundColor: colorPicked }}
-          onClick={(() => this.setState({ visible: true }))}
-        >
-          <Tooltip placement='bottom' title='Change color' mouseEnterDelay={0} mouseLeaveDelay={0}>
-            <span>&nbsp;</span>
-          </Tooltip>
+      <div style={{ zIndex: 1 }}>
+        <Popover content={this.picker} placement='bottom' trigger='click' visible={visible} zIndex={zIndex}>
+          <Button
+            size='small'
+            shape='circle'
+            style={{ backgroundColor: colorPicked }}
+            onClick={(() => this.setState({ visible: true }))}
+          >
+            <Tooltip placement='bottom' title='Change color' mouseEnterDelay={0} mouseLeaveDelay={0}>
+              <span>&nbsp;</span>
+            </Tooltip>
 
-        </Button>
-      </Popover>
+          </Button>
+        </Popover>
+      </div>
     );
   }
 }
 
 ColorPicker.defaultProps = {
   onColorChange: () => null,
+  zIndex: null,
 };
 
 ColorPicker.propTypes = {
   color: PropTypes.string.isRequired,
   onColorChange: PropTypes.func,
+  zIndex: PropTypes.number,
 };
 
 
