@@ -4,6 +4,8 @@ import { Provider } from 'react-redux';
 import Head from 'next/head';
 import App from 'next/app';
 import withReduxStore from '../redux/with-redux-store';
+import ContentWrapper from '../components/content-wrapper/ContentWrapper';
+
 import '../../assets/self-styles.less';
 
 class MyApp extends App {
@@ -14,7 +16,9 @@ class MyApp extends App {
         <Head>
           <title>Biomage</title>
         </Head>
-        <Component {...pageProps} />
+        <ContentWrapper>
+          <Component {...pageProps} />
+        </ContentWrapper>
       </Provider>
     );
   }

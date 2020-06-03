@@ -5,7 +5,7 @@ import { shallow, mount, configure } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import Adapter from 'enzyme-adapter-react-16';
-import HierarchicalTree from '../../../../../pages/DataExplorationView/components/hierarchical-tree/HierarchicalTree';
+import HierarchicalTree from '../../../../../pages/data-exploration/components/hierarchical-tree/HierarchicalTree';
 
 const mockStore = configureMockStore([]);
 
