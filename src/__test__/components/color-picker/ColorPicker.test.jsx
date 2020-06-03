@@ -11,7 +11,7 @@ describe('ColorPicker', () => {
     const expectedColor = '#ff00ff';
     const component = shallow(<ColorPicker color={expectedColor} />);
     const button = component.find('Button');
-    expect(component.getElement().props.trigger).toEqual('click');
+    expect(component.find('Popover').getElement().props.trigger).toEqual('click');
     expect(button.length).toEqual(1);
     expect(button.getElement().props.style.backgroundColor).toEqual(expectedColor);
     expect(button.find('Tooltip').length).toEqual(1);

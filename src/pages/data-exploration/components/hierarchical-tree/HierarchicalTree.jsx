@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Tree } from 'antd';
+import { Tree, Space } from 'antd';
 import { transform, cloneDeep } from 'lodash';
 import {
   useSelector,
@@ -232,10 +232,10 @@ const HierarchicalTree = (props) => {
       const modified = d;
 
       modified.title = (
-        <div>
+        <Space>
           {renderEditableField(modified)}
           {renderColorPicker(modified)}
-        </div>
+        </Space>
       );
 
       if (modified.children) {
