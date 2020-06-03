@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
-import GeneListTool from '../../../../../pages/DataExplorationView/components/gene-list-tool/GeneListTool';
+import GeneListTool from '../../../../../pages/data-exploration/components/gene-list-tool/GeneListTool';
 
 
 const mockStore = configureMockStore([thunk]);

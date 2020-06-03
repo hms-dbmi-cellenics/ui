@@ -10,7 +10,7 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/no-extraneous-dependencies, import/extensions
 import { Scatterplot } from 'vitessce/build-lib/es/production/scatterplot.min.js';
-import Embedding from '../../../../../pages/DataExplorationView/components/embedding/Embedding';
+import Embedding from '../../../../../pages/data-exploration/components/embedding/Embedding';
 
 
 const mockStore = configureMockStore([thunk]);

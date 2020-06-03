@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Space, Tree } from 'antd';
+import { Tree } from 'antd';
 import { transform, cloneDeep } from 'lodash';
 import {
   useSelector,
@@ -184,12 +184,14 @@ const HierarchicalTree = (props) => {
   };
 
   const filterTree = (tree, node) => tree.filter((n) => {
-    if (n.key !== node.key) {
-      if (n.children) {
-        n.children = filterTree(n.children, node);
+    const newNode = n;
+    if (newNode.key !== node.key) {
+      if (newNode.children) {
+        newNode.children = filterTree(newNode.children, node);
       }
       return n;
     }
+    return null;
   });
 
   const renderColorPicker = (modified) => {
@@ -215,7 +217,7 @@ const HierarchicalTree = (props) => {
           const newState = updateTree(treeData, modified.key, { name: e });
           props.onTreeUpdate(newState);
         }}
-        onDelete={(e) => {
+        onDelete={() => {
           const newState = filterTree(treeData, modified);
           props.onTreeUpdate(newState);
         }}

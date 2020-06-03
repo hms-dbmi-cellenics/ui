@@ -3,7 +3,7 @@
 import React from 'react';
 import { shallow, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import ClusterPopover from '../../../../../pages/DataExplorationView/components/embedding/ClusterPopover';
+import ClusterPopover from '../../../../../pages/data-exploration/components/embedding/ClusterPopover';
 
 describe('ClusterPopover', () => {
   configure({ adapter: new Adapter() });
