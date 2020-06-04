@@ -94,6 +94,7 @@ const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
 
 const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
   if (getState().geneList?.tableState === tableState) {
+    console.log('retuning null');
     return null;
   }
   dispatch({
@@ -129,6 +130,10 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
       limit: currentPageSize,
     };
 
+    if (tableState.geneNamesFilter) {
+      body.geneNamesFilter = tableState.geneNamesFilter;
+    }
+
     const request = {
       uuid: requestUuid,
       socketId: io.id,
@@ -152,7 +157,6 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
       if (tableState && tableState.pagination) {
         tableState.pagination.total = total;
       }
-
       return dispatch({
         type: UPDATE_GENE_LIST,
         data: {

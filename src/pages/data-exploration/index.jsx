@@ -42,18 +42,18 @@ class ExplorationViewPage extends React.Component {
       key: 'item-1',
       name: 'PCA Embedding',
       description: 'Visualize cells clustered by genetic expression using a PCA embedding.',
-      renderer: () => (<Embedding experimentID={experimentId} embeddingType='pca' />),
+      renderer: () => <Embedding experimentID={experimentId} embeddingType='pca' />,
     },
     {
       key: 'item-2',
       name: 'Heatmaps',
       description: 'Gain a high-level understanding of expression levels across large groups of genes and cells.',
-      renderer: () => (<HeatmapPlot />),
+      renderer: () => <HeatmapPlot />,
     }];
 
     this.state = {
-      openedTools: [this.tools[0]],
-      openedPlots: [this.plots[0]],
+      openedTools: [this.tools[1]],
+      openedPlots: [this.plots[1]],
     };
 
     this.openTool = this.openTool.bind(this);
