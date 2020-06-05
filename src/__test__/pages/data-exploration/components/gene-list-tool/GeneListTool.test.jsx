@@ -1,4 +1,3 @@
-/* eslint-disable arrow-parens */
 /* eslint-env jest */
 
 import React from 'react';
@@ -175,9 +174,10 @@ describe('GeneListTool', () => {
   test('renders correctly', () => {
     const table = component.find('Table Table');
     const spin = component.find('Table Spin');
-
+    const genesFilter = component.find('FilterGenes');
     expect(spin.length).toEqual(1);
     expect(table.length).toEqual(1);
+    expect(genesFilter.length).toEqual(1);
     expect(table.getElement().props.columns.length).toEqual(2);
     expect(table.getElement().props.columns[0].title).toEqual('Gene');
     expect(table.getElement().props.columns[1].title).toEqual('Dispersion');

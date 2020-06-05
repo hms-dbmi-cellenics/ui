@@ -15,13 +15,11 @@ const FilterGenes = (props) => {
   const [selectedOption, setSelectedOption] = useState('contains');
 
   const onSelectedOption = (newSelectedOption) => {
-    console.log('just selected an option: ', newSelectedOption);
     setSelectedOption(newSelectedOption);
   };
 
   const onSearch = (text) => {
     let searchPattern;
-    console.log('just finished search: ', text);
     if (selectedOption === 'starts with') {
       searchPattern = text.concat('%');
     }
