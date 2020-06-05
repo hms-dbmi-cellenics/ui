@@ -41,7 +41,7 @@ describe('FilterGenes', () => {
     const select = component.find(Select);
 
     act(() => {
-      select.getElement().props.onChange('starts with');
+      select.getElement().props.onChange('Starts with');
     });
 
     component.update();

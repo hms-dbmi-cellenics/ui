@@ -216,7 +216,7 @@ describe('GeneListTool', () => {
                 key: '1',
                 gene_names: 'a mock name',
               }],
-              total: [],
+              total: 1,
             }),
           },
         ],

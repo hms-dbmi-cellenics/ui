@@ -1,10 +1,9 @@
 
 import React, { useState } from 'react';
 import {
-  Input, Select, Button, Tooltip,
+  Input, Select,
 } from 'antd';
 
-import { UndoOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 
 const { Search } = Input;
@@ -12,7 +11,7 @@ const { Option } = Select;
 
 const FilterGenes = (props) => {
   const { filterGenes } = props;
-  const [selectedOption, setSelectedOption] = useState('contains');
+  const [selectedOption, setSelectedOption] = useState('Contains');
 
   const onSelectedOption = (newSelectedOption) => {
     setSelectedOption(newSelectedOption);
@@ -20,13 +19,13 @@ const FilterGenes = (props) => {
 
   const onSearch = (text) => {
     let searchPattern;
-    if (selectedOption === 'starts with') {
+    if (selectedOption === 'Starts with') {
       searchPattern = text.concat('%');
     }
-    if (selectedOption === 'ends with') {
+    if (selectedOption === 'Ends with') {
       searchPattern = '%'.concat(text);
     }
-    if (selectedOption === 'contains') {
+    if (selectedOption === 'Contains') {
       searchPattern = '%'.concat(text, '%');
     }
     filterGenes(searchPattern);
@@ -35,9 +34,9 @@ const FilterGenes = (props) => {
   return (
     <Input.Group compact>
       <Select defaultValue={selectedOption} size='small' onChange={onSelectedOption}>
-        <Option value='starts with' size='small'>starts with</Option>
-        <Option value='ends with' size='small'>ends with</Option>
-        <Option value='contains' size='small'>contains</Option>
+        <Option value='Starts with' size='small'>starts with</Option>
+        <Option value='Ends with' size='small'>ends with</Option>
+        <Option value='Contains' size='small'>contains</Option>
       </Select>
       <Search
         placeholder='Filter genes ...'

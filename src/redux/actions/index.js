@@ -79,8 +79,6 @@ const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
 
     io.emit('WorkRequest', request);
 
-    console.log('emitted!!!');
-
     io.on(`WorkResponse-${requestUuid}`, (res) => {
       const embedding = JSON.parse(res.results[0].body);
       console.log('response! ');
@@ -94,7 +92,6 @@ const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
 
 const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
   if (getState().geneList?.tableState === tableState) {
-    console.log('retuning null');
     return null;
   }
   dispatch({
@@ -141,6 +138,8 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
       timeout: '2021-01-01T00:00:00Z',
       body,
     };
+
+    console.log('genes body: ', request);
 
     io.emit('WorkRequest', request);
 
