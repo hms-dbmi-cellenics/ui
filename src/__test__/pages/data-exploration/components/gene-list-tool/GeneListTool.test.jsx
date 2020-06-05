@@ -8,7 +8,17 @@ import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
 import GeneListTool from '../../../../../pages/data-exploration/components/gene-list-tool/GeneListTool';
+import connectionPromise from '../../../../../utils/socketConnection';
 
+jest.mock('../../../../../utils/socketConnection');
+
+let io;
+let mockOn;
+let mockEmit;
+
+connectionPromise.mockImplementation(() => new Promise((resolve) => {
+  resolve(io);
+}));
 
 const mockStore = configureMockStore([thunk]);
 let component;
@@ -164,9 +174,10 @@ describe('GeneListTool', () => {
   test('renders correctly', () => {
     const table = component.find('Table Table');
     const spin = component.find('Table Spin');
-
+    const genesFilter = component.find('FilterGenes');
     expect(spin.length).toEqual(1);
     expect(table.length).toEqual(1);
+    expect(genesFilter.length).toEqual(1);
     expect(table.getElement().props.columns.length).toEqual(2);
     expect(table.getElement().props.columns[0].title).toEqual('Gene');
     expect(table.getElement().props.columns[1].title).toEqual('Dispersion');
@@ -193,12 +204,48 @@ describe('GeneListTool', () => {
       order: 'ascend',
     };
 
+    const finished = new Promise((resolve, reject) => {
+    });
+
+    mockOn = jest.fn(async (x, f) => {
+      const res = {
+        results: [
+          {
+            body: JSON.stringify({
+              rows: [{
+                key: '1',
+                gene_names: 'a mock name',
+              }],
+              total: 1,
+            }),
+          },
+        ],
+      };
+      f(res).then((result) => {
+        finished.resolve(result);
+      }).catch((e) => { console.log('****** ', e); finished.reject(e); });
+    });
+
+    mockEmit = jest.fn();
+
+    io = {
+      emit: mockEmit,
+      on: mockOn,
+    };
+
     const table = component.find('Table Table');
     const _ = {};
     table.getElement().props.onChange(newPagination, _, newSorter);
     table.update();
-    // Todo: the actual number of actions called should be 2, but right now it isn't 2 since we aren't mocking the connectionPromise function
-    expect(store.getActions().length).toEqual(1);
-    expect(store.getActions()[0].type).toEqual('GENE_LIST.LOAD');
+
+    finished.then((result) => {
+      console.log(result);
+      expect(store.getActions().length).toEqual(2);
+      expect(store.getActions()[0].type).toEqual('GENE_LIST.LOAD');
+      expect(store.getActions()[1].type).toEqual('GENE_LIST.UPDATE');
+      expect(mockEmit).toHaveBeenCalledWith('WorkRequest');
+      expect(mockEmit).toHaveBeenCalledTimes(1);
+      expect(mockOn).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -79,8 +79,6 @@ const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
 
     io.emit('WorkRequest', request);
 
-    console.log('emitted!!!');
-
     io.on(`WorkResponse-${requestUuid}`, (res) => {
       const embedding = JSON.parse(res.results[0].body);
       console.log('response! ');
@@ -129,6 +127,10 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
       limit: currentPageSize,
     };
 
+    if (tableState.geneNamesFilter) {
+      body.geneNamesFilter = tableState.geneNamesFilter;
+    }
+
     const request = {
       uuid: requestUuid,
       socketId: io.id,
@@ -136,6 +138,8 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
       timeout: '2021-01-01T00:00:00Z',
       body,
     };
+
+    console.log('genes body: ', request);
 
     io.emit('WorkRequest', request);
 
@@ -152,7 +156,6 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
       if (tableState && tableState.pagination) {
         tableState.pagination.total = total;
       }
-
       return dispatch({
         type: UPDATE_GENE_LIST,
         data: {

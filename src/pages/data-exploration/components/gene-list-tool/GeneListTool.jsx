@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
 
-import { Table } from 'antd';
+import {
+  Table, Input, Space, Select,
+} from 'antd';
 
 import PropTypes from 'prop-types';
+import FilterGenes from './FilterGenes';
 import { updateGeneList } from '../../../../redux/actions';
-
 
 const GeneListTool = (props) => {
   const { experimentID } = props;
@@ -16,6 +18,7 @@ const GeneListTool = (props) => {
   const isLoading = useSelector((state) => state.geneList.loading);
   const rows = useSelector((state) => state.geneList.rows);
   const tableState = useSelector((state) => state.geneList.tableState);
+  const [geneNamesFilter, setGeneNamesFilter] = useState(null);
 
   if (!tableState) {
     const defaultState = {
@@ -29,6 +32,7 @@ const GeneListTool = (props) => {
         field: 'dispersions',
         order: 'descend',
       },
+      geneNamesFilter,
     };
 
     dispatch(updateGeneList(experimentID, defaultState));
@@ -68,20 +72,29 @@ const GeneListTool = (props) => {
   ];
 
   const handleTableChange = (newPagination, _, newSorter) => {
-    const newTableState = { pagination: newPagination, sorter: newSorter };
+    const newTableState = { pagination: newPagination, sorter: { newSorter }, geneNamesFilter };
     dispatch(updateGeneList(experimentID, newTableState));
   };
 
+  const filterGenes = (searchPattern) => {
+    const newTableState = { pagination: tableState.pagination, sorter: { ...tableState.sorter }, geneNamesFilter: searchPattern };
+    dispatch(updateGeneList(experimentID, newTableState));
+    setGeneNamesFilter(searchPattern);
+  };
+
   return (
-    <Table
-      columns={columns}
-      dataSource={rows}
-      loading={isLoading}
-      size='small'
-      pagination={tableState?.pagination}
-      sorter={tableState?.sorter}
-      onChange={handleTableChange}
-    />
+    <Space direction='vertical' style={{ width: '100%' }}>
+      <FilterGenes filterGenes={filterGenes} />
+      <Table
+        columns={columns}
+        dataSource={rows}
+        loading={isLoading}
+        size='small'
+        pagination={tableState?.pagination}
+        sorter={tableState?.sorter}
+        onChange={handleTableChange}
+      />
+    </Space>
   );
 };
 
