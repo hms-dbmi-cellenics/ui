@@ -52,8 +52,8 @@ class ExplorationViewPage extends React.Component {
     }];
 
     this.state = {
-      openedTools: [this.tools[1]],
-      openedPlots: [this.plots[1]],
+      openedTools: [this.tools[0]],
+      openedPlots: [this.plots[0]],
     };
 
     this.openTool = this.openTool.bind(this);
