@@ -23,35 +23,24 @@ variables:
   POSTGRES_ENABLED: "false"
   AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS: --build-arg=CI_ENVIRONMENT_NAME=$CI_ENVIRONMENT_NAME
 
-install_dependencies:
-  image: node:latest
-  stage: install
-  script:
-  - yarn install --frozen-lockfile
-  cache:
-    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
-    paths:
-    - node_modules/
-
-test_and_build:
+test:
   image: node:latest
   stage: test
   script:
+  - if [[ ! -d node_modules ]];
+    then
+    yarn install --frozen-lockfile;
+    fi  
   - yarn test
-  - CI=false yarn run build
-  cache: 
-    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+  cache:
+    key:
+      files:
+        - package.json
+        - yarn.lock
     paths:
       - node_modules/
-    policy: pull
-  artifacts:
-    paths:
-      - .next/
-      - package.json
-      - server.js
-      - public/
 
-build-image:
+build:
   stage: build
   image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image:v0.2.2"
   variables:
@@ -70,16 +59,16 @@ build-image:
     - /build/build.sh
   rules:
     - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
-  cache: 
-    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+  cache:
+    key:
+      files:
+        - package.json
+        - yarn.lock
     paths:
       - node_modules/
     policy: pull
   needs:
-    - job: test_and_build
-      artifacts: true
-  
-    
+    - job: test
 
 include:
   - template: Jobs/Deploy.gitlab-ci.yml

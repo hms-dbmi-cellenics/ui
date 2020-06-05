@@ -7,16 +7,14 @@ WORKDIR /app
 # add `/app/node_modules/.bin` to $PATH
 ENV PATH /app/node_modules/.bin:$PATH
 
-# add built image
-COPY ./.next ./.next
-COPY package*.json ./
-COPY next.config.js .
-COPY server.js .
-COPY ./public ./public
-COPY ./assets ./assets
+# Copy node_modules we previously used.
+# This is not a great idea for a development build, but
+# in a CI environment we already have this cached, so we
+# may as well use it.
+COPY . ./
 
-RUN apk add --no-cache git
-RUN yarn install
+# build the app
+RUN yarn build
 
-# start app
+# start app in production mode
 CMD ["yarn", "prod"]

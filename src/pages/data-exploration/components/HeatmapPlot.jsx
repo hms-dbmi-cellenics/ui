@@ -2,10 +2,12 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import cells from './linnarsson.cells.json';
 import clusters from './linnarsson.clusters.json';
-import 'vitessce/build-lib/es/production/static/css/index.css';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+import 'vitessce/dist/es/production/static/css/index.css';
 
 const Heatmap = dynamic(
-  () => import('vitessce/build-lib/es/production/heatmap.min.js').then((mod) => mod.Heatmap),
+  () => import('vitessce/dist/es/production/heatmap.min.js').then((mod) => mod.Heatmap),
   { ssr: false },
 );
 
