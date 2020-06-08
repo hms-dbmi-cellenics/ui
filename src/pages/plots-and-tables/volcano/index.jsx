@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 import {
@@ -9,20 +10,19 @@ import { Vega } from 'react-vega';
 import _ from 'lodash';
 import differentialExpression from './differential_expression.json';
 
-import ThresholdsGuidesEditor from './components/DEVolcano/ThresholdsGuidesEditor';
-import MarkersEditor from './components/DEVolcano/MarkersEditor';
-import PointDesign from './components/DEVolcano/PointDesign';
-import TitleDesign from './components/DEVolcano/TitleDesign';
+import ThresholdsGuidesEditor from './components/ThresholdsGuidesEditor';
+import MarkersEditor from './components/MarkersEditor';
+import PointDesign from './components/PointDesign';
+import TitleDesign from './components/TitleDesign';
 
-import SchemaDesign from './components/DEVolcano/SchemaDesign';
-import AxesDesign from './components/DEVolcano/AxesDesign';
-
-// const differentialExpression = JSON.stringify(_.first([differentialExpression], 15));
-
+import SchemaDesign from './components/SchemaDesign';
+import AxesDesign from './components/AxesDesign';
+import FontDesign from './components/FontDesign';
+import ColourInversion from './components/ColourInversion';
+import LegendEditor from './components/LegendEditor';
 
 const { Panel } = Collapse;
 
-// eslint-disable-next-line react/prefer-stateless-function
 class PlotsAndTablesViewPage extends React.Component {
   constructor(props) {
     super(props);
@@ -68,23 +68,29 @@ class PlotsAndTablesViewPage extends React.Component {
       logFoldChangeThresholdColor: '#ff0000',
       pvalueThresholdColor: '#ff0000',
 
-      pointsize: 32,
-      pointstyle: 'circle',
+      pointSize: 32,
+      pointStyle: 'circle',
       pointOpa: 5,
       strokeOpa: 1,
       strokeCol: '#000000',
-
-      axistitlesize: 13,
-      axisticks: 13,
+      legend: null,
+      axisTitlesize: 13,
+      axisTicks: 13,
       colGrid: '#000000',
       widthGrid: 10,
       transGrid: 5,
       axesOffset: 10,
       lineWidth: 2,
+      xaxisText: 'Log2 Fold Change',
+      yaxisText: 'Log10 -p-value',
 
       titleText: '',
       titleSize: 20,
       titleAnchor: 'start',
+
+      masterFont: 'sans-serif',
+      masterColour: '#000000',
+      toggleInvert: '#FFFFFF',
     };
 
     this.state = {
@@ -170,6 +176,9 @@ class PlotsAndTablesViewPage extends React.Component {
       ? config.pvalueThresholdColor
       : '#ffffff00';
 
+
+    // if (config.toggleInvert === '#FFFFFF' ? config.masterColour === '#000000' : config.masterColour === '#FFFFFF');
+
     // Domain specifiers for the volcano plot axes.
     // If a logFoldChangeDomain is defined by the user (e.g. through the
     // interface by deselecting Auto and entering a custom value), use
@@ -188,6 +197,7 @@ class PlotsAndTablesViewPage extends React.Component {
       description: 'A basic scatter plot example depicting automobile statistics.',
       width: config.width || this.defaultConfig.width,
       height: config.height || this.defaultConfig.height,
+      background: config.toggleInvert,
       padding: 5,
 
 
@@ -200,8 +210,10 @@ class PlotsAndTablesViewPage extends React.Component {
               expr: "datum.log2FoldChange !== 'NA' && datum.pvalue !== 'NA'",
             },
             {
+
               type: 'formula',
               as: 'neglogpvalue',
+              // suggest not use natural log here, and use either LOG2E or LOG10E
               expr: '-(log(datum.pvalue) / LN10)',
             },
             {
@@ -264,13 +276,18 @@ class PlotsAndTablesViewPage extends React.Component {
           orient: 'bottom',
           // tickCount: config.logFoldChangeTickCount
           //  || this.defaultConfig.logFoldChangeTickCount,
-          title: 'log2 fold change',
-          gridColor: { value: config.colGrid },
+          title: { value: config.xaxisText },
+          titleFont: { value: config.masterFont },
+          labelFont: { value: config.masterFont },
+          labelColor: { value: config.masterColour },
+          tickColor: { value: config.masterColour },
+          gridColor: { value: config.masterColour },
           gridOpacity: { value: (config.transGrid / 20) },
           gridWidth: { value: (config.widthGrid / 20) },
           offset: { value: config.axesOffset },
-          titleFontSize: { value: config.axistitlesize },
-          labelFontSize: { value: config.axisticks },
+          titleFontSize: { value: config.axisTitlesize },
+          titleColor: { value: config.masterColour },
+          labelFontSize: { value: config.axisTicks },
           domainWidth: { value: config.lineWidth },
         },
         {
@@ -281,13 +298,18 @@ class PlotsAndTablesViewPage extends React.Component {
           // tickCount: config.negativeLogpValueTickCount
           //  || this.defaultConfig.negativeLogpValueTickCount,
           titlePadding: 5,
-          gridColor: { value: config.colGrid },
+          gridColor: { value: config.masterColour },
           gridOpacity: { value: (config.transGrid / 20) },
           gridWidth: { value: (config.widthGrid / 20) },
+          tickColor: { value: config.masterColour },
           offset: { value: config.axesOffset },
-          title: '-log10(pvalue)',
-          titleFontSize: { value: config.axistitlesize },
-          labelFontSize: { value: config.axisticks },
+          title: { value: config.yaxisText },
+          titleFont: { value: config.masterFont },
+          labelFont: { value: config.masterFont },
+          labelColor: { value: config.masterColour },
+          titleFontSize: { value: config.axisTitlesize },
+          titleColor: { value: config.masterColour },
+          labelFontSize: { value: config.axisTicks },
           domainWidth: { value: config.lineWidth },
 
         },
@@ -296,7 +318,9 @@ class PlotsAndTablesViewPage extends React.Component {
       title:
       {
         text: { value: config.titleText },
+        color: { value: config.masterColour },
         anchor: { value: config.titleAnchor },
+        font: { value: config.masterFont },
         dx: 10,
         fontSize: { value: config.titleSize },
       },
@@ -312,8 +336,8 @@ class PlotsAndTablesViewPage extends React.Component {
             enter: {
               x: { scale: 'x', field: 'log2FoldChange' },
               y: { scale: 'y', field: 'neglogpvalue' },
-              size: { value: config.pointsize },
-              shape: { value: config.pointstyle },
+              size: { value: config.pointSize },
+              shape: { value: config.pointStyle },
               strokeWidth: { value: 1 },
               strokeOpacity: { value: config.strokeOpa },
               stroke: {
@@ -328,6 +352,7 @@ class PlotsAndTablesViewPage extends React.Component {
             },
           },
         },
+
 
         {
           type: 'rule',
@@ -390,20 +415,7 @@ class PlotsAndTablesViewPage extends React.Component {
           },
         },
       ],
-      // legends: [
-      //  {
-      //    fill: 'color',
-      //    title: 'Colour Schema',
-      //    orient: 'top-left',
-      //    padding: 10,
-      // legendX: (config.width || this.defaultConfig.width) + 20,
-      // legendX: 600,
-      // encode: {
-      // symbols: { "enter": { "fillOpacity": { "value": 0.5 } } },
-      // labels: { "update": { "text": { "field": "value" } } }
-      //  },
-
-      //  ],
+      legends: config.legend,
     };
   }
 
@@ -492,9 +504,30 @@ class PlotsAndTablesViewPage extends React.Component {
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
                   />
+                  <Collapse>
+                    <Panel header='Colour Options' key='5'>
+                      <MarkersEditor
+                        config={config}
+                        onUpdate={this.updatePlotWithChanges}
+                      />
+                    </Panel>
+                  </Collapse>
                 </Panel>
-                <Panel header='Colour Options' key='5'>
-                  <MarkersEditor
+
+                <Panel header='Font' key='9'>
+                  <FontDesign
+                    config={config}
+                    onUpdate={this.updatePlotWithChanges}
+                  />
+                </Panel>
+                <Panel header='Colour Inversion' key='10'>
+                  <ColourInversion
+                    config={config}
+                    onUpdate={this.updatePlotWithChanges}
+                  />
+                </Panel>
+                <Panel header='Legend' key='11'>
+                  <LegendEditor
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
                   />
