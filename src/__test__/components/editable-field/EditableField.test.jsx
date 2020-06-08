@@ -10,63 +10,145 @@ import EditableField from '../../../components/editable-field/EditableField';
 describe('EditableField', () => {
   configure({ adapter: new Adapter() });
   test('renders correctly', () => {
-    const component = mount(<EditableField children='Cluster X' defaultText='Some default text' />);
-    const popover = component.find('Popover');
-    const buttons = popover.find('Button');
-    const popoverContent = popover.getElement().props.content;
+    const component = mount(<EditableField value='Cluster X' />);
+    const buttons = component.find('Button');
 
-    expect(component.getElement().props.children).toEqual('Cluster X');
-    expect(popover.length).toEqual(1);
-    expect(popoverContent.type.name).toEqual('EditablePopoverContent');
-    expect(popoverContent.props.defaultText).toEqual('Some default text');
+    expect(component.getElement().props.value).toEqual('Cluster X');
     expect(buttons.length).toEqual(2);
   });
 
-  test('The user can edit the editable field', () => {
+  test('The user can toggle between editing mode and non-editing mode', () => {
     const mockOnEdit = jest.fn();
-    const component = shallow(<EditableField children='Cluster X' defaultText='Some default text' onEdit={mockOnEdit} />);
+    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
 
-    expect(component.find('Popover').getElement().props.visible).toEqual(false);
+    // No input should show now.
+    let input = component.find('Input');
+    expect(input.length).toEqual(0);
 
     // click the edit button
-    component.find('Popover Button').at(0).simulate('click');
+    component.find('Button').at(0).simulate('click');
     component.update();
-    expect(component.find('Popover').getElement().props.visible).toEqual(true);
 
-    // close the popover with new text
-    component.find('Popover').getElement().props.content.props.onDone('updated text');
+    // There should be an input now.
+    input = component.find('Input');
+    expect(input.length).toEqual(1);
+
+    // It should be in focus
+    expect(input.getElement().props.autoFocus).toEqual(true);
+
+    // There should also be three buttons now.
+    expect(component.find('Button').length).toEqual(3);
+
+    // The user can click the cancel button.
+    component.find('Button').at(1).simulate('click');
     component.update();
-    expect(component.find('Popover').getElement().props.visible).toEqual(false);
-    expect(mockOnEdit).toHaveBeenCalledTimes(1);
-    expect(mockOnEdit).toHaveBeenCalledWith('updated text');
-  });
 
-  test('When user is done with editing and the text is the same, the text stays the same', () => {
-    const mockOnEdit = jest.fn();
-    const component = shallow(<EditableField children='Cluster X' defaultText='Some default text' onEdit={mockOnEdit} />);
-    expect(component.find('Popover').getElement().props.visible).toEqual(false);
+    // The input should be gone.
+    input = component.find('Input');
+    expect(input.length).toEqual(0);
 
-    // click the edit button
-    component.find('Popover Button').at(0).simulate('click');
-    component.update();
-    expect(component.find('Popover').getElement().props.visible).toEqual(true);
-
-    const popoverContent = shallow(component.find('Popover').props().content);
-    popoverContent.find('Button').at(1).simulate('click');
-    component.update();
-    expect(component.find('Popover').getElement().props.visible).toEqual(false);
+    // onEdit should not have been called.
     expect(mockOnEdit).toHaveBeenCalledTimes(0);
   });
 
-  test('When delete button is selected, delete function gets triggered', () => {
-    const mockOnDelete = jest.fn();
-    const component = shallow(<EditableField children='Cluster X' defaultText='Some default text' onDelete={mockOnDelete} />);
-    expect(component.find('Popover').getElement().props.visible).toEqual(false);
+  test('Editable field updates changed text on clicking save', () => {
+    const mockOnEdit = jest.fn();
+    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
 
-    // click the delete button
-    component.find('Popover Button').at(1).simulate('click');
+    // click the edit button
+    component.find('Button').at(0).simulate('click');
     component.update();
-    expect(component.find('Popover').getElement().props.visible).toEqual(false);
+
+    // Edit the input
+    component.find('Input').simulate('change', { target: { value: 'new name' } });
+
+    // Click save
+    component.find('Button').at(0).simulate('click');
+    component.update();
+
+    // No input should show
+    expect(component.find('Input').length).toEqual(0);
+
+    // onEdit should have been called with new data
+    expect(mockOnEdit).toHaveBeenCalledTimes(1);
+    expect(mockOnEdit).toHaveBeenCalledWith('new name');
+  });
+
+  test('Editable field updates changed text on pressing Enter', () => {
+    const mockOnEdit = jest.fn();
+    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
+
+    // click the edit button
+    component.find('Button').at(0).simulate('click');
+    component.update();
+
+    // Edit the input
+    component.find('Input').simulate('change', { target: { value: 'new name' } });
+
+    // Hit enter
+    component.find('Input').simulate('keydown', { key: 'Enter' });
+
+    // No input should show
+    expect(component.find('Input').length).toEqual(0);
+
+    // onEdit should have been called with new data
+    expect(mockOnEdit).toHaveBeenCalledTimes(1);
+    expect(mockOnEdit).toHaveBeenCalledWith('new name');
+  });
+
+  test('Editable field does not update changed text on cancel', () => {
+    const mockOnEdit = jest.fn();
+    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
+
+    // click the edit button
+    component.find('Button').at(0).simulate('click');
+    component.update();
+
+    // Edit the input
+    component.find('Input').simulate('change', { target: { value: 'new name' } });
+
+    // Click cancel
+    component.find('Button').at(1).simulate('click');
+    component.update();
+
+    // No input should show
+    expect(component.find('Input').length).toEqual(0);
+
+    // onEdit should not have been called
+    expect(mockOnEdit).toHaveBeenCalledTimes(0);
+  });
+
+  test('Editable field does not update changed text on hitting escape', () => {
+    const mockOnEdit = jest.fn();
+    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
+
+    // click the edit button
+    component.find('Button').at(0).simulate('click');
+    component.update();
+
+    // Edit the input
+    component.find('Input').simulate('change', { target: { value: 'new name' } });
+
+    // Hit escape
+    component.find('Input').simulate('keydown', { key: 'Escape' });
+
+    // No input should show
+    expect(component.find('Input').length).toEqual(0);
+
+    // onEdit should not have been called
+    expect(mockOnEdit).toHaveBeenCalledTimes(0);
+  });
+
+  test('The onDelete callback should trigger on delete.', () => {
+    const mockOnDelete = jest.fn();
+
+    const component = shallow(<EditableField value='Cluster X' onDelete={mockOnDelete} />);
+
+    // Click delete button.
+    component.find('Button').at(1).simulate('click');
+    component.update();
+
+    // The callback should have been called
     expect(mockOnDelete).toHaveBeenCalledTimes(1);
   });
 });

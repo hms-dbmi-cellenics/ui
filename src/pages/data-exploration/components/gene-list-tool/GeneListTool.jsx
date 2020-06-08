@@ -72,7 +72,7 @@ const GeneListTool = (props) => {
   ];
 
   const handleTableChange = (newPagination, _, newSorter) => {
-    const newTableState = { pagination: newPagination, sorter: { newSorter }, geneNamesFilter };
+    const newTableState = { pagination: newPagination, sorter: { ...newSorter }, geneNamesFilter };
     dispatch(updateGeneList(experimentID, newTableState));
   };
 
