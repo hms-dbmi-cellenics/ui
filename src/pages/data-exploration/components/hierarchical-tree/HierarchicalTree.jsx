@@ -212,7 +212,6 @@ const HierarchicalTree = (props) => {
   const renderEditableField = (modified) => (
     <>
       <EditableField
-        defaultText={modified.name}
         onEdit={(e) => {
           const newState = updateTree(treeData, modified.key, { name: e });
           props.onTreeUpdate(newState);
@@ -221,9 +220,8 @@ const HierarchicalTree = (props) => {
           const newState = filterTree(treeData, modified);
           props.onTreeUpdate(newState);
         }}
-      >
-        {modified.name}
-      </EditableField>
+        value={modified.name}
+      />
     </>
   );
 

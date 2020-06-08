@@ -22,9 +22,8 @@ const ClusterPopover = (props) => {
             setClusterName(e);
           }}
           showDelete={false}
-        >
-          {clusterName}
-        </EditableField>
+          value={clusterName}
+        />
         <ColorPicker
           color={clusterColor}
           onColorChange={((e) => {
