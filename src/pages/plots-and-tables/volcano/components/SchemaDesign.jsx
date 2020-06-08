@@ -7,10 +7,12 @@ import {
 
 const SchemaDesign = (props) => {
   const { onUpdate } = props;
+
   const [maxnlpValueDomain, setMaxNlpValueDomain] = useState(null);
   const [log2FoldChangeDomain, setLog2FoldChangeDomain] = useState(null);
   const [maxNlpValueDomainInputEnabled, setMaxNlpValueDomainInputEnabled] = useState(false);
   const [log2FoldChangeDomainInputEnabled, setLog2FoldChangeDomainInputEnabled] = useState(false);
+
 
   return (
     <>
