@@ -9,7 +9,7 @@ import GeneListTool from './components/gene-list-tool/GeneListTool';
 import DraggableList from '../../components/draggable-list/DraggableList';
 
 import Embedding from './components/embedding/Embedding';
-import HeatmapPlot from './components/HeatmapPlot';
+import HeatmapPlot from './components/heatmap/HeatmapPlot';
 import SearchMenu from '../../components/search-menu/SearchMenu';
 
 class ExplorationViewPage extends React.Component {
@@ -53,7 +53,7 @@ class ExplorationViewPage extends React.Component {
 
     this.state = {
       openedTools: [this.tools[0]],
-      openedPlots: [this.plots[0]],
+      openedPlots: [this.plots[0], this.plots[1]],
     };
 
     this.openTool = this.openTool.bind(this);
@@ -159,8 +159,6 @@ class ExplorationViewPage extends React.Component {
         <Row gutter={16}>
           <Col span={16}>
             <Space direction='vertical' style={{ width: '100%' }}>
-              {/* my url:
-            {process.env.REACT_APP_API_URL} */}
               {searchMenuPlots}
               {this.renderPlots()}
             </Space>
