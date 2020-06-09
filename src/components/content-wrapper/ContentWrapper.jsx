@@ -2,9 +2,8 @@ import React from 'react';
 import {
   Layout, Menu,
 } from 'antd';
+import Link from 'next/link';
 import {
-  HomeOutlined,
-  SettingOutlined,
   DatabaseOutlined,
   FundViewOutlined,
   BuildOutlined,
@@ -41,61 +40,48 @@ class ContentWrapper extends React.Component {
           collapsed={collapsed}
           onCollapse={this.onCollapse}
         >
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            justifyContent: 'space-between',
-          }}
-          >
-            <Menu theme='dark' defaultSelectedKeys={['1']} mode='inline'>
-              <Menu.Item disabled>
-                <svg width='125px' height='45px' viewBox='0 0 1968 448'>
-                  <g id='Page-1' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
-                    <g id='Group'>
-                      <g id='Product-logo' fill='#ffffff'>
-                        <rect id='Rectangle' x='320' y='384' width='64' height='64' />
-                        <rect id='Rectangle' x='0' y='0' width='192' height='64' />
-                        <rect id='Rectangle' x='0' y='384' width='192' height='64' />
-                        <rect id='Rectangle' x='64' y='64' width='64' height='320' />
-                        <rect id='Rectangle' x='256' y='0' width='64' height='384' />
-                        <rect id='Rectangle' x='384' y='0' width='64' height='384' />
-                      </g>
+          <Menu theme='dark' defaultSelectedKeys={['3']} mode='inline'>
+            <Menu.Item disabled key='0'>
+              <svg width='125px' height='45px' viewBox='0 0 1968 448'>
+                <g id='Page-1' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                  <g id='Group'>
+                    <g id='Product-logo' fill='#ffffff'>
+                      <rect id='Rectangle' x='320' y='384' width='64' height='64' />
+                      <rect id='Rectangle' x='0' y='0' width='192' height='64' />
+                      <rect id='Rectangle' x='0' y='384' width='192' height='64' />
+                      <rect id='Rectangle' x='64' y='64' width='64' height='320' />
+                      <rect id='Rectangle' x='256' y='0' width='64' height='384' />
+                      <rect id='Rectangle' x='384' y='0' width='64' height='384' />
                     </g>
                   </g>
-                </svg>
-              </Menu.Item>
-
-              <Menu.Item disabled>
-                <BarsOutlined />
-                <span>TGFB-1 hyperplasia experiment</span>
-              </Menu.Item>
-              <Menu.Item key='1'>
-                <HomeOutlined />
-                <span>Home</span>
-              </Menu.Item>
-              <Menu.Item key='2'>
-                <BuildOutlined />
-                <span>Processing</span>
-              </Menu.Item>
-              <Menu.Item key='3'>
-                <FundViewOutlined />
-                <span>Data Exploration</span>
-              </Menu.Item>
-              <Menu.Item key='4'>
-                <DatabaseOutlined />
-                <span>Plots and tables</span>
-              </Menu.Item>
-              <Menu.Item key='5'>
-                <SettingOutlined />
-                <span>Settings</span>
-              </Menu.Item>
-            </Menu>
-            <Menu
-              theme='dark'
-              mode='inline'
-            />
-          </div>
+                </g>
+              </svg>
+            </Menu.Item>
+            <Menu.Item disabled key='1'>
+              <BarsOutlined />
+              <span> PBMC Dataset Experiment</span>
+            </Menu.Item>
+            <Menu.Item key='2'>
+              <BuildOutlined />
+              <span>Data Processing</span>
+            </Menu.Item>
+            <Menu.Item key='3'>
+              <Link href='/data-exploration' passHref>
+                <div>
+                  <FundViewOutlined />
+                  <span>Data Exploration</span>
+                </div>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key='4'>
+              <Link href='/plots-and-tables/volcano' passHref>
+                <div>
+                  <DatabaseOutlined />
+                  <span> Plots and Tables </span>
+                </div>
+              </Link>
+            </Menu.Item>
+          </Menu>
         </Sider>
         <Layout>
           <Content style={{ margin: '8px 32px' }}>
