@@ -38,3 +38,6 @@ __MACOSX
 # custom
 .next
 out/
+
+# packages
+packages-lock.json
