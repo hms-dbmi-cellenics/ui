@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 import {
@@ -19,7 +18,7 @@ import SchemaDesign from './components/SchemaDesign';
 import AxesDesign from './components/AxesDesign';
 import FontDesign from './components/FontDesign';
 import ColourInversion from './components/ColourInversion';
-import LegendEditor from './components/LegendEditor';
+import LegendEditor from '../components/LegendEditor';
 
 const { Panel } = Collapse;
 
@@ -74,6 +73,7 @@ class PlotsAndTablesViewPage extends React.Component {
       strokeOpa: 1,
       strokeCol: '#000000',
       legend: null,
+      legendEnabled: null,
       axisTitlesize: 13,
       axisTicks: 13,
       colGrid: '#000000',
@@ -91,6 +91,7 @@ class PlotsAndTablesViewPage extends React.Component {
       masterFont: 'sans-serif',
       masterColour: '#000000',
       toggleInvert: '#FFFFFF',
+      reverseCbar: false,
     };
 
     this.state = {
@@ -147,8 +148,6 @@ class PlotsAndTablesViewPage extends React.Component {
       } else {
         status = '6_noDifference';
       }
-
-      // eslint-disable-next-line no-param-reassign
       datum.status = status;
 
       return datum;
@@ -176,9 +175,14 @@ class PlotsAndTablesViewPage extends React.Component {
       ? config.pvalueThresholdColor
       : '#ffffff00';
 
-
-    // if (config.toggleInvert === '#FFFFFF' ? config.masterColour === '#000000' : config.masterColour === '#FFFFFF');
-
+    if (config.toggleInvert === '#000000') {
+      config.reverseCbar = true;
+      config.masterColour = '#FFFFFF';
+    }
+    if (config.toggleInvert === '#FFFFFF') {
+      config.reverseCbar = false;
+      config.masterColour = '#000000';
+    }
     // Domain specifiers for the volcano plot axes.
     // If a logFoldChangeDomain is defined by the user (e.g. through the
     // interface by deselecting Auto and entering a custom value), use
@@ -191,6 +195,44 @@ class PlotsAndTablesViewPage extends React.Component {
     const maxNegativeLogpValueDomain = config.maxNegativeLogpValueDomain
       ? [0, config.maxNegativeLogpValueDomain]
       : { data: 'differentialExpression', field: 'neglogpvalue' };
+    if (config.legendEnabled) {
+      config.legend = [
+        {
+          fill: 'color',
+          encode: {
+            title: {
+              update: {
+                fontSize: { value: 14 },
+              },
+            },
+            labels: {
+              interactive: true,
+              update: {
+                fontSize: { value: 12 },
+                fill: { value: config.masterColour },
+              },
+              hover: {
+                fill: { value: 'firebrick' },
+              },
+            },
+            symbols: {
+              update: {
+                stroke: { value: 'transparent' },
+              },
+            },
+            legend: {
+              update: {
+                stroke: { value: '#ccc' },
+                strokeWidth: { value: 1.5 },
+              },
+            },
+          },
+        },
+      ];
+    }
+    else {
+      config.legend = null;
+    }
 
     return {
       $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -209,6 +251,7 @@ class PlotsAndTablesViewPage extends React.Component {
               type: 'filter',
               expr: "datum.log2FoldChange !== 'NA' && datum.pvalue !== 'NA'",
             },
+
             {
 
               type: 'formula',
@@ -226,10 +269,21 @@ class PlotsAndTablesViewPage extends React.Component {
             },
           ],
         },
+        {
+          name: 'dex2',
+          source: 'differentialExpression',
+          transform: [
+            {
+              type: 'filter',
+              expr: "datum.log2FoldChange !== 'NA' && datum.pvalue < 1e-11",
+            }],
+        },
+
       ],
 
 
       scales: [
+
         {
           name: 'x',
           type: 'linear',
@@ -263,6 +317,8 @@ class PlotsAndTablesViewPage extends React.Component {
             data: 'differentialExpression',
             field: 'status',
             sort: true,
+            reverse: config.reverseCbar,
+
           },
         },
 
@@ -274,8 +330,6 @@ class PlotsAndTablesViewPage extends React.Component {
           grid: true,
           domain: true,
           orient: 'bottom',
-          // tickCount: config.logFoldChangeTickCount
-          //  || this.defaultConfig.logFoldChangeTickCount,
           title: { value: config.xaxisText },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
@@ -295,8 +349,6 @@ class PlotsAndTablesViewPage extends React.Component {
           grid: true,
           domain: true,
           orient: 'left',
-          // tickCount: config.negativeLogpValueTickCount
-          //  || this.defaultConfig.negativeLogpValueTickCount,
           titlePadding: 5,
           gridColor: { value: config.masterColour },
           gridOpacity: { value: (config.transGrid / 20) },
@@ -350,6 +402,20 @@ class PlotsAndTablesViewPage extends React.Component {
                 field: 'status',
               },
             },
+          },
+        },
+        {
+          type: 'text',
+          from: { data: 'dex2' },
+          encode: {
+            enter: {
+              x: { scale: 'x', field: 'log2FoldChange' },
+              y: { scale: 'y', field: 'neglogpvalue' },
+              fill: { value: '#000' },
+              text: { field: 'Rownames' },
+            },
+            transform: [
+              { type: 'label', size: ['width', 'height'] }],
           },
         },
 
@@ -491,6 +557,15 @@ class PlotsAndTablesViewPage extends React.Component {
                       />
                     </Panel>
                   </Collapse>
+                  <Collapse>
+                    <Panel header='Font' key='9'>
+                      <FontDesign
+                        config={config}
+                        onUpdate={this.updatePlotWithChanges}
+                      />
+                    </Panel>
+
+                  </Collapse>
                 </Panel>
 
                 <Panel header='Axes and Margins' key='3'>
@@ -499,11 +574,7 @@ class PlotsAndTablesViewPage extends React.Component {
                     onUpdate={this.updatePlotWithChanges}
                   />
                 </Panel>
-                <Panel header='Markers' key='4'>
-                  <PointDesign
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
+                <Panel header='Colours' key='10'>
                   <Collapse>
                     <Panel header='Colour Options' key='5'>
                       <MarkersEditor
@@ -512,20 +583,21 @@ class PlotsAndTablesViewPage extends React.Component {
                       />
                     </Panel>
                   </Collapse>
-                </Panel>
-
-                <Panel header='Font' key='9'>
-                  <FontDesign
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                </Panel>
-                <Panel header='Colour Inversion' key='10'>
                   <ColourInversion
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
                   />
+
                 </Panel>
+                <Panel header='Markers' key='4'>
+                  <PointDesign
+                    config={config}
+                    onUpdate={this.updatePlotWithChanges}
+                  />
+
+                </Panel>
+
+
                 <Panel header='Legend' key='11'>
                   <LegendEditor
                     config={config}

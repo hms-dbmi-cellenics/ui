@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -50,7 +49,7 @@ const ColorBrowser = (props) => {
   return (
     <Select
       value='Browse ...'
-      style={{ width: 350 }}
+      style={{ width: 150 }}
       onChange={(e) => console.log('I changed: ', e)}
       open={colorPickerOpen}
       onFocus={() => setColorPickerOpen(true)}

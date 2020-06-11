@@ -38,13 +38,6 @@ const InvertColours = (props) => {
           <Radio value='#000000'>Invert</Radio>
         </Radio.Group>
       </Form.Item>
-      <div>Axes and Titles</div>
-      <Form.Item>
-        <Radio.Group onChange={onAddChange} value={toggleAddInvert}>
-          <Radio value='#000000'>Standard</Radio>
-          <Radio value='#FFFFFF'>Invert</Radio>
-        </Radio.Group>
-      </Form.Item>
     </Form>
   );
 };
