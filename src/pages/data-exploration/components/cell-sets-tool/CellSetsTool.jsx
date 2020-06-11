@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
@@ -10,8 +10,6 @@ import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import { loadCellSets, updateCellSets, cellSetsColor } from '../../../../redux/actions';
 
 
-let checkedKeys = [];
-
 const CellSetsTool = (props) => {
   const { experimentID } = props;
   const dispatch = useDispatch();
@@ -19,11 +17,13 @@ const CellSetsTool = (props) => {
     dispatch(loadCellSets(experimentID));
   });
 
+  const [checkedKeys, setCheckedKeys] = useState([]);
+
   const data = useSelector((state) => state.cellSets.data);
 
-  const getChangedData = (keys) => {
+  const composeColorData = (keys, treeState) => {
     const colorData = [];
-    data.forEach((cellSet) => {
+    treeState.forEach((cellSet) => {
       if (cellSet.children) {
         cellSet.children.forEach((child) => {
           if (keys.includes(child.key)) {
@@ -43,18 +43,25 @@ const CellSetsTool = (props) => {
     return colorData;
   };
 
-  const updateCellSetsColors = (keys) => {
-    const colorData = getChangedData(keys);
+  const updateCellSetsColors = (keys, treeState) => {
+    const colorData = composeColorData(keys, treeState || data);
     dispatch(cellSetsColor(colorData));
   };
 
   const onTreeUpdate = (newState) => {
+    // First, make sure tree updates are sent.
     dispatch(updateCellSets(newState));
-    updateCellSetsColors(checkedKeys);
+
+    /* In the meantime, update the colors
+     * according to the new state. This should make sure that
+     * only cells that are currently selected get drawn,
+     * and that deleted cell sets are not drawn anymore.
+     */
+    updateCellSetsColors(checkedKeys, newState);
   };
 
   const onCheck = (keys) => {
-    checkedKeys = keys;
+    setCheckedKeys(keys);
     updateCellSetsColors(keys);
   };
 
