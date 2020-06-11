@@ -1,0 +1,66 @@
+[
+  {
+    "Rownames": "ENSG00000133316",
+    "log2FoldChange": -6.06,
+    "pvalue": 2.46e-60
+  },
+  {
+    "Rownames": "ENSG00000124208",
+    "log2FoldChange": -12.1,
+    "pvalue": 4.3e-23
+  },
+  {
+    "Rownames": "ENSG00000153162",
+    "log2FoldChange": 3.85,
+    "pvalue": 3.95e-14
+  },
+  {
+    "Rownames": "ENSG00000183775",
+    "log2FoldChange": 2.8,
+    "pvalue": 7.76e-14
+  },
+  {
+    "Rownames": "ENSG00000074803",
+    "log2FoldChange": 3.3,
+    "pvalue": 5.75e-13
+  },
+  {
+    "Rownames": "ENSG00000147485",
+    "log2FoldChange": 3.3,
+    "pvalue": 9.87e-13
+  },
+  {
+    "Rownames": "ENSG00000152822",
+    "log2FoldChange": 3.12,
+    "pvalue": 2.22e-12
+  },
+  {
+    "Rownames": "ENSG00000166148",
+    "log2FoldChange": -2.72,
+    "pvalue": 6.53e-12
+  },
+  {
+    "Rownames": "ENSG00000117115",
+    "log2FoldChange": 2.09,
+    "pvalue": 1.88e-11
+  },
+  {
+    "Rownames": "ENSG00000186715",
+    "log2FoldChange": 2.39,
+    "pvalue": 1.07e-10
+  },
+  {
+    "Rownames": "ENSG00000169347",
+    "log2FoldChange": 2.57,
+    "pvalue": 2.01e-10
+  },
+  {
+    "Rownames": "ENSG00000164007",
+    "log2FoldChange": 2.97,
+    "pvalue": 3.85e-10
+  },
+  {
+    "Rownames": "ENSG00000166106",
+    "log2FoldChange": 2.22,
+    "pvalue": 4.99e-10
+  }]
