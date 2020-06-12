@@ -4,7 +4,7 @@ import {
 } from 'react-redux';
 
 import {
-  Table, Input, Space, Select,
+  Table, Space,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -68,6 +68,7 @@ const GeneListTool = (props) => {
       key: 'dispersions',
       sorter: true,
       sortOrder: getSortOrderIfExists('dispersions'),
+      render: (num) => parseFloat(num.toFixed(3)),
     },
   ];
 

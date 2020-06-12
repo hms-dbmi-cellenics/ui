@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import {
   LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CLUSTER, LOAD_CELLS,
   CELL_SETS_COLOR, UPDATE_GENE_LIST, LOAD_GENE_LIST,
+  LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
 } from '../actions/actionType';
 
 
@@ -49,10 +50,6 @@ const cellsReducer = (state = {}, action) => {
 const geneListReducer = (state = {}, action) => {
   switch (action.type) {
     case LOAD_GENE_LIST:
-      console.log({
-        ...state,
-        loading: true,
-      });
       return {
         ...state,
         loading: true,
@@ -68,9 +65,28 @@ const geneListReducer = (state = {}, action) => {
   }
 };
 
+const diffExprReducer = (state = {}, action) => {
+  switch (action.type) {
+    case LOAD_DIFF_EXPR:
+      return {
+        ...state,
+        loading: true,
+      };
+    case UPDATE_DIFF_EXPR:
+      return {
+        ...state,
+        ...action.data,
+        loading: false,
+      };
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   cellSets: cellSetsReducer,
   cellSetsColor: cellSetsColorReducer,
   cells: cellsReducer,
   geneList: geneListReducer,
+  diffExpr: diffExprReducer,
 });
