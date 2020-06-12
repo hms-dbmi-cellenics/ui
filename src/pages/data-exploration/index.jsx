@@ -6,6 +6,7 @@ import {
 
 import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
 import GeneListTool from './components/gene-list-tool/GeneListTool';
+import DiffExprManager from './components/differential-expression-tool/DiffExprManager';
 import DraggableList from '../../components/draggable-list/DraggableList';
 
 import Embedding from './components/embedding/Embedding';
@@ -34,7 +35,7 @@ class ExplorationViewPage extends React.Component {
         name: 'Differential expression (simple)',
         description: 'Find and explore the most characteristic genes in a set of cells.',
         key: '3',
-        renderer: () => <CellSetsTool experimentID={experimentId} />,
+        renderer: () => <DiffExprManager experimentID={experimentId} view='compute' />,
       },
     ];
 
@@ -53,7 +54,7 @@ class ExplorationViewPage extends React.Component {
 
     this.state = {
       openedTools: [this.tools[0]],
-      openedPlots: [this.plots[0], this.plots[1]],
+      openedPlots: [this.plots[0]],
     };
 
     this.openTool = this.openTool.bind(this);
@@ -157,13 +158,13 @@ class ExplorationViewPage extends React.Component {
           </Col>
         </Row>
         <Row gutter={16}>
-          <Col span={16}>
+          <Col span={15}>
             <Space direction='vertical' style={{ width: '100%' }}>
               {searchMenuPlots}
               {this.renderPlots()}
             </Space>
           </Col>
-          <Col span={8}>
+          <Col span={9}>
             <Space direction='vertical' style={{ width: '100%' }}>
               {searchMenuTools}
               {this.renderTools()}

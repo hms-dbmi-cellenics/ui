@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CLUSTER, LOAD_CELLS, CELL_SETS_COLOR,
   UPDATE_GENE_LIST, LOAD_GENE_LIST,
+  LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
 } from './actionType';
 import connectionPromise from '../../utils/socketConnection';
 
@@ -81,7 +82,6 @@ const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
 
     io.on(`WorkResponse-${requestUuid}`, (res) => {
       const embedding = JSON.parse(res.results[0].body);
-      console.log('response! ');
       return dispatch({
         type: LOAD_CELLS,
         data: embedding,
@@ -97,7 +97,6 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
   dispatch({
     type: LOAD_GENE_LIST,
   });
-
   return connectionPromise().then((io) => {
     const requestUuid = uuidv4();
     const { geneList } = getState();
@@ -139,8 +138,6 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
       body,
     };
 
-    console.log('genes body: ', request);
-
     io.emit('WorkRequest', request);
 
     io.on(`WorkResponse-${requestUuid}`, (res) => {
@@ -167,6 +164,71 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
   });
 };
 
+const loadDiffExpr = (
+  experimentId, comparisonType, firstSelectedCluster, secondSelectedCluster,
+) => (dispatch) => {
+  dispatch({
+    type: LOAD_DIFF_EXPR,
+  });
+  return connectionPromise().then((io) => {
+    const ComparisonTypes = {
+      One: 'Versus Rest',
+      Two: 'Across Sets',
+    };
+
+    const requestUuid = uuidv4();
+
+    const body = {
+      name: 'DifferentialExpression',
+      maxNum: 100,
+      cellSet: firstSelectedCluster.key,
+    };
+    if (comparisonType === ComparisonTypes.One) {
+      body.compareWith = 'rest';
+    } else {
+      body.compareWith = secondSelectedCluster.key;
+    }
+
+    const request = {
+      uuid: requestUuid,
+      socketId: io.id,
+      experimentId,
+      timeout: '2021-01-01T00:00:00Z',
+      body,
+    };
+
+    io.emit('WorkRequest', request);
+
+    io.on(`WorkResponse-${requestUuid}`, (res) => {
+      let data = {};
+
+      try {
+        data = JSON.parse(res.results[0].body);
+      } catch (error) {
+        console.error(error);
+        data = { rows: [] };
+      }
+
+      const { rows } = data;
+      const total = rows.length;
+
+      rows.map((row) => {
+        row.key = row.gene_names;
+        return row;
+      });
+
+      return dispatch({
+        type: UPDATE_DIFF_EXPR,
+        data: {
+          allData: rows,
+          total,
+        },
+      });
+    });
+  });
+};
+
 export {
-  loadCellSets, updateCellSets, createCluster, loadCells, cellSetsColor, updateGeneList,
+  loadCellSets, updateCellSets, createCluster, loadCells, cellSetsColor,
+  updateGeneList, loadDiffExpr,
 };

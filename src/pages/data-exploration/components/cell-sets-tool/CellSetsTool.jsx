@@ -15,7 +15,7 @@ const CellSetsTool = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(loadCellSets(experimentID));
-  });
+  }, []);
 
   const [checkedKeys, setCheckedKeys] = useState([]);
 
