@@ -19,7 +19,7 @@ const DiffExprResults = (props) => {
   const defaultState = {
     pagination: {
       current: 1,
-      pageSize: 15,
+      pageSize: 50,
       showSizeChanger: true,
       total,
     },
@@ -118,6 +118,7 @@ const DiffExprResults = (props) => {
         loading={isLoading}
         size='small'
         pagination={tableState?.pagination}
+        scroll={{ x: 200, y: 500 }}
         onChange={handleTableChange}
       />
     </Space>

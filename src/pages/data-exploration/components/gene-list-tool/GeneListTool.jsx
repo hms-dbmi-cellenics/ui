@@ -24,7 +24,7 @@ const GeneListTool = (props) => {
     const defaultState = {
       pagination: {
         current: 1,
-        pageSize: 15,
+        pageSize: 50,
         showSizeChanger: true,
         total: 1,
       },
@@ -93,6 +93,7 @@ const GeneListTool = (props) => {
         size='small'
         pagination={tableState?.pagination}
         sorter={tableState?.sorter}
+        scroll={{ x: 200, y: 500 }}
         onChange={handleTableChange}
       />
     </Space>
