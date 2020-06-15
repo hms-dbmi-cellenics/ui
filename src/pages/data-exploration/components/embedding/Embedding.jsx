@@ -23,7 +23,6 @@ const Embedding = (props) => {
   const { experimentID, embeddingType } = props;
   const uuid = 'my-scatterplot';
   const view = { target: [0, 0, 0], zoom: 0.75 };
-  const mapping = embeddingType.toUpperCase();
   const selectedCellIds = new Set();
   const dispatch = useDispatch();
 
@@ -123,7 +122,7 @@ const Embedding = (props) => {
         uuid={uuid}
         view={view}
         cells={convertCellsData(cells)}
-        mapping={mapping}
+        mapping='PCA'
         selectedCellIds={selectedCellIds}
         cellColors={converColorData()}
         updateStatus={updateStatus}
