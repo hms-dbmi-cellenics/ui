@@ -4,12 +4,14 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Radio, Form, Select, Space,
+  Button, Radio, Form, Select, Typography, Space,
 } from 'antd';
 
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 import { loadCellSets } from '../../../../redux/actions';
+
+const { Text } = Typography;
 
 const { Option } = Select;
 
@@ -197,6 +199,20 @@ const DiffExprCompute = (props) => {
         </Radio.Group>
       </Form.Item>
       {renderClusterSelect()}
+      <p>
+        <Text type='secondary'>
+          Performs a Wilcoxon rank-sum test
+          between two specified cell sets (across sets)
+          or a set and its complement (versus rest).
+          Cite
+          {' '}
+          <a href='https://diffxpy.readthedocs.io/en/latest/api/diffxpy.api.test.pairwise.html'>
+            diffxpy.api.test.pairwise
+          </a>
+          {' '}
+          as appropriate.
+        </Text>
+      </p>
       <Form.Item>
         <Button
           size='small'
@@ -208,7 +224,6 @@ const DiffExprCompute = (props) => {
           )}
         >
           Compute
-
         </Button>
       </Form.Item>
     </Form>
