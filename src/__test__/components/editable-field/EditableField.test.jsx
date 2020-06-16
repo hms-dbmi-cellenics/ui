@@ -1,14 +1,11 @@
-/* eslint-disable react/no-children-prop */
-/* eslint-env jest */
-
 import React from 'react';
 import { shallow, mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import EditableField from '../../../components/editable-field/EditableField';
 
+configure({ adapter: new Adapter() });
 
 describe('EditableField', () => {
-  configure({ adapter: new Adapter() });
   test('renders correctly', () => {
     const component = mount(<EditableField value='Cluster X' />);
     const buttons = component.find('Button');

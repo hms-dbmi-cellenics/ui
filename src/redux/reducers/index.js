@@ -2,10 +2,11 @@
 import { combineReducers } from 'redux';
 import {
   LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CLUSTER, LOAD_CELLS,
-  CELL_SETS_COLOR, UPDATE_GENE_LIST, LOAD_GENE_LIST,
+  CELL_SETS_COLOR, UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES,
+  BUILD_HEATMAP_SPEC, UPDATE_GENE_EXPRESSION, UPDATE_HEATMAP_SPEC,
   LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
 } from '../actions/actionType';
-
+import initialSpec from '../../utils/heatmapSpec';
 
 const cellSetsReducer = (state = {}, action) => {
   switch (action.type) {
@@ -97,10 +98,74 @@ const diffExprReducer = (state = {}, action) => {
   }
 };
 
+const geneSelectReducer = (state = {}, action) => {
+  switch (action.type) {
+    case SELECTED_GENES:
+      return {
+        ...state,
+        newGenesAdded: action.data.newGenesAdded,
+      };
+    default:
+      return state;
+  }
+};
+
+const heatmapSpecReducer = (state = {}, action) => {
+  switch (action.type) {
+    case BUILD_HEATMAP_SPEC:
+      initialSpec.data[0].values = action.data.geneExperessionData
+        ? action.data.geneExperessionData.cells : [];
+      initialSpec.data[1].values = action.data.geneExperessionData
+        ? action.data.geneExperessionData.data : [];
+      return {
+        ...state,
+        ...initialSpec,
+      };
+    case UPDATE_HEATMAP_SPEC:
+      if (action.data.rendering) {
+        initialSpec.data[1].values = action.data.genes;
+        return {
+          ...state,
+          ...initialSpec,
+          rendering: action.data.rendering,
+        };
+      }
+      return {
+        ...state,
+        rendering: action.data.rendering,
+      };
+
+    default:
+      return state;
+  }
+};
+
+const heatmapDataReducer = (state = {}, action) => {
+  switch (action.type) {
+    case UPDATE_GENE_EXPRESSION:
+      if (action.data.heatMapData) {
+        return {
+          ...state,
+          ...action.data.heatMapData,
+          isLoading: action.data.isLoading,
+        };
+      }
+      return {
+        ...state,
+        ...action.data,
+      };
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   cellSets: cellSetsReducer,
   cellSetsColor: cellSetsColorReducer,
   cells: cellsReducer,
   geneList: geneListReducer,
+  selectedGenes: geneSelectReducer,
+  heatmapSpec: heatmapSpecReducer,
+  geneExperessionData: heatmapDataReducer,
   diffExpr: diffExprReducer,
 });

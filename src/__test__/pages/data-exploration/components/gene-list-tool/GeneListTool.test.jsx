@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import React from 'react';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -157,6 +155,7 @@ describe('GeneListTool', () => {
           },
         },
       },
+      selectedGenes: { geneList: {} },
     });
 
     component = mount(
@@ -171,7 +170,7 @@ describe('GeneListTool', () => {
   });
 
   configure({ adapter: new Adapter() });
-  test('renders correctly', () => {
+  it('renders correctly', () => {
     const table = component.find('Table Table');
     const spin = component.find('Table Spin');
     const genesFilter = component.find('FilterGenes');
@@ -204,8 +203,7 @@ describe('GeneListTool', () => {
       order: 'ascend',
     };
 
-    const finished = new Promise((resolve, reject) => {
-    });
+    const finished = new Promise(() => { });
 
     mockOn = jest.fn(async (x, f) => {
       const res = {

@@ -1,12 +1,11 @@
-/* eslint-env jest */
-
 import React from 'react';
 import { shallow, mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import SearchMenu from '../../../components/search-menu/SearchMenu';
 
+configure({ adapter: new Adapter() });
+
 describe('SearchMenu', () => {
-  configure({ adapter: new Adapter() });
   test('renders correctly with no options', () => {
     const options = [{}];
     const component = mount(<SearchMenu options={options} placeholder='Search things' />);

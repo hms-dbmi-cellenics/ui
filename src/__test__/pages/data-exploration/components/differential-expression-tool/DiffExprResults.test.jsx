@@ -1,20 +1,11 @@
-/* eslint-env jest */
-
 import React from 'react';
-import { shallow, mount, configure } from 'enzyme';
+import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import preloadAll from 'jest-next-dynamic';
-import { act } from 'react-dom/test-utils';
-import {
-  Provider,
-} from 'react-redux';
+import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import {
-  Form, Select, Radio, Button,
-} from 'antd';
 import DiffExprResults from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprResults';
-
 
 const mockStore = configureMockStore([thunk]);
 

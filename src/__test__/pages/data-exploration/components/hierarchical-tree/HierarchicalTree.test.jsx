@@ -1,16 +1,14 @@
-/* eslint-env jest */
-
 import React from 'react';
-import { shallow, mount, configure } from 'enzyme';
+import { mount, configure } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import Adapter from 'enzyme-adapter-react-16';
 import HierarchicalTree from '../../../../../pages/data-exploration/components/hierarchical-tree/HierarchicalTree';
 
+configure({ adapter: new Adapter() });
 const mockStore = configureMockStore([]);
 
 describe('HierarchicalTree', () => {
-  configure({ adapter: new Adapter() });
   test('renders correctly', () => {
     const store = mockStore({
       cellSets: {

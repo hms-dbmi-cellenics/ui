@@ -1,12 +1,11 @@
-/* eslint-env jest */
-
 import React from 'react';
 import { shallow, mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import ContentWrapper from '../../../components/content-wrapper/ContentWrapper';
 
+configure({ adapter: new Adapter() });
+
 describe('ColorPicker', () => {
-  configure({ adapter: new Adapter() });
   test('renders correctly', () => {
     const wrapper = mount(<ContentWrapper />);
     const sider = wrapper.find('Sider');

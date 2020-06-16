@@ -1,7 +1,5 @@
-/* eslint-env jest */
-
 import React from 'react';
-import { shallow, mount, configure } from 'enzyme';
+import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import preloadAll from 'jest-next-dynamic';
 import { act } from 'react-dom/test-utils';
@@ -88,8 +86,7 @@ describe('DiffExprManager', () => {
     });
     component.update();
 
-    const finished = new Promise((resolve, reject) => {
-    });
+    const finished = new Promise(() => { });
 
     mockOn = jest.fn(async (x, f) => {
       const res = {

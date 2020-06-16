@@ -10,11 +10,12 @@
   "env": {
     "es6": true,
     "browser": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "rules":{
     "no-console":0,
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["next.config.js"]}],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["next.config.js", "./src/__test__/**"]}],
     "indent": [
       2,
       2,
