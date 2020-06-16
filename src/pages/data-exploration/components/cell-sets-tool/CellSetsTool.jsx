@@ -71,6 +71,7 @@ const CellSetsTool = (props) => {
         <HierarchicalTree
           onCheck={onCheck}
           onTreeUpdate={onTreeUpdate}
+          defaultExpandAll
         />
       );
     }

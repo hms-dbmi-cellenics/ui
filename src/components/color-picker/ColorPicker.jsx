@@ -1,56 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Popover, Button, Tooltip } from 'antd';
-import { CompactPicker } from 'react-color';
+import { SketchPicker } from 'react-color';
 
-class ColorPicker extends React.Component {
-  constructor(props) {
-    super(props);
+const ColorPicker = (props) => {
+  const { color, zIndex, onColorChange } = props;
 
-    const { color } = props;
+  const [colorPicked, setColorPicked] = useState(color);
+  const [visible, setVisible] = useState(false);
 
-    this.state = {
-      colorPicked: color,
-      visible: false,
-    };
+  const onTemporaryColorChange = (newColor) => {
+    const { hex } = newColor;
+    setColorPicked(hex);
+  };
 
-    this.handleColorChange = (newColor) => {
-      const { hex } = newColor;
-      this.setState({ colorPicked: hex, visible: false });
+  const onFinalColorChange = (newColor) => {
+    const { hex } = newColor;
+    setColorPicked(hex);
+    onColorChange(hex);
+  };
 
-      const { onColorChange } = this.props;
-      onColorChange(hex);
-    };
+  const pickerComponent = () => (
+    <SketchPicker
+      color={colorPicked}
+      onChange={onTemporaryColorChange}
+      onChangeComplete={onFinalColorChange}
+    />
+  );
 
-    this.picker = <CompactPicker color={props.color} onChangeComplete={this.handleColorChange} />;
-  }
+  return (
+    <div style={{ zIndex }}>
+      <Popover
+        content={pickerComponent()}
+        placement='bottom'
+        trigger='click'
+        visible={visible}
+        onVisibleChange={(newVisible) => setVisible(newVisible)}
+        destroyTooltipOnHide
+        zIndex={zIndex}
+      >
+        <Button
+          size='small'
+          shape='circle'
+          style={{ backgroundColor: colorPicked }}
+          onClick={(() => setVisible(true))}
+        >
+          <Tooltip placement='bottom' title='Change color' mouseEnterDelay={0} mouseLeaveDelay={0}>
+            <span>&nbsp;</span>
+          </Tooltip>
 
-  render() {
-    const { colorPicked, visible } = this.state;
-    const { zIndex } = this.props;
-    return (
-      <div style={{ zIndex: 1 }}>
-        <Popover content={this.picker} placement='bottom' trigger='click' visible={visible} zIndex={zIndex}>
-          <Button
-            size='small'
-            shape='circle'
-            style={{ backgroundColor: colorPicked }}
-            onClick={(() => this.setState({ visible: true }))}
-          >
-            <Tooltip placement='bottom' title='Change color' mouseEnterDelay={0} mouseLeaveDelay={0}>
-              <span>&nbsp;</span>
-            </Tooltip>
-
-          </Button>
-        </Popover>
-      </div>
-    );
-  }
-}
+        </Button>
+      </Popover>
+    </div>
+  );
+};
 
 ColorPicker.defaultProps = {
   onColorChange: () => null,
-  zIndex: null,
+  zIndex: 1,
 };
 
 ColorPicker.propTypes = {
@@ -58,6 +65,5 @@ ColorPicker.propTypes = {
   onColorChange: PropTypes.func,
   zIndex: PropTypes.number,
 };
-
 
 export default ColorPicker;

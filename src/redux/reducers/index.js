@@ -17,9 +17,23 @@ const cellSetsReducer = (state = {}, action) => {
       return state;
     case CREATE_CLUSTER:
       // for now, if cell set tool is not opened yet, we do nothing on create cell set action
-      // in the future, we will need to handle that case too
-      if (typeof state.data !== 'undefined') {
-        state.data = [...state.data, action.data];
+      // in the future, we will need to handle that case too.
+      if (!state.data) {
+        // Find scratchpad at top level and add the new cluster.
+        // The assignment is necessary because otherwise `useSelector`
+        // won't recognize the changed state and the cell set tool won't rerender.
+
+        state.data = state.data.map((topCategory) => {
+          if (topCategory.key === 'scratchpad') {
+            if (!topCategory.children) {
+              topCategory.children = [];
+            }
+
+            topCategory.children.push(action.data);
+          }
+
+          return topCategory;
+        });
       }
       return state;
     default:
