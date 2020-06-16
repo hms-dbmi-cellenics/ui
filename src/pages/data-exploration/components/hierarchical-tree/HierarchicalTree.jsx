@@ -9,6 +9,10 @@ import EditableField from '../../../../components/editable-field/EditableField';
 import ColorPicker from '../../../../components/color-picker/ColorPicker';
 
 const HierarchicalTree = (props) => {
+  const {
+    onCheck: propOnCheck, onSelect: propOnSelect, onTreeUpdate: propOnTreeUpdate, ...rest
+  } = props;
+
   // eslint-disable-next-line react/destructuring-assignment
   const treeData = useSelector((state) => state.cellSets.data);
 
@@ -18,9 +22,9 @@ const HierarchicalTree = (props) => {
     setAutoExpandParent(false);
   };
 
-  const onCheck = (keys) => { props.onCheck(keys); };
+  const onCheck = (keys) => { propOnCheck(keys); };
 
-  const onSelect = (keys) => { props.onSelect(keys); };
+  const onSelect = (keys) => { propOnSelect(keys); };
 
   const onDrop = (info) => {
     /**
@@ -161,7 +165,7 @@ const HierarchicalTree = (props) => {
     }
 
     if (shouldUpdateState) {
-      props.onTreeUpdate(newTreeData);
+      propOnTreeUpdate(newTreeData);
     }
   };
 
@@ -210,19 +214,22 @@ const HierarchicalTree = (props) => {
   };
 
   const renderEditableField = (modified) => (
-    <>
-      <EditableField
-        onEdit={(e) => {
-          const newState = updateTree(treeData, modified.key, { name: e });
-          props.onTreeUpdate(newState);
-        }}
-        onDelete={() => {
-          const newState = filterTree(treeData, modified);
-          props.onTreeUpdate(newState);
-        }}
-        value={modified.name}
-      />
-    </>
+    <EditableField
+      onEdit={(e) => {
+        const newState = updateTree(treeData, modified.key, { name: e });
+        props.onTreeUpdate(newState);
+      }}
+      onDelete={() => {
+        const newState = filterTree(treeData, modified);
+        props.onTreeUpdate(newState);
+      }}
+      value={modified.name}
+      showEdit={modified.key !== 'scratchpad'}
+      showDelete={modified.key !== 'scratchpad'}
+
+      // Root nodes are rendered in bold.
+      titleRenderFunction={modified.rootNode ? (x) => <strong>{x}</strong> : undefined}
+    />
   );
 
   const renderTitlesRecursive = (source) => {
@@ -259,6 +266,9 @@ const HierarchicalTree = (props) => {
       onSelect={onSelect}
       treeData={treeDataToRender}
       onDrop={onDrop}
+
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...rest}
     />
   );
 };
@@ -267,12 +277,14 @@ HierarchicalTree.defaultProps = {
   onCheck: () => null,
   onSelect: () => null,
   onTreeUpdate: () => null,
+  defaultCheckedKeys: [],
 };
 
 HierarchicalTree.propTypes = {
   onCheck: PropTypes.func,
   onSelect: PropTypes.func,
   onTreeUpdate: PropTypes.func,
+  defaultCheckedKeys: PropTypes.array,
 };
 
 export default HierarchicalTree;

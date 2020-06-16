@@ -16,7 +16,7 @@ const ClusterPopover = (props) => {
 
   const getContent = () => (
     <Space direction='vertical' style={{ width: '100%' }}>
-      <div>
+      <Space>
         <EditableField
           onEdit={(e) => {
             setClusterName(e);
@@ -30,7 +30,7 @@ const ClusterPopover = (props) => {
             setClusterColor(e);
           })}
         />
-      </div>
+      </Space>
       <div>
         <Button
           type='primary'
@@ -56,7 +56,7 @@ const ClusterPopover = (props) => {
 
   return (
     <div style={{ position: 'absolute', left: popoverPosition.x + 20, top: popoverPosition.y + 20 }}>
-      <Popover title='Creating a new cluster' content={content} visible />
+      <Popover title='Add cell set' content={content} visible />
     </div>
   );
 };

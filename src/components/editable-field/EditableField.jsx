@@ -10,7 +10,9 @@ import {
 
 
 const EditableField = (props) => {
-  const { value, showDelete, onEdit } = props;
+  const {
+    value, showDelete, showEdit, onEdit, titleRenderFunction,
+  } = props;
   const [editing, setEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
 
@@ -74,10 +76,15 @@ const EditableField = (props) => {
 
     return (
       <>
-        <span>{editedValue}</span>
-        <Tooltip placement='bottom' title='Edit' mouseLeaveDelay={0}>
-          <Button size='small' shape='circle' icon={<EditOutlined />} onClick={toggleEditing} />
-        </Tooltip>
+        {titleRenderFunction(editedValue)}
+        {
+          showEdit
+            ? (
+              <Tooltip placement='bottom' title='Edit' mouseLeaveDelay={0}>
+                <Button size='small' shape='circle' icon={<EditOutlined />} onClick={toggleEditing} />
+              </Tooltip>
+            ) : <></>
+        }
       </>
     );
   };
@@ -100,7 +107,9 @@ const EditableField = (props) => {
 EditableField.defaultProps = {
   onEdit: () => null,
   onDelete: () => null,
+  titleRenderFunction: (title) => <span>{title}</span>,
   showDelete: true,
+  showEdit: true,
 };
 
 EditableField.propTypes = {
@@ -108,6 +117,8 @@ EditableField.propTypes = {
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
   showDelete: PropTypes.bool,
+  showEdit: PropTypes.bool,
+  titleRenderFunction: PropTypes.func,
 };
 
 export default EditableField;
