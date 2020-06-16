@@ -240,6 +240,7 @@ class PlotsAndTablesViewPage extends React.Component {
               fillOpacity: { value: config.pointOpa / 10 },
             },
           },
+
         },
       ],
       legends: config.legend,

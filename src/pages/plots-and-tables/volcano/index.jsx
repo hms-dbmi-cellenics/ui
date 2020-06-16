@@ -410,7 +410,7 @@ class PlotsAndTablesViewPage extends React.Component {
             enter: {
               x: { scale: 'x', field: 'log2FoldChange' },
               y: { scale: 'y', field: 'neglogpvalue' },
-              fill: { value: '#000' },
+              fill: { value: config.masterColour },
               text: { field: 'Rownames' },
             },
             transform: [
@@ -593,10 +593,7 @@ class PlotsAndTablesViewPage extends React.Component {
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
                   />
-
                 </Panel>
-
-
                 <Panel header='Legend' key='11'>
                   <LegendEditor
                     config={config}
