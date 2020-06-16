@@ -229,8 +229,7 @@ class PlotsAndTablesViewPage extends React.Component {
           },
         },
       ];
-    }
-    else {
+    } else {
       config.legend = null;
     }
 

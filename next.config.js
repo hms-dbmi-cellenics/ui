@@ -2,6 +2,7 @@
 const withLess = require('@zeit/next-less');
 const withCSS = require('@zeit/next-css');
 const withSize = require('next-size');
+const withImages = require('next-images');
 const webpack = require('webpack');
 const lessToJS = require('less-vars-to-js');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -50,7 +51,7 @@ const srcFolder = [
 ];
 
 module.exports = withSize(withCSS(
-  withLess({
+  withLess(withImages({
     lessLoaderOptions: {
       javascriptEnabled: true,
       modifyVars: themeVariables,
@@ -170,5 +171,5 @@ module.exports = withSize(withCSS(
     env: {
       REACT_APP_API_URL: process.env.REACT_APP_API_URL,
     },
-  }),
+  })),
 ));

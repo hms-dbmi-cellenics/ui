@@ -74,7 +74,7 @@ class ContentWrapper extends React.Component {
               </Link>
             </Menu.Item>
             <Menu.Item key='4'>
-              <Link href='/plots-and-tables/volcano' passHref>
+              <Link href='/plots-and-tables' passHref>
                 <div>
                   <DatabaseOutlined />
                   <span> Plots and Tables </span>
