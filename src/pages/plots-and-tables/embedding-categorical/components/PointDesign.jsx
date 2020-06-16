@@ -6,7 +6,6 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 
-
 const PointDesign = (props) => {
   const { onUpdate, config } = props;
 

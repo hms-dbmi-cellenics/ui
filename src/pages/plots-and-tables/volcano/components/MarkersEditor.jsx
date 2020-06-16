@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Form,
+  Form
 } from 'antd';
 
 import ColorBrowser from '../../components/ColorBrowser';
