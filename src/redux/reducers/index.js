@@ -18,7 +18,7 @@ const cellSetsReducer = (state = {}, action) => {
     case CREATE_CLUSTER:
       // for now, if cell set tool is not opened yet, we do nothing on create cell set action
       // in the future, we will need to handle that case too.
-      if (!state.data) {
+      if (state.data) {
         // Find scratchpad at top level and add the new cluster.
         // The assignment is necessary because otherwise `useSelector`
         // won't recognize the changed state and the cell set tool won't rerender.
