@@ -1,13 +1,11 @@
-/* eslint-env jest */
-
 import React from 'react';
-import { shallow, configure, mount } from 'enzyme';
+import { shallow, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import ColorPicker from '../../../components/color-picker/ColorPicker';
 
-describe('ColorPicker', () => {
-  configure({ adapter: new Adapter() });
+configure({ adapter: new Adapter() });
 
+describe('ColorPicker', () => {
   const initialColor = '#ffff00';
   const newColor = '#ff00ff';
 

@@ -9,7 +9,11 @@ import {
 
 import PropTypes from 'prop-types';
 import FilterGenes from './FilterGenes';
-import { updateGeneList } from '../../../../redux/actions';
+import {
+  updateGeneList,
+  updateSelectedGenes,
+  loadGeneExpression,
+} from '../../../../redux/actions';
 
 const GeneListTool = (props) => {
   const { experimentID } = props;
@@ -19,6 +23,8 @@ const GeneListTool = (props) => {
   const rows = useSelector((state) => state.geneList.rows);
   const tableState = useSelector((state) => state.geneList.tableState);
   const [geneNamesFilter, setGeneNamesFilter] = useState(null);
+  const selectedGenes = useSelector((state) => state.selectedGenes);
+  const selectedRowKeys = selectedGenes.geneList ? Object.keys(selectedGenes.geneList) : [];
 
   if (!tableState) {
     const defaultState = {
@@ -78,9 +84,26 @@ const GeneListTool = (props) => {
   };
 
   const filterGenes = (searchPattern) => {
-    const newTableState = { pagination: tableState.pagination, sorter: { ...tableState.sorter }, geneNamesFilter: searchPattern };
+    const newTableState = {
+      pagination: tableState.pagination,
+      sorter: { ...tableState.sorter },
+      geneNamesFilter: searchPattern,
+    };
     dispatch(updateGeneList(experimentID, newTableState));
     setGeneNamesFilter(searchPattern);
+  };
+
+  const rowSelection = {
+    onSelect: (gene, selected) => {
+      dispatch(updateSelectedGenes([gene.key], selected, experimentID));
+      dispatch(loadGeneExpression(experimentID));
+    },
+    onSelectAll: (selected, selectedRows, changeRows) => {
+      const genes = [];
+      changeRows.forEach((row) => genes.push(row.gene_names));
+      dispatch(updateSelectedGenes(genes, selected, experimentID));
+      dispatch(loadGeneExpression(experimentID));
+    },
   };
 
   return (
@@ -95,6 +118,11 @@ const GeneListTool = (props) => {
         sorter={tableState?.sorter}
         scroll={{ x: 200, y: 500 }}
         onChange={handleTableChange}
+        rowSelection={{
+          type: 'checkbox',
+          selectedRowKeys,
+          ...rowSelection,
+        }}
       />
     </Space>
   );

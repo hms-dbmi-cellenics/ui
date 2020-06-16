@@ -1,12 +1,11 @@
-/* eslint-env jest */
-
 import React from 'react';
 import { shallow, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import ClusterPopover from '../../../../../pages/data-exploration/components/embedding/ClusterPopover';
 
+configure({ adapter: new Adapter() });
+
 describe('ClusterPopover', () => {
-  configure({ adapter: new Adapter() });
   test('renders correctly', () => {
     const popoverPosition = { x: 0, y: 0 };
     const component = shallow(<ClusterPopover popoverPosition={popoverPosition} />);
@@ -26,7 +25,9 @@ describe('ClusterPopover', () => {
   test('default cluster name and cluster color get passed in on create', () => {
     const mockCreate = jest.fn();
     const popoverPosition = { x: 0, y: 0 };
-    const component = shallow(<ClusterPopover popoverPosition={popoverPosition} onCreate={mockCreate} />);
+    const component = shallow(
+      <ClusterPopover popoverPosition={popoverPosition} onCreate={mockCreate} />,
+    );
 
     const popoverContent = shallow(component.find('Popover').props().content);
     const createButton = popoverContent.find('Button[type="primary"]');
@@ -39,7 +40,9 @@ describe('ClusterPopover', () => {
   test('updated cluster name and color get passed in on create', () => {
     const mockCreate = jest.fn();
     const popoverPosition = { x: 0, y: 0 };
-    const component = shallow(<ClusterPopover popoverPosition={popoverPosition} onCreate={mockCreate} />);
+    const component = shallow(
+      <ClusterPopover popoverPosition={popoverPosition} onCreate={mockCreate} />,
+    );
 
     let popoverContent = shallow(component.find('Popover').props().content);
     const editableField = popoverContent.find('EditableField');
@@ -60,7 +63,9 @@ describe('ClusterPopover', () => {
     const mockCancel = jest.fn();
     const popoverPosition = { x: 0, y: 0 };
 
-    const component = shallow(<ClusterPopover popoverPosition={popoverPosition} onCancel={mockCancel} />);
+    const component = shallow(
+      <ClusterPopover popoverPosition={popoverPosition} onCancel={mockCancel} />,
+    );
     const popoverContent = shallow(component.find('Popover').props().content);
     const cancelButton = popoverContent.find('Button[type="default"]');
 

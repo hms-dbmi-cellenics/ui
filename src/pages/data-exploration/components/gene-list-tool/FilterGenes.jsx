@@ -33,7 +33,7 @@ const FilterGenes = (props) => {
 
   return (
     <Input.Group compact>
-      <Select defaultValue={selectedOption} size='small' onChange={onSelectedOption}>
+      <Select defaultValue={selectedOption} style={{ width: 120 }} size='small' onChange={onSelectedOption}>
         <Option value='Starts with' size='small'>starts with</Option>
         <Option value='Ends with' size='small'>ends with</Option>
         <Option value='Contains' size='small'>contains</Option>

@@ -37,7 +37,7 @@ const Embedding = (props) => {
     if (!cells) {
       dispatch(loadCells(experimentID, embeddingType));
     }
-  });
+  }, []);
 
   if (!cells) {
     return (<center><Spin size='large' /></center>);

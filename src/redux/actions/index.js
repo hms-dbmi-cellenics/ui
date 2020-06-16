@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuidv4 } from 'uuid';
 import {
-  LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CLUSTER, LOAD_CELLS, CELL_SETS_COLOR,
-  UPDATE_GENE_LIST, LOAD_GENE_LIST,
-  LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
+  LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CLUSTER, CELL_SETS_COLOR,
+  UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES, UPDATE_GENE_EXPRESSION,
+  LOAD_CELLS, BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
 } from './actionType';
 import connectionPromise from '../../utils/socketConnection';
 
@@ -139,7 +139,6 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
     };
 
     io.emit('WorkRequest', request);
-
     io.on(`WorkResponse-${requestUuid}`, (res) => {
       const data = JSON.parse(res.results[0].body);
 
@@ -163,7 +162,6 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
     });
   });
 };
-
 const loadDiffExpr = (
   experimentId, comparisonType, firstSelectedCluster, secondSelectedCluster,
 ) => (dispatch) => {
@@ -228,7 +226,124 @@ const loadDiffExpr = (
   });
 };
 
+const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
+  const { selectedGenes, geneExperessionData } = getState();
+  selectedGenes.geneList = selectedGenes.geneList || {};
+  let newGenesAdded = false;
+  genes.forEach((gene) => {
+    if (selected) {
+      if (!selectedGenes.geneList[gene]) {
+        // This will present a dict of newly selected genes from gene table
+        // { <Gene Name>: <Is the gene experession resolved?> }
+        selectedGenes.geneList[gene] = false;
+        newGenesAdded = true;
+      }
+    } else {
+      delete selectedGenes.geneList[gene];
+      const foundGene = geneExperessionData.data.findIndex((g) => g.geneName === gene);
+      geneExperessionData.data.splice(foundGene, 1);
+    }
+  });
+  dispatch({
+    type: SELECTED_GENES,
+    data: { newGenesAdded },
+  });
+  dispatch({
+    type: UPDATE_HEATMAP_SPEC,
+    data: {
+      genes: geneExperessionData.data,
+      rendering: true,
+    },
+  });
+  setTimeout(() => {
+    // Running this action with a delay to allow rerendering of heatmap
+    dispatch({
+      type: UPDATE_HEATMAP_SPEC,
+      data: { rendering: false },
+    });
+  }, 50);
+};
+
+const loadGeneExpression = (experimentId) => (dispatch, getState) => {
+  const { geneExperessionData } = getState();
+  if (geneExperessionData?.isLoading) {
+    return null;
+  }
+  const { newGenesAdded, geneList } = getState().selectedGenes;
+  const newGeneBatch = [];
+  if (newGenesAdded) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [key, value] of Object.entries(geneList)) {
+      if (!value) {
+        newGeneBatch.push(key);
+        geneList[key] = true;
+      }
+    }
+  }
+  dispatch({
+    type: SELECTED_GENES,
+    data: {
+      newGenesAdded: false,
+    },
+  });
+  if (newGeneBatch.length) {
+    dispatch({
+      type: UPDATE_GENE_EXPRESSION,
+      data: {
+        isLoading: true,
+      },
+    });
+    return connectionPromise().then((io) => {
+      const requestUuid = uuidv4();
+
+      const body = {
+        name: 'GeneExpression',
+        cellSets: 'all',
+        genes: newGeneBatch,
+      };
+
+      const request = {
+        uuid: requestUuid,
+        socketId: io.id,
+        experimentId,
+        timeout: '2021-01-01T00:00:00Z',
+        body,
+      };
+
+      io.emit('WorkRequest', request);
+
+      io.on(`WorkResponse-${requestUuid}`, (res) => {
+        const heatMapData = JSON.parse(res.results[0].body);
+        const { data } = getState().geneExperessionData;
+        if (data) {
+          Array.prototype.push.apply(heatMapData.data, data);
+        }
+        dispatch({
+          type: UPDATE_GENE_EXPRESSION,
+          data: {
+            heatMapData,
+            isLoading: false,
+          },
+        });
+        return dispatch({
+          type: BUILD_HEATMAP_SPEC,
+          data: {
+            geneExperessionData: heatMapData,
+          },
+        });
+      });
+    });
+  }
+};
+
 export {
-  loadCellSets, updateCellSets, createCluster, loadCells, cellSetsColor,
-  updateGeneList, loadDiffExpr,
+  loadCellSets,
+  updateCellSets,
+  createCluster,
+  loadCells,
+  cellSetsColor,
+  updateGeneList,
+  updateSelectedGenes,
+  loadGeneExpression,
+  loadDiffExpr,
 };

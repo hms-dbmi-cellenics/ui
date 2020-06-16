@@ -1,7 +1,5 @@
-/* eslint-env jest */
-
 import React from 'react';
-import { shallow, mount, configure } from 'enzyme';
+import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import DraggableList from '../../../components/draggable-list/DraggableList';
 
@@ -49,55 +47,4 @@ describe('DraggableList', () => {
     expect(renderedPlots.length).toEqual(3);
     expect(collapse.length).toEqual(6);
   });
-
-  // configure({ adapter: new Adapter() });
-  // test('reorders correctly on dragging', () => {
-  //   const plotsBefore = [{
-  //     key: 'item-1',
-  //     name: 'a plot 1',
-  //     renderer: () => (<span>asd 1</span>),
-  //   },
-  //   {
-  //     key: 'item-2',
-  //     name: 'another plot 2',
-  //     renderer: () => (<span>asd 2</span>),
-  //   }];
-
-  //   const dragResult = {
-  //     draggableId: 'item-1',
-  //     source: {
-  //       index: 0,
-  //       droppableId: 'droppable',
-  //     },
-  //     destination: {
-  //       index: 1,
-  //       droppableId: 'droppable',
-  //     },
-  //   };
-
-  //   const plotsAfter = [
-  //     {
-  //       key: 'item-2',
-  //       name: 'another plot 2',
-  //       renderer: () => (<span>asd 2</span>),
-  //     },
-  //     {
-  //       key: 'item-1',
-  //       name: 'a plot 1',
-  //       renderer: () => (<span>asd 1</span>),
-  //     },
-  //   ];
-
-  //   const mockSetState = jest.fn();
-  //   const useStateSpy = jest.spyOn(React, 'useState');
-  //   useStateSpy.mockImplementation((init) => [init, mockSetState]);
-
-  //   debugger;
-
-  //   const component = mount(<DraggableList plots={plotsBefore} />);
-  //   const dragContext = component.find('DragDropContext').getElement();
-  //   const dragEnd = dragContext.props.onDragEnd;
-  //   dragEnd(dragResult);
-  //   expect(mockSetState).toHaveBeenCalledWith(plotsAfter);
-  // });
 });
