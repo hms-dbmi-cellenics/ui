@@ -11,7 +11,7 @@ const { Text } = Typography;
 
 
 const SearchMenu = (props) => {
-  const { options } = props;
+  const { options, onSelect } = props;
   const [filteredOptions, setFilteredOptions] = useState(options);
 
   const search = (text) => {
@@ -34,7 +34,7 @@ const SearchMenu = (props) => {
     <Menu.Item
       key={[key, 'item'].join('-')}
       onClick={() => {
-        props.onSelect(key);
+        onSelect(key);
       }}
     >
       <div>
@@ -83,8 +83,6 @@ SearchMenu.defaultProps = {
 
 SearchMenu.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // this is used, I don't know why lint is still complaining
-  // eslint-disable-next-line react/no-unused-prop-types
   onSelect: PropTypes.func,
   placeholder: PropTypes.string.isRequired,
 };

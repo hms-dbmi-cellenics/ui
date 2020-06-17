@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Collapse } from 'antd';
+import { Collapse, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 
 import styles from './styles.module.css';
@@ -58,13 +58,18 @@ const DraggableList = (props) => {
   };
 
   const renderExtras = (item) => (
-    <CloseOutlined onClick={(event) => {
-      const newItems = items.filter((obj) => obj.key !== item.key);
+    <Button
+      icon={<CloseOutlined />}
+      type='text'
+      size='small'
 
-      setItems(newItems);
-      props.onChange(newItems);
-      event.stopPropagation();
-    }}
+      onClick={(event) => {
+        const newItems = items.filter((obj) => obj.key !== item.key);
+
+        setItems(newItems);
+        props.onChange(newItems);
+        event.stopPropagation();
+      }}
     />
   );
 
