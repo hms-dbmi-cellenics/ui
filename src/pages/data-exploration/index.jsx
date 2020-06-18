@@ -11,6 +11,7 @@ import DraggableList from '../../components/draggable-list/DraggableList';
 
 import Embedding from './components/embedding/Embedding';
 import HeatmapPlot from './components/heatmap/HeatmapPlot';
+import InfoPanel from './components/info-panel/InfoPanel';
 import SearchMenu from '../../components/search-menu/SearchMenu';
 
 class ExplorationViewPage extends React.Component {
@@ -50,11 +51,17 @@ class ExplorationViewPage extends React.Component {
       name: 'Heatmaps',
       description: 'Gain a high-level understanding of expression levels across large groups of genes and cells.',
       renderer: () => <HeatmapPlot />,
+    },
+    {
+      key: 'item-3',
+      name: 'Cell Info',
+      description: 'A Panel to display information about the selected cell',
+      renderer: () => <InfoPanel />,
     }];
 
     this.state = {
       openedTools: [this.tools[0]],
-      openedPlots: [this.plots[0]],
+      openedPlots: [this.plots[2], this.plots[0]],
     };
 
     this.openTool = this.openTool.bind(this);

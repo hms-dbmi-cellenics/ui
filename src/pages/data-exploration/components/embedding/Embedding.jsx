@@ -5,12 +5,18 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  Spin,
-} from 'antd';
+import { Spin } from 'antd';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import { loadCells, createCluster } from '../../../../redux/actions';
+import {
+  convertColorData,
+  convertCellsData,
+  updateCellsHover,
+  updateStatus,
+  updateViewInfo,
+  clearPleaseWait,
+} from '../../../../utils/embeddingPlotHelperFunctions/helpers';
 
 const _ = require('lodash');
 
@@ -32,6 +38,7 @@ const Embedding = (props) => {
 
   const cells = useSelector((state) => state.cells.data);
   const colorData = useSelector((state) => state.cellSetsColor.data);
+  const cellInfo = useSelector((state) => state.cellInfo);
 
   useEffect(() => {
     if (!cells) {
@@ -43,45 +50,10 @@ const Embedding = (props) => {
     return (<center><Spin size='large' /></center>);
   }
 
-  const hexToRgb = (hex) => {
-    if (hex) {
-      return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i,
-        (m, r, g, b) => `#${r}${r}${g}${g}${b}${b}`)
-        .substring(1).match(/.{2}/g)
-        .map((x) => parseInt(x, 16));
-    }
-    return null;
-  };
-
-  const convertCellsData = (results) => {
-    const data = {};
-
-    Object.entries(results).forEach(([key, value]) => {
-      data[key] = {
-        mappings: {
-          PCA: value,
-        },
-      };
-    });
-
-    return data;
-  };
-
-  const converColorData = () => {
-    const colors = {};
-    if (colorData) {
-      colorData.forEach((cellSet) => {
-        const rgbColor = hexToRgb(cellSet.color);
-        if (cellSet.cellIds) {
-          cellSet.cellIds.forEach((cell) => {
-            colors[cell] = rgbColor;
-          });
-        }
-      });
-    }
-
-    return colors;
-  };
+  const cellColors = convertColorData(colorData);
+  if (cellInfo.cellName) {
+    cellColors[cellInfo.cellName] = [30, 30, 30];
+  }
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -92,14 +64,10 @@ const Embedding = (props) => {
     setCreateClusterPopover(false);
   };
 
-  const updateCellsHover = () => { };
   const updateCellsSelection = (selection) => {
     setCreateClusterPopover(true);
     setSelectedIds(selection);
   };
-  const updateStatus = () => { };
-  const updateViewInfo = () => { };
-  const clearPleaseWait = () => { };
 
   const updateCursorPosition = (e) => {
     if (!createClusterPopover) {
@@ -124,7 +92,7 @@ const Embedding = (props) => {
         cells={convertCellsData(cells)}
         mapping='PCA'
         selectedCellIds={selectedCellIds}
-        cellColors={converColorData()}
+        cellColors={cellColors}
         updateStatus={updateStatus}
         updateCellsSelection={updateCellsSelection}
         updateCellsHover={updateCellsHover}

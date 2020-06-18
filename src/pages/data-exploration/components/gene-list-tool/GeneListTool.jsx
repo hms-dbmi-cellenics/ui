@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
-import {
-  useSelector, useDispatch,
-} from 'react-redux';
-
-import {
-  Table, Space,
-} from 'antd';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { Table, Space } from 'antd';
 import PropTypes from 'prop-types';
 import FilterGenes from './FilterGenes';
 import {
