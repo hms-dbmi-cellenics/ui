@@ -16,8 +16,8 @@ const PointDesign = (props) => {
     onUpdate({ pointStyle: e.target.value });
   };
 
-
   return (
+
     <Form
       size='small'
       labelCol={{ span: 12 }}

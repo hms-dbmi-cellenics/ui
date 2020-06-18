@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  PageHeader, Row, Col, Space, Collapse,
+  PageHeader, Row, Col, Space, Collapse, Slider,
 } from 'antd';
 
 import { Vega } from 'react-vega';
@@ -14,11 +14,44 @@ import MarkersEditor from './components/MarkersEditor';
 import PointDesign from './components/PointDesign';
 import TitleDesign from './components/TitleDesign';
 
-import SchemaDesign from './components/SchemaDesign';
+import SchemaDesign from './components/SchemaDesign_2';
 import AxesDesign from './components/AxesDesign';
 import FontDesign from './components/FontDesign';
 import ColourInversion from './components/ColourInversion';
 import LegendEditor from '../components/LegendEditor';
+
+const minmaxData = differentialExpression;
+let maxNegativeLogpValue = 0;
+
+minmaxData.forEach((o) => {
+  Object.keys(o).forEach((k) => {
+    if (k === 'pvalue' && o[k] !== 'NA' && o[k] !== 0) {
+      maxNegativeLogpValue = Math.max(
+        maxNegativeLogpValue, -Math.log10(o[k]),
+      );
+    }
+  });
+});
+
+let l2fcMin = null;
+let l2fcMax = null;
+let xMax = null;
+minmaxData.forEach((o) => {
+  Object.keys(o).forEach((k) => {
+    if (k === 'log2FoldChange' && o[k] !== 'NA' && o[k] !== 1 && o[k] !== 0) {
+      l2fcMin = Math.min(l2fcMin, o[k]);
+      l2fcMax = Math.max(l2fcMax, o[k]);
+    }
+  });
+});
+
+if (Math.abs(l2fcMin) > Math.abs(l2fcMax)) {
+  xMax = Math.abs(l2fcMin);
+} else {
+  xMax = Math.abs(l2fcMax);
+}
+console.log(l2fcMin, l2fcMax);
+
 
 const { Panel } = Collapse;
 
@@ -92,6 +125,7 @@ class PlotsAndTablesViewPage extends React.Component {
       masterColour: '#000000',
       toggleInvert: '#FFFFFF',
       reverseCbar: false,
+      textThresholdValue: maxNegativeLogpValue,
     };
 
     this.state = {
@@ -233,6 +267,11 @@ class PlotsAndTablesViewPage extends React.Component {
       config.legend = null;
     }
 
+    const x = (config.textThresholdValue);
+
+    const textThreshold = ` ${x}`;
+    const textEquation = `datum.log2FoldChange !== 'NA' && datum.neglogpvalue >${textThreshold}`;
+
     return {
       $schema: 'https://vega.github.io/schema/vega/v5.json',
       description: 'A basic scatter plot example depicting automobile statistics.',
@@ -255,7 +294,7 @@ class PlotsAndTablesViewPage extends React.Component {
 
               type: 'formula',
               as: 'neglogpvalue',
-              // suggest not use natural log here, and use either LOG2E or LOG10E
+
               expr: '-(log(datum.pvalue) / LN10)',
             },
             {
@@ -274,7 +313,8 @@ class PlotsAndTablesViewPage extends React.Component {
           transform: [
             {
               type: 'filter',
-              expr: "datum.log2FoldChange !== 'NA' && datum.pvalue < 1e-11",
+              expr: textEquation,
+
             }],
         },
 
@@ -410,6 +450,7 @@ class PlotsAndTablesViewPage extends React.Component {
             enter: {
               x: { scale: 'x', field: 'log2FoldChange' },
               y: { scale: 'y', field: 'neglogpvalue' },
+
               fill: { value: config.masterColour },
               text: { field: 'Rownames' },
             },
@@ -495,6 +536,10 @@ class PlotsAndTablesViewPage extends React.Component {
     });
   }
 
+  handleChange(value) {
+    this.updatePlotWithChanges({ textThresholdValue: value });
+  }
+
   render() {
     const { config } = this.state;
     const data = { differentialExpression: this.generateData() };
@@ -534,6 +579,9 @@ class PlotsAndTablesViewPage extends React.Component {
                       <SchemaDesign
                         config={config}
                         onUpdate={this.updatePlotWithChanges}
+                        xMax={xMax}
+                        yMax={maxNegativeLogpValue + 2}
+                        l2fcMax={l2fcMax}
                       />
                     </Panel>
 
@@ -593,13 +641,27 @@ class PlotsAndTablesViewPage extends React.Component {
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
                   />
+
                 </Panel>
+
+
                 <Panel header='Legend' key='11'>
                   <LegendEditor
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
                   />
                 </Panel>
+                <Panel header='Text' key='12'>
+                  <h1> Display Gene Labels Above (Y-Axis Value) </h1>
+                  <Slider
+
+                    defaultValue={maxNegativeLogpValue}
+                    min={0}
+                    max={maxNegativeLogpValue + 5}
+                    onChange={(val) => this.handleChange(val)}
+                  />
+                </Panel>
+
               </Collapse>
             </Space>
           </Col>

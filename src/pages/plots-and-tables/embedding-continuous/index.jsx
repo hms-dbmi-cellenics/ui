@@ -9,6 +9,7 @@ import { Vega } from 'react-vega';
 import _ from 'lodash';
 import new_basicUMAP from './new_basicUMAP.json';
 
+
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
 import ColourInversion from './components/ColourInversion';
@@ -240,8 +241,8 @@ class PlotsAndTablesViewPage extends React.Component {
               fillOpacity: { value: config.pointOpa / 10 },
             },
           },
+        }, 
 
-        },
       ],
       legends: config.legend,
 

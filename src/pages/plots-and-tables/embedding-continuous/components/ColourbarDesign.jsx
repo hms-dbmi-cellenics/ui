@@ -11,6 +11,7 @@ const ColourbarDesign = (props) => {
   const [radioval, setradioval] = useState(config.colGradient);
 
   const onChange = (e) => {
+    console.log('radio checked', e.target.value);
     setradioval(e.target.value);
     onUpdate({ colGradient: e.target.value });
   };
