@@ -39,6 +39,7 @@ test:
         - yarn.lock
     paths:
       - node_modules/
+  interruptible: true
 
 build:
   stage: build
@@ -69,6 +70,7 @@ build:
     policy: pull
   needs:
     - job: test
+  interruptible: true
 
 include:
   - template: Jobs/Deploy.gitlab-ci.yml
