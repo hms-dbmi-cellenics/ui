@@ -4,6 +4,7 @@ import {
   LOAD_CELL_SETS, UPDATE_CELL_SETS, PUSH_CELL_SETS, CREATE_CLUSTER, CELL_SETS_COLOR,
   UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES, UPDATE_GENE_EXPRESSION,
   LOAD_CELLS, BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
+  UPDATE_CELL_INFO,
 } from './actionType';
 import connectionPromise from '../../utils/socketConnection';
 
@@ -376,6 +377,15 @@ const loadGeneExpression = (experimentId) => (dispatch, getState) => {
   }
 };
 
+const updateCellInfo = (cellData) => (dispatch) => {
+  dispatch({
+    type: UPDATE_CELL_INFO,
+    data: {
+      ...cellData,
+    },
+  });
+};
+
 export {
   loadCellSets,
   updateCellSets,
@@ -387,4 +397,5 @@ export {
   updateSelectedGenes,
   loadGeneExpression,
   loadDiffExpr,
+  updateCellInfo,
 };

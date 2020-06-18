@@ -1,4 +1,4 @@
-import { updateSelectedGenes, loadGeneExpression } from '../../../redux/actions';
+import { updateSelectedGenes, loadGeneExpression, updateCellInfo } from '../../../redux/actions';
 import * as types from '../../../redux/actions/actionType';
 import connectionPromise from '../../../utils/socketConnection';
 
@@ -145,6 +145,29 @@ describe('loadGeneExpression action', () => {
           ],
         },
       },
+    });
+  });
+});
+
+describe('updateCellInfo action', () => {
+  beforeEach(() => {
+    dispatch = jest.fn();
+  });
+  it('Fetch selected gene from API', () => {
+    updateCellInfo({
+      cellName: 'C1',
+      geneName: 'G1',
+      expression: 1,
+    })(dispatch);
+
+    expect(dispatch).toBeCalledTimes(1);
+    expect(dispatch).toBeCalledWith({
+      data: {
+        cellName: 'C1',
+        geneName: 'G1',
+        expression: 1,
+      },
+      type: types.UPDATE_CELL_INFO,
     });
   });
 });

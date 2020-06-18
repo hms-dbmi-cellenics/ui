@@ -39,6 +39,7 @@ describe('Embedding', () => {
           },
         ],
       },
+      cellInfo: {},
     });
 
     component = mount(
