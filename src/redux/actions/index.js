@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuidv4 } from 'uuid';
 import {
-  LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CLUSTER, CELL_SETS_COLOR,
+  LOAD_CELL_SETS, UPDATE_CELL_SETS, PUSH_CELL_SETS, CREATE_CLUSTER, CELL_SETS_COLOR,
   UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES, UPDATE_GENE_EXPRESSION,
   LOAD_CELLS, BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
 } from './actionType';
@@ -17,23 +17,56 @@ const loadCellSets = (experimentId) => (dispatch, getState) => {
   ).then(
     (json) => dispatch({
       type: LOAD_CELL_SETS,
+      experimentId,
       data: json.cellSets,
     }),
-  ).catch((e) => console.log('Error when trying to get cell sets data: ', e));
+  ).catch((e) => console.error('Error when trying to get cell sets data: ', e));
 };
 
-const updateCellSets = (newState) => (dispatch, getState) => {
+const updateCellSets = (experimentId, newState) => (dispatch, getState) => {
   if (getState().cellSets.data === newState) {
     return Promise.resolve();
   }
 
-  return dispatch({
+  dispatch({
     type: UPDATE_CELL_SETS,
+    experimentId,
     data: newState,
   });
+
+  return dispatch(pushCellSets(experimentId));
 };
 
-const createCluster = (cellSetInfo, clusterName, color) => (dispatch) => {
+const pushCellSets = (experimentId) => (dispatch, getState) => {
+  // If no loaded data exists for our cell sets and some event would
+  // trigger a push, we do not want to overwrite our cell sets with
+  // empty data.
+  if (!getState()?.cellSets?.data) {
+    return null;
+  }
+
+  return fetch(
+    `${process.env.REACT_APP_API_URL}/v1/experiments/${experimentId}/cellSets`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        getState().cellSets.data,
+        (k, v) => ((k === 'title') ? undefined : v),
+      ),
+    },
+  ).then(
+    (response) => response.json(),
+  ).then(
+    (json) => dispatch({
+      type: PUSH_CELL_SETS,
+      experimentId,
+      data: json,
+    }),
+  ).catch((e) => console.error('Error when trying to push cell sets to API: ', e));
+};
+
+const createCluster = (experimentId, cellSetInfo, clusterName, color) => (dispatch) => {
   const clusterKey = uuidv4();
   const newCluster = {
     key: clusterKey,
@@ -42,10 +75,13 @@ const createCluster = (cellSetInfo, clusterName, color) => (dispatch) => {
     cellIds: Array.from(cellSetInfo),
   };
 
-  return dispatch({
+  dispatch({
     type: CREATE_CLUSTER,
+    experimentId,
     data: newCluster,
   });
+
+  return dispatch(pushCellSets(experimentId));
 };
 
 const cellSetsColor = (colorData) => (dispatch, getState) => {
@@ -84,6 +120,7 @@ const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
       const embedding = JSON.parse(res.results[0].body);
       return dispatch({
         type: LOAD_CELLS,
+        experimentId,
         data: embedding,
       });
     });
@@ -154,6 +191,7 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
       }
       return dispatch({
         type: UPDATE_GENE_LIST,
+        experimentId,
         data: {
           rows,
           tableState: tableState || geneList.tableState,
@@ -162,6 +200,7 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
     });
   });
 };
+
 const loadDiffExpr = (
   experimentId, comparisonType, firstSelectedCluster, secondSelectedCluster,
 ) => (dispatch) => {
@@ -217,6 +256,7 @@ const loadDiffExpr = (
 
       return dispatch({
         type: UPDATE_DIFF_EXPR,
+        experimentId,
         data: {
           allData: rows,
           total,
@@ -339,6 +379,7 @@ const loadGeneExpression = (experimentId) => (dispatch, getState) => {
 export {
   loadCellSets,
   updateCellSets,
+  pushCellSets,
   createCluster,
   loadCells,
   cellSetsColor,

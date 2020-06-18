@@ -85,7 +85,7 @@ const Embedding = (props) => {
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
-    dispatch(createCluster(selectedIds, clusterName, clusterColor));
+    dispatch(createCluster(experimentID, selectedIds, clusterName, clusterColor));
   };
 
   const onCancelCreateCluster = () => {

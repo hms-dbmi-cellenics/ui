@@ -9,19 +9,20 @@ import {
   Skeleton, Space, Tooltip, Button,
 } from 'antd';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
-import { loadCellSets, updateCellSets, cellSetsColor } from '../../../../redux/actions';
+import {
+  loadCellSets, updateCellSets, cellSetsColor,
+} from '../../../../redux/actions';
 
 
 const CellSetsTool = (props) => {
   const { experimentID } = props;
   const dispatch = useDispatch();
+  const [checkedKeys, setCheckedKeys] = useState([]);
+  const cellSets = useSelector((state) => state.cellSets.data);
+
   useEffect(() => {
     dispatch(loadCellSets(experimentID));
   }, []);
-
-  const [checkedKeys, setCheckedKeys] = useState([]);
-
-  const data = useSelector((state) => state.cellSets.data);
 
   const composeColorData = (keys, treeState) => {
     const colorData = [];
@@ -46,13 +47,13 @@ const CellSetsTool = (props) => {
   };
 
   const updateCellSetsColors = (keys, treeState) => {
-    const colorData = composeColorData(keys, treeState || data);
+    const colorData = composeColorData(keys, treeState || cellSets);
     dispatch(cellSetsColor(colorData));
   };
 
   const onTreeUpdate = (newState) => {
     // First, make sure tree updates are sent.
-    dispatch(updateCellSets(newState));
+    dispatch(updateCellSets(experimentID, newState));
 
     /* In the meantime, update the colors
      * according to the new state. This should make sure that
@@ -68,7 +69,7 @@ const CellSetsTool = (props) => {
   };
 
   const renderHierarchicalTree = () => {
-    if (typeof data !== 'undefined') {
+    if (typeof cellSets !== 'undefined') {
       return (
         <HierarchicalTree
           onCheck={onCheck}
