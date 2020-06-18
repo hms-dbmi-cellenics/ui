@@ -49,6 +49,7 @@ const ColorBrowser = (props) => {
   return (
     <Select
       value='Browse ...'
+
       style={{ width: 300 }}
       onChange={(e) => console.log('I changed: ', e)}
       open={colorPickerOpen}

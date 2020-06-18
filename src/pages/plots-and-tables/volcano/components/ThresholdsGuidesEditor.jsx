@@ -75,7 +75,8 @@ const ThresholdsGuidesEditor = (props) => {
               defaultValue={0.05}
               onPressEnter={(e) => {
                 const value = parseFloat(e.target.value);
-                onUpdate({ pvalueThreshold: value });
+                onUpdate({ pvalueThreshold: value  });
+
               }}
             />
             <Checkbox

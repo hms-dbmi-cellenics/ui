@@ -9,6 +9,7 @@ import { Vega } from 'react-vega';
 import _ from 'lodash';
 import categoricalUMAP from './new_categoricalUMAP.json';
 
+
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourInversion from './components/ColourInversion';
 
@@ -110,6 +111,7 @@ class PlotsAndTablesViewPage extends React.Component {
           fill: 'color',
           rowPadding: 20,
           symbolSize: 200,
+
           encode: {
             title: {
               update: {
@@ -130,7 +132,6 @@ class PlotsAndTablesViewPage extends React.Component {
     } else {
       config.legend = null;
     }
-
     if (config.labelsEnabled) {
       config.labelFill = 'white';
       config.labelOutline = 'black';
@@ -199,8 +200,7 @@ class PlotsAndTablesViewPage extends React.Component {
           zero: true,
           domain: UMAP2Domain,
           range: 'height',
-
-        },
+        },  
         {
           name: 'color',
           type: 'ordinal',
