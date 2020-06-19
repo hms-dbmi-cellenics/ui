@@ -1,11 +1,12 @@
 import socketIOClient from 'socket.io-client';
+import getApiEndpoint from './apiEndpoint';
 
 let io;
 const connectionPromise = () => new Promise((resolve) => {
   if (io && io.connected) {
     resolve(io);
   } else {
-    io = socketIOClient(process.env.REACT_APP_API_URL);
+    io = socketIOClient(getApiEndpoint());
     io.on('connect', () => {
       resolve(io);
     });
