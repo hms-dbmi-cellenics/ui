@@ -8,13 +8,6 @@ import {
 const pointdesign = (props) => {
   const { onUpdate, config } = props;
 
-  const [radioval, setradioval] = useState(config.pointStyle);
-
-  const onChange = (e) => {
-    setradioval(e.target.value);
-    onUpdate({ pointStyle: e.target.value });
-  };
-
 
   return (
     <>

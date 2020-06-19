@@ -52,14 +52,14 @@ class PlotsTablesHome extends React.Component {
         name: 'Embedding with cluster labels',
         image: embeddingCont,
         key: 'embedding-cont-key',
-        link: '/plots-and-tables/embedding-continuous',
+        link: '/plots-and-tables/embedding-categorical',
         description: 'Last modified: 2nd June 20:20',
       },
       {
         name: 'Embedding with gene expression',
         image: embeddingCat,
         key: 'embedding-cat-key',
-        link: '/plots-and-tables/embedding-categorical',
+        link: '/plots-and-tables/embedding-continuous',
         description: 'Last modified: 2nd June 20:20',
       },
       {
