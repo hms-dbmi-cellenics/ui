@@ -11,7 +11,6 @@ const PointDesign = (props) => {
   const [radioval, setradioval] = useState(config.pointStyle);
 
   const onChange = (e) => {
-    console.log('radio checked', e.target.value);
     setradioval(e.target.value);
     onUpdate({ pointStyle: e.target.value });
   };
@@ -52,7 +51,7 @@ const PointDesign = (props) => {
       <Form.Item>
         <Radio.Group onChange={onChange} value={radioval}>
           <Radio value='circle'>Circle</Radio>
-          <Radio value='cross'>Cross</Radio>
+
           <Radio value='diamond'>Diamond</Radio>
         </Radio.Group>
       </Form.Item>

@@ -12,7 +12,6 @@ const ColourInversion = (props) => {
   const [toggleInvert, settoggleInvert] = useState(config.toggleInvert);
 
   const onChange = (e) => {
-    console.log('radio checked', e.target.value);
     settoggleInvert(e.target.value);
     onUpdate({ toggleInvert: e.target.value });
   };
@@ -20,7 +19,6 @@ const ColourInversion = (props) => {
   const [toggleAddInvert, settoggleAddInvert] = useState(config.masterColour);
 
   const onAddChange = (e) => {
-    console.log('radio checked', e.target.value);
     settoggleAddInvert(e.target.value);
     onUpdate({ masterColour: e.target.value });
   };

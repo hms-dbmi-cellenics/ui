@@ -9,13 +9,6 @@ import PropTypes from 'prop-types';
 const PointDesign = (props) => {
   const { onUpdate, config } = props;
 
-  const [radioval, setradioval] = useState(config.pointStyle);
-
-  const onChange = (e) => {
-    console.log('radio checked', e.target.value);
-    setradioval(e.target.value);
-    onUpdate({ pointStyle: e.target.value });
-  };
 
   return (
     <>
@@ -36,7 +29,6 @@ const PointDesign = (props) => {
             max={30}
             onAfterChange={(value) => {
               onUpdate({ pointSize: value });
-              console.log(value);
             }}
           />
         </Form.Item>
@@ -53,18 +45,6 @@ const PointDesign = (props) => {
             }}
           />
         </Form.Item>
-
-        <Form.Item>
-          <Radio.Group onChange={onChange} value={radioval}>
-            <Radio value='circle'>Circle</Radio>
-            <Radio value='square'>Square</Radio>
-            <Radio value='diamond'>Diamond</Radio>
-
-          </Radio.Group>
-
-
-        </Form.Item>
-
 
       </Form>
     </>

@@ -65,20 +65,25 @@ const ThresholdsGuidesEditor = (props) => {
             <span>
               p-value
               {' '}
-              <em>(linear)</em>
+              <em>(5x10^-)</em>
             </span>
           )}
         >
           <Space>
             <InputNumber
               min={0}
-              defaultValue={0.05}
+              defaultValue={2}
+              step={1}
+              type='number'
+
               onPressEnter={(e) => {
                 const value = parseFloat(e.target.value);
-                onUpdate({ pvalueThreshold: value  });
-
+                const valueFinal = 5 ** -value;
+                onUpdate({ pvalueThreshold: valueFinal });
               }}
             />
+
+
             <Checkbox
               onChange={(e) => {
                 const { checked } = e.target;
@@ -90,7 +95,7 @@ const ThresholdsGuidesEditor = (props) => {
                 }
               }}
             >
-              Guides
+              Show Guideline
             </Checkbox>
           </Space>
         </Form.Item>
@@ -124,12 +129,12 @@ const ThresholdsGuidesEditor = (props) => {
                 }
               }}
             >
-              Guides
+              Show Guideline
             </Checkbox>
           </Space>
         </Form.Item>
 
-        <div>Threshold guides</div>
+        <div>Guideline Design</div>
         <Form.Item
           label='Width'
         >

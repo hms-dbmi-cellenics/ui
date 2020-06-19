@@ -8,7 +8,7 @@ const LegendEditor = (props) => {
 
   const { config, onUpdate } = props;
 
-  const [legendEnabled, setLegendEnabled] = useState(false);
+  const [legendEnabled, setLegendEnabled] = useState(props.defaultState);
 
 
   const onChange = (e) => {

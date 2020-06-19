@@ -40,18 +40,7 @@ const AxesDesign = (props) => {
           }}
         />
       </Form.Item>
-      <Form.Item
-        label='Offset Margins'
-      >
-        <Slider
-          defaultValue={10}
-          min={0}
-          max={20}
-          onAfterChange={(value) => {
-            onUpdate({ axesOffset: value });
-          }}
-        />
-      </Form.Item>
+
       <Form.Item
         label='Grid-line weight'
       >

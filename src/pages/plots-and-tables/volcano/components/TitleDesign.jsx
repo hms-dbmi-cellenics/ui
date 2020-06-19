@@ -11,7 +11,6 @@ const TitleDesign = (props) => {
   const [titleAnchor, settitleAnchor] = useState(config.titleAnchor);
 
   const onChange = (e) => {
-    console.log('radio checked', e.target.value);
     settitleAnchor(e.target.value);
     onUpdate({ titleAnchor: e.target.value });
   };
@@ -52,7 +51,7 @@ const TitleDesign = (props) => {
         <Radio.Group onChange={onChange} value={titleAnchor}>
           <Radio value='start'>Left</Radio>
           <Radio value='middle'>Middle</Radio>
-          <Radio value='end'>Right</Radio>
+
         </Radio.Group>
       </Form.Item>
     </Form>
