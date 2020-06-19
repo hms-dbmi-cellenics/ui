@@ -11,7 +11,6 @@ const LogExpression = (props) => {
   const [logEquation, setlogEquation] = useState(config.logEquation);
 
   const onChange = (e) => {
-    console.log('radio checked', e.target.value);
     setlogEquation(e.target.value);
     onUpdate({ logEquation: e.target.value });
   };

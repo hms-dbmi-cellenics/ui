@@ -11,12 +11,12 @@ import _ from 'lodash';
 import heatmap from './heatmap.json';
 import DimensionsRangeEditor from './components/DimensionsRangeEditor';
 import ColourbarDesign from './components/ColourbarDesign';
-import LegendEditor from '../components/LegendEditor';
+import LegendEditor from './components/LegendEditorSpecial';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
+
 const { Panel } = Collapse;
 const { Title } = Typography;
-
 
 class PlotsAndTablesViewPage extends React.Component {
   constructor(props) {
@@ -46,7 +46,7 @@ class PlotsAndTablesViewPage extends React.Component {
       height: 500,
       colGradient: 'viridis',
       legend: null,
-      legendEnabled: false,
+      legendEnabled: true,
       selectedGenes: [],
       selectedData: heatmap.heatmapData,
       masterFont: 'sans-serif',
@@ -57,6 +57,7 @@ class PlotsAndTablesViewPage extends React.Component {
       masterColour: '#000000',
       labelColour: 'transparent',
       masterFont: 'sans-serif',
+      legendLocation: 'horizontal',
     };
 
     this.state = {
@@ -68,16 +69,20 @@ class PlotsAndTablesViewPage extends React.Component {
 
   generateSpec() {
     const { config } = this.state;
-    if (config.legendEnabled) {
-      config.legend = [
+
+    let legend = [];
+    if (config.legendLocation === 'horizontal') {
+      legend = [
         {
           fill: 'color',
           type: 'gradient',
-          title: ['Normalised', 'Expression'],
+          orient: 'bottom',
+          direction: 'horizontal',
+          title: ['Intensity'],
           labelFont: { value: config.masterFont },
           titleFont: { value: config.masterFont },
           gradientLength: {
-            signal: 'height/2',
+            signal: 'width',
           },
         },
 
@@ -93,8 +98,38 @@ class PlotsAndTablesViewPage extends React.Component {
           labelFont: { value: config.masterFont },
           titleFont: { value: config.masterFont },
         }];
-    } else {
-      config.legend = null;
+    }
+    if (config.legendLocation === 'vertical') {
+      legend = [
+        {
+          fill: 'color',
+          type: 'gradient',
+          // orient: 'bottom',
+          // direction: 'horizontal',
+          title: ['Intensity'],
+          // offset: -100,
+          labelFont: { value: config.masterFont },
+          titleFont: { value: config.masterFont },
+          gradientLength: {
+            signal: 'height / 3',
+          },
+        },
+
+        {
+          fill: 'colorids',
+          title: 'Cluster ID',
+          type: 'symbol',
+          orient: 'right',
+          // offset: 40,
+          symbolType: 'square',
+          symbolSize: { value: 200 },
+          direction: 'vertical',
+          labelFont: { value: config.masterFont },
+          titleFont: { value: config.masterFont },
+        }];
+    }
+    if (config.legendLocation === 'hide') {
+      legend = null;
     }
 
 
@@ -103,6 +138,7 @@ class PlotsAndTablesViewPage extends React.Component {
       width: config.width || defaultConfig.width,
       height: config.height || defaultConfig.height,
       autosize: { type: 'fit', resize: true },
+
       data: [
         {
           name: 'cellNames',
@@ -229,13 +265,13 @@ class PlotsAndTablesViewPage extends React.Component {
           scale: 'y',
           labelColor: config.labelColour,
           domain: false,
-          title: 'Gene',
+          // title: 'Gene',
           labelFont: { value: config.masterFont },
           titleFont: { value: config.masterFont },
         },
       ],
 
-      legends: config.legend,
+      legends: legend,
 
       marks: [
         {
@@ -314,13 +350,14 @@ class PlotsAndTablesViewPage extends React.Component {
         dx: { value: config.bounceX },
         fontSize: { value: config.titleSize },
       },
-    }
-  };
+    };
+  }
 
   generateData() {
     const { data } = this.state;
     return data;
   }
+
   updatePlotWithChanges(obj) {
     this.setState((prevState) => {
       const newState = _.cloneDeep(prevState);
@@ -335,12 +372,13 @@ class PlotsAndTablesViewPage extends React.Component {
     config.selectedData = [];
     if (config.selectedGenes.length >= 53 || config.selectedGenes.length == 0) {
       config.labelColour = 'transparent';
-    }
-    else {
+    } else {
       config.labelColour = 'black';
     }
-    if (config.selectedGenes.length == 0) {
+    if (config.selectedGenes.length == 0 || value == "redraw") {
       this.updatePlotWithChanges({ selectedData: heatmap.heatmapData });
+      config.labelColour = 'transparent';
+
       return 0;
     }
     for (let i = 0; i < heatmap.heatmapData.length; i++) {
@@ -356,6 +394,10 @@ class PlotsAndTablesViewPage extends React.Component {
     this.updatePlotWithChanges({ selectedData: newSelectedData });
   }
 
+  resetPlot() {
+    this.populateData("redraw");
+  }
+
   handleChange(value) {
     this.state.config.selectedGenes = [];
     this.state.config.selectedGenes = value;
@@ -367,12 +409,19 @@ class PlotsAndTablesViewPage extends React.Component {
     const options = [];
     let i;
 
-    for (i = 0; i < heatmap.heatmapData.length; i++) {
-      const value = heatmap.heatmapData[i].geneName;
-      options.push({
+    const sortedGenes = [];
+
+    const genes = heatmap.heatmapData;
+    const genenames = [...new Set(genes.map((item) => item.geneName))];
+    genenames.sort();
+
+    for (i = 0; i < genenames.length; i++) {
+      const value = genenames[i];
+      sortedGenes.push({
         value,
       });
     }
+
 
     return (
       <>
@@ -402,24 +451,47 @@ class PlotsAndTablesViewPage extends React.Component {
           </Col>
           <Col span={8}>
             <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']}>
-                <Panel header='Main Schema' key='1'>
-                  <Collapse defaultActiveKey={['1']}>
-                    <DimensionsRangeEditor
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                  </Collapse>
+              <Collapse defaultActiveKey={['1']} accordion>
+                <Panel header='Filter Genes' key='5'>
 
-                  <Collapse defaultActiveKey={['1']}>
+                  <Select
+                    mode='multiple'
+                    style={{ width: '100%' }}
+                    placeholder='Please select'
+                    onChange={(val) => this.handleChange(val)}
+                    options={sortedGenes}
+                  />
+                  <Space>
+
+                    <Button
+                      type='primary'
+                      config={config}
+                      onClick={() => this.populateData()}
+                    >
+                      Draw heatmap
+                  </Button>
+                    <Button
+                      type='primary'
+                      config={config}
+                      onClick={() => this.resetPlot()}
+                    >
+                      Reset
+                  </Button>
+                  </Space>
+                </Panel>
+                <Panel header='Main Schema' key='1'>
+                  <DimensionsRangeEditor
+                    config={config}
+                    onUpdate={this.updatePlotWithChanges}
+                  />
+
+                  <Collapse defaultActiveKey={['1']} accordion>
                     <Panel header='Define and Edit Title' key='6'>
                       <TitleDesign
                         config={config}
                         onUpdate={this.updatePlotWithChanges}
                       />
                     </Panel>
-                  </Collapse>
-                  <Collapse>
                     <Panel header='Font' key='9'>
                       <FontDesign
                         config={config}
@@ -435,35 +507,11 @@ class PlotsAndTablesViewPage extends React.Component {
                     onUpdate={this.updatePlotWithChanges}
                   />
                 </Panel>
-                <Collapse>
-                  <Panel header='Legend' key='5'>
-                    <LegendEditor
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                  </Panel>
-                </Collapse>
-                <Panel header='Filter Genes' key='5'>
-                  <Title level={4}>
-                    {options.length}
-                    {' '}
-                    Genes
-                  </Title>
-
-                  <Select
-                    mode='multiple'
-                    style={{ width: '100%' }}
-                    placeholder='Please select'
-                    onChange={(val) => this.handleChange(val)}
-                    options={options}
-                  />
-                  <Button
-                    type='primary'
+                <Panel header='Legend' key='11'>
+                  <LegendEditor
                     config={config}
-                    onClick={() => this.populateData()}
-                  >
-                    Draw heatmap
-                  </Button>
+                    onUpdate={this.updatePlotWithChanges}
+                  />
                 </Panel>
               </Collapse>
             </Space>

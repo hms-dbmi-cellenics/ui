@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  PageHeader, Row, Col, Space, Collapse,
+  PageHeader, Row, Col, Space, Collapse
 } from 'antd';
 
 import { Vega } from 'react-vega';
@@ -21,7 +21,6 @@ import LegendEditor from '../components/LegendEditor';
 import LabelsDesign from './components/LabelsDesign';
 const { Panel } = Collapse;
 
-// eslint-disable-next-line react/prefer-stateless-function
 class PlotsAndTablesViewPage extends React.Component {
   constructor(props) {
     super(props);
@@ -46,8 +45,8 @@ class PlotsAndTablesViewPage extends React.Component {
     ];
 
     this.defaultConfig = {
-      width: 750,
-      height: 600,
+      width: 700,
+      height: 550,
       pointSize: 5,
       toggleInvert: '#FFFFFF',
       masterColour: '#000000',
@@ -70,15 +69,17 @@ class PlotsAndTablesViewPage extends React.Component {
       g2mColor: 'green',
       sColor: 'blue',
       legendTextColor: '#FFFFFF',
-      legendEnabled: null,
+      legendEnabled: true,
       legend: null,
+      geneexpLegendloc: '',
 
       labelSize: 28,
       labelShow: 1,
       labelFont: 2,
       labelsEnabled: true,
-      labelFill: "white",
-      labelOutline: "black",
+
+      selectedClusters: [],
+      testVar: null,
     };
 
     this.state = {
@@ -103,13 +104,27 @@ class PlotsAndTablesViewPage extends React.Component {
       config.masterColour = '#000000';
       config.legendTextColor = '#000000';
     }
+
+    if (config.labelsEnabled) {
+      config.labelShow = 1;
+    } else {
+      config.labelShow = 0;
+    }
+
+    const UMAP1Domain = config.umap1Domain
+      ? [config.umap1Domain]
+      : { data: 'embeddingCat', field: 'UMAP_1' };
+
+    const UMAP2Domain = config.umap2Domain
+      ? [config.umap2Domain]
+      : { data: 'embeddingCat', field: 'UMAP_2' };
     if (config.legendEnabled) {
       config.legend = [
         {
           title: '',
           titleColor: config.masterColour,
           fill: 'color',
-          rowPadding: 20,
+          rowPadding: 5,
           symbolSize: 200,
 
           encode: {
@@ -132,23 +147,6 @@ class PlotsAndTablesViewPage extends React.Component {
     } else {
       config.legend = null;
     }
-    if (config.labelsEnabled) {
-      config.labelFill = 'white';
-      config.labelOutline = 'black';
-    }
-    else {
-      config.labelFill = 'transparent';
-      config.labelOutline = 'transparent';
-    }
-
-    const UMAP1Domain = config.umap1Domain
-      ? [config.umap1Domain]
-      : { data: 'embeddingCat', field: 'UMAP_1' };
-
-    const UMAP2Domain = config.umap2Domain
-      ? [config.umap2Domain]
-      : { data: 'embeddingCat', field: 'UMAP_2' };
-
 
     return {
 
@@ -200,13 +198,13 @@ class PlotsAndTablesViewPage extends React.Component {
           zero: true,
           domain: UMAP2Domain,
           range: 'height',
-        },  
+        },
         {
           name: 'color',
           type: 'ordinal',
           range:
             [
-              'red', 'green', 'blue', 'teal', 'orange', 'purple', 'cyan', 'magenta'
+              'red', 'green', 'blue', 'teal', 'orange', 'purple', 'cyan', 'magenta',
             ],
           domain: {
             data: 'embeddingCat',
@@ -295,10 +293,10 @@ class PlotsAndTablesViewPage extends React.Component {
               },
 
               fontSize: { value: config.labelSize },
-              stroke: { value: config.labelOutline },
               strokeWidth: { value: 1.2 },
-              fill: { value: config.labelFill },
+              fill: { value: config.masterColour },
               fillOpacity: { value: config.labelShow },
+              font: { value: config.masterFont },
 
             },
             transform: [
@@ -370,13 +368,13 @@ class PlotsAndTablesViewPage extends React.Component {
           </Col>
           <Col span={8}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse accordion defaultActiveKey={['1']}>
               <Panel header='Main Schema' key='2'>
                 <DimensionsRangeEditor
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
                 />
-                <Collapse defaultActiveKey={['1']}>
+                <Collapse accordion defaultActiveKey={['1']}>
                   <Panel header='Define and Edit Title' key='6'>
                     <TitleDesign
                       config={config}
@@ -399,42 +397,33 @@ class PlotsAndTablesViewPage extends React.Component {
                   onUpdate={this.updatePlotWithChanges}
                 />
               </Panel>
-            </Collapse>
-            <Collapse defaultActiveKey={['1']}>
 
-              <Collapse defaultActiveKey={['1']}>
-                <Panel header='Colour Inversion' key='4'>
-                  <ColourInversion
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
-            </Collapse>
+              <Panel header='Colour Inversion' key='4'>
+                <ColourInversion
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                />
+              </Panel>
 
 
-            <Collapse>
               <Panel header='Markers' key='5'>
                 <PointDesign
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
                 />
               </Panel>
-            </Collapse>
-            <Collapse defaultActiveKey={['1']}>
 
               <Panel header='Legend' key='10'>
                 <LegendEditor
                   color={config.legendTextColor}
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
+                  defaultState={true}
                 />
               </Panel>
 
-            </Collapse>
-            <Collapse defaultActiveKey={['1']}>
 
-              <Panel header='Labels' key='10'>
+              <Panel header='Labels' key='11'>
                 <LabelsDesign
                   color={config.legendTextColor}
                   config={config}

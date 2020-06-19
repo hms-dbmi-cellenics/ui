@@ -16,7 +16,6 @@ const titledesign = (props) => {
   const [titleAnchor, settitleAnchor] = useState(config.titleAnchor);
 
   const onChange = (e) => {
-    console.log('radio checked', e.target.value);
     settitleAnchor(e.target.value);
     onUpdate({ titleAnchor: e.target.value });
   };

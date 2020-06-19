@@ -45,7 +45,6 @@ ColorPickerOption.propTypes = {
 const ColorBrowser = (props) => {
   const { onUpdate, config, colorPickerOptions } = props;
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
-
   return (
     <Select
       value='Browse ...'
@@ -68,6 +67,7 @@ const ColorBrowser = (props) => {
           </Option>
         ))
       }
+
     </Select>
   );
 };

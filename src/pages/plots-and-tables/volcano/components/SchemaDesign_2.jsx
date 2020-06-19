@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 
 import {
-  Slider, Form, InputNumber, Checkbox, Space,
+  Slider, Form
 } from 'antd';
 
 
 const SchemaDesign = (props) => {
-  console.log("in point design: ",props.yMax, props.xMax)
 
   const { onUpdate } = props;
 

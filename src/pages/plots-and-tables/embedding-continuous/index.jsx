@@ -43,15 +43,15 @@ class PlotsAndTablesViewPage extends React.Component {
       },
       {
         path: 'third',
-        breadcrumbName: 'Disease vs. control (Differential expression)',
+        breadcrumbName: 'Disease vs. control (Gene expression)',
       },
     ];
 
     this.defaultConfig = {
-      width: 750,
-      height: 600,
+      width: 700,
+      height: 550,
       pointSize: 5,
-      colGradient: 'viridis',
+      colGradient: 'spectral',
       toggleInvert: '#FFFFFF',
       masterColour: '#000000',
       reverseCbar: false,
@@ -72,7 +72,7 @@ class PlotsAndTablesViewPage extends React.Component {
       pointOpa: 5,
       bounceX: 0,
       legend: null,
-      legendEnabled: null,
+      legendEnabled: true,
     };
 
     this.state = {
@@ -241,7 +241,7 @@ class PlotsAndTablesViewPage extends React.Component {
               fillOpacity: { value: config.pointOpa / 10 },
             },
           },
-        }, 
+        },
 
       ],
       legends: config.legend,
@@ -308,14 +308,14 @@ class PlotsAndTablesViewPage extends React.Component {
           </Col>
           <Col span={8}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse accordion>
 
               <Panel header='Main Schema' key='2'>
                 <DimensionsRangeEditor
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
                 />
-                <Collapse defaultActiveKey={['1']}>
+                <Collapse accordion>
                   <Panel header='Define and Edit Title' key='6'>
                     <TitleDesign
                       config={config}
@@ -337,23 +337,18 @@ class PlotsAndTablesViewPage extends React.Component {
                   onUpdate={this.updatePlotWithChanges}
                 />
               </Panel>
-            </Collapse>
-            <Collapse defaultActiveKey={['1']}>
-              <Panel header='Colours' key='3'>
+              <Panel header='Colours' key='10'>
                 <ColourbarDesign
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
                 />
-                <Collapse defaultActiveKey={['1']}>
+                <Collapse accordion>
                   <Panel header='Colour Inversion' key='4'>
                     <ColourInversion
                       config={config}
                       onUpdate={this.updatePlotWithChanges}
                     />
                   </Panel>
-
-                </Collapse>
-                <Collapse>
                   <Panel header='Log Transformation' key='5'>
                     <LogExpression
                       config={config}
@@ -362,26 +357,21 @@ class PlotsAndTablesViewPage extends React.Component {
                   </Panel>
                 </Collapse>
               </Panel>
-            </Collapse>
 
-
-            <Collapse>
-              <Panel header='Markers' key='5'>
+              <Panel header='Markers' key='11'>
                 <PointDesign
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
                 />
               </Panel>
-            </Collapse>
-            <Collapse>
-              <Panel header='Legend' key='5'>
+              <Panel header='Legend' key='12'>
                 <LegendEditor
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
+                  defaultState
                 />
               </Panel>
             </Collapse>
-
           </Col>
 
 

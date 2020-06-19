@@ -16,7 +16,7 @@ import TitleDesign from './components/TitleDesign';
 
 import SchemaDesign from './components/SchemaDesign_2';
 import AxesDesign from './components/AxesDesign';
-import FontDesign from './components/FontDesign';
+import FontDesign from '../components/FontDesign';
 import ColourInversion from './components/ColourInversion';
 import LegendEditor from '../components/LegendEditor';
 
@@ -50,10 +50,9 @@ if (Math.abs(l2fcMin) > Math.abs(l2fcMax)) {
 } else {
   xMax = Math.abs(l2fcMax);
 }
-console.log(l2fcMin, l2fcMax);
-
 
 const { Panel } = Collapse;
+
 
 class PlotsAndTablesViewPage extends React.Component {
   constructor(props) {
@@ -93,7 +92,9 @@ class PlotsAndTablesViewPage extends React.Component {
       logFoldChangeThreshold: 1,
       logFoldChangeTickCount: 5,
       negativeLogpValueTickCount: 5,
-      downsampleRatio: 0.9,
+      // Marcell, I removed downsampling for now because Vicky didnt like it
+      // downsampleRatio: 0.9,
+      downsampleRatio: 0,
       showLogFoldChangeThresholdGuides: false,
       showpvalueThresholdGuides: false,
       thresholdGuideWidth: 1,
@@ -572,22 +573,17 @@ class PlotsAndTablesViewPage extends React.Component {
           </Col>
           <Col span={8}>
             <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']}>
+              <Collapse defaultActiveKey={['1']} accordion>
                 <Panel header='Main Schema' key='1'>
-                  <Collapse defaultActiveKey={['1']}>
-                    <Panel header='Plot Dimensions and Ranges' key='7'>
-                      <SchemaDesign
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                        xMax={xMax}
-                        yMax={maxNegativeLogpValue + 2}
-                        l2fcMax={l2fcMax}
-                      />
-                    </Panel>
+                  <SchemaDesign
+                    config={config}
+                    onUpdate={this.updatePlotWithChanges}
+                    xMax={xMax}
+                    yMax={maxNegativeLogpValue + 2}
+                    l2fcMax={l2fcMax}
+                  />
 
-                  </Collapse>
-
-                  <Collapse defaultActiveKey={['1']}>
+                  <Collapse defaultActiveKey={['1']} accordion>
                     <Panel header='Define and Edit Title' key='6'>
                       <TitleDesign
                         config={config}
@@ -595,16 +591,12 @@ class PlotsAndTablesViewPage extends React.Component {
                       />
                     </Panel>
 
-                  </Collapse>
-                  <Collapse defaultActiveKey={['1']}>
                     <Panel header='Data Thresholding' key='8'>
                       <ThresholdsGuidesEditor
                         config={config}
                         onUpdate={this.updatePlotWithChanges}
                       />
                     </Panel>
-                  </Collapse>
-                  <Collapse>
                     <Panel header='Font' key='9'>
                       <FontDesign
                         config={config}
@@ -622,14 +614,14 @@ class PlotsAndTablesViewPage extends React.Component {
                   />
                 </Panel>
                 <Panel header='Colours' key='10'>
-                  <Collapse>
-                    <Panel header='Colour Options' key='5'>
-                      <MarkersEditor
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                    </Panel>
-                  </Collapse>
+
+
+                  <MarkersEditor
+                    config={config}
+                    onUpdate={this.updatePlotWithChanges}
+                  />
+
+
                   <ColourInversion
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
@@ -649,10 +641,11 @@ class PlotsAndTablesViewPage extends React.Component {
                   <LegendEditor
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
+                    defaultState={false}
                   />
                 </Panel>
                 <Panel header='Text' key='12'>
-                  <h1> Display Gene Labels Above (Y-Axis Value) </h1>
+                  <> Display Gene Labels Above (-log10 pvalue) </>
                   <Slider
 
                     defaultValue={maxNegativeLogpValue}
