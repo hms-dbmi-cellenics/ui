@@ -7,13 +7,14 @@ import {
   UPDATE_CELL_INFO,
 } from './actionType';
 import connectionPromise from '../../utils/socketConnection';
+import getApiEndpoint from '../../utils/apiEndpoint';
 
 const loadCellSets = (experimentId) => (dispatch, getState) => {
   if (getState().cellSets.data) {
     return null;
   }
 
-  return fetch(`${process.env.REACT_APP_API_URL}/v1/experiments/${experimentId}/cellSets`).then(
+  return fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`).then(
     (response) => response.json(),
   ).then(
     (json) => dispatch({
@@ -47,7 +48,7 @@ const pushCellSets = (experimentId) => (dispatch, getState) => {
   }
 
   return fetch(
-    `${process.env.REACT_APP_API_URL}/v1/experiments/${experimentId}/cellSets`,
+    `${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`,
     {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
