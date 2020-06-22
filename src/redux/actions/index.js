@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuidv4 } from 'uuid';
 import {
-  LOAD_CELL_SETS, UPDATE_CELL_SETS, PUSH_CELL_SETS, CREATE_CLUSTER, CELL_SETS_COLOR,
+  LOAD_CELL_SETS, UPDATE_CELL_SETS, PUSH_CELL_SETS,
+  CREATE_CLUSTER, CELL_SETS_COLOR,
   UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES, UPDATE_GENE_EXPRESSION,
   LOAD_CELLS, BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
   UPDATE_CELL_INFO,
@@ -23,6 +24,32 @@ const loadCellSets = (experimentId) => (dispatch, getState) => {
       data: json.cellSets,
     }),
   ).catch((e) => console.error('Error when trying to get cell sets data: ', e));
+};
+
+const refreshCellSets = (experimentId) => (dispatch) => {
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  dispatch({
+    type: LOAD_CELL_SETS,
+    experimentId,
+    data: undefined,
+  });
+
+  fetch(`${process.env.REACT_APP_API_URL}/v1/experiments/generate`, requestOptions).then(
+    () => fetch(`${process.env.REACT_APP_API_URL}/v1/experiments/${experimentId}/cellSets`),
+  ).then(
+    (response) => response.json(),
+  ).then(
+    (json) => dispatch({
+      type: LOAD_CELL_SETS,
+      experimentId,
+      data: json.cellSets,
+    }),
+  )
+    .catch((e) => console.log('Error when trying to get cell sets data: ', e));
 };
 
 const updateCellSets = (experimentId, newState) => (dispatch, getState) => {
@@ -390,6 +417,7 @@ const updateCellInfo = (cellData) => (dispatch) => {
 export {
   loadCellSets,
   updateCellSets,
+  refreshCellSets,
   pushCellSets,
   createCluster,
   loadCells,

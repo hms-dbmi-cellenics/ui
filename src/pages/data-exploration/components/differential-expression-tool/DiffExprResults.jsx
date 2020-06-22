@@ -28,7 +28,6 @@ const DiffExprResults = (props) => {
   const [rows, setRows] = useState([]);
 
   const updateRows = (newTableState) => {
-    console.log(newTableState, tableState);
     const currentPage = newTableState?.pagination.current
       || tableState?.pagination.current
       || 1;
@@ -105,7 +104,6 @@ const DiffExprResults = (props) => {
   const handleTableChange = (newPagination) => {
     const newTableState = { pagination: newPagination };
     setTableState(newTableState);
-    console.log('** my rows: ', rows);
   };
 
   return (
