@@ -38,7 +38,6 @@ const convertCellsData = (results) => {
   return data;
 };
 
-const updateCellsHover = () => { };
 const updateStatus = () => { };
 const updateViewInfo = () => { };
 const clearPleaseWait = () => { };
@@ -46,7 +45,6 @@ const clearPleaseWait = () => { };
 export {
   convertColorData,
   convertCellsData,
-  updateCellsHover,
   updateStatus,
   updateViewInfo,
   clearPleaseWait,

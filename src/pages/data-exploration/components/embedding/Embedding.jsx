@@ -8,11 +8,10 @@ import PropTypes from 'prop-types';
 import { Spin } from 'antd';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
-import { loadCells, createCluster } from '../../../../redux/actions';
+import { loadCells, createCluster, updateCellInfo } from '../../../../redux/actions';
 import {
   convertColorData,
   convertCellsData,
-  updateCellsHover,
   updateStatus,
   updateViewInfo,
   clearPleaseWait,
@@ -54,6 +53,14 @@ const Embedding = (props) => {
   if (cellInfo.cellName) {
     cellColors[cellInfo.cellName] = [30, 30, 30];
   }
+
+  const updateCellsHover = (cell) => {
+    if (cell) {
+      dispatch(updateCellInfo({
+        cellName: cell.cellId,
+      }));
+    }
+  };
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
