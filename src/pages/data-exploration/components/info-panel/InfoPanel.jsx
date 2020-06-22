@@ -8,7 +8,7 @@ const InfoPanel = () => {
     <div>
       <Descriptions>
         <Descriptions.Item label='Gene Name'>{cellInfo.geneName || 'Not Available'}</Descriptions.Item>
-        <Descriptions.Item label='Cell Name'>{cellInfo.cellName || 'Not Available'}</Descriptions.Item>
+        <Descriptions.Item label='Cell Barcode'>{cellInfo.cellName || 'Not Available'}</Descriptions.Item>
         <Descriptions.Item label='Expression Level'>{cellInfo.expression !== undefined ? cellInfo.expression : 'Not Available'}</Descriptions.Item>
       </Descriptions>
     </div>

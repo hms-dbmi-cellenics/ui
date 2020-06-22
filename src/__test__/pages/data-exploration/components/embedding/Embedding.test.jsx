@@ -139,4 +139,19 @@ describe('Embedding', () => {
     expect(store.getActions()[0].type).toEqual('CELL_SETS.CREATE');
     expect(store.getActions()[0].data.cellIds).toEqual(selectedCellIds);
   });
+
+  test('dispatches an action with updated cell information on hover', () => {
+    const scatterplot = component.find(Scatterplot);
+
+    const hoveredCell = { cellId: 'ATCG-1' };
+
+    // hover over cells
+    act(() => {
+      scatterplot.getElement().props.updateCellsHover(hoveredCell);
+    });
+
+    expect(store.getActions().length).toEqual(1);
+    expect(store.getActions()[0].type).toEqual('UPDATE_CELL_INFO');
+    expect(store.getActions()[0].data.cellName).toEqual(hoveredCell.cellId);
+  });
 });
