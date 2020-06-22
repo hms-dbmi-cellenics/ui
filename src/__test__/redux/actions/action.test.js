@@ -1,4 +1,6 @@
-import { updateSelectedGenes, loadGeneExpression, updateCellInfo } from '../../../redux/actions';
+import {
+  updateSelectedGenes, loadGeneExpression, updateCellInfo,
+} from '../../../redux/actions';
 import * as types from '../../../redux/actions/actionType';
 import connectionPromise from '../../../utils/socketConnection';
 

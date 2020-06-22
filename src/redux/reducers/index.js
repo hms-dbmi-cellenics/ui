@@ -23,7 +23,6 @@ const cellSetsReducer = (state = {}, action) => {
         // Find scratchpad at top level and add the new cluster.
         // The assignment is necessary because otherwise `useSelector`
         // won't recognize the changed state and the cell set tool won't rerender.
-
         state.data = state.data.map((topCategory) => {
           if (topCategory.key === 'scratchpad') {
             if (!topCategory.children) {
