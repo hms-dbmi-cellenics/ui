@@ -7,6 +7,7 @@ const HeatmapPlot = () => {
   const heatmapSpec = useSelector((state) => state.heatmapSpec);
   const geneExperessionData = useSelector((state) => state.geneExperessionData);
   const selectedGenes = useSelector((state) => state.selectedGenes);
+  const showAxes = useSelector((state) => state.heatmapSpec?.showAxes);
 
   if (!selectedGenes.geneList || Object.keys(selectedGenes.geneList).length === 0) {
     return (
@@ -29,6 +30,7 @@ const HeatmapPlot = () => {
   return (
     <VegaHeatmap
       spec={heatmapSpec}
+      showAxes={showAxes}
     />
   );
 };

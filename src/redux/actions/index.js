@@ -313,6 +313,11 @@ const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
       geneExperessionData.data.splice(foundGene, 1);
     }
   });
+  let showAxes = false;
+  const selectedGenesNumb = Object.keys(selectedGenes.geneList).length;
+  if (selectedGenesNumb < 30) {
+    showAxes = true;
+  }
   dispatch({
     type: SELECTED_GENES,
     data: { newGenesAdded },
@@ -322,6 +327,7 @@ const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
     data: {
       genes: geneExperessionData.data,
       rendering: true,
+      showAxes,
     },
   });
   setTimeout(() => {

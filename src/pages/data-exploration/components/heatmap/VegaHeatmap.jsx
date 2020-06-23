@@ -6,8 +6,15 @@ import ContainerDimensions from 'react-container-dimensions';
 import { updateCellInfo } from '../../../../redux/actions';
 
 const VegaHeatmap = (props) => {
-  const { spec } = props;
+  const { spec, showAxes } = props;
   const dispatch = useDispatch();
+  const axes = [
+    {
+      domain: false,
+      orient: 'left',
+      scale: 'y',
+    },
+  ];
 
   const handleHover = (...args) => {
     if (args[1].datum) {
@@ -24,8 +31,14 @@ const VegaHeatmap = (props) => {
     <div>
       <ContainerDimensions>
         {({ width, height }) => {
-          spec.width = width - 40;
           spec.height = height + 300;
+          if (showAxes) {
+            spec.axes = axes;
+            spec.width = width - 100;
+          } else {
+            spec.axes = [];
+            spec.width = width - 40;
+          }
           return (
             <Vega
               spec={spec}
@@ -39,8 +52,13 @@ const VegaHeatmap = (props) => {
   );
 };
 
+VegaHeatmap.defaultProps = {
+  showAxes: true,
+};
+
 VegaHeatmap.propTypes = {
   spec: PropTypes.object.isRequired,
+  showAxes: PropTypes.bool,
 };
 
 export default VegaHeatmap;

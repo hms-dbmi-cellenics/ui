@@ -127,6 +127,7 @@ const heatmapSpecReducer = (state = {}, action) => {
           ...state,
           ...initialSpec,
           rendering: action.data.rendering,
+          showAxes: action.data.showAxes,
         };
       }
       return {

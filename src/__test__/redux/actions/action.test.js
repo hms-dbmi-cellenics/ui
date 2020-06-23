@@ -52,6 +52,7 @@ describe('updateSelectedGenes action', () => {
       data: {
         genes: undefined,
         rendering: true,
+        showAxes: true,
       },
       type: types.UPDATE_HEATMAP_SPEC,
     });
@@ -89,7 +90,28 @@ describe('updateSelectedGenes action', () => {
           geneName: 'G2',
           expression: [1, 2],
         }],
+        showAxes: true,
         rendering: true,
+      },
+      type: types.UPDATE_HEATMAP_SPEC,
+    });
+  });
+  it('axes is removed when more than 30 genes are selected', () => {
+    const getState = () => ({
+      selectedGenes: {},
+      geneExperessionData: {},
+    });
+    updateSelectedGenes(['G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'G11', 'G12', 'G13', 'G14', 'G15', 'G16', 'G17', 'G18', 'G19', 'G20', 'G21', 'G22', 'G23', 'G24', 'G25', 'G26', 'G27', 'G28', 'G29', 'G30'], true)(dispatch, getState);
+    expect(dispatch).toBeCalledTimes(2);
+    expect(dispatch).toBeCalledWith({
+      data: { newGenesAdded: true },
+      type: types.SELECTED_GENES,
+    });
+    expect(dispatch).toBeCalledWith({
+      data: {
+        genes: undefined,
+        rendering: true,
+        showAxes: false,
       },
       type: types.UPDATE_HEATMAP_SPEC,
     });
