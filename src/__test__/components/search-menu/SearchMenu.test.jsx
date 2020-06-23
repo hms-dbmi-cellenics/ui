@@ -13,8 +13,8 @@ describe('SearchMenu', () => {
     expect(dropdown.length).toEqual(1);
 
     const menu = dropdown.find('Menu');
-    const search = dropdown.find('Search');
-    expect(search.length).toEqual(1);
+    const input = dropdown.find('Input');
+    expect(input.length).toEqual(1);
     expect(menu.length).toEqual(0);
   });
 
@@ -58,7 +58,7 @@ describe('SearchMenu', () => {
     ];
     const text1 = 'banana';
     const component = shallow(<SearchMenu options={options} placeholder='Search things' />);
-    const s = component.find('Dropdown').find('Search').getElement();
+    const s = component.find('Dropdown').find('Input').getElement();
     const actualKeys = s.props.onChange({ target: { value: text1 } });
     expect(actualKeys[0].key).toEqual(options[2].key);
   });

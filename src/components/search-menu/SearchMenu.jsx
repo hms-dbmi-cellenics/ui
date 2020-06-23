@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-
+import {
+  PlusOutlined,
+} from '@ant-design/icons';
 
 import {
-  Input, Dropdown, Menu, Typography,
+  Input, Dropdown, Menu, Typography, Button,
 } from 'antd';
 
-const { Search } = Input;
 const { Text } = Typography;
-
 
 const SearchMenu = (props) => {
   const { options, onSelect } = props;
@@ -71,7 +71,11 @@ const SearchMenu = (props) => {
       overlay={renderMenu()}
       trigger={['click']}
     >
-      <Search placeholder={placeholder} onChange={(e) => search(e.target.value)} />
+      <Input
+        prefix={<PlusOutlined />}
+        placeholder={placeholder}
+        onChange={(e) => search(e.target.value)}
+      />
     </Dropdown>
   );
 };

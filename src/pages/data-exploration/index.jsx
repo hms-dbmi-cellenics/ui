@@ -139,7 +139,7 @@ class ExplorationViewPage extends React.Component {
         onSelect={(key) => {
           this.openTool(key);
         }}
-        placeholder='Search or browse tools...'
+        placeholder='Add tool'
       />
     );
 
@@ -149,7 +149,7 @@ class ExplorationViewPage extends React.Component {
         onSelect={(key) => {
           this.openPlot(key);
         }}
-        placeholder='Search or browse plots...'
+        placeholder='Add plot'
       />
     );
 
