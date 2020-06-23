@@ -7,8 +7,10 @@ import {
   LOAD_CELLS, BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
   UPDATE_CELL_INFO,
 } from './actionType';
-import connectionPromise from '../../utils/socketConnection';
+import sendWork from '../../utils/sendWork';
 import getApiEndpoint from '../../utils/apiEndpoint';
+
+const TIMEOUT_SECONDS = 30;
 
 const loadCellSets = (experimentId) => (dispatch, getState) => {
   if (getState().cellSets.data) {
@@ -127,31 +129,18 @@ const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
   if (getState().cells.data) {
     return null;
   }
-  return connectionPromise().then((io) => {
-    const requestUuid = uuidv4();
 
-    const body = {
-      name: 'GetEmbedding',
-      type: embeddingType,
-    };
+  const body = {
+    name: 'GetEmbedding',
+    type: embeddingType,
+  };
 
-    const request = {
-      uuid: requestUuid,
-      socketId: io.id,
+  return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
+    const embedding = JSON.parse(res.results[0].body);
+    return dispatch({
+      type: LOAD_CELLS,
+      data: embedding,
       experimentId,
-      timeout: '2021-01-01T00:00:00Z',
-      body,
-    };
-
-    io.emit('WorkRequest', request);
-
-    io.on(`WorkResponse-${requestUuid}`, (res) => {
-      const embedding = JSON.parse(res.results[0].body);
-      return dispatch({
-        type: LOAD_CELLS,
-        experimentId,
-        data: embedding,
-      });
     });
   });
 };
@@ -160,72 +149,62 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
   if (getState().geneList?.tableState === tableState) {
     return null;
   }
+
   dispatch({
     type: LOAD_GENE_LIST,
   });
-  return connectionPromise().then((io) => {
-    const requestUuid = uuidv4();
-    const { geneList } = getState();
 
-    const orderBy = tableState?.sorter.field
-      || geneList.tableState?.sorter.field
-      || 'dispersions';
+  const { geneList } = getState();
 
-    const orderDirection = tableState?.sorter.order
-      || geneList.tableState?.sorter.order
-      || 'ascend';
+  const orderBy = tableState?.sorter.field
+    || geneList.tableState?.sorter.field
+    || 'dispersions';
 
-    const currentPage = tableState?.pagination.current
-      || geneList.tableState?.pagination.current
-      || 1;
+  const orderDirection = tableState?.sorter.order
+    || geneList.tableState?.sorter.order
+    || 'ascend';
 
-    const currentPageSize = tableState?.pagination.pageSize
-      || geneList.tableState?.pagination.pageSize
-      || 1;
+  const currentPage = tableState?.pagination.current
+    || geneList.tableState?.pagination.current
+    || 1;
 
-    const body = {
-      name: 'ListGenes',
-      selectFields: ['gene_names', 'dispersions'],
-      orderBy,
-      orderDirection: (orderDirection === 'ascend') ? 'ASC' : 'DESC',
-      offset: ((currentPage - 1) * currentPageSize),
-      limit: currentPageSize,
-    };
+  const currentPageSize = tableState?.pagination.pageSize
+    || geneList.tableState?.pagination.pageSize
+    || 1;
 
-    if (tableState.geneNamesFilter) {
-      body.geneNamesFilter = tableState.geneNamesFilter;
+  const body = {
+    name: 'ListGenes',
+    selectFields: ['gene_names', 'dispersions'],
+    orderBy,
+    orderDirection: (orderDirection === 'ascend') ? 'ASC' : 'DESC',
+    offset: ((currentPage - 1) * currentPageSize),
+    limit: currentPageSize,
+  };
+
+  if (tableState.geneNamesFilter) {
+    body.geneNamesFilter = tableState.geneNamesFilter;
+  }
+
+  return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
+    const data = JSON.parse(res.results[0].body);
+
+    const { total, rows } = data;
+
+    rows.map((row) => {
+      row.key = row.gene_names;
+      return row;
+    });
+
+    if (tableState && tableState.pagination) {
+      tableState.pagination.total = total;
     }
 
-    const request = {
-      uuid: requestUuid,
-      socketId: io.id,
-      experimentId,
-      timeout: '2021-01-01T00:00:00Z',
-      body,
-    };
-
-    io.emit('WorkRequest', request);
-    io.on(`WorkResponse-${requestUuid}`, (res) => {
-      const data = JSON.parse(res.results[0].body);
-
-      const { total, rows } = data;
-
-      rows.map((row) => {
-        row.key = row.gene_names;
-        return row;
-      });
-
-      if (tableState && tableState.pagination) {
-        tableState.pagination.total = total;
-      }
-      return dispatch({
-        type: UPDATE_GENE_LIST,
-        experimentId,
-        data: {
-          rows,
-          tableState: tableState || geneList.tableState,
-        },
-      });
+    dispatch({
+      type: UPDATE_GENE_LIST,
+      data: {
+        rows,
+        tableState: tableState || geneList.tableState,
+      },
     });
   });
 };
@@ -236,61 +215,47 @@ const loadDiffExpr = (
   dispatch({
     type: LOAD_DIFF_EXPR,
   });
-  return connectionPromise().then((io) => {
-    const ComparisonTypes = {
-      One: 'Versus Rest',
-      Two: 'Across Sets',
-    };
 
-    const requestUuid = uuidv4();
+  const ComparisonTypes = {
+    One: 'Versus Rest',
+    Two: 'Across Sets',
+  };
+  const body = {
+    name: 'DifferentialExpression',
+    maxNum: 100,
+    cellSet: firstSelectedCluster.key,
+  };
 
-    const body = {
-      name: 'DifferentialExpression',
-      maxNum: 100,
-      cellSet: firstSelectedCluster.key,
-    };
-    if (comparisonType === ComparisonTypes.One) {
-      body.compareWith = 'rest';
-    } else {
-      body.compareWith = secondSelectedCluster.key;
+  if (comparisonType === ComparisonTypes.One) {
+    body.compareWith = 'rest';
+  } else {
+    body.compareWith = secondSelectedCluster.key;
+  }
+
+  return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
+    let data = {};
+
+    try {
+      data = JSON.parse(res.results[0].body);
+    } catch (error) {
+      console.error(error);
+      data = { rows: [] };
     }
 
-    const request = {
-      uuid: requestUuid,
-      socketId: io.id,
-      experimentId,
-      timeout: '2021-01-01T00:00:00Z',
-      body,
-    };
+    const { rows } = data;
+    const total = rows.length;
 
-    io.emit('WorkRequest', request);
+    rows.map((row) => {
+      row.key = row.gene_names;
+      return row;
+    });
 
-    io.on(`WorkResponse-${requestUuid}`, (res) => {
-      let data = {};
-
-      try {
-        data = JSON.parse(res.results[0].body);
-      } catch (error) {
-        console.error(error);
-        data = { rows: [] };
-      }
-
-      const { rows } = data;
-      const total = rows.length;
-
-      rows.map((row) => {
-        row.key = row.gene_names;
-        return row;
-      });
-
-      return dispatch({
-        type: UPDATE_DIFF_EXPR,
-        experimentId,
-        data: {
-          allData: rows,
-          total,
-        },
-      });
+    return dispatch({
+      type: UPDATE_DIFF_EXPR,
+      data: {
+        allData: rows,
+        total,
+      },
     });
   });
 };
@@ -368,44 +333,31 @@ const loadGeneExpression = (experimentId) => (dispatch, getState) => {
         isLoading: true,
       },
     });
-    return connectionPromise().then((io) => {
-      const requestUuid = uuidv4();
+    const body = {
+      name: 'GeneExpression',
+      cellSets: 'all',
+      genes: newGeneBatch,
+    };
 
-      const body = {
-        name: 'GeneExpression',
-        cellSets: 'all',
-        genes: newGeneBatch,
-      };
+    return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
+      const heatMapData = JSON.parse(res.results[0].body);
+      const { data } = getState().geneExperessionData;
+      if (data) {
+        Array.prototype.push.apply(heatMapData.data, data);
+      }
+      dispatch({
+        type: UPDATE_GENE_EXPRESSION,
+        data: {
+          heatMapData,
+          isLoading: false,
+        },
+      });
 
-      const request = {
-        uuid: requestUuid,
-        socketId: io.id,
-        experimentId,
-        timeout: '2021-01-01T00:00:00Z',
-        body,
-      };
-
-      io.emit('WorkRequest', request);
-
-      io.on(`WorkResponse-${requestUuid}`, (res) => {
-        const heatMapData = JSON.parse(res.results[0].body);
-        const { data } = getState().geneExperessionData;
-        if (data) {
-          Array.prototype.push.apply(heatMapData.data, data);
-        }
-        dispatch({
-          type: UPDATE_GENE_EXPRESSION,
-          data: {
-            heatMapData,
-            isLoading: false,
-          },
-        });
-        return dispatch({
-          type: BUILD_HEATMAP_SPEC,
-          data: {
-            geneExperessionData: heatMapData,
-          },
-        });
+      dispatch({
+        type: BUILD_HEATMAP_SPEC,
+        data: {
+          geneExperessionData: heatMapData,
+        },
       });
     });
   }
