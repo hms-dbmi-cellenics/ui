@@ -1,8 +1,6 @@
 const spec = {
   $schema: 'https://vega.github.io/schema/vega/v5.json',
   description: 'A heatmap showing average daily temperatures in Seattle for each hour of the day.',
-  width: 500,
-  height: 500,
   data: [
     {
       name: 'cellNames',
@@ -83,20 +81,8 @@ const spec = {
       nice: true,
     },
   ],
-  // axes: [
-  //   {
-  //     orient: 'bottom',
-  //     scale: 'x',
-  //     domain: false,
-  //     title: 'Cells',
-  //   },
-  //   {
-  //     orient: 'left',
-  //     scale: 'y',
-  //     domain: false,
-  //     title: 'Gene names',
-  //   },
-  // ],
+  axes: [
+  ],
   legends: [
     {
       fill: 'color',
