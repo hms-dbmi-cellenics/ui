@@ -6,7 +6,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Collapse, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 
-import styles from './styles.module.css';
+import './styles.module.css';
 
 const { Panel } = Collapse;
 
@@ -79,7 +79,6 @@ const DraggableList = (props) => {
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className={styles.container}
           style={getItemStyle(
             snapshot.isDragging,
             provided.draggableProps.style,
@@ -89,7 +88,7 @@ const DraggableList = (props) => {
             <Panel
               headStyle={{ display: 'flex' }}
               header={(
-                <div style={{ display: 'flex', flexGrow: 1 }} {...provided.dragHandleProps}>
+                <div id={item.key} style={{ display: 'flex', flexGrow: 1 }} {...provided.dragHandleProps}>
                   {item.name}
                 </div>
               )}
