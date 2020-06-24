@@ -1,4 +1,4 @@
-:local(.container) :global(.ant-collapse-header) {
+.ant-collapse-header {
     display: flex;
 }
 
