@@ -1264,10 +1264,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
   integrity sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==
 
-"@hubmap/vitessce-image-viewer@^0.2.5":
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/@hubmap/vitessce-image-viewer/-/vitessce-image-viewer-0.2.6.tgz#f137cbf369d680e38079cdcac8135a78ea189ac0"
-  integrity sha512-EqpZrp5cUH6GjU8clTG0ILDLOpDlh1cZKMIku/fMYSoT2jL01P/EXvhjy5opJU5eWJPxJ4nsCmlU1OT82iEB1Q==
+"@hubmap/vitessce-image-viewer@^0.2.11":
+  version "0.2.11"
+  resolved "https://registry.yarnpkg.com/@hubmap/vitessce-image-viewer/-/vitessce-image-viewer-0.2.11.tgz#afdfda3411b6acd811b0d48d606a2115bdb27fd2"
+  integrity sha512-COPHBC72+txMnncotTJQcusx/onLRCFVzuo9ebQTe1pihNns2128xGQBGG4aohvyuhUpxMLpxUtOHgob+DGALQ==
   dependencies:
     "@deck.gl/core" "^8.1.0"
     "@deck.gl/geo-layers" "^8.1.0"
@@ -1277,8 +1277,9 @@
     "@luma.gl/core" "^8.1.0"
     "@luma.gl/shadertools" "^8.1.0"
     fast-xml-parser "^3.16.0"
-    geotiff "^1.0.0-beta.11"
-    zarr "^0.3.0-beta.0"
+    geotiff "^1.0.0-beta.12"
+    quickselect "^2.0.0"
+    zarr "^0.3.0"
 
 "@icons/material@^0.2.4":
   version "0.2.4"
@@ -6843,10 +6844,10 @@ geojson@0.5.0:
   resolved "https://registry.yarnpkg.com/geojson/-/geojson-0.5.0.tgz#3cd6c96399be65b56ee55596116fe9191ce701c0"
   integrity sha1-PNbJY5m+ZbVu5VWWEW/pGRznAcA=
 
-geotiff@^1.0.0-beta.11:
-  version "1.0.0-beta.11"
-  resolved "https://registry.yarnpkg.com/geotiff/-/geotiff-1.0.0-beta.11.tgz#854be85295defb2e0dc9ffa88d2e11bc7f85a3db"
-  integrity sha512-HiA9J/YpB7w1MZ+ALupKzSKWujqOLQv4tAFkuwhImSHWaBc7O0yRGY+nr+z7uiqPbbwctjraTPW60khJeNx/Gw==
+geotiff@^1.0.0-beta.12:
+  version "1.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/geotiff/-/geotiff-1.0.0-beta.12.tgz#d7ff7d505dc3783555d153a3f809d083050e15b5"
+  integrity sha512-2/hRBqpp+TLvILmvGScPFC/x8OsvbZpiZAfY10CZsHw8G+iTSauZwi5RooPGDnfymoj9CCQt3u7b3Lxrk+zUNQ==
   dependencies:
     pako "^1.0.11"
     threads "^1.3.1"
@@ -7120,10 +7121,10 @@ hex-color-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/hex-color-regex/-/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
 
-higlass@^1.9.3:
-  version "1.9.3"
-  resolved "https://registry.yarnpkg.com/higlass/-/higlass-1.9.3.tgz#a83f2dfeb12c1378dbfd43e960f17eee6fc89a58"
-  integrity sha512-I+NdomIFCyS9VVUpx0s+ziteAg+P1EJZnRwzwJCwe0uEsoeu496qSA0KtebVPR5g1yGQluljlnTSXtksFoGtbw==
+higlass@^1.9.5:
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/higlass/-/higlass-1.9.5.tgz#4ee4949c2490c716db745496788d3776402380ab"
+  integrity sha512-i+W8+uXIMSghbb0pNbGQ1Rlj36yS4JHCKKexfMGsE1Yp8wUu/k0UlGpxhsltErpDYeNMBYoVcL46ox2whaRGmQ==
   dependencies:
     ajv "^6.10.0"
     box-intersect "^1.0.1"
@@ -11179,6 +11180,11 @@ quickselect@^1.0.1:
   resolved "https://registry.yarnpkg.com/quickselect/-/quickselect-1.1.1.tgz#852e412ce418f237ad5b660d70cffac647ae94c2"
   integrity sha512-qN0Gqdw4c4KGPsBOQafj6yj/PA6c/L63f6CaZ/DCF/xF4Esu3jVmKLUDYxghFx8Kb/O7y9tI7x2RjTSXwdK1iQ==
 
+quickselect@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/quickselect/-/quickselect-2.0.0.tgz#f19680a486a5eefb581303e023e98faaf25dd018"
+  integrity sha512-RKJ22hX8mHe3Y6wH/N3wCM6BWtjaxIyyUIkpHOvfFnxdI4yD4tBXEBKSbriGujF6jnSVkJrffuo6vxACiSSxIw==
+
 quote-stream@~0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/quote-stream/-/quote-stream-0.0.0.tgz#cde29e94c409b16e19dc7098b89b6658f9721d3b"
@@ -14662,6 +14668,11 @@ vega-hierarchy@~4.0.6:
     vega-dataflow "^5.5.1"
     vega-util "^1.13.2"
 
+vega-lite-api@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/vega-lite-api/-/vega-lite-api-0.11.0.tgz#10e53fbeda7dd18ed01be6aa04968cc3062e7f05"
+  integrity sha512-1DdcP+o7Usg7TL0z2uO6JkjZ2TIH5Ljjwoyemxc9awwMJYPN1WyKQHeWmy9fuzPUkERfX/pIyEEjA5LX84yvCg==
+
 vega-lite@^4.13.0:
   version "4.13.1"
   resolved "https://registry.yarnpkg.com/vega-lite/-/vega-lite-4.13.1.tgz#e9ee31c76cb93565e287a760700e432e57244064"
@@ -14911,24 +14922,24 @@ viewport-mercator-project@>=6.0.0:
   dependencies:
     "@math.gl/web-mercator" "^3.1.3"
 
-vitessce-grid@0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/vitessce-grid/-/vitessce-grid-0.0.7.tgz#55c99061a999efdd775eff9ac407b6a2bdd9df06"
-  integrity sha512-M4dFbXCtlImN4lqfCcCgD96QRAqir+T8Yz/1faG+zBPUTVy6fvnqHjU+31gaEC/9inEdZWcyz2ePS7tVv7Jy0Q==
+vitessce-grid@0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/vitessce-grid/-/vitessce-grid-0.0.9.tgz#2c31ce79b8ee7e786f458490549a8020c2ddf6b8"
+  integrity sha512-R+7+qo2zFKuffUO6l2WG1xoT7idMK9Pg6639/psRvNnvev6s7XQZ/3rjSoiX8yIpZcL3Z6NllEWdc4OQ2Ged1w==
   dependencies:
     prop-types "^15.7.2"
     react "^16.8.6"
     react-dom "^16.8.6"
     react-grid-layout "^0.16.6"
 
-vitessce@^0.1.3:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/vitessce/-/vitessce-0.1.4.tgz#034639296a4fd6ea15b9842513012592446c0b65"
-  integrity sha512-EshzUyQvAx68hGkWr4wXGhVN1n2dkWTrCu4vRcFX9s6mTp+ufmb5rAjqqcxC2e+eRVm9NNog/bdJxbro5rXV6w==
+vitessce@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/vitessce/-/vitessce-0.1.6.tgz#57f067efd4d0ff42deb2640bf809ec45e8065bb1"
+  integrity sha512-bXU5kAi3z7fE9sSr8UUBCf7ldpxxLToAn7JQq+LbJrOP51efUKGUZx5bLS/2lmao4hkUXXXG6a10QaOJ/SKWkQ==
   dependencies:
     "@deck.gl/core" "8.1.0"
     "@deck.gl/layers" "8.1.0"
-    "@hubmap/vitessce-image-viewer" "^0.2.5"
+    "@hubmap/vitessce-image-viewer" "^0.2.11"
     "@loaders.gl/3d-tiles" "2.0.2"
     "@loaders.gl/core" "2.0.2"
     "@loaders.gl/loader-utils" "2.0.2"
@@ -14944,10 +14955,11 @@ vitessce@^0.1.3:
     "@turf/helpers" "^6.1.4"
     ajv "^6.10.0"
     classnames "^2.2.6"
+    d3-array "^2.4.0"
     d3-dsv "^1.1.1"
     d3-scale-chromatic "^1.3.3"
     deck.gl "8.1.0"
-    higlass "^1.9.3"
+    higlass "^1.9.5"
     json2csv "^4.5.2"
     lodash "^4.17.15"
     math.gl "^3.1.3"
@@ -14959,12 +14971,17 @@ vitessce@^0.1.3:
     rc-tooltip "^4.0.3"
     rc-tree "2.1.0"
     react-color "^2.18.0"
+    react-vega "^7.3.0"
     short-number "^1.0.6"
     store "^2.0.12"
     tinycolor2 "^1.4.1"
     turf "^3.0.14"
     uuid "^3.3.2"
-    vitessce-grid "0.0.7"
+    vega "^5.13.0"
+    vega-lite "^4.13.0"
+    vega-lite-api "^0.11.0"
+    vega-tooltip "^0.23.0"
+    vitessce-grid "0.0.9"
     whatwg-fetch "^3.0.0"
 
 vkbeautify@^0.99.3:
@@ -15411,7 +15428,7 @@ yup@^0.27.0:
     synchronous-promise "^2.0.6"
     toposort "^2.0.2"
 
-zarr@^0.3.0-beta.0:
+zarr@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/zarr/-/zarr-0.3.0.tgz#232fd35eea3a40009b74ce5a1460179144fb064a"
   integrity sha512-LKT2PugbaySj3M7i/bYIIr1eN4mvBYSrveWuTQK+2ZRgDjqNzt8va0rNCIv3s9dXfJhIIKrvUyftPrJG3lj/Fg==
