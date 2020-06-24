@@ -4,7 +4,7 @@ import {
   LOAD_CELL_SETS, UPDATE_CELL_SETS, CREATE_CLUSTER, LOAD_CELLS,
   CELL_SETS_COLOR, UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES,
   BUILD_HEATMAP_SPEC, UPDATE_GENE_EXPRESSION, UPDATE_HEATMAP_SPEC,
-  LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR, UPDATE_CELL_INFO,
+  LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR, UPDATE_CELL_INFO, SET_FOCUSED_GENE,
 } from '../actions/actionType';
 import initialSpec from '../../utils/heatmapSpec';
 
@@ -171,6 +171,26 @@ const cellInfoReducer = (state = {}, action) => {
   }
 };
 
+const focusedGeneReducer = (state = {}, action) => {
+  switch (action.type) {
+    case SET_FOCUSED_GENE:
+      if (action.data.cellsColoring) {
+        return {
+          ...state,
+          cellsColoring: action.data.cellsColoring,
+          geneName: action.data.geneName,
+          isLoading: action.data.isLoading,
+        };
+      }
+      return {
+        ...state,
+        ...action.data,
+      };
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   cellSets: cellSetsReducer,
   cellSetsColor: cellSetsColorReducer,
@@ -181,4 +201,5 @@ export default combineReducers({
   geneExperessionData: heatmapDataReducer,
   diffExpr: diffExprReducer,
   cellInfo: cellInfoReducer,
+  focusedGene: focusedGeneReducer,
 });

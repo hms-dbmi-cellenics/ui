@@ -1,0 +1,7 @@
+.ant-table-cell .anticon.anticon-eye {
+    visibility: hidden;
+}
+
+.ant-table-cell:hover .anticon.anticon-eye {
+    visibility: visible;
+}
