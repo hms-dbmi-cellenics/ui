@@ -262,7 +262,7 @@ const loadDiffExpr = (
 };
 
 const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
-  const { selectedGenes, geneExperessionData } = getState();
+  const { selectedGenes, geneExpressionData } = getState();
   selectedGenes.geneList = selectedGenes.geneList || {};
   let newGenesAdded = false;
   genes.forEach((gene) => {
@@ -275,8 +275,8 @@ const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
       }
     } else {
       delete selectedGenes.geneList[gene];
-      const foundGene = geneExperessionData.data.findIndex((g) => g.geneName === gene);
-      geneExperessionData.data.splice(foundGene, 1);
+      const foundGene = geneExpressionData.data.findIndex((g) => g.geneName === gene);
+      geneExpressionData.data.splice(foundGene, 1);
     }
   });
   let showAxes = false;
@@ -291,7 +291,7 @@ const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
   dispatch({
     type: UPDATE_HEATMAP_SPEC,
     data: {
-      genes: geneExperessionData.data,
+      genes: geneExpressionData.data,
       rendering: true,
       showAxes,
     },
@@ -306,8 +306,8 @@ const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
 };
 
 const loadGeneExpression = (experimentId) => (dispatch, getState) => {
-  const { geneExperessionData } = getState();
-  if (geneExperessionData?.isLoading) {
+  const { geneExpressionData } = getState();
+  if (geneExpressionData?.isLoading) {
     return null;
   }
   const { newGenesAdded, geneList } = getState().selectedGenes;
@@ -342,7 +342,7 @@ const loadGeneExpression = (experimentId) => (dispatch, getState) => {
 
     return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
       const heatMapData = JSON.parse(res.results[0].body);
-      const { data } = getState().geneExperessionData;
+      const { data } = getState().geneExpressionData;
       if (data) {
         Array.prototype.push.apply(heatMapData.data, data);
       }
@@ -357,7 +357,7 @@ const loadGeneExpression = (experimentId) => (dispatch, getState) => {
       dispatch({
         type: BUILD_HEATMAP_SPEC,
         data: {
-          geneExperessionData: heatMapData,
+          geneExpressionData: heatMapData,
         },
       });
     });

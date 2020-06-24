@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Table, Space } from 'antd';
+import {
+  Table, Space, Button, Typography,
+} from 'antd';
 import PropTypes from 'prop-types';
 import FilterGenes from './FilterGenes';
 import {
@@ -10,6 +12,8 @@ import {
   setFocusedGene,
 } from '../../../../redux/actions';
 import GeneLookupButton from './GeneLookupButton';
+
+const { Text } = Typography;
 
 const GeneListTool = (props) => {
   const { experimentID } = props;
@@ -109,13 +113,37 @@ const GeneListTool = (props) => {
     onSelectAll: (selected, selectedRows, changeRows) => {
       const genes = [];
       changeRows.forEach((row) => genes.push(row.gene_names));
+
       dispatch(updateSelectedGenes(genes, selected, experimentID));
       dispatch(loadGeneExpression(experimentID));
     },
   };
 
+  const clearAll = () => {
+    dispatch(updateSelectedGenes(selectedRowKeys, false, experimentID));
+    dispatch(loadGeneExpression(experimentID));
+  };
+
+  const selectionIndicator = () => {
+    if (selectedRowKeys.length === 0) {
+      return <></>;
+    }
+    return (
+      <Text type='secondary'>
+        {selectedRowKeys.length}
+        {' '}
+        gene
+        {selectedRowKeys.length === 1 ? '' : 's'}
+        {' '}
+        selected
+        <Button type='link' onClick={clearAll}>Clear</Button>
+      </Text>
+    );
+  };
+
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
+      {selectionIndicator()}
       <FilterGenes filterGenes={filterGenes} />
       <Table
         columns={columns}

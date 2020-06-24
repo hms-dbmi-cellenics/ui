@@ -9,7 +9,6 @@ import connectionPromise from '../../../utils/socketConnection';
 
 jest.mock('../../../utils/socketConnection');
 
-const finished = new Promise(() => { });
 const mockOn = jest.fn(async (x, f) => {
   const res = {
     results: [
@@ -26,9 +25,7 @@ const mockOn = jest.fn(async (x, f) => {
       },
     ],
   };
-  f(res).then((result) => {
-    finished.resolve(result);
-  }).catch((e) => { console.log('****** ', e); finished.reject(e); });
+  f(res);
 });
 const mockEmit = jest.fn();
 const io = { emit: mockEmit, on: mockOn };
@@ -45,7 +42,7 @@ describe('updateSelectedGenes action', () => {
   it('Fires correctly with select gene', () => {
     const getState = () => ({
       selectedGenes: {},
-      geneExperessionData: {},
+      geneExpressionData: {},
     });
     updateSelectedGenes(['G1'], true)(dispatch, getState);
     expect(dispatch).toBeCalledTimes(2);
@@ -69,7 +66,7 @@ describe('updateSelectedGenes action', () => {
           G1: true,
         },
       },
-      geneExperessionData: {
+      geneExpressionData: {
         cells: ['C1', 'C2'],
         data: [
           {
@@ -104,7 +101,7 @@ describe('updateSelectedGenes action', () => {
   it('axes is removed when more than 30 genes are selected', () => {
     const getState = () => ({
       selectedGenes: {},
-      geneExperessionData: {},
+      geneExpressionData: {},
     });
     updateSelectedGenes(['G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'G11', 'G12', 'G13', 'G14', 'G15', 'G16', 'G17', 'G18', 'G19', 'G20', 'G21', 'G22', 'G23', 'G24', 'G25', 'G26', 'G27', 'G28', 'G29', 'G30'], true)(dispatch, getState);
     expect(dispatch).toBeCalledTimes(2);
@@ -135,7 +132,7 @@ describe('loadGeneExpression action', () => {
         },
         newGenesAdded: true,
       },
-      geneExperessionData: { isLoading: false },
+      geneExpressionData: { isLoading: false },
     });
     await loadGeneExpression('expId')(dispatch, getState);
 
@@ -168,7 +165,7 @@ describe('loadGeneExpression action', () => {
     expect(dispatch).toBeCalledWith({
       type: types.BUILD_HEATMAP_SPEC,
       data: {
-        geneExperessionData: {
+        geneExpressionData: {
           cells: ['C1', 'C2'],
           data: [
             { geneName: 'G1', expression: [1, 2] },

@@ -27,7 +27,7 @@ class ExplorationViewPage extends React.Component {
         renderer: () => <CellSetsTool experimentID={experimentId} />,
       },
       {
-        name: 'Gene set',
+        name: 'Gene list',
         description: 'Find, organize, and annotate genes in your data set.',
         key: '2',
         renderer: () => <GeneListTool experimentID={experimentId} />,
