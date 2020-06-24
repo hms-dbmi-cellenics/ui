@@ -112,10 +112,10 @@ const geneSelectReducer = (state = {}, action) => {
 const heatmapSpecReducer = (state = {}, action) => {
   switch (action.type) {
     case BUILD_HEATMAP_SPEC:
-      initialSpec.data[0].values = action.data.geneExperessionData
-        ? action.data.geneExperessionData.cells : [];
-      initialSpec.data[1].values = action.data.geneExperessionData
-        ? action.data.geneExperessionData.data : [];
+      initialSpec.data[0].values = action.data.geneExpressionData
+        ? action.data.geneExpressionData.cells : [];
+      initialSpec.data[1].values = action.data.geneExpressionData
+        ? action.data.geneExpressionData.data : [];
       return {
         ...state,
         ...initialSpec,
@@ -198,7 +198,7 @@ export default combineReducers({
   geneList: geneListReducer,
   selectedGenes: geneSelectReducer,
   heatmapSpec: heatmapSpecReducer,
-  geneExperessionData: heatmapDataReducer,
+  geneExpressionData: heatmapDataReducer,
   diffExpr: diffExprReducer,
   cellInfo: cellInfoReducer,
   focusedGene: focusedGeneReducer,

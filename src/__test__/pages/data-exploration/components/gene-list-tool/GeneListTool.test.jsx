@@ -156,6 +156,7 @@ describe('GeneListTool', () => {
         },
       },
       selectedGenes: { geneList: {} },
+      geneExpressiondata: { data: {} },
     });
 
     component = mount(
@@ -204,9 +205,12 @@ describe('GeneListTool', () => {
       order: 'ascend',
     };
 
-    const finished = new Promise(() => { });
+    let outsideResolve;
+    const finished = new Promise((resolve) => {
+      outsideResolve = resolve;
+    });
 
-    mockOn = jest.fn(async (x, f) => {
+    mockOn = jest.fn((x, f) => {
       const res = {
         results: [
           {
@@ -220,9 +224,9 @@ describe('GeneListTool', () => {
           },
         ],
       };
-      f(res).then((result) => {
-        finished.resolve(result);
-      }).catch((e) => { console.log('****** ', e); finished.reject(e); });
+
+      f(res);
+      outsideResolve(res);
     });
 
     mockEmit = jest.fn();
@@ -237,12 +241,12 @@ describe('GeneListTool', () => {
     table.getElement().props.onChange(newPagination, _, newSorter);
     table.update();
 
-    finished.then((result) => {
+    return finished.then((result) => {
       console.log(result);
       expect(store.getActions().length).toEqual(2);
       expect(store.getActions()[0].type).toEqual('GENE_LIST.LOAD');
       expect(store.getActions()[1].type).toEqual('GENE_LIST.UPDATE');
-      expect(mockEmit).toHaveBeenCalledWith('WorkRequest');
+      expect(mockEmit).toHaveBeenCalledWith('WorkRequest', expect.anything());
       expect(mockEmit).toHaveBeenCalledTimes(1);
       expect(mockOn).toHaveBeenCalledTimes(1);
     });

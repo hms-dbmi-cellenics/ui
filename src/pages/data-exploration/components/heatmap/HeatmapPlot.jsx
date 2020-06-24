@@ -5,7 +5,7 @@ import VegaHeatmap from './VegaHeatmap';
 
 const HeatmapPlot = () => {
   const heatmapSpec = useSelector((state) => state.heatmapSpec);
-  const geneExperessionData = useSelector((state) => state.geneExperessionData);
+  const geneExpressionData = useSelector((state) => state.geneExpressionData);
   const selectedGenes = useSelector((state) => state.selectedGenes);
   const showAxes = useSelector((state) => state.heatmapSpec?.showAxes);
 
@@ -15,7 +15,7 @@ const HeatmapPlot = () => {
         <Empty
           description={(
             <span>
-              Please select Gene(s) from Gene Set tool
+              Please select gene(s) from the Gene list tool
             </span>
           )}
         />
@@ -23,7 +23,7 @@ const HeatmapPlot = () => {
     );
   }
 
-  if (geneExperessionData.isLoading || heatmapSpec.rendering) {
+  if (geneExpressionData.isLoading || heatmapSpec.rendering) {
     return (<center><Spin size='large' /></center>);
   }
 

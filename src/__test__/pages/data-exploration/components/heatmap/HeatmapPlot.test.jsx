@@ -38,7 +38,7 @@ describe('HeatmapPlot', () => {
           G1: true,
         },
       },
-      geneExperessionData: { isLoading: true },
+      geneExpressionData: { isLoading: true },
     });
 
     component = mount(
@@ -56,7 +56,7 @@ describe('HeatmapPlot', () => {
           G1: true,
         },
       },
-      geneExperessionData: { isLoading: false },
+      geneExpressionData: { isLoading: false },
       heatmapSpec: { rendering: true },
     });
 
@@ -75,7 +75,7 @@ describe('HeatmapPlot', () => {
           G1: true,
         },
       },
-      geneExperessionData: { isLoading: false },
+      geneExpressionData: { isLoading: false },
       heatmapSpec: { rendering: false },
     });
 
