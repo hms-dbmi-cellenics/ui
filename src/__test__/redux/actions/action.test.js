@@ -1,5 +1,8 @@
 import {
-  updateSelectedGenes, loadGeneExpression, updateCellInfo,
+  updateSelectedGenes,
+  loadGeneExpression,
+  updateCellInfo,
+  setFocusedGene,
 } from '../../../redux/actions';
 import * as types from '../../../redux/actions/actionType';
 import connectionPromise from '../../../utils/socketConnection';
@@ -17,6 +20,8 @@ const mockOn = jest.fn(async (x, f) => {
             { geneName: 'G1', expression: [1, 2] },
             { geneName: 'G2', expression: [1, 2] },
           ],
+          minExpression: 0,
+          maxExpression: 10,
         }),
       },
     ],
@@ -154,6 +159,8 @@ describe('loadGeneExpression action', () => {
             { geneName: 'G1', expression: [1, 2] },
             { geneName: 'G2', expression: [1, 2] },
           ],
+          minExpression: 0,
+          maxExpression: 10,
         },
         isLoading: false,
       },
@@ -167,6 +174,8 @@ describe('loadGeneExpression action', () => {
             { geneName: 'G1', expression: [1, 2] },
             { geneName: 'G2', expression: [1, 2] },
           ],
+          minExpression: 0,
+          maxExpression: 10,
         },
       },
     });
@@ -192,6 +201,73 @@ describe('updateCellInfo action', () => {
         expression: 1,
       },
       type: types.UPDATE_CELL_INFO,
+    });
+  });
+});
+
+describe('setFocusedGene action', () => {
+  beforeEach(() => {
+    dispatch = jest.fn();
+  });
+  it('Get focused gene from store', async () => {
+    const getState = () => ({
+      selectedGenes: {
+        geneList: {
+          G1: true,
+        },
+      },
+      geneExperessionData: {
+        cells: ['C1'],
+        data: [{ geneName: 'G1', expression: [1] }],
+        minExpression: 0,
+        maxExpression: 10,
+        isLoading: false,
+      },
+    });
+    await setFocusedGene('G1', 'expId')(dispatch, getState);
+
+    expect(dispatch).toBeCalledTimes(1);
+    expect(dispatch).toBeCalledWith({
+      data: {
+        cellsColoring: {
+          C1: [72, 36, 117],
+        },
+        geneName: 'G1',
+        isLoading: false,
+      },
+      type: types.SET_FOCUSED_GENE,
+    });
+  });
+  it('Get focused gene from API', async () => {
+    const getState = () => ({
+      selectedGenes: {},
+      geneExperessionData: {
+        cells: ['C1'],
+        data: [{ geneName: 'G1', expression: [1] }],
+        minExpression: 0,
+        maxExpression: 10,
+        isLoading: false,
+      },
+    });
+    await setFocusedGene('G1', 'expId')(dispatch, getState);
+
+    expect(dispatch).toBeCalledTimes(2);
+    expect(dispatch).toBeCalledWith({
+      data: {
+        isLoading: true,
+      },
+      type: types.SET_FOCUSED_GENE,
+    });
+    expect(dispatch).toBeCalledWith({
+      data: {
+        cellsColoring: {
+          C1: [72, 36, 117],
+          C2: [65, 68, 135],
+        },
+        geneName: 'G1',
+        isLoading: false,
+      },
+      type: types.SET_FOCUSED_GENE,
     });
   });
 });

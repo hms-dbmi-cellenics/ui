@@ -40,6 +40,7 @@ describe('Embedding', () => {
         ],
       },
       cellInfo: {},
+      focusedGene: {},
     });
 
     component = mount(

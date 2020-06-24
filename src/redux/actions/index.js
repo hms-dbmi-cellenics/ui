@@ -5,10 +5,11 @@ import {
   CREATE_CLUSTER, CELL_SETS_COLOR,
   UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES, UPDATE_GENE_EXPRESSION,
   LOAD_CELLS, BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
-  UPDATE_CELL_INFO,
+  UPDATE_CELL_INFO, SET_FOCUSED_GENE,
 } from './actionType';
 import sendWork from '../../utils/sendWork';
 import getApiEndpoint from '../../utils/apiEndpoint';
+import { createColorScale } from '../../utils/embeddingPlotHelperFunctions/helpers';
 
 const TIMEOUT_SECONDS = 30;
 
@@ -56,7 +57,7 @@ const refreshCellSets = (experimentId) => (dispatch) => {
 
 const updateCellSets = (experimentId, newState) => (dispatch, getState) => {
   if (getState().cellSets.data === newState) {
-    return Promise.resolve();
+    return null;
   }
 
   dispatch({
@@ -372,6 +373,60 @@ const updateCellInfo = (cellData) => (dispatch) => {
   });
 };
 
+const setFocusedGene = (geneName, experimentId) => (dispatch, getState) => {
+  const { selectedGenes } = getState();
+  if (selectedGenes?.geneList) {
+    let foundGene = selectedGenes.geneList[geneName];
+    if (foundGene) {
+      const { geneExperessionData } = getState();
+      foundGene = geneExperessionData.data.find((obj) => obj.geneName === geneName);
+      const cellsColoring = createColorScale(
+        geneExperessionData.cells,
+        foundGene.expression,
+        geneExperessionData.minExpression,
+        geneExperessionData.maxExpression,
+      );
+      return dispatch({
+        type: SET_FOCUSED_GENE,
+        data: {
+          cellsColoring,
+          geneName,
+          isLoading: false,
+        },
+      });
+    }
+  }
+  dispatch({
+    type: SET_FOCUSED_GENE,
+    data: {
+      isLoading: true,
+    },
+  });
+  const body = {
+    name: 'GeneExpression',
+    cellSets: 'all',
+    genes: [geneName],
+  };
+
+  return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
+    const geneExpressionData = JSON.parse(res.results[0].body);
+    const cellsColoring = createColorScale(
+      geneExpressionData.cells,
+      geneExpressionData.data[0].expression,
+      geneExpressionData.minExpression,
+      geneExpressionData.maxExpression,
+    );
+    dispatch({
+      type: SET_FOCUSED_GENE,
+      data: {
+        cellsColoring,
+        geneName,
+        isLoading: false,
+      },
+    });
+  });
+};
+
 export {
   loadCellSets,
   updateCellSets,
@@ -385,4 +440,5 @@ export {
   loadGeneExpression,
   loadDiffExpr,
   updateCellInfo,
+  setFocusedGene,
 };

@@ -7,7 +7,9 @@ import {
   updateGeneList,
   updateSelectedGenes,
   loadGeneExpression,
+  setFocusedGene,
 } from '../../../../redux/actions';
+import GeneLookupButton from './GeneLookupButton';
 
 const GeneListTool = (props) => {
   const { experimentID } = props;
@@ -38,6 +40,13 @@ const GeneListTool = (props) => {
     dispatch(updateGeneList(experimentID, defaultState));
   }
 
+  if (rows) {
+    rows.forEach((row) => {
+      // eslint-disable-next-line no-param-reassign
+      row.lookup = <GeneLookupButton />;
+    });
+  }
+
   const getSortOrderIfExists = (key) => {
     if (key === tableState?.sorter.columnKey) {
       return tableState.sorter.order;
@@ -61,6 +70,11 @@ const GeneListTool = (props) => {
         </a>
       ),
       sortOrder: getSortOrderIfExists('gene_names'),
+    },
+    {
+      title: '',
+      dataIndex: 'lookup',
+      key: 'lookup',
     },
     {
       title: 'Dispersion',
@@ -117,6 +131,11 @@ const GeneListTool = (props) => {
           selectedRowKeys,
           ...rowSelection,
         }}
+        onRow={(record) => ({
+          onClick: () => {
+            dispatch(setFocusedGene(record.key, experimentID));
+          },
+        })}
       />
     </Space>
   );

@@ -177,9 +177,10 @@ describe('GeneListTool', () => {
     expect(spin.length).toEqual(1);
     expect(table.length).toEqual(1);
     expect(genesFilter.length).toEqual(1);
-    expect(table.getElement().props.columns.length).toEqual(2);
+    expect(table.getElement().props.columns.length).toEqual(3);
     expect(table.getElement().props.columns[0].title).toEqual('Gene');
-    expect(table.getElement().props.columns[1].title).toEqual('Dispersion');
+    expect(table.getElement().props.columns[1].key).toEqual('lookup');
+    expect(table.getElement().props.columns[2].title).toEqual('Dispersion');
     expect(table.getElement().props.dataSource.length).toEqual(19);
     expect(table.getElement().props.data.length).toEqual(15);
   });

@@ -38,6 +38,7 @@ const Embedding = (props) => {
   const cells = useSelector((state) => state.cells.data);
   const colorData = useSelector((state) => state.cellSetsColor.data);
   const cellInfo = useSelector((state) => state.cellInfo);
+  const focusedGene = useSelector((state) => state.focusedGene);
 
   useEffect(() => {
     if (!cells) {
@@ -45,13 +46,13 @@ const Embedding = (props) => {
     }
   }, []);
 
-  if (!cells) {
+  if (!cells || focusedGene.isLoading) {
     return (<center><Spin size='large' /></center>);
   }
 
-  const cellColors = convertColorData(colorData);
+  const cellColors = _.cloneDeep(focusedGene.cellsColoring) || convertColorData(colorData);
   if (cellInfo.cellName) {
-    cellColors[cellInfo.cellName] = [30, 30, 30];
+    cellColors[cellInfo.cellName] = [0, 0, 0];
   }
 
   const updateCellsHover = (cell) => {
@@ -93,6 +94,12 @@ const Embedding = (props) => {
         onMouseUpdate(e);
       }}
     >
+      {focusedGene.geneName ? (
+        <div>
+          Gene name:
+          <b>{focusedGene.geneName}</b>
+        </div>
+      ) : <div />}
       <Scatterplot
         uuid={uuid}
         view={view}
