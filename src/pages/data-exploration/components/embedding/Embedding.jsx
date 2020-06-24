@@ -101,6 +101,8 @@ const Embedding = (props) => {
         </div>
       ) : <div />}
       <Scatterplot
+        cellOpacity={0.1}
+        cellRadiusScale={0.1}
         uuid={uuid}
         view={view}
         cells={convertCellsData(cells)}
