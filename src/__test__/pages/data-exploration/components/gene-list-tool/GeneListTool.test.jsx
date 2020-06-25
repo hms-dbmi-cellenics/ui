@@ -241,8 +241,7 @@ describe('GeneListTool', () => {
     table.getElement().props.onChange(newPagination, _, newSorter);
     table.update();
 
-    return finished.then((result) => {
-      console.log(result);
+    return finished.then(() => {
       expect(store.getActions().length).toEqual(2);
       expect(store.getActions()[0].type).toEqual('GENE_LIST.LOAD');
       expect(store.getActions()[1].type).toEqual('GENE_LIST.UPDATE');
