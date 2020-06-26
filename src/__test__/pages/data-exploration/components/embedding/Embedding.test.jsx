@@ -1,15 +1,17 @@
 import React from 'react';
+import {
+  Provider,
+} from 'react-redux';
 import { act } from 'react-dom/test-utils';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { Provider } from 'react-redux';
+
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/extensions
 import { Scatterplot } from 'vitessce/dist/es/production/scatterplot.min.js';
 import Embedding from '../../../../../pages/data-exploration/components/embedding/Embedding';
-
 
 const mockStore = configureMockStore([thunk]);
 let component;
@@ -154,5 +156,50 @@ describe('Embedding', () => {
     expect(store.getActions().length).toEqual(1);
     expect(store.getActions()[0].type).toEqual('UPDATE_CELL_INFO');
     expect(store.getActions()[0].data.cellName).toEqual(hoveredCell.cellId);
+  });
+
+  test('the gene expression view gets rendered correctly', () => {
+    const geneExprStore = mockStore({
+      cells: {
+        data: {
+          1: [-13, 32],
+          2: [6, 7],
+          3: [43, 9],
+          4: [57, 3],
+        },
+      },
+      cellSetsColor: {
+        data: [
+          {
+            color: '#ff0000',
+            cellIds: ['1', '2', '3', '4'],
+          },
+        ],
+      },
+      cellInfo: {},
+      focusedGene: {
+        cells: ['1', '2', '3', '4'],
+        expression: [0, 0.4, 0.5, 1.6],
+        geneName: 'A',
+        maxExpression: 1.6,
+        minExpression: 0,
+        isLoading: false,
+      },
+    });
+
+    const embedding = mount(
+      <Provider store={geneExprStore}>
+        <Embedding experimentID='1234' embeddingType='pca' />
+      </Provider>,
+    );
+
+    const geneExprInfo = embedding.find('Embedding div.vitessce-container').children().at(0);
+    expect(geneExprInfo.length).toEqual(1);
+    expect(geneExprInfo.props().children[1].type).toEqual('b');
+    expect(geneExprInfo.props().children[1].props.children).toEqual('A');
+
+    const legend = embedding.find('Embedding div.vitessce-container').children().at(2);
+    expect(legend.length).toEqual(1);
+    expect(legend.props().children.type).toEqual('img');
   });
 });

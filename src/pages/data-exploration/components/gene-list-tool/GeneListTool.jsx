@@ -131,11 +131,9 @@ const GeneListTool = (props) => {
     return (
       <Text type='secondary'>
         {selectedRowKeys.length}
-        {' '}
-        gene
+        &nbsp;gene
         {selectedRowKeys.length === 1 ? '' : 's'}
-        {' '}
-        selected
+        &nbsp;selected
         <Button type='link' onClick={clearAll}>Clear</Button>
       </Text>
     );
@@ -152,7 +150,7 @@ const GeneListTool = (props) => {
         size='small'
         pagination={tableState?.pagination}
         sorter={tableState?.sorter}
-        scroll={{ x: 200, y: 500 }}
+        scroll={{ x: 200, y: 400 }}
         onChange={handleTableChange}
         rowSelection={{
           type: 'checkbox',

@@ -213,7 +213,7 @@ describe('setFocusedGene action', () => {
           G1: true,
         },
       },
-      geneExperessionData: {
+      geneExpressionData: {
         cells: ['C1'],
         data: [{ geneName: 'G1', expression: [1] }],
         minExpression: 0,
@@ -226,10 +226,11 @@ describe('setFocusedGene action', () => {
     expect(dispatch).toBeCalledTimes(1);
     expect(dispatch).toBeCalledWith({
       data: {
-        cellsColoring: {
-          C1: [72, 36, 117],
-        },
+        cells: ['C1'],
+        expression: [1],
         geneName: 'G1',
+        minExpression: 0,
+        maxExpression: 10,
         isLoading: false,
       },
       type: types.SET_FOCUSED_GENE,
@@ -257,10 +258,10 @@ describe('setFocusedGene action', () => {
     });
     expect(dispatch).toBeCalledWith({
       data: {
-        cellsColoring: {
-          C1: [72, 36, 117],
-          C2: [65, 68, 135],
-        },
+        cells: ['C1', 'C2'],
+        expression: [1, 2],
+        minExpression: 0,
+        maxExpression: 10,
         geneName: 'G1',
         isLoading: false,
       },

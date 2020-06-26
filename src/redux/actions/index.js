@@ -9,7 +9,6 @@ import {
 } from './actionType';
 import sendWork from '../../utils/sendWork';
 import getApiEndpoint from '../../utils/apiEndpoint';
-import { createColorScale } from '../../utils/embeddingPlotHelperFunctions/helpers';
 
 const TIMEOUT_SECONDS = 30;
 
@@ -118,6 +117,12 @@ const createCluster = (experimentId, cellSetInfo, clusterName, color) => (dispat
 
 const cellSetsColor = (colorData) => (dispatch, getState) => {
   if (getState().cells.data) {
+    dispatch(
+      {
+        type: SET_FOCUSED_GENE,
+        data: {},
+      },
+    );
     return dispatch({
       type: CELL_SETS_COLOR,
       data: colorData,
@@ -376,21 +381,18 @@ const updateCellInfo = (cellData) => (dispatch) => {
 const setFocusedGene = (geneName, experimentId) => (dispatch, getState) => {
   const { selectedGenes } = getState();
   if (selectedGenes?.geneList) {
-    let foundGene = selectedGenes.geneList[geneName];
-    if (foundGene) {
-      const { geneExperessionData } = getState();
-      foundGene = geneExperessionData.data.find((obj) => obj.geneName === geneName);
-      const cellsColoring = createColorScale(
-        geneExperessionData.cells,
-        foundGene.expression,
-        geneExperessionData.minExpression,
-        geneExperessionData.maxExpression,
-      );
+    let foundGeneName = selectedGenes.geneList[geneName];
+    if (foundGeneName) {
+      const { geneExpressionData } = getState();
+      foundGeneName = geneExpressionData.data.find((obj) => obj.geneName === geneName);
       return dispatch({
         type: SET_FOCUSED_GENE,
         data: {
-          cellsColoring,
+          cells: geneExpressionData.cells,
+          expression: foundGeneName.expression,
           geneName,
+          minExpression: geneExpressionData.minExpression,
+          maxExpression: geneExpressionData.maxExpression,
           isLoading: false,
         },
       });
@@ -402,6 +404,7 @@ const setFocusedGene = (geneName, experimentId) => (dispatch, getState) => {
       isLoading: true,
     },
   });
+
   const body = {
     name: 'GeneExpression',
     cellSets: 'all',
@@ -410,17 +413,14 @@ const setFocusedGene = (geneName, experimentId) => (dispatch, getState) => {
 
   return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
     const geneExpressionData = JSON.parse(res.results[0].body);
-    const cellsColoring = createColorScale(
-      geneExpressionData.cells,
-      geneExpressionData.data[0].expression,
-      geneExpressionData.minExpression,
-      geneExpressionData.maxExpression,
-    );
     dispatch({
       type: SET_FOCUSED_GENE,
       data: {
-        cellsColoring,
+        cells: geneExpressionData.cells,
+        expression: geneExpressionData.data[0].expression,
         geneName,
+        minExpression: geneExpressionData.minExpression,
+        maxExpression: geneExpressionData.maxExpression,
         isLoading: false,
       },
     });

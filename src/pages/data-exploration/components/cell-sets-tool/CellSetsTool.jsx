@@ -6,7 +6,7 @@ import {
 import PropTypes from 'prop-types';
 
 import {
-  Skeleton, Space, Button,
+  Skeleton, Space, Button, Tooltip,
 } from 'antd';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
@@ -88,7 +88,9 @@ const CellSetsTool = (props) => {
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
       <Space style={{ width: '100%' }}>
-        <Button type='primary' size='small' onClick={recluster}>Recluster</Button>
+        <Tooltip title='Reset clusters to the initial state'>
+          <Button type='primary' size='small' onClick={recluster}>Recluster</Button>
+        </Tooltip>
       </Space>
       {
         renderHierarchicalTree()

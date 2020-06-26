@@ -5,7 +5,7 @@ import {
 } from '@ant-design/icons';
 
 import {
-  Input, Dropdown, Menu, Typography, Button,
+  Input, Dropdown, Menu, Typography,
 } from 'antd';
 
 const { Text } = Typography;
