@@ -10,12 +10,15 @@ import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import { loadCells, createCluster, updateCellInfo } from '../../../../redux/actions';
 import {
-  convertColorData,
   convertCellsData,
   updateStatus,
   updateViewInfo,
   clearPleaseWait,
+  colorByCellClusters,
+  colorByGeneExpression,
 } from '../../../../utils/embeddingPlotHelperFunctions/helpers';
+
+import legend from '../../../../../static/media/viridis.png';
 
 const _ = require('lodash');
 
@@ -50,15 +53,41 @@ const Embedding = (props) => {
     return (<center><Spin size='large' /></center>);
   }
 
-  const cellColors = _.cloneDeep(focusedGene.cellsColoring) || convertColorData(colorData);
+  const getCellColors = () => {
+    if (focusedGene.geneName) {
+      return colorByGeneExpression(
+        focusedGene.cells,
+        focusedGene.expression,
+        focusedGene.minExpression,
+        focusedGene.maxExpression,
+      );
+    }
+    return colorByCellClusters(colorData);
+  };
+
+  const cellColors = getCellColors();
+
   if (cellInfo.cellName) {
     cellColors[cellInfo.cellName] = [0, 0, 0];
   }
 
   const updateCellsHover = (cell) => {
     if (cell) {
-      dispatch(updateCellInfo({
+      if (focusedGene.geneName) {
+        const cellPosition = focusedGene.cells.indexOf(cell.cellId);
+        if (cellPosition !== -1) {
+          const cellExpression = focusedGene.expression[cellPosition];
+          return dispatch(updateCellInfo({
+            geneName: focusedGene.geneName,
+            cellName: cell.cellId,
+            expression: cellExpression,
+          }));
+        }
+      }
+      return dispatch(updateCellInfo({
         cellName: cell.cellId,
+        geneName: undefined,
+        expression: undefined,
       }));
     }
   };
@@ -95,10 +124,10 @@ const Embedding = (props) => {
       }}
     >
       {focusedGene.geneName ? (
-        <div>
-          Gene name:
+        <label htmlFor='gene name'>
+          Showing expression for gene:&nbsp;
           <b>{focusedGene.geneName}</b>
-        </div>
+        </label>
       ) : <div />}
       <Scatterplot
         cellOpacity={0.1}
@@ -123,6 +152,17 @@ const Embedding = (props) => {
             onCancel={onCancelCreateCluster}
           />
         ) : <></>}
+      {focusedGene.geneName ? (
+        <div>
+          <img
+            src={legend}
+            alt='Gene expression Legend'
+            style={{
+              height: 200, width: 20, position: 'absolute', top: 70,
+            }}
+          />
+        </div>
+      ) : <div />}
     </div>
   );
 };

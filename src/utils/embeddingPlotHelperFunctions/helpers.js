@@ -11,7 +11,7 @@ const hexToRgb = (hex) => {
   return null;
 };
 
-const convertColorData = (colorData) => {
+const colorByCellClusters = (colorData) => {
   const colors = {};
   if (colorData) {
     colorData.forEach((cellSet) => {
@@ -27,7 +27,7 @@ const convertColorData = (colorData) => {
   return colors;
 };
 
-const createColorScale = (cells, expressions, min, max) => {
+const colorByGeneExpression = (cells, expressions, min, max) => {
   const scaleFunction = d3.scaleSequential(d3Chromatic.interpolateViridis)
     .domain([min, max]);
   const cellColoring = {};
@@ -58,10 +58,10 @@ const updateViewInfo = () => { };
 const clearPleaseWait = () => { };
 
 export {
-  convertColorData,
   convertCellsData,
   updateStatus,
   updateViewInfo,
   clearPleaseWait,
-  createColorScale,
+  colorByGeneExpression,
+  colorByCellClusters,
 };

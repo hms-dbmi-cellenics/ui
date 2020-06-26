@@ -23,6 +23,7 @@ const ClusterPopover = (props) => {
           }}
           showDelete={false}
           value={clusterName}
+          defaultEditing
         />
         <ColorPicker
           color={clusterColor}

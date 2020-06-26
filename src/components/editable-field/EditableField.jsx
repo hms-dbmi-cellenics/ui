@@ -11,9 +11,9 @@ import {
 
 const EditableField = (props) => {
   const {
-    value, showDelete, showEdit, onEdit, titleRenderFunction,
+    value, showDelete, showEdit, onEdit, titleRenderFunction, defaultEditing,
   } = props;
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(defaultEditing);
   const [editedValue, setEditedValue] = useState(value);
 
   const deleteEditableField = () => {
@@ -110,6 +110,7 @@ EditableField.defaultProps = {
   titleRenderFunction: (title) => <span>{title}</span>,
   showDelete: true,
   showEdit: true,
+  defaultEditing: false,
 };
 
 EditableField.propTypes = {
@@ -119,6 +120,7 @@ EditableField.propTypes = {
   showDelete: PropTypes.bool,
   showEdit: PropTypes.bool,
   titleRenderFunction: PropTypes.func,
+  defaultEditing: PropTypes.bool,
 };
 
 export default EditableField;
