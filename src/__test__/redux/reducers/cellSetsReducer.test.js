@@ -1,0 +1,278 @@
+import cellSetsReducer from '../../../redux/reducers/cellSetsReducer';
+import initialState from '../../../redux/reducers/cellSetsReducer/initialState';
+
+import {
+  CELL_SETS_LOADING, CELL_SETS_LOADED,
+  CELL_SETS_CREATE,
+  CELL_SETS_UPDATE_PROPERTY, CELL_SETS_UPDATE_HIERARCHY, CELL_SETS_SET_SELECTED,
+  CELL_SETS_DELETE,
+  CELL_SETS_ERROR,
+} from '../../../redux/actionTypes/cellSets';
+
+describe('cellSetsReducer', () => {
+  it('Reduces identical state on unknown action', () => expect(
+    cellSetsReducer(undefined, {
+      action: 'well/this/is/not/a/valid/action',
+      payload: {},
+    }),
+  ).toEqual(initialState));
+
+  it('Sets loading state on loading action', () => {
+    const newState = cellSetsReducer({ ...initialState, loading: false }, {
+      type: CELL_SETS_LOADING,
+    });
+
+    expect(newState.loading).toEqual(true);
+  });
+
+  it('Sets up store properly for loaded cell sets.', () => {
+    const data = [
+      {
+        key: '1',
+        name: 'parent 1',
+        rootNode: true,
+        children: [
+          {
+            key: '1a',
+            name: 'first child',
+            color: '#00FF00',
+          },
+        ],
+      },
+      {
+        key: '2',
+        name: 'parent 2',
+        rootNode: true,
+        children: [],
+      },
+    ];
+
+    const newState = cellSetsReducer(initialState, {
+      type: CELL_SETS_LOADED,
+      payload: {
+        data,
+      },
+    });
+
+    expect(newState.loading).toEqual(false);
+    expect(newState.hierarchy).toEqual([{ key: '1', children: [{ key: '1a' }] }, { key: '2', children: [] }]);
+    expect(newState.properties).toMatchObject({ 1: {}, 2: {}, '1a': {} });
+  });
+
+  it('Adds cells to scratchpad on creation', () => {
+    const data = {
+      key: 'key2',
+      name: 'My Key',
+      color: '#ff00ff',
+      cellIds: [1, 2, 3],
+    };
+
+    const newState = cellSetsReducer({ ...initialState, hierarchy: [{ key: 'scratchpad', children: [] }] }, {
+      type: CELL_SETS_CREATE,
+      payload: data,
+    });
+
+    expect(newState.hierarchy).toMatchObject([{ key: 'scratchpad', children: [{ key: 'key2' }] }]);
+    expect(newState.properties).toMatchObject({ key2: data });
+  });
+
+  it('Updates cell set properties', () => {
+    const state = {
+      ...initialState,
+      properties: {
+        1: {
+          name: 'parent 1',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        2: {
+          name: 'parent 2',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        '1a': {
+          name: 'first child',
+          color: '#00FF00',
+          cellIds: undefined,
+          rootNode: undefined,
+        },
+      },
+      hierarchy: [{ key: '1', children: [{ key: '1a' }] }, { key: '2', children: [] }],
+    };
+
+    const newState = cellSetsReducer(state, {
+      type: CELL_SETS_UPDATE_PROPERTY,
+      payload: {
+        key: '1a',
+        dataUpdated: { name: 'favorite child', color: '#ffffff' },
+      },
+    });
+
+    expect(newState.properties['1a']).toMatchObject({ name: 'favorite child', color: '#ffffff' });
+  });
+
+  it('Hierarchy is updated appropriately', () => {
+    const state = {
+      ...initialState,
+      properties: {
+        1: {
+          name: 'parent 1',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        2: {
+          name: 'parent 2',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        '1a': {
+          name: 'first child',
+          color: '#00FF00',
+          cellIds: undefined,
+          rootNode: undefined,
+        },
+      },
+      hierarchy: [{ key: '1', children: [Array] }, { key: '2', children: [] }],
+    };
+
+    const newState = cellSetsReducer(state, {
+      type: CELL_SETS_UPDATE_HIERARCHY,
+      payload: {
+        hierarchy: [
+          {
+            key: '1',
+            name: 'parent 1',
+            rootNode: true,
+            children: [],
+          },
+          {
+            key: '2',
+            name: 'parent 2',
+            rootNode: true,
+            children: [
+              {
+                key: '1a',
+                name: 'first child',
+                color: '#00FF00',
+              },
+            ],
+          },
+        ],
+        dataUpdated: { name: 'favorite child', color: '#ffffff' },
+      },
+    });
+
+    expect(newState.hierarchy).toMatchObject([{ key: '1', children: [] }, { key: '2', children: [{ key: '1a' }] }]);
+  });
+
+  it('Selected cells are maintained', () => {
+    let newState = cellSetsReducer(initialState, {
+      type: CELL_SETS_SET_SELECTED,
+      payload: {
+        keys: ['a', 'b', 'c'],
+      },
+    });
+
+    expect(newState.selected).toMatchObject(['a', 'b', 'c']);
+
+    newState = cellSetsReducer(initialState, {
+      type: CELL_SETS_SET_SELECTED,
+      payload: {
+        keys: [1, 2, 'c', 3],
+      },
+    });
+
+    expect(newState.selected).toMatchObject([1, 2, 'c', 3]);
+  });
+
+  it('Removes cell sets and their children if root node is removed', () => {
+    const state = {
+      ...initialState,
+      properties: {
+        1: {
+          name: 'parent 1',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        2: {
+          name: 'parent 2',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        '1a': {
+          name: 'first child',
+          color: '#00FF00',
+          cellIds: undefined,
+          rootNode: undefined,
+        },
+      },
+      hierarchy: [{ key: '1', children: [{ key: '1a' }] }, { key: '2', children: [] }],
+    };
+
+    const newState = cellSetsReducer(state, {
+      type: CELL_SETS_DELETE,
+      payload: {
+        key: '1',
+      },
+    });
+
+    expect(Object.keys(newState.properties).length).toEqual(1);
+    expect(newState.hierarchy.length).toEqual(1);
+    expect(newState.hierarchy[0]).toMatchObject({ key: '2', children: [] });
+  });
+
+  it('Removes only child, not parent, when child is removed', () => {
+    const state = {
+      ...initialState,
+      properties: {
+        1: {
+          name: 'parent 1',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        2: {
+          name: 'parent 2',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        '1a': {
+          name: 'first child',
+          color: '#00FF00',
+          cellIds: undefined,
+          rootNode: undefined,
+        },
+      },
+      hierarchy: [{ key: '1', children: [{ key: '1a' }] }, { key: '2', children: [] }],
+    };
+
+    const newState = cellSetsReducer(state, {
+      type: CELL_SETS_DELETE,
+      payload: {
+        key: '1a',
+      },
+    });
+
+    expect(Object.keys(newState.properties).length).toEqual(2);
+    expect(newState.hierarchy.length).toEqual(2);
+    expect(newState.hierarchy).toMatchObject([{ key: '1', children: [] }, { key: '2', children: [] }]);
+  });
+
+  it('Sets error conditions', () => {
+    const newState = cellSetsReducer(initialState, {
+      type: CELL_SETS_ERROR,
+      payload: {
+        error: 'asdsadsa',
+      },
+    });
+
+    expect(newState.error).toEqual('asdsadsa');
+  });
+});

@@ -8,8 +8,12 @@ import PropTypes from 'prop-types';
 import { Spin } from 'antd';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
-import { loadCells, createCluster, updateCellInfo } from '../../../../redux/actions';
+
+import { createCellSet } from '../../../../redux/actions/cellSets';
+import { loadCells, updateCellInfo } from '../../../../redux/actions';
+
 import {
+  renderCellSetColors,
   convertCellsData,
   updateStatus,
   updateViewInfo,
@@ -38,8 +42,10 @@ const Embedding = (props) => {
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
 
+  const cellSetSelected = useSelector((state) => state.cellSets.selected);
+  const cellSetProperties = useSelector((state) => state.cellSets.properties);
+
   const cells = useSelector((state) => state.cells.data);
-  const colorData = useSelector((state) => state.cellSetsColor.data);
   const cellInfo = useSelector((state) => state.cellInfo);
   const focusedGene = useSelector((state) => state.focusedGene);
 
@@ -62,7 +68,7 @@ const Embedding = (props) => {
         focusedGene.maxExpression,
       );
     }
-    return colorByCellClusters(colorData);
+    return renderCellSetColors(cellSetSelected, cellSetProperties);
   };
 
   const cellColors = getCellColors();
@@ -94,7 +100,7 @@ const Embedding = (props) => {
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
-    dispatch(createCluster(experimentID, selectedIds, clusterName, clusterColor));
+    dispatch(createCellSet(experimentID, clusterName, clusterColor, selectedIds));
   };
 
   const onCancelCreateCluster = () => {
@@ -106,13 +112,11 @@ const Embedding = (props) => {
     setSelectedIds(selection);
   };
 
-  const updateCursorPosition = (e) => {
+  const onMouseUpdate = _.throttle((e) => {
     if (!createClusterPopover) {
       hoverPosition.current = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
     }
-  };
-
-  const onMouseUpdate = _.throttle(updateCursorPosition, 1000);
+  }, 1000);
 
   return (
     <div

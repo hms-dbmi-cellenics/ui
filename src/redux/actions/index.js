@@ -1,135 +1,12 @@
 /* eslint-disable no-param-reassign */
-import { v4 as uuidv4 } from 'uuid';
 import {
-  LOAD_CELL_SETS, UPDATE_CELL_SETS, PUSH_CELL_SETS,
-  CREATE_CLUSTER, CELL_SETS_COLOR,
   UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES, UPDATE_GENE_EXPRESSION,
   LOAD_CELLS, BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
   UPDATE_CELL_INFO, SET_FOCUSED_GENE,
-} from './actionType';
+} from '../actionTypes';
 import sendWork from '../../utils/sendWork';
-import getApiEndpoint from '../../utils/apiEndpoint';
 
 const TIMEOUT_SECONDS = 30;
-
-const loadCellSets = (experimentId) => (dispatch, getState) => {
-  if (getState().cellSets.data) {
-    return null;
-  }
-
-  return fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`).then(
-    (response) => response.json(),
-  ).then(
-    (json) => dispatch({
-      type: LOAD_CELL_SETS,
-      experimentId,
-      data: json.cellSets,
-    }),
-  ).catch((e) => console.error('Error when trying to get cell sets data: ', e));
-};
-
-const refreshCellSets = (experimentId) => (dispatch) => {
-  const requestOptions = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-  };
-
-  dispatch({
-    type: LOAD_CELL_SETS,
-    experimentId,
-    data: undefined,
-  });
-
-  fetch(`${process.env.REACT_APP_API_URL}/v1/experiments/generate`, requestOptions).then(
-    () => fetch(`${process.env.REACT_APP_API_URL}/v1/experiments/${experimentId}/cellSets`),
-  ).then(
-    (response) => response.json(),
-  ).then(
-    (json) => dispatch({
-      type: LOAD_CELL_SETS,
-      experimentId,
-      data: json.cellSets,
-    }),
-  )
-    .catch((e) => console.log('Error when trying to get cell sets data: ', e));
-};
-
-const updateCellSets = (experimentId, newState) => (dispatch, getState) => {
-  if (getState().cellSets.data === newState) {
-    return null;
-  }
-
-  dispatch({
-    type: UPDATE_CELL_SETS,
-    experimentId,
-    data: newState,
-  });
-
-  return dispatch(pushCellSets(experimentId));
-};
-
-const pushCellSets = (experimentId) => (dispatch, getState) => {
-  // If no loaded data exists for our cell sets and some event would
-  // trigger a push, we do not want to overwrite our cell sets with
-  // empty data.
-  if (!getState()?.cellSets?.data) {
-    return null;
-  }
-
-  return fetch(
-    `${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`,
-    {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(
-        getState().cellSets.data,
-        (k, v) => ((k === 'title') ? undefined : v),
-      ),
-    },
-  ).then(
-    (response) => response.json(),
-  ).then(
-    (json) => dispatch({
-      type: PUSH_CELL_SETS,
-      experimentId,
-      data: json,
-    }),
-  ).catch((e) => console.error('Error when trying to push cell sets to API: ', e));
-};
-
-const createCluster = (experimentId, cellSetInfo, clusterName, color) => (dispatch) => {
-  const clusterKey = uuidv4();
-  const newCluster = {
-    key: clusterKey,
-    name: clusterName,
-    color,
-    cellIds: Array.from(cellSetInfo),
-  };
-
-  dispatch({
-    type: CREATE_CLUSTER,
-    experimentId,
-    data: newCluster,
-  });
-
-  return dispatch(pushCellSets(experimentId));
-};
-
-const cellSetsColor = (colorData) => (dispatch, getState) => {
-  if (getState().cells.data) {
-    dispatch(
-      {
-        type: SET_FOCUSED_GENE,
-        data: {},
-      },
-    );
-    return dispatch({
-      type: CELL_SETS_COLOR,
-      data: colorData,
-    });
-  }
-  return null;
-};
 
 const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
   if (getState().cells.data) {
@@ -216,26 +93,26 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
 };
 
 const loadDiffExpr = (
-  experimentId, comparisonType, firstSelectedCluster, secondSelectedCluster,
+  experimentId, comparisonType, selectedCellSets,
 ) => (dispatch) => {
   dispatch({
     type: LOAD_DIFF_EXPR,
   });
 
   const ComparisonTypes = {
-    One: 'Versus Rest',
-    Two: 'Across Sets',
+    One: 'Versus rest',
+    Two: 'Across sets',
   };
   const body = {
     name: 'DifferentialExpression',
     maxNum: 100,
-    cellSet: firstSelectedCluster.key,
+    cellSet: selectedCellSets.first,
   };
 
   if (comparisonType === ComparisonTypes.One) {
     body.compareWith = 'rest';
   } else {
-    body.compareWith = secondSelectedCluster.key;
+    body.compareWith = selectedCellSets.second;
   }
 
   return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
@@ -347,7 +224,7 @@ const loadGeneExpression = (experimentId) => (dispatch, getState) => {
     };
 
     if (cellSets) {
-      const louvainKeys = cellSets.data[0].children.map((child) => child.key);
+      const louvainKeys = cellSets.hierarchy[0].children.map((child) => child.key);
       body.cellSets = louvainKeys;
     }
 
@@ -434,13 +311,7 @@ const setFocusedGene = (geneName, experimentId) => (dispatch, getState) => {
 };
 
 export {
-  loadCellSets,
-  updateCellSets,
-  refreshCellSets,
-  pushCellSets,
-  createCluster,
   loadCells,
-  cellSetsColor,
   updateGeneList,
   updateSelectedGenes,
   loadGeneExpression,

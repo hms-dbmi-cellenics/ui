@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Tree, Space, Skeleton } from 'antd';
+import { Tree, Space } from 'antd';
 import { transform, cloneDeep } from 'lodash';
-import {
-  useSelector,
-} from 'react-redux';
+
 import EditableField from '../../../../components/editable-field/EditableField';
 import ColorPicker from '../../../../components/color-picker/ColorPicker';
 
 const HierarchicalTree = (props) => {
   const {
-    onCheck: propOnCheck, onSelect: propOnSelect, onTreeUpdate: propOnTreeUpdate, ...rest
+    onCheck: propOnCheck, onSelect: propOnSelect, onNodeUpdate: propOnNodeUpdate, treeData, ...restOfProps
   } = props;
-
-  // eslint-disable-next-line react/destructuring-assignment
-  const treeData = useSelector((state) => state.cellSets.data);
 
   const [autoExpandParent, setAutoExpandParent] = useState(true);
 
@@ -165,38 +160,9 @@ const HierarchicalTree = (props) => {
     }
 
     if (shouldUpdateState) {
-      propOnTreeUpdate(newTreeData);
+      props.onHierarchyUpdate(newTreeData);
     }
   };
-
-  const updateTree = (tree, node, newState) => {
-    const updated = tree.map((d) => {
-      let modified = d;
-
-      if (modified.key === node) {
-        modified = { ...modified, ...newState };
-      }
-
-      if (modified.children) {
-        modified.children = updateTree(modified.children, node, newState);
-      }
-
-      return modified;
-    });
-
-    return updated;
-  };
-
-  const filterTree = (tree, node) => tree.filter((n) => {
-    const newNode = n;
-    if (newNode.key !== node.key) {
-      if (newNode.children) {
-        newNode.children = filterTree(newNode.children, node);
-      }
-      return n;
-    }
-    return null;
-  });
 
   const renderColorPicker = (modified) => {
     if (modified.color) {
@@ -204,8 +170,7 @@ const HierarchicalTree = (props) => {
         <ColorPicker
           color={modified.color || '#ffffff'}
           onColorChange={((e) => {
-            const newState = updateTree(treeData, modified.key, { color: e });
-            props.onTreeUpdate(newState);
+            props.onNodeUpdate(modified.key, { color: e });
           })}
         />
       );
@@ -216,12 +181,10 @@ const HierarchicalTree = (props) => {
   const renderEditableField = (modified) => (
     <EditableField
       onEdit={(e) => {
-        const newState = updateTree(treeData, modified.key, { name: e });
-        props.onTreeUpdate(newState);
+        props.onNodeUpdate(modified.key, { name: e });
       }}
       onDelete={() => {
-        const newState = filterTree(treeData, modified);
-        props.onTreeUpdate(newState);
+        props.onNodeDelete(modified.key);
       }}
       value={modified.name}
       showEdit={modified.key !== 'scratchpad'}
@@ -268,7 +231,7 @@ const HierarchicalTree = (props) => {
       onDrop={onDrop}
 
       // eslint-disable-next-line react/jsx-props-no-spreading
-      {...rest}
+      {...restOfProps}
     />
   );
 };
@@ -276,15 +239,20 @@ const HierarchicalTree = (props) => {
 HierarchicalTree.defaultProps = {
   onCheck: () => null,
   onSelect: () => null,
-  onTreeUpdate: () => null,
+  onNodeUpdate: () => null,
+  onNodeDelete: () => null,
+  onHierarchyUpdate: () => null,
   defaultCheckedKeys: [],
 };
 
 HierarchicalTree.propTypes = {
   onCheck: PropTypes.func,
   onSelect: PropTypes.func,
-  onTreeUpdate: PropTypes.func,
+  onNodeUpdate: PropTypes.func,
+  onNodeDelete: PropTypes.func,
+  onHierarchyUpdate: PropTypes.func,
   defaultCheckedKeys: PropTypes.array,
+  treeData: PropTypes.array.isRequired,
 };
 
 export default HierarchicalTree;
