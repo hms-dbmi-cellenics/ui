@@ -311,7 +311,7 @@ const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
 };
 
 const loadGeneExpression = (experimentId) => (dispatch, getState) => {
-  const { geneExpressionData } = getState();
+  const { geneExpressionData, cellSets } = getState();
   if (geneExpressionData?.isLoading) {
     return null;
   }
@@ -339,11 +339,17 @@ const loadGeneExpression = (experimentId) => (dispatch, getState) => {
         isLoading: true,
       },
     });
+
     const body = {
       name: 'GeneExpression',
       cellSets: 'all',
       genes: newGeneBatch,
     };
+
+    if (cellSets) {
+      const louvainKeys = cellSets.data[0].children.map((child) => child.key);
+      body.cellSets = louvainKeys;
+    }
 
     return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
       const heatMapData = JSON.parse(res.results[0].body);
