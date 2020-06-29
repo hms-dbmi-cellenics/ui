@@ -4,191 +4,170 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Radio, Form, Select, Typography, Space,
+  Button, Radio, Form, Select, Typography,
 } from 'antd';
 
 import PropTypes from 'prop-types';
-import { cloneDeep } from 'lodash';
-import { loadCellSets } from '../../../../redux/actions';
+import _ from 'lodash';
+import { loadCellSets } from '../../../../redux/actions/cellSets';
+
 
 const { Text } = Typography;
 
-const { Option } = Select;
+const { Option, OptGroup } = Select;
 
 const ComparisonTypes = {
-  One: 'Versus Rest',
-  Two: 'Across Sets',
+  One: 'Versus rest',
+  Two: 'Across sets',
 };
 
 const DiffExprCompute = (props) => {
   const {
-    experimentID, onCompute, first, second, comparison,
+    experimentID, onCompute, selection, comparison,
   } = props;
-  const cellSetsData = useSelector((state) => state.cellSets.data);
-  const [selectableClusters, setSelectableClusters] = useState([]);
+
   const dispatch = useDispatch();
 
+  const properties = useSelector((state) => state.cellSets.properties);
+  const hierarchy = useSelector((state) => state.cellSets.hierarchy);
+  const [selectableClusters, setSelectableClusters] = useState(_.cloneDeep(hierarchy));
+
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [comparisonType, setComparisonType] = useState(comparison);
+
+  const defaultSelected = 'Select a cell set';
+  const [selectedCellSets, setSelectedCellSets] = useState(selection);
+
+  /**
+   * Loads cell set on initial render if it does not already exist in the store.
+   */
   useEffect(() => {
     dispatch(loadCellSets(experimentID));
   }, []);
 
-  const resetSelectableClusters = () => {
-    if (!cellSetsData) {
-      setSelectableClusters([]);
-    } else {
-      const options = [];
-      cellSetsData.forEach((cellSet) => {
-        if (cellSet.children) {
-          cellSet.children.forEach((c) => {
-            options.push({
-              key: c.key,
-              value: c.name.concat(' (', cellSet.name, ')'),
-            });
-          });
-        }
-      });
-      setSelectableClusters(options);
-    }
-  };
+  /**
+   * Re-renders the list of selections when the hierarchy or the properties change.
+   *
+   * If the cell set previously selected is deleted, the selection is reset to the default.
+   */
+  useEffect(() => {
+    setSelectableClusters(hierarchy);
 
-  const defaultSelected = { key: 'default', value: 'select cluster' };
-  const [comparisonType, setComparisonType] = useState(comparison);
-  const [computeDisabled, setComputeDisabled] = useState(true);
-  const [availableClusters, setAvailableClusters] = useState(selectableClusters);
-  const [firstSelectedCluster, setFirstSelectedCluster] = useState(first || defaultSelected);
-  const [secondSelectedCluster, setSecondSelectedCluster] = useState(second || defaultSelected);
-
-  const updateComputeButtonStatus = () => {
-    if (firstSelectedCluster.key === defaultSelected.key) {
-      setComputeDisabled(true);
-      return;
-    }
-    if (comparisonType === ComparisonTypes.One) {
-      setComputeDisabled(false);
-      return;
-    }
-    if (secondSelectedCluster.key !== defaultSelected.key && ComparisonTypes.Two) {
-      setComputeDisabled(false);
-    } else {
-      setComputeDisabled(true);
-    }
-  };
-
-  const findCluster = (key) => {
-    for (let i = 0; i < selectableClusters.length; i += 1) {
-      if (selectableClusters[i].key === key) {
-        return i;
+    setSelectedCellSets(_.mapValues(selectedCellSets, (cellSetKey) => {
+      if (cellSetKey !== defaultSelected && !properties[cellSetKey]) {
+        return defaultSelected;
       }
+
+      return cellSetKey;
+    }));
+  }, [hierarchy, properties]);
+
+
+  const validateForm = () => {
+    if (selectedCellSets.first === defaultSelected) {
+      setIsFormValid(false);
+      return;
     }
+
+    if (selectedCellSets.first === selectedCellSets.second) {
+      setIsFormValid(false);
+      return;
+    }
+
+    if (comparisonType === ComparisonTypes.Two && selectedCellSets.second === defaultSelected) {
+      setIsFormValid(false);
+      return;
+    }
+
+    setIsFormValid(true);
   };
 
-  const resetAvailableClusters = () => {
-    const newSelectableClusters = cloneDeep(selectableClusters);
-    if (firstSelectedCluster.key !== defaultSelected.key) {
-      const indexFirst = findCluster(firstSelectedCluster.key);
-      newSelectableClusters.splice(indexFirst, 1);
-    }
-    if (secondSelectedCluster.key !== defaultSelected.key) {
-      const indexSecond = findCluster(secondSelectedCluster.key);
-      newSelectableClusters.splice(indexSecond, 1);
-    }
-    setAvailableClusters(newSelectableClusters);
-  };
-
   useEffect(() => {
-    resetSelectableClusters();
-  }, [cellSetsData]);
-
-  useEffect(() => {
-    updateComputeButtonStatus();
-  }, [comparisonType, firstSelectedCluster, secondSelectedCluster]);
-
-  useEffect(() => {
-    resetAvailableClusters();
-  }, [firstSelectedCluster, secondSelectedCluster, selectableClusters]);
+    validateForm();
+  }, [comparisonType, selectedCellSets]);
 
   const onSelectComparisonType = (e) => {
     setComparisonType(e.target.value);
+
     if (e.target.value === ComparisonTypes.One) {
-      setSecondSelectedCluster(defaultSelected);
+      setSelectedCellSets({
+        ...selectedCellSets,
+        second: defaultSelected,
+      });
     }
   };
 
-  const onSelectCluster = (selectedValue, selectedPanel) => {
-    const selectedCluster = selectableClusters.find((obj) => obj.value === selectedValue);
-    if (selectedPanel === 1) {
-      setFirstSelectedCluster(selectedCluster);
-    }
-    if (selectedPanel === 2) {
-      setSecondSelectedCluster(selectedCluster);
-    }
+  /**
+   * Updates the selected clusters.
+   * @param {string} cellSet The key of the cell set.
+   * @param {string} option The option string (`first` or `second`).
+   */
+  const onSelectCluster = (cellSet, option) => {
+    setSelectedCellSets({
+      ...selectedCellSets,
+      [option]: cellSet,
+    });
   };
 
-  const renderClusterSelect = () => {
+  /**
+   * Constructs a form item, a `Select` field with selectable clusters.
+   */
+  const renderClusterSelectorItem = (title, option) => {
+    const renderChildren = (children) => {
+      if (!children || children.length === 0) { return (<></>); }
+
+      return children.map(({ key }) => (
+        <Option key={key} disabled={Object.values(selectedCellSets).includes(key)}>
+          {properties[key]?.name}
+        </Option>
+      ));
+    };
+
+    return (
+      <Form.Item label={title}>
+        <Select
+          style={{ width: 200 }}
+          onChange={(cellSet) => onSelectCluster(cellSet, option)}
+          value={selectedCellSets[option]}
+          size='small'
+        >
+          {
+            selectableClusters.map(({ key, children }) => (
+              <OptGroup label={properties[key]?.name} key={key}>
+                {renderChildren(children)}
+              </OptGroup>
+            ))
+          }
+        </Select>
+      </Form.Item>
+    );
+  };
+
+  /**
+   * Renders the form for selecting one or two cell sets for simple DE.
+   */
+  const renderClusterSelectorForm = () => {
     if (comparisonType === ComparisonTypes.One) {
       return (
-        <Form.Item>
-          <Space>
-            <div>Cell Set</div>
-            <Select
-              style={{ width: 200 }}
-              onChange={(option) => onSelectCluster(option, 1)}
-              optionLabelProp='value'
-              value={firstSelectedCluster.value}
-              size='small'
-            >
-              {
-                availableClusters.map((name) => (
-                  <Option value={name.value} key={name.key} />
-                ))
-              }
-            </Select>
-          </Space>
-        </Form.Item>
+        renderClusterSelectorItem('Select cell set:', 'first')
       );
     }
+
     if (comparisonType === ComparisonTypes.Two) {
       return (
-        <Form.Item>
-          <Space>
-            <div>Cell Sets</div>
-            <Select
-              style={{ width: 200 }}
-              onChange={(option) => onSelectCluster(option, 1)}
-              optionLabelProp='value'
-              value={firstSelectedCluster.value}
-              size='small'
-            >
-              {
-                availableClusters.map((name) => (
-                  <Option value={name.value} key={name.key} />
-                ))
-              }
-            </Select>
-            <Select
-              style={{ width: 200 }}
-              onChange={(option) => onSelectCluster(option, 2)}
-              optionLabelProp='value'
-              value={secondSelectedCluster.value}
-              size='small'
-            >
-              {
-                availableClusters.map((name) => (
-                  <Option value={name.value} key={name.key} />
-                ))
-              }
-            </Select>
-          </Space>
-        </Form.Item>
+        <>
+          {renderClusterSelectorItem('Select a base cell set:', 'first')}
+          {renderClusterSelectorItem('Select a comparison set:', 'second')}
+        </>
       );
     }
+
     return (<></>);
   };
 
   return (
-    <Form size='small'>
-      <div>Compare</div>
-      <Form.Item>
+    <Form size='small' layout='vertical'>
+      <Form.Item label='Compare:'>
         <Radio.Group onChange={onSelectComparisonType} value={comparisonType}>
           <Radio value={ComparisonTypes.One}>
             {ComparisonTypes.One}
@@ -198,7 +177,9 @@ const DiffExprCompute = (props) => {
           </Radio>
         </Radio.Group>
       </Form.Item>
-      {renderClusterSelect()}
+
+      {renderClusterSelectorForm()}
+
       <p>
         <Text type='secondary'>
           Performs a Wilcoxon rank-sum test
@@ -213,14 +194,14 @@ const DiffExprCompute = (props) => {
           as appropriate.
         </Text>
       </p>
+
       <Form.Item>
         <Button
           size='small'
-          disabled={computeDisabled}
+          disabled={!isFormValid}
           onClick={() => onCompute(
             comparisonType,
-            firstSelectedCluster,
-            secondSelectedCluster,
+            selectedCellSets,
           )}
         >
           Compute
@@ -231,16 +212,13 @@ const DiffExprCompute = (props) => {
 };
 
 DiffExprCompute.defaultProps = {
-  first: null,
-  second: null,
   comparison: null,
 };
 
 DiffExprCompute.propTypes = {
   experimentID: PropTypes.string.isRequired,
   onCompute: PropTypes.func.isRequired,
-  first: PropTypes.string,
-  second: PropTypes.string,
+  selection: PropTypes.object.isRequired,
   comparison: PropTypes.string,
 };
 

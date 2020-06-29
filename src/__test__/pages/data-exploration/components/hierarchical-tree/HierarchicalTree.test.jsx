@@ -1,36 +1,24 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
+import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import HierarchicalTree from '../../../../../pages/data-exploration/components/hierarchical-tree/HierarchicalTree';
 
 configure({ adapter: new Adapter() });
-const mockStore = configureMockStore([]);
 
 describe('HierarchicalTree', () => {
   test('renders correctly', () => {
-    const store = mockStore({
-      cellSets: {
-        data: [
-          {
-            key: '1',
-            name: 'my element',
-            rootNode: false,
-            color: '#000000',
-          },
-        ],
-      },
-    });
+    const treeData = [{
+      key: '1',
+      name: 'my element',
+      rootNode: false,
+      color: '#000000',
+    }];
 
     const component = mount(
-      <Provider store={store}>
-        <HierarchicalTree />
-      </Provider>,
+      <HierarchicalTree treeData={treeData} />,
     );
     const tree = component.find('HierarchicalTree Tree');
     expect(tree.length).toEqual(1);
-    expect(tree.getElement().props.treeData).toEqual(store.getState().cellSets.data);
   });
 
   test('can drag first component at the last position', () => {
@@ -52,7 +40,7 @@ describe('HierarchicalTree', () => {
       color: '#00FF00',
     };
 
-    const myData = [
+    const treeData = [
       {
         key: '1',
         name: 'element 1',
@@ -64,12 +52,6 @@ describe('HierarchicalTree', () => {
         ],
       },
     ];
-
-    const store = mockStore({
-      cellSets: {
-        data: myData,
-      },
-    });
 
     const dropInfo = {
       dragNode: {
@@ -85,24 +67,19 @@ describe('HierarchicalTree', () => {
       },
     };
 
-    const mockOnTreeUpdate = jest.fn();
-
+    const mockOnHierarchyUpdate = jest.fn();
     const component = mount(
-      <Provider store={store}>
-        <HierarchicalTree onTreeUpdate={mockOnTreeUpdate} />
-      </Provider>,
+      <HierarchicalTree treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
     );
 
-    let tree = component.find('HierarchicalTree Tree');
-
+    const tree = component.find('HierarchicalTree Tree');
     tree.getElement().props.onDrop(dropInfo);
     component.update();
 
-    tree = component.find('HierarchicalTree Tree').getElement();
-    const actualKeys = [];
-    mockOnTreeUpdate.mock.calls[0][0][0].children.forEach((c) => actualKeys.push(c.key));
-    expect(mockOnTreeUpdate).toHaveBeenCalledTimes(1);
-    expect(actualKeys).toEqual(['2a', '3a', '1a']);
+    expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(1);
+    const firstArgument = mockOnHierarchyUpdate.mock.calls[0][0];
+    const childrenKeys = firstArgument[0].children.map((child) => child.key);
+    expect(childrenKeys).toEqual(['2a', '3a', '1a']);
   });
 
   test('Can have child component change parent', () => {
@@ -119,7 +96,7 @@ describe('HierarchicalTree', () => {
       children: [],
     };
 
-    const data = [
+    const treeData = [
       {
         key: '1',
         name: 'parent 1',
@@ -130,12 +107,6 @@ describe('HierarchicalTree', () => {
       },
       secondParent,
     ];
-
-    const store = mockStore({
-      cellSets: {
-        data,
-      },
-    });
 
     const dropInfo = {
       dragNode: {
@@ -151,27 +122,20 @@ describe('HierarchicalTree', () => {
       },
     };
 
-    const mockOnTreeUpdate = jest.fn();
-
+    const mockOnHierarchyUpdate = jest.fn();
     const component = mount(
-      <Provider store={store}>
-        <HierarchicalTree onTreeUpdate={mockOnTreeUpdate} />
-      </Provider>,
+      <HierarchicalTree treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
     );
 
-    let tree = component.find('HierarchicalTree Tree').getElement();
-
-    const { treeData } = tree.props;
-    expect(treeData[0].children.length).toEqual(1);
-    expect(treeData[1].children.length).toEqual(0);
-
-    tree.props.onDrop(dropInfo);
+    const tree = component.find('HierarchicalTree Tree');
+    tree.getElement().props.onDrop(dropInfo);
     component.update();
 
-    tree = component.find('HierarchicalTree Tree').getElement();
-    expect(mockOnTreeUpdate).toHaveBeenCalledTimes(1);
-    expect(mockOnTreeUpdate.mock.calls[0][0][0].children.length).toEqual(0);
-    expect(mockOnTreeUpdate.mock.calls[0][0][1].children.length).toEqual(1);
+    expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(1);
+    const firstArgument = mockOnHierarchyUpdate.mock.calls[0][0];
+
+    expect(firstArgument[0].children.length).toEqual(0);
+    expect(firstArgument[1].children.length).toEqual(1);
   });
 
   test("Can't drop parent inside node", () => {
@@ -189,16 +153,11 @@ describe('HierarchicalTree', () => {
       children: [],
     };
 
-    const data = [
+    let treeData = [
       firstParent,
       secondParent,
     ];
 
-    const store = mockStore({
-      cellSets: {
-        data,
-      },
-    });
 
     const dropInfo = {
       dragNode: {
@@ -214,28 +173,21 @@ describe('HierarchicalTree', () => {
       },
     };
 
-    const mockOnTreeUpdate = jest.fn();
-
+    const mockOnHierarchyUpdate = jest.fn();
     const component = mount(
-      <Provider store={store}>
-        <HierarchicalTree onTreeUpdate={mockOnTreeUpdate} />
-      </Provider>,
+      <HierarchicalTree treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
     );
 
-    let tree = component.find('HierarchicalTree Tree').getElement();
-
-    let { treeData } = tree.props;
-    expect(treeData.length).toEqual(2);
-    expect(treeData[0].children.length).toEqual(0);
-    expect(treeData[1].children.length).toEqual(0);
-
-    tree.props.onDrop(dropInfo);
+    let tree = component.find('HierarchicalTree Tree');
+    tree.getElement().props.onDrop(dropInfo);
     component.update();
 
-    tree = component.find('HierarchicalTree Tree').getElement();
+    expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(0);
 
+    tree = component.find('HierarchicalTree Tree').getElement();
     treeData = tree.props.treeData;
     expect(treeData.length).toEqual(2);
-    expect(mockOnTreeUpdate).toHaveBeenCalledTimes(0);
+
+    expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(0);
   });
 });

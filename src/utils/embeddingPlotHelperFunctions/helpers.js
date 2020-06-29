@@ -11,18 +11,19 @@ const hexToRgb = (hex) => {
   return null;
 };
 
-const colorByCellClusters = (colorData) => {
+const renderCellSetColors = (cellSets, cellSetProperties) => {
   const colors = {};
-  if (colorData) {
-    colorData.forEach((cellSet) => {
-      const rgbColor = hexToRgb(cellSet.color);
-      if (cellSet.cellIds) {
-        cellSet.cellIds.forEach((cell) => {
-          colors[cell] = rgbColor;
-        });
-      }
-    });
-  }
+
+  cellSets.forEach((key) => {
+    const { color: stringColor, cellIds } = cellSetProperties[key];
+    const color = hexToRgb(stringColor);
+
+    if (color && cellIds) {
+      cellIds.forEach((cellId) => {
+        colors[cellId] = color;
+      });
+    }
+  });
 
   return colors;
 };
@@ -58,10 +59,10 @@ const updateViewInfo = () => { };
 const clearPleaseWait = () => { };
 
 export {
+  renderCellSetColors,
   convertCellsData,
   updateStatus,
   updateViewInfo,
   clearPleaseWait,
   colorByGeneExpression,
-  colorByCellClusters,
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
@@ -6,94 +6,113 @@ import {
 import PropTypes from 'prop-types';
 
 import {
-  Skeleton, Space, Button, Tooltip,
+  Skeleton, Space, Button,
+  Empty, Typography, Tooltip,
 } from 'antd';
+
+import { ExclamationCircleFilled } from '@ant-design/icons';
+
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
+
 import {
-  loadCellSets, updateCellSets, refreshCellSets, cellSetsColor,
-} from '../../../../redux/actions';
+  loadCellSets, deleteCellSet, updateCellSetHierarchy, updateCellSetSelected,
+  updateCellSetProperty, resetCellSets,
+} from '../../../../redux/actions/cellSets';
+
+
+import composeTree from '../../../../utils/composeTree';
+
+const { Text } = Typography;
 
 
 const CellSetsTool = (props) => {
   const { experimentID } = props;
+
   const dispatch = useDispatch();
-  const [checkedKeys, setCheckedKeys] = useState([]);
-  const cellSets = useSelector((state) => state.cellSets.data);
+
+  const cellSets = useSelector((state) => state.cellSets);
+
+  const {
+    loading, error, properties, hierarchy,
+  } = cellSets;
 
   useEffect(() => {
     dispatch(loadCellSets(experimentID));
   }, []);
 
-  const composeColorData = (keys, treeState) => {
-    const colorData = [];
-    treeState.forEach((cellSet) => {
-      if (cellSet.children) {
-        cellSet.children.forEach((child) => {
-          if (keys.includes(child.key)) {
-            colorData.push({
-              color: child.color,
-              cellIds: child.cellIds,
-            });
-          }
-        });
-      } else if (keys.includes(cellSet.key)) {
-        colorData.push({
-          color: cellSet.color,
-          cellIds: cellSet.cellIds,
-        });
-      }
-    });
-    return colorData;
+  const onNodeUpdate = (key, data) => {
+    dispatch(updateCellSetProperty(experimentID, key, data));
   };
 
-  const updateCellSetsColors = (keys, treeState) => {
-    const colorData = composeColorData(keys, treeState || cellSets);
-    dispatch(cellSetsColor(colorData));
+  const onNodeDelete = (key) => {
+    dispatch(deleteCellSet(experimentID, key));
   };
 
-  const onTreeUpdate = (newState) => {
-    // First, make sure tree updates are sent.
-    dispatch(updateCellSets(experimentID, newState));
-
-    /* In the meantime, update the colors
-     * according to the new state. This should make sure that
-     * only cells that are currently selected get drawn,
-     * and that deleted cell sets are not drawn anymore.
-     */
-    updateCellSetsColors(checkedKeys, newState);
+  const onHierarchyUpdate = (newHierarchy) => {
+    dispatch(updateCellSetHierarchy(experimentID, newHierarchy));
   };
 
   const onCheck = (keys) => {
-    setCheckedKeys(keys);
-    updateCellSetsColors(keys);
+    dispatch(updateCellSetSelected(experimentID, keys));
   };
 
-  const renderHierarchicalTree = () => {
-    if (typeof cellSets !== 'undefined') {
+  /**
+   * Remders the content inside the tool. Can be a skeleton during loading
+   * or a hierarchical tree listing all cell sets.
+   */
+  const renderContent = () => {
+    if (loading) {
+      return (<Skeleton active />);
+    }
+
+    if (error) {
       return (
-        <HierarchicalTree
-          onCheck={onCheck}
-          onTreeUpdate={onTreeUpdate}
-          defaultExpandAll
-        />
+        <Empty
+          image={<Text type='danger'><ExclamationCircleFilled style={{ fontSize: 40 }} /></Text>}
+          imageStyle={{
+            height: 40,
+          }}
+          description={
+            error
+          }
+        >
+          <Button
+            type='primary'
+            onClick={() => dispatch(loadCellSets(experimentID))}
+          >
+            Try again
+          </Button>
+        </Empty>
       );
     }
-    return (<Skeleton active />);
+
+    return (
+      <>
+        <Space style={{ width: '100%' }}>
+          <Tooltip title='Reset clusters to the initial state'>
+            <Button type='primary' size='small' onClick={recluster}>Recluster</Button>
+          </Tooltip>
+        </Space>
+        <HierarchicalTree
+          treeData={composeTree(hierarchy, properties)}
+          onCheck={onCheck}
+          onNodeUpdate={onNodeUpdate}
+          onNodeDelete={onNodeDelete}
+          onHierarchyUpdate={onHierarchyUpdate}
+          defaultExpandAll
+        />
+      </>
+    );
   };
 
   const recluster = () => {
-    dispatch(refreshCellSets(experimentID));
+    dispatch(resetCellSets(experimentID));
   };
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
-      <Space style={{ width: '100%' }}>
-        <Tooltip title='Reset clusters to the initial state'>
-          <Button type='primary' size='small' onClick={recluster}>Recluster</Button>
-        </Tooltip>
-      </Space>
       {
-        renderHierarchicalTree()
+        renderContent()
       }
     </Space>
   );

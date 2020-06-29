@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   useDispatch,
 } from 'react-redux';
+import _ from 'lodash';
 import DiffExprCompute from './DiffExprCompute';
 import DiffExprResults from './DiffExprResults';
 import { loadDiffExpr } from '../../../../redux/actions';
@@ -9,26 +10,28 @@ import { loadDiffExpr } from '../../../../redux/actions';
 const DiffExprManager = (props) => {
   const { experimentID, view } = props;
 
-  const defaultSelected = { key: 'default', value: 'select cluster' };
+  const defaultSelected = 'Select a cell set';
+  const [selectedCellSets, setSelectedCellSets] = useState({
+    first: defaultSelected,
+    second: defaultSelected,
+  });
 
   const [currentView, setCurrentView] = useState(view);
-  const [firstSelectedCluster, setFirstSelectedCluster] = useState(defaultSelected);
-  const [secondSelectedCluster, setSecondSelectedCluster] = useState(defaultSelected);
   const [comparisonType, setComparisonType] = useState(null);
 
   const dispatch = useDispatch();
 
-  const onCompute = (comparison, first, second) => {
+  const onCompute = (comparison, selection) => {
     if (comparison !== comparisonType
-      || first.key !== firstSelectedCluster.key
-      || second.key !== secondSelectedCluster.key) {
+      || !_.isEqual(selection, selectedCellSets)) {
       dispatch(
-        loadDiffExpr(experimentID, comparison, first, second),
+        loadDiffExpr(experimentID, comparison, selection),
       );
+
+      setSelectedCellSets(selection);
     }
+
     setCurrentView('results');
-    setFirstSelectedCluster(first);
-    setSecondSelectedCluster(second);
     setComparisonType(comparison);
   };
 
@@ -41,8 +44,7 @@ const DiffExprManager = (props) => {
       <DiffExprCompute
         experimentID={experimentID}
         onCompute={onCompute}
-        first={firstSelectedCluster}
-        second={secondSelectedCluster}
+        selection={selectedCellSets}
         comparison={comparisonType}
       />
     );

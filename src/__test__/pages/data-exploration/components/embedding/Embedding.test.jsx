@@ -12,6 +12,7 @@ import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/extensions
 import { Scatterplot } from 'vitessce/dist/es/production/scatterplot.min.js';
 import Embedding from '../../../../../pages/data-exploration/components/embedding/Embedding';
+import { CELL_SETS_CREATE } from '../../../../../redux/actionTypes/cellSets';
 
 const mockStore = configureMockStore([thunk]);
 let component;
@@ -33,16 +34,23 @@ describe('Embedding', () => {
           4: [57, 3],
         },
       },
-      cellSetsColor: {
-        data: [
-          {
+      cellSets: {
+        properties: {
+          cluster1: {
             color: '#ff0000',
             cellIds: ['1', '2', '3', '4'],
           },
+        },
+        hierarchy: [
+          {
+            key: 'louvain',
+            children: ['cluster1'],
+          },
         ],
+        selected: ['cluster1'],
       },
-      cellInfo: {},
       focusedGene: {},
+      cellInfo: {},
     });
 
     component = mount(
@@ -139,8 +147,8 @@ describe('Embedding', () => {
     popover = component.find('ClusterPopover');
     expect(popover.length).toEqual(0);
     expect(store.getActions().length).toEqual(1);
-    expect(store.getActions()[0].type).toEqual('CELL_SETS.CREATE');
-    expect(store.getActions()[0].data.cellIds).toEqual(selectedCellIds);
+    expect(store.getActions()[0].type).toEqual(CELL_SETS_CREATE);
+    expect(store.getActions()[0].payload.cellIds).toEqual(selectedCellIds);
   });
 
   test('dispatches an action with updated cell information on hover', () => {
@@ -168,13 +176,20 @@ describe('Embedding', () => {
           4: [57, 3],
         },
       },
-      cellSetsColor: {
-        data: [
-          {
+      cellSets: {
+        properties: {
+          cluster1: {
             color: '#ff0000',
             cellIds: ['1', '2', '3', '4'],
           },
+        },
+        hierarchy: [
+          {
+            key: 'louvain',
+            children: ['cluster1'],
+          },
         ],
+        selected: ['cluster1'],
       },
       cellInfo: {},
       focusedGene: {

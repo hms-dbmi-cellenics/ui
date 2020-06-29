@@ -4,7 +4,7 @@ import {
   updateCellInfo,
   setFocusedGene,
 } from '../../../redux/actions';
-import * as types from '../../../redux/actions/actionType';
+import * as types from '../../../redux/actionTypes';
 import connectionPromise from '../../../utils/socketConnection';
 
 jest.mock('../../../utils/socketConnection');
