@@ -5,6 +5,7 @@ import deleteCellSet from '../../../../redux/actions/cellSets/deleteCellSet';
 import initialState from '../../../../redux/reducers/cellSetsReducer/initialState';
 import { CELL_SETS_DELETE, CELL_SETS_SAVE } from '../../../../redux/actionTypes/cellSets';
 
+jest.mock('localforage');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

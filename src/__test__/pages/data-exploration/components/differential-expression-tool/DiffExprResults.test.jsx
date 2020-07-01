@@ -7,6 +7,8 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import DiffExprResults from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprResults';
 
+jest.mock('localforage');
+
 const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({

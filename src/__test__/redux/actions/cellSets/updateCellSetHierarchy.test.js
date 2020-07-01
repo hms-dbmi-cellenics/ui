@@ -5,6 +5,7 @@ import updateCellSetHierarchy from '../../../../redux/actions/cellSets/updateCel
 import initialState from '../../../../redux/reducers/cellSetsReducer/initialState';
 import { CELL_SETS_UPDATE_HIERARCHY, CELL_SETS_SAVE } from '../../../../redux/actionTypes/cellSets';
 
+jest.mock('localforage');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

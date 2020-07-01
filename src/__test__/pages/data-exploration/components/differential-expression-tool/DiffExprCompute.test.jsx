@@ -11,6 +11,8 @@ import {
 } from 'antd';
 import DiffExprCompute from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprCompute';
 
+jest.mock('localforage');
+
 const { Item } = Form;
 const mockStore = configureMockStore([thunk]);
 

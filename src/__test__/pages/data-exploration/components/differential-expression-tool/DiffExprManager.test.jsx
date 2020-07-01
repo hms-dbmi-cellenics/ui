@@ -11,6 +11,7 @@ import DiffExprCompute from '../../../../../pages/data-exploration/components/di
 import DiffExprResults from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprResults';
 import connectionPromise from '../../../../../utils/socketConnection';
 
+jest.mock('localforage');
 jest.mock('../../../../../utils/socketConnection');
 
 let io;

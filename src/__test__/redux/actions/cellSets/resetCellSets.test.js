@@ -7,6 +7,8 @@ import {
   CELL_SETS_LOADING,
 } from '../../../../redux/actionTypes/cellSets';
 
+jest.mock('localforage');
+
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 

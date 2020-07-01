@@ -3,6 +3,8 @@ import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import HierarchicalTree from '../../../../../pages/data-exploration/components/hierarchical-tree/HierarchicalTree';
 
+jest.mock('localforage');
+
 configure({ adapter: new Adapter() });
 
 describe('HierarchicalTree', () => {

@@ -18,7 +18,6 @@ import {
   updateStatus,
   updateViewInfo,
   clearPleaseWait,
-  colorByCellClusters,
   colorByGeneExpression,
 } from '../../../../utils/embeddingPlotHelperFunctions/helpers';
 
