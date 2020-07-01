@@ -6,16 +6,18 @@ import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
 import GeneListTool from '../../../../../pages/data-exploration/components/gene-list-tool/GeneListTool';
-import connectionPromise from '../../../../../utils/socketConnection';
+import { fetchCachedWork } from '../../../../../utils/cacheRequest';
 
-jest.mock('../../../../../utils/socketConnection');
+jest.mock('localforage');
 
-let io;
-let mockOn;
-let mockEmit;
-
-connectionPromise.mockImplementation(() => new Promise((resolve) => {
-  resolve(io);
+jest.mock('../../../../../utils/cacheRequest', () => ({
+  fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve(JSON.stringify({
+    rows: [{
+      key: '1',
+      gene_names: 'a mock name',
+    }],
+    total: 1,
+  })))),
 }));
 
 const mockStore = configureMockStore([thunk]);
@@ -186,7 +188,7 @@ describe('GeneListTool', () => {
     expect(table.getElement().props.data.length).toEqual(15);
   });
 
-  test('can sort the gene names in alphabetical order', () => {
+  it('can sort the gene names in alphabetical order', () => {
     const newPagination = {
       current: 1,
       pageSize: 15,
@@ -205,49 +207,14 @@ describe('GeneListTool', () => {
       order: 'ascend',
     };
 
-    let outsideResolve;
-    const finished = new Promise((resolve) => {
-      outsideResolve = resolve;
-    });
-
-    mockOn = jest.fn((x, f) => {
-      const res = {
-        results: [
-          {
-            body: JSON.stringify({
-              rows: [{
-                key: '1',
-                gene_names: 'a mock name',
-              }],
-              total: 1,
-            }),
-          },
-        ],
-      };
-
-      f(res);
-      outsideResolve(res);
-    });
-
-    mockEmit = jest.fn();
-
-    io = {
-      emit: mockEmit,
-      on: mockOn,
-    };
-
     const table = component.find('Table Table');
     const _ = {};
     table.getElement().props.onChange(newPagination, _, newSorter);
     table.update();
-
-    return finished.then(() => {
-      expect(store.getActions().length).toEqual(2);
-      expect(store.getActions()[0].type).toEqual('GENE_LIST.LOAD');
-      expect(store.getActions()[1].type).toEqual('GENE_LIST.UPDATE');
-      expect(mockEmit).toHaveBeenCalledWith('WorkRequest', expect.anything());
-      expect(mockEmit).toHaveBeenCalledTimes(1);
-      expect(mockOn).toHaveBeenCalledTimes(1);
+    expect(fetchCachedWork).toHaveBeenCalledWith('1234', 30, {
+      limit: 15, name: 'ListGenes', offset: 0, orderBy: 'gene_names', orderDirection: 'ASC', selectFields: ['gene_names', 'dispersions'],
     });
+    expect(store.getActions().length).toEqual(1);
+    expect(store.getActions()[0].type).toEqual('GENE_LIST.LOAD');
   });
 });

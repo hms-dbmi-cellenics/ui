@@ -4,11 +4,12 @@ import {
   LOAD_CELLS, BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
   UPDATE_CELL_INFO, SET_FOCUSED_GENE,
 } from '../actionTypes';
-import sendWork from '../../utils/sendWork';
+import { fetchCachedWork } from '../../utils/cacheRequest';
+import pushNotificationMessage from './notifications/pushNotificationMessage';
 
 const TIMEOUT_SECONDS = 30;
 
-const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
+const loadCells = (experimentId, embeddingType) => async (dispatch, getState) => {
   if (getState().cells.data) {
     return null;
   }
@@ -18,21 +19,23 @@ const loadCells = (experimentId, embeddingType) => (dispatch, getState) => {
     type: embeddingType,
   };
 
-  return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
-    const embedding = JSON.parse(res.results[0].body);
-    return dispatch({
+  try {
+    const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body, 3600);
+    const embedding = JSON.parse(res);
+    dispatch({
       type: LOAD_CELLS,
       data: embedding,
       experimentId,
     });
-  });
+  } catch (error) {
+    dispatch(pushNotificationMessage('error', 'Failed to fetch Embedding plot data', 5));
+  }
 };
 
-const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
+const updateGeneList = (experimentId, tableState) => async (dispatch, getState) => {
   if (getState().geneList?.tableState === tableState) {
     return null;
   }
-
   dispatch({
     type: LOAD_GENE_LIST,
   });
@@ -68,20 +71,17 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
     body.geneNamesFilter = tableState.geneNamesFilter;
   }
 
-  return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
-    const data = JSON.parse(res.results[0].body);
-
+  try {
+    const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
+    const data = JSON.parse(res);
     const { total, rows } = data;
-
     rows.map((row) => {
       row.key = row.gene_names;
       return row;
     });
-
     if (tableState && tableState.pagination) {
       tableState.pagination.total = total;
     }
-
     dispatch({
       type: UPDATE_GENE_LIST,
       data: {
@@ -89,12 +89,14 @@ const updateGeneList = (experimentId, tableState) => (dispatch, getState) => {
         tableState: tableState || geneList.tableState,
       },
     });
-  });
+  } catch (error) {
+    dispatch(pushNotificationMessage('error', 'Failed to update gene list', 5));
+  }
 };
 
 const loadDiffExpr = (
   experimentId, comparisonType, selectedCellSets,
-) => (dispatch) => {
+) => async (dispatch) => {
   dispatch({
     type: LOAD_DIFF_EXPR,
   });
@@ -115,24 +117,21 @@ const loadDiffExpr = (
     body.compareWith = selectedCellSets.second;
   }
 
-  return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
+  try {
+    const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
     let data = {};
-
     try {
-      data = JSON.parse(res.results[0].body);
+      data = JSON.parse(res);
     } catch (error) {
       console.error(error);
       data = { rows: [] };
     }
-
     const { rows } = data;
     const total = rows.length;
-
     rows.map((row) => {
       row.key = row.gene_names;
       return row;
     });
-
     return dispatch({
       type: UPDATE_DIFF_EXPR,
       data: {
@@ -140,7 +139,9 @@ const loadDiffExpr = (
         total,
       },
     });
-  });
+  } catch (error) {
+    dispatch(pushNotificationMessage('error', 'Failed to load Differential Expression data', 5));
+  }
 };
 
 const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
@@ -187,7 +188,7 @@ const updateSelectedGenes = (genes, selected) => (dispatch, getState) => {
   }, 50);
 };
 
-const loadGeneExpression = (experimentId) => (dispatch, getState) => {
+const loadGeneExpression = (experimentId) => async (dispatch, getState) => {
   const { geneExpressionData, cellSets } = getState();
   if (geneExpressionData?.isLoading) {
     return null;
@@ -228,8 +229,9 @@ const loadGeneExpression = (experimentId) => (dispatch, getState) => {
       body.cellSets = louvainKeys;
     }
 
-    return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
-      const heatMapData = JSON.parse(res.results[0].body);
+    try {
+      const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
+      const heatMapData = JSON.parse(res);
       const { data } = getState().geneExpressionData;
       if (data) {
         Array.prototype.push.apply(heatMapData.data, data);
@@ -241,14 +243,15 @@ const loadGeneExpression = (experimentId) => (dispatch, getState) => {
           isLoading: false,
         },
       });
-
       dispatch({
         type: BUILD_HEATMAP_SPEC,
         data: {
           geneExpressionData: heatMapData,
         },
       });
-    });
+    } catch (error) {
+      dispatch(pushNotificationMessage('error', 'Failed to load Gene Expression data', 5));
+    }
   }
 };
 
@@ -261,7 +264,7 @@ const updateCellInfo = (cellData) => (dispatch) => {
   });
 };
 
-const setFocusedGene = (geneName, experimentId) => (dispatch, getState) => {
+const setFocusedGene = (geneName, experimentId) => async (dispatch, getState) => {
   const { selectedGenes } = getState();
   if (selectedGenes?.geneList) {
     let foundGeneName = selectedGenes.geneList[geneName];
@@ -294,8 +297,9 @@ const setFocusedGene = (geneName, experimentId) => (dispatch, getState) => {
     genes: [geneName],
   };
 
-  return sendWork(experimentId, TIMEOUT_SECONDS, body).then((res) => {
-    const geneExpressionData = JSON.parse(res.results[0].body);
+  try {
+    const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
+    const geneExpressionData = JSON.parse(res);
     dispatch({
       type: SET_FOCUSED_GENE,
       data: {
@@ -307,7 +311,9 @@ const setFocusedGene = (geneName, experimentId) => (dispatch, getState) => {
         isLoading: false,
       },
     });
-  });
+  } catch (error) {
+    dispatch(pushNotificationMessage('error', 'Failed to load Gene Expression data', 5));
+  }
 };
 
 export {

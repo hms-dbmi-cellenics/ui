@@ -1,6 +1,6 @@
 import getApiEndpoint from '../../../utils/apiEndpoint';
 import loadCellSets from './loadCellSets';
-
+import { cacheFetch } from '../../../utils/cacheRequest';
 import {
   CELL_SETS_LOADING, CELL_SETS_ERROR,
 } from '../../actionTypes/cellSets';
@@ -19,23 +19,22 @@ const resetCellSets = (experimentId) => async (dispatch, getState) => {
     headers: { 'Content-Type': 'application/json' },
   };
 
-  await dispatch({
+  dispatch({
     type: CELL_SETS_LOADING,
   });
 
-  await fetch(`${getApiEndpoint()}/v1/experiments/generate`, requestOptions)
-    .then(
-      async () => dispatch(loadCellSets(experimentId)),
-    )
-    .catch(() => {
-      dispatch({
-        type: CELL_SETS_ERROR,
-        payload: {
-          experimentId,
-          error: "Couldn't reset cell sets to default.",
-        },
-      });
+  try {
+    await cacheFetch(`${getApiEndpoint()}/v1/experiments/generate`, requestOptions);
+    dispatch(loadCellSets(experimentId));
+  } catch (e) {
+    dispatch({
+      type: CELL_SETS_ERROR,
+      payload: {
+        experimentId,
+        error: "Couldn't reset cell sets to default.",
+      },
     });
+  }
 };
 
 export default resetCellSets;

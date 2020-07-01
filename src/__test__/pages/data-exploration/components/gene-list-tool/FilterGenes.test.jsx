@@ -6,6 +6,8 @@ import { act } from 'react-dom/test-utils';
 import { Input, Select } from 'antd';
 import FilterGenes from '../../../../../pages/data-exploration/components/gene-list-tool/FilterGenes';
 
+jest.mock('localforage');
+
 const { Search } = Input;
 
 describe('FilterGenes', () => {

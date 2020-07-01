@@ -7,6 +7,7 @@ import configureMockStore from 'redux-mock-store';
 import HeatmapPlot from '../../../../../pages/data-exploration/components/heatmap/HeatmapPlot';
 import VegaHeatmap from '../../../../../pages/data-exploration/components/heatmap/VegaHeatmap';
 
+jest.mock('localforage');
 jest.mock('../../../../../pages/data-exploration/components/heatmap/VegaHeatmap');
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
 

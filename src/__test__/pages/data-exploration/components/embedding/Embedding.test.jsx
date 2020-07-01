@@ -14,6 +14,8 @@ import { Scatterplot } from 'vitessce/dist/es/production/scatterplot.min.js';
 import Embedding from '../../../../../pages/data-exploration/components/embedding/Embedding';
 import { CELL_SETS_CREATE } from '../../../../../redux/actionTypes/cellSets';
 
+jest.mock('localforage');
+
 const mockStore = configureMockStore([thunk]);
 let component;
 let store;

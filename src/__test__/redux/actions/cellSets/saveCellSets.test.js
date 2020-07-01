@@ -6,6 +6,7 @@ import initialState from '../../../../redux/reducers/cellSetsReducer/initialStat
 import { CELL_SETS_SAVE } from '../../../../redux/actionTypes/cellSets';
 import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
 
+jest.mock('localforage');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

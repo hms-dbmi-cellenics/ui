@@ -3,6 +3,8 @@ import { shallow, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import ClusterPopover from '../../../../../pages/data-exploration/components/embedding/ClusterPopover';
 
+jest.mock('localforage');
+
 configure({ adapter: new Adapter() });
 
 describe('ClusterPopover', () => {

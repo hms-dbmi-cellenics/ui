@@ -2,6 +2,7 @@ import getApiEndpoint from '../../../utils/apiEndpoint';
 import {
   CELL_SETS_LOADED, CELL_SETS_LOADING, CELL_SETS_ERROR,
 } from '../../actionTypes/cellSets';
+import { cacheFetch } from '../../../utils/cacheRequest';
 
 const loadCellSets = (experimentId) => async (dispatch, getState) => {
   const {
@@ -21,17 +22,16 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
     });
   }
 
-  await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`).then(
-    (response) => response.json(),
-  ).then(
-    (json) => dispatch({
+  try {
+    const json = await cacheFetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`);
+    dispatch({
       type: CELL_SETS_LOADED,
       payload: {
         experimentId,
         data: json.cellSets,
       },
-    }),
-  ).catch(() => {
+    });
+  } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,
       payload: {
@@ -39,7 +39,7 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
         error: "Couldn't fetch cell sets.",
       },
     });
-  });
+  }
 };
 
 export default loadCellSets;

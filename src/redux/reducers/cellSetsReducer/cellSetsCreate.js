@@ -1,8 +1,6 @@
 import _ from 'lodash';
 
 const cellSetsCreate = (state, action) => {
-  console.log(action.payload);
-
   const {
     key, name, color, cellIds,
   } = action.payload;

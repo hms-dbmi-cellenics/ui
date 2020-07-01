@@ -7,6 +7,7 @@ import {
 import * as types from '../../../redux/actionTypes';
 import connectionPromise from '../../../utils/socketConnection';
 
+jest.mock('localforage');
 jest.mock('../../../utils/socketConnection');
 
 const mockOn = jest.fn(async (x, f) => {
