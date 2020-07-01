@@ -7,10 +7,12 @@ import {
 import PropTypes from 'prop-types';
 import { Spin } from 'antd';
 import 'vitessce/dist/es/production/static/css/index.css';
+import _ from 'lodash';
 import ClusterPopover from './ClusterPopover';
 
 import { createCellSet } from '../../../../redux/actions/cellSets';
 import { loadCells, updateCellInfo } from '../../../../redux/actions';
+
 
 import {
   renderCellSetColors,
@@ -22,8 +24,6 @@ import {
 } from '../../../../utils/embeddingPlotHelperFunctions/helpers';
 
 import legend from '../../../../../static/media/viridis.png';
-
-const _ = require('lodash');
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
@@ -48,29 +48,34 @@ const Embedding = (props) => {
   const cellInfo = useSelector((state) => state.cellInfo);
   const focusedGene = useSelector((state) => state.focusedGene);
 
+  const [cellColors, setCellColors] = useState([]);
+
   useEffect(() => {
     if (!cells) {
       dispatch(loadCells(experimentID, embeddingType));
     }
   }, []);
 
-  if (!cells || focusedGene.isLoading) {
-    return (<center><Spin size='large' /></center>);
-  }
+  useEffect(() => {
+    if (cellSetSelected?.length > 0) {
+      setCellColors(renderCellSetColors(cellSetSelected, cellSetProperties));
+    }
+  }, [cellSetSelected]);
 
-  const getCellColors = () => {
-    if (focusedGene.geneName) {
-      return colorByGeneExpression(
+  useEffect(() => {
+    if (!_.isEmpty(focusedGene) && focusedGene.expression) {
+      setCellColors(colorByGeneExpression(
         focusedGene.cells,
         focusedGene.expression,
         focusedGene.minExpression,
         focusedGene.maxExpression,
-      );
+      ));
     }
-    return renderCellSetColors(cellSetSelected, cellSetProperties);
-  };
+  }, [focusedGene]);
 
-  const cellColors = getCellColors();
+  if (!cells || focusedGene.isLoading) {
+    return (<center><Spin size='large' /></center>);
+  }
 
   if (cellInfo.cellName) {
     cellColors[cellInfo.cellName] = [0, 0, 0];
