@@ -57,9 +57,11 @@ const Embedding = (props) => {
   }, []);
 
   useEffect(() => {
-    if (cellSetSelected?.length > 0) {
-      setCellColors(renderCellSetColors(cellSetSelected, cellSetProperties));
+    if (!cellSetSelected) {
+      return;
     }
+
+    setCellColors(renderCellSetColors(cellSetSelected, cellSetProperties));
   }, [cellSetSelected]);
 
   useEffect(() => {
