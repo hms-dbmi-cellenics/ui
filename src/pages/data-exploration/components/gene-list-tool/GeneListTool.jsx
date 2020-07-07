@@ -22,6 +22,8 @@ const GeneListTool = (props) => {
   const isLoading = useSelector((state) => state.geneList.loading);
   const rows = useSelector((state) => state.geneList.rows);
   const tableState = useSelector((state) => state.geneList.tableState);
+  const focusedGeneName = useSelector((state) => state.focusedGene.geneName);
+
   const [geneNamesFilter, setGeneNamesFilter] = useState(null);
   const selectedGenes = useSelector((state) => state.selectedGenes);
   const selectedRowKeys = selectedGenes.geneList ? Object.keys(selectedGenes.geneList) : [];
@@ -47,7 +49,14 @@ const GeneListTool = (props) => {
   if (rows) {
     rows.forEach((row) => {
       // eslint-disable-next-line no-param-reassign
-      row.lookup = <GeneLookupButton />;
+      row.lookup = (
+        <GeneLookupButton
+          focused={row.key === focusedGeneName}
+          onClick={() => {
+            dispatch(setFocusedGene(row.key, experimentID));
+          }}
+        />
+      );
     });
   }
 
@@ -157,11 +166,6 @@ const GeneListTool = (props) => {
           selectedRowKeys,
           ...rowSelection,
         }}
-        onRow={(record) => ({
-          onClick: () => {
-            dispatch(setFocusedGene(record.key, experimentID));
-          },
-        })}
       />
     </Space>
   );
