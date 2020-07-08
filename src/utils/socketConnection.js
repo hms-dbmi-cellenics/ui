@@ -2,7 +2,8 @@ import socketIOClient from 'socket.io-client';
 import getApiEndpoint from './apiEndpoint';
 
 let io;
-const connectionPromise = () => new Promise((resolve) => {
+
+const connectionPromise = () => new Promise((resolve, reject) => {
   if (io && io.connected) {
     resolve(io);
   } else {
@@ -11,10 +12,12 @@ const connectionPromise = () => new Promise((resolve) => {
       resolve(io);
     });
     io.on('error', (error) => {
-      console.log(error);
+      io.close();
+      reject(error);
     });
     io.on('connect_error', (error) => {
-      console.log(error);
+      io.close();
+      reject(error);
     });
   }
 });

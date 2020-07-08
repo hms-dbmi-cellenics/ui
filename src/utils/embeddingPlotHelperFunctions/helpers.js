@@ -43,7 +43,7 @@ const colorByGeneExpression = (cells, expressions, min, max) => {
 const convertCellsData = (results) => {
   const data = {};
 
-  Object.entries(results).forEach(([key, value]) => {
+  results.forEach((value, key) => {
     data[key] = {
       mappings: {
         PCA: value,

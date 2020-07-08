@@ -1,36 +1,13 @@
 /* eslint-disable no-param-reassign */
 import {
   UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES, UPDATE_GENE_EXPRESSION,
-  LOAD_CELLS, BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
+  BUILD_HEATMAP_SPEC, UPDATE_HEATMAP_SPEC, LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR,
   UPDATE_CELL_INFO, SET_FOCUSED_GENE,
 } from '../actionTypes';
 import { fetchCachedWork } from '../../utils/cacheRequest';
 import pushNotificationMessage from './notifications/pushNotificationMessage';
 
 const TIMEOUT_SECONDS = 30;
-
-const loadCells = (experimentId, embeddingType) => async (dispatch, getState) => {
-  if (getState().cells.data) {
-    return null;
-  }
-
-  const body = {
-    name: 'GetEmbedding',
-    type: embeddingType,
-  };
-
-  try {
-    const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body, 3600);
-    const embedding = JSON.parse(res);
-    dispatch({
-      type: LOAD_CELLS,
-      data: embedding,
-      experimentId,
-    });
-  } catch (error) {
-    dispatch(pushNotificationMessage('error', 'Failed to fetch Embedding plot data', 5));
-  }
-};
 
 const updateGeneList = (experimentId, tableState) => async (dispatch, getState) => {
   if (getState().geneList?.tableState === tableState) {
@@ -73,7 +50,8 @@ const updateGeneList = (experimentId, tableState) => async (dispatch, getState) 
 
   try {
     const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
-    const data = JSON.parse(res);
+
+    const data = JSON.parse(res[0].body);
     const { total, rows } = data;
     rows.map((row) => {
       row.key = row.gene_names;
@@ -121,7 +99,7 @@ const loadDiffExpr = (
     const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
     let data = {};
     try {
-      data = JSON.parse(res);
+      data = JSON.parse(res[0].body);
     } catch (error) {
       console.error(error);
       data = { rows: [] };
@@ -231,7 +209,7 @@ const loadGeneExpression = (experimentId) => async (dispatch, getState) => {
 
     try {
       const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
-      const heatMapData = JSON.parse(res);
+      const heatMapData = JSON.parse(res[0].body);
       const { data } = getState().geneExpressionData;
       if (data) {
         Array.prototype.push.apply(heatMapData.data, data);
@@ -299,7 +277,7 @@ const setFocusedGene = (geneName, experimentId) => async (dispatch, getState) =>
 
   try {
     const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
-    const geneExpressionData = JSON.parse(res);
+    const geneExpressionData = JSON.parse(res[0].body);
     dispatch({
       type: SET_FOCUSED_GENE,
       data: {
@@ -317,7 +295,6 @@ const setFocusedGene = (geneName, experimentId) => async (dispatch, getState) =>
 };
 
 export {
-  loadCells,
   updateGeneList,
   updateSelectedGenes,
   loadGeneExpression,

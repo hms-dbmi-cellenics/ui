@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 
 import cellSetsReducer from './cellSetsReducer';
 import notificationsReducer from './notificationsReducer';
+import embeddingsReducer from './embeddingsReducer';
 
 
 import {
@@ -160,6 +161,7 @@ const focusedGeneReducer = (state = {}, action) => {
 export default combineReducers({
   cellSets: cellSetsReducer,
   notifications: notificationsReducer,
+  embeddings: embeddingsReducer,
 
 
   cells: cellsReducer,
