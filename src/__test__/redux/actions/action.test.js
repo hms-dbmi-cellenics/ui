@@ -257,6 +257,7 @@ describe('setFocusedGene action', () => {
       },
       type: types.SET_FOCUSED_GENE,
     });
+
     expect(dispatch).toBeCalledWith({
       data: {
         cells: ['C1', 'C2'],

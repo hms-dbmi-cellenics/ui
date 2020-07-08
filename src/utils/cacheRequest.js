@@ -22,8 +22,8 @@ const fetchCachedWork = async (experimentId, timeout, body, ttl = 900) => {
   const data = await cache.get(key);
   if (data) return data;
   const response = await sendWork(experimentId, timeout, body);
-  await cache._set(key, response.results[0].body, ttl);
-  return response.results[0].body;
+  await cache._set(key, response.results, ttl);
+  return response.results;
 };
 
 export { cacheFetch, fetchCachedWork };

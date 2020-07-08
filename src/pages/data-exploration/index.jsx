@@ -44,7 +44,7 @@ class ExplorationViewPage extends React.Component {
       key: 'item-1',
       name: 'UMAP Embedding',
       description: 'Visualize cells clustered by genetic expression using a UMAP embedding.',
-      renderer: () => <Embedding experimentID={experimentId} embeddingType='umap' />,
+      renderer: () => <Embedding experimentId={experimentId} embeddingType='umap' />,
     },
     {
       key: 'item-2',
