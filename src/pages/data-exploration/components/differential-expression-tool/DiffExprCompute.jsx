@@ -23,7 +23,7 @@ const ComparisonTypes = {
 
 const DiffExprCompute = (props) => {
   const {
-    experimentID, onCompute, selection, comparison,
+    experimentId, onCompute, selection, comparison,
   } = props;
 
   const dispatch = useDispatch();
@@ -42,7 +42,7 @@ const DiffExprCompute = (props) => {
    * Loads cell set on initial render if it does not already exist in the store.
    */
   useEffect(() => {
-    dispatch(loadCellSets(experimentID));
+    dispatch(loadCellSets(experimentId));
   }, []);
 
   /**
@@ -216,7 +216,7 @@ DiffExprCompute.defaultProps = {
 };
 
 DiffExprCompute.propTypes = {
-  experimentID: PropTypes.string.isRequired,
+  experimentId: PropTypes.string.isRequired,
   onCompute: PropTypes.func.isRequired,
   selection: PropTypes.object.isRequired,
   comparison: PropTypes.string,

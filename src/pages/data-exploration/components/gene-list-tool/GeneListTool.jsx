@@ -16,7 +16,7 @@ import GeneLookupButton from './GeneLookupButton';
 const { Text } = Typography;
 
 const GeneListTool = (props) => {
-  const { experimentID } = props;
+  const { experimentId } = props;
   const dispatch = useDispatch();
 
   const isLoading = useSelector((state) => state.geneList.loading);
@@ -43,7 +43,7 @@ const GeneListTool = (props) => {
       geneNamesFilter,
     };
 
-    dispatch(updateGeneList(experimentID, defaultState));
+    dispatch(updateGeneList(experimentId, defaultState));
   }
 
   if (rows) {
@@ -53,7 +53,7 @@ const GeneListTool = (props) => {
         <GeneLookupButton
           focused={row.key === focusedGeneName}
           onClick={() => {
-            dispatch(setFocusedGene(row.key, experimentID));
+            dispatch(setFocusedGene(row.key, experimentId));
           }}
         />
       );
@@ -101,7 +101,7 @@ const GeneListTool = (props) => {
 
   const handleTableChange = (newPagination, _, newSorter) => {
     const newTableState = { pagination: newPagination, sorter: { ...newSorter }, geneNamesFilter };
-    dispatch(updateGeneList(experimentID, newTableState));
+    dispatch(updateGeneList(experimentId, newTableState));
   };
 
   const filterGenes = (searchPattern) => {
@@ -110,27 +110,27 @@ const GeneListTool = (props) => {
       sorter: { ...tableState.sorter },
       geneNamesFilter: searchPattern,
     };
-    dispatch(updateGeneList(experimentID, newTableState));
+    dispatch(updateGeneList(experimentId, newTableState));
     setGeneNamesFilter(searchPattern);
   };
 
   const rowSelection = {
     onSelect: (gene, selected) => {
-      dispatch(updateSelectedGenes([gene.key], selected, experimentID));
-      dispatch(loadGeneExpression(experimentID));
+      dispatch(updateSelectedGenes([gene.key], selected, experimentId));
+      dispatch(loadGeneExpression(experimentId));
     },
     onSelectAll: (selected, selectedRows, changeRows) => {
       const genes = [];
       changeRows.forEach((row) => genes.push(row.gene_names));
 
-      dispatch(updateSelectedGenes(genes, selected, experimentID));
-      dispatch(loadGeneExpression(experimentID));
+      dispatch(updateSelectedGenes(genes, selected, experimentId));
+      dispatch(loadGeneExpression(experimentId));
     },
   };
 
   const clearAll = () => {
-    dispatch(updateSelectedGenes(selectedRowKeys, false, experimentID));
-    dispatch(loadGeneExpression(experimentID));
+    dispatch(updateSelectedGenes(selectedRowKeys, false, experimentId));
+    dispatch(loadGeneExpression(experimentId));
   };
 
   const selectionIndicator = () => {
@@ -175,7 +175,7 @@ const GeneListTool = (props) => {
 GeneListTool.defaultProps = {};
 
 GeneListTool.propTypes = {
-  experimentID: PropTypes.string.isRequired,
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default GeneListTool;

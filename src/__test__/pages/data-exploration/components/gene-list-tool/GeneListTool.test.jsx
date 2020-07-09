@@ -168,7 +168,7 @@ describe('GeneListTool', () => {
 
     component = mount(
       <Provider store={store}>
-        <GeneListTool experimentID='1234' />
+        <GeneListTool experimentId='1234' />
       </Provider>,
     );
   });
@@ -251,7 +251,7 @@ describe('GeneListTool', () => {
     store = mockStore({ ...initialState, focusedGene: { geneName: FOCUSED_GENE } });
     component = mount(
       <Provider store={store}>
-        <GeneListTool experimentID='1234' />
+        <GeneListTool experimentId='1234' />
       </Provider>,
     );
 

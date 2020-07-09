@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  PageHeader, Row, Col, Space, Button, List, Card, Tooltip,
+  PageHeader, Row, Col, Space, Button, List, Card, Tooltip, Dropdown,
 } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined, DownOutlined } from '@ant-design/icons';
 
 import Link from 'next/link';
 import SearchMenu from '../../components/search-menu/SearchMenu';
@@ -80,6 +80,7 @@ class PlotsTablesHome extends React.Component {
 
     this.state = {
       openedPlots: this.plots,
+      addMenuVisible: false,
     };
   }
 
@@ -116,7 +117,17 @@ class PlotsTablesHome extends React.Component {
   }
 
   render() {
-    const { openedPlots } = this.state;
+    const { openedPlots, addMenuVisible } = this.state;
+
+    const searchMenu = (
+      <SearchMenu
+        options={{ Plots: this.plots }}
+        onSelect={(key) => {
+          this.openPlot(key);
+          this.setState({ addMenuVisible: false });
+        }}
+      />
+    );
 
     return (
       <>
@@ -127,22 +138,29 @@ class PlotsTablesHome extends React.Component {
               title='Plots and Tables'
               subTitle='Home'
               style={{ width: '100%', paddingRight: '0px' }}
-              extra={(
+              extra={[
+                <Dropdown
+                  overlay={searchMenu}
+                  visible={addMenuVisible}
+                  onVisibleChange={(visible) => this.setState({ addMenuVisible: visible })}
+                >
+                  <Button
+                    type='primary'
+                    onClick={() => this.setState({ addMenuVisible: false })}
+                  >
+                    Open Existing
+                    {' '}
+                    <DownOutlined />
+                  </Button>
+                </Dropdown>,
                 <Tooltip title='Coming soon!'>
                   <Button type='primary' disabled>
                     Create
                   </Button>
-                </Tooltip>
-              )}
+                </Tooltip>,
+              ]}
             />
             <Space direction='vertical' style={{ width: '100%' }}>
-              <SearchMenu
-                options={this.plots}
-                onSelect={(key) => {
-                  this.openPlot(key);
-                }}
-                placeholder='Search in existing figures ...'
-              />
               <h1>Recent</h1>
               <List
                 grid={{ gutter: 16, column: 3 }}

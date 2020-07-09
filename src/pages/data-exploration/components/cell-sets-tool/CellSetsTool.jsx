@@ -26,7 +26,7 @@ const { Text } = Typography;
 
 
 const CellSetsTool = (props) => {
-  const { experimentID } = props;
+  const { experimentId } = props;
 
   const dispatch = useDispatch();
 
@@ -37,23 +37,23 @@ const CellSetsTool = (props) => {
   } = cellSets;
 
   useEffect(() => {
-    dispatch(loadCellSets(experimentID));
+    dispatch(loadCellSets(experimentId));
   }, []);
 
   const onNodeUpdate = (key, data) => {
-    dispatch(updateCellSetProperty(experimentID, key, data));
+    dispatch(updateCellSetProperty(experimentId, key, data));
   };
 
   const onNodeDelete = (key) => {
-    dispatch(deleteCellSet(experimentID, key));
+    dispatch(deleteCellSet(experimentId, key));
   };
 
   const onHierarchyUpdate = (newHierarchy) => {
-    dispatch(updateCellSetHierarchy(experimentID, newHierarchy));
+    dispatch(updateCellSetHierarchy(experimentId, newHierarchy));
   };
 
   const onCheck = (keys) => {
-    dispatch(updateCellSetSelected(experimentID, keys));
+    dispatch(updateCellSetSelected(experimentId, keys));
   };
 
   /**
@@ -78,7 +78,7 @@ const CellSetsTool = (props) => {
         >
           <Button
             type='primary'
-            onClick={() => dispatch(loadCellSets(experimentID))}
+            onClick={() => dispatch(loadCellSets(experimentId))}
           >
             Try again
           </Button>
