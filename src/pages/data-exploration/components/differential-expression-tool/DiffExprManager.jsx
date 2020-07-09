@@ -8,7 +8,7 @@ import DiffExprResults from './DiffExprResults';
 import { loadDiffExpr } from '../../../../redux/actions';
 
 const DiffExprManager = (props) => {
-  const { experimentID, view } = props;
+  const { experimentId, view } = props;
 
   const defaultSelected = 'Select a cell set';
   const [selectedCellSets, setSelectedCellSets] = useState({
@@ -25,7 +25,7 @@ const DiffExprManager = (props) => {
     if (comparison !== comparisonType
       || !_.isEqual(selection, selectedCellSets)) {
       dispatch(
-        loadDiffExpr(experimentID, comparison, selection),
+        loadDiffExpr(experimentId, comparison, selection),
       );
 
       setSelectedCellSets(selection);
@@ -42,7 +42,7 @@ const DiffExprManager = (props) => {
   if (currentView === 'compute') {
     return (
       <DiffExprCompute
-        experimentID={experimentID}
+        experimentId={experimentId}
         onCompute={onCompute}
         selection={selectedCellSets}
         comparison={comparisonType}

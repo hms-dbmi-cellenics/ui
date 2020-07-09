@@ -1,94 +1,74 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  PlusOutlined,
-} from '@ant-design/icons';
-
-import {
-  Input, Dropdown, Menu, Typography,
+  Input, Menu, Divider,
 } from 'antd';
 
-const { Text } = Typography;
 
 const SearchMenu = (props) => {
-  const { options, onSelect } = props;
+  const { options, categoryInfo, onSelect } = props;
   const [filteredOptions, setFilteredOptions] = useState(options);
 
   const search = (text) => {
-    const newFiltered = [];
-    options.forEach((tool) => {
-      const keys = Object.keys(tool);
-      const containsText = keys.filter(
-        (k) => tool[k].toString().toLowerCase().includes(text.toLowerCase()),
-      );
-      if (containsText.length > 0) {
-        newFiltered.push(tool);
-      }
+    const newFiltered = {};
+    Object.keys(options).forEach((key) => {
+      newFiltered[key] = newFiltered[key] || [];
+      options[key].forEach((tool) => {
+        const keys = Object.keys(tool);
+        const containsText = keys.filter(
+          (k) => tool[k].toString().toLowerCase().includes(text.toLowerCase()),
+        );
+        if (containsText.length > 0) {
+          newFiltered[key].push(tool);
+        }
+      });
     });
+
     setFilteredOptions(newFiltered);
     return newFiltered;
   };
 
-
-  const renderMenuItem = (primaryText, secondaryText, key) => (
+  const renderMenuItem = (icon, item, category) => (
     <Menu.Item
-      key={[key, 'item'].join('-')}
+      key={[item.key, 'item'].join('-')}
+      icon={icon}
       onClick={() => {
-        onSelect(key);
+        onSelect(item.key, category);
       }}
     >
-      <div>
-        <Text strong>{primaryText}</Text>
-        <br />
-        <Text type='secondary'>{secondaryText}</Text>
-      </div>
+      {item.name}
     </Menu.Item>
   );
 
-  const renderMenu = () => {
-    if (filteredOptions.length > 0) {
-      return (
-        <Menu>
-          {
-            filteredOptions.map((t) => renderMenuItem(t.name, t.description, t.key))
-          }
-        </Menu>
-      );
-    }
-    return (
-      <Menu>
-        {
-          options.map((t) => renderMenuItem(t.name, t.description, t.key))
-        }
-      </Menu>
-    );
-  };
-
-  const { placeholder } = props;
-
   return (
-    <Dropdown
-      overlay={renderMenu()}
-      trigger={['click']}
-    >
-      <Input
-        prefix={<PlusOutlined />}
-        placeholder={placeholder}
-        onChange={(e) => search(e.target.value)}
-      />
-    </Dropdown>
+    <Menu>
+      <Menu.Item>
+        <Input
+          placeholder='Search'
+          onChange={(e) => search(e.target.value)}
+          allowClear
+        />
+      </Menu.Item>
+      {
+        Object.keys(filteredOptions).map((category) => [
+          filteredOptions[category].length > 0 ? <Menu.Item><Divider orientation='left' plain>{category || ''}</Divider></Menu.Item> : <></>,
+          filteredOptions[category].map((item) => renderMenuItem(categoryInfo[category] || <></>, item, category)),
+        ])
+      }
+    </Menu>
   );
 };
 
 SearchMenu.defaultProps = {
   onSelect: () => null,
+  categoryInfo: {},
 };
 
 
 SearchMenu.propTypes = {
-  options: PropTypes.arrayOf(PropTypes.object).isRequired,
+  options: PropTypes.objectOf(PropTypes.object).isRequired,
+  categoryInfo: PropTypes.objectOf(),
   onSelect: PropTypes.func,
-  placeholder: PropTypes.string.isRequired,
 };
 
 export default SearchMenu;

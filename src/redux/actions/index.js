@@ -7,7 +7,9 @@ import {
 import { fetchCachedWork } from '../../utils/cacheRequest';
 import pushNotificationMessage from './notifications/pushNotificationMessage';
 
-const TIMEOUT_SECONDS = 30;
+const DEFAULT_TIMEOUT_SECONDS = 30;
+const DIFF_EXPR_TIMEOUT_SECONDS = 90;
+
 
 const updateGeneList = (experimentId, tableState) => async (dispatch, getState) => {
   if (getState().geneList?.tableState === tableState) {
@@ -49,7 +51,7 @@ const updateGeneList = (experimentId, tableState) => async (dispatch, getState) 
   }
 
   try {
-    const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
+    const res = await fetchCachedWork(experimentId, DEFAULT_TIMEOUT_SECONDS, body);
 
     const data = JSON.parse(res[0].body);
     const { total, rows } = data;
@@ -96,7 +98,7 @@ const loadDiffExpr = (
   }
 
   try {
-    const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
+    const res = await fetchCachedWork(experimentId, DIFF_EXPR_TIMEOUT_SECONDS, body);
     let data = {};
     try {
       data = JSON.parse(res[0].body);
@@ -208,7 +210,7 @@ const loadGeneExpression = (experimentId) => async (dispatch, getState) => {
     }
 
     try {
-      const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
+      const res = await fetchCachedWork(experimentId, DEFAULT_TIMEOUT_SECONDS, body);
       const heatMapData = JSON.parse(res[0].body);
       const { data } = getState().geneExpressionData;
       if (data) {
@@ -276,7 +278,7 @@ const setFocusedGene = (geneName, experimentId) => async (dispatch, getState) =>
   };
 
   try {
-    const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
+    const res = await fetchCachedWork(experimentId, DEFAULT_TIMEOUT_SECONDS, body);
     const geneExpressionData = JSON.parse(res[0].body);
     dispatch({
       type: SET_FOCUSED_GENE,
