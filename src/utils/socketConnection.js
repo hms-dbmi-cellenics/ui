@@ -9,7 +9,7 @@ const connectionPromise = () => new Promise((resolve, reject) => {
   } else {
     io = socketIOClient(getApiEndpoint());
     io.on('connect', () => {
-      resolve(io);
+      if (io.id) resolve(io);
     });
     io.on('error', (error) => {
       io.close();
