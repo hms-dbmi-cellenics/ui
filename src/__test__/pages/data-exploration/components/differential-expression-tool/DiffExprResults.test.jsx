@@ -61,7 +61,7 @@ describe('DiffExprResults', () => {
   test('renders correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <DiffExprResults experimentID='1234' onGoBack={jest.fn()} />
+        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} />
       </Provider>,
     );
 

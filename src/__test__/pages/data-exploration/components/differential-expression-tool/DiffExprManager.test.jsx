@@ -59,7 +59,7 @@ describe('DiffExprManager', () => {
   test('renders correctly a compute view', () => {
     const component = mount(
       <Provider store={emptyStore}>
-        <DiffExprManager experimentID='1234' view='compute' />
+        <DiffExprManager experimentId='1234' view='compute' />
       </Provider>,
     );
     expect(component.find(DiffExprCompute).length).toEqual(1);
@@ -68,7 +68,7 @@ describe('DiffExprManager', () => {
   test('renders correctly a results view', () => {
     const component = mount(
       <Provider store={emptyStore}>
-        <DiffExprManager experimentID='1234' view='results' />
+        <DiffExprManager experimentId='1234' view='results' />
       </Provider>,
     );
     expect(component.find(DiffExprResults).length).toEqual(1);
@@ -77,7 +77,7 @@ describe('DiffExprManager', () => {
   test('on click of compute with changed parameters, DiffExprManager dispatches an action to fetch results', () => {
     const component = mount(
       <Provider store={emptyStore}>
-        <DiffExprManager experimentID='1234' view='compute' />
+        <DiffExprManager experimentId='1234' view='compute' />
       </Provider>,
     );
     expect(component.find(DiffExprResults).length).toEqual(0);

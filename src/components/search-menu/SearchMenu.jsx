@@ -66,8 +66,8 @@ SearchMenu.defaultProps = {
 
 
 SearchMenu.propTypes = {
-  options: PropTypes.objectOf(PropTypes.object).isRequired,
-  categoryInfo: PropTypes.objectOf(),
+  options: PropTypes.objectOf(PropTypes.array).isRequired,
+  categoryInfo: PropTypes.object,
   onSelect: PropTypes.func,
 };
 
