@@ -88,7 +88,7 @@ describe('DiffExprCompute', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
-          experimentID='1234'
+          experimentId='1234'
           selection={{ first: 'Select a cell set', second: 'Select a cell set' }}
           onCompute={jest.fn()}
         />
@@ -117,7 +117,7 @@ describe('DiffExprCompute', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
-          experimentID='1234'
+          experimentId='1234'
           selection={{ first: 'Select a cell set', second: 'Select a cell set' }}
           comparison='Versus rest'
           onCompute={jest.fn()}
@@ -145,7 +145,7 @@ describe('DiffExprCompute', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
-          experimentID='1234'
+          experimentId='1234'
           selection={{ first: 'Select a cell set', second: 'Select a cell set' }}
           comparison='Across sets'
           onCompute={jest.fn()}
@@ -173,7 +173,7 @@ describe('DiffExprCompute', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
-          experimentID='1234'
+          experimentId='1234'
           selection={{ first: 'Select a cell set', second: 'Select a cell set' }}
           comparison='Versus rest'
           onCompute={jest.fn()}
@@ -204,7 +204,7 @@ describe('DiffExprCompute', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
-          experimentID='1234'
+          experimentId='1234'
           selection={{ first: 'cluster-a', second: 'cluster-b' }}
           comparison='Across sets'
           onCompute={jest.fn()}
@@ -229,7 +229,7 @@ describe('DiffExprCompute', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
-          experimentID='1234'
+          experimentId='1234'
           selection={{ first: 'cluster-a', second: 'Select a cell set' }}
           comparison='Versus rest'
           onCompute={jest.fn()}
@@ -263,7 +263,7 @@ describe('DiffExprCompute', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
-          experimentID='1234'
+          experimentId='1234'
           selection={{ first: 'cluster-a', second: 'cluster-b' }}
           comparison='Across sets'
           onCompute={jest.fn()}

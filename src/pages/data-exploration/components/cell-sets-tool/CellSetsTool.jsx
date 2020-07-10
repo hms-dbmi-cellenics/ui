@@ -106,7 +106,7 @@ const CellSetsTool = (props) => {
   };
 
   const recluster = () => {
-    dispatch(resetCellSets(experimentID));
+    dispatch(resetCellSets(experimentId));
   };
 
   return (
@@ -122,7 +122,7 @@ const CellSetsTool = (props) => {
 CellSetsTool.defaultProps = {};
 
 CellSetsTool.propTypes = {
-  experimentID: PropTypes.string.isRequired,
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default CellSetsTool;
