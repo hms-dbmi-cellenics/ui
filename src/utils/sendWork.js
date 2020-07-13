@@ -15,7 +15,6 @@ const sendWork = async (experimentId, timeout, body) => {
     timeout: timeoutDate,
     body,
   };
-
   io.emit('WorkRequest', request);
 
   const responsePromise = new Promise((resolve) => {

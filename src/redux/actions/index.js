@@ -198,16 +198,20 @@ const loadGeneExpression = (experimentId) => async (dispatch, getState) => {
       },
     });
 
+    let clusterBy = 'all';
+    // if louvain clusters exist, cluster by them
+    if (cellSets && cellSets.hierarchy) {
+      const louvainClusters = cellSets.hierarchy.filter((clusters) => clusters.key === 'louvain');
+      if (louvainClusters.length > 0) {
+        clusterBy = louvainClusters[0].children.map((child) => child.key);
+      }
+    }
+
     const body = {
       name: 'GeneExpression',
-      cellSets: 'all',
+      cellSets: clusterBy,
       genes: newGeneBatch,
     };
-
-    if (cellSets) {
-      const louvainKeys = cellSets.hierarchy[0].children.map((child) => child.key);
-      body.cellSets = louvainKeys;
-    }
 
     try {
       const res = await fetchCachedWork(experimentId, DEFAULT_TIMEOUT_SECONDS, body);

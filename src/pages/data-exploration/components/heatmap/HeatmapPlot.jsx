@@ -31,6 +31,7 @@ const HeatmapPlot = () => {
     <VegaHeatmap
       spec={heatmapSpec}
       showAxes={showAxes}
+      rowsNumber={geneExpressionData.data.length || 0}
     />
   );
 };

@@ -136,7 +136,6 @@ describe('loadGeneExpression action', () => {
       geneExpressionData: { isLoading: false },
     });
     await loadGeneExpression('expId')(dispatch, getState);
-
     expect(dispatch).toBeCalledTimes(4);
     expect(dispatch).toBeCalledWith({
       data: { newGenesAdded: false },
@@ -177,6 +176,56 @@ describe('loadGeneExpression action', () => {
         },
       },
     });
+  });
+  it('Does not apply clustering if there are no louvain cellSets in the store', async () => {
+    const getState = () => ({
+      selectedGenes: {
+        geneList: {
+          G1: false,
+        },
+        newGenesAdded: true,
+      },
+      geneExpressionData: { isLoading: false },
+    });
+    await loadGeneExpression('expId')(dispatch, getState);
+    expect(mockEmit).toBeCalledWith('WorkRequest', expect.objectContaining({
+      body: {
+        name: 'GeneExpression',
+        cellSets: 'all',
+        genes: ['G1'],
+      },
+    }));
+  });
+  it('Applies clustering if there are louvain cellSets in the store', async () => {
+    const getState = () => ({
+      cellSets: {
+        hierarchy: [
+          {
+            key: 'louvain',
+            children: [{ key: 'louvain-0' }, { key: 'louvain-1' }, { key: 'louvain-2' }],
+          },
+          {
+            key: 'something-else',
+            children: [{ key: 'something-0' }, { key: 'something-1' }, { key: 'something-2' }],
+          },
+        ],
+      },
+      selectedGenes: {
+        geneList: {
+          G1: false,
+        },
+        newGenesAdded: true,
+      },
+      geneExpressionData: { isLoading: false },
+    });
+    await loadGeneExpression('expId')(dispatch, getState);
+    expect(mockEmit).toBeCalledWith('WorkRequest', expect.objectContaining({
+      body: {
+        name: 'GeneExpression',
+        cellSets: ['louvain-0', 'louvain-1', 'louvain-2'],
+        genes: ['G1'],
+      },
+    }));
   });
 });
 

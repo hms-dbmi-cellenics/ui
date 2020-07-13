@@ -142,7 +142,7 @@ class ExplorationViewPage extends React.Component {
               visible={addMenuVisible}
               onVisibleChange={(visible) => this.setState({ addMenuVisible: visible })}
             >
-              <Button type='primary' onClick={() => this.setState({ addMenuVisible: false })}>
+              <Button type='primary' onClick={() => this.setState({ addMenuVisible: !addMenuVisible })}>
                 Add
                 {' '}
                 <DownOutlined />
