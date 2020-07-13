@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadEmbedding action Dispatches error action on unsuccessful loading 1`] = `
+Object {
+  "payload": Object {
+    "embeddingType": "4567",
+    "experimentId": "1234",
+  },
+  "type": "embeddings/loading",
+}
+`;
+
+exports[`loadEmbedding action Dispatches error action on unsuccessful loading 2`] = `
+Object {
+  "payload": Object {
+    "embeddingType": "4567",
+    "error": "Oops, we couldn't load your embedding. The computation took too long or your connection is broken.",
+    "experimentId": "1234",
+  },
+  "type": "embeddings/error",
+}
+`;
+
+exports[`loadEmbedding action Dispatches on a previous error condition 1`] = `
+Object {
+  "payload": Object {
+    "embeddingType": "4567",
+    "experimentId": "1234",
+  },
+  "type": "embeddings/loading",
+}
+`;
+
+exports[`loadEmbedding action Dispatches on a previous error condition 2`] = `
+Object {
+  "payload": Object {
+    "data": Array [
+      Array [
+        1,
+        2,
+      ],
+      Array [
+        3,
+        4,
+      ],
+    ],
+    "embeddingType": "4567",
+    "experimentId": "1234",
+  },
+  "type": "embeddings/loaded",
+}
+`;
+
+exports[`loadEmbedding action Dispatches on a previously unseen embedding 1`] = `
+Object {
+  "payload": Object {
+    "embeddingType": "4567",
+    "experimentId": "1234",
+  },
+  "type": "embeddings/loading",
+}
+`;
+
+exports[`loadEmbedding action Dispatches on a previously unseen embedding 2`] = `
+Object {
+  "payload": Object {
+    "data": Array [
+      Array [
+        1,
+        2,
+      ],
+      Array [
+        3,
+        4,
+      ],
+    ],
+    "embeddingType": "4567",
+    "experimentId": "1234",
+  },
+  "type": "embeddings/loaded",
+}
+`;

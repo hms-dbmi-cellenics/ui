@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`deleteCellSet action Dispatches an action to delete cell set to the reducer 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+    "key": "my-key",
+  },
+  "type": "cellSets/delete",
+}
+`;
+
+exports[`deleteCellSet action Last action dispatches cellSetSave event 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+    "key": "my-key",
+  },
+  "type": "cellSets/delete",
+}
+`;

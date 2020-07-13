@@ -2,7 +2,6 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import loadEmbedding from '../../../../redux/actions/embeddings/loadEmbedding';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddingsReducer/initialState';
-import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../../../../redux/actionTypes/embeddings';
 
 import sendWork from '../../../../utils/sendWork';
 
@@ -27,7 +26,7 @@ describe('loadEmbedding action', () => {
       },
     );
 
-    await store.dispatch(loadEmbedding(experimentId, embeddingType));
+    store.dispatch(loadEmbedding(experimentId, embeddingType));
     expect(store.getActions().length).toEqual(0);
   });
 
@@ -39,7 +38,7 @@ describe('loadEmbedding action', () => {
       },
     );
 
-    await store.dispatch(loadEmbedding(experimentId, embeddingType));
+    store.dispatch(loadEmbedding(experimentId, embeddingType));
     expect(store.getActions().length).toEqual(0);
   });
 
@@ -73,15 +72,11 @@ describe('loadEmbedding action', () => {
 
     // The first action should have been a loading.
     const firstAction = store.getActions()[0];
-    expect(firstAction).toMatchObject(
-      { type: EMBEDDINGS_LOADING, payload: { experimentId, embeddingType } },
-    );
+    expect(firstAction).toMatchSnapshot();
 
     // The first action should have been an appropriately constructed loaded action.
     const secondAction = store.getActions()[1];
-    expect(secondAction).toMatchObject(
-      { type: EMBEDDINGS_LOADED, payload: { experimentId, embeddingType, data: [[1, 2], [3, 4]] } },
-    );
+    expect(secondAction).toMatchSnapshot();
   });
 
   it('Dispatches on a previous error condition', async () => {
@@ -115,15 +110,11 @@ describe('loadEmbedding action', () => {
 
     // The first action should have been a loading.
     const firstAction = store.getActions()[0];
-    expect(firstAction).toMatchObject(
-      { type: EMBEDDINGS_LOADING, payload: { experimentId, embeddingType } },
-    );
+    expect(firstAction).toMatchSnapshot();
 
     // The first action should have been an appropriately constructed loaded action.
     const secondAction = store.getActions()[1];
-    expect(secondAction).toMatchObject(
-      { type: EMBEDDINGS_LOADED, payload: { experimentId, embeddingType, data: [[1, 2], [3, 4]] } },
-    );
+    expect(secondAction).toMatchSnapshot();
   });
 
   it('Dispatches error action on unsuccessful loading', async () => {
@@ -143,14 +134,10 @@ describe('loadEmbedding action', () => {
 
     // The first action should have been a loading.
     const firstAction = store.getActions()[0];
-    expect(firstAction).toMatchObject(
-      { type: EMBEDDINGS_LOADING, payload: { embeddingType, experimentId } },
-    );
+    expect(firstAction).toMatchSnapshot();
 
     // The first action should have been an error condition.
     const secondAction = store.getActions()[1];
-    expect(secondAction).toMatchObject(
-      { type: EMBEDDINGS_ERROR },
-    );
+    expect(secondAction).toMatchSnapshot();
   });
 });

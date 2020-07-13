@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateCellSetSelected action Dispatches an action to update property to the reducer 1`] = `
+Object {
+  "payload": Object {
+    "loadingColors": true,
+  },
+  "type": "cellSets/setSelected",
+}
+`;

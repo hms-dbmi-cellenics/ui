@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateCellSetHierarchy action Dispatches an action to update hierarchy to the reducer 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+    "hierarchy": Object {
+      "children": Array [],
+      "key": "root",
+    },
+  },
+  "type": "cellSets/updateHierarchy",
+}
+`;
+
+exports[`updateCellSetHierarchy action Last action dispatches cellSetSave event 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+    "hierarchy": Object {
+      "children": Array [],
+      "key": "root",
+    },
+  },
+  "type": "cellSets/updateHierarchy",
+}
+`;

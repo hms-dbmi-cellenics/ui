@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cellSetsReducer Adds cells to scratchpad on creation 1`] = `
+Array [
+  Object {
+    "children": Array [
+      Object {
+        "key": "key2",
+      },
+    ],
+    "key": "scratchpad",
+  },
+]
+`;
+
+exports[`cellSetsReducer Adds cells to scratchpad on creation 2`] = `
+Object {
+  "key2": Object {
+    "cellIds": Array [
+      1,
+      2,
+      3,
+    ],
+    "color": "#ff00ff",
+    "key": "key2",
+    "name": "My Key",
+  },
+}
+`;
+
+exports[`cellSetsReducer Hierarchy is updated appropriately 1`] = `
+Array [
+  Object {
+    "children": Array [],
+    "key": "1",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "key": "1a",
+      },
+    ],
+    "key": "2",
+  },
+]
+`;
+
+exports[`cellSetsReducer Removes cell sets and their children if root node is removed 1`] = `
+Object {
+  "children": Array [],
+  "key": "2",
+}
+`;
+
+exports[`cellSetsReducer Removes only child, not parent, when child is removed 1`] = `
+Array [
+  Object {
+    "children": Array [],
+    "key": "1",
+  },
+  Object {
+    "children": Array [],
+    "key": "2",
+  },
+]
+`;
+
+exports[`cellSetsReducer Selected cells are maintained 1`] = `
+Array [
+  "a",
+  "b",
+  "c",
+]
+`;
+
+exports[`cellSetsReducer Selected cells are maintained 2`] = `
+Array [
+  1,
+  2,
+  "c",
+  3,
+]
+`;
+
+exports[`cellSetsReducer Sets up store properly for loaded cell sets. 1`] = `
+Object {
+  "1": Object {
+    "cellIds": undefined,
+    "color": undefined,
+    "name": "parent 1",
+    "rootNode": true,
+  },
+  "1a": Object {
+    "cellIds": undefined,
+    "color": "#00FF00",
+    "name": "first child",
+    "rootNode": undefined,
+  },
+  "2": Object {
+    "cellIds": undefined,
+    "color": undefined,
+    "name": "parent 2",
+    "rootNode": true,
+  },
+}
+`;
+
+exports[`cellSetsReducer Updates cell set properties 1`] = `
+Object {
+  "cellIds": undefined,
+  "color": "#ffffff",
+  "name": "favorite child",
+  "rootNode": undefined,
+}
+`;

@@ -48,6 +48,7 @@ const Embedding = (props) => {
   const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const cellSetSelected = useSelector((state) => state.cellSets.selected);
+  const loadingColors = useSelector((state) => state.cellSets.loadingColors);
   const cellSetProperties = useSelector((state) => state.cellSets.properties);
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const focusedGene = useSelector((state) => state.focusedGene);
@@ -94,9 +95,8 @@ const Embedding = (props) => {
   }, [focusedGene]);
 
   useEffect(() => {
-    console.log('new selection event', cellSetSelected);
     currentView.current = 'cellSet';
-    setCellColors(getCellColors('cellSet'));
+    if (!loadingColors) setCellColors(getCellColors('cellSet'));
   }, [cellSetSelected]);
 
   const updateCellsHover = (cell) => {
@@ -140,7 +140,7 @@ const Embedding = (props) => {
     }
   }, 1000);
 
-  if (!data || loading || focusedGene.isLoading) {
+  if (!data || loading || focusedGene.isLoading || loadingColors) {
     return (<center><Spin size='large' /></center>);
   }
 
