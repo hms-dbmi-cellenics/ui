@@ -55,14 +55,12 @@ const convertCellsData = (results) => {
 };
 
 const updateStatus = () => { };
-const updateViewInfo = () => { };
 const clearPleaseWait = () => { };
 
 export {
   renderCellSetColors,
   convertCellsData,
   updateStatus,
-  updateViewInfo,
   clearPleaseWait,
   colorByGeneExpression,
 };

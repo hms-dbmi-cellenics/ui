@@ -238,6 +238,7 @@ describe('updateCellInfo action', () => {
       cellName: 'C1',
       geneName: 'G1',
       expression: 1,
+      componentType: 'heatmap',
     })(dispatch);
 
     expect(dispatch).toBeCalledTimes(1);
@@ -246,6 +247,7 @@ describe('updateCellInfo action', () => {
         cellName: 'C1',
         geneName: 'G1',
         expression: 1,
+        componentType: 'heatmap',
       },
       type: types.UPDATE_CELL_INFO,
     });

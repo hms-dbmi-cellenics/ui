@@ -52,7 +52,6 @@ const updateGeneList = (experimentId, tableState) => async (dispatch, getState) 
 
   try {
     const res = await fetchCachedWork(experimentId, DEFAULT_TIMEOUT_SECONDS, body);
-
     const data = JSON.parse(res[0].body);
     const { total, rows } = data;
     rows.map((row) => {
