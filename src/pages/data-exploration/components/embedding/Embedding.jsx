@@ -14,17 +14,16 @@ import { ExclamationCircleFilled } from '@ant-design/icons';
 
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
+import CrossHair from '../cross-hair/CrossHair';
 
 import loadEmbedding from '../../../../redux/actions/embeddings/loadEmbedding';
 
 import { createCellSet } from '../../../../redux/actions/cellSets';
 import { updateCellInfo } from '../../../../redux/actions';
 
-
 import {
   convertCellsData,
   updateStatus,
-  updateViewInfo,
   clearPleaseWait,
   renderCellSetColors,
   colorByGeneExpression,
@@ -41,7 +40,6 @@ const Scatterplot = dynamic(
 
 const Embedding = (props) => {
   const { experimentId, embeddingType } = props;
-  const uuid = 'my-scatterplot';
   const view = { target: [7, 5, 0], zoom: 4.00 };
   const selectedCellIds = new Set();
 
@@ -56,6 +54,7 @@ const Embedding = (props) => {
   const hoverPosition = useRef({ x: 0, y: 0 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [viewPort, setViewPort] = useState({});
 
   const [cellColors, setCellColors] = useState({});
 
@@ -109,6 +108,7 @@ const Embedding = (props) => {
             geneName: focusedGene.geneName,
             cellName: cell.cellId,
             expression: cellExpression,
+            componentType: embeddingType,
           }));
         }
       }
@@ -116,6 +116,7 @@ const Embedding = (props) => {
         cellName: cell.cellId,
         geneName: undefined,
         expression: undefined,
+        componentType: embeddingType,
       }));
     }
   };
@@ -132,6 +133,25 @@ const Embedding = (props) => {
   const updateCellsSelection = (selection) => {
     setCreateClusterPopover(true);
     setSelectedIds(selection);
+  };
+
+  const updateViewInfo = (newView) => {
+    if (selectedCell) {
+      setViewPort(newView.viewport);
+    }
+  };
+
+  const updateCrossHairView = () => {
+    if (viewPort.project) {
+      const [x, y] = viewPort.project([data[selectedCell][0], data[selectedCell][1]]);
+      return {
+        x,
+        y,
+        width: viewPort.width,
+        height: viewPort.height,
+      };
+    }
+    return {};
   };
 
   const onMouseUpdate = _.throttle((e) => {
@@ -174,16 +194,25 @@ const Embedding = (props) => {
         onMouseUpdate(e);
       }}
     >
-      {currentView.current === 'expression' ? (
+      {currentView.current === 'expression' ? [
         <label htmlFor='gene name'>
           Showing expression for gene:&nbsp;
           <b>{focusedGene.geneName}</b>
-        </label>
-      ) : <div />}
+        </label>,
+        <div>
+          <img
+            src={legend}
+            alt='gene expression legend'
+            style={{
+              height: 200, width: 20, position: 'absolute', top: 70,
+            }}
+          />
+        </div>,
+      ] : <div />}
       <Scatterplot
         cellOpacity={0.1}
         cellRadiusScale={0.1}
-        uuid={uuid}
+        uuid={embeddingType}
         view={view}
         cells={convertCellsData(data)}
         mapping='PCA'
@@ -195,25 +224,17 @@ const Embedding = (props) => {
         updateViewInfo={updateViewInfo}
         clearPleaseWait={clearPleaseWait}
       />
-      {createClusterPopover
-        ? (
-          <ClusterPopover
-            popoverPosition={hoverPosition.current}
-            onCreate={onCreateCluster}
-            onCancel={onCancelCreateCluster}
-          />
-        ) : <></>}
-      {currentView.current === 'expression' ? (
-        <div>
-          <img
-            src={legend}
-            alt='Gene expression Legend'
-            style={{
-              height: 200, width: 20, position: 'absolute', top: 70,
-            }}
-          />
-        </div>
-      ) : <div />}
+      <CrossHair componentType={embeddingType} getView={updateCrossHairView} />
+      {
+        createClusterPopover
+          ? (
+            <ClusterPopover
+              popoverPosition={hoverPosition.current}
+              onCreate={onCreateCluster}
+              onCancel={onCancelCreateCluster}
+            />
+          ) : <></>
+      }
     </div>
   );
 };

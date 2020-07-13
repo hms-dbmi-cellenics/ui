@@ -5,6 +5,8 @@ import { useDispatch } from 'react-redux';
 import ContainerDimensions from 'react-container-dimensions';
 import { updateCellInfo } from '../../../../redux/actions';
 
+const componentType = 'heatmap';
+
 const VegaHeatmap = (props) => {
   const { spec, showAxes, rowsNumber } = props;
   const dispatch = useDispatch();
@@ -19,7 +21,9 @@ const VegaHeatmap = (props) => {
   const handleHover = (...args) => {
     if (args[1].datum) {
       const { cellName, expression, geneName } = args[1].datum;
-      dispatch(updateCellInfo({ cellName, expression, geneName }));
+      dispatch(updateCellInfo({
+        cellName, expression, geneName, componentType,
+      }));
     }
   };
 
