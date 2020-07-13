@@ -6,7 +6,7 @@ import ContainerDimensions from 'react-container-dimensions';
 import { updateCellInfo } from '../../../../redux/actions';
 
 const VegaHeatmap = (props) => {
-  const { spec, showAxes } = props;
+  const { spec, showAxes, rowsNumber } = props;
   const dispatch = useDispatch();
   const axes = [
     {
@@ -27,11 +27,21 @@ const VegaHeatmap = (props) => {
     mouseover: handleHover,
   };
 
+  const getAdjustedHeight = () => {
+    const maxHeight = 400;
+    const minHeightPerGene = 6;
+    const heightPerGene = 30 - rowsNumber / 2;
+    if (heightPerGene < minHeightPerGene || heightPerGene * rowsNumber > maxHeight) {
+      return maxHeight;
+    }
+    return heightPerGene * rowsNumber;
+  };
+
+
   return (
     <div>
       <ContainerDimensions>
-        {({ width, height }) => {
-          spec.height = height + 300;
+        {({ width }) => {
           if (showAxes) {
             spec.axes = axes;
             spec.width = width - 100;
@@ -39,6 +49,7 @@ const VegaHeatmap = (props) => {
             spec.axes = [];
             spec.width = width - 40;
           }
+          spec.height = getAdjustedHeight();
           return (
             <Vega
               spec={spec}
@@ -59,6 +70,7 @@ VegaHeatmap.defaultProps = {
 VegaHeatmap.propTypes = {
   spec: PropTypes.object.isRequired,
   showAxes: PropTypes.bool,
+  rowsNumber: PropTypes.number.isRequired,
 };
 
 export default VegaHeatmap;

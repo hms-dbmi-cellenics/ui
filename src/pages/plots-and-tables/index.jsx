@@ -146,7 +146,7 @@ class PlotsTablesHome extends React.Component {
                 >
                   <Button
                     type='primary'
-                    onClick={() => this.setState({ addMenuVisible: false })}
+                    onClick={() => this.setState({ addMenuVisible: !addMenuVisible })}
                   >
                     Open Existing
                     {' '}

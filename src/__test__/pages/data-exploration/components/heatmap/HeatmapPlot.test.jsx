@@ -76,7 +76,7 @@ describe('HeatmapPlot', () => {
           G1: true,
         },
       },
-      geneExpressionData: { isLoading: false },
+      geneExpressionData: { isLoading: false, data: [{ geneName: 'G1', expression: [1, 2, 3, 4] }] },
       heatmapSpec: { rendering: false },
     });
 
