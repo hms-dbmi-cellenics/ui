@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateCellSetProperty action Dispatches an action to update property to the reducer 1`] = `
+Object {
+  "payload": Object {
+    "dataUpdated": Object {
+      "name": "Root node!",
+    },
+    "experimentId": "1234",
+    "key": "root",
+  },
+  "type": "cellSets/updateProperty",
+}
+`;
+
+exports[`updateCellSetProperty action Last action dispatches cellSetSave event 1`] = `
+Object {
+  "payload": Object {
+    "dataUpdated": Object {
+      "name": "Root node!",
+    },
+    "experimentId": "1234",
+    "key": "root",
+  },
+  "type": "cellSets/updateProperty",
+}
+`;

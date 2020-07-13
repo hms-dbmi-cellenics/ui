@@ -6,7 +6,6 @@ import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
 import GeneListTool from '../../../../../pages/data-exploration/components/gene-list-tool/GeneListTool';
-import GeneLookupButton from '../../../../../pages/data-exploration/components/gene-list-tool/GeneLookupButton';
 
 import { fetchCachedWork } from '../../../../../utils/cacheRequest';
 
@@ -241,7 +240,7 @@ describe('GeneListTool', () => {
 
     // The store should have been updated.
     expect(store.getActions().length).toEqual(1);
-    expect(store.getActions()[0]).toMatchObject({ type: 'SET_FOCUSED_GENE' });
+    expect(store.getActions()[0]).toMatchSnapshot();
   });
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {

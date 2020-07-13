@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`saveCellSets action Dispatches a notification when fetch fails. 1`] = `undefined`;
+
+exports[`saveCellSets action Dispatches a saved action when run correctly. 1`] = `undefined`;

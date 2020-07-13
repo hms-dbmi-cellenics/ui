@@ -3,7 +3,6 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import initialState from '../../../../redux/reducers/cellSetsReducer/initialState';
-import { CELL_SETS_LOADING, CELL_SETS_LOADED, CELL_SETS_ERROR } from '../../../../redux/actionTypes/cellSets';
 
 jest.mock('localforage');
 
@@ -27,7 +26,7 @@ describe('loadCellSets action', () => {
 
   it('Does not dispatch on normal operation', async () => {
     const store = mockStore({ cellSets: { loading: false, error: false } });
-    await store.dispatch(loadCellSets(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
+    store.dispatch(loadCellSets(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
     expect(store.getActions().length).toEqual(0);
   });
 
@@ -39,26 +38,26 @@ describe('loadCellSets action', () => {
 
   it('Dispatches on loading and error state', async () => {
     const store = mockStore({ cellSets: { loading: true, error: true } });
-    await store.dispatch(loadCellSets(experimentId));
+    store.dispatch(loadCellSets(experimentId));
     expect(store.getActions().length).toBeGreaterThan(0);
   });
 
   it('Dispatches a loading action when run after an error condition.', async () => {
     const store = mockStore({ cellSets: { loading: false, error: true } });
-    await store.dispatch(loadCellSets(experimentId));
+    store.dispatch(loadCellSets(experimentId));
 
     const firstAction = store.getActions()[0];
 
-    expect(firstAction).toMatchObject({ type: CELL_SETS_LOADING });
+    expect(firstAction).toMatchSnapshot();
   });
 
   it('Dispatches a loaded action when run with the initial state.', async () => {
     const store = mockStore({ cellSets: initialState });
-    await store.dispatch(loadCellSets(experimentId));
+    store.dispatch(loadCellSets(experimentId));
 
     const firstAction = store.getActions()[0];
 
-    expect(firstAction).toMatchObject({ type: CELL_SETS_LOADED, payload: { experimentId } });
+    expect(firstAction).toMatchSnapshot();
   });
 
   it('Dispatches an error condition if fetch fails', async () => {
@@ -67,9 +66,9 @@ describe('loadCellSets action', () => {
     fetchMock.resetMocks();
     fetchMock.mockReject(new Error('some weird error that happened'));
 
-    await store.dispatch(loadCellSets(experimentId));
+    store.dispatch(loadCellSets(experimentId));
 
     const firstAction = store.getActions()[0];
-    expect(firstAction).toMatchObject({ type: CELL_SETS_ERROR, payload: { experimentId } });
+    expect(firstAction).toMatchSnapshot();
   });
 });

@@ -1,8 +1,9 @@
 const cellSetsSetSelected = (state, action) => {
-  const { keys } = action.payload;
+  const { keys, loadingColors } = action.payload;
 
   return {
     ...state,
+    loadingColors,
     selected: keys,
   };
 };

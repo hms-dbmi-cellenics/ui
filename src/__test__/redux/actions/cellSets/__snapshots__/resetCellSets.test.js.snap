@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resetCellSets action Dispatches a loading action first. 1`] = `
+Object {
+  "type": "cellSets/loading",
+}
+`;

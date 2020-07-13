@@ -1,5 +1,5 @@
 import embeddingsReducer from '../../../redux/reducers/embeddingsReducer';
-import initialState, { initialEmbeddingState } from '../../../redux/reducers/embeddingsReducer/initialState';
+import initialState from '../../../redux/reducers/embeddingsReducer/initialState';
 
 import {
   EMBEDDINGS_ERROR, EMBEDDINGS_LOADED, EMBEDDINGS_LOADING,
@@ -25,11 +25,7 @@ describe('embeddingsReducer', () => {
       },
     });
 
-    expect(newState).toMatchObject({
-      [embeddingType]: {
-        ...initialEmbeddingState,
-      },
-    });
+    expect(newState).toMatchSnapshot();
   });
 
   it('Sets up store properly for loaded cell sets.', () => {
@@ -44,13 +40,7 @@ describe('embeddingsReducer', () => {
       },
     });
 
-    expect(newState).toMatchObject({
-      [embeddingType]: {
-        ...initialEmbeddingState,
-        loading: false,
-        data,
-      },
-    });
+    expect(newState).toMatchSnapshot();
   });
 
   it('Loads up sparse array for sparse embedding data.', () => {
@@ -84,12 +74,6 @@ describe('embeddingsReducer', () => {
       },
     });
 
-    expect(newState).toMatchObject({
-      [embeddingType]: {
-        ...initialEmbeddingState,
-        loading: false,
-        error: 'wow, something really bad happened',
-      },
-    });
+    expect(newState).toMatchSnapshot();
   });
 });

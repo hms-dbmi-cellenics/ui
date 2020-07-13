@@ -44,11 +44,7 @@ describe('cache init', () => {
   });
   it('Initialises the cache successfully', async () => {
     await cache._init();
-    expect(cache.lru).toMatchObject({
-      key1: { next: 'key2', previous: null },
-      key2: { next: 'key3', previous: 'key1' },
-      key3: { next: null, previous: 'key2' },
-    });
+    expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(3);
     expect(cache.head).toBe('key3');
     expect(cache.tail).toBe('key1');
@@ -57,7 +53,7 @@ describe('cache init', () => {
   it('Will not initialise if it is already initialised', async () => {
     cache.initialised = true;
     await cache._init();
-    expect(cache.lru).toMatchObject({});
+    expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(0);
     expect(cache.head).toBe(null);
     expect(cache.tail).toBe(null);
@@ -78,17 +74,14 @@ describe('cache set', () => {
   it('set items to cache correctly', async () => {
     let result = await cache._set('key1', 'value1');
     expect(result).toBe(true);
-    expect(cache.lru).toMatchObject({ key1: { next: null, previous: null } });
+    expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(1);
     expect(cache.head).toBe('key1');
     expect(cache.tail).toBe('key1');
     expect(localForage.setItem).toBeCalledWith('key1', { ttl: expect.any(Number), value: 'value1' });
     result = await cache._set('key2', 'value2');
     expect(result).toBe(true);
-    expect(cache.lru).toMatchObject({
-      key1: { next: 'key2', previous: null },
-      key2: { next: null, previous: 'key1' },
-    });
+    expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(2);
     expect(cache.head).toBe('key2');
     expect(cache.tail).toBe('key1');
@@ -97,7 +90,7 @@ describe('cache set', () => {
   it('Rejects invalid cache', async () => {
     const result = await cache._set('invalid', 'value');
     expect(result).toBe(false);
-    expect(cache.lru).toMatchObject({});
+    expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(0);
     expect(cache.head).toBe(null);
     expect(cache.tail).toBe(null);
@@ -106,7 +99,7 @@ describe('cache set', () => {
     cache.maxSize = 1;
     await cache._set('key1', 'value1');
     await cache._set('key2', 'value2');
-    expect(cache.lru).toMatchObject({});
+    expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(1);
     expect(cache.head).toBe('key2');
     expect(cache.tail).toBe('key2');
@@ -137,11 +130,7 @@ describe('cache get', () => {
     await cache._set('key2', 'value2');
     await cache._set('key3', 'value3');
     await cache.get('key1');
-    expect(cache.lru).toMatchObject({
-      key1: { next: null, previous: 'key3' },
-      key2: { next: 'key3', previous: null },
-      key3: { next: 'key1', previous: 'key2' },
-    });
+    expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(3);
     expect(cache.head).toBe('key1');
     expect(cache.tail).toBe('key2');
@@ -154,7 +143,7 @@ describe('cache get', () => {
     cache.head = 'shortTtl';
     cache.tail = 'shortTtl';
     await cache.get('shortTtl');
-    expect(cache.lru).toMatchObject({});
+    expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(0);
     expect(cache.head).toBe(null);
     expect(cache.tail).toBe(null);
@@ -169,10 +158,7 @@ describe('cache get', () => {
     cache.head = 'key3';
     cache.tail = 'key1';
     await cache.get('shortTtl');
-    expect(cache.lru).toMatchObject({
-      key1: { next: 'key3', previous: null },
-      key3: { next: null, previous: 'key1' },
-    });
+    expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(2);
     expect(cache.head).toBe('key3');
     expect(cache.tail).toBe('key1');

@@ -56,7 +56,7 @@ describe('cellSetsReducer', () => {
 
     expect(newState.loading).toEqual(false);
     expect(newState.hierarchy).toEqual([{ key: '1', children: [{ key: '1a' }] }, { key: '2', children: [] }]);
-    expect(newState.properties).toMatchObject({ 1: {}, 2: {}, '1a': {} });
+    expect(newState.properties).toMatchSnapshot();
   });
 
   it('Adds cells to scratchpad on creation', () => {
@@ -72,8 +72,8 @@ describe('cellSetsReducer', () => {
       payload: data,
     });
 
-    expect(newState.hierarchy).toMatchObject([{ key: 'scratchpad', children: [{ key: 'key2' }] }]);
-    expect(newState.properties).toMatchObject({ key2: data });
+    expect(newState.hierarchy).toMatchSnapshot();
+    expect(newState.properties).toMatchSnapshot();
   });
 
   it('Updates cell set properties', () => {
@@ -110,7 +110,7 @@ describe('cellSetsReducer', () => {
       },
     });
 
-    expect(newState.properties['1a']).toMatchObject({ name: 'favorite child', color: '#ffffff' });
+    expect(newState.properties['1a']).toMatchSnapshot();
   });
 
   it('Hierarchy is updated appropriately', () => {
@@ -166,7 +166,7 @@ describe('cellSetsReducer', () => {
       },
     });
 
-    expect(newState.hierarchy).toMatchObject([{ key: '1', children: [] }, { key: '2', children: [{ key: '1a' }] }]);
+    expect(newState.hierarchy).toMatchSnapshot();
   });
 
   it('Selected cells are maintained', () => {
@@ -177,7 +177,7 @@ describe('cellSetsReducer', () => {
       },
     });
 
-    expect(newState.selected).toMatchObject(['a', 'b', 'c']);
+    expect(newState.selected).toMatchSnapshot();
 
     newState = cellSetsReducer(initialState, {
       type: CELL_SETS_SET_SELECTED,
@@ -186,7 +186,7 @@ describe('cellSetsReducer', () => {
       },
     });
 
-    expect(newState.selected).toMatchObject([1, 2, 'c', 3]);
+    expect(newState.selected).toMatchSnapshot();
   });
 
   it('Removes cell sets and their children if root node is removed', () => {
@@ -224,7 +224,7 @@ describe('cellSetsReducer', () => {
 
     expect(Object.keys(newState.properties).length).toEqual(1);
     expect(newState.hierarchy.length).toEqual(1);
-    expect(newState.hierarchy[0]).toMatchObject({ key: '2', children: [] });
+    expect(newState.hierarchy[0]).toMatchSnapshot();
   });
 
   it('Removes only child, not parent, when child is removed', () => {
@@ -262,7 +262,7 @@ describe('cellSetsReducer', () => {
 
     expect(Object.keys(newState.properties).length).toEqual(2);
     expect(newState.hierarchy.length).toEqual(2);
-    expect(newState.hierarchy).toMatchObject([{ key: '1', children: [] }, { key: '2', children: [] }]);
+    expect(newState.hierarchy).toMatchSnapshot();
   });
 
   it('Sets error conditions', () => {

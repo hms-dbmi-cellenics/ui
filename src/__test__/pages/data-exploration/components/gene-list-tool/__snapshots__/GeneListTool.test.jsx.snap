@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GeneListTool Clicking one of the \`eye\` buttons triggers appropriate onChange actions. 1`] = `
+Object {
+  "data": Object {
+    "isLoading": true,
+  },
+  "type": "SET_FOCUSED_GENE",
+}
+`;
