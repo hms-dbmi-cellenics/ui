@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Collapse, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
+import ContainerDimensions from 'react-container-dimensions';
 
 import './styles.module.css';
 
@@ -84,20 +85,24 @@ const DraggableList = (props) => {
             provided.draggableProps.style,
           )}
         >
-          <Collapse defaultActiveKey={[item.key]}>
-            <Panel
-              headStyle={{ display: 'flex' }}
-              header={(
-                <div id={item.key} style={{ display: 'flex', flexGrow: 1 }} {...provided.dragHandleProps}>
-                  {item.name}
-                </div>
-              )}
-              key={item.key}
-              extra={renderExtras(item, provided)}
-            >
-              {item.renderer()}
-            </Panel>
-          </Collapse>
+          <ContainerDimensions>
+            {({ width }) => (
+              <Collapse defaultActiveKey={[item.key]}>
+                <Panel
+                  headStyle={{ display: 'flex' }}
+                  header={(
+                    <div id={item.key} style={{ display: 'flex', flexGrow: 1 }} {...provided.dragHandleProps}>
+                      {item.name}
+                    </div>
+                  )}
+                  key={item.key}
+                  extra={renderExtras(item, provided)}
+                >
+                  {item.renderer(width)}
+                </Panel>
+              </Collapse>
+            )}
+          </ContainerDimensions>
         </div>
       )}
     </Draggable>

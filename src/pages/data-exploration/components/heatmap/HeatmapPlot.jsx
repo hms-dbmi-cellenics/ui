@@ -1,9 +1,12 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Empty, Spin } from 'antd';
+import PropTypes from 'prop-types';
 import VegaHeatmap from './VegaHeatmap';
 
-const HeatmapPlot = () => {
+
+const HeatmapPlot = (props) => {
+  const { heatmapWidth } = props;
   const heatmapSpec = useSelector((state) => state.heatmapSpec);
   const geneExpressionData = useSelector((state) => state.geneExpressionData);
   const selectedGenes = useSelector((state) => state.selectedGenes);
@@ -32,8 +35,16 @@ const HeatmapPlot = () => {
       spec={heatmapSpec}
       showAxes={showAxes}
       rowsNumber={geneExpressionData.data.length || 0}
+      defaultWidth={heatmapWidth}
     />
   );
+};
+
+HeatmapPlot.defaultProps = {
+};
+
+HeatmapPlot.propTypes = {
+  heatmapWidth: PropTypes.number.isRequired,
 };
 
 export default HeatmapPlot;
