@@ -1,6 +1,6 @@
 const spec = {
   $schema: 'https://vega.github.io/schema/vega/v5.json',
-  description: 'A heatmap showing average daily temperatures in Seattle for each hour of the day.',
+  description: 'A heatmap showing expression per cell (columns) per gene (rows).',
   data: [
     {
       name: 'cellNames',
