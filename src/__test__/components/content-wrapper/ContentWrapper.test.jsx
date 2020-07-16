@@ -1,10 +1,10 @@
 import React from 'react';
-import { shallow, mount, configure } from 'enzyme';
+import { mount, configure } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
-import ContentWrapper from '../../../components/content-wrapper/ContentWrapper';
+import ContentWrapper from '../../../components/ContentWrapper';
 
 configure({ adapter: new Adapter() });
 

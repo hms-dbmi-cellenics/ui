@@ -52,7 +52,9 @@ const SearchMenu = (props) => {
       {
         Object.keys(filteredOptions).map((category) => [
           filteredOptions[category].length > 0 ? <Menu.Item><Divider orientation='left' plain>{category || ''}</Divider></Menu.Item> : <></>,
-          filteredOptions[category].map((item) => renderMenuItem(categoryInfo[category] || <></>, item, category)),
+          filteredOptions[category].map((item) => renderMenuItem(categoryInfo[category] || <></>,
+            item,
+            category)),
         ])
       }
     </Menu>

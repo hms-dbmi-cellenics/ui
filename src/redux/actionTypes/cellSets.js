@@ -46,7 +46,6 @@ const CELL_SETS_SAVE = `${CELL_SETS}/save`;
  */
 const CELL_SETS_ERROR = `${CELL_SETS}/error`;
 
-
 export {
   CELL_SETS_LOADING, CELL_SETS_LOADED,
   CELL_SETS_CREATE,

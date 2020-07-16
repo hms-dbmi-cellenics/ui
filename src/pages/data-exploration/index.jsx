@@ -1,26 +1,16 @@
 import React from 'react';
-
 import {
   PageHeader, Row, Col, Space, Button, Dropdown,
 } from 'antd';
-
-import {
-  DownOutlined,
-
-  PictureOutlined, ToolOutlined,
-} from '@ant-design/icons';
-
+import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import DraggableList from '../../components/draggable-list/DraggableList';
-import SearchMenu from '../../components/search-menu/SearchMenu';
-
-
+import SearchMenu from '../../components/SearchMenu';
 import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
 import GeneListTool from './components/gene-list-tool/GeneListTool';
 import DiffExprManager from './components/differential-expression-tool/DiffExprManager';
 import Embedding from './components/embedding/Embedding';
 import HeatmapPlot from './components/heatmap/HeatmapPlot';
 import InfoPanel from './components/info-panel/InfoPanel';
-
 
 const experimentId = '5e959f9c9f4b120771249001';
 

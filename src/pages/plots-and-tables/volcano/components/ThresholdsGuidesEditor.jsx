@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-
 import {
   Form, InputNumber, Checkbox, Space, Select,
 } from 'antd';
-
-import ColorPicker from '../../../../components/color-picker/ColorPicker';
+import ColorPicker from '../../../../components/ColorPicker';
 
 const { Option } = Select;
 
@@ -153,7 +151,7 @@ const ThresholdsGuidesEditor = (props) => {
           <Select
             value='Browse...'
             style={{ width: 200 }}
-            onChange={(e) => false}
+            onChange={() => false}
             open={colorPickerOpen}
             onFocus={() => setColorPickerOpen(true)}
             onBlur={() => setColorPickerOpen(false)}

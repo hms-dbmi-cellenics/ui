@@ -5,7 +5,7 @@ import {
   Space, Select,
 } from 'antd';
 
-import ColorPicker from '../../../components/color-picker/ColorPicker';
+import ColorPicker from '../../../components/ColorPicker';
 
 const { Option } = Select;
 

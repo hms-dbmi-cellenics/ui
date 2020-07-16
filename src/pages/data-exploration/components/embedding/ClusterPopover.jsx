@@ -5,8 +5,8 @@ import {
 } from 'antd';
 
 
-import EditableField from '../../../../components/editable-field/EditableField';
-import ColorPicker from '../../../../components/color-picker/ColorPicker';
+import EditableField from '../../../../components/EditableField';
+import ColorPicker from '../../../../components/ColorPicker';
 
 
 const ClusterPopover = (props) => {

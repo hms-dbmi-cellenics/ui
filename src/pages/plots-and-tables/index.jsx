@@ -7,7 +7,7 @@ import {
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
 
 import Link from 'next/link';
-import SearchMenu from '../../components/search-menu/SearchMenu';
+import SearchMenu from '../../components/SearchMenu';
 import heatmapPic from '../../../static/media/heatmap.png';
 import embeddingCont from '../../../static/media/embeddingC.png';
 import embeddingCat from '../../../static/media/embeddingG.png';

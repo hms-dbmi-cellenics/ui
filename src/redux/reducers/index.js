@@ -1,11 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { combineReducers } from 'redux';
-
 import cellSetsReducer from './cellSetsReducer';
 import notificationsReducer from './notificationsReducer';
 import embeddingsReducer from './embeddingsReducer';
-
-
 import {
   LOAD_CELLS,
   UPDATE_GENE_LIST, LOAD_GENE_LIST, SELECTED_GENES,
@@ -13,7 +10,6 @@ import {
   LOAD_DIFF_EXPR, UPDATE_DIFF_EXPR, UPDATE_CELL_INFO, SET_FOCUSED_GENE,
 } from '../actionTypes';
 import initialSpec from '../../utils/heatmapSpec';
-
 
 const cellsReducer = (state = {}, action) => {
   switch (action.type) {
@@ -162,7 +158,6 @@ export default combineReducers({
   cellSets: cellSetsReducer,
   notifications: notificationsReducer,
   embeddings: embeddingsReducer,
-
 
   cells: cellsReducer,
   geneList: geneListReducer,
