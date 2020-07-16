@@ -9,7 +9,6 @@ describe('EditableField', () => {
   test('renders correctly', () => {
     const component = mount(<EditableField value='Cluster X' />);
     const buttons = component.find('Button');
-
     expect(component.getElement().props.value).toEqual('Cluster X');
     expect(buttons.length).toEqual(2);
   });
@@ -49,8 +48,8 @@ describe('EditableField', () => {
   });
 
   test('Editable field updates changed text on clicking save', () => {
-    const mockOnEdit = jest.fn();
-    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
+    const mockOnSubmit = jest.fn();
+    const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
     component.find('Button').at(0).simulate('click');
@@ -67,13 +66,13 @@ describe('EditableField', () => {
     expect(component.find('Input').length).toEqual(0);
 
     // onEdit should have been called with new data
-    expect(mockOnEdit).toHaveBeenCalledTimes(1);
-    expect(mockOnEdit).toHaveBeenCalledWith('new name');
+    expect(mockOnSubmit).toHaveBeenCalledTimes(1);
+    expect(mockOnSubmit).toHaveBeenCalledWith('new name');
   });
 
   test('Editable field updates changed text on pressing Enter', () => {
-    const mockOnEdit = jest.fn();
-    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
+    const mockOnSubmit = jest.fn();
+    const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
     component.find('Button').at(0).simulate('click');
@@ -89,13 +88,13 @@ describe('EditableField', () => {
     expect(component.find('Input').length).toEqual(0);
 
     // onEdit should have been called with new data
-    expect(mockOnEdit).toHaveBeenCalledTimes(1);
-    expect(mockOnEdit).toHaveBeenCalledWith('new name');
+    expect(mockOnSubmit).toHaveBeenCalledTimes(1);
+    expect(mockOnSubmit).toHaveBeenCalledWith('new name');
   });
 
   test('Editable field does not update changed text on cancel', () => {
-    const mockOnEdit = jest.fn();
-    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
+    const mockOnSubmit = jest.fn();
+    const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
     component.find('Button').at(0).simulate('click');
@@ -112,12 +111,12 @@ describe('EditableField', () => {
     expect(component.find('Input').length).toEqual(0);
 
     // onEdit should not have been called
-    expect(mockOnEdit).toHaveBeenCalledTimes(0);
+    expect(mockOnSubmit).toHaveBeenCalledTimes(0);
   });
 
   test('Editable field does not update changed text on hitting escape', () => {
-    const mockOnEdit = jest.fn();
-    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
+    const mockOnSubmit = jest.fn();
+    const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
     component.find('Button').at(0).simulate('click');
@@ -133,7 +132,7 @@ describe('EditableField', () => {
     expect(component.find('Input').length).toEqual(0);
 
     // onEdit should not have been called
-    expect(mockOnEdit).toHaveBeenCalledTimes(0);
+    expect(mockOnSubmit).toHaveBeenCalledTimes(0);
   });
 
   test('The onDelete callback should trigger on delete.', () => {
