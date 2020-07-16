@@ -1,76 +1,43 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Popover, Button, Space,
-} from 'antd';
-
-
+import { Popover } from 'antd';
 import EditableField from '../../../../components/EditableField';
-import ColorPicker from '../../../../components/ColorPicker';
-
 
 const ClusterPopover = (props) => {
+  const defaultColor = '#0000FF';
   const { popoverPosition, onCreate, onCancel } = props;
   const [clusterName, setClusterName] = useState('New Cluster');
-  const [clusterColor, setClusterColor] = useState('#0000FF');
 
   const getContent = () => (
-    <Space direction='vertical' style={{ width: '100%' }}>
-      <Space>
-        <EditableField
-          onEdit={(e) => {
-            setClusterName(e);
-          }}
-          showDelete={false}
-          value={clusterName}
-          defaultEditing
-        />
-        <ColorPicker
-          color={clusterColor}
-          onColorChange={((e) => {
-            setClusterColor(e);
-          })}
-        />
-      </Space>
-      <div>
-        <Button
-          type='primary'
-          size='small'
-          onClick={(() => { onCreate(clusterName, clusterColor); })}
-        >
-          Create
-
-        </Button>
-        <Button
-          type='default'
-          size='small'
-          onClick={(() => onCancel())}
-        >
-          Cancel
-
-        </Button>
-      </div>
-    </Space>
+    <EditableField
+      onAfterSubmit={(e) => {
+        setClusterName(e);
+        onCreate(clusterName, defaultColor);
+      }}
+      onAfterCancel={() => {
+        onCancel();
+      }}
+      deleteEnabled={false}
+      value={clusterName}
+      defaultEditing
+    />
   );
 
   const content = getContent();
 
   return (
     <div style={{ position: 'absolute', left: popoverPosition.x + 20, top: popoverPosition.y + 20 }}>
-      <Popover title='Add cell set' content={content} visible />
+      <Popover title='Add cell selection' content={content} visible />
     </div>
   );
 };
 
 ClusterPopover.defaultProps = {
-  onCreate: () => null,
-  onCancel: () => null,
-
 };
 
 ClusterPopover.propTypes = {
-  onCreate: PropTypes.func,
-  onCancel: PropTypes.func,
+  onCreate: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
   popoverPosition: PropTypes.objectOf(PropTypes.number).isRequired,
 };
 

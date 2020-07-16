@@ -11,7 +11,7 @@ import {
 
 const EditableField = (props) => {
   const {
-    value, showDelete, showEdit, onEdit, titleRenderFunction, defaultEditing,
+    value, deleteEnabled, showEdit, onAfterSubmit, onAfterCancel, renderBold, defaultEditing,
   } = props;
   const [editing, setEditing] = useState(defaultEditing);
   const [editedValue, setEditedValue] = useState(value);
@@ -37,13 +37,14 @@ const EditableField = (props) => {
   };
 
   const onSubmit = () => {
-    onEdit(editedValue);
+    onAfterSubmit(editedValue);
     toggleEditing();
   };
 
   const onCancel = () => {
     setEditedValue(value);
     toggleEditing();
+    onAfterCancel();
   };
 
   const toggleEditing = () => {
@@ -76,7 +77,7 @@ const EditableField = (props) => {
 
     return (
       <>
-        {titleRenderFunction(editedValue)}
+        {renderBold ? <strong>{editedValue}</strong> : <span>{editedValue}</span>}
         {
           showEdit
             ? (
@@ -93,7 +94,7 @@ const EditableField = (props) => {
     <Space>
       {renderEditState()}
       {
-        showDelete
+        deleteEnabled
           ? (
             <Tooltip placement='bottom' title='Delete' mouseLeaveDelay={0}>
               <Button size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
@@ -105,21 +106,23 @@ const EditableField = (props) => {
 };
 
 EditableField.defaultProps = {
-  onEdit: () => null,
+  onAfterSubmit: () => null,
+  onAfterCancel: () => null,
   onDelete: () => null,
-  titleRenderFunction: (title) => <span>{title}</span>,
-  showDelete: true,
+  renderBold: false,
   showEdit: true,
+  deleteEnabled: true,
   defaultEditing: false,
 };
 
 EditableField.propTypes = {
   value: PropTypes.string.isRequired,
-  onEdit: PropTypes.func,
+  onAfterSubmit: PropTypes.func,
+  onAfterCancel: PropTypes.func,
   onDelete: PropTypes.func,
-  showDelete: PropTypes.bool,
+  deleteEnabled: PropTypes.bool,
   showEdit: PropTypes.bool,
-  titleRenderFunction: PropTypes.func,
+  renderBold: PropTypes.bool,
   defaultEditing: PropTypes.bool,
 };
 

@@ -192,10 +192,8 @@ const HierarchicalTree = (props) => {
       }}
       value={modified.name}
       showEdit={modified.key !== 'scratchpad'}
-      showDelete={modified.key !== 'scratchpad'}
-
-      // Root nodes are rendered in bold.
-      titleRenderFunction={modified.rootNode ? (x) => <strong>{x}</strong> : undefined}
+      deleteEnabled={modified.key !== 'scratchpad'}
+      renderBold={!!modified.rootNode}
     />
   );
 
