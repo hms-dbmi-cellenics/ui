@@ -80,6 +80,7 @@ const DraggableList = (props) => {
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
+          {...provided.dragHandleProps}
           style={getItemStyle(
             snapshot.isDragging,
             provided.draggableProps.style,
@@ -91,7 +92,7 @@ const DraggableList = (props) => {
                 <Panel
                   headStyle={{ display: 'flex' }}
                   header={(
-                    <div id={item.key} style={{ display: 'flex', flexGrow: 1 }} {...provided.dragHandleProps}>
+                    <div id={item.key} style={{ display: 'flex', flexGrow: 1 }}>
                       {item.name}
                     </div>
                   )}

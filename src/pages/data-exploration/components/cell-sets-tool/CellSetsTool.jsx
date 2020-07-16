@@ -80,7 +80,7 @@ const CellSetsTool = (props) => {
       <>
         <Space style={{ width: '100%' }}>
           <Tooltip title='Reset clusters to the initial state'>
-            <Button type='primary' size='small' onClick={recluster}>Recluster</Button>
+            <Button type='primary' size='small' onClick={recluster}>Reset Clusters</Button>
           </Tooltip>
         </Space>
         <HierarchicalTree
