@@ -1,12 +1,9 @@
 import {
   NOTIFICATIONS_PUSH_MESSAGE, NOTIFICATIONS_CLEAR_MESSAGE,
 } from '../../actionTypes/notifications';
-
 import initialState from './initialState';
-
 import notificationsPushMessage from './notificationsPushMessage';
 import notificationsClearMessage from './notificationsClearMessage';
-
 
 const notificationsReducer = (state = initialState, action) => {
   switch (action.type) {

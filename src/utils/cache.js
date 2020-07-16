@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable max-classes-per-file */
 import * as localForage from 'localforage';
+import isBrowser from './environment';
 
 class BrowserCache {
   constructor() {
@@ -20,7 +21,7 @@ class BrowserCache {
   async _init() {
     try {
       if (this.initialised) return;
-      if (typeof window === 'undefined') return;
+      if (!isBrowser) return;
       localForage.config({
         driver: localForage.INDEXEDDB,
         name: 'biomage',

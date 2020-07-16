@@ -3,7 +3,7 @@ import { shallow, mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { Menu, Input } from 'antd';
 import { PictureFilled, PictureOutlined } from '@ant-design/icons';
-import SearchMenu from '../../../components/search-menu/SearchMenu';
+import SearchMenu from '../../../components/SearchMenu';
 
 
 configure({ adapter: new Adapter() });

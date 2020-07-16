@@ -2,29 +2,21 @@ import React, { useEffect } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
-
 import PropTypes from 'prop-types';
-
 import {
   Skeleton, Space, Button,
   Empty, Typography, Tooltip,
 } from 'antd';
-
 import { ExclamationCircleFilled } from '@ant-design/icons';
-
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
-
 import {
   loadCellSets, deleteCellSet, updateCellSetHierarchy, updateCellSetSelected,
   updateCellSetProperty, resetCellSets,
 } from '../../../../redux/actions/cellSets';
-
-
 import composeTree from '../../../../utils/composeTree';
+import isBrowser from '../../../../utils/environment';
 
 const { Text } = Typography;
-
-
 const CellSetsTool = (props) => {
   const { experimentId } = props;
 
@@ -37,7 +29,7 @@ const CellSetsTool = (props) => {
   } = cellSets;
 
   useEffect(() => {
-    dispatch(loadCellSets(experimentId));
+    if (isBrowser) dispatch(loadCellSets(experimentId));
   }, []);
 
   const onNodeUpdate = (key, data) => {
@@ -61,9 +53,7 @@ const CellSetsTool = (props) => {
    * or a hierarchical tree listing all cell sets.
    */
   const renderContent = () => {
-    if (loading) {
-      return (<Skeleton active />);
-    }
+    if (loading || !isBrowser) return (<Skeleton active />);
 
     if (error) {
       return (

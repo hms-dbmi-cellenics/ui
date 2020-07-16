@@ -1,12 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import initializeStore from './store';
+import isBrowser from '../utils/environment';
 
 const __NEXT_REDUX_STORE__ = '__NEXT_REDUX_STORE__';
 
 const getOrCreateStore = (initialState) => {
   // Always make a new store if server, otherwise state is shared between requests
-  if (typeof window === 'undefined') {
+  if (!isBrowser) {
     return initializeStore(initialState);
   }
 

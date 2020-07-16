@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Space, Button, Typography,
+  Table, Space, Button, Typography, Skeleton,
 } from 'antd';
 import PropTypes from 'prop-types';
 import FilterGenes from './FilterGenes';
@@ -12,6 +12,7 @@ import {
   setFocusedGene,
 } from '../../../../redux/actions';
 import GeneLookupButton from './GeneLookupButton';
+import isBrowser from '../../../../utils/environment';
 
 const { Text } = Typography;
 
@@ -27,6 +28,10 @@ const GeneListTool = (props) => {
   const [geneNamesFilter, setGeneNamesFilter] = useState(null);
   const selectedGenes = useSelector((state) => state.selectedGenes);
   const selectedRowKeys = selectedGenes.geneList ? Object.keys(selectedGenes.geneList) : [];
+
+  if (!isBrowser) {
+    return (<Skeleton active />);
+  }
 
   if (!tableState) {
     const defaultState = {

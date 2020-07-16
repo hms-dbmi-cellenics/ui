@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  PageHeader, Row, Col, Space, Collapse
+  PageHeader, Row, Col, Space, Collapse,
 } from 'antd';
 
 import { Vega } from 'react-vega';
@@ -19,6 +19,7 @@ import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
 import LabelsDesign from './components/LabelsDesign';
+
 const { Panel } = Collapse;
 
 class PlotsAndTablesViewPage extends React.Component {
@@ -418,7 +419,7 @@ class PlotsAndTablesViewPage extends React.Component {
                   color={config.legendTextColor}
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
-                  defaultState={true}
+                  defaultState
                 />
               </Panel>
 

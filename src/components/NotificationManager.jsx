@@ -1,14 +1,6 @@
 import React from 'react';
-
-import {
-  useSelector,
-} from 'react-redux';
-
-
-import {
-  message,
-} from 'antd';
-
+import { useSelector } from 'react-redux';
+import { message } from 'antd';
 
 const NotificationManager = () => {
   const notifications = useSelector((state) => state.notifications);

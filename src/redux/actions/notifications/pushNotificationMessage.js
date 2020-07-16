@@ -1,6 +1,5 @@
 import { NOTIFICATIONS_CLEAR_MESSAGE, NOTIFICATIONS_PUSH_MESSAGE } from '../../actionTypes/notifications';
 
-
 const pushNotificationMessage = (type, message, time) => (dispatch) => {
   dispatch({
     type: NOTIFICATIONS_PUSH_MESSAGE,
@@ -19,6 +18,5 @@ const pushNotificationMessage = (type, message, time) => (dispatch) => {
     }, time * 1000);
   }
 };
-
 
 export default pushNotificationMessage;

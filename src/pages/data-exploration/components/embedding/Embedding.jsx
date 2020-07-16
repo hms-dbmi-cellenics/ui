@@ -6,21 +6,16 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-
 import {
   Spin, Button, Empty, Typography,
 } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import CrossHair from '../cross-hair/CrossHair';
-
 import loadEmbedding from '../../../../redux/actions/embeddings/loadEmbedding';
-
 import { createCellSet } from '../../../../redux/actions/cellSets';
 import { updateCellInfo } from '../../../../redux/actions';
-
 import {
   convertCellsData,
   updateStatus,
@@ -28,8 +23,8 @@ import {
   renderCellSetColors,
   colorByGeneExpression,
 } from '../../../../utils/embeddingPlotHelperFunctions/helpers';
-
 import legend from '../../../../../static/media/viridis.png';
+import isBrowser from '../../../../utils/environment';
 
 const { Text } = Typography;
 
@@ -61,7 +56,7 @@ const Embedding = (props) => {
   const currentView = useRef();
 
   useEffect(() => {
-    if (!data) {
+    if (!data && isBrowser) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
   }, []);
@@ -90,13 +85,17 @@ const Embedding = (props) => {
     }
 
     currentView.current = 'expression';
-    setCellColors(getCellColors('expression'));
+    if (isBrowser) setCellColors(getCellColors('expression'));
   }, [focusedGene]);
 
   useEffect(() => {
     currentView.current = 'cellSet';
-    if (!loadingColors) setCellColors(getCellColors('cellSet'));
+    if (!loadingColors && isBrowser) setCellColors(getCellColors('cellSet'));
   }, [cellSetSelected]);
+
+  if (!data || loading || focusedGene.isLoading || loadingColors || !isBrowser) {
+    return (<center><Spin size='large' /></center>);
+  }
 
   const updateCellsHover = (cell) => {
     if (cell) {
@@ -159,10 +158,6 @@ const Embedding = (props) => {
       hoverPosition.current = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
     }
   }, 1000);
-
-  if (!data || loading || focusedGene.isLoading || loadingColors) {
-    return (<center><Spin size='large' /></center>);
-  }
 
   if (error) {
     return (

@@ -3,12 +3,16 @@ import PropTypes from 'prop-types';
 import { Tree, Space } from 'antd';
 import { transform, cloneDeep } from 'lodash';
 
-import EditableField from '../../../../components/editable-field/EditableField';
-import ColorPicker from '../../../../components/color-picker/ColorPicker';
+import EditableField from '../../../../components/EditableField';
+import ColorPicker from '../../../../components/ColorPicker';
 
 const HierarchicalTree = (props) => {
   const {
-    onCheck: propOnCheck, onSelect: propOnSelect, onNodeUpdate: propOnNodeUpdate, treeData, ...restOfProps
+    onCheck: propOnCheck,
+    onSelect: propOnSelect,
+    onNodeUpdate: propOnNodeUpdate,
+    treeData,
+    ...restOfProps
   } = props;
 
   const [autoExpandParent, setAutoExpandParent] = useState(true);

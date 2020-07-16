@@ -1,5 +1,3 @@
-// import { createHierarchyFromTree, createPropertiesFromTree } from './helpers';
-
 const notificationsPushMessage = (state, action) => {
   const { type, message, time } = action.payload;
 
