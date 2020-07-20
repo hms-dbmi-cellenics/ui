@@ -163,12 +163,12 @@ class PlotsTablesHome extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }}>
               <h1>Recent</h1>
               <List
+                size='small'
                 grid={{ gutter: 16, column: 3 }}
                 dataSource={openedPlots}
                 renderItem={(item) => (
                   <List.Item>
                     <Card
-                      size='small'
                       hoverable
                       title={item.name}
                       extra={this.renderExtras(item)}
