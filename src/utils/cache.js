@@ -4,6 +4,18 @@
 import * as localForage from 'localforage';
 import isBrowser from './environment';
 
+const currentCacheVersion = 'biomage_0.0.1';
+const previousCacheVersions = ['biomage'];
+
+const deleteOldVersions = () => {
+  const indexedDbInstace = window.indexedDB
+    || window.mozIndexedDB
+    || window.webkitIndexedDB
+    || window.msIndexedDB;
+  previousCacheVersions.forEach((db) => indexedDbInstace.deleteDatabase(db));
+};
+
+
 class BrowserCache {
   constructor() {
     if (!BrowserCache.instance) {
@@ -24,7 +36,7 @@ class BrowserCache {
       if (!isBrowser) return;
       localForage.config({
         driver: localForage.INDEXEDDB,
-        name: 'biomage',
+        name: currentCacheVersion,
         storeName: 'biomage_cache',
         description: 'In Browser Cache',
       });
@@ -41,6 +53,7 @@ class BrowserCache {
         });
       }
       this.initialised = true;
+      deleteOldVersions();
     } catch (error) {
       console.trace(error);
     }
