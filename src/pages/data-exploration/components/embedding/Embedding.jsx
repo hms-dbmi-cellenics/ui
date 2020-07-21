@@ -46,11 +46,7 @@ const Embedding = (props) => {
   const cellSetProperties = useSelector((state) => state.cellSets.properties);
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const focusedGene = useSelector((state) => state.focusedGene);
-
-  const hoverPosition = useRef({
-    x: 0, y: 0,
-  });
-  const cellCoordintes = useRef({});
+  const cellCoordintes = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
 
@@ -98,11 +94,8 @@ const Embedding = (props) => {
 
 
   const updateCellCoordinates = (newView) => {
-    if (createClusterPopover) {
-      cellCoordintes.current = {};
-    } else if (selectedCell && newView.viewport.project) {
+    if (selectedCell && newView.viewport.project) {
       const [x, y] = newView.viewport.project([data[selectedCell][0], data[selectedCell][1]]);
-
       cellCoordintes.current = {
         x,
         y,
@@ -147,17 +140,11 @@ const Embedding = (props) => {
   };
 
   const updateCellsSelection = (selection) => {
-    setCreateClusterPopover(true);
-    setSelectedIds(selection);
-  };
-
-  const onMouseUpdate = _.throttle((e) => {
-    if (!createClusterPopover) {
-      hoverPosition.current = {
-        x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY,
-      };
+    if (selection.size > 0) {
+      setCreateClusterPopover(true);
+      setSelectedIds(selection);
     }
-  }, 1000);
+  };
 
   if (error) {
     return (
@@ -180,16 +167,9 @@ const Embedding = (props) => {
     );
   }
 
-  return (
-    <div
-      className='vitessce-container vitessce-theme-light'
-      style={{ height: '50vh', position: 'relative' }}
-      onMouseMove={(e) => {
-        e.persist();
-        onMouseUpdate(e);
-      }}
-    >
-      {currentView.current === 'expression' ? [
+  const renderExpressionView = () => {
+    if (currentView.current === 'expression') {
+      return [
         <label htmlFor='gene name'>
           Showing expression for gene:&nbsp;
           <b>{focusedGene.geneName}</b>
@@ -203,7 +183,17 @@ const Embedding = (props) => {
             }}
           />
         </div>,
-      ] : <div />}
+      ];
+    }
+    return <div />;
+  };
+
+  return (
+    <div
+      className='vitessce-container vitessce-theme-light'
+      style={{ height: '50vh', position: 'relative' }}
+    >
+      {renderExpressionView()}
       <Scatterplot
         cellOpacity={0.1}
         cellRadiusScale={0.1}
@@ -219,23 +209,24 @@ const Embedding = (props) => {
         updateViewInfo={updateCellCoordinates}
         clearPleaseWait={clearPleaseWait}
       />
-      <CrossHair
-        componentType={embeddingType}
-        coordinates={cellCoordintes}
-      />
-      <CellInfo
-        componentType={embeddingType}
-        coordinates={cellCoordintes}
-      />
       {
         createClusterPopover
           ? (
             <ClusterPopover
-              popoverPosition={hoverPosition}
+              popoverPosition={cellCoordintes}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
             />
-          ) : <></>
+          ) : [
+            <CrossHair
+              componentType={embeddingType}
+              coordinates={cellCoordintes}
+            />,
+            <CellInfo
+              componentType={embeddingType}
+              coordinates={cellCoordintes}
+            />,
+          ]
       }
     </div>
   );

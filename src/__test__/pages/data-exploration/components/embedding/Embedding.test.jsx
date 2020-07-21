@@ -3,7 +3,7 @@ import {
   Provider,
 } from 'react-redux';
 import { act } from 'react-dom/test-utils';
-import { shallow, mount, configure } from 'enzyme';
+import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 import configureMockStore from 'redux-mock-store';
@@ -109,9 +109,10 @@ describe('Embedding', () => {
     const scatterplot = component.find(Scatterplot);
     expect(component.find('ClusterPopover').length).toEqual(0);
 
+    const selectedCellIds = new Set(['1', '2']);
     // lasso select cells 1 and 2
     act(() => {
-      scatterplot.getElement().props.updateCellsSelection(['1', '2']);
+      scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
     });
     component.update();
     let popover = component.find('ClusterPopover');
@@ -127,17 +128,44 @@ describe('Embedding', () => {
     expect(store.getActions().length).toEqual(0);
   });
 
+  test('does not render the popover after lasso selection of 0 cells', () => {
+    const scatterplot = component.find(Scatterplot);
+    const selectedCellIds = new Set();
+
+    // lasso select cells 1 and 2
+    act(() => {
+      scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
+    });
+    component.update();
+
+    expect(component.find('ClusterPopover').length).toEqual(0);
+  });
+
+  test('does not render cell info and crosshair when the popover is open', () => {
+    const scatterplot = component.find(Scatterplot);
+    // lasso select cells 1 and 2
+    const selectedCellIds = new Set(['1', '2']);
+    act(() => {
+      scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
+    });
+    component.update();
+
+    expect(component.find('ClusterPopover').length).toEqual(1);
+    expect(component.find(CrossHair).length).toEqual(0);
+    expect(component.find(CellInfo).length).toEqual(0);
+  });
+
   test('renders correctly a popover on lasso selection and creates a new cluster on create', () => {
     const scatterplot = component.find(Scatterplot);
     expect(component.find('ClusterPopover').length).toEqual(0);
 
     // lasso select cells 1 and 2
-    const selectedCellIds = ['1', '2'];
+    const selectedCellIds = new Set(['1', '2']);
     act(() => {
       scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
     });
     component.update();
-    let popover = component.find('ClusterPopover');
+    const popover = component.find('ClusterPopover');
     expect(popover.length).toEqual(1);
 
     // click create in the popover
@@ -145,11 +173,11 @@ describe('Embedding', () => {
       popover.getElement().props.onCreate();
     });
     component.update();
-    popover = component.find('ClusterPopover');
-    expect(popover.length).toEqual(0);
+
+    expect(component.find('ClusterPopover').length).toEqual(0);
     expect(store.getActions().length).toEqual(1);
     expect(store.getActions()[0].type).toEqual(CELL_SETS_CREATE);
-    expect(store.getActions()[0].payload.cellIds).toEqual(selectedCellIds);
+    expect(store.getActions()[0].payload.cellIds).toEqual(Array.from(selectedCellIds));
   });
 
   test('dispatches an action with updated cell information on hover', () => {
