@@ -26,6 +26,8 @@ const CellInfo = (props) => {
     <Card
       size='small'
       style={{
+        // make sure that cell info renders on top of the cross hairs
+        zIndex: 6,
         position: 'absolute',
         left: `${coordinates.current.x + 40}px`,
         top: `${coordinates.current.y - 60}px`,
