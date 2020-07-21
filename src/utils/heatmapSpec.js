@@ -42,10 +42,24 @@ const spec = {
   ],
   signals: [
     {
-      name: 'mouseover',
+      name: 'mouseOver',
       on: [
-        { events: '*:mouseover', encode: 'select' },
+        { events: 'rect:mouseover{50}', encode: 'mouseOver' },
       ],
+    },
+    {
+      name: 'hoveroverembedding',
+      bind: {
+        id: 'cellNameInput',
+        element: '#heatmapHoverBox',
+      },
+    },
+    {
+      name: 'hoveroverembeddingGene',
+      bind: {
+        id: 'geneNameInput',
+        element: '#heatmapHoverBox',
+      },
     },
   ],
   scales: [
@@ -126,6 +140,68 @@ const spec = {
         hover: {
           cursor: {
             value: 'pointer',
+          },
+        },
+      },
+    },
+    {
+      type: 'rule',
+      encode: {
+        enter: {
+          strokeWidth: {
+            scale: 'x',
+            band: 2,
+          },
+          stroke: {
+            value: '#000000',
+          },
+          opacity: {
+            value: 1,
+          },
+          y: { value: 0 },
+          y2: { signal: 'height' },
+        },
+        update: {
+          x: {
+            scale: 'x',
+            signal: 'hoveroverembedding',
+            offset: { scale: 'x', band: 0.5 },
+          },
+          x2: {
+            scale: 'x',
+            signal: 'hoveroverembedding',
+            offset: { scale: 'x', band: 0.5 },
+          },
+        },
+      },
+    },
+    {
+      type: 'rule',
+      encode: {
+        enter: {
+          strokeWidth: {
+            scale: 'x',
+            band: 2,
+          },
+          stroke: {
+            value: '#000000',
+          },
+          opacity: {
+            value: 1,
+          },
+          x: { value: 0 },
+          x2: { signal: 'width' },
+        },
+        update: {
+          y: {
+            scale: 'y',
+            signal: 'hoveroverembeddingGene',
+            offset: { scale: 'y', band: 0.5 },
+          },
+          y2: {
+            scale: 'y',
+            signal: 'hoveroverembeddingGene',
+            offset: { scale: 'y', band: 0.5 },
           },
         },
       },

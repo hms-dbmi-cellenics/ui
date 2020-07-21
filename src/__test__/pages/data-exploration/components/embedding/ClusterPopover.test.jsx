@@ -14,7 +14,7 @@ let component;
 
 describe('ClusterPopover', () => {
   beforeEach(() => {
-    const popoverPosition = { x: 0, y: 0 };
+    const popoverPosition = { current: { x: 0, y: 0 } };
     mockCreate = jest.fn();
     mockCancel = jest.fn();
     component = mount(

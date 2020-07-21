@@ -12,7 +12,8 @@ import {
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
-import CrossHair from '../cross-hair/CrossHair';
+import CrossHair from './CrossHair';
+import CellInfo from '../CellInfo';
 import loadEmbedding from '../../../../redux/actions/embeddings/loadEmbedding';
 import { createCellSet } from '../../../../redux/actions/cellSets';
 import { updateCellInfo } from '../../../../redux/actions';
@@ -46,10 +47,12 @@ const Embedding = (props) => {
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const focusedGene = useSelector((state) => state.focusedGene);
 
-  const hoverPosition = useRef({ x: 0, y: 0 });
+  const hoverPosition = useRef({
+    x: 0, y: 0,
+  });
+  const cellCoordintes = useRef({});
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-  const [viewPort, setViewPort] = useState({});
 
   const [cellColors, setCellColors] = useState({});
 
@@ -93,6 +96,22 @@ const Embedding = (props) => {
     if (!loadingColors && isBrowser) setCellColors(getCellColors('cellSet'));
   }, [cellSetSelected]);
 
+
+  const updateCellCoordinates = (newView) => {
+    if (createClusterPopover) {
+      cellCoordintes.current = {};
+    } else if (selectedCell && newView.viewport.project) {
+      const [x, y] = newView.viewport.project([data[selectedCell][0], data[selectedCell][1]]);
+
+      cellCoordintes.current = {
+        x,
+        y,
+        width: newView.viewport.width,
+        height: newView.viewport.height,
+      };
+    }
+  };
+
   if (!data || loading || focusedGene.isLoading || loadingColors || !isBrowser) {
     return (<center><Spin size='large' /></center>);
   }
@@ -100,16 +119,14 @@ const Embedding = (props) => {
   const updateCellsHover = (cell) => {
     if (cell) {
       if (focusedGene.geneName) {
-        const cellPosition = focusedGene.cells.indexOf(cell.cellId);
-        if (cellPosition !== -1) {
-          const cellExpression = focusedGene.expression[cellPosition];
-          return dispatch(updateCellInfo({
-            geneName: focusedGene.geneName,
-            cellName: cell.cellId,
-            expression: cellExpression,
-            componentType: embeddingType,
-          }));
-        }
+        const cellIndex = focusedGene.cells.indexOf(parseInt(cell.cellId, 10));
+        const cellExpression = focusedGene.expression[cellIndex];
+        return dispatch(updateCellInfo({
+          geneName: focusedGene.geneName,
+          cellName: cell.cellId,
+          expression: cellExpression,
+          componentType: embeddingType,
+        }));
       }
       return dispatch(updateCellInfo({
         cellName: cell.cellId,
@@ -134,28 +151,11 @@ const Embedding = (props) => {
     setSelectedIds(selection);
   };
 
-  const updateViewInfo = (newView) => {
-    if (selectedCell) {
-      setViewPort(newView.viewport);
-    }
-  };
-
-  const updateCrossHairView = () => {
-    if (viewPort.project) {
-      const [x, y] = viewPort.project([data[selectedCell][0], data[selectedCell][1]]);
-      return {
-        x,
-        y,
-        width: viewPort.width,
-        height: viewPort.height,
-      };
-    }
-    return {};
-  };
-
   const onMouseUpdate = _.throttle((e) => {
     if (!createClusterPopover) {
-      hoverPosition.current = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
+      hoverPosition.current = {
+        x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY,
+      };
     }
   }, 1000);
 
@@ -216,15 +216,22 @@ const Embedding = (props) => {
         updateStatus={updateStatus}
         updateCellsSelection={updateCellsSelection}
         updateCellsHover={updateCellsHover}
-        updateViewInfo={updateViewInfo}
+        updateViewInfo={updateCellCoordinates}
         clearPleaseWait={clearPleaseWait}
       />
-      <CrossHair componentType={embeddingType} getView={updateCrossHairView} />
+      <CrossHair
+        componentType={embeddingType}
+        coordinates={cellCoordintes}
+      />
+      <CellInfo
+        componentType={embeddingType}
+        coordinates={cellCoordintes}
+      />
       {
         createClusterPopover
           ? (
             <ClusterPopover
-              popoverPosition={hoverPosition.current}
+              popoverPosition={hoverPosition}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
             />

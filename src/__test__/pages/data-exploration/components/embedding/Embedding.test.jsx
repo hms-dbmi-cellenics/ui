@@ -3,7 +3,7 @@ import {
   Provider,
 } from 'react-redux';
 import { act } from 'react-dom/test-utils';
-import { mount, configure } from 'enzyme';
+import { shallow, mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 import configureMockStore from 'redux-mock-store';
@@ -12,6 +12,8 @@ import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/extensions
 import { Scatterplot } from 'vitessce/dist/es/production/scatterplot.min.js';
 import Embedding from '../../../../../pages/data-exploration/components/embedding/Embedding';
+import CrossHair from '../../../../../pages/data-exploration/components/embedding/CrossHair';
+import CellInfo from '../../../../../pages/data-exploration/components/CellInfo';
 import { CELL_SETS_CREATE } from '../../../../../redux/actionTypes/cellSets';
 import { initialEmbeddingState } from '../../../../../redux/reducers/embeddingsReducer/initialState';
 
@@ -153,7 +155,7 @@ describe('Embedding', () => {
   test('dispatches an action with updated cell information on hover', () => {
     const scatterplot = component.find(Scatterplot);
 
-    const hoveredCell = { cellId: 'ATCG-1' };
+    const hoveredCell = { cellId: 1 };
 
     // hover over cells
     act(() => {
@@ -163,6 +165,79 @@ describe('Embedding', () => {
     expect(store.getActions().length).toEqual(1);
     expect(store.getActions()[0].type).toEqual('UPDATE_CELL_INFO');
     expect(store.getActions()[0].data.cellName).toEqual(hoveredCell.cellId);
+  });
+
+  test('renders CrossHair and CellInfo components when user hovers over cell', () => {
+    store = mockStore({
+      embeddings: {
+        pca: {
+          ...initialEmbeddingState,
+          loading: false,
+          data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
+        },
+      },
+      focusedGene: {},
+      cellInfo: {
+        cellName: 2,
+        componentType: 'pca',
+        expression: 6.5,
+        geneName: 'DOK3',
+      },
+      cellSets: {
+        properties: {
+          cluster1: {
+            color: '#ff0000',
+            cellIds: [2, 3],
+          },
+        },
+        hierarchy: [
+          {
+            key: 'louvain',
+            children: ['cluster1'],
+          },
+        ],
+        selected: ['cluster1'],
+      },
+    });
+
+    const mockProject = jest.fn(([x, y]) => [x + 1, y + 1]);
+
+    const cellCoordinates = {
+      viewport: {
+        project: mockProject,
+        width: 100,
+        height: 200,
+      },
+    };
+
+    component = mount(
+      <Provider store={store}>
+        <Embedding experimentId='1234' embeddingType='pca' />
+      </Provider>,
+    );
+    const scatterplot = component.find(Scatterplot);
+
+    // hover over cells
+    act(() => {
+      scatterplot.getElement().props.updateViewInfo(cellCoordinates);
+    });
+
+    const crossHairs = component.find(CrossHair);
+    const cellInfo = component.find(CellInfo);
+
+    expect(mockProject).toHaveBeenCalledTimes(1);
+    expect(mockProject).toHaveBeenCalledWith(store.getState().embeddings.pca.data[2]);
+    expect(crossHairs.length).toEqual(1);
+    expect(crossHairs.props().coordinates.current).toEqual(
+      {
+        x: 44,
+        y: 10,
+        width: 100,
+        height: 200,
+      },
+    );
+    expect(cellInfo.length).toEqual(1);
+    expect(crossHairs.props().coordinates.current).toEqual(crossHairs.props().coordinates.current);
   });
 
   /*

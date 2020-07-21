@@ -1,9 +1,13 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Empty, Spin } from 'antd';
 import PropTypes from 'prop-types';
 import VegaHeatmap from './VegaHeatmap';
+import HeatmapCrossHairs from './HeatmapCrossHairs';
+import CellInfo from '../CellInfo';
+import { updateCellInfo } from '../../../../redux/actions';
 
+const componentType = 'heatmap';
 
 const HeatmapPlot = (props) => {
   const { heatmapWidth } = props;
@@ -11,6 +15,9 @@ const HeatmapPlot = (props) => {
   const geneExpressionData = useSelector((state) => state.geneExpressionData);
   const selectedGenes = useSelector((state) => state.selectedGenes);
   const showAxes = useSelector((state) => state.heatmapSpec?.showAxes);
+  const dispatch = useDispatch();
+
+  const hoverCoordinates = useRef({});
 
   if (!selectedGenes.geneList || Object.keys(selectedGenes.geneList).length === 0) {
     return (
@@ -30,14 +37,39 @@ const HeatmapPlot = (props) => {
     return (<center><Spin size='large' /></center>);
   }
 
-  return (
+  const handleMouseOver = (...args) => {
+    if (args[1].datum) {
+      const { cellName, expression, geneName } = args[1].datum;
+      dispatch(updateCellInfo({
+        cellName, expression, geneName, componentType,
+      }));
+    }
+    if (args[1].x && args[1].y) {
+      hoverCoordinates.current = {
+        x: args[1].x,
+        y: args[1].y,
+      };
+    }
+  };
+
+  const signalListeners = {
+    mouseOver: handleMouseOver,
+  };
+
+  return [
     <VegaHeatmap
       spec={heatmapSpec}
       showAxes={showAxes}
       rowsNumber={geneExpressionData.data.length || 0}
       defaultWidth={heatmapWidth}
-    />
-  );
+      signalListeners={signalListeners}
+    />,
+    <HeatmapCrossHairs />,
+    <CellInfo
+      coordinates={hoverCoordinates}
+      componentType={componentType}
+    />,
+  ];
 };
 
 HeatmapPlot.defaultProps = {
