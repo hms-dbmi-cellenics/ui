@@ -80,7 +80,6 @@ const DraggableList = (props) => {
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          {...provided.dragHandleProps}
           style={getItemStyle(
             snapshot.isDragging,
             provided.draggableProps.style,
@@ -88,11 +87,15 @@ const DraggableList = (props) => {
         >
           <ContainerDimensions>
             {({ width }) => (
-              <Collapse defaultActiveKey={[item.key]}>
+              <Collapse defaultActiveKey={[item.key]} accordion>
                 <Panel
                   headStyle={{ display: 'flex' }}
                   header={(
-                    <div id={item.key} style={{ display: 'flex', flexGrow: 1 }}>
+                    <div
+                      id={item.key}
+                      {...provided.dragHandleProps}
+                      style={{ display: 'flex', flexGrow: 1 }}
+                    >
                       {item.name}
                     </div>
                   )}
