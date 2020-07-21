@@ -22,11 +22,12 @@ describe('HeatmapPlot', () => {
   it('renders Empty component when no selected gene', () => {
     const store = mockStore({
       selectedGenes: {},
+      cellInfo: {},
     });
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot />
+        <HeatmapPlot heatmapWidth={200} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
@@ -39,12 +40,13 @@ describe('HeatmapPlot', () => {
           G1: true,
         },
       },
+      cellInfo: {},
       geneExpressionData: { isLoading: true },
     });
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot />
+        <HeatmapPlot heatmapWidth={200} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
@@ -57,13 +59,14 @@ describe('HeatmapPlot', () => {
           G1: true,
         },
       },
+      cellInfo: {},
       geneExpressionData: { isLoading: false },
       heatmapSpec: { rendering: true },
     });
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot />
+        <HeatmapPlot heatmapWidth={200} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
@@ -76,13 +79,14 @@ describe('HeatmapPlot', () => {
           G1: true,
         },
       },
+      cellInfo: {},
       geneExpressionData: { isLoading: false, data: [{ geneName: 'G1', expression: [1, 2, 3, 4] }] },
       heatmapSpec: { rendering: false },
     });
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot />
+        <HeatmapPlot heatmapWidth={400} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);

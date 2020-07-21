@@ -26,8 +26,8 @@ const ClusterPopover = (props) => {
   const content = getContent();
 
   return (
-    <div style={{ position: 'absolute', left: popoverPosition.x + 20, top: popoverPosition.y + 20 }}>
-      <Popover title='Add cell selection' content={content} visible />
+    <div style={{ position: 'absolute', left: popoverPosition.current.x + 20, top: popoverPosition.current.y + 20 }}>
+      <Popover title='Add cell set' content={content} visible />
     </div>
   );
 };
