@@ -2,7 +2,9 @@ import React from 'react';
 import {
   PageHeader, Collapse
 } from 'antd';
-import CellSizeDistribution from './components/CellSizeDistribution/cellSizeDistribution'
+import CellSizeDistribution from './components/CellSizeDistribution/CellSizeDistribution'
+import MitochondrialContent from './components/MitochondrialContent/MitochondrialContent'
+
 const { Panel } = Collapse;
 
 class ProcessingViewPage extends React.Component {
@@ -23,6 +25,7 @@ class ProcessingViewPage extends React.Component {
             <CellSizeDistribution />
           </Panel>
           <Panel header='Mitochondrial content' key='2'>
+            <MitochondrialContent />
           </Panel>
           <Panel header='Read alignment' key='3'>
           </Panel>

@@ -1,11 +1,10 @@
 import { Vega } from '../../../../../../node_modules/react-vega';
 import React from 'react';
 import {
-  Collapse, Row, Col, List, Space, Switch,
-  InputNumber
+  Collapse, Row, Col, List, Space, Switch, Select,
+  InputNumber,
 } from 'antd';
 import plot1Pic from '../../../../../../static/media/plot1.png'
-import plotData from './data.json'
 const { Panel } = Collapse;
 
 class CellSizeDistribution extends React.Component {
@@ -186,12 +185,15 @@ class CellSizeDistribution extends React.Component {
       console.log(this.state.filtering)
 
     }
+    const handleChange = () => {
+
+    }
     return (
       <>
         <Row>
 
           <Col span={9}>
-            <Vega data={plotData} spec={this.generateSpec()} renderer='canvas' />
+            <Vega spec={this.generateSpec()} renderer='canvas' />
           </Col>
 
           <Col span={6}>
@@ -231,11 +233,22 @@ class CellSizeDistribution extends React.Component {
               <Space>
                 <Switch defaultChecked onChange={disableFiltering} />
                 Disable controls
-          </Space>
+              </Space>
               <Collapse >
                 <Panel header="filtering settings" disabled={this.state.filtering}>
-                  Min cell size:
-                  <InputNumber disabled={this.state.filtering} defaultValue={1000} />
+                  Method:
+                  <Space direction='vertical'>
+                    <Select defaultValue="option1" style={{ width: 200 }}
+                      onChange={handleChange} disabled={this.state.filtering}>
+                      <Option value="option1">option1</Option>
+                      <Option value="option2">option2</Option>
+                      <Option value="option3">option3</Option>
+                    </Select>
+                    <Space>
+                      Max fraction:
+                  <InputNumber disabled={this.state.filtering} defaultValue={0} />
+                    </Space>
+                  </Space>
                 </Panel>
 
                 <Panel header="plot styling" disabled={this.state.filtering}>
