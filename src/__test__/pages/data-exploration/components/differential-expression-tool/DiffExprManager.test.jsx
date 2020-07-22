@@ -13,6 +13,7 @@ import connectionPromise from '../../../../../utils/socketConnection';
 
 jest.mock('localforage');
 jest.mock('../../../../../utils/socketConnection');
+jest.mock('../../../../../utils/environment', () => false);
 
 let io;
 let mockOn;
@@ -56,7 +57,7 @@ describe('DiffExprManager', () => {
   });
 
   configure({ adapter: new Adapter() });
-  test('renders correctly a compute view', () => {
+  it('renders correctly a compute view', () => {
     const component = mount(
       <Provider store={emptyStore}>
         <DiffExprManager experimentId='1234' view='compute' />
@@ -65,7 +66,7 @@ describe('DiffExprManager', () => {
     expect(component.find(DiffExprCompute).length).toEqual(1);
   });
 
-  test('renders correctly a results view', () => {
+  it('renders correctly a results view', () => {
     const component = mount(
       <Provider store={emptyStore}>
         <DiffExprManager experimentId='1234' view='results' />
@@ -74,7 +75,7 @@ describe('DiffExprManager', () => {
     expect(component.find(DiffExprResults).length).toEqual(1);
   });
 
-  test('on click of compute with changed parameters, DiffExprManager dispatches an action to fetch results', () => {
+  it('on click of compute with changed parameters, DiffExprManager dispatches an action to fetch results', () => {
     const component = mount(
       <Provider store={emptyStore}>
         <DiffExprManager experimentId='1234' view='compute' />

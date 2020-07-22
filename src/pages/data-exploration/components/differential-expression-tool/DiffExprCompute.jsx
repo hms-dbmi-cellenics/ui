@@ -4,7 +4,7 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Radio, Form, Select, Typography,
+  Button, Form, Select, Typography, Tooltip,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -64,7 +64,18 @@ const DiffExprCompute = (props) => {
 
 
   const validateForm = () => {
+    if (selectedCellSets.second === 'All') {
+      setComparisonType(ComparisonTypes.One);
+    } else {
+      setComparisonType(ComparisonTypes.Two);
+    }
+
     if (selectedCellSets.first === defaultSelected) {
+      setIsFormValid(false);
+      return;
+    }
+
+    if (selectedCellSets.second === defaultSelected) {
       setIsFormValid(false);
       return;
     }
@@ -84,18 +95,7 @@ const DiffExprCompute = (props) => {
 
   useEffect(() => {
     validateForm();
-  }, [comparisonType, selectedCellSets]);
-
-  const onSelectComparisonType = (e) => {
-    setComparisonType(e.target.value);
-
-    if (e.target.value === ComparisonTypes.One) {
-      setSelectedCellSets({
-        ...selectedCellSets,
-        second: defaultSelected,
-      });
-    }
-  };
+  }, [selectedCellSets]);
 
   /**
    * Updates the selected clusters.
@@ -132,8 +132,15 @@ const DiffExprCompute = (props) => {
           size='small'
         >
           {
-            selectableClusters.map(({ key, children }) => (
+            selectableClusters && selectableClusters.map(({ key, children }) => (
               <OptGroup label={properties[key]?.name} key={key}>
+                {option === 'second' ? (
+                  <Option key='All' disabled={Object.values(selectedCellSets).includes('All')}>
+                    <Tooltip placement='left' title='Compare above selected set and its complements'>
+                      <span style={{ display: 'flex', flexGrow: 1 }}>All</span>
+                    </Tooltip>
+                  </Option>
+                ) : <></>}
                 {renderChildren(children)}
               </OptGroup>
             ))
@@ -143,49 +150,14 @@ const DiffExprCompute = (props) => {
     );
   };
 
-  /**
-   * Renders the form for selecting one or two cell sets for simple DE.
-   */
-  const renderClusterSelectorForm = () => {
-    if (comparisonType === ComparisonTypes.One) {
-      return (
-        renderClusterSelectorItem('Select cell set:', 'first')
-      );
-    }
-
-    if (comparisonType === ComparisonTypes.Two) {
-      return (
-        <>
-          {renderClusterSelectorItem('Select a base cell set:', 'first')}
-          {renderClusterSelectorItem('Select a comparison set:', 'second')}
-        </>
-      );
-    }
-
-    return (<></>);
-  };
-
   return (
     <Form size='small' layout='vertical'>
-      <Form.Item label='Compare:'>
-        <Radio.Group onChange={onSelectComparisonType} value={comparisonType}>
-          <Radio value={ComparisonTypes.One}>
-            {ComparisonTypes.One}
-          </Radio>
-          <Radio value={ComparisonTypes.Two}>
-            {ComparisonTypes.Two}
-          </Radio>
-        </Radio.Group>
-      </Form.Item>
-
-      {renderClusterSelectorForm()}
+      {renderClusterSelectorItem('Compare:', 'first')}
+      {renderClusterSelectorItem('Versus:', 'second')}
 
       <p>
         <Text type='secondary'>
-          Performs a Wilcoxon rank-sum test
-          between two specified cell sets (across sets)
-          or a set and its complement (versus rest).
-          Cite
+          Performs a Wilcoxon rank-sum test between selected sets. Cite
           {' '}
           <a href='https://diffxpy.readthedocs.io/en/latest/api/diffxpy.api.test.pairwise.html'>
             diffxpy.api.test.pairwise

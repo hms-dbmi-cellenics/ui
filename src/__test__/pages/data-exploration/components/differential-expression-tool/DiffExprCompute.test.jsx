@@ -2,16 +2,16 @@ import React from 'react';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import preloadAll from 'jest-next-dynamic';
-import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {
-  Form, Select, Radio, Button,
+  Form, Select, Button,
 } from 'antd';
 import DiffExprCompute from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprCompute';
 
 jest.mock('localforage');
+jest.mock('../../../../../utils/environment', () => false);
 
 const { Item } = Form;
 const mockStore = configureMockStore([thunk]);
@@ -84,7 +84,7 @@ describe('DiffExprCompute', () => {
   });
 
   configure({ adapter: new Adapter() });
-  test('renders correctly with no comparison method', () => {
+  it('renders correctly with no comparison method', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
@@ -101,19 +101,18 @@ describe('DiffExprCompute', () => {
     expect(form.length).toEqual(1);
 
     // It should have two items.
-    expect(form.find(Item).length).toEqual(2);
+    expect(form.find(Item).length).toEqual(3);
 
     // The first one should be a radio group titled Compare
     expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare:');
-    expect(form.find(Item).at(0).find(Radio.Group).length).toEqual(1);
 
     // The second one should be a disabled button.
-    const button = form.find(Item).at(1).find(Button);
+    const button = form.find(Button);
     expect(button.length).toEqual(1);
     expect(button.getElement().props.disabled).toEqual(true);
   });
 
-  test('renders correctly with versus rest comparison method', () => {
+  it('renders correctly with versus rest comparison method', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
@@ -131,7 +130,6 @@ describe('DiffExprCompute', () => {
     expect(form.find(Item).length).toEqual(3);
 
     expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare:');
-    expect(form.find(Item).at(0).find(Radio.Group).length).toEqual(1);
 
     // Second item is now a single select.
     expect(form.find(Item).at(1).find(Select).length).toEqual(1);
@@ -141,7 +139,7 @@ describe('DiffExprCompute', () => {
     expect(button.getElement().props.disabled).toEqual(true);
   });
 
-  test('renders correctly with across sets comparison method', () => {
+  it('renders correctly with across sets comparison method', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
@@ -156,20 +154,18 @@ describe('DiffExprCompute', () => {
     const form = component.find(Form);
 
     expect(form.length).toEqual(1);
-    expect(form.find(Item).length).toEqual(4);
+    expect(form.find(Item).length).toEqual(3);
 
     expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare:');
-    expect(form.find(Item).at(0).find(Radio.Group).length).toEqual(1);
 
     expect(form.find(Item).at(1).find(Select).length).toEqual(1);
-    expect(form.find(Item).at(2).find(Select).length).toEqual(1);
 
-    const button = form.find(Item).at(3).find(Button);
+    const button = form.find(Button);
     expect(button.length).toEqual(1);
     expect(button.getElement().props.disabled).toEqual(true);
   });
 
-  test('the select options render correctly', () => {
+  it('the select options render correctly', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
@@ -200,7 +196,7 @@ describe('DiffExprCompute', () => {
     });
   });
 
-  test('renders correctly with previously selected clusters', () => {
+  it('renders correctly with previously selected clusters', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
@@ -213,19 +209,19 @@ describe('DiffExprCompute', () => {
     );
 
     const form = component.find(Form);
-    const firstSelected = form.find(Item).at(1).find(Select).at(0)
+    const firstSelected = form.find(Item).at(0).find(Select).at(0)
       .getElement();
-    const secondSelected = form.find(Item).at(2).find(Select).at(0)
+    const secondSelected = form.find(Item).at(1).find(Select).at(0)
       .getElement();
 
     expect(firstSelected.props.value).toEqual('cluster-a');
     expect(secondSelected.props.value).toEqual('cluster-b');
 
-    expect(form.find(Item).at(3).find(Button)
+    expect(form.find(Button)
       .getElement().props.disabled).toEqual(false);
   });
 
-  test('button gets disabled when switching from versus rest to across sets', () => {
+  it('button is disabled when second select is not selected', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
@@ -237,62 +233,13 @@ describe('DiffExprCompute', () => {
       </Provider>,
     );
 
-    let form = component.find(Form);
-    let firstSelected = form.find(Item).at(1).find(Select).at(0);
-    let computeButton = form.find(Item).at(2).find(Button);
+    const form = component.find(Form);
+    const firstSelected = form.find(Item).at(0).find(Select).at(0);
+    const secondSelected = form.find(Item).at(1).find(Select).at(0);
 
     expect(firstSelected.getElement().props.value).toEqual('cluster-a');
-    expect(computeButton.getElement().props.disabled).toEqual(false);
-
-    // change the comparison type
-    act(() => {
-      form.find(Item).at(0).find(Radio.Group)
-        .getElement().props.onChange({ target: { value: 'Across sets' } });
-    });
-    component.update();
-
-    form = component.find(Form);
-    firstSelected = form.find(Item).at(1).find(Select).at(0);
-    computeButton = form.find(Item).at(3).find(Button);
-
-    expect(firstSelected.getElement().props.value).toEqual('cluster-a');
-    expect(computeButton.getElement().props.disabled).toEqual(true);
-  });
-
-  test('button stays enabled when switching from across sets to versus rest', () => {
-    const component = mount(
-      <Provider store={store}>
-        <DiffExprCompute
-          experimentId='1234'
-          selection={{ first: 'cluster-a', second: 'cluster-b' }}
-          comparison='Across sets'
-          onCompute={jest.fn()}
-        />
-      </Provider>,
-    );
-
-    let form = component.find(Form);
-    let firstSelected = form.find(Item).at(1).find(Select).at(0);
-    const secondSelected = form.find(Item).at(2).find(Select).at(0);
-
-    let computeButton = form.find(Item).at(3).find(Button);
-
-    expect(firstSelected.getElement().props.value).toEqual('cluster-a');
-    expect(secondSelected.getElement().props.value).toEqual('cluster-b');
-    expect(computeButton.getElement().props.disabled).toEqual(false);
-
-    // change the comparison type
-    act(() => {
-      form.find(Item).at(0).find(Radio.Group)
-        .getElement().props.onChange({ target: { value: 'Versus rest' } });
-    });
-    component.update();
-
-    form = component.find(Form);
-    firstSelected = form.find(Item).at(1).find(Select).at(0);
-    computeButton = form.find(Item).at(2).find(Button).at(0);
-
-    expect(firstSelected.getElement().props.value).toEqual('cluster-a');
-    expect(computeButton.getElement().props.disabled).toEqual(false);
+    expect(secondSelected.getElement().props.value).toEqual('Select a cell set');
+    expect(form.find(Button)
+      .getElement().props.disabled).toEqual(true);
   });
 });
