@@ -137,11 +137,6 @@ const spec = {
             field: 'expression',
           },
         },
-        hover: {
-          cursor: {
-            value: 'pointer',
-          },
-        },
       },
     },
     {

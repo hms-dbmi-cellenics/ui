@@ -8,7 +8,7 @@ import { fetchCachedWork } from '../../utils/cacheRequest';
 import pushNotificationMessage from './notifications/pushNotificationMessage';
 
 const DEFAULT_TIMEOUT_SECONDS = 30;
-const DIFF_EXPR_TIMEOUT_SECONDS = 90;
+const DIFF_EXPR_TIMEOUT_SECONDS = 180;
 
 
 const updateGeneList = (experimentId, tableState) => async (dispatch, getState) => {
