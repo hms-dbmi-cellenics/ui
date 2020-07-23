@@ -2,7 +2,7 @@ import { Vega } from '../../../../../../node_modules/react-vega';
 import React from 'react';
 import {
   Collapse, Row, Col, List, Space, Switch,
-  InputNumber
+  InputNumber, Form, Input
 } from 'antd';
 import _ from 'lodash'
 import plot1Pic from '../../../../../../static/media/plot1.png'
@@ -19,7 +19,10 @@ class CellSizeDistribution extends React.Component {
       data: plotData,
       legendEnabled: true,
       legend: null,
-
+      minCellSize: 1000,
+      minCellSizeChanged: 0,
+      xAxisText: "#UMIs in cell",
+      yAxisText: "#UMIs * #Cells",
     }
   }
 
@@ -43,7 +46,6 @@ class CellSizeDistribution extends React.Component {
       return datum;
     });
     console.log("****** ", data);
-    //this.setState({ data });
     return data;
   }
   generateSpec() {
@@ -91,7 +93,7 @@ class CellSizeDistribution extends React.Component {
     return {
       "$schema": "https://vega.github.io/schema/vega/v5.json",
       "description": "An interactive histogram for visualizing a univariate distribution.",
-      "width": 480,
+      "width": 470,
       "height": 300,
       "padding": 5,
 
@@ -112,7 +114,7 @@ class CellSizeDistribution extends React.Component {
           "transform": [
             {
               "type": "bin", "field": "u",
-              "extent": [1000, 20000],
+              "extent": [this.state.minCellSize, 17000],
               "step": { "signal": "binStep" },
               "nice": false
             },
@@ -121,6 +123,7 @@ class CellSizeDistribution extends React.Component {
               "key": "bin0", "groupby": ["bin0", "bin1"],
               "fields": ["bin0"], "ops": ["count"], "as": ["count"]
             },
+
             {
               "type": "formula",
               "as": "status",
@@ -135,7 +138,7 @@ class CellSizeDistribution extends React.Component {
           "name": "xscale",
           "type": "linear",
           "range": "width",
-          "domain": [1000, 14000]
+          "domain": [1000, 17000]
         },
         {
           "name": "yscale",
@@ -159,8 +162,14 @@ class CellSizeDistribution extends React.Component {
         },
       ],
       "axes": [
-        { "orient": "bottom", "scale": "xscale", "zindex": 1 },
-        { "orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1 }
+        {
+          "orient": "bottom", "scale": "xscale", "zindex": 1,
+          title: { value: this.state.xAxisText },
+        },
+        {
+          "orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1,
+          title: { value: this.state.yAxisText },
+        }
       ],
 
       "marks": [
@@ -193,7 +202,7 @@ class CellSizeDistribution extends React.Component {
             "enter": {
               "x": { "scale": "xscale", "field": "u" },
               "width": { "value": 1 },
-              "y": { "value": 25, "offset": { "signal": "height" } },
+              "y": { "value": 35, "offset": { "signal": "height" } },
               "height": { "value": 5 },
               'stroke': {
                 'scale': 'color',
@@ -217,15 +226,14 @@ class CellSizeDistribution extends React.Component {
 
   render() {
     const data = { plotData: this.generateData() };
-    //const newData = this.generateData();
 
     const listData = [
-      'Estimated number of cells  ',
-      'Fraction reads in cells  ',
-      'Mean reads per cell  ',
-      'Median genes per cell  ',
-      'Total genes detected   ',
-      'Median UMI counts per cell   ',
+      'Estimated number of cells 8672',
+      'Fraction reads in cells  93.1%',
+      'Mean reads per cell  93,551',
+      'Median genes per cell  1,297',
+      'Total genes detected   21,425',
+      'Median UMI counts per cell   4,064',
     ];
     const imageClick = (image) => {
       if (image) {
@@ -240,16 +248,30 @@ class CellSizeDistribution extends React.Component {
       }
     }
     const disableFiltering = (checked) => {
+      const currentCell = this.state.minCellSize
+      const changedCell = this.state.minCellSizeChanged
       this.setState({
         filtering: !this.state.filtering,
       });
+      if (!this.state.filtering) {
+        this.setState({
+          minCellSizeChanged: currentCell,
+          minCellSize: 1000
+        })
+      }
+      else {
+        this.setState({
+          minCellSize: changedCell,
+        })
+      }
+      console.log(this.state.minCellSize, this.state.minCellSizeChanged, currentCell, changedCell)
     }
 
     return (
       <>
         <Row>
 
-          <Col span={13}>
+          <Col span={12}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
 
@@ -268,8 +290,6 @@ class CellSizeDistribution extends React.Component {
                   height: '100px', width: '100px', align: 'center', padding: '8px',
                 }}
                 onClick={() => imageClick(false)}
-              // onMouseOver={e => (e.currentTarget.style={{height: '110px', width: '110px'}})}
-
               />
             </Space>
             <List
@@ -289,15 +309,38 @@ class CellSizeDistribution extends React.Component {
             <Space direction='vertical'>
               <Space>
                 <Switch defaultChecked onChange={disableFiltering} />
-                Disable controls
+                Disable Filter
           </Space>
               <Collapse >
-                <Panel header="filtering settings" disabled={this.state.filtering}>
+                <Panel header="Filtering Settings" disabled={this.state.filtering}>
                   Min cell size:
-                  <InputNumber disabled={this.state.filtering} defaultValue={1000} />
+                  <InputNumber disabled={this.state.filtering}
+                    defaultValue={1000} onChange={(val) => this.setState({ minCellSize: val })} />
                 </Panel>
 
-                <Panel header="plot styling" disabled={this.state.filtering}>
+                <Panel header="Plot Styling" disabled={this.state.filtering}>
+                  <Form.Item label="Toggle Legend">
+                    <Switch defaultChecked disabled={this.state.filtering}
+                      onChange={(val) => this.setState({ legendEnabled: val })} />
+                  </Form.Item>
+                  <Form.Item
+                    label='X axis Title'
+                  >
+                    <Input
+                      placeholder='Enter X axis title'
+                      onPressEnter={(val) => this.setState({ xAxisText: val.target.value })}
+                      disabled={this.state.filtering}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label='X axis Title'
+                  >
+                    <Input
+                      placeholder='Enter Y axis title'
+                      onPressEnter={(val) => this.setState({ yAxisText: val.target.value })}
+                      disabled={this.state.filtering}
+                    />
+                  </Form.Item>
                 </Panel>
               </Collapse>
             </Space>
