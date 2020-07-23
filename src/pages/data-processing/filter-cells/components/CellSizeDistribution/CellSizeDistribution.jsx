@@ -45,11 +45,9 @@ class CellSizeDistribution extends React.Component {
 
       return datum;
     });
-    console.log("****** ", data);
     return data;
   }
   generateSpec() {
-    console.log(plotData.status)
     if (this.state.legendEnabled) {
       this.state.legend = [
         {
@@ -91,8 +89,7 @@ class CellSizeDistribution extends React.Component {
       this.state.legend = null;
     }
     return {
-      "$schema": "https://vega.github.io/schema/vega/v5.json",
-      "description": "An interactive histogram for visualizing a univariate distribution.",
+      "description": "An interactive histogram",
       "width": 470,
       "height": 300,
       "padding": 5,
@@ -264,7 +261,6 @@ class CellSizeDistribution extends React.Component {
           minCellSize: changedCell,
         })
       }
-      console.log(this.state.minCellSize, this.state.minCellSizeChanged, currentCell, changedCell)
     }
 
     return (
