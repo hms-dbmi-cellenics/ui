@@ -15,7 +15,6 @@ const deleteOldVersions = () => {
   previousCacheVersions.forEach((db) => indexedDbInstace.deleteDatabase(db));
 };
 
-
 class BrowserCache {
   constructor() {
     if (!BrowserCache.instance) {

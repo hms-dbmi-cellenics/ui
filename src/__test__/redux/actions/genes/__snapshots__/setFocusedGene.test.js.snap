@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`setFocusedGene action Dispatches focus event when gene is specified 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+    "gene": "asd",
+  },
+  "type": "genes/focus",
+}
+`;
+
+exports[`setFocusedGene action Dispatches unfocus event when no is specified 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+  },
+  "type": "genes/unfocus",
+}
+`;

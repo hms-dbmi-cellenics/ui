@@ -1,0 +1,353 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`genesReducer Deselecting all genes updates to empty list 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [],
+}
+`;
+
+exports[`genesReducer Deselecting non-selected genes is handled gracefully 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [
+    "a",
+    "b",
+    "d",
+  ],
+}
+`;
+
+exports[`genesReducer Deselecting part of all genes updates list as set 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [
+    "a",
+    "d",
+  ],
+}
+`;
+
+exports[`genesReducer Error state handled appropriately 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {
+      "asd": Object {
+        "data": Array [],
+        "error": "asd",
+        "fetching": false,
+      },
+    },
+  },
+  "selected": Array [],
+}
+`;
+
+exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {
+      "gene1": Object {
+        "a": 5,
+        "b": 6,
+        "c": 7,
+      },
+      "gene2": Object {
+        "a": 7,
+        "b": 8,
+        "c": 9,
+      },
+    },
+    "loading": Array [],
+    "views": Object {
+      "asd": Object {
+        "data": Array [
+          "gene1",
+          "gene2",
+        ],
+        "error": false,
+        "fetching": false,
+        "total": undefined,
+      },
+    },
+  },
+  "selected": Array [],
+}
+`;
+
+exports[`genesReducer Loaded paginated state handled appropriately when other things are still loading 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {
+      "gene1": Object {
+        "a": 5,
+        "b": 6,
+        "c": 7,
+      },
+      "gene2": Object {
+        "a": 7,
+        "b": 8,
+        "c": 9,
+      },
+    },
+    "loading": Array [
+      "d",
+      "e",
+    ],
+    "views": Object {
+      "asd": Object {
+        "data": Array [
+          "gene1",
+          "gene2",
+        ],
+        "error": false,
+        "fetching": false,
+        "total": undefined,
+      },
+    },
+  },
+  "selected": Array [],
+}
+`;
+
+exports[`genesReducer Loading on error state causes error to reset 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [
+      "a",
+      "b",
+    ],
+    "views": Object {
+      "asd": Object {
+        "data": Array [],
+        "error": false,
+        "fetching": true,
+      },
+    },
+  },
+  "selected": Array [],
+}
+`;
+
+exports[`genesReducer Multiple components loading some of same property triggers appropriate action 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [
+      "a",
+      "b",
+      "c",
+    ],
+    "views": Object {
+      "asd": Object {
+        "data": Array [],
+        "error": false,
+        "fetching": true,
+      },
+      "asdf": Object {
+        "data": Array [],
+        "error": false,
+        "fetching": true,
+      },
+    },
+  },
+  "selected": Array [],
+}
+`;
+
+exports[`genesReducer Properties loading triggers appropriate changes 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [
+      "a",
+      "b",
+    ],
+    "views": Object {
+      "asd": Object {
+        "data": Array [],
+        "error": false,
+        "fetching": true,
+      },
+    },
+  },
+  "selected": Array [],
+}
+`;
+
+exports[`genesReducer Selected genes get added as a set to a non-empty list 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [
+    "a",
+    "b",
+    "d",
+  ],
+}
+`;
+
+exports[`genesReducer Selected genes get added on empty list 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [
+    "a",
+    "b",
+    "c",
+  ],
+}
+`;
+
+exports[`genesReducer Sets error state on expression error action 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": "asd",
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [],
+}
+`;
+
+exports[`genesReducer Sets loaded state on expression loading action 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {
+      "GENE1": Object {
+        "expression": Array [
+          0,
+          0,
+          0,
+          0,
+        ],
+        "max": 0,
+        "min": 0,
+      },
+    },
+    "error": false,
+    "loading": Array [],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [],
+}
+`;
+
+exports[`genesReducer Sets loading state on expression loading action 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [
+      "A",
+      "B",
+      "C",
+    ],
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [],
+}
+`;

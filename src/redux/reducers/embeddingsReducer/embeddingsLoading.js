@@ -9,6 +9,7 @@ const embeddingsLoading = (state, action) => {
       ...initialEmbeddingState,
       ...state[embeddingType],
       loading: true,
+      error: false,
     },
   };
 };

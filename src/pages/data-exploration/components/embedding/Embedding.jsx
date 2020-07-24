@@ -16,6 +16,8 @@ import CrossHair from './CrossHair';
 import CellInfo from '../CellInfo';
 import loadEmbedding from '../../../../redux/actions/embeddings/loadEmbedding';
 import { createCellSet } from '../../../../redux/actions/cellSets';
+import { loadGeneExpression } from '../../../../redux/actions/genes';
+
 import { updateCellInfo } from '../../../../redux/actions';
 import {
   convertCellsData,
@@ -45,14 +47,16 @@ const Embedding = (props) => {
   const loadingColors = useSelector((state) => state.cellSets.loadingColors);
   const cellSetProperties = useSelector((state) => state.cellSets.properties);
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
-  const focusedGene = useSelector((state) => state.focusedGene);
+
+  const focusedGene = useSelector((state) => state.genes.focused);
+  const expressionLoading = useSelector((state) => state.genes.expression.loading);
+  const focusedExpression = useSelector((state) => state.genes.expression.data[focusedGene]);
   const cellCoordintes = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-
   const [cellColors, setCellColors] = useState({});
+  const currentView = useRef(focusedGene ? 'expression' : 'cellSet');
 
-  const currentView = useRef();
 
   useEffect(() => {
     if (!data && isBrowser) {
@@ -62,12 +66,7 @@ const Embedding = (props) => {
 
   const getCellColors = (coloringMode) => {
     if (coloringMode === 'expression') {
-      return colorByGeneExpression(
-        focusedGene.cells,
-        focusedGene.expression,
-        focusedGene.minExpression,
-        focusedGene.maxExpression,
-      );
+      return colorByGeneExpression(focusedExpression);
     }
 
     if (coloringMode === 'cellSet') {
@@ -78,20 +77,34 @@ const Embedding = (props) => {
     return {};
   };
 
-  useEffect(() => {
-    if (_.isEmpty(focusedGene) || !focusedGene.expression) {
-      return;
-    }
-
-    currentView.current = 'expression';
-    if (isBrowser) setCellColors(getCellColors('expression'));
-  }, [focusedGene]);
-
+  // Handle a cell set being selected for coloring.
   useEffect(() => {
     currentView.current = 'cellSet';
     if (!loadingColors && isBrowser) setCellColors(getCellColors('cellSet'));
   }, [cellSetSelected]);
 
+  // Handle focusing/defocusing of genes. This will set a loading
+  // state and try to fetch the expression level from the store or the backend.
+  // This MUST be after the hook of cellSetSelected to be preferentially loaded over cell set selections.
+  useEffect(() => {
+    // If we defocused a gene, set it back to cell set coloring view.
+    if (!focusedGene) {
+      currentView.current = 'cellSet';
+      setCellColors(getCellColors('cellSet'));
+      return;
+    }
+
+    currentView.current = 'expression';
+    if (isBrowser) dispatch(loadGeneExpression(experimentId, [focusedGene]));
+  }, [focusedGene]);
+
+  // Handle loading of expression for focused gene.
+  useEffect(() => {
+    if (!focusedExpression) {
+      return;
+    }
+    setCellColors(getCellColors('expression'));
+  }, [focusedExpression]);
 
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.viewport.project) {
@@ -105,26 +118,12 @@ const Embedding = (props) => {
     }
   };
 
-  if (!data || loading || focusedGene.isLoading || loadingColors || !isBrowser) {
-    return (<center><Spin size='large' /></center>);
-  }
-
   const updateCellsHover = (cell) => {
     if (cell) {
-      if (focusedGene.geneName) {
-        const cellIndex = focusedGene.cells.indexOf(parseInt(cell.cellId, 10));
-        const cellExpression = focusedGene.expression[cellIndex];
-        return dispatch(updateCellInfo({
-          geneName: focusedGene.geneName,
-          cellName: cell.cellId,
-          expression: cellExpression,
-          componentType: embeddingType,
-        }));
-      }
       return dispatch(updateCellInfo({
         cellName: cell.cellId,
-        geneName: undefined,
-        expression: undefined,
+        geneName: focusedGene,
+        expression: focusedExpression ? focusedExpression.expression[cell.cellId] : undefined,
         componentType: embeddingType,
       }));
     }
@@ -146,6 +145,18 @@ const Embedding = (props) => {
     }
   };
 
+  // Embedding data is loading.
+  if (!data || loading || !isBrowser) {
+    return (<center><Spin size='large' /></center>);
+  }
+
+  // We are focused on a gene and its expression is loading.
+  if (currentView.current === 'expression'
+    && expressionLoading.includes(focusedGene)) {
+    return (<center><Spin size='large' /></center>);
+  }
+
+  // The embedding couldn't load. Display an error condition.
   if (error) {
     return (
       <Empty
@@ -169,23 +180,25 @@ const Embedding = (props) => {
 
   const renderExpressionView = () => {
     if (currentView.current === 'expression') {
-      return [
-        <label htmlFor='gene name'>
-          Showing expression for gene:&nbsp;
-          <b>{focusedGene.geneName}</b>
-        </label>,
+      return (
         <div>
-          <img
-            src={legend}
-            alt='gene expression legend'
-            style={{
-              height: 200, width: 20, position: 'absolute', top: 70,
-            }}
-          />
-        </div>,
-      ];
+          <label htmlFor='gene name'>
+            Showing expression for gene:&nbsp;
+            <strong>{focusedGene}</strong>
+          </label>
+          <div>
+            <img
+              src={legend}
+              alt='gene expression legend'
+              style={{
+                height: 200, width: 20, position: 'absolute', top: 70,
+              }}
+            />
+          </div>
+        </div>
+      );
     }
-    return <div />;
+    return <></>;
   };
 
   return (

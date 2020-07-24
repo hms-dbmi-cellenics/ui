@@ -21,7 +21,7 @@ const HeatmapCrossHairs = () => {
 
   if (!cellNameInput || !geneNameInput) {
     return (
-      <div id='heatmapHoverBox' style={{ display: 'None' }} />
+      <div id='heatmapHoverBox' style={{ display: 'none' }} />
     );
   }
 
@@ -54,7 +54,7 @@ const HeatmapCrossHairs = () => {
   }
 
   return (
-    <div id='heatmapHoverBox' style={{ display: 'None' }} />
+    <div id='heatmapHoverBox' style={{ display: 'none' }} />
   );
 };
 

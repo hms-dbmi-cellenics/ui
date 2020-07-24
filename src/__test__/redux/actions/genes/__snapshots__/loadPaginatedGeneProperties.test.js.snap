@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadPaginatedGeneProperties action Dispatches appropriately on error condition 1`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "properties": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/propertiesLoading",
+}
+`;
+
+exports[`loadPaginatedGeneProperties action Dispatches appropriately on error condition 2`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "debug": [Error: random error!],
+    "error": "Couldn't load the gene list.",
+    "experimentId": "1234",
+    "properties": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/propertiesError",
+}
+`;
+
+exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "1234",
+      30,
+      Object {
+        "limit": 20,
+        "name": "ListGenes",
+        "offset": 20,
+        "orderBy": "gene_names",
+        "orderDirection": "ASC",
+        "selectFields": Array [
+          "gene_names",
+          "a",
+          "b",
+          "c",
+        ],
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": Promise {},
+    },
+  ],
+}
+`;
+
+exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 2`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "properties": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/propertiesLoading",
+}
+`;
+
+exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 3`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "data": Object {
+      "a": Object {
+        "dispersions": 1,
+      },
+      "b": Object {
+        "dispersions": 1,
+      },
+    },
+    "experimentId": "1234",
+    "properties": Array [
+      "a",
+      "b",
+      "c",
+    ],
+    "total": 2,
+  },
+  "type": "genes/propertiesLoadedPaginated",
+}
+`;

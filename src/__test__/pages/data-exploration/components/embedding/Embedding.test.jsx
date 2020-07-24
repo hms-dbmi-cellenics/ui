@@ -23,38 +23,48 @@ const mockStore = configureMockStore([thunk]);
 let component;
 let store;
 
+const initialState = {
+  embeddings: {
+    pca: {
+      ...initialEmbeddingState,
+      loading: false,
+      data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
+    },
+  },
+  cellSets: {
+    properties: {
+      cluster1: {
+        color: '#ff0000',
+        cellIds: [2, 3],
+      },
+    },
+    hierarchy: [
+      {
+        key: 'louvain',
+        children: ['cluster1'],
+      },
+    ],
+    selected: ['cluster1'],
+  },
+  genes: {
+    expression: {
+      loading: false,
+      data: {},
+    },
+    focused: undefined,
+  },
+  cellInfo: {
+    cellName: 2,
+  },
+};
+
 describe('Embedding', () => {
   beforeAll(async () => {
     await preloadAll();
   });
   beforeEach(() => {
     // Clears the database and adds some testing data.
-    store = mockStore({
-      embeddings: {
-        pca: {
-          ...initialEmbeddingState,
-          loading: false,
-          data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
-        },
-      },
-      cellSets: {
-        properties: {
-          cluster1: {
-            color: '#ff0000',
-            cellIds: [2, 3],
-          },
-        },
-        hierarchy: [
-          {
-            key: 'louvain',
-            children: ['cluster1'],
-          },
-        ],
-        selected: ['cluster1'],
-      },
-      focusedGene: {},
-      cellInfo: {},
-    });
+    store = mockStore(initialState);
 
     component = mount(
       <Provider store={store}>
@@ -68,6 +78,8 @@ describe('Embedding', () => {
   });
 
   configure({ adapter: new Adapter() });
+
+
   test('renders correctly a PCA embedding', () => {
     const scatterplot = component.find(Scatterplot);
     expect(component.find('Embedding').length).toEqual(1);
@@ -75,7 +87,8 @@ describe('Embedding', () => {
     expect(scatterplot.getElement().props.mapping).toEqual('PCA');
     expect(scatterplot.getElement().props.cellColors).toEqual(
       {
-        2: [255, 0, 0],
+        // cell #2 is selected, so it has a different color
+        2: [0, 0, 0],
         3: [255, 0, 0],
       },
     );
@@ -196,37 +209,7 @@ describe('Embedding', () => {
   });
 
   test('renders CrossHair and CellInfo components when user hovers over cell', () => {
-    store = mockStore({
-      embeddings: {
-        pca: {
-          ...initialEmbeddingState,
-          loading: false,
-          data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
-        },
-      },
-      focusedGene: {},
-      cellInfo: {
-        cellName: 2,
-        componentType: 'pca',
-        expression: 6.5,
-        geneName: 'DOK3',
-      },
-      cellSets: {
-        properties: {
-          cluster1: {
-            color: '#ff0000',
-            cellIds: [2, 3],
-          },
-        },
-        hierarchy: [
-          {
-            key: 'louvain',
-            children: ['cluster1'],
-          },
-        ],
-        selected: ['cluster1'],
-      },
-    });
+    store = mockStore(initialState);
 
     const mockProject = jest.fn(([x, y]) => [x + 1, y + 1]);
 
@@ -268,46 +251,30 @@ describe('Embedding', () => {
     expect(crossHairs.props().coordinates.current).toEqual(crossHairs.props().coordinates.current);
   });
 
-  /*
-  TODO: this test is not working correctly because we only use a mock store.
-  Mocking a store means store updates are impossible to process and therefore
-  `useSelector` will not be called. This will be fixed with the 'gene' Redux
-  refactor.
-
-  test('the gene expression view gets rendered correctly', () => {
-    const geneExprStore = createStore({
-      embeddings: {
-        pca: {
-          ...initialEmbeddingState,
-          loading: false,
-          data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
-        },
-      },
+  it('the gene expression view gets rendered correctly', () => {
+    const focusedState = {
+      ...initialState,
       cellSets: {
-        properties: {
-          cluster1: {
-            color: '#ff0000',
-            cellIds: ['1', '2', '3', '4'],
+        ...initialState.cellSets,
+        selected: [],
+      },
+      genes: {
+        ...initialState.genes,
+        focused: 'REALGENE',
+        expression: {
+          loading: [],
+          data: {
+            REALGENE: {
+              min: 0,
+              max: 1.6,
+              expression: [0, 0.4, 0.5, 1.6],
+            },
           },
         },
-        hierarchy: [
-          {
-            key: 'louvain',
-            children: ['cluster1'],
-          },
-        ],
-        selected: ['cluster1'],
       },
-      cellInfo: {},
-      focusedGene: {
-        cells: ['1', '2', '3', '4'],
-        expression: [0, 0.4, 0.5, 1.6],
-        geneName: 'A',
-        maxExpression: 1.6,
-        minExpression: 0,
-        isLoading: false,
-      },
-    });
+    };
+
+    const geneExprStore = mockStore(focusedState);
 
     const embedding = mount(
       <Provider store={geneExprStore}>
@@ -315,14 +282,11 @@ describe('Embedding', () => {
       </Provider>,
     );
 
-    const geneExprInfo = embedding.find('Embedding div.vitessce-container').children().at(0);
-    expect(geneExprInfo.length).toEqual(1);
-    expect(geneExprInfo.props().children[1].type).toEqual('b');
-    expect(geneExprInfo.props().children[1].props.children).toEqual('A');
-
-    const legend = embedding.find('Embedding div.vitessce-container').children().at(2);
+    const legend = embedding.find('Embedding div img');
     expect(legend.length).toEqual(1);
-    expect(legend.props().children.type).toEqual('img');
+
+    const focusedGeneInfo = embedding.find('Embedding div label strong');
+    expect(focusedGeneInfo.length).toEqual(1);
+    expect(focusedGeneInfo.props().children).toEqual('REALGENE');
   });
-  */
 });

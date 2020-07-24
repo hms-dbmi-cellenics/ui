@@ -28,15 +28,17 @@ const renderCellSetColors = (cellSets, cellSetProperties) => {
   return colors;
 };
 
-const colorByGeneExpression = (cells, expressions, min, max) => {
+const colorByGeneExpression = (focusedGene) => {
+  const { expression, min, max } = focusedGene;
+
   const scaleFunction = d3.scaleSequential(d3Chromatic.interpolateViridis)
     .domain([min, max]);
   const cellColoring = {};
-  let index = 0;
-  expressions.forEach((expression) => {
-    cellColoring[cells[index]] = hexToRgb(scaleFunction(expression));
-    index += 1;
+
+  expression.forEach((expressionValue, cellId) => {
+    cellColoring[cellId] = hexToRgb(scaleFunction(expressionValue));
   });
+
   return cellColoring;
 };
 
