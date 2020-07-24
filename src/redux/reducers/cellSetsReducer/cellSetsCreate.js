@@ -6,7 +6,7 @@ const cellSetsCreate = (state, action) => {
   } = action.payload;
   const newState = _.cloneDeep(state);
 
-  newState.hierarchy = newState.hierarchy.map((rootNode) => {
+  newState.hierarchy = newState.hierarchy && newState.hierarchy.map((rootNode) => {
     if (rootNode.key === 'scratchpad') {
       // eslint-disable-next-line no-param-reassign
       rootNode.children = rootNode.children || [];

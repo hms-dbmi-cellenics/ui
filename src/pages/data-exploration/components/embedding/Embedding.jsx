@@ -5,7 +5,6 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import {
   Spin, Button, Empty, Typography,
 } from 'antd';
@@ -85,7 +84,8 @@ const Embedding = (props) => {
 
   // Handle focusing/defocusing of genes. This will set a loading
   // state and try to fetch the expression level from the store or the backend.
-  // This MUST be after the hook of cellSetSelected to be preferentially loaded over cell set selections.
+  // This MUST be after the hook of cellSetSelected
+  // to be preferentially loaded over cell set selections.
   useEffect(() => {
     // If we defocused a gene, set it back to cell set coloring view.
     if (!focusedGene) {

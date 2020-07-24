@@ -198,7 +198,7 @@ const HierarchicalTree = (props) => {
   );
 
   const renderTitlesRecursive = (source) => {
-    const toRender = source.map((d) => {
+    const toRender = source && source.map((d) => {
       const modified = d;
 
       modified.title = (
