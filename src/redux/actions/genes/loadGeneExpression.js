@@ -35,7 +35,7 @@ const loadGeneExpression = (
   }
 
   const body = {
-    name: 'GeneExpressionNew',
+    name: 'GeneExpression',
     genes: genesToFetch,
   };
 
