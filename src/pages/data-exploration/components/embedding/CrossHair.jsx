@@ -25,7 +25,6 @@ const CrossHair = (props) => {
   }, [cellInfo]);
 
   const commonStyle = {
-    zIndex: 5,
     position: 'absolute',
     backgroundColor: 'gray',
   };
