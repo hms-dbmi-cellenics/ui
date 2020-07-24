@@ -3,7 +3,7 @@
  * `properties` to create a tree we can render.
  */
 const composeTree = (hierarchy, properties) => {
-  const composeTreeRecursive = (data) => data.map((node) => ({
+  const composeTreeRecursive = (data) => data && data.map((node) => ({
     ...node,
     ...properties[node.key],
     children: node.children ? composeTreeRecursive(node.children) : undefined,
