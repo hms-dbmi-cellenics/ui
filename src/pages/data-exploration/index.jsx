@@ -50,7 +50,7 @@ const categoryItems = {
       key: 'heatmap-plot-data-expl',
       name: 'Heatmaps',
       description: 'Gain a high-level understanding of expression levels across large groups of genes and cells.',
-      renderer: (width) => <HeatmapPlot heatmapWidth={width} />,
+      renderer: (width) => <HeatmapPlot experimentId={experimentId} heatmapWidth={width} />,
     },
   ],
 };

@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Space, Button, Typography, Skeleton,
+  Table, Space, Button, Typography, Empty, Skeleton,
 } from 'antd';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import FilterGenes from './FilterGenes';
-import {
-  updateGeneList,
-  updateSelectedGenes,
-  loadGeneExpression,
-  setFocusedGene,
-} from '../../../../redux/actions';
+import { changeGeneSelection, setFocusedGene, loadPaginatedGeneProperties } from '../../../../redux/actions/genes';
+import GeneSelectionStatus from '../../../../redux/actions/genes/geneSelectionStatus';
+
 import GeneLookupButton from './GeneLookupButton';
 import isBrowser from '../../../../utils/environment';
 
@@ -18,23 +18,36 @@ const { Text } = Typography;
 
 const GeneListTool = (props) => {
   const { experimentId } = props;
-  const dispatch = useDispatch();
 
-  const isLoading = useSelector((state) => state.geneList.loading);
-  const rows = useSelector((state) => state.geneList.rows);
-  const tableState = useSelector((state) => state.geneList.tableState);
-  const focusedGeneName = useSelector((state) => state.focusedGene.geneName);
+  // eslint-disable-next-line react/destructuring-assignment
+  const [tableUuid] = useState(props.uuid || uuidv4());
+
+  const dispatch = useDispatch();
+  const focusedGene = useSelector((state) => state.genes.focused);
+  const selectedGenes = useSelector((state) => state.genes.selected);
+
+  const properties = useSelector((state) => state.genes.properties.data);
+  const propertiesLoading = useSelector((state) => state.genes.properties.loading);
+
+  const viewState = useSelector((state) => state.genes.properties.views[tableUuid]);
+  const error = useSelector((state) => state.genes.properties.views[tableUuid]?.error);
+  const componentFetching = useSelector(
+    (state) => state.genes.properties.views[tableUuid]?.fetching,
+  );
+  const tableRowKeys = useSelector((state) => state.genes.properties.views[tableUuid]?.data);
+  const totalResults = useSelector((state) => state.genes.properties.views[tableUuid]?.total);
+
+  const [tableRows, setTableRows] = useState([]);
 
   const [geneNamesFilter, setGeneNamesFilter] = useState(null);
-  const selectedGenes = useSelector((state) => state.selectedGenes);
-  const selectedRowKeys = selectedGenes.geneList ? Object.keys(selectedGenes.geneList) : [];
+  const PROPERTIES = ['dispersions'];
 
   if (!isBrowser) {
     return (<Skeleton active />);
   }
 
-  if (!tableState) {
-    const defaultState = {
+  const [tableState, setTableState] = useState(
+    {
       pagination: {
         current: 1,
         pageSize: 50,
@@ -46,27 +59,81 @@ const GeneListTool = (props) => {
         order: 'descend',
       },
       geneNamesFilter,
-    };
+    },
+  );
 
-    dispatch(updateGeneList(experimentId, defaultState));
-  }
+  const isTableLoading = () => {
+    // Load if the view is not yet created (pre-dispatch).
+    if (!viewState) {
+      return true;
+    }
 
-  if (rows) {
-    rows.forEach((row) => {
-      // eslint-disable-next-line no-param-reassign
-      row.lookup = (
-        <GeneLookupButton
-          focused={row.key === focusedGeneName}
-          onClick={() => {
-            dispatch(setFocusedGene(row.key, experimentId));
-          }}
-        />
-      );
+    // Load if the view is actively fetching (post-dispatch, pre-result).
+    if (componentFetching) {
+      return true;
+    }
+
+    // Load if anything is updating the properties we are listening for.
+    if (_.intersection(PROPERTIES, propertiesLoading).length > 0) {
+      return true;
+    }
+
+    return false;
+  };
+
+  // On initial render, start loading the data for the initial state.
+  useEffect(() => {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, tableState));
+  }, []);
+
+  // When data or focus changes, update rows.
+  useEffect(() => {
+    if (!tableRowKeys) {
+      return;
+    }
+
+    const newRows = [];
+
+    tableRowKeys.forEach((key) => {
+      newRows.push({
+        key,
+        gene_names: key,
+        dispersions: properties[key].dispersions,
+        lookup: (
+          <GeneLookupButton
+            focused={key === focusedGene}
+            onClick={() => {
+              if (key !== focusedGene) {
+                dispatch(setFocusedGene(experimentId, key));
+              } else {
+                dispatch(setFocusedGene(experimentId, undefined));
+              }
+            }}
+          />
+        ),
+      });
     });
-  }
 
-  const getSortOrderIfExists = (key) => {
-    if (key === tableState?.sorter.columnKey) {
+    setTableRows(newRows);
+  }, [tableRowKeys, focusedGene]);
+
+  // Update total results if changes.
+  useEffect(() => {
+    if (!totalResults) {
+      return;
+    }
+
+    setTableState({
+      ...tableState,
+      pagination: {
+        ...tableState.pagination,
+        total: totalResults,
+      },
+    });
+  }, [totalResults]);
+
+  const getSortOrder = (key) => {
+    if (key === tableState.sorter.columnKey) {
       return tableState.sorter.order;
     }
     return null;
@@ -87,7 +154,7 @@ const GeneListTool = (props) => {
           {geneName}
         </a>
       ),
-      sortOrder: getSortOrderIfExists('gene_names'),
+      sortOrder: getSortOrder('gene_names'),
     },
     {
       title: '',
@@ -99,68 +166,98 @@ const GeneListTool = (props) => {
       dataIndex: 'dispersions',
       key: 'dispersions',
       sorter: true,
-      sortOrder: getSortOrderIfExists('dispersions'),
+      sortOrder: getSortOrder('dispersions'),
       render: (num) => parseFloat(num.toFixed(3)),
     },
   ];
 
-  const handleTableChange = (newPagination, _, newSorter) => {
+  const handleTableChange = (newPagination, a, newSorter) => {
     const newTableState = { pagination: newPagination, sorter: { ...newSorter }, geneNamesFilter };
-    dispatch(updateGeneList(experimentId, newTableState));
+    setTableState(newTableState);
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, newTableState));
   };
 
   const filterGenes = (searchPattern) => {
     const newTableState = {
-      pagination: tableState.pagination,
+      pagination: { ...tableState.pagination, current: 1 },
       sorter: { ...tableState.sorter },
       geneNamesFilter: searchPattern,
     };
-    dispatch(updateGeneList(experimentId, newTableState));
+
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, newTableState));
+    setTableState(newTableState);
     setGeneNamesFilter(searchPattern);
   };
 
   const rowSelection = {
     onSelect: (gene, selected) => {
-      dispatch(updateSelectedGenes([gene.key], selected, experimentId));
-      dispatch(loadGeneExpression(experimentId));
+      dispatch(changeGeneSelection(experimentId, [gene.key],
+        (selected) ? GeneSelectionStatus.select : GeneSelectionStatus.deselect));
     },
     onSelectAll: (selected, selectedRows, changeRows) => {
+      // changeRows returns the row objects for all genes that were affected
+      // by the (de)selection event.
       const genes = [];
       changeRows.forEach((row) => genes.push(row.gene_names));
 
-      dispatch(updateSelectedGenes(genes, selected, experimentId));
-      dispatch(loadGeneExpression(experimentId));
+      dispatch(changeGeneSelection(experimentId, genes,
+        (selected) ? GeneSelectionStatus.select : GeneSelectionStatus.deselect));
     },
   };
 
   const clearAll = () => {
-    dispatch(updateSelectedGenes(selectedRowKeys, false, experimentId));
-    dispatch(loadGeneExpression(experimentId));
+    dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
   };
 
   const selectionIndicator = () => {
-    if (selectedRowKeys.length === 0) {
+    if (selectedGenes.length === 0) {
       return <></>;
     }
     return (
       <Text type='secondary'>
-        {selectedRowKeys.length}
+        {selectedGenes.length}
         &nbsp;gene
-        {selectedRowKeys.length === 1 ? '' : 's'}
+        {selectedGenes.length === 1 ? '' : 's'}
         &nbsp;selected
         <Button type='link' onClick={clearAll}>Clear</Button>
       </Text>
     );
   };
 
+  // The gene list couldn't load.
+  if (error) {
+    return (
+      <Empty
+        image={<Text type='danger'><ExclamationCircleFilled style={{ fontSize: 40 }} /></Text>}
+        imageStyle={{
+          height: 40,
+        }}
+        description={
+          error
+        }
+      >
+        <Button
+          type='primary'
+          onClick={() => dispatch(
+            loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, tableState),
+          )}
+        >
+          Try again
+        </Button>
+      </Empty>
+    );
+  }
+
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
-      {selectionIndicator()}
-      <FilterGenes filterGenes={filterGenes} />
+      <Space>
+        <FilterGenes filterGenes={filterGenes} />
+        {selectionIndicator()}
+      </Space>
       <Table
         columns={columns}
-        dataSource={rows}
-        loading={isLoading}
+        dataSource={tableRows}
+        loading={isTableLoading()}
         size='small'
         pagination={tableState?.pagination}
         sorter={tableState?.sorter}
@@ -168,7 +265,7 @@ const GeneListTool = (props) => {
         onChange={handleTableChange}
         rowSelection={{
           type: 'checkbox',
-          selectedRowKeys,
+          selectedRowKeys: selectedGenes,
           ...rowSelection,
         }}
       />
@@ -177,10 +274,13 @@ const GeneListTool = (props) => {
 };
 
 
-GeneListTool.defaultProps = {};
+GeneListTool.defaultProps = {
+  uuid: undefined,
+};
 
 GeneListTool.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  uuid: PropTypes.string,
 };
 
 export default GeneListTool;

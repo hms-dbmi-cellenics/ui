@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`embeddingsReducer Loading on error condition resets error 1`] = `
+Object {
+  "fghfgdh": Object {
+    "data": Array [],
+    "error": false,
+    "loading": true,
+  },
+}
+`;
+
 exports[`embeddingsReducer Sets error conditions 1`] = `
 Object {
   "fghfgdh": Object {

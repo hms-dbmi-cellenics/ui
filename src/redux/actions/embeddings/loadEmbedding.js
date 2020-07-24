@@ -43,7 +43,6 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
       },
     });
   } catch (e) {
-    console.warn(e);
     return dispatch({
       type: EMBEDDINGS_ERROR,
       payload: {

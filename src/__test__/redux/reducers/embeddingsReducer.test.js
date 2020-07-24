@@ -76,4 +76,26 @@ describe('embeddingsReducer', () => {
 
     expect(newState).toMatchSnapshot();
   });
+
+  it('Loading on error condition resets error', () => {
+    let newState = embeddingsReducer(initialState, {
+      type: EMBEDDINGS_ERROR,
+      payload: {
+        experimentId,
+        embeddingType,
+        error: 'wow, something really bad happened',
+      },
+    });
+
+    newState = embeddingsReducer(newState, {
+      type: EMBEDDINGS_LOADING,
+      payload: {
+        experimentId,
+        embeddingType,
+      },
+    });
+
+    expect(newState[embeddingType].error).toEqual(false);
+    expect(newState).toMatchSnapshot();
+  });
 });

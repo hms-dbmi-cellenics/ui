@@ -4,8 +4,9 @@ import { Vega } from 'react-vega';
 
 const VegaHeatmap = (props) => {
   const {
-    spec, showAxes, rowsNumber, defaultWidth, signalListeners,
+    spec, showAxes, rowsNumber, defaultWidth, signalListeners, data,
   } = props;
+
   const axes = [
     {
       domain: false,
@@ -42,6 +43,11 @@ const VegaHeatmap = (props) => {
   spec.width = getAdjustedWidth();
   spec.axes = getAxes();
 
+  spec.data.forEach((datum) => {
+    // eslint-disable-next-line no-param-reassign
+    datum.values = data[datum.name];
+  });
+
   return (
     <Vega
       spec={spec}
@@ -59,6 +65,7 @@ VegaHeatmap.propTypes = {
   spec: PropTypes.object.isRequired,
   showAxes: PropTypes.bool,
   rowsNumber: PropTypes.number.isRequired,
+  data: PropTypes.object.isRequired,
   defaultWidth: PropTypes.number.isRequired,
   signalListeners: PropTypes.object.isRequired,
 };
