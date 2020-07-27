@@ -1,20 +1,25 @@
 import React from 'react';
 import {
-  PageHeader, Collapse, Switch
+  PageHeader, Collapse, Switch, Tooltip,
 } from 'antd';
-import CellSizeDistribution from './components/CellSizeDistribution/CellSizeDistribution'
+import CellSizeDistribution from './components/CellSizeDistribution/CellSizeDistribution';
 
 const { Panel } = Collapse;
 
 class ProcessingViewPage extends React.Component {
-  state = {
-    filtering1: false
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      filtering1: false,
+    };
   }
 
   render() {
-    const disableFiltering = (e) => {
-      this.setState({ filtering1: !this.state.filtering1 })
-    }
+    const { filtering1 } = this.state;
+    const disableFiltering = () => {
+      this.setState({ filtering1: !filtering1 });
+    };
     return (
       <>
         <PageHeader
@@ -25,19 +30,22 @@ class ProcessingViewPage extends React.Component {
         />
 
         <Collapse accordion>
-          <Panel header='Cell size Distribution' extra={<Switch defaultChecked onChange={disableFiltering} />} key='1'>
-            <CellSizeDistribution filtering={this.state.filtering1} />
+          <Panel
+            header='Cell size Distribution'
+            extra={(
+              <Tooltip placement='topLeft' title='disable filter'>
+                <Switch defaultChecked onChange={disableFiltering} />
+              </Tooltip>
+            )}
+            key='1'
+          >
+            <CellSizeDistribution filtering={filtering1} />
           </Panel>
-          <Panel header='Mitochondrial content' key='2'>
-          </Panel>
-          <Panel header='Read alignment' key='3'>
-          </Panel>
-          <Panel header='Classifier' key='4'>
-          </Panel>
-          <Panel header='Number of genes vs number of UMIs' key='5'>
-          </Panel>
-          <Panel header='Doublet scores' key='6'>
-          </Panel>
+          <Panel header='Mitochondrial content' key='2' />
+          <Panel header='Read alignment' key='3' />
+          <Panel header='Classifier' key='4' />
+          <Panel header='Number of genes vs number of UMIs' key='5' />
+          <Panel header='Doublet scores' key='6' />
         </Collapse>
       </>
     );
