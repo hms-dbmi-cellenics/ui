@@ -1,23 +1,15 @@
 const spec = {
   $schema: 'https://vega.github.io/schema/vega/v5.json',
-  description: 'A heatmap showing expression per cell (columns) per gene (rows).',
   data: [
     {
-      name: 'cellNames',
+      name: 'cellOrder',
       values: [],
-      type: 'json',
       copy: true,
-      transform: [
-        {
-          type: 'identifier',
-          as: 'cellIndex',
-        },
-        {
-          type: 'formula',
-          as: 'cellIndex',
-          expr: 'datum.cellIndex-1',
-        },
-      ],
+    },
+    {
+      name: 'geneOrder',
+      values: [],
+      copy: true,
     },
     {
       name: 'heatmapData',
@@ -26,26 +18,37 @@ const spec = {
       transform: [
         {
           type: 'flatten',
-          fields: ['expression'],
-          index: 'cellIndex',
-        },
-        {
-          type: 'lookup',
-          from: 'cellNames',
-          key: 'cellIndex',
-          fields: ['cellIndex'],
-          values: ['data'],
-          as: ['cellName'],
+          fields: [
+            'expression',
+          ],
+          index: 'cellId',
         },
       ],
     },
   ],
   signals: [
     {
-      name: 'mouseover',
+      name: 'mouseOver',
       on: [
-        { events: '*:mouseover', encode: 'select' },
+        { events: 'rect:mouseover{50}', encode: 'mouseOver' },
       ],
+    },
+    {
+      name: 'hoveroverembedding',
+      bind: {
+        input: 'text',
+        id: 'cellNameInput',
+        element: '#heatmapHoverBox',
+      },
+
+    },
+    {
+      name: 'hoveroverembeddingGene',
+      bind: {
+        input: 'text',
+        id: 'geneNameInput',
+        element: '#heatmapHoverBox',
+      },
     },
   ],
   scales: [
@@ -53,7 +56,7 @@ const spec = {
       name: 'x',
       type: 'band',
       domain: {
-        data: 'cellNames',
+        data: 'cellOrder',
         field: 'data',
       },
       range: 'width',
@@ -62,8 +65,8 @@ const spec = {
       name: 'y',
       type: 'band',
       domain: {
-        data: 'heatmapData',
-        field: 'geneName',
+        data: 'geneOrder',
+        field: 'data',
       },
       range: 'height',
     },
@@ -71,7 +74,7 @@ const spec = {
       name: 'color',
       type: 'linear',
       range: {
-        scheme: 'Viridis',
+        scheme: 'viridis',
       },
       domain: {
         data: 'heatmapData',
@@ -82,6 +85,19 @@ const spec = {
     },
   ],
   axes: [
+    // Enable for debugging.
+    // {
+    //   orient: 'bottom',
+    //   scale: 'x',
+    //   domain: false,
+    //   title: 'Cells',
+    // },
+    // {
+    //   orient: 'left',
+    //   scale: 'y',
+    //   domain: false,
+    //   title: 'Genes',
+    // },
   ],
   legends: [
     {
@@ -102,11 +118,11 @@ const spec = {
         enter: {
           x: {
             scale: 'x',
-            field: 'cellName',
+            field: 'cellId',
           },
           y: {
             scale: 'y',
-            field: 'geneName',
+            field: 'gene',
           },
           width: {
             scale: 'x',
@@ -123,9 +139,86 @@ const spec = {
             field: 'expression',
           },
         },
-        hover: {
-          cursor: {
-            value: 'pointer',
+      },
+    },
+    {
+      type: 'rule',
+      encode: {
+        enter: {
+          strokeWidth: {
+            scale: 'x',
+            band: 2,
+          },
+          stroke: {
+            value: '#000000',
+          },
+          opacity: {
+            value: 1,
+          },
+          y: {
+            value: 0,
+          },
+          y2: {
+            signal: 'height',
+          },
+        },
+        update: {
+          x: {
+            scale: 'x',
+            signal: 'hoveroverembedding',
+            offset: {
+              scale: 'x',
+              band: 0.5,
+            },
+          },
+          x2: {
+            scale: 'x',
+            signal: 'hoveroverembedding',
+            offset: {
+              scale: 'x',
+              band: 0.5,
+            },
+          },
+        },
+      },
+    },
+    {
+      type: 'rule',
+      encode: {
+        enter: {
+          strokeWidth: {
+            scale: 'x',
+            band: 2,
+          },
+          stroke: {
+            value: '#000000',
+          },
+          opacity: {
+            value: 1,
+          },
+          x: {
+            value: 0,
+          },
+          x2: {
+            signal: 'width',
+          },
+        },
+        update: {
+          y: {
+            scale: 'y',
+            signal: 'hoveroverembeddingGene',
+            offset: {
+              scale: 'y',
+              band: 0.5,
+            },
+          },
+          y2: {
+            scale: 'y',
+            signal: 'hoveroverembeddingGene',
+            offset: {
+              scale: 'y',
+              band: 0.5,
+            },
           },
         },
       },

@@ -1,4 +1,4 @@
-const createHierarchyFromTree = (data) => data.map((rootNode) => {
+const createHierarchyFromTree = (data) => data && data.map((rootNode) => {
   const rootNodeObject = {
     key: rootNode.key,
   };
@@ -15,22 +15,24 @@ const createPropertiesFromTree = (data) => {
   const properties = {};
 
   const traverseProperties = ((nodes) => {
-    nodes.forEach((node) => {
-      const {
-        key, name, color, cellIds, rootNode,
-      } = node;
+    if (nodes) {
+      nodes.forEach((node) => {
+        const {
+          key, name, color, cellIds, rootNode,
+        } = node;
 
-      properties[key] = {
-        name,
-        color,
-        cellIds,
-        rootNode,
-      };
+        properties[key] = {
+          name,
+          color,
+          cellIds,
+          rootNode,
+        };
 
-      if (node.children) {
-        traverseProperties(node.children);
-      }
-    });
+        if (node.children) {
+          traverseProperties(node.children);
+        }
+      });
+    }
   });
 
   traverseProperties(data);

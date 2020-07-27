@@ -1,0 +1,120 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadEmbedding action Dispatches appropriately on failure 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+    "genes": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/expressionLoading",
+}
+`;
+
+exports[`loadEmbedding action Dispatches appropriately on failure 2`] = `
+Object {
+  "payload": Object {
+    "error": "Couldn't fetch expression data.",
+    "experimentId": "1234",
+    "genes": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/expressionError",
+}
+`;
+
+exports[`loadEmbedding action Dispatches appropriately on success 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+    "genes": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/expressionLoading",
+}
+`;
+
+exports[`loadEmbedding action Dispatches appropriately on success 2`] = `
+Object {
+  "payload": Object {
+    "data": Object {
+      "a": "b",
+    },
+    "experimentId": "1234",
+  },
+  "type": "genes/expressionLoaded",
+}
+`;
+
+exports[`loadEmbedding action Does not send work for already loaded expression data. 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "1234",
+      30,
+      Object {
+        "genes": Array [
+          "b",
+          "c",
+        ],
+        "name": "GeneExpression",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": Promise {},
+    },
+  ],
+}
+`;
+
+exports[`loadEmbedding action Sends work for already loaded expression data if forced to do so. 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "1234",
+      30,
+      Object {
+        "genes": Array [
+          "b",
+          "c",
+        ],
+        "name": "GeneExpression",
+      },
+    ],
+    Array [
+      "1234",
+      30,
+      Object {
+        "genes": Array [
+          "a",
+          "b",
+          "c",
+        ],
+        "name": "GeneExpression",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": Promise {},
+    },
+    Object {
+      "type": "return",
+      "value": Promise {},
+    },
+  ],
+}
+`;

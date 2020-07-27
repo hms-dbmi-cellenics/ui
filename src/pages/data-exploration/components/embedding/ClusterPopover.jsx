@@ -1,24 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
 import EditableField from '../../../../components/EditableField';
+import colorProvider from '../../../../utils/colorProvider';
 
 const ClusterPopover = (props) => {
-  const defaultColor = '#0000FF';
   const { popoverPosition, onCreate, onCancel } = props;
-  const [clusterName, setClusterName] = useState('New Cluster');
 
   const getContent = () => (
     <EditableField
       onAfterSubmit={(e) => {
-        setClusterName(e);
-        onCreate(clusterName, defaultColor);
+        onCreate(e, colorProvider.getColor());
       }}
       onAfterCancel={() => {
         onCancel();
       }}
       deleteEnabled={false}
-      value={clusterName}
+      value='New Cluster'
       defaultEditing
     />
   );
@@ -26,8 +24,8 @@ const ClusterPopover = (props) => {
   const content = getContent();
 
   return (
-    <div style={{ position: 'absolute', left: popoverPosition.x + 20, top: popoverPosition.y + 20 }}>
-      <Popover title='Add cell selection' content={content} visible />
+    <div style={{ position: 'absolute', left: popoverPosition.current.x + 20, top: popoverPosition.current.y + 20 }}>
+      <Popover title='Add cell set' content={content} visible />
     </div>
   );
 };

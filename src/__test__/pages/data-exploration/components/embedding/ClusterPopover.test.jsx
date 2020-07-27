@@ -14,7 +14,7 @@ let component;
 
 describe('ClusterPopover', () => {
   beforeEach(() => {
-    const popoverPosition = { x: 0, y: 0 };
+    const popoverPosition = { current: { x: 0, y: 0 } };
     mockCreate = jest.fn();
     mockCancel = jest.fn();
     component = mount(
@@ -38,7 +38,7 @@ describe('ClusterPopover', () => {
     component.find(EditableField).find('Button').at(0).simulate('click');
     component.update();
     expect(mockCreate).toBeCalledTimes(1);
-    expect(mockCreate).toBeCalledWith('New Cluster', '#0000FF');
+    expect(mockCreate).toBeCalledWith('New Cluster', '#082213');
   });
   test('new cluster is not created on cancel', () => {
     component.find(EditableField).find('Button').at(1).simulate('click');

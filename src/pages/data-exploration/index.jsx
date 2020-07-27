@@ -10,7 +10,6 @@ import GeneListTool from './components/gene-list-tool/GeneListTool';
 import DiffExprManager from './components/differential-expression-tool/DiffExprManager';
 import Embedding from './components/embedding/Embedding';
 import HeatmapPlot from './components/heatmap/HeatmapPlot';
-import InfoPanel from './components/info-panel/InfoPanel';
 
 const experimentId = '5e959f9c9f4b120771249001';
 
@@ -48,16 +47,10 @@ const categoryItems = {
       renderer: () => <Embedding experimentId={experimentId} embeddingType='umap' />,
     },
     {
-      key: 'cell-info',
-      name: 'Cell Info',
-      description: 'A Panel to display information about the selected cell',
-      renderer: () => <InfoPanel />,
-    },
-    {
-      key: 'heatmap-plot',
+      key: 'heatmap-plot-data-expl',
       name: 'Heatmaps',
       description: 'Gain a high-level understanding of expression levels across large groups of genes and cells.',
-      renderer: (width) => <HeatmapPlot heatmapWidth={width} />,
+      renderer: (width) => <HeatmapPlot experimentId={experimentId} heatmapWidth={width} />,
     },
   ],
 };

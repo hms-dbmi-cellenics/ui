@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
-import { useDispatch } from 'react-redux';
-import { updateCellInfo } from '../../../../redux/actions';
-
-const componentType = 'heatmap';
 
 const VegaHeatmap = (props) => {
   const {
-    spec, showAxes, rowsNumber, defaultWidth,
+    spec, showAxes, rowsNumber, defaultWidth, signalListeners, data,
   } = props;
-  const dispatch = useDispatch();
+
   const axes = [
     {
       domain: false,
@@ -18,19 +14,6 @@ const VegaHeatmap = (props) => {
       scale: 'y',
     },
   ];
-
-  const handleHover = (...args) => {
-    if (args[1].datum) {
-      const { cellName, expression, geneName } = args[1].datum;
-      dispatch(updateCellInfo({
-        cellName, expression, geneName, componentType,
-      }));
-    }
-  };
-
-  const signalListeners = {
-    mouseover: handleHover,
-  };
 
   const getAdjustedHeight = () => {
     const maxHeight = 400;
@@ -60,6 +43,11 @@ const VegaHeatmap = (props) => {
   spec.width = getAdjustedWidth();
   spec.axes = getAxes();
 
+  spec.data.forEach((datum) => {
+    // eslint-disable-next-line no-param-reassign
+    datum.values = data[datum.name];
+  });
+
   return (
     <Vega
       spec={spec}
@@ -77,7 +65,9 @@ VegaHeatmap.propTypes = {
   spec: PropTypes.object.isRequired,
   showAxes: PropTypes.bool,
   rowsNumber: PropTypes.number.isRequired,
+  data: PropTypes.object.isRequired,
   defaultWidth: PropTypes.number.isRequired,
+  signalListeners: PropTypes.object.isRequired,
 };
 
 export default VegaHeatmap;
