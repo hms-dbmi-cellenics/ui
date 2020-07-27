@@ -29,7 +29,8 @@ class CellSizeDistribution extends React.Component {
       yAxisText: '#UMIs * #Cells',
       xAxisText2: 'Cell rank',
       yAxisText2: "#UMI's in cell",
-
+      xDefaultTitle: '#UMIs in cell',
+      yDefaultTitle: '#UMIs * #Cells',
       legendOrientation: "right",
     };
   }
@@ -374,7 +375,20 @@ class CellSizeDistribution extends React.Component {
       'Total genes detected   21,425',
       'Median UMI counts per cell   4,064',
     ];
-
+    const changePlot = (val) => {
+      this.setState({ plotToDraw: val })
+      if (!this.state.plotToDraw) {
+        this.setState({
+          xDefaultTitle: this.state.xAxisText,
+          yDefaultTitle: this.state.yAxisText
+        })
+      } else {
+        this.setState({
+          xDefaultTitle: this.state.xAxisText2,
+          yDefaultTitle: this.state.yAxisText2
+        })
+      }
+    }
     const setAxis = (val, axe) => {
       if (axe == 'x') {
         if (this.state.plotToDraw) {
@@ -406,14 +420,14 @@ class CellSizeDistribution extends React.Component {
                 style={{
                   height: '100px', width: '100px', align: 'center', padding: '8px',
                 }}
-                onClick={() => this.setState({ plotToDraw: true })}
+                onClick={() => changePlot(true)}
               />
               <img
                 src={plot2Pic}
                 style={{
                   height: '100px', width: '100px', align: 'center', padding: '8px',
                 }}
-                onClick={() => this.setState({ plotToDraw: false })}
+                onClick={() => changePlot(false)}
               />
             </Space>
             <List
@@ -454,7 +468,7 @@ class CellSizeDistribution extends React.Component {
                     label='X axis Title'
                   >
                     <Input
-                      placeholder='Enter title'
+                      placeholder={this.state.xDefaultTitle}
                       onPressEnter={(val) => setAxis(val, "x")}
 
                       disabled={this.props.filtering}
@@ -464,7 +478,7 @@ class CellSizeDistribution extends React.Component {
                     label='Y axis Title'
                   >
                     <Input
-                      placeholder='Enter title'
+                      placeholder={this.state.yDefaultTitle}
                       onPressEnter={(val) => setAxis(val, "y")}
                       disabled={this.props.filtering}
                     />
