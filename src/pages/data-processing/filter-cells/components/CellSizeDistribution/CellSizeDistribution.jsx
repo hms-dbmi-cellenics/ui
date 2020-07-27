@@ -25,7 +25,6 @@ class CellSizeDistribution extends React.Component {
       legendEnabled: true,
       legend: null,
       minCellSize: 1000,
-      minCellSizeChanged: 0,
       xAxisText: '#UMIs in cell',
       yAxisText: '#UMIs * #Cells',
       xAxisText2: 'Cell rank',
@@ -102,7 +101,7 @@ class CellSizeDistribution extends React.Component {
     if (this.state.plotToDraw) {
       return {
         description: 'An interactive histogram',
-        width: 470,
+        width: 430,
         height: 300,
         padding: 5,
 
@@ -185,7 +184,9 @@ class CellSizeDistribution extends React.Component {
             title: { value: this.state.xAxisText },
           },
           {
-            orient: 'left', scale: 'yscale', tickCount: 5, zindex: 1,
+            orient: 'left',
+            scale: 'yscale',
+            zindex: 1,
             title: { value: this.state.yAxisText },
           },
         ],
@@ -302,7 +303,9 @@ class CellSizeDistribution extends React.Component {
 
         "axes": [
           {
-            "orient": "bottom", "scale": "xscale",
+            "orient": "bottom",
+            "scale": "xscale",
+            labels: false,
             title: { value: this.state.xAxisText2 },
           },
           {
@@ -361,7 +364,6 @@ class CellSizeDistribution extends React.Component {
   }
 
   render() {
-
     const data = { plotData: this.generateData() };
 
     const listData = [
@@ -373,23 +375,6 @@ class CellSizeDistribution extends React.Component {
       'Median UMI counts per cell   4,064',
     ];
 
-    const disableFiltering = () => {
-      const currentCell = this.state.minCellSize
-      const changedCell = this.state.minCellSizeChanged
-      this.setState({
-        filtering: !this.state.filtering,
-      });
-      if (!this.state.filtering) {
-        this.setState({
-          minCellSizeChanged: currentCell,
-          minCellSize: 1000,
-        })
-      } else {
-        this.setState({
-          minCellSize: changedCell,
-        })
-      }
-    }
     const setAxis = (val, axe) => {
       if (axe == 'x') {
         if (this.state.plotToDraw) {
@@ -446,24 +431,22 @@ class CellSizeDistribution extends React.Component {
           <Col span={6}>
             <Space direction='vertical'>
               <Space>
-                <Switch defaultChecked onChange={disableFiltering} />
-                Disable Filter
               </Space>
               <Collapse>
-                <Panel header='Filtering Settings' disabled={this.state.filtering}>
+                <Panel header='Filtering Settings' disabled={this.props.filtering}>
                   Min cell size:
                   <InputNumber
-                    disabled={this.state.filtering}
+                    disabled={this.props.filtering}
                     defaultValue={1000}
                     onChange={(val) => this.setState({ minCellSize: val })}
                   />
                 </Panel>
 
-                <Panel header='Plot Styling' disabled={this.state.filtering}>
+                <Panel header='Plot Styling' disabled={this.props.filtering}>
                   <Form.Item label='Toggle Legend'>
                     <Switch
                       defaultChecked
-                      disabled={this.state.filtering}
+                      disabled={this.props.filtering}
                       onChange={(val) => this.setState({ legendEnabled: val })}
                     />
                   </Form.Item>
@@ -474,7 +457,7 @@ class CellSizeDistribution extends React.Component {
                       placeholder='Enter title'
                       onPressEnter={(val) => setAxis(val, "x")}
 
-                      disabled={this.state.filtering}
+                      disabled={this.props.filtering}
                     />
                   </Form.Item>
                   <Form.Item
@@ -483,7 +466,7 @@ class CellSizeDistribution extends React.Component {
                     <Input
                       placeholder='Enter title'
                       onPressEnter={(val) => setAxis(val, "y")}
-                      disabled={this.state.filtering}
+                      disabled={this.props.filtering}
                     />
                   </Form.Item>
                 </Panel>

@@ -1,16 +1,20 @@
 import React from 'react';
 import {
-  PageHeader, Collapse
+  PageHeader, Collapse, Switch
 } from 'antd';
 import CellSizeDistribution from './components/CellSizeDistribution/CellSizeDistribution'
-import MitochondrialContent from './components/MitochondrialContent/MitochondrialContent'
 
 const { Panel } = Collapse;
 
 class ProcessingViewPage extends React.Component {
-
+  state = {
+    filtering1: false
+  }
 
   render() {
+    const disableFiltering = (e) => {
+      this.setState({ filtering1: !this.state.filtering1 })
+    }
     return (
       <>
         <PageHeader
@@ -21,11 +25,10 @@ class ProcessingViewPage extends React.Component {
         />
 
         <Collapse accordion>
-          <Panel header='Cell size Distribution' key='1'>
-            <CellSizeDistribution />
+          <Panel header='Cell size Distribution' extra={<Switch defaultChecked onChange={disableFiltering} />} key='1'>
+            <CellSizeDistribution filtering={this.state.filtering1} />
           </Panel>
           <Panel header='Mitochondrial content' key='2'>
-            <MitochondrialContent />
           </Panel>
           <Panel header='Read alignment' key='3'>
           </Panel>
