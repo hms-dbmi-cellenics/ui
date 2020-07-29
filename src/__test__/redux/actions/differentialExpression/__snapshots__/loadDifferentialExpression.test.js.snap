@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadDifferentialExpression action Dispatches appropriately on failure 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+  },
+  "type": "diffExpr/loading",
+}
+`;
+
+exports[`loadDifferentialExpression action Dispatches appropriately on failure 2`] = `
+Object {
+  "payload": Object {
+    "error": "Couldn't fetch differential expression results data.",
+    "experimentId": "1234",
+  },
+  "type": "diffExpr/error",
+}
+`;
+
+exports[`loadDifferentialExpression action Dispatches appropriately on success 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+  },
+  "type": "diffExpr/loading",
+}
+`;
+
+exports[`loadDifferentialExpression action Dispatches appropriately on success 2`] = `
+Object {
+  "payload": Object {
+    "cellSets": Object {
+      "first": "louvain-0",
+      "second": "louvain-1",
+    },
+    "data": Array [
+      Object {
+        "gene_names": "A",
+        "log2fc": 3.45,
+        "pval": 1.16,
+        "qval": 2.16,
+      },
+      Object {
+        "gene_names": "B",
+        "log2fc": 4.45,
+        "pval": 2.16,
+        "qval": 3.16,
+      },
+      Object {
+        "gene_names": "C",
+        "log2fc": 5.45,
+        "pval": 3.16,
+        "qval": 4.16,
+      },
+      Object {
+        "gene_names": "D",
+        "log2fc": 6.45,
+        "pval": 4.16,
+        "qval": 5.16,
+      },
+      Object {
+        "gene_names": "E",
+        "log2fc": 7.45,
+        "pval": 5.16,
+        "qval": 6.16,
+      },
+      Object {
+        "gene_names": "F",
+        "log2fc": 8.45,
+        "pval": 6.16,
+        "qval": 7.16,
+      },
+    ],
+    "experimentId": "1234",
+    "total": 6,
+  },
+  "type": "diffExpr/loaded",
+}
+`;

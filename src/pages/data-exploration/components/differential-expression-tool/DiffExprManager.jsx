@@ -5,7 +5,7 @@ import {
 import _ from 'lodash';
 import DiffExprCompute from './DiffExprCompute';
 import DiffExprResults from './DiffExprResults';
-import { loadDiffExpr } from '../../../../redux/actions';
+import { loadDifferentialExpression } from '../../../../redux/actions/differentialExpression';
 
 const DiffExprManager = (props) => {
   const { experimentId, view } = props;
@@ -25,7 +25,7 @@ const DiffExprManager = (props) => {
     if (comparison !== comparisonType
       || !_.isEqual(selection, selectedCellSets)) {
       dispatch(
-        loadDiffExpr(experimentId, comparison, selection),
+        loadDifferentialExpression(experimentId, comparison, selection),
       );
 
       setSelectedCellSets(selection);

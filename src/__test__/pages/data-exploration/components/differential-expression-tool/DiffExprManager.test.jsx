@@ -10,6 +10,7 @@ import DiffExprManager from '../../../../../pages/data-exploration/components/di
 import DiffExprCompute from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprCompute';
 import DiffExprResults from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprResults';
 import connectionPromise from '../../../../../utils/socketConnection';
+import initialState from '../../../../../redux/reducers/differentialExpressionReducer/initialState';
 
 jest.mock('localforage');
 jest.mock('../../../../../utils/socketConnection');
@@ -26,10 +27,7 @@ connectionPromise.mockImplementation(() => new Promise((resolve) => {
 const mockStore = configureMockStore([thunk]);
 
 const emptyStore = mockStore({
-  diffExpr: {
-    loading: false,
-    rows: [],
-  },
+  differentialExpression: { ...initialState },
   cellSets: {
     data: [],
   },

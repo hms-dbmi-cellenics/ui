@@ -12,26 +12,29 @@ jest.mock('localforage');
 const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({
-  diffExpr: {
-    allData: [
-      {
-        pval: 1.4969461240347763e-12, qval: 1.647289002209057e-11, log2fc: -1.4274754343649423, gene_names: 'A',
-      },
-      {
-        pval: 2.4969461240347763e-12, qval: 2.647289002209057e-11, log2fc: -2.4274754343649423, gene_names: 'B',
-      },
-      {
-        pval: 3.4969461240347763e-12, qval: 3.647289002209057e-11, log2fc: -3.4274754343649423, gene_names: 'C',
-      },
-      {
-        pval: 4.4969461240347763e-12, qval: 4.647289002209057e-11, log2fc: -4.4274754343649423, gene_names: 'D',
-      },
-      {
-        pval: 5.4969461240347763e-12, qval: 5.647289002209057e-11, log2fc: -5.4274754343649423, gene_names: 'E',
-      },
-    ],
-    loading: false,
-    total: 5,
+  differentialExpression: {
+    properties: {
+      data: [
+        {
+          pval: 1.4969461240347763e-12, qval: 1.647289002209057e-11, log2fc: -1.4274754343649423, gene_names: 'A',
+        },
+        {
+          pval: 2.4969461240347763e-12, qval: 2.647289002209057e-11, log2fc: -2.4274754343649423, gene_names: 'B',
+        },
+        {
+          pval: 3.4969461240347763e-12, qval: 3.647289002209057e-11, log2fc: -3.4274754343649423, gene_names: 'C',
+        },
+        {
+          pval: 4.4969461240347763e-12, qval: 4.647289002209057e-11, log2fc: -4.4274754343649423, gene_names: 'D',
+        },
+        {
+          pval: 5.4969461240347763e-12, qval: 5.647289002209057e-11, log2fc: -5.4274754343649423, gene_names: 'E',
+        },
+      ],
+      loading: false,
+      error: false,
+      total: 5,
+    },
   },
 });
 

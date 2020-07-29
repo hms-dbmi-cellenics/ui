@@ -12,9 +12,9 @@ import PropTypes from 'prop-types';
 const DiffExprResults = (props) => {
   const { onGoBack } = props;
 
-  const isLoading = useSelector((state) => state.diffExpr.loading);
-  const allData = useSelector((state) => state.diffExpr.allData);
-  const total = useSelector((state) => state.diffExpr.total);
+  const isLoading = useSelector((state) => state.differentialExpression.properties.loading);
+  const data = useSelector((state) => state.differentialExpression.properties.data);
+  const total = useSelector((state) => state.differentialExpression.properties.total);
 
   const defaultState = {
     pagination: {
@@ -38,18 +38,18 @@ const DiffExprResults = (props) => {
     const offset = ((currentPage - 1) * currentPageSize);
     const limit = currentPageSize;
 
-    if (allData) {
+    if (data.length > 0) {
       if (offset + limit > total) {
-        setRows(allData.slice(offset));
+        setRows(data.slice(offset));
       } else {
-        setRows(allData.slice(offset, limit + offset));
+        setRows(data.slice(offset, limit + offset));
       }
     }
   };
 
   useEffect(() => {
     updateRows();
-  }, [tableState, allData]);
+  }, [tableState, data]);
 
   useEffect(() => {
     const { current, pageSize, showSizeChanger } = tableState.pagination;

@@ -2,7 +2,7 @@ const GENES = 'genes';
 
 /**
  * Turns on the loading condition for gene information.
- * Components that have the particular properties requestedin their dependencies
+ * Components that have the particular properties requested in their dependencies
  * should set a loading state at this event.
  */
 const GENES_PROPERTIES_LOADING = `${GENES}/propertiesLoading`;
