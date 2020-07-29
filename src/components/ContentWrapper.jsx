@@ -53,8 +53,12 @@ const ContentWrapper = (props) => {
             <span> PBMC Dataset Experiment</span>
           </Menu.Item>
           <Menu.Item key='2'>
-            <BuildOutlined />
-            <span>Data Processing</span>
+            <Link href='/data-processing/filter-cells' passHref>
+              <div>
+                <BuildOutlined />
+                <span>Data Processing</span>
+              </div>
+            </Link>
           </Menu.Item>
           <Menu.Item key='3'>
             <Link href='/data-exploration' passHref>
