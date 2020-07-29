@@ -6,6 +6,8 @@ import { transform, cloneDeep } from 'lodash';
 import EditableField from '../../../../components/EditableField';
 import ColorPicker from '../../../../components/ColorPicker';
 
+import './hierarchicalTree.css';
+
 const HierarchicalTree = (props) => {
   const {
     onCheck: propOnCheck,
