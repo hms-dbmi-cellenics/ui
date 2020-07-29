@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`loadEmbedding action Dispatches appropriately on failure 1`] = `
+exports[`loadGeneExpression action Dispatches appropriately on failure 1`] = `
 Object {
   "payload": Object {
     "experimentId": "1234",
@@ -14,7 +14,7 @@ Object {
 }
 `;
 
-exports[`loadEmbedding action Dispatches appropriately on failure 2`] = `
+exports[`loadGeneExpression action Dispatches appropriately on failure 2`] = `
 Object {
   "payload": Object {
     "error": "Couldn't fetch expression data.",
@@ -29,7 +29,7 @@ Object {
 }
 `;
 
-exports[`loadEmbedding action Dispatches appropriately on success 1`] = `
+exports[`loadGeneExpression action Dispatches appropriately on success 1`] = `
 Object {
   "payload": Object {
     "experimentId": "1234",
@@ -43,7 +43,7 @@ Object {
 }
 `;
 
-exports[`loadEmbedding action Dispatches appropriately on success 2`] = `
+exports[`loadGeneExpression action Dispatches appropriately on success 2`] = `
 Object {
   "payload": Object {
     "data": Object {
@@ -55,7 +55,7 @@ Object {
 }
 `;
 
-exports[`loadEmbedding action Does not send work for already loaded expression data. 1`] = `
+exports[`loadGeneExpression action Does not send work for already loaded expression data. 1`] = `
 [MockFunction] {
   "calls": Array [
     Array [
@@ -79,7 +79,7 @@ exports[`loadEmbedding action Does not send work for already loaded expression d
 }
 `;
 
-exports[`loadEmbedding action Sends work for already loaded expression data if forced to do so. 1`] = `
+exports[`loadGeneExpression action Sends work for already loaded expression data if forced to do so. 1`] = `
 [MockFunction] {
   "calls": Array [
     Array [

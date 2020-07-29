@@ -18,7 +18,7 @@ jest.mock('../../../../utils/sendWork', () => ({
 
 const mockStore = configureStore([thunk]);
 
-describe('loadEmbedding action', () => {
+describe('loadGeneExpression action', () => {
   const experimentId = '1234';
   const loadingGenes = ['a', 'b', 'c'];
 

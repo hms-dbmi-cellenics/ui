@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`differentialExpressionReducer Sets error state on error action 1`] = `
+Object {
+  "properties": Object {
+    "cellSets": Object {},
+    "data": Object {},
+    "error": "asd",
+    "loading": false,
+  },
+}
+`;
+
+exports[`differentialExpressionReducer Sets loaded state on loaded action 1`] = `
+Object {
+  "properties": Object {
+    "cellSets": Object {
+      "first": "louvain-0",
+      "second": "louvain-1",
+    },
+    "data": Array [
+      Object {
+        "gene_names": "A",
+        "log2fc": 3.45,
+        "pval": 1.16,
+        "qval": 2.16,
+      },
+      Object {
+        "gene_names": "B",
+        "log2fc": 4.45,
+        "pval": 2.16,
+        "qval": 3.16,
+      },
+      Object {
+        "gene_names": "C",
+        "log2fc": 5.45,
+        "pval": 3.16,
+        "qval": 4.16,
+      },
+      Object {
+        "gene_names": "D",
+        "log2fc": 6.45,
+        "pval": 4.16,
+        "qval": 5.16,
+      },
+      Object {
+        "gene_names": "E",
+        "log2fc": 7.45,
+        "pval": 5.16,
+        "qval": 6.16,
+      },
+      Object {
+        "gene_names": "F",
+        "log2fc": 8.45,
+        "pval": 6.16,
+        "qval": 7.16,
+      },
+    ],
+    "error": false,
+    "loading": false,
+    "total": 6,
+  },
+}
+`;
+
+exports[`differentialExpressionReducer Sets loading state on loading action 1`] = `
+Object {
+  "properties": Object {
+    "cellSets": Object {},
+    "data": Object {},
+    "error": false,
+    "loading": true,
+  },
+}
+`;
