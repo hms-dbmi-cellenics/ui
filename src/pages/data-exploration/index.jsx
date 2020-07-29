@@ -1,7 +1,8 @@
 import React from 'react';
 import {
-  PageHeader, Row, Col, Space, Button, Dropdown,
+  PageHeader, Button, Dropdown,
 } from 'antd';
+import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import DraggableList from '../../components/draggable-list/DraggableList';
 import SearchMenu from '../../components/SearchMenu';
@@ -11,7 +12,24 @@ import DiffExprManager from './components/differential-expression-tool/DiffExprM
 import Embedding from './components/embedding/Embedding';
 import HeatmapPlot from './components/heatmap/HeatmapPlot';
 
+import 'react-mosaic-component/react-mosaic-component.css';
+import '@blueprintjs/core/lib/css/blueprint.css';
+
 const experimentId = '5e959f9c9f4b120771249001';
+
+const TILE_MAP = {
+  'UMAP Embedding': <Embedding experimentId={experimentId} embeddingType='umap' />,
+  Heatmap: <HeatmapPlot experimentId={experimentId} heatmapWidth={1300} />,
+  'Cell set': <CellSetsTool experimentId={experimentId} />,
+  'Gene list': <GeneListTool experimentId={experimentId} />,
+  'Differential expression (simple)': <DiffExprManager experimentId={experimentId} view='compute' />,
+};
+
+const renderWindow = (child) => (
+  <div style={{ margin: '4px' }}>
+    {child}
+  </div>
+);
 
 const categoryInfo = {
   Plots: <PictureOutlined />,
@@ -117,34 +135,47 @@ class ExplorationViewPage extends React.Component {
           className='site-page-header'
           title='Investigator'
           subTitle='Powerful data exploration'
-          style={{ width: '100%', paddingRight: '0px' }}
+          style={{ width: '100%' }}
           extra={[
-            <Dropdown
-              key='search-menu-dropdown'
-              overlay={searchMenu}
-              visible={addMenuVisible}
-              onVisibleChange={(visible) => this.setState({ addMenuVisible: visible })}
-            >
-              <Button type='primary' onClick={() => this.setState({ addMenuVisible: !addMenuVisible })}>
-                Add
-                {' '}
-                <DownOutlined />
-              </Button>
-            </Dropdown>,
+            <div>
+              <Dropdown
+                key='search-menu-dropdown'
+                overlay={searchMenu}
+                visible={addMenuVisible}
+                onVisibleChange={(visible) => this.setState({ addMenuVisible: visible })}
+              >
+                <Button type='primary' onClick={() => this.setState({ addMenuVisible: !addMenuVisible })}>
+                  Add
+                  {' '}
+                  <DownOutlined />
+                </Button>
+              </Dropdown>
+            </div>,
           ]}
         />
-        <Row gutter={16}>
-          <Col span={15}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              {this.renderItems('Plots')}
-            </Space>
-          </Col>
-          <Col span={9}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              {this.renderItems('Tools')}
-            </Space>
-          </Col>
-        </Row>
+        <div style={{ height: '100%', width: '100%', margin: 0 }}>
+          <Mosaic
+            renderTile={(id, path) => (
+              <MosaicWindow path={path} createNode={() => 'Differential expression (simple)'} title={id}>
+                {renderWindow(TILE_MAP[id])}
+              </MosaicWindow>
+            )}
+            initialValue={{
+              direction: 'row',
+              first: {
+                first: 'UMAP Embedding',
+                second: 'Heatmap',
+                direction: 'column',
+              },
+              second: {
+                direction: 'column',
+                first: 'Cell set',
+                second: 'Gene list',
+              },
+              splitPercentage: 70,
+            }}
+          />
+        </div>
       </>
     );
   }

@@ -15,7 +15,7 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './NotificationManager';
 
-const { Content, Sider } = Layout;
+const { Sider } = Layout;
 
 const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(true);
@@ -79,9 +79,7 @@ const ContentWrapper = (props) => {
         </Menu>
       </Sider>
       <Layout>
-        <Content style={{ margin: '8px 32px' }}>
-          {children}
-        </Content>
+        {children}
       </Layout>
     </Layout>
   );

@@ -50,6 +50,29 @@ const srcFolder = [
   path.resolve(__dirname, './src/redux'),
 ];
 
+const generalWebpackConfig = [
+  {
+    test: /\.(ttf|eot|svg)$/,
+    use: {
+      loader: 'file-loader',
+      options: {
+        name: 'fonts/[hash].[ext]',
+      },
+    },
+  },
+  {
+    test: /\.(woff|woff2)$/,
+    use: {
+      loader: 'url-loader',
+      options: {
+        name: 'fonts/[hash].[ext]',
+        limit: 5000,
+        mimetype: 'application/font-woff',
+      },
+    },
+  },
+];
+
 module.exports = withSize(withCSS(
   withLess(withImages({
     lessLoaderOptions: {
@@ -141,6 +164,7 @@ module.exports = withSize(withCSS(
           },
           loader: 'thread-loader',
         });
+        generalWebpackConfig.forEach((c) => config.module.rules.push(c));
         config.devtool = 'source-map';
       } else {
         config.module.rules.push({
@@ -155,6 +179,7 @@ module.exports = withSize(withCSS(
           },
           loader: 'eslint-loader',
         });
+        generalWebpackConfig.forEach((c) => config.module.rules.push(c));
         config.devtool = 'cheap-module-inline-source-map';
       }
       return config;
