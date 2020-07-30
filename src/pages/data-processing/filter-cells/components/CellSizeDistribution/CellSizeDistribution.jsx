@@ -14,7 +14,6 @@ import plot2Pic from '../../../../../../static/media/plot2.png';
 
 import plotData from './new_data.json';
 
-
 const { Panel } = Collapse;
 
 class CellSizeDistribution extends React.Component {
@@ -457,20 +456,20 @@ class CellSizeDistribution extends React.Component {
           <Col span={6}>
             <Space direction='vertical'>
               <Collapse>
-                <Panel header='Filtering Settings' disabled={filtering}>
+                <Panel header='Filtering Settings' disabled={!filtering}>
                   Min cell size:
                   <InputNumber
-                    disabled={filtering}
+                    disabled={!filtering}
                     defaultValue={1000}
                     onChange={(val) => this.setState({ minCellSize: val })}
                   />
                 </Panel>
 
-                <Panel header='Plot Styling' disabled={filtering}>
+                <Panel header='Plot Styling' disabled={!filtering}>
                   <Form.Item label='Toggle Legend'>
                     <Switch
                       defaultChecked
-                      disabled={filtering}
+                      disabled={!filtering}
                       onChange={(val) => this.setState({ legendEnabled: val })}
                     />
                   </Form.Item>
@@ -481,7 +480,7 @@ class CellSizeDistribution extends React.Component {
                       placeholder={xDefaultTitle}
                       onPressEnter={(val) => setAxis(val, 'x')}
 
-                      disabled={filtering}
+                      disabled={!filtering}
                     />
                   </Form.Item>
                   <Form.Item
@@ -490,7 +489,7 @@ class CellSizeDistribution extends React.Component {
                     <Input
                       placeholder={yDefaultTitle}
                       onPressEnter={(val) => setAxis(val, 'y')}
-                      disabled={filtering}
+                      disabled={!filtering}
                     />
                   </Form.Item>
                 </Panel>
