@@ -152,13 +152,16 @@ const HeatmapPlot = (props) => {
   };
 
   const handleMouseOver = (...args) => {
+    if (args.length < 2) {
+      return;
+    }
     if (args[1].datum) {
       const { cellId: cellName, expression, gene: geneName } = args[1].datum;
       dispatch(updateCellInfo({
         cellName, expression, geneName, componentType,
       }));
     }
-    if (args[1].x && args[1].y) {
+    if ('x' in args[1] && 'y' in args[1]) {
       hoverCoordinates.current = {
         x: args[1].x,
         y: args[1].y,
