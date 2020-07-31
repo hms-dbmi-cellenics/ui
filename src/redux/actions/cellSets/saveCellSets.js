@@ -9,7 +9,6 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
     loading, hierarchy, properties, error,
   } = getState().cellSets;
 
-
   // If no loaded data exists for our cell sets and some event would
   // trigger a push, we do not want to overwrite our cell sets with
   // empty data.

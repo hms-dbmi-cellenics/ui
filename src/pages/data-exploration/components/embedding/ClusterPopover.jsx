@@ -36,7 +36,7 @@ ClusterPopover.defaultProps = {
 ClusterPopover.propTypes = {
   onCreate: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
-  popoverPosition: PropTypes.objectOf(PropTypes.number).isRequired,
+  popoverPosition: PropTypes.object.isRequired,
 };
 
 export default ClusterPopover;
