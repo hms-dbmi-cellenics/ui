@@ -250,10 +250,12 @@ const GeneListTool = (props) => {
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
-      <Space>
-        <FilterGenes filterGenes={filterGenes} />
-        {selectionIndicator()}
-      </Space>
+      {isTableLoading() ? <></> : (
+        <Space>
+          <FilterGenes filterGenes={filterGenes} />
+          {selectionIndicator()}
+        </Space>
+      )}
       <Table
         columns={columns}
         dataSource={tableRows}
