@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, List, Space, Switch,
-  InputNumber, Form, Input,
+  InputNumber, Form, Input, Slider
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
@@ -13,6 +13,8 @@ import plot1Pic from '../../../../../../static/media/plot1.png';
 import plot2Pic from '../../../../../../static/media/plot2.png';
 
 import plotData from './new_data.json';
+import TitleDesign from '../../../../plots-and-tables/components/TitleDesign'
+import FontDesign from '../../../../plots-and-tables/components/FontDesign'
 
 const { Panel } = Collapse;
 
@@ -20,7 +22,7 @@ class CellSizeDistribution extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.defaultConfig = {
       plotToDraw: true,
       data: plotData,
       legendEnabled: true,
@@ -32,9 +34,29 @@ class CellSizeDistribution extends React.Component {
       xDefaultTitle: '#UMIs in cell',
       yDefaultTitle: '#UMIs * #Cells',
       legendOrientation: 'right',
+      gridWeight: 0,
+      titleSize: 12,
+      titleText: '',
+      titleAnchor: 'start',
+      masterFont: 'sans-serif',
+      masterSize: 13,
     };
-  }
+    this.state = {
+      config: _.cloneDeep(this.defaultConfig),
+      data: plotData,
+    };
+    this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
 
+  }
+  updatePlotWithChanges(obj) {
+    this.setState((prevState) => {
+      const newState = _.cloneDeep(prevState);
+
+      _.merge(newState.config, obj);
+
+      return newState;
+    });
+  }
   generateData() {
     let { data } = this.state;
     data = _.cloneDeep(data);
@@ -57,16 +79,13 @@ class CellSizeDistribution extends React.Component {
   }
 
   generateSpec() {
-    const {
-      legendEnabled, plotToDraw, legendOrientation, minCellSize,
-      xAxisText, yAxisText, xAxisText2, yAxisText2,
-    } = this.state;
+    const {config} = this.state;
     let legend = null;
-    if (legendEnabled) {
+    if (config.legendEnabled) {
       legend = [
         {
           fill: 'color',
-          orient: legendOrientation,
+          orient: config.legendOrientation,
           title: 'Quality',
           encode: {
             title: {
@@ -101,7 +120,7 @@ class CellSizeDistribution extends React.Component {
     } else {
       legend = null;
     }
-    if (plotToDraw) {
+    if (config.plotToDraw) {
       return {
         description: 'An interactive histogram',
         width: 430,
@@ -128,7 +147,7 @@ class CellSizeDistribution extends React.Component {
               {
                 type: 'bin',
                 field: 'u',
-                extent: [minCellSize, 17000],
+                extent: [config.minCellSize, 17000],
                 step: { signal: 'binStep' },
                 nice: false,
               },
@@ -185,13 +204,21 @@ class CellSizeDistribution extends React.Component {
             orient: 'bottom',
             scale: 'xscale',
             zindex: 1,
-            title: { value: xAxisText },
+            title: {value: config.xAxisText},
+            titleFont: { value: config.masterFont },
+            labelFont: { value: config.masterFont },
+            titleFontSize: { value: config.masterSize },
+            labelFontSize: { value: config.masterSize },
           },
           {
             orient: 'left',
             scale: 'yscale',
             zindex: 1,
-            title: { value: yAxisText },
+            title: {value: config.yAxisText},
+            titleFont: { value: config.masterFont },
+            labelFont: { value: config.masterFont },
+            titleFontSize: { value: config.masterSize },
+            labelFontSize: { value: config.masterSize },
           },
         ],
         marks: [
@@ -218,29 +245,16 @@ class CellSizeDistribution extends React.Component {
 
             },
           },
-          {
-            type: 'rect',
-            from: { data: 'plotData' },
-            encode: {
-              enter: {
-                x: { scale: 'xscale', field: 'u' },
-                width: { value: 1 },
-                y: { value: 35, offset: { signal: 'height' } },
-                height: { value: 5 },
-                stroke: {
-                  scale: 'color',
-                  field: 'status',
-                },
-                fill: {
-                  scale: 'color',
-                  field: 'status',
-                },
-                fillOpacity: { value: 0.4 },
-              },
-            },
-          },
         ],
         legends: legend,
+    title:
+      {
+        text: { value: config.titleText },
+        anchor: { value: config.titleAnchor },
+        font: { value: config.masterFont },
+        dx: 10,
+        fontSize: { value: config.titleSize },
+      },
       };
     }
     return {
@@ -311,12 +325,20 @@ class CellSizeDistribution extends React.Component {
           orient: 'bottom',
           scale: 'xscale',
           labels: false,
-          title: { value: xAxisText2 },
+          title: { value: config.xAxisText2 },
+          titleFont: { value: config.masterFont },
+          labelFont: { value: config.masterFont },
+          titleFontSize: { value: config.masterSize },
+          labelFontSize: { value: config.masterSize },
         },
         {
           orient: 'left',
           scale: 'yscale',
-          title: { value: yAxisText2 },
+          title: { value: config.yAxisText2 },
+          titleFont: { value: config.masterFont },
+          labelFont: { value: config.masterFont },
+          titleFontSize: { value: config.masterSize },
+          labelFontSize: { value: config.masterSize },
         },
       ],
 
@@ -365,15 +387,20 @@ class CellSizeDistribution extends React.Component {
         },
       ],
       legends: legend,
+      title:
+      {
+        text: { value: config.titleText },
+        anchor: { value: config.titleAnchor },
+        font: { value: config.masterFont },
+        dx: 10,
+        fontSize: { value: config.titleSize },
+      },
     };
   }
 
   render() {
     const data = { plotData: this.generateData() };
-    const {
-      plotToDraw, xAxisText, xAxisText2, yAxisText2, yAxisText,
-      xDefaultTitle, yDefaultTitle,
-    } = this.state;
+    const {config} = this.state;
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
     const listData = [
@@ -385,32 +412,32 @@ class CellSizeDistribution extends React.Component {
       'Median UMI counts per cell   4,064',
     ];
     const changePlot = (val) => {
-      this.setState({ plotToDraw: val });
-      if (!plotToDraw) {
-        this.setState({
-          xDefaultTitle: xAxisText,
-          yDefaultTitle: yAxisText,
+      this.updatePlotWithChanges({ plotToDraw: val });
+      if (!config.plotToDraw) {
+        this.updatePlotWithChanges({
+          xDefaultTitle: config.xAxisText,
+          yDefaultTitle: config.yAxisText,
         });
       } else {
-        this.setState({
-          xDefaultTitle: xAxisText2,
-          yDefaultTitle: yAxisText2,
+        this.updatePlotWithChanges({
+          xDefaultTitle: config.xAxisText2,
+          yDefaultTitle: config.yAxisText2,
         });
       }
     };
     const setAxis = (val, axe) => {
       if (axe === 'x') {
-        if (plotToDraw) {
-          this.setState({ xAxisText: val.target.value });
+        if (config.plotToDraw) {
+          this.updatePlotWithChanges({ xAxisText: val.target.value });
         } else {
-          this.setState({ xAxisText2: val.target.value });
+          this.updatePlotWithChanges({ xAxisText2: val.target.value });
         }
       }
       if (axe === 'y') {
-        if (plotToDraw) {
-          this.setState({ yAxisText: val.target.value });
+        if (config.plotToDraw) {
+          this.updatePlotWithChanges({ yAxisText: val.target.value });
         } else {
-          this.setState({ yAxisText2: val.target.value });
+          this.updatePlotWithChanges({ yAxisText2: val.target.value });
         }
       }
     };
@@ -429,6 +456,8 @@ class CellSizeDistribution extends React.Component {
                 src={plot1Pic}
                 style={{
                   height: '100px', width: '100px', align: 'center', padding: '8px',
+                  border: '1px solid #000'
+
                 }}
                 onClick={() => changePlot(true)}
               />
@@ -437,6 +466,8 @@ class CellSizeDistribution extends React.Component {
                 src={plot2Pic}
                 style={{
                   height: '100px', width: '100px', align: 'center', padding: '8px',
+                  border: '1px solid #000'
+
                 }}
                 onClick={() => changePlot(false)}
               />
@@ -461,7 +492,7 @@ class CellSizeDistribution extends React.Component {
                   <InputNumber
                     disabled={!filtering}
                     defaultValue={1000}
-                    onChange={(val) => this.setState({ minCellSize: val })}
+                    onChange={(val) => this.updatePlotWithChanges({ minCellSize: val })}
                   />
                 </Panel>
 
@@ -470,14 +501,16 @@ class CellSizeDistribution extends React.Component {
                     <Switch
                       defaultChecked
                       disabled={!filtering}
-                      onChange={(val) => this.setState({ legendEnabled: val })}
+                      onChange={(val) => this.updatePlotWithChanges({ legendEnabled: val })}
                     />
                   </Form.Item>
+                  <Collapse accordion>
+                  <Panel header = "Axes">
                   <Form.Item
                     label='X axis Title'
                   >
                     <Input
-                      placeholder={xDefaultTitle}
+                      placeholder={config.xDefaultTitle}
                       onPressEnter={(val) => setAxis(val, 'x')}
 
                       disabled={!filtering}
@@ -487,11 +520,34 @@ class CellSizeDistribution extends React.Component {
                     label='Y axis Title'
                   >
                     <Input
-                      placeholder={yDefaultTitle}
+                      placeholder={config.yDefaultTitle}
                       onPressEnter={(val) => setAxis(val, 'y')}
                       disabled={!filtering}
                     />
                   </Form.Item>
+                  </Panel>
+                  <Panel header = "Title">
+                    <TitleDesign
+                      config={config}
+                      onUpdate={this.updatePlotWithChanges}
+                    />
+                   </Panel>
+                    <Panel header='Font' key='9'>
+                      <FontDesign
+                        config={config}
+                        onUpdate={this.updatePlotWithChanges}
+                      />
+                      Font size
+                    <Slider
+                      defaultValue={13}
+                      min={5}
+                      max={21}
+                      onAfterChange={(value) => {
+                        this.updatePlotWithChanges({ masterSize: value });
+                      }}
+                    />
+                    </Panel>
+                    </Collapse>
                 </Panel>
               </Collapse>
             </Space>

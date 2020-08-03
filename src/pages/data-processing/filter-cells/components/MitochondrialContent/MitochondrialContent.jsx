@@ -5,53 +5,70 @@
 import React from 'react';
 import {
   Collapse, Row, Col, List, Space, Switch,
-  InputNumber, Form, Input, Select,
+  InputNumber, Form, Input, Select, Slider
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
-import plot1Pic from '../../../../../../static/media/plot1.png';
-import plot2Pic from '../../../../../../static/media/plot2.png';
+import plot1Pic from '../../../../../../static/media/plot3.png';
+import plot2Pic from '../../../../../../static/media/plot4.png';
 
 import plotData from './data2.json';
+import TitleDesign from '../../../../plots-and-tables/components/TitleDesign'
+import FontDesign from '../../../../plots-and-tables/components/FontDesign'
 
 const { Panel } = Collapse;
 const { Option } = Select;
 class MitochondrialContent extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
+    this.defaultConfig = {
       plotToDraw: true,
       data: plotData,
       legendEnabled: true,
       minCellSize: 1000,
       xAxisText: 'Fraction of mitochondrial reads',
       yAxisText: 'Fraction of cells',
-      xAxisText2: 'Cell rank',
-      yAxisText2: "#UMI's in cell",
+      xAxisText2: 'log10(#UMI in cell)',
+      yAxisText2: "Average % mitochondrial",
       xDefaultTitle: 'Fraction of mitochondrial reads',
       yDefaultTitle: 'Fraction of cells',
       legendOrientation: 'top-right',
+      gridWeight: 0,
+      titleSize: 12,
+      titleText: '',
+      titleAnchor: 'start',
+      masterFont: 'sans-serif',
+      masterSize: 13,
+    }
+    this.state = {
+      config: _.cloneDeep(this.defaultConfig),
+      data: plotData,
     };
+    this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
+
   }
 
   generateData() {
     let { data } = this.state;
-    data = _.cloneDeep(data);
     return data;
   }
+  updatePlotWithChanges(obj) {
+    this.setState((prevState) => {
+      const newState = _.cloneDeep(prevState);
 
+      _.merge(newState.config, obj);
+
+      return newState;
+    });
+  }
   generateSpec() {
-    const {
-      legendEnabled, plotToDraw, legendOrientation, minCellSize,
-      xAxisText, yAxisText, xAxisText2, yAxisText2,
-    } = this.state;
+    const {config} = this.state;
     let legend = null;
-    if (legendEnabled) {
+    if (config.legendEnabled) {
       legend =[
         {
           fill: 'color',
-          orient: legendOrientation,
+          orient: config.legendOrientation,
           encode: {
             title: {
               update: {
@@ -85,7 +102,7 @@ class MitochondrialContent extends React.Component {
     } else {
       legend = null;
     }
-    if (plotToDraw) {
+    if (config.plotToDraw) {
       return {
         "$schema": "https://vega.github.io/schema/vega/v5.json",
         "description": "An interactive histogram for visualizing a univariate distribution.",
@@ -166,11 +183,18 @@ class MitochondrialContent extends React.Component {
 
         "axes": [
           {"orient": "bottom", "scale": "xscale", "zindex": 1,
-            title: {value: xAxisText}
-
+            title: {value: config.xAxisText},
+            titleFont: { value: config.masterFont },
+            labelFont: { value: config.masterFont },
+            titleFontSize: { value: config.masterSize },
+            labelFontSize: { value: config.masterSize },
           },
           {"orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1,
-            title: {value: yAxisText}
+            title: {value: config.yAxisText},
+            titleFont: { value: config.masterFont },
+            labelFont: { value: config.masterFont },
+            titleFontSize: { value: config.masterSize },
+            labelFontSize: { value: config.masterSize },
           }
         ],
 
@@ -212,7 +236,15 @@ class MitochondrialContent extends React.Component {
             }
           }
         ],
-        legends: legend
+        legends: legend,
+    title:
+      {
+        text: { value: config.titleText },
+        anchor: { value: config.titleAnchor },
+        font: { value: config.masterFont },
+        dx: 10,
+        fontSize: { value: config.titleSize },
+      },
   }
 }
     return {
@@ -223,7 +255,7 @@ class MitochondrialContent extends React.Component {
         "padding": 5,
 
         "signals": [
-          { "name": "binStep", "value": 0.1,
+          { "name": "binStep", "value": 0.05,
             "bind": {"input": "range", "min": 0.001, "max": 0.5, "step": 0.001} }
         ],
 
@@ -246,9 +278,9 @@ class MitochondrialContent extends React.Component {
                 "type": "aggregate",
                 "key": "bin0",
                 "groupby": ["bin0", "bin1"],
-                "fields": ["bin0"],
-                "ops": ["count"],
-                "as": ["count"]
+                "fields":["fracMito"],
+                "ops":["average"],
+                "as":["averageFracMito"]
               }             
             ]
           }
@@ -265,7 +297,7 @@ class MitochondrialContent extends React.Component {
             "name": "yscale",
             "type": "linear",
             "range": "height", "round": true,
-            "domain": {"data": "binned", "field": "count"},
+            "domain": {"data": "binned", "field": "averageFracMito"},
             "zero": true, "nice": true
           },
           {
@@ -285,11 +317,19 @@ class MitochondrialContent extends React.Component {
 
         "axes": [
           {"orient": "bottom", "scale": "xscale", "zindex": 1,
-            title: {value: xAxisText}
+            title: {value: config.xAxisText2},
+            titleFont: { value: config.masterFont },
+            labelFont: { value: config.masterFont },
+            titleFontSize: { value: config.masterSize },
+            labelFontSize: { value: config.masterSize },
 
           },
           {"orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1,
-            title: {value: yAxisText}
+            title: {value: config.yAxisText2},
+            titleFont: { value: config.masterFont },
+            labelFont: { value: config.masterFont },
+            titleFontSize: { value: config.masterSize },
+            labelFontSize: { value: config.masterSize },
           }
         ],
 
@@ -302,7 +342,7 @@ class MitochondrialContent extends React.Component {
                 "x": {"scale": "xscale", "field": "bin0"},
                 "x2": {"scale": "xscale", "field": "bin1",
                       "offset": {"signal": "binStep > 0.02 ? -0.5 : 0"}},
-                "y": {"scale": "yscale", "field": "count"},
+                "y": {"scale": "yscale", "field": "averageFracMito"},
                 "y2": {"scale": "yscale", "value": 0},
                 fill: {
                   scale: 'color',
@@ -313,46 +353,52 @@ class MitochondrialContent extends React.Component {
             }
           },
         ],
-        legends: legend
+      title:
+        {
+          text: { value: config.titleText },
+          anchor: { value: config.titleAnchor },
+          font: { value: config.masterFont },
+          dx: 10,
+          fontSize: { value: config.titleSize },
+        },
   }
   }
 
   render() {
+    
     const data = { plotData: this.generateData() };
-    const {
-      plotToDraw, xAxisText, xAxisText2, yAxisText2, yAxisText,
-      xDefaultTitle, yDefaultTitle,
-    } = this.state;
+    const {config} = this.state;
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
 
     const changePlot = (val) => {
-      this.setState({ plotToDraw: val });
-      if (!plotToDraw) {
-        this.setState({
-          xDefaultTitle: xAxisText,
-          yDefaultTitle: yAxisText,
+      const {config} = this.state
+      this.updatePlotWithChanges({ plotToDraw: val });
+      if (!config.plotToDraw) {
+        this.updatePlotWithChanges({
+          xDefaultTitle: config.xAxisText,
+          yDefaultTitle: config.yAxisText,
         });
       } else {
-        this.setState({
-          xDefaultTitle: xAxisText2,
-          yDefaultTitle: yAxisText2,
+        this.updatePlotWithChanges({
+          xDefaultTitle: config.xAxisText2,
+          yDefaultTitle: config.yAxisText2,
         });
       }
     };
     const setAxis = (val, axe) => {
       if (axe === 'x') {
-        if (plotToDraw) {
-          this.setState({ xAxisText: val.target.value });
+        if (config.plotToDraw) {
+          this.updatePlotWithChanges({ xAxisText: val.target.value });
         } else {
-          this.setState({ xAxisText2: val.target.value });
+          this.updatePlotWithChanges({ xAxisText2: val.target.value });
         }
       }
       if (axe === 'y') {
-        if (plotToDraw) {
-          this.setState({ yAxisText: val.target.value });
+        if (config.plotToDraw) {
+          this.updatePlotWithChanges({ yAxisText: val.target.value });
         } else {
-          this.setState({ yAxisText2: val.target.value });
+          this.updatePlotWithChanges({ yAxisText2: val.target.value });
         }
       }
     };
@@ -367,13 +413,14 @@ class MitochondrialContent extends React.Component {
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
 
-          <Col span={4}>
+          <Col span={3}>
             <Space direction='vertical'>
               <img
                 alt=''
                 src={plot1Pic}
                 style={{
                   height: '100px', width: '100px', align: 'center', padding: '8px',
+                  border: '1px solid #000'
                 }}
                 onClick={() => changePlot(true)}
               />
@@ -382,6 +429,7 @@ class MitochondrialContent extends React.Component {
                 src={plot2Pic}
                 style={{
                   height: '100px', width: '100px', align: 'center', padding: '8px',
+                  border: '1px solid #000'
                 }}
                 onClick={() => changePlot(false)}
               />
@@ -389,7 +437,7 @@ class MitochondrialContent extends React.Component {
           </Col>
 
 
-          <Col span={7}>
+          <Col span={8}>
             <Space direction='vertical'>
               <Collapse>
                 <Panel header='Filtering settings' disabled={!filtering}>
@@ -401,7 +449,7 @@ class MitochondrialContent extends React.Component {
                       onChange={(val) => MethodChange(val)}
                       disabled={!filtering}
                     >
-                      <Option value='option1'>option1</Option>
+                      <Option value='option1'>Absolute threshold</Option>
                       <Option value='option2'>option2</Option>
                       <Option value='option3'>option3</Option>
                     </Select>
@@ -412,33 +460,56 @@ class MitochondrialContent extends React.Component {
                   </Space>
                 </Panel>
 
-                <Panel header='Plot Styling' disabled={!filtering}>
+                <Panel header='Plot Styling' >
+            <Space direction='vertical' style={{ width: '100%' }} />
+
                   <Form.Item label='Toggle Legend'>
                     <Switch
                       defaultChecked
-                      disabled={!filtering}
-                      onChange={(val) => this.setState({ legendEnabled: val })}
+                      onChange={(val) => this.updatePlotWithChanges({ legendEnabled: val })}
                     />
                   </Form.Item>
+                  <Collapse accordion>
+                  <Panel header = "Axes">
                   <Form.Item
                     label='X axis Title'
                   >
                     <Input
-                      placeholder={xDefaultTitle}
+                      placeholder={config.xDefaultTitle}
                       onPressEnter={(val) => setAxis(val, 'x')}
-
-                      disabled={!filtering}
                     />
                   </Form.Item>
                   <Form.Item
                     label='Y axis Title'
                   >
                     <Input
-                      placeholder={yDefaultTitle}
+                      placeholder={config.yDefaultTitle}
                       onPressEnter={(val) => setAxis(val, 'y')}
-                      disabled={!filtering}
                     />
                   </Form.Item>
+                  </Panel>
+                    <Panel header = "Title">
+                    <TitleDesign
+                      config={config}
+                      onUpdate={this.updatePlotWithChanges}
+                    />
+                   </Panel>
+                    <Panel header='Font' key='9'>
+                      <FontDesign
+                        config={config}
+                        onUpdate={this.updatePlotWithChanges}
+                      />
+                      Font size
+                    <Slider
+                      defaultValue={13}
+                      min={5}
+                      max={21}
+                      onAfterChange={(value) => {
+                        this.updatePlotWithChanges({ masterSize: value });
+                      }}
+                    />
+                    </Panel>
+                    </Collapse>
                 </Panel>
               </Collapse>
             </Space>
