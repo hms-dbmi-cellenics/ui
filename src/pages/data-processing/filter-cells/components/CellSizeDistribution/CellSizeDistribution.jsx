@@ -500,7 +500,6 @@ class CellSizeDistribution extends React.Component {
                   <Form.Item label='Toggle Legend'>
                     <Switch
                       defaultChecked
-                      disabled={!filtering}
                       onChange={(val) => this.updatePlotWithChanges({ legendEnabled: val })}
                     />
                   </Form.Item>
@@ -512,8 +511,6 @@ class CellSizeDistribution extends React.Component {
                     <Input
                       placeholder={config.xDefaultTitle}
                       onPressEnter={(val) => setAxis(val, 'x')}
-
-                      disabled={!filtering}
                     />
                   </Form.Item>
                   <Form.Item
@@ -522,7 +519,6 @@ class CellSizeDistribution extends React.Component {
                     <Input
                       placeholder={config.yDefaultTitle}
                       onPressEnter={(val) => setAxis(val, 'y')}
-                      disabled={!filtering}
                     />
                   </Form.Item>
                   </Panel>

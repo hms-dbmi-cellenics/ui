@@ -402,9 +402,7 @@ class MitochondrialContent extends React.Component {
         }
       }
     };
-    const MethodChange = (val) => {
-      console.log(val);
-    };
+
     return (
       <>
         <Row>
@@ -446,7 +444,6 @@ class MitochondrialContent extends React.Component {
                     <Select
                       defaultValue='option1'
                       style={{ width: 200 }}
-                      onChange={(val) => MethodChange(val)}
                       disabled={!filtering}
                     >
                       <Option value='option1'>Absolute threshold</Option>
