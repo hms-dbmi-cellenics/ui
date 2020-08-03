@@ -25,13 +25,13 @@ class MitochondrialContent extends React.Component {
       data: plotData,
       legendEnabled: true,
       minCellSize: 1000,
-      xAxisText: '#UMIs in cell',
-      yAxisText: '#UMIs * #Cells',
+      xAxisText: 'Fraction of mitochondrial reads',
+      yAxisText: 'Fraction of cells',
       xAxisText2: 'Cell rank',
       yAxisText2: "#UMI's in cell",
-      xDefaultTitle: '#UMIs in cell',
-      yDefaultTitle: '#UMIs * #Cells',
-      legendOrientation: 'right',
+      xDefaultTitle: 'Fraction of mitochondrial reads',
+      yDefaultTitle: 'Fraction of cells',
+      legendOrientation: 'top-right',
     };
   }
 
@@ -52,7 +52,6 @@ class MitochondrialContent extends React.Component {
         {
           fill: 'color',
           orient: legendOrientation,
-          title: 'Quality',
           encode: {
             title: {
               update: {
@@ -95,9 +94,7 @@ class MitochondrialContent extends React.Component {
         "padding": 5,
 
         "signals": [
-          { "name": "binOffset", "value": 0,
-            "bind": {"input": "range", "min": -0.1, "max": 0.1} },
-          { "name": "binStep", "value": 0.1,
+          { "name": "binStep", "value": 0.05,
             "bind": {"input": "range", "min": 0.001, "max": 0.4, "step": 0.001} }
         ],
 
@@ -113,7 +110,6 @@ class MitochondrialContent extends React.Component {
                 "type": "bin", 
                 "field": "fracMito",
                 "extent": [0, 1],
-                "anchor": {"signal": "binOffset"},
                 "step": {"signal": "binStep"},
                 "nice": false
               },
@@ -133,7 +129,7 @@ class MitochondrialContent extends React.Component {
               {
                 type: 'formula',
                 as: 'status',
-                expr: "(datum.bin1 <= 0.1) ? 'Mitochondrial' : 'Real'",
+                expr: "(datum.bin1 <= 0.1) ? 'Real' : 'Mitochondrial'",
               },              
             ]
           }
@@ -158,7 +154,7 @@ class MitochondrialContent extends React.Component {
             type: 'ordinal',
             range:
               [
-                'green', 'blue',
+                'blue', 'green',
               ],
             domain: {
               data: 'binned',
@@ -169,8 +165,13 @@ class MitochondrialContent extends React.Component {
         ],
 
         "axes": [
-          {"orient": "bottom", "scale": "xscale", "zindex": 1},
-          {"orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1}
+          {"orient": "bottom", "scale": "xscale", "zindex": 1,
+            title: {value: xAxisText}
+
+          },
+          {"orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1,
+            title: {value: yAxisText}
+          }
         ],
 
         "marks": [
@@ -197,7 +198,7 @@ class MitochondrialContent extends React.Component {
             "from": {"data": "plotData"},
             "encode": {
               "enter": {
-                "x": {"scale": "xscale", "field": "fracMito"},
+                "x": {"scale": "xscale", "field": "datum.fracMito"},
                 "width": {"value": 1},
                 "y": {"value": 25, "offset": {"signal": "height"}},
                 "height": {"value": 5},
@@ -215,101 +216,105 @@ class MitochondrialContent extends React.Component {
   }
 }
     return {
-      description: 'An interactive histogram',
-      width: 430,
-      height: 300,
-      padding: 5,
+        "$schema": "https://vega.github.io/schema/vega/v5.json",
+        "description": "An interactive histogram for visualizing a univariate distribution.",
+        "width": 430,
+        "height": 300,
+        "padding": 5,
 
-      signals: [
-        {
-          name: 'binStep',
-          value: 200,
-          bind: {
-            input: 'range', min: 100, max: 400, step: 1,
+        "signals": [
+          { "name": "binStep", "value": 0.1,
+            "bind": {"input": "range", "min": 0.001, "max": 0.5, "step": 0.001} }
+        ],
+
+        "data": [
+          {
+            "name": "plotData",
           },
-        },
-      ],
-      data: [
-        {
-          name: 'plotData',
-        },
-        {
-          name: 'binned',
-          source: 'plotData',
-          transform: [
-            {
-              type: 'bin',
-              field: 'u',
-              extent: [0, 1],
-              step: { signal: 'binStep' },
-              nice: false,
-            },
-            {
-              type: 'aggregate',
-              key: 'bin0',
-              groupby: ['bin0', 'bin1'],
-              fields: ['bin0'],
-              ops: ['count'],
-              as: ['count'],
-            },
-          ],
-        },
-      ],
-
-      scales: [
-        {
-          name: 'xscale',
-          type: 'linear',
-          range: 'width',
-          domain: [0, 1],
-        },
-        {
-          name: 'yscale',
-          type: 'linear',
-          range: 'height',
-          round: true,
-          domain: { data: 'binned', field: 'count' },
-          zero: true,
-          nice: true,
-        },
-      ],
-      axes: [
-        {
-          orient: 'bottom',
-          scale: 'xscale',
-          zindex: 1,
-          title: { value: xAxisText },
-        },
-        {
-          orient: 'left',
-          scale: 'yscale',
-          zindex: 1,
-          title: { value: yAxisText },
-        },
-      ],
-      marks: [
-        {
-          type: 'rect',
-          from: { data: 'binned' },
-          encode: {
-            enter: {
-              x: { scale: 'xscale', field: 'bin0' },
-              x2: {
-                scale: 'xscale',
-                field: 'bin1',
-                offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
+          {
+            "name": "binned",
+            "source": "plotData",
+            "transform": [
+              {
+                "type": "bin", 
+                "field": "cellSize",
+                "extent": [0, 6],
+                "step": {"signal": "binStep"},
+                "nice": false
               },
-              y: { scale: 'yscale', field: 'count' },
-              y2: { scale: 'yscale', value: 0 },
-              stroke: { value: 'black' },
-              strokeWidth: { value: 0.5 },
+              {
+                "type": "aggregate",
+                "key": "bin0",
+                "groupby": ["bin0", "bin1"],
+                "fields": ["bin0"],
+                "ops": ["count"],
+                "as": ["count"]
+              }             
+            ]
+          }
+        ],
+
+        "scales": [
+          {
+            "name": "xscale",
+            "type": "linear",
+            "range": "width",
+            "domain": [0, 6]
+          },
+          {
+            "name": "yscale",
+            "type": "linear",
+            "range": "height", "round": true,
+            "domain": {"data": "binned", "field": "count"},
+            "zero": true, "nice": true
+          },
+          {
+            name: 'color',
+            type: 'ordinal',
+            range:
+              [
+                'green', 'blue',
+              ],
+            domain: {
+              data: 'plotData',
+              field: 'status',
+              sort: true,
             },
+          },
+        ],
+
+        "axes": [
+          {"orient": "bottom", "scale": "xscale", "zindex": 1,
+            title: {value: xAxisText}
 
           },
-        },
-      ],
-      legends: legend,
-    };
+          {"orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1,
+            title: {value: yAxisText}
+          }
+        ],
+
+        "marks": [
+          {
+            "type": "rect",
+            "from": {"data": "binned"},
+            "encode": {
+              "update": {
+                "x": {"scale": "xscale", "field": "bin0"},
+                "x2": {"scale": "xscale", "field": "bin1",
+                      "offset": {"signal": "binStep > 0.02 ? -0.5 : 0"}},
+                "y": {"scale": "yscale", "field": "count"},
+                "y2": {"scale": "yscale", "value": 0},
+                fill: {
+                  scale: 'color',
+                  field: 'status',
+                },
+              },
+              "hover": { "fill": {"value": "firebrick"} }
+            }
+          },
+        ],
+        legends: legend
+  }
   }
 
   render() {
