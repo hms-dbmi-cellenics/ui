@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, List, Space, Switch,
-  InputNumber, Form, Input, Slider
+  InputNumber, Form, Input, Slider,
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
@@ -13,8 +13,8 @@ import plot1Pic from '../../../../../../static/media/plot1.png';
 import plot2Pic from '../../../../../../static/media/plot2.png';
 
 import plotData from './new_data.json';
-import TitleDesign from '../../../../plots-and-tables/components/TitleDesign'
-import FontDesign from '../../../../plots-and-tables/components/FontDesign'
+import TitleDesign from '../../../../plots-and-tables/components/TitleDesign';
+import FontDesign from '../../../../plots-and-tables/components/FontDesign';
 
 const { Panel } = Collapse;
 
@@ -46,8 +46,8 @@ class CellSizeDistribution extends React.Component {
       data: plotData,
     };
     this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
-
   }
+
   updatePlotWithChanges(obj) {
     this.setState((prevState) => {
       const newState = _.cloneDeep(prevState);
@@ -57,6 +57,7 @@ class CellSizeDistribution extends React.Component {
       return newState;
     });
   }
+
   generateData() {
     let { data } = this.state;
     data = _.cloneDeep(data);
@@ -79,7 +80,7 @@ class CellSizeDistribution extends React.Component {
   }
 
   generateSpec() {
-    const {config} = this.state;
+    const { config } = this.state;
     let legend = null;
     if (config.legendEnabled) {
       legend = [
@@ -204,7 +205,7 @@ class CellSizeDistribution extends React.Component {
             orient: 'bottom',
             scale: 'xscale',
             zindex: 1,
-            title: {value: config.xAxisText},
+            title: { value: config.xAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
             titleFontSize: { value: config.masterSize },
@@ -214,7 +215,7 @@ class CellSizeDistribution extends React.Component {
             orient: 'left',
             scale: 'yscale',
             zindex: 1,
-            title: {value: config.yAxisText},
+            title: { value: config.yAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
             titleFontSize: { value: config.masterSize },
@@ -247,14 +248,14 @@ class CellSizeDistribution extends React.Component {
           },
         ],
         legends: legend,
-    title:
-      {
-        text: { value: config.titleText },
-        anchor: { value: config.titleAnchor },
-        font: { value: config.masterFont },
-        dx: 10,
-        fontSize: { value: config.titleSize },
-      },
+        title:
+        {
+          text: { value: config.titleText },
+          anchor: { value: config.titleAnchor },
+          font: { value: config.masterFont },
+          dx: 10,
+          fontSize: { value: config.titleSize },
+        },
       };
     }
     return {
@@ -400,7 +401,7 @@ class CellSizeDistribution extends React.Component {
 
   render() {
     const data = { plotData: this.generateData() };
-    const {config} = this.state;
+    const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
     const listData = [
@@ -455,8 +456,11 @@ class CellSizeDistribution extends React.Component {
                 alt=''
                 src={plot1Pic}
                 style={{
-                  height: '100px', width: '100px', align: 'center', padding: '8px',
-                  border: '1px solid #000'
+                  height: '100px',
+                  width: '100px',
+                  align: 'center',
+                  padding: '8px',
+                  border: '1px solid #000',
 
                 }}
                 onClick={() => changePlot(true)}
@@ -465,8 +469,11 @@ class CellSizeDistribution extends React.Component {
                 alt=''
                 src={plot2Pic}
                 style={{
-                  height: '100px', width: '100px', align: 'center', padding: '8px',
-                  border: '1px solid #000'
+                  height: '100px',
+                  width: '100px',
+                  align: 'center',
+                  padding: '8px',
+                  border: '1px solid #000',
 
                 }}
                 onClick={() => changePlot(false)}
@@ -504,46 +511,46 @@ class CellSizeDistribution extends React.Component {
                     />
                   </Form.Item>
                   <Collapse accordion>
-                  <Panel header = "Axes">
-                  <Form.Item
-                    label='X axis Title'
-                  >
-                    <Input
-                      placeholder={config.xDefaultTitle}
-                      onPressEnter={(val) => setAxis(val, 'x')}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label='Y axis Title'
-                  >
-                    <Input
-                      placeholder={config.yDefaultTitle}
-                      onPressEnter={(val) => setAxis(val, 'y')}
-                    />
-                  </Form.Item>
-                  </Panel>
-                  <Panel header = "Title">
-                    <TitleDesign
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                   </Panel>
+                    <Panel header='Axes'>
+                      <Form.Item
+                        label='X axis Title'
+                      >
+                        <Input
+                          placeholder={config.xDefaultTitle}
+                          onPressEnter={(val) => setAxis(val, 'x')}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        label='Y axis Title'
+                      >
+                        <Input
+                          placeholder={config.yDefaultTitle}
+                          onPressEnter={(val) => setAxis(val, 'y')}
+                        />
+                      </Form.Item>
+                    </Panel>
+                    <Panel header='Title'>
+                      <TitleDesign
+                        config={config}
+                        onUpdate={this.updatePlotWithChanges}
+                      />
+                    </Panel>
                     <Panel header='Font' key='9'>
                       <FontDesign
                         config={config}
                         onUpdate={this.updatePlotWithChanges}
                       />
                       Font size
-                    <Slider
-                      defaultValue={13}
-                      min={5}
-                      max={21}
-                      onAfterChange={(value) => {
-                        this.updatePlotWithChanges({ masterSize: value });
-                      }}
-                    />
+                      <Slider
+                        defaultValue={13}
+                        min={5}
+                        max={21}
+                        onAfterChange={(value) => {
+                          this.updatePlotWithChanges({ masterSize: value });
+                        }}
+                      />
                     </Panel>
-                    </Collapse>
+                  </Collapse>
                 </Panel>
               </Collapse>
             </Space>
