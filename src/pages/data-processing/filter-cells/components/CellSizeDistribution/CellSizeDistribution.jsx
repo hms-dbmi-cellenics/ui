@@ -11,10 +11,8 @@ import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../../static/media/plot1.png';
 import plot2Pic from '../../../../../../static/media/plot2.png';
-
 import plotData from './new_data.json';
-import TitleDesign from '../../../../plots-and-tables/components/TitleDesign'
-import FontDesign from '../../../../plots-and-tables/components/FontDesign'
+import PlotStyling from '../components/PlotStyling'
 
 const { Panel } = Collapse;
 
@@ -495,56 +493,12 @@ class CellSizeDistribution extends React.Component {
                     onChange={(val) => this.updatePlotWithChanges({ minCellSize: val })}
                   />
                 </Panel>
-
-                <Panel header='Plot Styling' disabled={!filtering}>
-                  <Form.Item label='Toggle Legend'>
-                    <Switch
-                      defaultChecked
-                      onChange={(val) => this.updatePlotWithChanges({ legendEnabled: val })}
-                    />
-                  </Form.Item>
-                  <Collapse accordion>
-                  <Panel header = "Axes">
-                  <Form.Item
-                    label='X axis Title'
-                  >
-                    <Input
-                      placeholder={config.xDefaultTitle}
-                      onPressEnter={(val) => setAxis(val, 'x')}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label='Y axis Title'
-                  >
-                    <Input
-                      placeholder={config.yDefaultTitle}
-                      onPressEnter={(val) => setAxis(val, 'y')}
-                    />
-                  </Form.Item>
-                  </Panel>
-                  <Panel header = "Title">
-                    <TitleDesign
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                   </Panel>
-                    <Panel header='Font' key='9'>
-                      <FontDesign
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                      Font size
-                    <Slider
-                      defaultValue={13}
-                      min={5}
-                      max={21}
-                      onAfterChange={(value) => {
-                        this.updatePlotWithChanges({ masterSize: value });
-                      }}
-                    />
-                    </Panel>
-                    </Collapse>
-                </Panel>
+              <PlotStyling 
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  updatePlotWithChanges = {this.updatePlotWithChanges}
+                  setAxis = {setAxis}
+              />
               </Collapse>
             </Space>
           </Col>
