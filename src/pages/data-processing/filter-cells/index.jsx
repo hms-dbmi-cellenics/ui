@@ -11,13 +11,13 @@ class ProcessingViewPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      filtering1: true,
-      filtering2: true,
+      cellSizeFiltering: true,
+      MitochondrialFiltering: true,
     };
   }
 
   render() {
-    const { filtering1, filtering2 } = this.state;
+    const { cellSizeFiltering, MitochondrialFiltering } = this.state;
     return (
       <>
         <PageHeader
@@ -32,33 +32,31 @@ class ProcessingViewPage extends React.Component {
             header='Cell size Distribution'
             extra={(
               <Tooltip title='disable filter'>
-                <Switch defaultChecked onChange={(checked, event) => 
-                { 
-                  event.stopPropagation(); 
-                  this.setState({filtering1: checked}) 
-                }} 
+                <Switch defaultChecked onChange={(checked, event) => {
+                  event.stopPropagation();
+                  this.setState({ cellSizeFiltering: checked })
+                }}
                 />
               </Tooltip>
             )}
             key='1'
           >
-            <CellSizeDistribution filtering={filtering1} />
+            <CellSizeDistribution filtering={cellSizeFiltering} />
           </Panel>
           <Panel
             header='Mitochondrial content'
             extra={(
               <Tooltip title='disable filter'>
-                <Switch defaultChecked onChange={(checked, event) => 
-                { 
-                  event.stopPropagation(); 
-                  this.setState({filtering2: checked}) 
-                }}  
+                <Switch defaultChecked onChange={(checked, event) => {
+                  event.stopPropagation();
+                  this.setState({ MitochondrialFiltering: checked })
+                }}
                 />
               </Tooltip>
             )}
             key='2'
           >
-            <MitochondrialContent filtering={filtering2} />
+            <MitochondrialContent filtering={MitochondrialFiltering} />
           </Panel>
           <Panel header='Read alignment' key='3' />
           <Panel header='Classifier' key='4' />
