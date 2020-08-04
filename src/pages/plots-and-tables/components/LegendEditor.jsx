@@ -14,7 +14,6 @@ const LegendEditor = (props) => {
   const onChange = (e) => {
     setLegendEnabled(e.target.value);
     onUpdate({ legendEnabled: e.target.value });
-
   };
 
   return (
