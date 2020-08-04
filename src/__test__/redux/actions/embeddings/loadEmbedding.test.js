@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import loadEmbedding from '../../../../redux/actions/embeddings/loadEmbedding';
-import { initialEmbeddingState } from '../../../../redux/reducers/embeddingsReducer/initialState';
+import loadEmbedding from '../../../../redux/actions/embeddings';
+import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 
 import sendWork from '../../../../utils/sendWork';
 

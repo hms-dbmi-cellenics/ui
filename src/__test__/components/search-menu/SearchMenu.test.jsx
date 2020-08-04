@@ -39,8 +39,8 @@ describe('SearchMenu', () => {
     expect(menu.children().length).toEqual(4);
     expect(menu.childAt(1).find('Divider').length).toEqual(1);
     expect(menu.childAt(1).find('Divider').props().children).toEqual('category1');
-    expect(menu.childAt(2).props().children).toEqual('item 1');
-    expect(menu.childAt(3).props().children).toEqual('item 2');
+    expect(menu.childAt(2).props().children).toMatchSnapshot();
+    expect(menu.childAt(3).props().children).toMatchSnapshot();
   });
 
   it('renders correctly with category info', () => {
@@ -69,8 +69,8 @@ describe('SearchMenu', () => {
     expect(menu.children().length).toEqual(4);
     expect(menu.childAt(1).find('Divider').length).toEqual(1);
     expect(menu.childAt(1).find('Divider').props().children).toEqual('category1');
-    expect(menu.childAt(2).props().children).toEqual('item 1');
-    expect(menu.childAt(3).props().children).toEqual('item 2');
+    expect(menu.childAt(2).props().children).toMatchSnapshot();
+    expect(menu.childAt(3).props().children).toMatchSnapshot();
   });
 
   it('retrieves relevant items from menu on search', () => {

@@ -5,7 +5,7 @@ import {
 import _ from 'lodash';
 import DiffExprCompute from './DiffExprCompute';
 import DiffExprResults from './DiffExprResults';
-import { loadDifferentialExpression } from '../../../../redux/actions/differentialExpression';
+import loadDifferentialExpression from '../../../../redux/actions/differentialExpression';
 
 const DiffExprManager = (props) => {
   const { experimentId, view } = props;

@@ -1,5 +1,5 @@
-import genesReducer from '../../../redux/reducers/genesReducer';
-import initialState from '../../../redux/reducers/genesReducer/initialState';
+import genesReducer from '../../../redux/reducers/genes';
+import initialState from '../../../redux/reducers/genes/initialState';
 
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,

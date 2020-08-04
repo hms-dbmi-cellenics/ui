@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Input, Menu, Divider,
+  Input, Menu, Divider, Tooltip,
 } from 'antd';
-
 
 const SearchMenu = (props) => {
   const { options, categoryInfo, onSelect } = props;
@@ -33,10 +32,12 @@ const SearchMenu = (props) => {
       key={[item.key, 'item'].join('-')}
       icon={icon}
       onClick={() => {
-        onSelect(item.key, category);
+        onSelect(item.key, category, item.group);
       }}
     >
-      {item.name}
+      <Tooltip placement='left' title={item.description} mouseLeaveDelay={0}>
+        {item.name ?? item.key}
+      </Tooltip>
     </Menu.Item>
   );
 
@@ -68,9 +69,9 @@ SearchMenu.defaultProps = {
 
 
 SearchMenu.propTypes = {
+  onSelect: PropTypes.func,
   options: PropTypes.objectOf(PropTypes.array).isRequired,
   categoryInfo: PropTypes.object,
-  onSelect: PropTypes.func,
 };
 
 export default SearchMenu;

@@ -1,5 +1,5 @@
-import differentialExpressionReducer from '../../../redux/reducers/differentialExpressionReducer';
-import initialState from '../../../redux/reducers/differentialExpressionReducer/initialState';
+import differentialExpressionReducer from '../../../redux/reducers/differentialExpression';
+import initialState from '../../../redux/reducers/differentialExpression/initialState';
 
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,

@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import setFocusedGene from '../../../../redux/actions/genes/setFocusedGene';
-import initialState from '../../../../redux/reducers/genesReducer/initialState';
+import initialState from '../../../../redux/reducers/genes/initialState';
 
 import { GENES_FOCUS, GENES_UNFOCUS } from '../../../../redux/actionTypes/genes';
 

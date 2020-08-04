@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import loadPaginatedGeneProperties from '../../../../redux/actions/genes/loadPaginatedGeneProperties';
-import initialState from '../../../../redux/reducers/genesReducer/initialState';
+import initialState from '../../../../redux/reducers/genes/initialState';
 
 import sendWork from '../../../../utils/sendWork';
 

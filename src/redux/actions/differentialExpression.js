@@ -1,8 +1,8 @@
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
-} from '../../actionTypes/differentialExpression';
+} from '../actionTypes/differentialExpression';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchCachedWork } from '../../utils/cacheRequest';
 
 const ComparisonTypes = {
   One: 'Versus rest',
