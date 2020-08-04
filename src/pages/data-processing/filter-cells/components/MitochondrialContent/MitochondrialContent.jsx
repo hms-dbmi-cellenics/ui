@@ -14,7 +14,7 @@ import plot2Pic from '../../../../../../static/media/plot4.png';
 
 import plotData from './data2.json';
 
-import PlotStyling from '../components/PlotStyling';
+import PlotStyling from '../PlotStyling';
 
 
 const { Panel } = Collapse;

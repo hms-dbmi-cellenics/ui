@@ -5,9 +5,9 @@ import {
 } from 'antd';
 import React from 'react';
 
-import TitleDesign from '../../../../plots-and-tables/components/TitleDesign';
-import FontDesign from '../../../../plots-and-tables/components/FontDesign';
-import LegendEditor from '../../../../plots-and-tables/components/LegendEditor';
+import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
+import FontDesign from '../../../plots-and-tables/components/FontDesign';
+import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
 
 
 const { Panel } = Collapse;

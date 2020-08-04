@@ -12,7 +12,7 @@ import { Vega } from '../../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../../static/media/plot1.png';
 import plot2Pic from '../../../../../../static/media/plot2.png';
 import plotData from './new_data.json';
-import PlotStyling from '../components/PlotStyling';
+import PlotStyling from '../PlotStyling';
 
 const { Panel } = Collapse;
 
