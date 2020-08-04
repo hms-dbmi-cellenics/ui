@@ -4,15 +4,15 @@
 
 import React from 'react';
 import {
-  Collapse, Row, Col, List, Space, Switch,
-  InputNumber, Form, Input, Slider
+  Collapse, Row, Col, List, Space,
+  InputNumber,
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../../static/media/plot1.png';
 import plot2Pic from '../../../../../../static/media/plot2.png';
 import plotData from './new_data.json';
-import PlotStyling from '../components/PlotStyling'
+import PlotStyling from '../components/PlotStyling';
 
 const { Panel } = Collapse;
 
@@ -24,7 +24,8 @@ class CellSizeDistribution extends React.Component {
       plotToDraw: true,
       data: plotData,
       legendEnabled: true,
-      minCellSize: 1000,
+      minCellSize: 10800,
+      minCellSize2: 50,
       xAxisText: '#UMIs in cell',
       yAxisText: '#UMIs * #Cells',
       xAxisText2: 'Cell rank',
@@ -44,8 +45,8 @@ class CellSizeDistribution extends React.Component {
       data: plotData,
     };
     this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
-
   }
+
   updatePlotWithChanges(obj) {
     this.setState((prevState) => {
       const newState = _.cloneDeep(prevState);
@@ -55,10 +56,10 @@ class CellSizeDistribution extends React.Component {
       return newState;
     });
   }
+
   generateData() {
     let { data } = this.state;
     data = _.cloneDeep(data);
-
     data = data.map((datum) => {
       let newStatus;
 
@@ -77,8 +78,11 @@ class CellSizeDistribution extends React.Component {
   }
 
   generateSpec() {
-    const {config} = this.state;
+    const { config } = this.state;
     let legend = null;
+    const coloringExpression = `(datum.bin1 < ${config.minCellSize - 2000}) ? 'low' : (datum.bin1 >${config.minCellSize}) ? 'high' : 'unknown'`;
+    const coloringExpression2 = `(datum.cell_rank < ${config.minCellSize2 - 20}) ? 'low' : (datum.cell_rank >${config.minCellSize2}) ? 'high' : 'unknown'`;
+
     if (config.legendEnabled) {
       legend = [
         {
@@ -145,7 +149,7 @@ class CellSizeDistribution extends React.Component {
               {
                 type: 'bin',
                 field: 'u',
-                extent: [config.minCellSize, 17000],
+                extent: [0, 17000],
                 step: { signal: 'binStep' },
                 nice: false,
               },
@@ -161,7 +165,7 @@ class CellSizeDistribution extends React.Component {
               {
                 type: 'formula',
                 as: 'status',
-                expr: "(datum.bin1 < 8800) ? 'low' : (datum.bin1 > 10800) ? 'high' : 'unknown'",
+                expr: coloringExpression,
               },
             ],
           },
@@ -202,7 +206,7 @@ class CellSizeDistribution extends React.Component {
             orient: 'bottom',
             scale: 'xscale',
             zindex: 1,
-            title: {value: config.xAxisText},
+            title: { value: config.xAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
             titleFontSize: { value: config.masterSize },
@@ -212,7 +216,7 @@ class CellSizeDistribution extends React.Component {
             orient: 'left',
             scale: 'yscale',
             zindex: 1,
-            title: {value: config.yAxisText},
+            title: { value: config.yAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
             titleFontSize: { value: config.masterSize },
@@ -245,14 +249,14 @@ class CellSizeDistribution extends React.Component {
           },
         ],
         legends: legend,
-    title:
-      {
-        text: { value: config.titleText },
-        anchor: { value: config.titleAnchor },
-        font: { value: config.masterFont },
-        dx: 10,
-        fontSize: { value: config.titleSize },
-      },
+        title:
+        {
+          text: { value: config.titleText },
+          anchor: { value: config.titleAnchor },
+          font: { value: config.masterFont },
+          dx: 10,
+          fontSize: { value: config.titleSize },
+        },
       };
     }
     return {
@@ -271,7 +275,7 @@ class CellSizeDistribution extends React.Component {
             {
               type: 'formula',
               as: 'status',
-              expr: "(datum.cell_rank < 50) ? 'low' : (datum.cell_rank > 90) ? 'high' : 'unknown'",
+              expr: coloringExpression2,
             },
           ],
         },
@@ -398,7 +402,7 @@ class CellSizeDistribution extends React.Component {
 
   render() {
     const data = { plotData: this.generateData() };
-    const {config} = this.state;
+    const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
     const listData = [
@@ -423,20 +427,12 @@ class CellSizeDistribution extends React.Component {
         });
       }
     };
-    const setAxis = (val, axe) => {
-      if (axe === 'x') {
-        if (config.plotToDraw) {
-          this.updatePlotWithChanges({ xAxisText: val.target.value });
-        } else {
-          this.updatePlotWithChanges({ xAxisText2: val.target.value });
-        }
-      }
-      if (axe === 'y') {
-        if (config.plotToDraw) {
-          this.updatePlotWithChanges({ yAxisText: val.target.value });
-        } else {
-          this.updatePlotWithChanges({ yAxisText2: val.target.value });
-        }
+
+    const changeCellSize = (val) => {
+      if (config.plotToDraw) {
+        this.updatePlotWithChanges({ minCellSize: val });
+      } else {
+        this.updatePlotWithChanges({ minCellSize2: val / 5 });
       }
     };
     return (
@@ -453,8 +449,11 @@ class CellSizeDistribution extends React.Component {
                 alt=''
                 src={plot1Pic}
                 style={{
-                  height: '100px', width: '100px', align: 'center', padding: '8px',
-                  border: '1px solid #000'
+                  height: '100px',
+                  width: '100px',
+                  align: 'center',
+                  padding: '8px',
+                  border: '1px solid #000',
 
                 }}
                 onClick={() => changePlot(true)}
@@ -463,8 +462,11 @@ class CellSizeDistribution extends React.Component {
                 alt=''
                 src={plot2Pic}
                 style={{
-                  height: '100px', width: '100px', align: 'center', padding: '8px',
-                  border: '1px solid #000'
+                  height: '100px',
+                  width: '100px',
+                  align: 'center',
+                  padding: '8px',
+                  border: '1px solid #000',
 
                 }}
                 onClick={() => changePlot(false)}
@@ -490,15 +492,14 @@ class CellSizeDistribution extends React.Component {
                   <InputNumber
                     disabled={!filtering}
                     defaultValue={1000}
-                    onChange={(val) => this.updatePlotWithChanges({ minCellSize: val })}
+                    onChange={(val) => changeCellSize(val)}
                   />
                 </Panel>
-              <PlotStyling 
+                <PlotStyling
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
-                  updatePlotWithChanges = {this.updatePlotWithChanges}
-                  setAxis = {setAxis}
-              />
+                  updatePlotWithChanges={this.updatePlotWithChanges}
+                />
               </Collapse>
             </Space>
           </Col>
