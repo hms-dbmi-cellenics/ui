@@ -10,7 +10,7 @@ import DiffExprManager from '../../../../../pages/data-exploration/components/di
 import DiffExprCompute from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprCompute';
 import DiffExprResults from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprResults';
 import connectionPromise from '../../../../../utils/socketConnection';
-import initialState from '../../../../../redux/reducers/differentialExpressionReducer/initialState';
+import initialState from '../../../../../redux/reducers/differentialExpression/initialState';
 
 jest.mock('localforage');
 jest.mock('../../../../../utils/socketConnection');

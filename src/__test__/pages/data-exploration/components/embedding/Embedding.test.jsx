@@ -15,7 +15,7 @@ import Embedding from '../../../../../pages/data-exploration/components/embeddin
 import CrossHair from '../../../../../pages/data-exploration/components/embedding/CrossHair';
 import CellInfo from '../../../../../pages/data-exploration/components/CellInfo';
 import { CELL_SETS_CREATE } from '../../../../../redux/actionTypes/cellSets';
-import { initialEmbeddingState } from '../../../../../redux/reducers/embeddingsReducer/initialState';
+import { initialEmbeddingState } from '../../../../../redux/reducers/embeddings/initialState';
 
 jest.mock('localforage');
 

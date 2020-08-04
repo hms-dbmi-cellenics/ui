@@ -1,5 +1,5 @@
-import cellSetsReducer from '../../../redux/reducers/cellSetsReducer';
-import initialState from '../../../redux/reducers/cellSetsReducer/initialState';
+import cellSetsReducer from '../../../redux/reducers/cellSets';
+import initialState from '../../../redux/reducers/cellSets/initialState';
 
 import {
   CELL_SETS_LOADING, CELL_SETS_LOADED,

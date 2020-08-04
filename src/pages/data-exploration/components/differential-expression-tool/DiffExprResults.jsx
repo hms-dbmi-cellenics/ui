@@ -108,7 +108,6 @@ const DiffExprResults = (props) => {
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
-
       <Button size='small' onClick={onGoBack}>Go Back</Button>
       <Table
         columns={columns}
@@ -116,7 +115,7 @@ const DiffExprResults = (props) => {
         loading={isLoading}
         size='small'
         pagination={tableState?.pagination}
-        scroll={{ x: 200, y: 400 }}
+        scroll={{ x: 200, y: 350 }}
         onChange={handleTableChange}
       />
     </Space>

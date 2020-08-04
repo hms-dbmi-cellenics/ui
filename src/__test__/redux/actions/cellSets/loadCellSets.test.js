@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
-import initialState from '../../../../redux/reducers/cellSetsReducer/initialState';
+import initialState from '../../../../redux/reducers/cellSets/initialState';
 
 jest.mock('localforage');
 
