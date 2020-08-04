@@ -8,6 +8,7 @@ const sendWork = async (experimentId, timeout, body) => {
   const timeoutDate = moment().add(timeout, 's').toISOString();
 
   const io = await connectionPromise();
+
   const request = {
     uuid: requestUuid,
     socketId: io.id,
@@ -15,6 +16,7 @@ const sendWork = async (experimentId, timeout, body) => {
     timeout: timeoutDate,
     body,
   };
+
   io.emit('WorkRequest', request);
 
   const responsePromise = new Promise((resolve) => {
