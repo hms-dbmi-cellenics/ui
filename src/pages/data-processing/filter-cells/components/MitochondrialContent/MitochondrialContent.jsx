@@ -431,9 +431,9 @@ class MitochondrialContent extends React.Component {
     };
     const changeFraction = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ maxFraction: val });
+        this.updatePlotWithChanges({ maxFraction: val.target.value });
       } else {
-        this.updatePlotWithChanges({ maxFraction2: val });
+        this.updatePlotWithChanges({ maxFraction2: val.target.value });
       }
     };
     return (
@@ -494,7 +494,7 @@ class MitochondrialContent extends React.Component {
                       <InputNumber
                         disabled={!filtering}
                         defaultValue={0}
-                        onChange={(val) => changeFraction(val)}
+                        onPressEnter={(val) => changeFraction(val)}
                       />
                     </Space>
                   </Space>

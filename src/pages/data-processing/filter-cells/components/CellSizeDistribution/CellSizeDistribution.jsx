@@ -430,9 +430,9 @@ class CellSizeDistribution extends React.Component {
 
     const changeCellSize = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ minCellSize: val });
+        this.updatePlotWithChanges({ minCellSize: val.target.value });
       } else {
-        this.updatePlotWithChanges({ minCellSize2: val / 5 });
+        this.updatePlotWithChanges({ minCellSize2: val.target.value / 5 });
       }
     };
     return (
@@ -492,7 +492,7 @@ class CellSizeDistribution extends React.Component {
                   <InputNumber
                     disabled={!filtering}
                     defaultValue={1000}
-                    onChange={(val) => changeCellSize(val)}
+                    onPressEnter={(val) => changeCellSize(val)}
                   />
                 </Panel>
                 <PlotStyling

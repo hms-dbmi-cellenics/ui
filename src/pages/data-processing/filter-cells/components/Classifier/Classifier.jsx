@@ -9,8 +9,6 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
-import plot1Pic from '../../../../../../static/media/plot1.png';
-import plot2Pic from '../../../../../../static/media/plot2.png';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
 
@@ -21,24 +19,18 @@ class Classifier extends React.Component {
     super(props);
 
     this.defaultConfig = {
-      plotToDraw: true,
       data: plotData,
-      legendEnabled: true,
-      minCellSize: 10800,
-      minCellSize2: 50,
-      xAxisText: '#UMIs in cell',
-      yAxisText: '#UMIs * #Cells',
-      xAxisText2: 'Cell rank',
-      yAxisText2: "#UMI's in cell",
-      xDefaultTitle: '#UMIs in cell',
-      yDefaultTitle: '#UMIs * #Cells',
-      legendOrientation: 'right',
+      xAxisText: 'log10[ cell size (molecules) ]',
+      yAxisText: 'classifier prob',
+      xDefaultTitle: 'log10[ cell size (molecules) ]',
+      yDefaultTitle: 'classifier prob',
       gridWeight: 0,
       titleSize: 12,
       titleText: '',
       titleAnchor: 'start',
       masterFont: 'sans-serif',
       masterSize: 13,
+      minProbability: 0.82,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -64,49 +56,7 @@ class Classifier extends React.Component {
 
   generateSpec() {
     const { config } = this.state;
-    let legend = null;
-    if (config.legendEnabled) {
-      legend = [
-        {
-          fill: 'color',
-          orient: config.legendOrientation,
-          title: 'Quality',
-          encode: {
-            title: {
-              update: {
-                fontSize: { value: 14 },
-              },
-            },
-            labels: {
-              interactive: true,
-              update: {
-                fontSize: { value: 12 },
-                fill: { value: 'black' },
-              },
-              hover: {
-                fill: { value: 'firebrick' },
-              },
-            },
-            symbols: {
-              update: {
-                stroke: { value: 'transparent' },
-              },
-            },
-            legend: {
-              update: {
-                stroke: { value: '#ccc' },
-                strokeWidth: { value: 1.5 },
-              },
-            },
-          },
-        },
-      ];
-    } else {
-      legend = null;
-    }
     return {
-      $schema: 'https://vega.github.io/schema/vega/v5.json',
-      description: 'A contour plot example, overlaying a density estimate on scatter plot points.',
       width: 500,
       height: 400,
       padding: 5,
@@ -155,7 +105,7 @@ class Classifier extends React.Component {
             {
               type: 'isocontour',
               field: 'grid',
-              levels: 5,
+              levels: 10,
             },
           ],
         },
@@ -179,16 +129,6 @@ class Classifier extends React.Component {
           domain: { data: 'plotData', field: 'classifierP' },
           range: 'height',
         },
-        {
-          name: 'color',
-          type: 'ordinal',
-          domain: {
-            data: 'plotData',
-            field: 'Origin',
-            sort: { order: 'descending' },
-          },
-          range: 'category',
-        },
       ],
       axes: [
         {
@@ -197,7 +137,7 @@ class Classifier extends React.Component {
           domain: false,
           orient: 'bottom',
           tickCount: 5,
-          title: 'size',
+          title: config.xAxisText,
         },
         {
           scale: 'y',
@@ -205,11 +145,8 @@ class Classifier extends React.Component {
           domain: false,
           orient: 'left',
           titlePadding: 5,
-          title: 'classifierP',
+          title: config.yAxisText,
         },
-      ],
-      legends: [
-        { stroke: 'color', symbolType: 'stroke' },
       ],
       marks: [
         {
@@ -242,11 +179,32 @@ class Classifier extends React.Component {
               type: 'heatmap',
               field: 'datum.grid',
               resolve: { signal: 'resolve' },
-              color: { expr: "scale('color', datum.datum.Origin)" },
+              color: '#1361a8',
             },
           ],
         },
+        {
+          type: 'rule',
+          encode: {
+            update: {
+              x: { value: 0 },
+              x2: { field: { group: 'width' } },
+              y: { scale: 'y', value: config.minProbability, round: true },
+              strokeWidth: { value: 2 },
+              strokeDash: { value: [8, 4] },
+              stroke: { value: 'red' },
+            },
+          },
+        },
       ],
+      title:
+      {
+        text: { value: config.titleText },
+        anchor: { value: config.titleAnchor },
+        font: { value: config.masterFont },
+        dx: 10,
+        fontSize: { value: config.titleSize },
+      },
     };
   }
 
@@ -255,27 +213,9 @@ class Classifier extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
-    const changePlot = (val) => {
-      this.updatePlotWithChanges({ plotToDraw: val });
-      if (!config.plotToDraw) {
-        this.updatePlotWithChanges({
-          xDefaultTitle: config.xAxisText,
-          yDefaultTitle: config.yAxisText,
-        });
-      } else {
-        this.updatePlotWithChanges({
-          xDefaultTitle: config.xAxisText2,
-          yDefaultTitle: config.yAxisText2,
-        });
-      }
-    };
-
-    const changeCellSize = (val) => {
-      if (config.plotToDraw) {
-        this.updatePlotWithChanges({ minCellSize: val });
-      } else {
-        this.updatePlotWithChanges({ minCellSize2: val / 5 });
-      }
+    console.log(config.minProbability);
+    const minProbabilityChange = (val) => {
+      this.updatePlotWithChanges({ minProbability: val.target.value });
     };
     return (
       <>
@@ -284,48 +224,17 @@ class Classifier extends React.Component {
           <Col span={13}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
-
-          <Col span={5}>
-            <Space direction='vertical'>
-              <img
-                alt=''
-                src={plot1Pic}
-                style={{
-                  height: '100px',
-                  width: '100px',
-                  align: 'center',
-                  padding: '8px',
-                  border: '1px solid #000',
-
-                }}
-                onClick={() => changePlot(true)}
-              />
-              <img
-                alt=''
-                src={plot2Pic}
-                style={{
-                  height: '100px',
-                  width: '100px',
-                  align: 'center',
-                  padding: '8px',
-                  border: '1px solid #000',
-
-                }}
-                onClick={() => changePlot(false)}
-              />
-            </Space>
-          </Col>
-
-
-          <Col span={6}>
+          <Col span={11}>
             <Space direction='vertical'>
               <Collapse>
                 <Panel header='Filtering Settings' disabled={!filtering}>
                   Min probability:
                   <InputNumber
                     disabled={!filtering}
-                    defaultValue={1000}
-                    onChange={(val) => changeCellSize(val)}
+                    defaultValue={0.82}
+                    max={1}
+                    min={0}
+                    onPressEnter={(val) => minProbabilityChange(val)}
                   />
                 </Panel>
                 <PlotStyling
