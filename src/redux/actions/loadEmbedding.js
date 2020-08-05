@@ -30,10 +30,7 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
   };
 
   try {
-    const resp = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body, 3600, 1);
-
-    const data = JSON.parse(resp[1].body);
-
+    const data = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body, 3600, 1);
     return dispatch({
       type: EMBEDDINGS_LOADED,
       payload: {

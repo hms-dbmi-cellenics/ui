@@ -14,15 +14,13 @@ import { fetchCachedWork } from '../../../../../utils/cacheRequest';
 jest.mock('localforage');
 
 jest.mock('../../../../../utils/cacheRequest', () => ({
-  fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve([{
-    body: JSON.stringify({
-      rows: [{
-        gene_names: 'R3ALG3N3',
-        dispersions: 12.3131,
-      }],
-      total: 1,
-    }),
-  }]))),
+  fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
+    rows: [{
+      gene_names: 'R3ALG3N3',
+      dispersions: 12.3131,
+    }],
+    total: 1,
+  }))),
 }));
 
 const mockStore = configureMockStore([thunk]);

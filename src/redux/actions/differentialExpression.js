@@ -34,8 +34,7 @@ const loadDifferentialExpression = (
   }
 
   try {
-    const res = await fetchCachedWork(experimentId, REQUEST_TIMEOUT, body);
-    const data = JSON.parse(res[0].body);
+    const data = await fetchCachedWork(experimentId, REQUEST_TIMEOUT, body);
     const { rows } = data;
 
     return dispatch({

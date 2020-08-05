@@ -38,17 +38,61 @@ const cacheFetch = async (endpoint, options = {}, ttl = 900) => {
   throw new Error('Disabling network interaction on server');
 };
 
+const decomposeBody = async (body, experimentId) => {
+  const { genes: requestedGenes } = body;
+  const missingDataKeys = {};
+  const cachedData = {};
+
+  await Promise.all(requestedGenes.map(async (g) => {
+    const newBody = {
+      ...body,
+      genes: g,
+    };
+    const key = createObjectHash({ experimentId, newBody });
+    const data = await cache.get(key);
+    if (data) {
+      cachedData[g] = data;
+    } else {
+      missingDataKeys[g] = key;
+    }
+  }));
+
+  return { missingDataKeys, cachedData };
+};
+
+const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, ttl = 900) => {
+  const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
+  const missingGenes = Object.keys(missingDataKeys);
+  if (missingGenes.length === 0) {
+    return cachedData;
+  }
+  const response = await sendWork(experimentId, timeout, { ...body, genes: missingGenes });
+
+  const responseData = JSON.parse(response.results[0].body);
+  Object.keys(missingDataKeys).forEach(async (gene) => {
+    await cache._set(missingDataKeys[gene], responseData[gene], ttl);
+  });
+
+  return responseData;
+};
 
 const fetchCachedWork = async (experimentId, timeout, body, ttl = 900) => {
   if (isBrowser) {
+    if (body.name === 'GeneExpression') {
+      return fetchCachedGeneExpressionWork(experimentId, timeout, body, ttl);
+    }
     const key = createObjectHash({ experimentId, body });
     const data = await cache.get(key);
     if (data) return data;
     const response = await sendWork(experimentId, timeout, body);
-    await cache._set(key, response.results, ttl);
-    return response.results;
+    const responseData = JSON.parse(response.results[0].body);
+    await cache._set(key, responseData, ttl);
+    return responseData;
   }
   throw new Error('Disabling network interaction on server');
 };
 
-export { cacheFetch, fetchCachedWork, objectToSortedString };
+
+export {
+  cacheFetch, fetchCachedWork, fetchCachedGeneExpressionWork, objectToSortedString,
+};
