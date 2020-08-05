@@ -34,14 +34,22 @@ const loadGeneExpression = (
     genesToFetch = genesToFetch.filter((gene) => !genesAlreadyLoaded.has(gene));
   }
 
+  if (genesToFetch.length === 0) {
+    return dispatch({
+      type: GENES_EXPRESSION_LOADED,
+      payload: {
+        experimentId,
+      },
+    });
+  }
+
   const body = {
     name: 'GeneExpression',
     genes: genesToFetch,
   };
 
   try {
-    const res = await fetchCachedWork(experimentId, 30, body);
-    const data = JSON.parse(res[0].body);
+    const data = await fetchCachedWork(experimentId, 30, body);
 
     dispatch({
       type: GENES_EXPRESSION_LOADED,

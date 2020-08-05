@@ -1,17 +1,100 @@
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { cacheFetch, objectToSortedString } from '../../utils/cacheRequest';
+import { cacheFetch, fetchCachedWork, objectToSortedString } from '../../utils/cacheRequest';
 
 enableFetchMocks();
-const mockGet = jest.fn();
+
+const fakeCacheKeyMappings = {
+  A: 'fd3161a878f67ebf54018720cffd6a66',
+  B: '10250a11679234110a1c260d6fd81d3c',
+  C: '76bf160685c4c80c67abd9a701da23e6',
+  D: '21671038b9ac73c1f08a94c8213cb872',
+  E: '33faa711a94a2028b5bae1778126aec0',
+};
+
+const fakeData = {
+  A: {
+    min: 0,
+    max: 6.8,
+    expression: [0, 0, 0, 1.56, 0, 6.8, 3.4],
+  },
+  B: {
+    min: 0,
+    max: 6.8,
+    expression: [0, 0, 0, 2.56, 0, 6.8, 2.56],
+  },
+  C: {
+    min: 0,
+    max: 3.4,
+    expression: [0, 0, 0, 3.56, 0, 4.8, 3.4],
+  },
+  D: {
+    min: 0,
+    max: 6.8,
+    expression: [0, 0, 0, 1.56, 0, 6.8, 3.4],
+  },
+  E: { hello: 'world' },
+};
+
+const fakeCacheContents = {
+  fd3161a878f67ebf54018720cffd6a66: 'A',
+  '10250a11679234110a1c260d6fd81d3c': 'B',
+  f5c957411a28de68f35e1f5c8a29da7e: 'C',
+  '33faa711a94a2028b5bae1778126aec0': 'E',
+};
+
+const mockGet = jest.fn((x) => {
+  if (x in fakeCacheContents) {
+    return fakeData[fakeCacheContents[x]];
+  }
+  return null;
+});
 const mockSet = jest.fn();
 
+const mockSendWork = jest.fn((experimentId, timeout, body) => {
+  const wantedGenes = body.genes;
+  const returnedBody = {};
+  wantedGenes.forEach((gene) => {
+    // eslint-disable-next-line no-param-reassign
+    returnedBody[gene] = fakeData[gene];
+  });
+  return {
+    results: [{
+      body: JSON.stringify(
+        returnedBody,
+      ),
+    }],
+  };
+});
+
 jest.mock('../../utils/cache', () => ({
-  get: jest.fn((x) => { console.log('I am a mocked get: ', x); mockGet(); return 'blabla'; }),
-  _set: jest.fn((x) => { console.log('I am a mocked set: ', x); mockSet(); }),
+  get: jest.fn((x) => mockGet(x)),
+  _set: jest.fn((key, val) => mockSet(key, val)),
 }));
 
+jest.mock('../../utils/sendWork', () => ({
+  __esModule: true, // this property makes it work
+  default: jest.fn((experimentId, timeout, body) => mockSendWork(experimentId, timeout, body)),
+}));
 
-describe('fetch things', () => {
+describe('tests for fetchCachedWork', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('test fetchCachedWork with GeneExpression task', async () => {
+    const experimentId = '1234';
+    const res = await fetchCachedWork(experimentId, 10, {
+      name: 'GeneExpression',
+      genes: ['A', 'B', 'C', 'D'],
+    });
+    expect(res).toEqual({ D: fakeData.D });
+    expect(mockSendWork).toHaveBeenCalledWith(experimentId, 10, { name: 'GeneExpression', genes: ['D'] });
+    expect(mockGet).toHaveBeenCalledTimes(4);
+    expect(mockSet).toHaveBeenCalledTimes(1);
+    expect(mockSet).toHaveBeenCalledWith(fakeCacheKeyMappings.D, fakeData.D);
+  });
+});
+
+describe('tests for cacheFetch', () => {
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
     fetchMock.resetMocks();
@@ -21,11 +104,10 @@ describe('fetch things', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  it('fetches results from cache when the request is GET', async () => {
-    const res = await cacheFetch('https://test.com', { method: 'GET' });
-    expect(res).toEqual('blabla');
+  it('attempts to fetch results from cache when the request is GET', async () => {
+    await cacheFetch('https://test.com', { method: 'GET' });
     expect(mockGet).toBeCalledTimes(1);
-    expect(mockSet).toBeCalledTimes(0);
+    expect(mockSet).toBeCalledTimes(1);
   });
   it('does not fetch results from cache when the request is PUT', async () => {
     await cacheFetch('https://test.com', { method: 'PUT' });
@@ -34,8 +116,8 @@ describe('fetch things', () => {
   });
   it('retrives data from cache if no options are provided', async () => {
     await cacheFetch('https://test.com');
-    expect(mockSet).toBeCalledTimes(0);
     expect(mockGet).toBeCalledTimes(1);
+    expect(mockSet).toBeCalledTimes(0);
   });
   it('the object the hash will be computed on is sorted', () => {
     const options = {

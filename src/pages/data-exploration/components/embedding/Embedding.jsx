@@ -13,7 +13,7 @@ import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import CrossHair from './CrossHair';
 import CellInfo from '../CellInfo';
-import loadEmbedding from '../../../../redux/actions/embeddings';
+import loadEmbedding from '../../../../redux/actions/loadEmbedding';
 import { createCellSet } from '../../../../redux/actions/cellSets';
 import { loadGeneExpression } from '../../../../redux/actions/genes';
 

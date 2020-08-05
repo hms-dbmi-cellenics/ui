@@ -1,6 +1,6 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import loadEmbedding from '../../../../redux/actions/embeddings';
+import loadEmbedding from '../../../../redux/actions/loadEmbedding';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 
 import sendWork from '../../../../utils/sendWork';
@@ -17,6 +17,10 @@ const mockStore = configureStore([thunk]);
 describe('loadEmbedding action', () => {
   const experimentId = '1234';
   const embeddingType = '4567';
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('Does not dispatch on already loaded embedding', async () => {
     const store = mockStore(

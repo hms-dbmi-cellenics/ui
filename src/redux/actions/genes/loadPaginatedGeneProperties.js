@@ -43,11 +43,8 @@ const loadPaginatedGeneProperties = (
   }
 
   try {
-    const res = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
-
-    const { rows, total } = JSON.parse(res[0].body);
+    const { rows, total } = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
     const loadedProperties = {};
-
     rows.forEach((row) => {
       const { gene_names: geneName, ...rest } = row;
 
