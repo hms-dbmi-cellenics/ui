@@ -47,9 +47,9 @@ const Header = () => {
     <SearchMenu
       options={categoryItems}
       categoryInfo={categoryInfo}
-      onSelect={(key, category, group) => {
-        if (group) {
-          dispatch(addToWindow(key, group));
+      onSelect={(key, category, belongsToGroup) => {
+        if (belongsToGroup) {
+          dispatch(addToWindow(key, belongsToGroup));
         } else {
           dispatch(addWindow(key));
         }

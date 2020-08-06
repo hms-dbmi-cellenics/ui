@@ -6,7 +6,6 @@ import embeddingsReducer from './embeddings';
 import genesReducer from './genes';
 import differentialExpressionReducer from './differentialExpression';
 import layoutReducer from './layout/layout';
-
 import { UPDATE_CELL_INFO } from '../actionTypes';
 
 const cellInfoReducer = (state = {}, action) => {
