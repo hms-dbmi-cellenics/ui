@@ -36,6 +36,7 @@ class GenesVsUMIs extends React.Component {
       titleAnchor: 'start',
       masterFont: 'sans-serif',
       masterSize: 13,
+      Stringency: 2.1,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -112,6 +113,8 @@ class GenesVsUMIs extends React.Component {
             type: 'linear',
             range: 'width',
             domain: [2, 5],
+            domainMin: 2,
+
           },
           {
             name: 'yscale',
@@ -167,6 +170,32 @@ class GenesVsUMIs extends React.Component {
               hover: { fill: { value: 'firebrick' } },
             },
           },
+          {
+            type: 'rule',
+            encode: {
+              update: {
+                x: { scale: 'xscale', value: config.Stringency },
+                y: { value: 0 },
+                y2: { field: { group: 'height' } },
+                strokeWidth: { value: 2 },
+                strokeDash: { value: [8, 4] },
+                stroke: { value: 'red' },
+              },
+            },
+          },
+          {
+            type: 'rule',
+            encode: {
+              update: {
+                x: { scale: 'xscale', value: 7 - config.Stringency },
+                y: { value: 0 },
+                y2: { field: { group: 'height' } },
+                strokeWidth: { value: 2 },
+                strokeDash: { value: [8, 4] },
+                stroke: { value: 'red' },
+              },
+            },
+          },
         ],
         title:
         {
@@ -202,7 +231,8 @@ class GenesVsUMIs extends React.Component {
           round: true,
           nice: true,
           zero: true,
-          domain: { data: 'plotData', field: 'genes' },
+          domain: [0, 5],
+          domainMin: 1,
           range: 'width',
         },
         {
@@ -251,7 +281,41 @@ class GenesVsUMIs extends React.Component {
             },
           },
         },
+        {
+          type: 'rule',
+          encode: {
+            update: {
+              x: { scale: 'x', value: config.Stringency },
+              y: { value: 0 },
+              y2: { field: { group: 'height' } },
+              strokeWidth: { value: 2 },
+              strokeDash: { value: [8, 4] },
+              stroke: { value: 'red' },
+            },
+          },
+        },
+        {
+          type: 'rule',
+          encode: {
+            update: {
+              x: { scale: 'x', value: 6 - config.Stringency },
+              y: { value: 0 },
+              y2: { field: { group: 'height' } },
+              strokeWidth: { value: 2 },
+              strokeDash: { value: [8, 4] },
+              stroke: { value: 'red' },
+            },
+          },
+        },
       ],
+      title:
+      {
+        text: { value: config.titleText },
+        anchor: { value: config.titleAnchor },
+        font: { value: config.masterFont },
+        dx: 10,
+        fontSize: { value: config.titleSize },
+      },
     };
   }
 
@@ -344,7 +408,7 @@ class GenesVsUMIs extends React.Component {
                       defaultValue={0.05}
                       max={1}
                       min={0}
-                    //  onPressEnter={(val) => minProbabilityChange(val)}
+                      onPressEnter={(val) => this.updatePlotWithChanges({ Stringency: val.target.value })}
                     />
                   </Form.Item>
                 </Panel>
