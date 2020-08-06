@@ -36,7 +36,7 @@ const addWindow = (window) => (dispatch, getState) => {
 const addToWindow = (panel, window) => (dispatch, getState) => {
   const { layout } = getState();
   const newLayout = _.cloneDeep(layout);
-  const allWindows = JSON.stringify(newLayout);
+  const allWindows = JSON.stringify(newLayout.windows);
   if (allWindows.includes(window) || allWindows.includes(panel)) {
     newLayout.panel = panel;
     return dispatch({

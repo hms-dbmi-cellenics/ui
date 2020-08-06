@@ -5,11 +5,9 @@ import {
   Empty, Spin, Button, Typography,
 } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-
+import ContainerDimensions from 'react-container-dimensions';
 import _ from 'lodash';
-
 import spec from '../../../../utils/heatmapSpec';
-
 import VegaHeatmap from './VegaHeatmap';
 import HeatmapCrossHairs from './HeatmapCrossHairs';
 import CellInfo from '../CellInfo';
@@ -20,7 +18,7 @@ import { loadGeneExpression } from '../../../../redux/actions/genes';
 const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
-  const { experimentId, heatmapWidth } = props;
+  const { experimentId } = props;
   const componentType = 'heatmap';
 
   const dispatch = useDispatch();
@@ -87,7 +85,7 @@ const HeatmapPlot = (props) => {
 
   if (heatmapLoading) {
     return (
-      <center>
+      <center style={{ marginTop: 40 }}>
         <Spin size='large' />
         <HeatmapCrossHairs />
       </center>
@@ -174,14 +172,18 @@ const HeatmapPlot = (props) => {
   };
 
   return [
-    <VegaHeatmap
-      spec={spec}
-      data={createVegaData()}
-      showAxes={selectedGenes?.length <= 30}
-      rowsNumber={selectedGenes.length}
-      defaultWidth={heatmapWidth}
-      signalListeners={signalListeners}
-    />,
+    <ContainerDimensions>
+      {({ width }) => (
+        <VegaHeatmap
+          spec={spec}
+          data={createVegaData()}
+          showAxes={selectedGenes?.length <= 30}
+          rowsNumber={selectedGenes.length}
+          defaultWidth={width + 60}
+          signalListeners={signalListeners}
+        />
+      )}
+    </ContainerDimensions>,
     <HeatmapCrossHairs />,
     <CellInfo
       coordinates={hoverCoordinates}

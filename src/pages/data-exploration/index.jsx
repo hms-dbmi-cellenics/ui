@@ -33,7 +33,7 @@ const ExplorationViewPage = () => {
 
   const TILE_MAP = {
     'UMAP Embedding': <Embedding experimentId={experimentId} embeddingType='umap' />,
-    Heatmap: <HeatmapPlot experimentId={experimentId} heatmapWidth={1300} />,
+    Heatmap: <HeatmapPlot experimentId={experimentId} />,
     Tools: (
       <Tabs
         activeKey={selectedTab}
