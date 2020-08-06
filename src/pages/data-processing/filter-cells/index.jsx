@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import CellSizeDistribution from './components/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from './components/MitochondrialContent/MitochondrialContent';
+import DoubletScores from './components/DoubletScores/DoubletScores';
 
 const { Panel } = Collapse;
 
@@ -13,11 +14,12 @@ class ProcessingViewPage extends React.Component {
     this.state = {
       cellSizeFiltering: true,
       MitochondrialFiltering: true,
+      DoubletScoresFiltering: true,
     };
   }
 
   render() {
-    const { cellSizeFiltering, MitochondrialFiltering } = this.state;
+    const { cellSizeFiltering, MitochondrialFiltering, DoubletScoresFiltering } = this.state;
     return (
       <>
         <PageHeader
@@ -32,10 +34,12 @@ class ProcessingViewPage extends React.Component {
             header='Cell size Distribution'
             extra={(
               <Tooltip title='disable filter'>
-                <Switch defaultChecked onChange={(checked, event) => {
-                  event.stopPropagation();
-                  this.setState({ cellSizeFiltering: checked })
-                }}
+                <Switch
+                  defaultChecked
+                  onChange={(checked, event) => {
+                    event.stopPropagation();
+                    this.setState({ cellSizeFiltering: checked });
+                  }}
                 />
               </Tooltip>
             )}
@@ -47,10 +51,12 @@ class ProcessingViewPage extends React.Component {
             header='Mitochondrial content'
             extra={(
               <Tooltip title='disable filter'>
-                <Switch defaultChecked onChange={(checked, event) => {
-                  event.stopPropagation();
-                  this.setState({ MitochondrialFiltering: checked })
-                }}
+                <Switch
+                  defaultChecked
+                  onChange={(checked, event) => {
+                    event.stopPropagation();
+                    this.setState({ MitochondrialFiltering: checked });
+                  }}
                 />
               </Tooltip>
             )}
@@ -61,7 +67,23 @@ class ProcessingViewPage extends React.Component {
           <Panel header='Read alignment' key='3' />
           <Panel header='Classifier' key='4' />
           <Panel header='Number of genes vs number of UMIs' key='5' />
-          <Panel header='Doublet scores' key='6' />
+          <Panel
+            header='Doublet Scores'
+            extra={(
+              <Tooltip title='disable filter'>
+                <Switch
+                  defaultChecked
+                  onChange={(checked, event) => {
+                    event.stopPropagation();
+                    this.setState({ DoubletScoresFiltering: checked });
+                  }}
+                />
+              </Tooltip>
+            )}
+            key='6'
+          >
+            <DoubletScores filtering={DoubletScoresFiltering} />
+          </Panel>
         </Collapse>
       </>
     );

@@ -12,17 +12,17 @@ import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
 
 const { Panel } = Collapse;
 const PlotStyling = (props) => {
-  const { config, onUpdate } = props;
+  const { config, onUpdate, singlePlot } = props;
   const setAxis = (val, axe) => {
     if (axe === 'x') {
-      if (config.plotToDraw) {
+      if (config.plotToDraw || singlePlot) {
         onUpdate({ xAxisText: val.target.value });
       } else {
         onUpdate({ xAxisText2: val.target.value });
       }
     }
     if (axe === 'y') {
-      if (config.plotToDraw) {
+      if (config.plotToDraw || singlePlot) {
         onUpdate({ yAxisText: val.target.value });
       } else {
         onUpdate({ yAxisText2: val.target.value });
