@@ -1,6 +1,6 @@
 import getApiEndpoint from '../../../utils/apiEndpoint';
 import { CELL_SETS_SAVE } from '../../actionTypes/cellSets';
-import pushNotificationMessage from '../notifications/pushNotificationMessage';
+import pushNotificationMessage from '../notifications';
 import composeTree from '../../../utils/composeTree';
 import { cacheFetch } from '../../../utils/cacheRequest';
 

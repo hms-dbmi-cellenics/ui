@@ -1,4 +1,4 @@
-import { NOTIFICATIONS_CLEAR_MESSAGE, NOTIFICATIONS_PUSH_MESSAGE } from '../../actionTypes/notifications';
+import { NOTIFICATIONS_CLEAR_MESSAGE, NOTIFICATIONS_PUSH_MESSAGE } from '../actionTypes/notifications';
 
 const pushNotificationMessage = (type, message, time) => (dispatch) => {
   dispatch({

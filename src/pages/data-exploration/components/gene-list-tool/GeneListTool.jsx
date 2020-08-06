@@ -263,7 +263,7 @@ const GeneListTool = (props) => {
         size='small'
         pagination={tableState?.pagination}
         sorter={tableState?.sorter}
-        scroll={{ x: 200, y: 400 }}
+        scroll={{ x: 200, y: 350 }}
         onChange={handleTableChange}
         rowSelection={{
           type: 'checkbox',

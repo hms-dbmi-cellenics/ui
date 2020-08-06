@@ -6,6 +6,8 @@ import CellSizeDistribution from './components/CellSizeDistribution/CellSizeDist
 import MitochondrialContent from './components/MitochondrialContent/MitochondrialContent';
 import Classifier from './components/Classifier/Classifier';
 import GenesVsUMIs from './components/GenesVsUMIs/GenesVsUMIs';
+import DoubletScores from './components/DoubletScores/DoubletScores';
+
 const { Panel } = Collapse;
 
 class ProcessingViewPage extends React.Component {
@@ -16,13 +18,14 @@ class ProcessingViewPage extends React.Component {
       MitochondrialFiltering: true,
       ClassifierFiltering: true,
       GeneVUmiFiltering: true,
+      DoubletScoresFiltering: true,
     };
   }
 
   render() {
     const {
       cellSizeFiltering, MitochondrialFiltering,
-      ClassifierFiltering, GeneVUmiFiltering,
+      ClassifierFiltering, GeneVUmiFiltering, DoubletScoresFiltering,
     } = this.state;
     return (
       <>
@@ -103,7 +106,24 @@ class ProcessingViewPage extends React.Component {
           >
             <GenesVsUMIs filtering={GeneVUmiFiltering} />
           </Panel>
-          <Panel header='Doublet scores' key='6' />
+          <Panel
+            header='Doublet Scores'
+            extra={(
+              <Tooltip title='disable filter'>
+                <Switch
+                  defaultChecked
+                  onChange={(checked, event) => {
+                    event.stopPropagation();
+                    this.setState({ DoubletScoresFiltering: checked });
+                  }}
+                />
+              </Tooltip>
+            )}
+            key='6'
+          >
+            <DoubletScores filtering={DoubletScoresFiltering} />
+          </Panel>
+
         </Collapse>
       </>
     );

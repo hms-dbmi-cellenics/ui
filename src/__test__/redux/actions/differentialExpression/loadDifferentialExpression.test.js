@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import loadDifferentialExpression from '../../../../redux/actions/differentialExpression/loadDifferentialExpression';
-import initialState from '../../../../redux/reducers/differentialExpressionReducer/initialState';
+import loadDifferentialExpression from '../../../../redux/actions/differentialExpression';
+import initialState from '../../../../redux/reducers/differentialExpression/initialState';
 import sendWork from '../../../../utils/sendWork';
 
 import {

@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import updateCellSetSelected from '../../../../redux/actions/cellSets/updateCellSetSelected';
-import initialState from '../../../../redux/reducers/cellSetsReducer/initialState';
+import initialState from '../../../../redux/reducers/cellSets/initialState';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
 import { combineReducers } from 'redux';
-import cellSetsReducer from './cellSetsReducer';
+import cellSetsReducer from './cellSets';
 import notificationsReducer from './notificationsReducer';
-import embeddingsReducer from './embeddingsReducer';
-import genesReducer from './genesReducer';
-import differentialExpressionReducer from './differentialExpressionReducer';
-
+import embeddingsReducer from './embeddings';
+import genesReducer from './genes';
+import differentialExpressionReducer from './differentialExpression';
+import layoutReducer from './layout/layout';
 import { UPDATE_CELL_INFO } from '../actionTypes';
 
 const cellInfoReducer = (state = {}, action) => {
@@ -27,4 +27,5 @@ export default combineReducers({
   genes: genesReducer,
   differentialExpression: differentialExpressionReducer,
   cellInfo: cellInfoReducer,
+  layout: layoutReducer,
 });

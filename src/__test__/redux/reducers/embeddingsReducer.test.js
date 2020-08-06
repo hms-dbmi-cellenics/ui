@@ -1,5 +1,5 @@
-import embeddingsReducer from '../../../redux/reducers/embeddingsReducer';
-import initialState from '../../../redux/reducers/embeddingsReducer/initialState';
+import embeddingsReducer from '../../../redux/reducers/embeddings';
+import initialState from '../../../redux/reducers/embeddings/initialState';
 
 import {
   EMBEDDINGS_ERROR, EMBEDDINGS_LOADED, EMBEDDINGS_LOADING,

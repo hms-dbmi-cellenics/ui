@@ -1,8 +1,8 @@
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
-} from '../../actionTypes/differentialExpression';
+} from '../actionTypes/differentialExpression';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchCachedWork } from '../../utils/cacheRequest';
 
 const ComparisonTypes = {
   One: 'Versus rest',
@@ -34,8 +34,7 @@ const loadDifferentialExpression = (
   }
 
   try {
-    const res = await fetchCachedWork(experimentId, REQUEST_TIMEOUT, body);
-    const data = JSON.parse(res[0].body);
+    const data = await fetchCachedWork(experimentId, REQUEST_TIMEOUT, body);
     const { rows } = data;
 
     return dispatch({
