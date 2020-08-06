@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber,
+  InputNumber, Form,
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
@@ -228,19 +228,21 @@ class Classifier extends React.Component {
             <Space direction='vertical'>
               <Collapse>
                 <Panel header='Filtering Settings' disabled={!filtering}>
-                  Min probability:
-                  <InputNumber
-                    disabled={!filtering}
-                    defaultValue={0.82}
-                    max={1}
-                    min={0}
-                    onPressEnter={(val) => minProbabilityChange(val)}
-                  />
+                  <Form.Item label='Min probability:'>
+                    <InputNumber
+                      disabled={!filtering}
+                      defaultValue={0.82}
+                      max={1}
+                      min={0}
+                      onPressEnter={(val) => minProbabilityChange(val)}
+                    />
+                  </Form.Item>
                 </Panel>
                 <PlotStyling
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
                   updatePlotWithChanges={this.updatePlotWithChanges}
+                  singlePlot
                 />
               </Collapse>
             </Space>

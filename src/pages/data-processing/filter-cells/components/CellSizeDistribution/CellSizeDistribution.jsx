@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, List, Space,
-  InputNumber,
+  InputNumber, Form,
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
@@ -488,12 +488,13 @@ class CellSizeDistribution extends React.Component {
             <Space direction='vertical'>
               <Collapse>
                 <Panel header='Filtering Settings' disabled={!filtering}>
-                  Min cell size:
-                  <InputNumber
-                    disabled={!filtering}
-                    defaultValue={1000}
-                    onPressEnter={(val) => changeCellSize(val)}
-                  />
+                  <Form.Item label='Min cell size:'>
+                    <InputNumber
+                      disabled={!filtering}
+                      defaultValue={1000}
+                      onPressEnter={(val) => changeCellSize(val)}
+                    />
+                  </Form.Item>
                 </Panel>
                 <PlotStyling
                   config={config}

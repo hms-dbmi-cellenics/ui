@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Select,
+  InputNumber, Select, Form,
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
@@ -478,8 +478,7 @@ class MitochondrialContent extends React.Component {
             <Space direction='vertical'>
               <Collapse>
                 <Panel header='Filtering settings' disabled={!filtering}>
-                  Method:
-                  <Space direction='vertical'>
+                  <Form.Item label='Method:'>
                     <Select
                       defaultValue='option1'
                       style={{ width: 200 }}
@@ -489,15 +488,14 @@ class MitochondrialContent extends React.Component {
                       <Option value='option2'>option2</Option>
                       <Option value='option3'>option3</Option>
                     </Select>
-                    <Space>
-                      Max fraction:
-                      <InputNumber
-                        disabled={!filtering}
-                        defaultValue={0}
-                        onPressEnter={(val) => changeFraction(val)}
-                      />
-                    </Space>
-                  </Space>
+                  </Form.Item>
+                  <Form.Item label='Max fraction:'>
+                    <InputNumber
+                      disabled={!filtering}
+                      defaultValue={0}
+                      onPressEnter={(val) => changeFraction(val)}
+                    />
+                  </Form.Item>
                 </Panel>
                 <PlotStyling
                   config={config}
