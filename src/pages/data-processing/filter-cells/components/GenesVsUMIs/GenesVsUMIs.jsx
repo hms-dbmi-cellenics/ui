@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber,
+  InputNumber, Select, Slider, Form,
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
@@ -15,6 +15,7 @@ import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
 
 const { Panel } = Collapse;
+const { Option } = Select;
 
 class GenesVsUMIs extends React.Component {
   constructor(props) {
@@ -23,16 +24,12 @@ class GenesVsUMIs extends React.Component {
     this.defaultConfig = {
       plotToDraw: true,
       data: plotData,
-      legendEnabled: true,
-      minCellSize: 10800,
-      minCellSize2: 50,
       xAxisText: 'log10 [molecules]',
       yAxisText: 'Frequency',
       xAxisText2: 'log10 [molecule counts]',
       yAxisText2: 'log10 [gene counts]',
       xDefaultTitle: 'log10 [molecules]',
       yDefaultTitle: 'Frequency',
-      legendOrientation: 'right',
       gridWeight: 0,
       titleSize: 12,
       titleText: '',
@@ -64,85 +61,135 @@ class GenesVsUMIs extends React.Component {
 
   generateSpec() {
     const { config } = this.state;
-    let legend = null;
-    if (config.legendEnabled) {
-      legend = [
-        {
-          fill: 'color',
-          orient: config.legendOrientation,
-          title: 'Quality',
-          encode: {
-            title: {
-              update: {
-                fontSize: { value: 14 },
-              },
-            },
-            labels: {
-              interactive: true,
-              update: {
-                fontSize: { value: 12 },
-                fill: { value: 'black' },
-              },
-              hover: {
-                fill: { value: 'firebrick' },
-              },
-            },
-            symbols: {
-              update: {
-                stroke: { value: 'transparent' },
-              },
-            },
-            legend: {
-              update: {
-                stroke: { value: '#ccc' },
-                strokeWidth: { value: 1.5 },
-              },
+    if (config.plotToDraw) {
+      return {
+        $schema: 'https://vega.github.io/schema/vega/v5.json',
+        description: 'An interactive histogram for visualizing a univariate distribution.',
+        width: 420,
+        height: 300,
+        padding: 5,
+
+        signals: [
+          {
+            name: 'binStep',
+            value: 0.05,
+            bind: {
+              input: 'range', min: 0.001, max: 0.4, step: 0.001,
             },
           },
+        ],
+
+        data: [
+          {
+            name: 'plotData',
+          },
+          {
+            name: 'binned',
+            source: 'plotData',
+            transform: [
+              {
+                type: 'bin',
+                field: 'molecules',
+                extent: [2, 5],
+                step: { signal: 'binStep' },
+                nice: false,
+              },
+              {
+                type: 'aggregate',
+                key: 'bin0',
+                groupby: ['bin0', 'bin1'],
+                fields: ['bin0'],
+                ops: ['count'],
+                as: ['count'],
+              },
+            ],
+          },
+        ],
+
+        scales: [
+          {
+            name: 'xscale',
+            type: 'linear',
+            range: 'width',
+            domain: [2, 5],
+          },
+          {
+            name: 'yscale',
+            type: 'linear',
+            range: 'height',
+            round: true,
+            domain: { data: 'binned', field: 'count' },
+            zero: true,
+            nice: true,
+          },
+        ],
+
+        axes: [
+          {
+            orient: 'bottom',
+            scale: 'xscale',
+            zindex: 1,
+            title: { value: config.xAxisText },
+            titleFont: { value: config.masterFont },
+            labelFont: { value: config.masterFont },
+            titleFontSize: { value: config.masterSize },
+            labelFontSize: { value: config.masterSize },
+          },
+          {
+            orient: 'left',
+            scale: 'yscale',
+            tickCount: 5,
+            zindex: 1,
+            title: { value: config.yAxisText },
+            titleFont: { value: config.masterFont },
+            labelFont: { value: config.masterFont },
+            titleFontSize: { value: config.masterSize },
+            labelFontSize: { value: config.masterSize },
+          },
+        ],
+
+        marks: [
+          {
+            type: 'rect',
+            from: { data: 'binned' },
+            encode: {
+              update: {
+                x: { scale: 'xscale', field: 'bin0' },
+                x2: {
+                  scale: 'xscale',
+                  field: 'bin1',
+                  offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
+                },
+                y: { scale: 'yscale', field: 'count' },
+                y2: { scale: 'yscale', value: 0 },
+                fill: { value: '#f5ce42' },
+              },
+              hover: { fill: { value: 'firebrick' } },
+            },
+          },
+        ],
+        title:
+        {
+          text: { value: config.titleText },
+          anchor: { value: config.titleAnchor },
+          font: { value: config.masterFont },
+          dx: 10,
+          fontSize: { value: config.titleSize },
         },
-      ];
-    } else {
-      legend = null;
+      };
     }
     return {
-      $schema: 'https://vega.github.io/schema/vega/v5.json',
-      description: 'An interactive histogram for visualizing a univariate distribution.',
       width: 420,
       height: 300,
       padding: 5,
 
-      signals: [
-        {
-          name: 'binStep',
-          value: 0.05,
-          bind: {
-            input: 'range', min: 0.001, max: 0.4, step: 0.001,
-          },
-        },
-      ],
-
       data: [
         {
           name: 'plotData',
-        },
-        {
-          name: 'binned',
-          source: 'plotData',
           transform: [
             {
-              type: 'bin',
-              field: 'molecules',
-              extent: [2, 5],
-              step: { signal: 'binStep' },
-              nice: false,
-            },
-            {
-              type: 'aggregate',
-              key: 'bin0',
-              groupby: ['bin0', 'bin1'],
-              fields: ['bin0'],
-              ops: ['count'],
-              as: ['count'],
+              type: 'filter',
+              expr: "datum['genes'] != null && datum['molecules'] != null",
             },
           ],
         },
@@ -150,75 +197,62 @@ class GenesVsUMIs extends React.Component {
 
       scales: [
         {
-          name: 'xscale',
+          name: 'x',
           type: 'linear',
+          round: true,
+          nice: true,
+          zero: true,
+          domain: { data: 'plotData', field: 'genes' },
           range: 'width',
-          domain: [2, 5],
         },
         {
-          name: 'yscale',
+          name: 'y',
           type: 'linear',
-          range: 'height',
           round: true,
-          domain: { data: 'binned', field: 'count' },
-          zero: true,
           nice: true,
+          zero: true,
+          domain: { data: 'plotData', field: 'molecules' },
+          range: 'height',
         },
       ],
 
       axes: [
         {
+          scale: 'x',
+          grid: true,
+          domain: false,
           orient: 'bottom',
-          scale: 'xscale',
-          zindex: 1,
-          title: { value: config.xAxisText },
-          titleFont: { value: config.masterFont },
-          labelFont: { value: config.masterFont },
-          titleFontSize: { value: config.masterSize },
-          labelFontSize: { value: config.masterSize },
+          tickCount: 5,
+          title: config.xAxisText2,
         },
         {
+          scale: 'y',
+          grid: true,
+          domain: false,
           orient: 'left',
-          scale: 'yscale',
-          tickCount: 5,
-          zindex: 1,
-          title: { value: config.yAxisText },
-          titleFont: { value: config.masterFont },
-          labelFont: { value: config.masterFont },
-          titleFontSize: { value: config.masterSize },
-          labelFontSize: { value: config.masterSize },
+          titlePadding: 5,
+          title: config.yAxisText2,
         },
       ],
 
       marks: [
         {
-          type: 'rect',
-          from: { data: 'binned' },
+          name: 'marks',
+          type: 'symbol',
+          from: { data: 'plotData' },
           encode: {
             update: {
-              x: { scale: 'xscale', field: 'bin0' },
-              x2: {
-                scale: 'xscale',
-                field: 'bin1',
-                offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
-              },
-              y: { scale: 'yscale', field: 'count' },
-              y2: { scale: 'yscale', value: 0 },
-              fill: { value: '#f5ce42' },
+              x: { scale: 'x', field: 'genes' },
+              y: { scale: 'y', field: 'molecules' },
+              size: { value: 5 },
+              strokeWidth: { value: 2 },
+              opacity: { value: 0.5 },
+              stroke: { value: 'red' },
+              fill: { value: 'transparent' },
             },
-            hover: { fill: { value: 'firebrick' } },
           },
         },
       ],
-      //  legends: legend,
-      title:
-      {
-        text: { value: config.titleText },
-        anchor: { value: config.titleAnchor },
-        font: { value: config.masterFont },
-        dx: 10,
-        fontSize: { value: config.titleSize },
-      },
     };
   }
 
@@ -241,19 +275,11 @@ class GenesVsUMIs extends React.Component {
         });
       }
     };
-
-    const changeCellSize = (val) => {
-      if (config.plotToDraw) {
-        this.updatePlotWithChanges({ minCellSize: val });
-      } else {
-        this.updatePlotWithChanges({ minCellSize2: val / 5 });
-      }
-    };
     return (
       <>
         <Row>
 
-          <Col span={14}>
+          <Col span={12}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
 
@@ -268,7 +294,6 @@ class GenesVsUMIs extends React.Component {
                   align: 'center',
                   padding: '8px',
                   border: '1px solid #000',
-
                 }}
                 onClick={() => changePlot(true)}
               />
@@ -281,24 +306,48 @@ class GenesVsUMIs extends React.Component {
                   align: 'center',
                   padding: '8px',
                   border: '1px solid #000',
-
                 }}
                 onClick={() => changePlot(false)}
               />
             </Space>
           </Col>
-
-
-          <Col span={6}>
+          <Col span={8}>
             <Space direction='vertical'>
               <Collapse>
                 <Panel header='Filtering Settings' disabled={!filtering}>
-                  Min probability:
-                  <InputNumber
-                    disabled={!filtering}
-                    defaultValue={1000}
-                    onChange={(val) => changeCellSize(val)}
-                  />
+                  <Form.Item
+                    label='Regression type:'
+                  >
+                    <Select
+                      defaultValue='option1'
+                      style={{ width: 200 }}
+                      disabled={!filtering}
+                    >
+                      <Option value='option1'>Gam</Option>
+                      <Option value='option2'>option2</Option>
+                      <Option value='option3'>option3</Option>
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    label='Smoothing:'
+                  >
+                    <Slider
+                      defaultValue={13}
+                      min={5}
+                      max={21}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label='Stringency:'
+                  >
+                    <InputNumber
+                      disabled={!filtering}
+                      defaultValue={0.05}
+                      max={1}
+                      min={0}
+                    //  onPressEnter={(val) => minProbabilityChange(val)}
+                    />
+                  </Form.Item>
                 </Panel>
                 <PlotStyling
                   config={config}
