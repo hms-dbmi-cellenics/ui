@@ -2,6 +2,7 @@ import React from 'react';
 import {
   PageHeader, Collapse, Switch, Tooltip,
 } from 'antd';
+import ReadAlignment from './components/ReadAlignment/ReadAlignment';
 import CellSizeDistribution from './components/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from './components/MitochondrialContent/MitochondrialContent';
 import DoubletScores from './components/DoubletScores/DoubletScores';
@@ -12,6 +13,7 @@ class ProcessingViewPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      ReadAlignmentFiltering: true,
       cellSizeFiltering: true,
       MitochondrialFiltering: true,
       DoubletScoresFiltering: true,
@@ -19,7 +21,7 @@ class ProcessingViewPage extends React.Component {
   }
 
   render() {
-    const { cellSizeFiltering, MitochondrialFiltering, DoubletScoresFiltering } = this.state;
+    const { ReadAlignmentFiltering, cellSizeFiltering, MitochondrialFiltering, DoubletScoresFiltering } = this.state;
     return (
       <>
         <PageHeader
@@ -64,7 +66,23 @@ class ProcessingViewPage extends React.Component {
           >
             <MitochondrialContent filtering={MitochondrialFiltering} />
           </Panel>
-          <Panel header='Read alignment' key='3' />
+          <Panel
+            header='Read Alignment'
+            extra={(
+              <Tooltip title='disable filter'>
+                <Switch
+                  defaultChecked
+                  onChange={(checked, event) => {
+                    event.stopPropagation();
+                    this.setState({ ReadAlignmentFiltering: checked });
+                  }}
+                />
+              </Tooltip>
+            )}
+            key='3'
+          >
+            <ReadAlignment filtering={ReadAlignmentFiltering} />
+          </Panel>
           <Panel header='Classifier' key='4' />
           <Panel header='Number of genes vs number of UMIs' key='5' />
           <Panel
