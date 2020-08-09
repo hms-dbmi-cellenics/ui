@@ -6,7 +6,7 @@ import {
 
 
 const DimensionsRangeEditor = (props) => {
-  const { onUpdate } = props;
+  const { onUpdate, config } = props;
 
   return (
     <>
@@ -21,7 +21,7 @@ const DimensionsRangeEditor = (props) => {
           label='Width'
         >
           <Slider
-            defaultValue={750}
+            defaultValue={config.width}
             min={400}
             max={1200}
             onAfterChange={(value) => {
@@ -33,7 +33,7 @@ const DimensionsRangeEditor = (props) => {
           label='Height'
         >
           <Slider
-            defaultValue={600}
+            defaultValue={config.height}
             min={200}
             max={1000}
             onAfterChange={(value) => {

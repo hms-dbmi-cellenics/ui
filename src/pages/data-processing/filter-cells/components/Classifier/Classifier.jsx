@@ -24,13 +24,18 @@ class Classifier extends React.Component {
       yAxisText: 'classifier prob',
       xDefaultTitle: 'log10[ cell size (molecules) ]',
       yDefaultTitle: 'classifier prob',
-      gridWeight: 0,
       titleSize: 12,
       titleText: '',
       titleAnchor: 'start',
       masterFont: 'sans-serif',
       masterSize: 13,
       minProbability: 0.82,
+      axisTitlesize: 13,
+      axisTicks: 13,
+      axisOffset: 0,
+      transGrid: 10,
+      width: 530,
+      height: 400,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -57,8 +62,9 @@ class Classifier extends React.Component {
   generateSpec() {
     const { config } = this.state;
     return {
-      width: 500,
-      height: 400,
+      width: config.width,
+      height: config.height,
+      autosize: { type: 'fit', resize: true },
       padding: 5,
       autoSize: 'pad',
       signals: [
@@ -137,7 +143,14 @@ class Classifier extends React.Component {
           domain: false,
           orient: 'bottom',
           tickCount: 5,
-          title: config.xAxisText,
+          zindex: 1,
+          title: { value: config.xAxisText },
+          titleFont: { value: config.masterFont },
+          labelFont: { value: config.masterFont },
+          titleFontSize: { value: config.axisTitlesize },
+          labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
         },
         {
           scale: 'y',
@@ -145,7 +158,14 @@ class Classifier extends React.Component {
           domain: false,
           orient: 'left',
           titlePadding: 5,
-          title: config.yAxisText,
+          zindex: 1,
+          title: { value: config.yAxisText },
+          titleFont: { value: config.masterFont },
+          labelFont: { value: config.masterFont },
+          titleFontSize: { value: config.axisTitlesize },
+          labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
         },
       ],
       marks: [
@@ -221,31 +241,30 @@ class Classifier extends React.Component {
       <>
         <Row>
 
-          <Col span={13}>
+          <Col span={18}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
-          <Col span={11}>
-            <Space direction='vertical'>
-              <Collapse>
-                <Panel header='Filtering Settings' disabled={!filtering}>
-                  <Form.Item label='Min probability:'>
-                    <InputNumber
-                      disabled={!filtering}
-                      defaultValue={0.82}
-                      max={1}
-                      min={0}
-                      onPressEnter={(val) => minProbabilityChange(val)}
-                    />
-                  </Form.Item>
-                </Panel>
-                <PlotStyling
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  updatePlotWithChanges={this.updatePlotWithChanges}
-                  singlePlot
-                />
-              </Collapse>
-            </Space>
+          <Col span={6}>
+            <Space direction='vertical' style={{ width: '100%' }} />
+            <Collapse>
+              <Panel header='Filtering Settings' disabled={!filtering}>
+                <Form.Item label='Min probability:'>
+                  <InputNumber
+                    disabled={!filtering}
+                    defaultValue={0.82}
+                    max={1}
+                    min={0}
+                    onPressEnter={(val) => minProbabilityChange(val)}
+                  />
+                </Form.Item>
+              </Panel>
+              <PlotStyling
+                config={config}
+                onUpdate={this.updatePlotWithChanges}
+                updatePlotWithChanges={this.updatePlotWithChanges}
+                singlePlot
+              />
+            </Collapse>
           </Col>
         </Row>
       </>

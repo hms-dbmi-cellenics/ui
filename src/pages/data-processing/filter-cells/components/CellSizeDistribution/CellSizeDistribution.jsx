@@ -32,13 +32,19 @@ class CellSizeDistribution extends React.Component {
       yAxisText2: "#UMI's in cell",
       xDefaultTitle: '#UMIs in cell',
       yDefaultTitle: '#UMIs * #Cells',
-      legendOrientation: 'right',
+      legendOrientation: 'top-left',
       gridWeight: 0,
       titleSize: 12,
       titleText: '',
       titleAnchor: 'start',
       masterFont: 'sans-serif',
       masterSize: 13,
+      axisTitlesize: 13,
+      axisTicks: 13,
+      axisOffset: 0,
+      transGrid: 0,
+      width: 530,
+      height: 400,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -84,11 +90,14 @@ class CellSizeDistribution extends React.Component {
     const coloringExpression2 = `(datum.cell_rank < ${config.minCellSize2 - 20}) ? 'low' : (datum.cell_rank >${config.minCellSize2}) ? 'high' : 'unknown'`;
 
     if (config.legendEnabled) {
+      config.legendOrientation = config.plotToDraw ? 'top-left' : 'bottom';
       legend = [
         {
           fill: 'color',
           orient: config.legendOrientation,
           title: 'Quality',
+          labelFont: config.masterFont,
+          titleFont: config.masterFont,
           encode: {
             title: {
               update: {
@@ -125,8 +134,10 @@ class CellSizeDistribution extends React.Component {
     if (config.plotToDraw) {
       return {
         description: 'An interactive histogram',
-        width: 430,
-        height: 300,
+        width: config.width,
+        height: config.height,
+        autosize: { type: 'fit', resize: true },
+
         padding: 5,
 
         signals: [
@@ -205,22 +216,28 @@ class CellSizeDistribution extends React.Component {
           {
             orient: 'bottom',
             scale: 'xscale',
+            grid: true,
             zindex: 1,
             title: { value: config.xAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
-            titleFontSize: { value: config.masterSize },
-            labelFontSize: { value: config.masterSize },
+            titleFontSize: { value: config.axisTitlesize },
+            labelFontSize: { value: config.axisTicks },
+            offset: { value: config.axisOffset },
+            gridOpacity: { value: (config.transGrid / 20) },
           },
           {
             orient: 'left',
             scale: 'yscale',
+            grid: true,
             zindex: 1,
-            title: { value: config.yAxisText },
+            title: { value: config.xAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
-            titleFontSize: { value: config.masterSize },
-            labelFontSize: { value: config.masterSize },
+            titleFontSize: { value: config.axisTitlesize },
+            labelFontSize: { value: config.axisTicks },
+            offset: { value: config.axisOffset },
+            gridOpacity: { value: (config.transGrid / 20) },
           },
         ],
         marks: [
@@ -247,6 +264,7 @@ class CellSizeDistribution extends React.Component {
 
             },
           },
+
         ],
         legends: legend,
         title:
@@ -261,8 +279,9 @@ class CellSizeDistribution extends React.Component {
     }
     return {
       description: 'Cell rank chart',
-      width: 430,
-      height: 300,
+      width: config.width,
+      height: config.height,
+      autosize: { type: 'fit', resize: true },
       padding: 5,
 
       data: [
@@ -327,20 +346,27 @@ class CellSizeDistribution extends React.Component {
           orient: 'bottom',
           scale: 'xscale',
           labels: false,
+          zindex: 1,
           title: { value: config.xAxisText2 },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
-          titleFontSize: { value: config.masterSize },
-          labelFontSize: { value: config.masterSize },
+          titleFontSize: { value: config.axisTitlesize },
+          labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
         },
         {
           orient: 'left',
           scale: 'yscale',
+          grid: true,
+          zindex: 1,
           title: { value: config.yAxisText2 },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
-          titleFontSize: { value: config.masterSize },
-          labelFontSize: { value: config.masterSize },
+          titleFontSize: { value: config.axisTitlesize },
+          labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
         },
       ],
 
@@ -485,24 +511,24 @@ class CellSizeDistribution extends React.Component {
 
 
           <Col span={6}>
-            <Space direction='vertical'>
-              <Collapse>
-                <Panel header='Filtering Settings' disabled={!filtering}>
-                  <Form.Item label='Min cell size:'>
-                    <InputNumber
-                      disabled={!filtering}
-                      defaultValue={1000}
-                      onPressEnter={(val) => changeCellSize(val)}
-                    />
-                  </Form.Item>
-                </Panel>
-                <PlotStyling
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  updatePlotWithChanges={this.updatePlotWithChanges}
-                />
-              </Collapse>
-            </Space>
+            <Space direction='vertical' style={{ width: '100%' }} />
+            <Collapse>
+              <Panel header='Filtering Settings' disabled={!filtering}>
+                <Form.Item label='Min cell size:'>
+                  <InputNumber
+                    disabled={!filtering}
+                    defaultValue={1000}
+                    onPressEnter={(val) => changeCellSize(val)}
+                  />
+                </Form.Item>
+              </Panel>
+              <PlotStyling
+                config={config}
+                onUpdate={this.updatePlotWithChanges}
+                updatePlotWithChanges={this.updatePlotWithChanges}
+                legendMenu
+              />
+            </Collapse>
           </Col>
         </Row>
       </>
