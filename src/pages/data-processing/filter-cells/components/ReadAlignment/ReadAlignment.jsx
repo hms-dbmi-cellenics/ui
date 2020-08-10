@@ -5,47 +5,42 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Select, Form,
+  InputNumber, Select, Slider, Form,
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
-import plot1Pic from '../../../../../../static/media/plot3.png';
-import plot2Pic from '../../../../../../static/media/plot4.png';
-
-import plotData from './data2.json';
-
+import plot1Pic from '../../../../../../static/media/plot5.png';
+import plot2Pic from '../../../../../../static/media/plot6.png';
+import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
-
 
 const { Panel } = Collapse;
 const { Option } = Select;
-class MitochondrialContent extends React.Component {
+
+class ReadAlignment extends React.Component {
   constructor(props) {
     super(props);
+
     this.defaultConfig = {
       plotToDraw: true,
       data: plotData,
-      legendEnabled: true,
-      minCellSize: 1000,
-      xAxisText: 'Fraction of mitochondrial reads',
-      yAxisText: 'Fraction of cells',
-      xAxisText2: 'log10(#UMI in cell)',
-      yAxisText2: 'Average % mitochondrial',
-      xDefaultTitle: 'Fraction of mitochondrial reads',
-      yDefaultTitle: 'Fraction of cells',
-      legendOrientation: 'top-right',
+      xAxisText: 'log10 [cell size (mol)]',
+      yAxisText: 'fraction of intergenic reads',
+      xAxisText2: 'fraction of intergenic reads',
+      yAxisText2: 'Frequency',
+      xDefaultTitle: 'log10 [cell size (mol)]',
+      yDefaultTitle: 'fraction of intergenic reads',
       gridWeight: 0,
       titleSize: 12,
       titleText: '',
       titleAnchor: 'start',
       masterFont: 'sans-serif',
       masterSize: 13,
-      maxFraction: 0.1,
-      maxFraction2: 3.5,
+      Stringency: 2.1,
       axisTitlesize: 13,
       axisTicks: 13,
       axisOffset: 0,
-      transGrid: 0,
+      transGrid: 10,
       width: 530,
       height: 400,
     };
@@ -54,11 +49,6 @@ class MitochondrialContent extends React.Component {
       data: plotData,
     };
     this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
-  }
-
-  generateData() {
-    const { data } = this.state;
-    return data;
   }
 
   updatePlotWithChanges(obj) {
@@ -71,141 +61,87 @@ class MitochondrialContent extends React.Component {
     });
   }
 
+  generateData() {
+    const { data } = this.state;
+    return data;
+  }
+
   generateSpec() {
     const { config } = this.state;
-    let legend = null;
-    const colorExpression = `(datum.bin1 <= ${config.maxFraction}) ? 'Real' : 'Mitochondrial'`;
-    const colorExpression2 = `(datum.bin1 <= ${config.maxFraction2 - 1}) ? 'Mitochondrial' : (datum.bin1 >=${config.maxFraction2}) ? 'Real' : 'Unknown'`;
-    if (config.legendEnabled) {
-      legend = [
-        {
-          fill: 'color',
-          orient: config.legendOrientation,
-          labelFont: config.masterFont,
-          titleFont: config.masterFont,
-          encode: {
-            title: {
-              update: {
-                fontSize: { value: 14 },
-              },
-            },
-            labels: {
-              interactive: true,
-              update: {
-                fontSize: { value: 12 },
-                fill: { value: 'black' },
-              },
-              hover: {
-                fill: { value: 'firebrick' },
-              },
-            },
-            symbols: {
-              update: {
-                stroke: { value: 'transparent' },
-              },
-            },
-            legend: {
-              update: {
-                stroke: { value: '#ccc' },
-                strokeWidth: { value: 1.5 },
-              },
-            },
-          },
-        },
-      ];
-    } else {
-      legend = null;
-    }
     if (config.plotToDraw) {
       return {
         width: config.width,
         height: config.height,
         autosize: { type: 'fit', resize: true },
         padding: 5,
-
+        autoSize: 'pad',
         signals: [
           {
-            name: 'binStep',
-            value: 0.05,
+            name: 'bandwidth',
+            value: -1,
             bind: {
-              input: 'range', min: 0.001, max: 0.4, step: 0.001,
+              input: 'range', min: -1, max: 100, step: 1,
             },
           },
         ],
-
         data: [
           {
             name: 'plotData',
+            transform: [
+              {
+                type: 'filter',
+                expr: 'datum.cellSize != null && datum.fracMito != null',
+              },
+            ],
           },
           {
-            name: 'binned',
+            name: 'density',
             source: 'plotData',
             transform: [
               {
-                type: 'bin',
-                field: 'fracMito',
-                extent: [0, 1],
-                step: { signal: 'binStep' },
-                nice: false,
+                type: 'kde2d',
+                size: [{ signal: 'width' }, { signal: 'height' }],
+                x: { expr: "scale('x', datum.cellSize)" },
+                y: { expr: "scale('y', datum.fracMito)" },
+                bandwidth: { signal: '[bandwidth, bandwidth]' },
+                cellSize: 15,
               },
               {
-                type: 'aggregate',
-                key: 'bin0',
-                groupby: ['bin0', 'bin1'],
-                fields: ['bin0'],
-                ops: ['count'],
-                as: ['count'],
-              },
-              {
-                type: 'formula',
-                as: 'count',
-                expr: 'datum.count/10000',
-              },
-              {
-                type: 'formula',
-                as: 'status',
-                expr: colorExpression,
+                type: 'isocontour',
+                field: 'grid',
+                levels: 5,
               },
             ],
           },
         ],
-
         scales: [
           {
-            name: 'xscale',
+            name: 'x',
             type: 'linear',
-            range: 'width',
-            domain: [0, 1],
-          },
-          {
-            name: 'yscale',
-            type: 'linear',
-            range: 'height',
             round: true,
-            domain: { data: 'binned', field: 'count' },
-            zero: true,
             nice: true,
+            zero: true,
+            domain: { data: 'plotData', field: 'cellSize' },
+            domainMin: 1,
+            range: 'width',
           },
           {
-            name: 'color',
-            type: 'ordinal',
-            range:
-              [
-                'blue', 'green',
-              ],
-            domain: {
-              data: 'binned',
-              field: 'status',
-              sort: true,
-            },
+            name: 'y',
+            type: 'linear',
+            round: true,
+            nice: true,
+            zero: true,
+            domain: { data: 'plotData', field: 'fracMito' },
+            range: 'height',
           },
         ],
-
         axes: [
           {
-            orient: 'bottom',
-            scale: 'xscale',
+            scale: 'x',
             grid: true,
+            domain: false,
+            orient: 'bottom',
+            tickCount: 5,
             zindex: 1,
             title: { value: config.xAxisText },
             titleFont: { value: config.masterFont },
@@ -214,12 +150,14 @@ class MitochondrialContent extends React.Component {
             labelFontSize: { value: config.axisTicks },
             offset: { value: config.axisOffset },
             gridOpacity: { value: (config.transGrid / 20) },
+
           },
           {
-            orient: 'left',
-            scale: 'yscale',
-            tickCount: 5,
+            scale: 'y',
             grid: true,
+            domain: false,
+            orient: 'left',
+            titlePadding: 5,
             zindex: 1,
             title: { value: config.yAxisText },
             titleFont: { value: config.masterFont },
@@ -228,50 +166,44 @@ class MitochondrialContent extends React.Component {
             labelFontSize: { value: config.axisTicks },
             offset: { value: config.axisOffset },
             gridOpacity: { value: (config.transGrid / 20) },
+
           },
         ],
-
         marks: [
           {
-            type: 'rect',
-            from: { data: 'binned' },
+            name: 'marks',
+            type: 'symbol',
+            from: { data: 'plotData' },
             encode: {
               update: {
-                x: { scale: 'xscale', field: 'bin0' },
-                x2: {
-                  scale: 'xscale',
-                  field: 'bin1',
-                  offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
-                },
-                y: { scale: 'yscale', field: 'count' },
-                y2: { scale: 'yscale', value: 0 },
-                fill: {
-                  scale: 'color',
-                  field: 'status',
-                },
+                x: { scale: 'x', field: 'cellSize' },
+                y: { scale: 'y', field: 'fracMito' },
+                size: { value: 4 },
+                fill: { value: '#ccc' },
               },
-              hover: { fill: { value: 'firebrick' } },
             },
           },
           {
-            type: 'rect',
-            from: { data: 'plotData' },
+            type: 'image',
+            from: { data: 'density' },
             encode: {
-              enter: {
-                x: { scale: 'xscale', field: 'datum.fracMito' },
-                width: { value: 1 },
-                y: { value: 25, offset: { signal: 'height' } },
-                height: { value: 5 },
-                fillOpacity: { value: 0.4 },
-                fill: {
-                  scale: 'color',
-                  field: 'status',
-                },
+              update: {
+                x: { value: 0 },
+                y: { value: 0 },
+                width: { signal: 'width' },
+                height: { signal: 'height' },
+                aspect: { value: false },
               },
             },
+            transform: [
+              {
+                type: 'heatmap',
+                field: 'datum.grid',
+                color: '#1361a8',
+              },
+            ],
           },
         ],
-        legends: legend,
         title:
         {
           text: { value: config.titleText },
@@ -282,18 +214,18 @@ class MitochondrialContent extends React.Component {
         },
       };
     }
-
     return {
       width: config.width,
-      height: config.height,
-      padding: 5,
+      height: config.width,
       autosize: { type: 'fit', resize: true },
+      padding: 5,
+
       signals: [
         {
           name: 'binStep',
           value: 0.05,
           bind: {
-            input: 'range', min: 0.001, max: 0.5, step: 0.001,
+            input: 'range', min: 0.001, max: 0.4, step: 0.001,
           },
         },
       ],
@@ -308,8 +240,8 @@ class MitochondrialContent extends React.Component {
           transform: [
             {
               type: 'bin',
-              field: 'cellSize',
-              extent: [0, 6],
+              field: 'fracMito',
+              extent: [0, 1],
               step: { signal: 'binStep' },
               nice: false,
             },
@@ -317,14 +249,9 @@ class MitochondrialContent extends React.Component {
               type: 'aggregate',
               key: 'bin0',
               groupby: ['bin0', 'bin1'],
-              fields: ['fracMito'],
-              ops: ['average'],
-              as: ['averageFracMito'],
-            },
-            {
-              type: 'formula',
-              as: 'status',
-              expr: colorExpression2,
+              fields: ['bin0'],
+              ops: ['count'],
+              as: ['count'],
             },
           ],
         },
@@ -335,30 +262,16 @@ class MitochondrialContent extends React.Component {
           name: 'xscale',
           type: 'linear',
           range: 'width',
-          domain: [1, 4.5],
-          domainMin: 1,
+          domain: { data: 'binned', field: 'bin0' },
         },
         {
           name: 'yscale',
           type: 'linear',
           range: 'height',
           round: true,
-          domain: { data: 'binned', field: 'averageFracMito' },
+          domain: { data: 'binned', field: 'count' },
           zero: true,
           nice: true,
-        },
-        {
-          name: 'color',
-          type: 'ordinal',
-          range:
-            [
-              '#f57b42', 'green', 'grey',
-            ],
-          domain: {
-            data: 'binned',
-            field: 'status',
-            sort: true,
-          },
         },
       ],
 
@@ -375,14 +288,13 @@ class MitochondrialContent extends React.Component {
           labelFontSize: { value: config.axisTicks },
           offset: { value: config.axisOffset },
           gridOpacity: { value: (config.transGrid / 20) },
-
         },
         {
           orient: 'left',
           scale: 'yscale',
           tickCount: 5,
-          grid: true,
           zindex: 1,
+          grid: true,
           title: { value: config.yAxisText2 },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
@@ -405,12 +317,9 @@ class MitochondrialContent extends React.Component {
                 field: 'bin1',
                 offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
               },
-              y: { scale: 'yscale', field: 'averageFracMito' },
+              y: { scale: 'yscale', field: 'count' },
               y2: { scale: 'yscale', value: 0 },
-              fill: {
-                scale: 'color',
-                field: 'status',
-              },
+              fill: { value: '#f5ce42' },
             },
             hover: { fill: { value: 'firebrick' } },
           },
@@ -432,7 +341,6 @@ class MitochondrialContent extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
-
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
       if (!config.plotToDraw) {
@@ -445,13 +353,6 @@ class MitochondrialContent extends React.Component {
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
         });
-      }
-    };
-    const changeFraction = (val) => {
-      if (config.plotToDraw) {
-        this.updatePlotWithChanges({ maxFraction: val.target.value });
-      } else {
-        this.updatePlotWithChanges({ maxFraction2: val.target.value });
       }
     };
     return (
@@ -490,16 +391,15 @@ class MitochondrialContent extends React.Component {
               />
             </Space>
           </Col>
-
-
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse>
-              <Panel header='Filtering settings' disabled={!filtering}>
-                <Form.Item label='Method:'>
+              <Panel header='Filtering Settings' disabled={!filtering}>
+                <Form.Item
+                  label='Method:'
+                >
                   <Select
                     defaultValue='option1'
-                    style={{ width: 200 }}
                     disabled={!filtering}
                   >
                     <Option value='option1'>Absolute threshold</Option>
@@ -507,19 +407,11 @@ class MitochondrialContent extends React.Component {
                     <Option value='option3'>option3</Option>
                   </Select>
                 </Form.Item>
-                <Form.Item label='Max fraction:'>
-                  <InputNumber
-                    disabled={!filtering}
-                    defaultValue={0}
-                    onPressEnter={(val) => changeFraction(val)}
-                  />
-                </Form.Item>
               </Panel>
               <PlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}
                 updatePlotWithChanges={this.updatePlotWithChanges}
-                legendMenu
               />
             </Collapse>
           </Col>
@@ -529,4 +421,4 @@ class MitochondrialContent extends React.Component {
   }
 }
 
-export default MitochondrialContent;
+export default ReadAlignment;

@@ -32,6 +32,12 @@ class DoubletScores extends React.Component {
       masterFont: 'sans-serif',
       masterSize: 13,
       probThreshold: 0.2,
+      axisTitlesize: 13,
+      axisTicks: 13,
+      axisOffset: 0,
+      transGrid: 0,
+      width: 530,
+      height: 400,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -59,7 +65,6 @@ class DoubletScores extends React.Component {
     const { config } = this.state;
     let legend = null;
     const colorExpression = `(datum.bin1 <= ${config.probThreshold}) ? 'high score' : 'low score'`;
-    console.log(config.probThreshold)
     if (config.legendEnabled) {
       legend = [
         {
@@ -99,8 +104,9 @@ class DoubletScores extends React.Component {
       legend = null;
     }
     return {
-      width: 430,
-      height: 300,
+      width: config.width,
+      height: config.height,
+      autosize: { type: 'fit', resize: true },
       padding: 5,
 
       signals: [
@@ -185,23 +191,29 @@ class DoubletScores extends React.Component {
         {
           orient: 'bottom',
           scale: 'xscale',
+          grid: true,
           zindex: 1,
           title: { value: config.xAxisText },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
-          titleFontSize: { value: config.masterSize },
-          labelFontSize: { value: config.masterSize },
+          titleFontSize: { value: config.axisTitlesize },
+          labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
         },
         {
           orient: 'left',
           scale: 'yscale',
           tickCount: 5,
+          grid: true,
           zindex: 1,
           title: { value: config.yAxisText },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
-          titleFontSize: { value: config.masterSize },
-          labelFontSize: { value: config.masterSize },
+          titleFontSize: { value: config.axisTitlesize },
+          labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
         },
       ],
 
@@ -269,31 +281,31 @@ class DoubletScores extends React.Component {
       <>
         <Row>
 
-          <Col span={13}>
+          <Col span={18}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
-          <Col span={8}>
-            <Space direction='vertical'>
-              <Collapse>
-                <Panel header='Filtering settings' disabled={!filtering}>
-                  <Form.Item label='Probability threshold'>
-                    <Space>
-                      <InputNumber
-                        disabled={!filtering}
-                        defaultValue={0.2}
-                        onPressEnter={(val) => changeThreshold(val)}
-                      />
-                    </Space>
-                  </Form.Item>
-                </Panel>
-                <PlotStyling
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  updatePlotWithChanges={this.updatePlotWithChanges}
-                  singlePlot
-                />
-              </Collapse>
-            </Space>
+          <Col span={6}>
+            <Space direction='vertical' style={{ width: '100%' }} />
+            <Collapse>
+              <Panel header='Filtering settings' disabled={!filtering}>
+                <Form.Item label='Probability threshold'>
+                  <Space>
+                    <InputNumber
+                      disabled={!filtering}
+                      defaultValue={0.2}
+                      onPressEnter={(val) => changeThreshold(val)}
+                    />
+                  </Space>
+                </Form.Item>
+              </Panel>
+              <PlotStyling
+                config={config}
+                onUpdate={this.updatePlotWithChanges}
+                updatePlotWithChanges={this.updatePlotWithChanges}
+                singlePlot
+                legendMenu
+              />
+            </Collapse>
           </Col>
         </Row>
       </>
