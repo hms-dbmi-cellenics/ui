@@ -17,7 +17,7 @@ import isBrowser from '../../../../utils/environment';
 const { Text } = Typography;
 
 const GeneListTool = (props) => {
-  const { experimentId } = props;
+  const { experimentId, width, height } = props;
 
   // eslint-disable-next-line react/destructuring-assignment
   const [tableUuid] = useState(props.uuid || uuidv4());
@@ -263,7 +263,7 @@ const GeneListTool = (props) => {
         size='small'
         pagination={tableState?.pagination}
         sorter={tableState?.sorter}
-        scroll={{ x: 200, y: 350 }}
+        scroll={{ x: width, y: height - 250 }}
         onChange={handleTableChange}
         rowSelection={{
           type: 'checkbox',
@@ -283,6 +283,8 @@ GeneListTool.defaultProps = {
 GeneListTool.propTypes = {
   experimentId: PropTypes.string.isRequired,
   uuid: PropTypes.string,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
 };
 
 export default GeneListTool;
