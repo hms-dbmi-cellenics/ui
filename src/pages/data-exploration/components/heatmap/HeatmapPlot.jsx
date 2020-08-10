@@ -5,7 +5,6 @@ import {
   Empty, Spin, Button, Typography,
 } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import ContainerDimensions from 'react-container-dimensions';
 import _ from 'lodash';
 import spec from '../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
@@ -18,7 +17,7 @@ import { loadGeneExpression } from '../../../../redux/actions/genes';
 const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
-  const { experimentId } = props;
+  const { experimentId, width, height } = props;
   const componentType = 'heatmap';
 
   const dispatch = useDispatch();
@@ -85,7 +84,7 @@ const HeatmapPlot = (props) => {
 
   if (heatmapLoading) {
     return (
-      <center style={{ marginTop: 40 }}>
+      <center style={{ marginTop: height / 2 }}>
         <Spin size='large' />
         <HeatmapCrossHairs />
       </center>
@@ -97,7 +96,7 @@ const HeatmapPlot = (props) => {
       <Empty
         image={<Text type='danger'><ExclamationCircleFilled style={{ fontSize: 40 }} /></Text>}
         imageStyle={{
-          height: 40,
+          height: height / 2,
         }}
         description={
           error
@@ -172,18 +171,14 @@ const HeatmapPlot = (props) => {
   };
 
   return [
-    <ContainerDimensions>
-      {({ width }) => (
-        <VegaHeatmap
-          spec={spec}
-          data={createVegaData()}
-          showAxes={selectedGenes?.length <= 30}
-          rowsNumber={selectedGenes.length}
-          defaultWidth={width + 60}
-          signalListeners={signalListeners}
-        />
-      )}
-    </ContainerDimensions>,
+    <VegaHeatmap
+      spec={spec}
+      data={createVegaData()}
+      showAxes={selectedGenes?.length <= 30}
+      rowsNumber={selectedGenes.length}
+      defaultWidth={width + 40}
+      signalListeners={signalListeners}
+    />,
     <HeatmapCrossHairs />,
     <CellInfo
       coordinates={hoverCoordinates}
@@ -197,6 +192,8 @@ HeatmapPlot.defaultProps = {};
 HeatmapPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   heatmapWidth: PropTypes.number.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
 };
 
 export default HeatmapPlot;

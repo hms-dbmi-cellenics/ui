@@ -10,7 +10,7 @@ import {
 import PropTypes from 'prop-types';
 
 const DiffExprResults = (props) => {
-  const { onGoBack } = props;
+  const { onGoBack, width, height } = props;
 
   const isLoading = useSelector((state) => state.differentialExpression.properties.loading);
   const data = useSelector((state) => state.differentialExpression.properties.data);
@@ -115,7 +115,7 @@ const DiffExprResults = (props) => {
         loading={isLoading}
         size='small'
         pagination={tableState?.pagination}
-        scroll={{ x: 200, y: 350 }}
+        scroll={{ x: width, y: height - 250 }}
         onChange={handleTableChange}
       />
     </Space>
@@ -126,6 +126,8 @@ DiffExprResults.defaultProps = {};
 
 DiffExprResults.propTypes = {
   onGoBack: PropTypes.func.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
 };
 
 
