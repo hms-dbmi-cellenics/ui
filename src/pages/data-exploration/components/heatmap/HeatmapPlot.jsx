@@ -176,8 +176,10 @@ const HeatmapPlot = (props) => {
       data={createVegaData()}
       showAxes={selectedGenes?.length <= 30}
       rowsNumber={selectedGenes.length}
-      defaultWidth={width + 40}
+      defaultWidth={width + 35}
       signalListeners={signalListeners}
+      width={width}
+      height={height}
     />,
     <HeatmapCrossHairs />,
     <CellInfo

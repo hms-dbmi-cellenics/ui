@@ -3,6 +3,7 @@ import { CELL_SETS_SAVE } from '../../actionTypes/cellSets';
 import pushNotificationMessage from '../notifications';
 import composeTree from '../../../utils/composeTree';
 import { cacheFetch } from '../../../utils/cacheRequest';
+import messages from '../../../components/notification/messages';
 
 const saveCellSets = (experimentId) => async (dispatch, getState) => {
   const {
@@ -37,7 +38,7 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
       },
     });
   } catch (e) {
-    dispatch(pushNotificationMessage('error', 'Could not connect to the server. Check your internet connection.', 5));
+    dispatch(pushNotificationMessage('error', messages.saveCellSets, 5));
   }
 };
 
