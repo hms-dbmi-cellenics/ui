@@ -335,7 +335,8 @@ class MitochondrialContent extends React.Component {
           name: 'xscale',
           type: 'linear',
           range: 'width',
-          domain: [0, 6],
+          domain: [1, 4.5],
+          domainMin: 1,
         },
         {
           name: 'yscale',

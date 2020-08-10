@@ -75,16 +75,6 @@ class Classifier extends React.Component {
             input: 'range', min: -1, max: 100, step: 1,
           },
         },
-        {
-          name: 'resolve',
-          value: 'shared',
-          bind: { input: 'select', options: ['independent', 'shared'] },
-        },
-        {
-          name: 'counts',
-          value: true,
-          bind: { input: 'checkbox' },
-        },
       ],
       data: [
         {
@@ -124,6 +114,7 @@ class Classifier extends React.Component {
           nice: true,
           zero: true,
           domain: { data: 'plotData', field: 'size' },
+          domainMin: 1.5,
           range: 'width',
         },
         {
@@ -198,7 +189,7 @@ class Classifier extends React.Component {
             {
               type: 'heatmap',
               field: 'datum.grid',
-              resolve: { signal: 'resolve' },
+              resolve: 'independent',
               color: '#1361a8',
             },
           ],
@@ -233,7 +224,6 @@ class Classifier extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
-    console.log(config.minProbability);
     const minProbabilityChange = (val) => {
       this.updatePlotWithChanges({ minProbability: val.target.value });
     };

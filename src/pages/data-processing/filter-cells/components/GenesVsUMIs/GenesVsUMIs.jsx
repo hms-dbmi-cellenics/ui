@@ -9,8 +9,8 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
-import plot1Pic from '../../../../../../static/media/plot1.png';
-import plot2Pic from '../../../../../../static/media/plot2.png';
+import plot1Pic from '../../../../../../static/media/plot5.png';
+import plot2Pic from '../../../../../../static/media/plot6.png';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
 
@@ -30,7 +30,6 @@ class GenesVsUMIs extends React.Component {
       yAxisText2: 'log10 [gene counts]',
       xDefaultTitle: 'log10 [molecules]',
       yDefaultTitle: 'Frequency',
-      gridWeight: 0,
       titleSize: 12,
       titleText: '',
       titleAnchor: 'start',
@@ -40,7 +39,7 @@ class GenesVsUMIs extends React.Component {
       axisTitlesize: 13,
       axisTicks: 13,
       axisOffset: 0,
-      transGrid: 0,
+      transGrid: 10,
       width: 530,
       height: 400,
     };
@@ -243,8 +242,8 @@ class GenesVsUMIs extends React.Component {
           round: true,
           nice: true,
           zero: true,
-          domain: [0, 5],
-          domainMin: 1,
+          domain: [0, 4],
+          domainMin: 2,
           range: 'width',
         },
         {
@@ -254,6 +253,7 @@ class GenesVsUMIs extends React.Component {
           nice: true,
           zero: true,
           domain: { data: 'plotData', field: 'molecules' },
+          domainMin: 2,
           range: 'height',
         },
       ],
@@ -421,6 +421,7 @@ class GenesVsUMIs extends React.Component {
                   label='Smoothing:'
                 >
                   <Slider
+                    disabled={!filtering}
                     defaultValue={13}
                     min={5}
                     max={21}
@@ -434,7 +435,9 @@ class GenesVsUMIs extends React.Component {
                     defaultValue={0.05}
                     max={1}
                     min={0}
-                    onPressEnter={(val) => this.updatePlotWithChanges({ Stringency: val.target.value })}
+                    onPressEnter={
+                      (val) => this.updatePlotWithChanges({ Stringency: val.target.value })
+                    }
                   />
                 </Form.Item>
               </Panel>
