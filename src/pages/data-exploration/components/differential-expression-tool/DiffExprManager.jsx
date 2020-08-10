@@ -8,7 +8,9 @@ import DiffExprResults from './DiffExprResults';
 import loadDifferentialExpression from '../../../../redux/actions/differentialExpression';
 
 const DiffExprManager = (props) => {
-  const { experimentId, view } = props;
+  const {
+    experimentId, view, width, height,
+  } = props;
 
   const defaultSelected = 'Select a cell set';
   const [selectedCellSets, setSelectedCellSets] = useState({
@@ -50,7 +52,13 @@ const DiffExprManager = (props) => {
     );
   }
   if (currentView === 'results') {
-    return <DiffExprResults onGoBack={onGoBack} />;
+    return (
+      <DiffExprResults
+        onGoBack={onGoBack}
+        width={width}
+        height={height}
+      />
+    );
   }
 };
 

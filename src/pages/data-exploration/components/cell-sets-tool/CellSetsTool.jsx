@@ -7,6 +7,7 @@ import {
   Skeleton, Space, Button,
   Empty, Typography, Tooltip,
 } from 'antd';
+import { Element } from 'react-scroll';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
@@ -18,7 +19,7 @@ import isBrowser from '../../../../utils/environment';
 
 const { Text } = Typography;
 const CellSetsTool = (props) => {
-  const { experimentId } = props;
+  const { experimentId, width, height } = props;
 
   const dispatch = useDispatch();
 
@@ -100,11 +101,22 @@ const CellSetsTool = (props) => {
   };
 
   return (
-    <Space direction='vertical' style={{ width: '100%' }}>
-      {
-        renderContent()
-      }
-    </Space>
+    <Element
+      className='element'
+      id='scroll-container'
+      style={{
+        position: 'relative',
+        height: `${height - 40}px`,
+        width: `${width - 8}px`,
+        overflow: 'scroll',
+      }}
+    >
+      <Space direction='vertical' style={{ width: '100%' }}>
+        {
+          renderContent()
+        }
+      </Space>
+    </Element>
   );
 };
 
@@ -113,6 +125,8 @@ CellSetsTool.defaultProps = {};
 
 CellSetsTool.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
 };
 
 export default CellSetsTool;
