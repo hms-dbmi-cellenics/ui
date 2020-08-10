@@ -49,10 +49,10 @@ describe('createCellSet action', () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
     store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
 
-    const lastActionID = store.getActions().length - 1;
-    const lastAction = store.getActions()[lastActionID];
-    lastAction.payload.key = 'a key';
+    const cellSetSaveActionID = store.getActions().length - 2;
+    const cellSetSaveAction = store.getActions()[cellSetSaveActionID];
+    cellSetSaveAction.payload.key = 'a key';
 
-    expect(lastAction).toMatchSnapshot();
+    expect(cellSetSaveAction).toMatchSnapshot();
   });
 });

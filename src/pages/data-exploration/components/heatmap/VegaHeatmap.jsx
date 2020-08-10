@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
+import { Element } from 'react-scroll';
 
 const VegaHeatmap = (props) => {
   const {
-    spec, showAxes, rowsNumber, defaultWidth, signalListeners, data,
+    spec, showAxes, rowsNumber, defaultWidth, signalListeners, data, width, height,
   } = props;
 
   const axes = [
@@ -49,11 +50,22 @@ const VegaHeatmap = (props) => {
   });
 
   return (
-    <Vega
-      spec={spec}
-      signalListeners={signalListeners}
-      actions={false}
-    />
+    <Element
+      className='element'
+      id='heatmap-container'
+      style={{
+        position: 'relative',
+        height: `${height - 40}px`,
+        width: `${width - 8}px`,
+        overflow: 'scroll',
+      }}
+    >
+      <Vega
+        spec={spec}
+        signalListeners={signalListeners}
+        actions={false}
+      />
+    </Element>
   );
 };
 
@@ -68,6 +80,8 @@ VegaHeatmap.propTypes = {
   data: PropTypes.object.isRequired,
   defaultWidth: PropTypes.number.isRequired,
   signalListeners: PropTypes.object.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
 };
 
 export default VegaHeatmap;

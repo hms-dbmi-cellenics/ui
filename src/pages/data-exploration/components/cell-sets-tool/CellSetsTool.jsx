@@ -7,7 +7,7 @@ import {
   Skeleton, Space, Button,
   Empty, Typography, Tooltip,
 } from 'antd';
-import { Element } from 'react-scroll';
+import { Element, animateScroll } from 'react-scroll';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
@@ -16,6 +16,7 @@ import {
 } from '../../../../redux/actions/cellSets';
 import composeTree from '../../../../utils/composeTree';
 import isBrowser from '../../../../utils/environment';
+import messages from '../../../../components/notification/messages';
 
 const { Text } = Typography;
 const CellSetsTool = (props) => {
@@ -24,6 +25,7 @@ const CellSetsTool = (props) => {
   const dispatch = useDispatch();
 
   const cellSets = useSelector((state) => state.cellSets);
+  const notifications = useSelector((state) => state.notifications);
 
   const {
     loading, error, properties, hierarchy,
@@ -32,6 +34,14 @@ const CellSetsTool = (props) => {
   useEffect(() => {
     if (isBrowser) dispatch(loadCellSets(experimentId));
   }, []);
+
+  useEffect(() => {
+    if (notifications
+      && notifications.message
+      && notifications.message.message === messages.newClusterCreated) {
+      animateScroll.scrollTo(height, { containerId: 'cell-set-tool-container' });
+    }
+  }, [notifications]);
 
   const onNodeUpdate = (key, data) => {
     dispatch(updateCellSetProperty(experimentId, key, data));
@@ -103,7 +113,7 @@ const CellSetsTool = (props) => {
   return (
     <Element
       className='element'
-      id='scroll-container'
+      id='cell-set-tool-container'
       style={{
         position: 'relative',
         height: `${height - 40}px`,
