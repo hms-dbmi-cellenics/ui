@@ -9,28 +9,27 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
-import plot1Pic from '../../../../../../static/media/plot5.png';
-import plot2Pic from '../../../../../../static/media/plot6.png';
+import plot1Pic from '../../../../../../static/media/plot7.png';
+import plot2Pic from '../../../../../../static/media/plot8.png';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
 
 const { Panel } = Collapse;
 const { Option } = Select;
 
-class ReadAlignment extends React.Component {
+class GenesVsUMIs extends React.Component {
   constructor(props) {
     super(props);
 
     this.defaultConfig = {
       plotToDraw: true,
       data: plotData,
-      xAxisText: 'log10 [cell size (mol)]',
-      yAxisText: 'fraction of intergenic reads',
-      xAxisText2: 'fraction of intergenic reads',
-      yAxisText2: 'Frequency',
-      xDefaultTitle: 'log10 [cell size (mol)]',
-      yDefaultTitle: 'fraction of intergenic reads',
-      gridWeight: 0,
+      xAxisText: 'log10 [molecules]',
+      yAxisText: 'Frequency',
+      xAxisText2: 'log10 [molecule counts]',
+      yAxisText2: 'log10 [gene counts]',
+      xDefaultTitle: 'log10 [molecules]',
+      yDefaultTitle: 'Frequency',
       titleSize: 12,
       titleText: '',
       titleAnchor: 'start',
@@ -74,74 +73,69 @@ class ReadAlignment extends React.Component {
         height: config.height,
         autosize: { type: 'fit', resize: true },
         padding: 5,
-        autoSize: 'pad',
+
         signals: [
           {
-            name: 'bandwidth',
-            value: -1,
+            name: 'binStep',
+            value: 0.05,
             bind: {
-              input: 'range', min: -1, max: 100, step: 1,
+              input: 'range', min: 0.001, max: 0.4, step: 0.001,
             },
           },
         ],
+
         data: [
           {
             name: 'plotData',
-            transform: [
-              {
-                type: 'filter',
-                expr: 'datum.cellSize != null && datum.fracMito != null',
-              },
-            ],
           },
           {
-            name: 'density',
+            name: 'binned',
             source: 'plotData',
             transform: [
               {
-                type: 'kde2d',
-                size: [{ signal: 'width' }, { signal: 'height' }],
-                x: { expr: "scale('x', datum.cellSize)" },
-                y: { expr: "scale('y', datum.fracMito)" },
-                bandwidth: { signal: '[bandwidth, bandwidth]' },
-                cellSize: 15,
+                type: 'bin',
+                field: 'molecules',
+                extent: [2, 5],
+                step: { signal: 'binStep' },
+                nice: false,
               },
               {
-                type: 'isocontour',
-                field: 'grid',
-                levels: 5,
+                type: 'aggregate',
+                key: 'bin0',
+                groupby: ['bin0', 'bin1'],
+                fields: ['bin0'],
+                ops: ['count'],
+                as: ['count'],
               },
             ],
           },
         ],
+
         scales: [
           {
-            name: 'x',
+            name: 'xscale',
             type: 'linear',
-            round: true,
-            nice: true,
-            zero: true,
-            domain: { data: 'plotData', field: 'cellSize' },
-            domainMin: 1,
             range: 'width',
+            domain: [2, 5],
+            domainMin: 2,
+
           },
           {
-            name: 'y',
+            name: 'yscale',
             type: 'linear',
-            round: true,
-            nice: true,
-            zero: true,
-            domain: { data: 'plotData', field: 'fracMito' },
             range: 'height',
+            round: true,
+            domain: { data: 'binned', field: 'count' },
+            zero: true,
+            nice: true,
           },
         ],
+
         axes: [
           {
-            scale: 'x',
-            grid: true,
-            domain: false,
             orient: 'bottom',
-            tickCount: 5,
+            scale: 'xscale',
+            grid: true,
             zindex: 1,
             title: { value: config.xAxisText },
             titleFont: { value: config.masterFont },
@@ -150,14 +144,12 @@ class ReadAlignment extends React.Component {
             labelFontSize: { value: config.axisTicks },
             offset: { value: config.axisOffset },
             gridOpacity: { value: (config.transGrid / 20) },
-
           },
           {
-            scale: 'y',
-            grid: true,
-            domain: false,
             orient: 'left',
-            titlePadding: 5,
+            scale: 'yscale',
+            tickCount: 5,
+            grid: true,
             zindex: 1,
             title: { value: config.yAxisText },
             titleFont: { value: config.masterFont },
@@ -166,42 +158,53 @@ class ReadAlignment extends React.Component {
             labelFontSize: { value: config.axisTicks },
             offset: { value: config.axisOffset },
             gridOpacity: { value: (config.transGrid / 20) },
-
           },
         ],
+
         marks: [
           {
-            name: 'marks',
-            type: 'symbol',
-            from: { data: 'plotData' },
+            type: 'rect',
+            from: { data: 'binned' },
             encode: {
               update: {
-                x: { scale: 'x', field: 'cellSize' },
-                y: { scale: 'y', field: 'fracMito' },
-                size: { value: 4 },
-                fill: { value: '#ccc' },
+                x: { scale: 'xscale', field: 'bin0' },
+                x2: {
+                  scale: 'xscale',
+                  field: 'bin1',
+                  offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
+                },
+                y: { scale: 'yscale', field: 'count' },
+                y2: { scale: 'yscale', value: 0 },
+                fill: { value: '#f5ce42' },
+              },
+              hover: { fill: { value: 'firebrick' } },
+            },
+          },
+          {
+            type: 'rule',
+            encode: {
+              update: {
+                x: { scale: 'xscale', value: config.Stringency },
+                y: { value: 0 },
+                y2: { field: { group: 'height' } },
+                strokeWidth: { value: 2 },
+                strokeDash: { value: [8, 4] },
+                stroke: { value: 'red' },
               },
             },
           },
           {
-            type: 'image',
-            from: { data: 'density' },
+            type: 'rule',
             encode: {
               update: {
-                x: { value: 0 },
+                x: { scale: 'xscale', value: 7 - config.Stringency },
                 y: { value: 0 },
-                width: { signal: 'width' },
-                height: { signal: 'height' },
-                aspect: { value: false },
+                y2: { field: { group: 'height' } },
+                strokeWidth: { value: 2 },
+                strokeDash: { value: [8, 4] },
+                stroke: { value: 'red' },
               },
             },
-            transform: [
-              {
-                type: 'heatmap',
-                field: 'datum.grid',
-                color: '#1361a8',
-              },
-            ],
           },
         ],
         title:
@@ -216,42 +219,17 @@ class ReadAlignment extends React.Component {
     }
     return {
       width: config.width,
-      height: config.width,
+      height: config.height,
       autosize: { type: 'fit', resize: true },
       padding: 5,
-
-      signals: [
-        {
-          name: 'binStep',
-          value: 0.05,
-          bind: {
-            input: 'range', min: 0.001, max: 0.4, step: 0.001,
-          },
-        },
-      ],
 
       data: [
         {
           name: 'plotData',
-        },
-        {
-          name: 'binned',
-          source: 'plotData',
           transform: [
             {
-              type: 'bin',
-              field: 'fracMito',
-              extent: [0, 1],
-              step: { signal: 'binStep' },
-              nice: false,
-            },
-            {
-              type: 'aggregate',
-              key: 'bin0',
-              groupby: ['bin0', 'bin1'],
-              fields: ['bin0'],
-              ops: ['count'],
-              as: ['count'],
+              type: 'filter',
+              expr: "datum['genes'] != null && datum['molecules'] != null",
             },
           ],
         },
@@ -259,28 +237,35 @@ class ReadAlignment extends React.Component {
 
       scales: [
         {
-          name: 'xscale',
+          name: 'x',
           type: 'linear',
+          round: true,
+          nice: true,
+          zero: true,
+          domain: [0, 4],
+          domainMin: 2,
           range: 'width',
-          domain: { data: 'binned', field: 'bin0' },
         },
         {
-          name: 'yscale',
+          name: 'y',
           type: 'linear',
-          range: 'height',
           round: true,
-          domain: { data: 'binned', field: 'count' },
-          zero: true,
           nice: true,
+          zero: true,
+          domain: { data: 'plotData', field: 'molecules' },
+          domainMin: 2,
+          range: 'height',
         },
       ],
 
       axes: [
         {
-          orient: 'bottom',
-          scale: 'xscale',
-          zindex: 1,
+          scale: 'x',
           grid: true,
+          domain: false,
+          orient: 'bottom',
+          tickCount: 5,
+          zindex: 1,
           title: { value: config.xAxisText2 },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
@@ -290,11 +275,12 @@ class ReadAlignment extends React.Component {
           gridOpacity: { value: (config.transGrid / 20) },
         },
         {
-          orient: 'left',
-          scale: 'yscale',
-          tickCount: 5,
-          zindex: 1,
+          scale: 'y',
           grid: true,
+          domain: false,
+          orient: 'left',
+          titlePadding: 5,
+          zindex: 1,
           title: { value: config.yAxisText2 },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
@@ -307,21 +293,44 @@ class ReadAlignment extends React.Component {
 
       marks: [
         {
-          type: 'rect',
-          from: { data: 'binned' },
+          name: 'marks',
+          type: 'symbol',
+          from: { data: 'plotData' },
           encode: {
             update: {
-              x: { scale: 'xscale', field: 'bin0' },
-              x2: {
-                scale: 'xscale',
-                field: 'bin1',
-                offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
-              },
-              y: { scale: 'yscale', field: 'count' },
-              y2: { scale: 'yscale', value: 0 },
-              fill: { value: '#f5ce42' },
+              x: { scale: 'x', field: 'genes' },
+              y: { scale: 'y', field: 'molecules' },
+              size: { value: 3 },
+              strokeWidth: { value: 2 },
+              opacity: { value: 0.2 },
+              fill: { value: 'red' },
             },
-            hover: { fill: { value: 'firebrick' } },
+          },
+        },
+        {
+          type: 'rule',
+          encode: {
+            update: {
+              x: { scale: 'x', value: config.Stringency },
+              y: { value: 0 },
+              y2: { field: { group: 'height' } },
+              strokeWidth: { value: 2 },
+              strokeDash: { value: [8, 4] },
+              stroke: { value: 'red' },
+            },
+          },
+        },
+        {
+          type: 'rule',
+          encode: {
+            update: {
+              x: { scale: 'x', value: 6 - config.Stringency },
+              y: { value: 0 },
+              y2: { field: { group: 'height' } },
+              strokeWidth: { value: 2 },
+              strokeDash: { value: [8, 4] },
+              stroke: { value: 'red' },
+            },
           },
         },
       ],
@@ -364,7 +373,7 @@ class ReadAlignment extends React.Component {
           </Col>
 
           <Col span={3}>
-            <Space direction='vertical'>
+            <Space direction='vertical' style={{ width: '100%' }}>
               <img
                 alt=''
                 src={plot1Pic}
@@ -396,16 +405,40 @@ class ReadAlignment extends React.Component {
             <Collapse>
               <Panel header='Filtering Settings' disabled={!filtering}>
                 <Form.Item
-                  label='Method:'
+                  label='Regression type:'
                 >
                   <Select
                     defaultValue='option1'
+                    style={{ width: 200 }}
                     disabled={!filtering}
                   >
-                    <Option value='option1'>Absolute threshold</Option>
+                    <Option value='option1'>Gam</Option>
                     <Option value='option2'>option2</Option>
                     <Option value='option3'>option3</Option>
                   </Select>
+                </Form.Item>
+                <Form.Item
+                  label='Smoothing:'
+                >
+                  <Slider
+                    disabled={!filtering}
+                    defaultValue={13}
+                    min={5}
+                    max={21}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label='Stringency:'
+                >
+                  <InputNumber
+                    disabled={!filtering}
+                    defaultValue={0.05}
+                    max={1}
+                    min={0}
+                    onPressEnter={
+                      (val) => this.updatePlotWithChanges({ Stringency: val.target.value })
+                    }
+                  />
                 </Form.Item>
               </Panel>
               <PlotStyling
@@ -421,4 +454,4 @@ class ReadAlignment extends React.Component {
   }
 }
 
-export default ReadAlignment;
+export default GenesVsUMIs;

@@ -46,7 +46,7 @@ const AxesDesign = (props) => {
           label='Offset Margins'
         >
           <Slider
-            defaultValue={10}
+            defaultValue={config.axesOffset}
             min={0}
             max={20}
             onAfterChange={(value) => {

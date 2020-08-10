@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Select,
+  InputNumber, Select, Form,
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
@@ -42,6 +42,12 @@ class MitochondrialContent extends React.Component {
       masterSize: 13,
       maxFraction: 0.1,
       maxFraction2: 3.5,
+      axisTitlesize: 13,
+      axisTicks: 13,
+      axisOffset: 0,
+      transGrid: 0,
+      width: 530,
+      height: 400,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -75,6 +81,8 @@ class MitochondrialContent extends React.Component {
         {
           fill: 'color',
           orient: config.legendOrientation,
+          labelFont: config.masterFont,
+          titleFont: config.masterFont,
           encode: {
             title: {
               update: {
@@ -110,10 +118,9 @@ class MitochondrialContent extends React.Component {
     }
     if (config.plotToDraw) {
       return {
-        $schema: 'https://vega.github.io/schema/vega/v5.json',
-        description: 'An interactive histogram for visualizing a univariate distribution.',
-        width: 430,
-        height: 300,
+        width: config.width,
+        height: config.height,
+        autosize: { type: 'fit', resize: true },
         padding: 5,
 
         signals: [
@@ -198,23 +205,29 @@ class MitochondrialContent extends React.Component {
           {
             orient: 'bottom',
             scale: 'xscale',
+            grid: true,
             zindex: 1,
             title: { value: config.xAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
-            titleFontSize: { value: config.masterSize },
-            labelFontSize: { value: config.masterSize },
+            titleFontSize: { value: config.axisTitlesize },
+            labelFontSize: { value: config.axisTicks },
+            offset: { value: config.axisOffset },
+            gridOpacity: { value: (config.transGrid / 20) },
           },
           {
             orient: 'left',
             scale: 'yscale',
             tickCount: 5,
+            grid: true,
             zindex: 1,
             title: { value: config.yAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
-            titleFontSize: { value: config.masterSize },
-            labelFontSize: { value: config.masterSize },
+            titleFontSize: { value: config.axisTitlesize },
+            labelFontSize: { value: config.axisTicks },
+            offset: { value: config.axisOffset },
+            gridOpacity: { value: (config.transGrid / 20) },
           },
         ],
 
@@ -271,12 +284,10 @@ class MitochondrialContent extends React.Component {
     }
 
     return {
-      $schema: 'https://vega.github.io/schema/vega/v5.json',
-      description: 'An interactive histogram for visualizing a univariate distribution.',
-      width: 430,
-      height: 300,
+      width: config.width,
+      height: config.height,
       padding: 5,
-
+      autosize: { type: 'fit', resize: true },
       signals: [
         {
           name: 'binStep',
@@ -324,7 +335,8 @@ class MitochondrialContent extends React.Component {
           name: 'xscale',
           type: 'linear',
           range: 'width',
-          domain: [0, 6],
+          domain: [1, 4.5],
+          domainMin: 1,
         },
         {
           name: 'yscale',
@@ -355,23 +367,29 @@ class MitochondrialContent extends React.Component {
           orient: 'bottom',
           scale: 'xscale',
           zindex: 1,
+          grid: true,
           title: { value: config.xAxisText2 },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
-          titleFontSize: { value: config.masterSize },
-          labelFontSize: { value: config.masterSize },
+          titleFontSize: { value: config.axisTitlesize },
+          labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
 
         },
         {
           orient: 'left',
           scale: 'yscale',
           tickCount: 5,
+          grid: true,
           zindex: 1,
           title: { value: config.yAxisText2 },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
-          titleFontSize: { value: config.masterSize },
-          labelFontSize: { value: config.masterSize },
+          titleFontSize: { value: config.axisTitlesize },
+          labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
         },
       ],
 
@@ -431,16 +449,16 @@ class MitochondrialContent extends React.Component {
     };
     const changeFraction = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ maxFraction: val });
+        this.updatePlotWithChanges({ maxFraction: val.target.value });
       } else {
-        this.updatePlotWithChanges({ maxFraction2: val });
+        this.updatePlotWithChanges({ maxFraction2: val.target.value });
       }
     };
     return (
       <>
         <Row>
 
-          <Col span={13}>
+          <Col span={15}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
 
@@ -474,38 +492,36 @@ class MitochondrialContent extends React.Component {
           </Col>
 
 
-          <Col span={8}>
-            <Space direction='vertical'>
-              <Collapse>
-                <Panel header='Filtering settings' disabled={!filtering}>
-                  Method:
-                  <Space direction='vertical'>
-                    <Select
-                      defaultValue='option1'
-                      style={{ width: 200 }}
-                      disabled={!filtering}
-                    >
-                      <Option value='option1'>Absolute threshold</Option>
-                      <Option value='option2'>option2</Option>
-                      <Option value='option3'>option3</Option>
-                    </Select>
-                    <Space>
-                      Max fraction:
-                      <InputNumber
-                        disabled={!filtering}
-                        defaultValue={0}
-                        onChange={(val) => changeFraction(val)}
-                      />
-                    </Space>
-                  </Space>
-                </Panel>
-                <PlotStyling
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  updatePlotWithChanges={this.updatePlotWithChanges}
-                />
-              </Collapse>
-            </Space>
+          <Col span={6}>
+            <Space direction='vertical' style={{ width: '100%' }} />
+            <Collapse>
+              <Panel header='Filtering settings' disabled={!filtering}>
+                <Form.Item label='Method:'>
+                  <Select
+                    defaultValue='option1'
+                    style={{ width: 200 }}
+                    disabled={!filtering}
+                  >
+                    <Option value='option1'>Absolute threshold</Option>
+                    <Option value='option2'>option2</Option>
+                    <Option value='option3'>option3</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item label='Max fraction:'>
+                  <InputNumber
+                    disabled={!filtering}
+                    defaultValue={0}
+                    onPressEnter={(val) => changeFraction(val)}
+                  />
+                </Form.Item>
+              </Panel>
+              <PlotStyling
+                config={config}
+                onUpdate={this.updatePlotWithChanges}
+                updatePlotWithChanges={this.updatePlotWithChanges}
+                legendMenu
+              />
+            </Collapse>
           </Col>
         </Row>
       </>

@@ -8,11 +8,16 @@ import React from 'react';
 import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
 import FontDesign from '../../../plots-and-tables/components/FontDesign';
 import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
-
+import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 
 const { Panel } = Collapse;
 const PlotStyling = (props) => {
-  const { config, onUpdate, singlePlot } = props;
+  const {
+    config, onUpdate, singlePlot, legendMenu,
+  } = props;
+  //  legendMenu is true if the plot has a legend
+  //  singlePlot is true if there is only one plot in the dropdown
+
   const setAxis = (val, axe) => {
     if (axe === 'x') {
       if (config.plotToDraw || singlePlot) {
@@ -29,17 +34,31 @@ const PlotStyling = (props) => {
       }
     }
   };
+  let legend;
+  if (legendMenu) {
+    legend = (
+      <Form.Item label='Legend'>
+        <LegendEditor
+          defaultState
+          config={config}
+          onUpdate={onUpdate}
+        />
+      </Form.Item>
+    );
+  } else {
+    legend = null;
+  }
   return (
     <Collapse>
       <Panel header='Plot Styling'>
-        <Form.Item label='Legend'>
-          <LegendEditor
-            defaultState
-            config={config}
-            onUpdate={onUpdate}
-          />
-        </Form.Item>
+        {legend}
         <Collapse accordion>
+          <Panel header='Plot Dimensions'>
+            <DimensionsRangeEditor
+              config={config}
+              onUpdate={onUpdate}
+            />
+          </Panel>
           <Panel header='Axes'>
             <Form.Item
               label='X axis Title'
@@ -57,6 +76,57 @@ const PlotStyling = (props) => {
                 onPressEnter={(val) => setAxis(val, 'y')}
               />
             </Form.Item>
+            <Form.Item
+              label='Axes Label Size'
+            >
+              <Slider
+                defaultValue={config.axisTitlesize}
+                min={5}
+                max={21}
+                onAfterChange={(value) => {
+                  onUpdate({ axisTitlesize: value });
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label='Axes Ticks Size'
+            >
+              <Slider
+                defaultValue={config.axisTicks}
+                min={5}
+                max={21}
+                onAfterChange={(value) => {
+                  onUpdate({ axisTicks: value });
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label='Offset Margins'
+            >
+              <Slider
+                defaultValue={config.axisOffset}
+                min={0}
+                max={20}
+                onAfterChange={(value) => {
+                  onUpdate({ axisOffset: value });
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label='Grid-line weight'
+            >
+              <Slider
+                defaultValue={config.transGrid}
+                min={0}
+                max={10}
+                onAfterChange={(value) => {
+                  onUpdate({ transGrid: value });
+                }}
+              />
+            </Form.Item>
           </Panel>
           <Panel header='Title'>
             <TitleDesign
@@ -68,15 +138,6 @@ const PlotStyling = (props) => {
             <FontDesign
               config={config}
               onUpdate={onUpdate}
-            />
-            Font size
-            <Slider
-              defaultValue={13}
-              min={5}
-              max={21}
-              onAfterChange={(value) => {
-                onUpdate({ masterSize: value });
-              }}
             />
           </Panel>
         </Collapse>

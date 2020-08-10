@@ -5,6 +5,8 @@ import {
 import ReadAlignment from './components/ReadAlignment/ReadAlignment';
 import CellSizeDistribution from './components/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from './components/MitochondrialContent/MitochondrialContent';
+import Classifier from './components/Classifier/Classifier';
+import GenesVsUMIs from './components/GenesVsUMIs/GenesVsUMIs';
 import DoubletScores from './components/DoubletScores/DoubletScores';
 
 const { Panel } = Collapse;
@@ -16,12 +18,17 @@ class ProcessingViewPage extends React.Component {
       ReadAlignmentFiltering: true,
       cellSizeFiltering: true,
       MitochondrialFiltering: true,
+      ClassifierFiltering: true,
+      GeneVUmiFiltering: true,
       DoubletScoresFiltering: true,
     };
   }
 
   render() {
-    const { ReadAlignmentFiltering, cellSizeFiltering, MitochondrialFiltering, DoubletScoresFiltering } = this.state;
+    const {
+      cellSizeFiltering, MitochondrialFiltering,
+      ClassifierFiltering, GeneVUmiFiltering, DoubletScoresFiltering, ReadAlignmentFiltering,
+    } = this.state;
     return (
       <>
         <PageHeader
@@ -67,7 +74,7 @@ class ProcessingViewPage extends React.Component {
             <MitochondrialContent filtering={MitochondrialFiltering} />
           </Panel>
           <Panel
-            header='Read Alignment'
+            header='Read alignment'
             extra={(
               <Tooltip title='disable filter'>
                 <Switch
@@ -83,8 +90,40 @@ class ProcessingViewPage extends React.Component {
           >
             <ReadAlignment filtering={ReadAlignmentFiltering} />
           </Panel>
-          <Panel header='Classifier' key='4' />
-          <Panel header='Number of genes vs number of UMIs' key='5' />
+          <Panel
+            header='Classifier'
+            extra={(
+              <Tooltip title='disable filter'>
+                <Switch
+                  defaultChecked
+                  onChange={(checked, event) => {
+                    event.stopPropagation();
+                    this.setState({ ClassifierFiltering: checked });
+                  }}
+                />
+              </Tooltip>
+            )}
+            key='4'
+          >
+            <Classifier filtering={ClassifierFiltering} />
+          </Panel>
+          <Panel
+            header='Number of genes vs number of UMIs'
+            key='5'
+            extra={(
+              <Tooltip title='disable filter'>
+                <Switch
+                  defaultChecked
+                  onChange={(checked, event) => {
+                    event.stopPropagation();
+                    this.setState({ GeneVUmiFiltering: checked });
+                  }}
+                />
+              </Tooltip>
+            )}
+          >
+            <GenesVsUMIs filtering={GeneVUmiFiltering} />
+          </Panel>
           <Panel
             header='Doublet Scores'
             extra={(
@@ -102,6 +141,7 @@ class ProcessingViewPage extends React.Component {
           >
             <DoubletScores filtering={DoubletScoresFiltering} />
           </Panel>
+
         </Collapse>
       </>
     );
