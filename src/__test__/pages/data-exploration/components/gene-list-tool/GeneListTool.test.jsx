@@ -8,8 +8,11 @@ import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import { ExclamationCircleFilled } from '@ant-design/icons';
+import waitForActions from 'redux-mock-store-await-actions';
 import GeneListTool from '../../../../../pages/data-exploration/components/gene-list-tool/GeneListTool';
 import { fetchCachedWork } from '../../../../../utils/cacheRequest';
+
+import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
 
@@ -84,7 +87,7 @@ describe('GeneListTool', () => {
 
     component = mount(
       <Provider store={store}>
-        <GeneListTool experimentId='1234' uuid={TEST_UUID} />
+        <GeneListTool experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
   });
@@ -102,8 +105,8 @@ describe('GeneListTool', () => {
     expect(table.length).toEqual(1);
     expect(genesFilter.length).toEqual(1);
     expect(table.getElement().props.columns.length).toEqual(3);
-    expect(table.getElement().props.columns[0].title).toEqual('Gene');
-    expect(table.getElement().props.columns[1].key).toEqual('lookup');
+    expect(table.getElement().props.columns[0].key).toEqual('lookup');
+    expect(table.getElement().props.columns[1].title).toEqual('Gene');
     expect(table.getElement().props.columns[2].title).toEqual('Dispersion');
     expect(table.getElement().props.dataSource.length).toEqual(
       initialState.genes.properties.views[TEST_UUID].data.length,
@@ -113,7 +116,7 @@ describe('GeneListTool', () => {
     );
   });
 
-  it('can sort the gene names in alphabetical order', () => {
+  it('can sort the gene names in alphabetical order', async () => {
     const newPagination = {
       current: 1,
       pageSize: 4,
@@ -138,6 +141,9 @@ describe('GeneListTool', () => {
       table.getElement().props.onChange(newPagination, {}, newSorter);
     });
 
+    // Wait for side-effect to propagate (properties loading and loaded).
+    await waitForActions(store, [GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED]);
+
     expect(fetchCachedWork).toHaveBeenCalledWith('1234', 30, {
       limit: 4,
       name: 'ListGenes',
@@ -148,7 +154,6 @@ describe('GeneListTool', () => {
     });
 
     expect(store.getActions()[0]).toMatchSnapshot();
-
     expect(store.getActions()[1]).toMatchSnapshot();
   });
 
@@ -169,8 +174,8 @@ describe('GeneListTool', () => {
     onClick();
 
     // The store should have been updated.
-    expect(store.getActions().length).toEqual(3);
-    expect(store.getActions()[2]).toMatchSnapshot();
+    expect(store.getActions().length).toEqual(1);
+    expect(store.getActions()[0]).toMatchSnapshot();
   });
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
@@ -184,7 +189,7 @@ describe('GeneListTool', () => {
 
     component = mount(
       <Provider store={store}>
-        <GeneListTool experimentId='1234' uuid={TEST_UUID} />
+        <GeneListTool experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
 
@@ -206,7 +211,7 @@ describe('GeneListTool', () => {
 
     component = mount(
       <Provider store={store}>
-        <GeneListTool experimentId='1234' uuid={TEST_UUID} />
+        <GeneListTool experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
 

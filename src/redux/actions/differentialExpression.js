@@ -23,7 +23,7 @@ const loadDifferentialExpression = (
 
   const body = {
     name: 'DifferentialExpression',
-    maxNum: 100,
+    maxNum: 500,
     cellSet: selectedCellSets.first,
   };
 

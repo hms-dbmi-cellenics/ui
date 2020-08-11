@@ -1,122 +1,91 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+
 import {
   useSelector,
 } from 'react-redux';
 
 import {
-  Table, Space, Button,
+  Space, Button,
 } from 'antd';
+
+import _ from 'lodash';
 
 import PropTypes from 'prop-types';
 
-const DiffExprResults = (props) => {
-  const { onGoBack, width, height } = props;
+import GeneTable from '../gene-list-tool/GeneTable';
 
-  const isLoading = useSelector((state) => state.differentialExpression.properties.loading);
+const DiffExprResults = (props) => {
+  const {
+    experimentId, onGoBack, width, height,
+  } = props;
+
+  const loading = useSelector((state) => state.differentialExpression.properties.loading);
   const data = useSelector((state) => state.differentialExpression.properties.data);
   const total = useSelector((state) => state.differentialExpression.properties.total);
 
-  const defaultState = {
-    pagination: {
-      current: 1,
-      pageSize: 50,
-      showSizeChanger: true,
-      total,
-    },
-  };
-  const [tableState, setTableState] = useState(defaultState);
-  const [rows, setRows] = useState([]);
-
-  const updateRows = (newTableState) => {
-    const currentPage = newTableState?.pagination.current
-      || tableState?.pagination.current
-      || 1;
-
-    const currentPageSize = newTableState?.pagination.pageSize
-      || tableState?.pagination.pageSize
-      || 1;
-    const offset = ((currentPage - 1) * currentPageSize);
-    const limit = currentPageSize;
-
-    if (data.length > 0) {
-      if (offset + limit > total) {
-        setRows(data.slice(offset));
-      } else {
-        setRows(data.slice(offset, limit + offset));
-      }
-    }
-  };
-
-  useEffect(() => {
-    updateRows();
-  }, [tableState, data]);
-
-  useEffect(() => {
-    const { current, pageSize, showSizeChanger } = tableState.pagination;
-    setTableState(
-      {
-        pagination: {
-          current,
-          pageSize,
-          showSizeChanger,
-          total,
-        },
-      },
-    );
-  }, [total]);
+  const [dataShown, setDataShown] = useState(data);
 
   const columns = [
     {
-      title: 'Gene',
-      dataIndex: 'gene_names',
-      key: 'gene_names',
-      render: (geneName) => (
-        <a
-          href={`https://www.genecards.org/cgi-bin/carddisp.pl?gene=${geneName}`}
-          target='_blank'
-          rel='noreferrer'
-        >
-          {geneName}
-        </a>
-      ),
-    },
-    {
-      title: 'pValue',
-      dataIndex: 'pval',
+      title: 'p-value',
       key: 'pval',
       render: (num) => num.toExponential(3),
+      sorter: true,
     },
     {
-      title: 'qValue',
-      dataIndex: 'qval',
+      title: 'q-value',
       key: 'qval',
       render: (num) => num.toExponential(3),
+      sorter: true,
     },
     {
-      title: 'Log2 Fold Change',
-      dataIndex: 'log2fc',
+      title: 'log2 fold change',
       key: 'log2fc',
       render: (num) => parseFloat(num.toFixed(3)),
+      sorter: true,
     },
   ];
 
 
-  const handleTableChange = (newPagination) => {
-    const newTableState = { pagination: newPagination };
-    setTableState(newTableState);
+  const onUpdate = (newState) => {
+    // Apply sorting
+    const { field: sortField, order: sortOrder } = newState.sorter;
+    let newData = _.orderBy(data, [sortField], [(sortOrder === 'ascend') ? 'asc' : 'desc']);
+
+    // Apply pagination
+    const { current, pageSize: limit } = newState.pagination;
+    const offset = ((current - 1) * limit);
+    newData = newData.slice(offset, offset + limit);
+
+    setDataShown(newData);
   };
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
       <Button size='small' onClick={onGoBack}>Go Back</Button>
-      <Table
+      <GeneTable
+        experimentId={experimentId}
+        initialTableState={{
+          sorter: {
+            field: 'qval',
+            columnKey: 'qval',
+            order: 'ascend',
+          },
+        }}
+        onUpdate={onUpdate}
         columns={columns}
-        dataSource={rows}
-        loading={isLoading}
-        size='small'
-        pagination={tableState?.pagination}
-        scroll={{ x: width, y: height - 250 }}
-        onChange={handleTableChange}
+        loading={loading}
+
+        // This component only loads when we already have data saved in the store,
+        // so error conditions never happen.
+        // This will change once we use pagination to fetch partial views of
+        // differential expression dynamically.
+        error={false}
+
+        width={width}
+        height={height}
+        data={dataShown}
+        total={total}
       />
     </Space>
   );
@@ -125,6 +94,7 @@ const DiffExprResults = (props) => {
 DiffExprResults.defaultProps = {};
 
 DiffExprResults.propTypes = {
+  experimentId: PropTypes.string.isRequired,
   onGoBack: PropTypes.func.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,

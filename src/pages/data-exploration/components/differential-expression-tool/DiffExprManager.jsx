@@ -55,6 +55,7 @@ const DiffExprManager = (props) => {
     return (
       <DiffExprResults
         onGoBack={onGoBack}
+        experimentId={experimentId}
         width={width}
         height={height}
       />

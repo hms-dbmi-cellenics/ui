@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Table, Space, Button, Typography, Empty, Skeleton,
 } from 'antd';
+import _ from 'lodash';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import FilterGenes from './FilterGenes';
 import { changeGeneSelection, setFocusedGene } from '../../../../redux/actions/genes';
 import GeneSelectionStatus from '../../../../redux/actions/genes/geneSelectionStatus';
+import { geneTableUpdateReason } from '../../../../utils/geneTable/geneTableUpdateReason';
 
 import GeneLookupButton from './GeneLookupButton';
 import isBrowser from '../../../../utils/environment';
@@ -16,7 +18,7 @@ const { Text } = Typography;
 
 const GeneTable = (props) => {
   const {
-    experimentId, onUpdate, error, loading, columns, data, total,
+    experimentId, onUpdate, error, loading, columns, data, total, initialTableState, width, height,
   } = props;
 
   const dispatch = useDispatch();
@@ -29,20 +31,24 @@ const GeneTable = (props) => {
   }
 
   const [tableState, setTableState] = useState(
-    {
-      pagination: {
-        current: 1,
-        pageSize: 50,
-        showSizeChanger: true,
-        total,
+    _.merge(
+      {
+        pagination: {
+          current: 1,
+          pageSize: 50,
+          showSizeChanger: true,
+          total,
+        },
+        geneNamesFilter,
       },
-      sorter: {
-        field: 'dispersions',
-        order: 'descend',
-      },
-      geneNamesFilter,
-    },
+      initialTableState,
+    ),
   );
+
+  useEffect(() => {
+    onUpdate(tableState, loading ? geneTableUpdateReason.loading : geneTableUpdateReason.loaded);
+  }, [loading]);
+
 
   const getSortOrder = (key) => {
     if (key === tableState.sorter.columnKey) {
@@ -54,7 +60,7 @@ const GeneTable = (props) => {
   const handleTableChange = (newPagination, a, newSorter) => {
     const newTableState = { pagination: newPagination, sorter: { ...newSorter }, geneNamesFilter };
 
-    onUpdate(newTableState);
+    onUpdate(newTableState, geneTableUpdateReason.paginated);
     setTableState(newTableState);
   };
 
@@ -65,7 +71,7 @@ const GeneTable = (props) => {
       geneNamesFilter: searchPattern,
     };
 
-    onUpdate(newTableState);
+    onUpdate(newTableState, geneTableUpdateReason.filtered);
     setTableState(newTableState);
     setGeneNamesFilter(searchPattern);
   };
@@ -120,6 +126,12 @@ const GeneTable = (props) => {
   const renderColumns = (propColumns) => {
     const baseColumns = [
       {
+        title: '',
+        dataIndex: 'lookup',
+        key: 'lookup',
+        width: '50px',
+      },
+      {
         title: 'Gene',
         dataIndex: 'gene_names',
         key: 'gene_names',
@@ -133,11 +145,7 @@ const GeneTable = (props) => {
             {geneName}
           </a>
         ),
-      },
-      {
-        title: '',
-        dataIndex: 'lookup',
-        key: 'lookup',
+        sortOrder: getSortOrder('gene_names'),
       },
     ];
 
@@ -206,9 +214,9 @@ const GeneTable = (props) => {
         dataSource={renderRows(data)}
         loading={loading}
         size='small'
-        pagination={tableState?.pagination}
+        pagination={{ ...tableState?.pagination, total }}
         sorter={tableState?.sorter}
-        scroll={{ x: 200, y: 400 }}
+        scroll={{ x: width, y: height - 260 }}
         onChange={handleTableChange}
         rowSelection={{
           type: 'checkbox',
@@ -220,14 +228,26 @@ const GeneTable = (props) => {
   );
 };
 
+GeneTable.defaultProps = {
+  initialTableState: {},
+};
+
 GeneTable.propTypes = {
   experimentId: PropTypes.string.isRequired,
   columns: PropTypes.array.isRequired,
   data: PropTypes.array.isRequired,
   total: PropTypes.number.isRequired,
-  error: PropTypes.isRequired,
+  error: PropTypes.PropTypes.oneOfType(
+    [
+      PropTypes.string,
+      PropTypes.bool,
+    ],
+  ).isRequired,
   loading: PropTypes.bool.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  initialTableState: PropTypes.object,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
 };
 
 export default GeneTable;

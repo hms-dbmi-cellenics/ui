@@ -44,6 +44,7 @@ const loadPaginatedGeneProperties = (
 
   try {
     const { rows, total } = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
+
     const loadedProperties = {};
     rows.forEach((row) => {
       const { gene_names: geneName, ...rest } = row;
@@ -51,7 +52,7 @@ const loadPaginatedGeneProperties = (
       loadedProperties[geneName] = rest;
     });
 
-    dispatch({
+    return dispatch({
       type: GENES_PROPERTIES_LOADED_PAGINATED,
       payload: {
         experimentId,
@@ -62,7 +63,7 @@ const loadPaginatedGeneProperties = (
       },
     });
   } catch (error) {
-    dispatch({
+    return dispatch({
       type: GENES_PROPERTIES_ERROR,
       payload: {
         experimentId,

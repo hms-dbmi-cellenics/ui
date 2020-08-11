@@ -12,6 +12,10 @@ jest.mock('localforage');
 const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({
+  genes: {
+    selected: [],
+    focused: undefined,
+  },
   differentialExpression: {
     properties: {
       data: [
@@ -72,11 +76,12 @@ describe('DiffExprResults', () => {
     const spin = component.find('Table Spin');
     expect(spin.length).toEqual(1);
     expect(table.length).toEqual(1);
-    expect(table.getElement().props.columns.length).toEqual(4);
-    expect(table.getElement().props.columns[0].title).toEqual('Gene');
-    expect(table.getElement().props.columns[1].title).toEqual('pValue');
-    expect(table.getElement().props.columns[2].title).toEqual('qValue');
-    expect(table.getElement().props.columns[3].title).toEqual('Log2 Fold Change');
+    expect(table.getElement().props.columns.length).toEqual(5);
+    expect(table.getElement().props.columns[0].key).toEqual('lookup');
+    expect(table.getElement().props.columns[1].title).toEqual('Gene');
+    expect(table.getElement().props.columns[2].key).toEqual('pval');
+    expect(table.getElement().props.columns[3].key).toEqual('qval');
+    expect(table.getElement().props.columns[4].key).toEqual('log2fc');
 
     expect(table.getElement().props.dataSource.length).toEqual(5);
     expect(table.getElement().props.data.length).toEqual(5);
