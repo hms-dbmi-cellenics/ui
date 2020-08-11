@@ -31,6 +31,9 @@ const emptyStore = mockStore({
   cellSets: {
     data: [],
   },
+  genes: {
+    focused: undefined,
+  },
 });
 
 describe('DiffExprManager', () => {

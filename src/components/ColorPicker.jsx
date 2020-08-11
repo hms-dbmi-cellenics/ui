@@ -57,7 +57,7 @@ const ColorPicker = (props) => {
 
 ColorPicker.defaultProps = {
   onColorChange: () => null,
-  zIndex: 1,
+  zIndex: 5,
 };
 
 ColorPicker.propTypes = {
