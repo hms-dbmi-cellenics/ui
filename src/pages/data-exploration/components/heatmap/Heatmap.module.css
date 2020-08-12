@@ -1,0 +1,6 @@
+.cell-info-container {
+  visibility: hidden;
+}
+#heatmap-container:hover + .cell-info-container {
+  visibility: visible;
+}

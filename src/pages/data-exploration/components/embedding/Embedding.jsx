@@ -27,6 +27,7 @@ import {
 } from '../../../../utils/embeddingPlotHelperFunctions/helpers';
 import legend from '../../../../../static/media/viridis.png';
 import isBrowser from '../../../../utils/environment';
+import './Embedding.module.css';
 
 const { Text } = Typography;
 
@@ -205,6 +206,7 @@ const Embedding = (props) => {
     <div
       className='vitessce-container vitessce-theme-light'
       style={{ height: '50vh', position: 'relative' }}
+
     >
       {renderExpressionView()}
       <Scatterplot
@@ -231,11 +233,13 @@ const Embedding = (props) => {
               onCancel={onCancelCreateCluster}
             />
           ) : [
+            <div className='cell-info-container'>
+              <CellInfo
+                componentType={embeddingType}
+                coordinates={cellCoordintes}
+              />
+            </div>,
             <CrossHair
-              componentType={embeddingType}
-              coordinates={cellCoordintes}
-            />,
-            <CellInfo
               componentType={embeddingType}
               coordinates={cellCoordintes}
             />,

@@ -181,11 +181,13 @@ const HeatmapPlot = (props) => {
       width={width}
       height={height}
     />,
+    <div className='cell-info-container'>
+      <CellInfo
+        coordinates={hoverCoordinates}
+        componentType={componentType}
+      />
+    </div>,
     <HeatmapCrossHairs />,
-    <CellInfo
-      coordinates={hoverCoordinates}
-      componentType={componentType}
-    />,
   ];
 };
 
