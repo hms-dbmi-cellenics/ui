@@ -29,8 +29,8 @@ const CellInfo = (props) => {
         // make sure that cell info renders on top of the cross hairs
         zIndex: 6,
         position: 'absolute',
-        left: `${coordinates.current.x + 40}px`,
-        top: `${coordinates.current.y - 60}px`,
+        left: `${coordinates.current.x + 100}px`,
+        top: `${coordinates.current.y}px`,
       }}
     >
       {cellInfo.geneName ? (
