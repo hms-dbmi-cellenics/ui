@@ -15,6 +15,7 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './NotificationManager';
 
+const { SubMenu } = Menu;
 const { Sider } = Layout;
 
 const ContentWrapper = (props) => {
@@ -52,14 +53,30 @@ const ContentWrapper = (props) => {
             <BarsOutlined />
             <span> PBMC Dataset Experiment</span>
           </Menu.Item>
-          <Menu.Item key='2'>
-            <Link href='/data-processing/filter-cells' passHref>
-              <div>
-                <BuildOutlined />
-                <span>Data Processing</span>
-              </div>
-            </Link>
-          </Menu.Item>
+          <SubMenu key='sub1' icon={<BuildOutlined />} title='Data Processing'>
+            <Menu.Item key='5'>
+              <Link href='/data-processing/filter-cells' passHref>
+                <div>
+                  <BuildOutlined />
+                  <span>Filter Cells</span>
+                </div>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key='6'>
+              <Link href='/data-processing/reduce-dimensions' passHref>
+                <div>
+                  <span>Reduce Dimensions</span>
+                </div>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key='7'>
+              <Link href='/data-processing/configure-embedding' passHref>
+                <div>
+                  <span>Configure Embedding</span>
+                </div>
+              </Link>
+            </Menu.Item>
+          </SubMenu>
           <Menu.Item key='3'>
             <Link href='/data-exploration' passHref>
               <div>
