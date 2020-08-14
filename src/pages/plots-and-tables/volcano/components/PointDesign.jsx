@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import PropTypes from 'prop-types';
 import {
   Slider, Form,
   Radio,
@@ -57,6 +57,11 @@ const PointDesign = (props) => {
       </Form.Item>
     </Form>
   );
+};
+
+PointDesign.propTypes = {
+  config: PropTypes.object.isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export default PointDesign;

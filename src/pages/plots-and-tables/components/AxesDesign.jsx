@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Slider, Form, Input,
-
 } from 'antd';
 
 const AxesDesign = (props) => {
@@ -98,6 +97,11 @@ const AxesDesign = (props) => {
       </Form>
     </>
   );
+};
+
+AxesDesign.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 export default AxesDesign;

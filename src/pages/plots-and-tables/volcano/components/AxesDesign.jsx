@@ -1,14 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import {
   Slider, Form, Input,
-
 } from 'antd';
 
 const AxesDesign = (props) => {
   const { onUpdate } = props;
-
   return (
     <Form
       size='small'
@@ -40,7 +37,6 @@ const AxesDesign = (props) => {
           }}
         />
       </Form.Item>
-
       <Form.Item
         label='Grid-line weight'
       >

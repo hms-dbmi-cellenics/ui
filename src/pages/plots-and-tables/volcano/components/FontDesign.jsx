@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-
 import {
   Form,
   Radio,
@@ -8,9 +7,7 @@ import {
 
 const FontDesign = (props) => {
   const { onUpdate, config } = props;
-
   const [masterfont, setmasterfont] = useState(config.masterFont);
-
   const onChange = (e) => {
     setmasterfont(e.target.value);
     onUpdate({ masterFont: e.target.value });

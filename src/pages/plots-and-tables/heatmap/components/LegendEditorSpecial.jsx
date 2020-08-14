@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-
+import PropTypes from 'prop-types';
 import {
   Radio,
 } from 'antd';
 
 
 const LegendEditor = (props) => {
-  const { config, onUpdate } = props;
+  const { onUpdate } = props;
 
   const [legendLocation, setlegendLocation] = useState('horizontal');
 
@@ -23,6 +23,10 @@ const LegendEditor = (props) => {
       <Radio value='none'>Hide</Radio>
     </Radio.Group>
   );
+};
+
+LegendEditor.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export default LegendEditor;

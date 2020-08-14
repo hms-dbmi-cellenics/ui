@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-
+import PropTypes from 'prop-types';
 import {
-  Radio, Form, Slider
+  Radio, Form, Slider,
 } from 'antd';
 
 
 const LabelsDesign = (props) => {
-
-  const { config, onUpdate } = props;
-
+  const { onUpdate } = props;
   const [labelsEnabled, setlabelsEnabled] = useState(true);
-
 
   const onChange = (e) => {
     setlabelsEnabled(e.target.value);
@@ -38,6 +35,10 @@ const LabelsDesign = (props) => {
       </Form.Item>
     </>
   );
+};
+
+LabelsDesign.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export default LabelsDesign;

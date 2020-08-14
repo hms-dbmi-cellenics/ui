@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
-  Slider, Form, InputNumber, Checkbox, Space,
+  Slider, Form,
 } from 'antd';
 
 
@@ -16,7 +16,6 @@ const DimensionsRangeEditor = (props) => {
         wrapperCol={{ span: 12 }}
       >
         <div>Dimensions</div>
-
         <Form.Item
           label='Width'
         >
@@ -44,6 +43,11 @@ const DimensionsRangeEditor = (props) => {
       </Form>
     </>
   );
+};
+
+DimensionsRangeEditor.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 export default DimensionsRangeEditor;

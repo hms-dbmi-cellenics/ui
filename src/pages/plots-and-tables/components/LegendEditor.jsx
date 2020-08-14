@@ -1,16 +1,10 @@
 import React, { useState } from 'react';
-
-import {
-  Radio,
-} from 'antd';
+import PropTypes from 'prop-types';
+import { Radio } from 'antd';
 
 const LegendEditor = (props) => {
-
-  const { config, onUpdate } = props;
-
-  const [legendEnabled, setLegendEnabled] = useState(props.defaultState);
-
-
+  const { defaultState, onUpdate } = props;
+  const [legendEnabled, setLegendEnabled] = useState(defaultState);
   const onChange = (e) => {
     setLegendEnabled(e.target.value);
     onUpdate({ legendEnabled: e.target.value });
@@ -22,6 +16,11 @@ const LegendEditor = (props) => {
       <Radio value={false}>Hide</Radio>
     </Radio.Group>
   );
+};
+
+LegendEditor.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+  defaultState: PropTypes.object.isRequired,
 };
 
 export default LegendEditor;

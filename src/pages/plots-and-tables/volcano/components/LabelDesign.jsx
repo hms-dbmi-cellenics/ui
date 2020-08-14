@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
-
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
-  Form, InputNumber, Checkbox, Space, Select,
+  Form, InputNumber, Checkbox, Space,
 } from 'antd';
 
 
 const ApplyTextLabels = (props) => {
-  const { onUpdate, config } = props;
-
+  const { onUpdate } = props;
 
   return (
     <>
@@ -50,11 +49,13 @@ const ApplyTextLabels = (props) => {
             </Checkbox>
           </Space>
         </Form.Item>
-
-
       </Form>
     </>
   );
+};
+
+ApplyTextLabels.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export default ApplyTextLabels;
