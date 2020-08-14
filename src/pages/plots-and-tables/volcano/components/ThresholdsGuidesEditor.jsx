@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Form, InputNumber, Checkbox, Space, Select,
 } from 'antd';
@@ -32,6 +33,13 @@ const ColorPickerOption = (props) => {
       />
     </Space>
   );
+};
+
+ColorPickerOption.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
+  configType: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
 };
 
 const ThresholdsGuidesEditor = (props) => {
@@ -171,6 +179,11 @@ const ThresholdsGuidesEditor = (props) => {
       </Form>
     </>
   );
+};
+
+ThresholdsGuidesEditor.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 export default ThresholdsGuidesEditor;

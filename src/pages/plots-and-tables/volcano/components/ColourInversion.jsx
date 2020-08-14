@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-
 import {
   Form,
   Radio,
@@ -8,9 +7,7 @@ import {
 
 const InvertColours = (props) => {
   const { onUpdate, config } = props;
-
   const [toggleInvert, settoggleInvert] = useState(config.toggleInvert);
-
   const onChange = (e) => {
     settoggleInvert(e.target.value);
     onUpdate({ toggleInvert: e.target.value });

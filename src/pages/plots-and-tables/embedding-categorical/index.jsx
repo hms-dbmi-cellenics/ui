@@ -1,18 +1,12 @@
 import React from 'react';
-
 import {
   PageHeader, Row, Col, Space, Collapse,
 } from 'antd';
-
 import { Vega } from 'react-vega';
-
 import _ from 'lodash';
 import categoricalUMAP from './new_categoricalUMAP.json';
-
-
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourInversion from './components/ColourInversion';
-
 import AxesDesign from '../components/AxesDesign';
 import PointDesign from './components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
@@ -53,7 +47,6 @@ class PlotsAndTablesViewPage extends React.Component {
       masterColour: '#000000',
       umap1Domain: null,
       umap2Domain: null,
-
       titleText: '',
       titleSize: 20,
       titleAnchor: 'start',
@@ -73,12 +66,10 @@ class PlotsAndTablesViewPage extends React.Component {
       legendEnabled: true,
       legend: null,
       geneexpLegendloc: '',
-
       labelSize: 28,
       labelShow: 1,
       labelFont: 2,
       labelsEnabled: true,
-
       selectedClusters: [],
       testVar: null,
     };
@@ -150,13 +141,11 @@ class PlotsAndTablesViewPage extends React.Component {
     }
 
     return {
-
       $schema: 'https://vega.github.io/schema/vega/v5.json',
       description: 'A basic scatter plot example depicting automobile statistics.',
       width: config.width || this.defaultConfig.width,
       height: config.height || this.defaultConfig.height,
       autosize: { type: 'fit', resize: true },
-
       background: config.toggleInvert,
       padding: 5,
       data: [{
@@ -169,7 +158,6 @@ class PlotsAndTablesViewPage extends React.Component {
           as: ['um1', 'um2'],
         }],
       },
-
       {
         name: 'cluster_labels',
         source: 'embeddingCat',
@@ -180,8 +168,6 @@ class PlotsAndTablesViewPage extends React.Component {
           as: ['um1', 'um2'],
         }],
       }],
-
-
       scales: [
         {
           name: 'x',
@@ -215,7 +201,6 @@ class PlotsAndTablesViewPage extends React.Component {
 
         },
       ],
-
       axes: [
         {
           scale: 'x',
@@ -305,9 +290,7 @@ class PlotsAndTablesViewPage extends React.Component {
           },
         },
       ],
-
       legends: config.legend,
-
       title:
       {
         text: { value: config.titleText },
@@ -322,23 +305,19 @@ class PlotsAndTablesViewPage extends React.Component {
 
   generateData() {
     const { data } = this.state;
-
     return data;
   }
 
   updatePlotWithChanges(obj) {
     this.setState((prevState) => {
       const newState = _.cloneDeep(prevState);
-
       _.merge(newState.config, obj);
-
       return newState;
     });
   }
 
   render() {
     const { config } = this.state;
-
     const data = { embeddingCat: this.generateData() };
 
     return (
@@ -390,7 +369,6 @@ class PlotsAndTablesViewPage extends React.Component {
                   </Panel>
                 </Collapse>
               </Panel>
-
               <Panel header='Axes and Margins' key='3'>
                 <AxesDesign
 
@@ -398,22 +376,18 @@ class PlotsAndTablesViewPage extends React.Component {
                   onUpdate={this.updatePlotWithChanges}
                 />
               </Panel>
-
               <Panel header='Colour Inversion' key='4'>
                 <ColourInversion
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
                 />
               </Panel>
-
-
               <Panel header='Markers' key='5'>
                 <PointDesign
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
                 />
               </Panel>
-
               <Panel header='Legend' key='10'>
                 <LegendEditor
                   color={config.legendTextColor}
@@ -422,8 +396,6 @@ class PlotsAndTablesViewPage extends React.Component {
                   defaultState
                 />
               </Panel>
-
-
               <Panel header='Labels' key='11'>
                 <LabelsDesign
                   color={config.legendTextColor}
@@ -431,11 +403,8 @@ class PlotsAndTablesViewPage extends React.Component {
                   onUpdate={this.updatePlotWithChanges}
                 />
               </Panel>
-
             </Collapse>
           </Col>
-
-
         </Row>
       </>
     );

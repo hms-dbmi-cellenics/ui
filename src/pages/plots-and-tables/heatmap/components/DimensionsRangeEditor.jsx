@@ -1,7 +1,7 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import {
-  Slider, Form
+  Slider, Form,
 } from 'antd';
 
 
@@ -44,6 +44,10 @@ const DimensionsRangeEditor = (props) => {
       </Form>
     </>
   );
+};
+
+DimensionsRangeEditor.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export default DimensionsRangeEditor;

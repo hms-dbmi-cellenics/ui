@@ -1,25 +1,20 @@
-import React, { useState } from 'react';
-
+import React from 'react';
 import {
   Slider, Form,
-  Radio, Collapse,
 } from 'antd';
 import PropTypes from 'prop-types';
 
 const PointDesign = (props) => {
-  const { onUpdate, config } = props;
-
+  const { onUpdate } = props;
 
   return (
     <>
-
       <Form
         size='small'
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
         <div>Styles</div>
-
         <Form.Item
           label='Point Size'
         >
@@ -45,13 +40,12 @@ const PointDesign = (props) => {
             }}
           />
         </Form.Item>
-
       </Form>
     </>
   );
 };
+
 PointDesign.propTypes = {
-  config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
 

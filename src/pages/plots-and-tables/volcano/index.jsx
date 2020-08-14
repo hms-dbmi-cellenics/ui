@@ -1,19 +1,14 @@
 import React from 'react';
-
 import {
   PageHeader, Row, Col, Space, Collapse, Slider,
 } from 'antd';
-
 import { Vega } from 'react-vega';
-
 import _ from 'lodash';
 import differentialExpression from './differential_expression.json';
-
 import ThresholdsGuidesEditor from './components/ThresholdsGuidesEditor';
 import MarkersEditor from './components/MarkersEditor';
 import PointDesign from './components/PointDesign';
 import TitleDesign from './components/TitleDesign';
-
 import SchemaDesign from './components/SchemaDesign_2';
 import AxesDesign from './components/AxesDesign';
 import FontDesign from '../components/FontDesign';
@@ -52,8 +47,6 @@ if (Math.abs(l2fcMin) > Math.abs(l2fcMax)) {
 }
 
 const { Panel } = Collapse;
-
-
 class PlotsAndTablesViewPage extends React.Component {
   constructor(props) {
     super(props);
@@ -92,15 +85,12 @@ class PlotsAndTablesViewPage extends React.Component {
       logFoldChangeThreshold: 1,
       logFoldChangeTickCount: 5,
       negativeLogpValueTickCount: 5,
-      // Marcell, I removed downsampling for now because Vicky didnt like it
-      // downsampleRatio: 0.9,
       downsampleRatio: 0,
       showLogFoldChangeThresholdGuides: false,
       showpvalueThresholdGuides: false,
       thresholdGuideWidth: 1,
       logFoldChangeThresholdColor: '#ff0000',
       pvalueThresholdColor: '#ff0000',
-
       pointSize: 32,
       pointStyle: 'circle',
       pointOpa: 5,
@@ -117,11 +107,9 @@ class PlotsAndTablesViewPage extends React.Component {
       lineWidth: 2,
       xaxisText: 'Log2 Fold Change',
       yaxisText: 'Log10 -p-value',
-
       titleText: '',
       titleSize: 20,
       titleAnchor: 'start',
-
       masterFont: 'sans-serif',
       masterColour: '#000000',
       toggleInvert: '#FFFFFF',
@@ -141,7 +129,6 @@ class PlotsAndTablesViewPage extends React.Component {
     let { data } = this.state;
     const { config } = this.state;
     data = _.cloneDeep(data);
-
     data = data.filter((datum) => {
       // Downsample insignificant, not changing genes by the appropriate amount.
       const isSignificant = (
@@ -183,6 +170,7 @@ class PlotsAndTablesViewPage extends React.Component {
       } else {
         status = '6_noDifference';
       }
+      // eslint-disable-next-line no-param-reassign
       datum.status = status;
 
       return datum;
@@ -280,8 +268,6 @@ class PlotsAndTablesViewPage extends React.Component {
       height: config.height || this.defaultConfig.height,
       background: config.toggleInvert,
       padding: 5,
-
-
       data: [
         {
           name: 'differentialExpression',
@@ -320,10 +306,7 @@ class PlotsAndTablesViewPage extends React.Component {
         },
 
       ],
-
-
       scales: [
-
         {
           name: 'x',
           type: 'linear',
@@ -363,7 +346,6 @@ class PlotsAndTablesViewPage extends React.Component {
         },
 
       ],
-
       axes: [
         {
           scale: 'x',
@@ -406,7 +388,6 @@ class PlotsAndTablesViewPage extends React.Component {
 
         },
       ],
-
       title:
       {
         text: { value: config.titleText },
@@ -416,14 +397,10 @@ class PlotsAndTablesViewPage extends React.Component {
         dx: 10,
         fontSize: { value: config.titleSize },
       },
-
       marks: [
         {
           type: 'symbol',
-
           from: { data: 'differentialExpression' },
-
-
           encode: {
             enter: {
               x: { scale: 'x', field: 'log2FoldChange' },
@@ -459,8 +436,6 @@ class PlotsAndTablesViewPage extends React.Component {
               { type: 'label', size: ['width', 'height'] }],
           },
         },
-
-
         {
           type: 'rule',
           encode: {
@@ -530,9 +505,7 @@ class PlotsAndTablesViewPage extends React.Component {
   updatePlotWithChanges(obj) {
     this.setState((prevState) => {
       const newState = _.cloneDeep(prevState);
-
       _.merge(newState.config, obj);
-
       return newState;
     });
   }
@@ -606,7 +579,6 @@ class PlotsAndTablesViewPage extends React.Component {
 
                   </Collapse>
                 </Panel>
-
                 <Panel header='Axes and Margins' key='3'>
                   <AxesDesign
                     config={config}
@@ -614,29 +586,21 @@ class PlotsAndTablesViewPage extends React.Component {
                   />
                 </Panel>
                 <Panel header='Colours' key='10'>
-
-
                   <MarkersEditor
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
                   />
-
-
                   <ColourInversion
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
                   />
-
                 </Panel>
                 <Panel header='Markers' key='4'>
                   <PointDesign
                     config={config}
                     onUpdate={this.updatePlotWithChanges}
                   />
-
                 </Panel>
-
-
                 <Panel header='Legend' key='11'>
                   <LegendEditor
                     config={config}
@@ -654,7 +618,6 @@ class PlotsAndTablesViewPage extends React.Component {
                     onChange={(val) => this.handleChange(val)}
                   />
                 </Panel>
-
               </Collapse>
             </Space>
           </Col>

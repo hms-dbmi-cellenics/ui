@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import PropTypes from 'prop-types';
 import {
   Slider, Form,
   Radio, Input,
@@ -56,6 +56,11 @@ const TitleDesign = (props) => {
       </Form.Item>
     </Form>
   );
+};
+
+TitleDesign.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 export default TitleDesign;

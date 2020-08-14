@@ -1,20 +1,15 @@
 import React from 'react';
-
 import {
   PageHeader, Row, Col, Space, Collapse,
 } from 'antd';
-
 import { Vega } from 'react-vega';
-
 import _ from 'lodash';
+// eslint-disable-next-line camelcase
 import new_basicUMAP from './new_basicUMAP.json';
-
-
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
 import ColourInversion from './components/ColourInversion';
 import LogExpression from './components/LogExpression';
-
 import AxesDesign from '../components/AxesDesign';
 import PointDesign from './components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
@@ -23,7 +18,6 @@ import LegendEditor from '../components/LegendEditor';
 
 const { Panel } = Collapse;
 
-// eslint-disable-next-line react/prefer-stateless-function
 class PlotsAndTablesViewPage extends React.Component {
   constructor(props) {
     super(props);
@@ -83,7 +77,6 @@ class PlotsAndTablesViewPage extends React.Component {
     this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   generateSpec() {
     const { config } = this.state;
 
@@ -146,12 +139,12 @@ class PlotsAndTablesViewPage extends React.Component {
         // normally log transform would apply without +10 but had to add
         // here to make values positive
         // current gene expression values arent what id expect them to be
-        transform: [{ type: 'formula', as: 'geneExpression', expr: config.logEquation },
-        { type: 'formula', as: 'umap1', expr: 'datum.UMAP_1*1' },
-        { type: 'formula', as: 'umap2', expr: 'datum.UMAP_2*1' }],
+        transform: [
+          { type: 'formula', as: 'geneExpression', expr: config.logEquation },
+          { type: 'formula', as: 'umap1', expr: 'datum.UMAP_1*1' },
+          { type: 'formula', as: 'umap2', expr: 'datum.UMAP_2*1' },
+        ],
       },
-
-
       scales: [
         {
           name: 'x',
@@ -176,9 +169,7 @@ class PlotsAndTablesViewPage extends React.Component {
           domain: { data: 'embedding', field: 'geneExpression' },
           reverse: config.reverseCbar,
         },
-
       ],
-
       axes: [
         {
           scale: 'x',
@@ -245,7 +236,6 @@ class PlotsAndTablesViewPage extends React.Component {
 
       ],
       legends: config.legend,
-
       title:
       {
         text: { value: config.titleText },
@@ -260,7 +250,6 @@ class PlotsAndTablesViewPage extends React.Component {
 
   generateData() {
     const { data } = this.state;
-
     return data;
   }
 
@@ -268,16 +257,13 @@ class PlotsAndTablesViewPage extends React.Component {
   updatePlotWithChanges(obj) {
     this.setState((prevState) => {
       const newState = _.cloneDeep(prevState);
-
       _.merge(newState.config, obj);
-
       return newState;
     });
   }
 
   render() {
     const { config } = this.state;
-
     const data = { embedding: this.generateData() };
 
     return (
@@ -309,7 +295,6 @@ class PlotsAndTablesViewPage extends React.Component {
           <Col span={8}>
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse accordion>
-
               <Panel header='Main Schema' key='2'>
                 <DimensionsRangeEditor
                   config={config}
@@ -357,7 +342,6 @@ class PlotsAndTablesViewPage extends React.Component {
                   </Panel>
                 </Collapse>
               </Panel>
-
               <Panel header='Markers' key='11'>
                 <PointDesign
                   config={config}
@@ -373,8 +357,6 @@ class PlotsAndTablesViewPage extends React.Component {
               </Panel>
             </Collapse>
           </Col>
-
-
         </Row>
       </>
     );

@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
-
+import PropTypes from 'prop-types';
 import {
   Slider, Form,
   Radio, Input,
 } from 'antd';
 
-
-import { DownOutlined } from '@ant-design/icons';
-
-const titledesign = (props) => {
+const TitleDesign = (props) => {
   const { onUpdate, config } = props;
-
-  const [titleText, settitleText] = useState('');
-
   const [titleAnchor, settitleAnchor] = useState(config.titleAnchor);
 
   const onChange = (e) => {
@@ -46,35 +40,30 @@ const titledesign = (props) => {
           label='Define Title'
         >
           <Input
-
             placeholder='Enter title'
             onPressEnter={(e) => {
               const { value } = e.target;
-              settitleText(value);
               onUpdate({ titleText: value });
             }}
-
           />
 
         </Form.Item>
-
-
         <Form.Item
           label='Title Location'
         >
           <Radio.Group onChange={onChange} value={titleAnchor}>
             <Radio value='start'>Left</Radio>
             <Radio value='middle'>Middle</Radio>
-
-
           </Radio.Group>
-
-
         </Form.Item>
-
       </Form>
     </>
   );
 };
 
-export default titledesign;
+TitleDesign.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
+};
+
+export default TitleDesign;

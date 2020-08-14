@@ -1,17 +1,14 @@
-import React, { useState } from 'react';
-
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Slider, Form,
-  Radio,
 } from 'antd';
 
-const pointdesign = (props) => {
-  const { onUpdate, config } = props;
-
+const PointDesign = (props) => {
+  const { onUpdate } = props;
 
   return (
     <>
-
       <Form
         size='small'
         labelCol={{ span: 12 }}
@@ -31,7 +28,6 @@ const pointdesign = (props) => {
             }}
           />
         </Form.Item>
-
         <Form.Item
           label='Point Fill Opacity'
         >
@@ -44,10 +40,13 @@ const pointdesign = (props) => {
             }}
           />
         </Form.Item>
-
       </Form>
     </>
   );
 };
 
-export default pointdesign;
+PointDesign.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+};
+
+export default PointDesign;

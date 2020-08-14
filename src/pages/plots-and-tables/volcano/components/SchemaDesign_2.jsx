@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
-
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
-  Slider, Form
+  Slider, Form,
 } from 'antd';
 
 
 const SchemaDesign = (props) => {
-
-  const { onUpdate } = props;
-
+  const { onUpdate, yMax, xMax } = props;
 
   return (
     <>
@@ -43,14 +41,13 @@ const SchemaDesign = (props) => {
             }}
           />
         </Form.Item>
-
         <Form.Item
           label='Y-axis Range'
         >
           <Slider
             defaultValue={60}
             min={0}
-            max={props.yMax}
+            max={yMax}
             onAfterChange={(value) => {
               onUpdate({ maxNegativeLogpValueDomain: value });
             }}
@@ -62,7 +59,7 @@ const SchemaDesign = (props) => {
           <Slider
             defaultValue={25}
             min={0}
-            max={props.xMax}
+            max={xMax}
             onAfterChange={(value) => {
               onUpdate({ logFoldChangeDomain: value });
             }}
@@ -73,6 +70,12 @@ const SchemaDesign = (props) => {
       </Form>
     </>
   );
+};
+
+SchemaDesign.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+  yMax: PropTypes.number.isRequired,
+  xMax: PropTypes.number.isRequired,
 };
 
 export default SchemaDesign;
