@@ -191,9 +191,7 @@ const GeneTable = (props) => {
       >
         <Button
           type='primary'
-          onClick={() => dispatch(
-            onUpdate(tableState),
-          )}
+          onClick={() => onUpdate(tableState, geneTableUpdateReason.loading)}
         >
           Try again
         </Button>
