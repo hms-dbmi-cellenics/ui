@@ -36,6 +36,7 @@ class GenesVsUMIs extends React.Component {
       masterFont: 'sans-serif',
       masterSize: 13,
       Stringency: 2.1,
+      Stringency2: 2.1,
       axisTitlesize: 13,
       axisTicks: 13,
       axisOffset: 0,
@@ -177,7 +178,6 @@ class GenesVsUMIs extends React.Component {
                 y2: { scale: 'yscale', value: 0 },
                 fill: { value: '#f5ce42' },
               },
-              hover: { fill: { value: 'firebrick' } },
             },
           },
           {
@@ -311,7 +311,7 @@ class GenesVsUMIs extends React.Component {
           type: 'rule',
           encode: {
             update: {
-              x: { scale: 'x', value: config.Stringency },
+              x: { scale: 'x', value: config.Stringency2 },
               y: { value: 0 },
               y2: { field: { group: 'height' } },
               strokeWidth: { value: 2 },
@@ -324,7 +324,7 @@ class GenesVsUMIs extends React.Component {
           type: 'rule',
           encode: {
             update: {
-              x: { scale: 'x', value: 6 - config.Stringency },
+              x: { scale: 'x', value: 6 - config.Stringency2 },
               y: { value: 0 },
               y2: { field: { group: 'height' } },
               strokeWidth: { value: 2 },
@@ -362,6 +362,13 @@ class GenesVsUMIs extends React.Component {
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
         });
+      }
+    };
+    const updateStringency = (val) => {
+      if (config.plotToDraw) {
+        this.updatePlotWithChanges({ Stringency: val.target.value })
+      } else {
+        this.updatePlotWithChanges({ Stringency2: val.target.value })
       }
     };
     return (
@@ -432,11 +439,11 @@ class GenesVsUMIs extends React.Component {
                 >
                   <InputNumber
                     disabled={!filtering}
-                    defaultValue={0.05}
+                    defaultValue={2.1}
                     max={1}
                     min={0}
                     onPressEnter={
-                      (val) => this.updatePlotWithChanges({ Stringency: val.target.value })
+                      (val) => updateStringency(val)
                     }
                   />
                 </Form.Item>

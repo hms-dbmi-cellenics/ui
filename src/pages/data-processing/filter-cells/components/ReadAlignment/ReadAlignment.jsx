@@ -321,7 +321,6 @@ class ReadAlignment extends React.Component {
               y2: { scale: 'yscale', value: 0 },
               fill: { value: '#f5ce42' },
             },
-            hover: { fill: { value: 'firebrick' } },
           },
         },
       ],

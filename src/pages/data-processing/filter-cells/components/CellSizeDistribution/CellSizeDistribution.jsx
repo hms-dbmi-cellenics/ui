@@ -110,9 +110,6 @@ class CellSizeDistribution extends React.Component {
                 fontSize: { value: 12 },
                 fill: { value: 'black' },
               },
-              hover: {
-                fill: { value: 'firebrick' },
-              },
             },
             symbols: {
               update: {
@@ -388,9 +385,6 @@ class CellSizeDistribution extends React.Component {
                 scale: 'color',
                 field: 'status',
               },
-            },
-            hover: {
-              fill: { value: 'red' },
             },
           },
         },

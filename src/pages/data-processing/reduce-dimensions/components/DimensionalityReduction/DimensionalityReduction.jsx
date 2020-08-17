@@ -4,7 +4,7 @@
 
 import React from 'react';
 import {
-  Collapse, Row, Col, Space,
+  Row, Col, Space, Select,
   InputNumber, Form, Radio,
 } from 'antd';
 import _ from 'lodash';
@@ -12,7 +12,7 @@ import { Vega } from '../../../../../../node_modules/react-vega';
 import plotData from './new_data.json';
 import PlotStyling from '../../../filter-cells/components/PlotStyling';
 
-const { Panel } = Collapse;
+const { Option } = Select;
 
 class Classifier extends React.Component {
   constructor(props) {
@@ -100,7 +100,6 @@ class Classifier extends React.Component {
             },
           ],
         },
-
       ],
 
       scales: [
@@ -139,7 +138,7 @@ class Classifier extends React.Component {
           orient: 'left',
           scale: 'y',
           grid: true,
-          format: '+%',
+          format: '%',
           zindex: 1,
           title: { value: config.yAxisText },
           titleFont: { value: config.masterFont },
@@ -216,6 +215,17 @@ class Classifier extends React.Component {
           </Col>
           <Col span={8}>
             <Space direction='vertical' style={{ width: '100%' }} />
+            <Form.Item
+              label='Method:'
+            >
+              <Select
+                defaultValue='option1'
+              >
+                <Option value='option1'>PCA</Option>
+                <Option value='option2'>option2</Option>
+                <Option value='option3'>option3</Option>
+              </Select>
+            </Form.Item>
             <Form.Item label='Max PCs:'>
               <InputNumber
                 defaultValue={50}
