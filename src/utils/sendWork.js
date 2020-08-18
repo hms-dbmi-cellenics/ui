@@ -3,7 +3,7 @@ import moment from 'moment';
 import connectionPromise from './socketConnection';
 
 
-const sendWork = async (experimentId, timeout, body) => {
+const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();
   const timeoutDate = moment().add(timeout, 's').toISOString();
 
@@ -15,6 +15,7 @@ const sendWork = async (experimentId, timeout, body) => {
     experimentId,
     timeout: timeoutDate,
     body,
+    ...requestProps,
   };
 
   io.emit('WorkRequest', request);

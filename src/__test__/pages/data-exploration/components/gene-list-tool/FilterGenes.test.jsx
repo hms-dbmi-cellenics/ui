@@ -4,7 +4,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import preloadAll from 'jest-next-dynamic';
 import { act } from 'react-dom/test-utils';
 import { Input, Select } from 'antd';
-import FilterGenes from '../../../../../pages/data-exploration/components/gene-list-tool/FilterGenes';
+import FilterGenes from '../../../../../pages/data-exploration/components/generic-gene-table/FilterGenes';
 
 jest.mock('localforage');
 
