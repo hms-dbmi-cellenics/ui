@@ -5,16 +5,17 @@ import React from 'react';
 
 import {
   Row, Col, Slider, Space, Input,
-  InputNumber, Form, Select,
+  InputNumber, Form, Select, Collapse, PageHeader,
 } from 'antd';
 import _ from 'lodash';
 import { Vega } from '../../../../../node_modules/react-vega';
-import plot1Pic from '../../../../../static/media/plot1.png';
-import plot2Pic from '../../../../../static/media/plot2.png';
+import plot1Pic from '../../../../../static/media/plot9.png';
+import plot2Pic from '../../../../../static/media/plot10.png';
 import PlotStyling from '../../filter-cells/components/PlotStyling';
 import UMAP from './new_data.json';
 
 const { Option } = Select;
+const { Panel } = Collapse;
 class EmbeddingPreview extends React.Component {
   constructor(props) {
     super(props);
@@ -55,8 +56,10 @@ class EmbeddingPreview extends React.Component {
       transGrid: 0,
       axesOffset: 10,
       masterFont: 'sans-serif',
-      xaxisText: 'UMAP 1',
-      yaxisText: 'UMAP 2',
+      xAxisText: '',
+      yAxisText: '',
+      xAxisText2: '',
+      yAxisText2: '',
       pointStyle: 'circle',
       pointOpa: 5,
       g1Color: 'red',
@@ -75,7 +78,7 @@ class EmbeddingPreview extends React.Component {
       selectedClusters: [],
       testVar: null,
       bounceX: 0,
-
+      plotTitle: 'default clusters',
     };
 
     this.state = {
@@ -210,19 +213,13 @@ class EmbeddingPreview extends React.Component {
             grid: true,
             domain: true,
             orient: 'bottom',
-            title: { value: config.xaxisText },
+            title: { value: config.xAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
-            labelColor: { value: config.masterColour },
-            tickColor: { value: config.masterColour },
-            gridColor: { value: config.masterColour },
-            gridOpacity: { value: (config.transGrid / 20) },
-            gridWidth: { value: (config.widthGrid / 20) },
-            offset: { value: config.axesOffset },
             titleFontSize: { value: config.axisTitlesize },
-            titleColor: { value: config.masterColour },
             labelFontSize: { value: config.axisTicks },
-            domainWidth: { value: config.lineWidth },
+            offset: { value: config.axisOffset },
+            gridOpacity: { value: (config.transGrid / 20) },
           },
           {
             scale: 'y',
@@ -230,19 +227,13 @@ class EmbeddingPreview extends React.Component {
             domain: true,
             orient: 'left',
             titlePadding: 5,
-            gridColor: { value: config.masterColour },
-            gridOpacity: { value: (config.transGrid / 20) },
-            gridWidth: { value: (config.widthGrid / 20) },
-            tickColor: { value: config.masterColour },
-            offset: { value: config.axesOffset },
-            title: { value: config.yaxisText },
+            title: { value: config.yAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
-            labelColor: { value: config.masterColour },
             titleFontSize: { value: config.axisTitlesize },
-            titleColor: { value: config.masterColour },
             labelFontSize: { value: config.axisTicks },
-            domainWidth: { value: config.lineWidth },
+            offset: { value: config.axisOffset },
+            gridOpacity: { value: (config.transGrid / 20) },
           },
         ],
         marks: [
@@ -312,30 +303,26 @@ class EmbeddingPreview extends React.Component {
       width: config.width,
       height: config.height,
       autosize: { type: 'fit', resize: true },
+
+      background: config.toggleInvert,
       padding: 5,
       data: {
-        name: 'UMAP',
-        // normally log transform would apply without +10 but had to add
-        // here to make values positive
-        // current gene expression values arent what id expect them to be
-        transform: [{ type: 'formula', as: 'geneExpression', expr: 'datum.doubletScore*1' },
-        { type: 'formula', as: 'umap1', expr: 'datum.UMAP_1*1' },
-        { type: 'formula', as: 'umap2', expr: 'datum.UMAP_2*1' },
-        {
+        name: 'embeddingCat',
+        transform: [{
           type: 'filter',
-          expr: "datum.doubletScores !== 'NA'",
+          expr: "datum.doubletScore !== 'NA'",
         },
-        ],
+        { type: 'formula', as: 'geneExpression', expr: 'datum.doubletScore*1' },
+        { type: 'formula', as: 'umap1', expr: 'datum.UMAP_1*1' },
+        { type: 'formula', as: 'umap2', expr: 'datum.UMAP_2*1' }],
       },
-
-
       scales: [
         {
           name: 'x',
           type: 'linear',
           round: true,
           nice: true,
-          domain: { data: 'UMAP', field: 'UMAP_1' },
+          domain: { data: 'embeddingCat', field: 'UMAP_1' },
           range: 'width',
         },
         {
@@ -343,14 +330,14 @@ class EmbeddingPreview extends React.Component {
           type: 'linear',
           round: true,
           nice: true,
-          domain: { data: 'UMAP', field: 'UMAP_2' },
+          domain: { data: 'embeddingCat', field: 'UMAP_2' },
           range: 'height',
         },
         {
           name: 'color',
           type: 'linear',
           range: { scheme: config.colGradient },
-          domain: { data: 'UMAP', field: 'geneExpression' },
+          domain: { data: 'embeddingCat', field: 'geneExpression' },
           reverse: config.reverseCbar,
         },
 
@@ -362,17 +349,13 @@ class EmbeddingPreview extends React.Component {
           grid: true,
           domain: true,
           orient: 'bottom',
-          title: { value: config.xaxisText2 },
+          title: { value: config.xAxisText2 },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
-          labelColor: { value: config.masterColour },
-          tickColor: { value: config.masterColour },
-          gridColor: { value: config.masterColour },
-          gridOpacity: { value: (config.transGrid / 20) },
-          offset: { value: config.axesOffset },
           titleFontSize: { value: config.axisTitlesize },
-          titleColor: { value: config.masterColour },
           labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
         },
         {
           scale: 'y',
@@ -380,29 +363,24 @@ class EmbeddingPreview extends React.Component {
           domain: true,
           orient: 'left',
           titlePadding: 5,
-          gridColor: { value: config.masterColour },
-          gridOpacity: { value: (config.transGrid / 20) },
-          gridWidth: { value: (config.widthGrid / 20) },
-          tickColor: { value: config.masterColour },
-          offset: { value: config.axesOffset },
-          title: { value: config.yaxisText2 },
+          title: { value: config.yAxisText2 },
           titleFont: { value: config.masterFont },
           labelFont: { value: config.masterFont },
-          labelColor: { value: config.masterColour },
           titleFontSize: { value: config.axisTitlesize },
-          titleColor: { value: config.masterColour },
           labelFontSize: { value: config.axisTicks },
+          offset: { value: config.axisOffset },
+          gridOpacity: { value: (config.transGrid / 20) },
         },
       ],
       marks: [
         {
           type: 'symbol',
-          from: { data: 'UMAP' },
+          from: { data: 'embeddingCat' },
           encode: {
             enter: {
               x: { scale: 'x', field: 'umap1' },
               y: { scale: 'y', field: 'umap2' },
-              // size: { value: config.pointSize },
+              size: { value: config.pointSize },
               stroke: {
                 scale: 'color',
                 field: 'geneExpression',
@@ -419,11 +397,10 @@ class EmbeddingPreview extends React.Component {
 
       ],
       legends: config.legend,
-
       title:
       {
         text: { value: config.titleText },
-        // color: { value: config.masterColour },
+        color: { value: config.masterColour },
         anchor: { value: config.titleAnchor },
         font: { value: config.masterFont },
         dx: { value: config.bounceX },
@@ -449,7 +426,13 @@ class EmbeddingPreview extends React.Component {
   }
 
   changePlot(val) {
+    const { config } = this.state;
     this.updatePlotWithChanges({ plotToDraw: val });
+    if (val) {
+      this.updatePlotWithChanges({ plotTitle: 'default clusters' });
+    } else {
+      this.updatePlotWithChanges({ plotTitle: 'cell doublet score' });
+    }
   }
 
   render() {
@@ -459,6 +442,12 @@ class EmbeddingPreview extends React.Component {
 
     return (
       <>
+        <PageHeader
+          className='site-page-header'
+          title={`Embedding preview (${config.plotTitle})`}
+          subTitle='Powerful data exploration'
+          style={{ width: '100%', paddingRight: '0px' }}
+        />
         <Row>
           <Col span={15}>
 
@@ -498,69 +487,73 @@ class EmbeddingPreview extends React.Component {
 
 
           <Col span={5}>
-            <h1>Embedding Settings</h1>
-            <Form.Item
-              label='Name:'
-            >
-              <Input
-                placeholder='Embedding1'
+            <Collapse accordion>
+              <Panel header='Filtering Settings'>
+                <h1>Embedding Settings</h1>
+                <Form.Item
+                  label='Name:'
+                >
+                  <Input
+                    placeholder='Embedding1'
+                  />
+                </Form.Item>
+                <Space direction='vertical' style={{ width: '90%' }} />
+                <Form.Item
+                  label='Method:'
+                >
+                  <Select
+                    defaultValue='option1'
+                  >
+                    <Option value='option1'>UMAP</Option>
+                    <Option value='option2'>option2</Option>
+                    <Option value='option3'>option3</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item label='Min distance:'>
+                  <InputNumber
+                    defaultValue={0.01}
+                  // onPressEnter={(val) => changeCellSize(val)}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label='Reduced space:'
+                >
+                  <Select
+                    defaultValue='option1'
+                  >
+                    <Option value='option1'>PCA</Option>
+                    <Option value='option2'>option2</Option>
+                    <Option value='option3'>option3</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  label='Distance metric:'
+                >
+                  <Select
+                    defaultValue='option1'
+                  >
+                    <Option value='option1'>Euclidean</Option>
+                    <Option value='option2'>option2</Option>
+                    <Option value='option3'>option3</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  label='Dimensions to use:'
+                >
+                  <Slider
+                    defaultValue={15}
+                    min={0}
+                    max={30}
+                  />
+                </Form.Item>
+              </Panel>
+              <PlotStyling
+                config={config}
+                onUpdate={this.updatePlotWithChanges}
+                updatePlotWithChanges={this.updatePlotWithChanges}
+                legendMenu
               />
-            </Form.Item>
-            <Space direction='vertical' style={{ width: '90%' }} />
-            <Form.Item
-              label='Method:'
-            >
-              <Select
-                defaultValue='option1'
-              >
-                <Option value='option1'>UMAP</Option>
-                <Option value='option2'>option2</Option>
-                <Option value='option3'>option3</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label='Min distance:'>
-              <InputNumber
-                defaultValue={0.01}
-              // onPressEnter={(val) => changeCellSize(val)}
-              />
-            </Form.Item>
-            <Form.Item
-              label='Reduced space:'
-            >
-              <Select
-                defaultValue='option1'
-              >
-                <Option value='option1'>PCA</Option>
-                <Option value='option2'>option2</Option>
-                <Option value='option3'>option3</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              label='Distance metric:'
-            >
-              <Select
-                defaultValue='option1'
-              >
-                <Option value='option1'>Euclidean</Option>
-                <Option value='option2'>option2</Option>
-                <Option value='option3'>option3</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              label='Dimensions to use:'
-            >
-              <Slider
-                defaultValue={15}
-                min={0}
-                max={30}
-              />
-            </Form.Item>
-            <PlotStyling
-              config={config}
-              onUpdate={this.updatePlotWithChanges}
-              updatePlotWithChanges={this.updatePlotWithChanges}
-              legendMenu
-            />
+            </Collapse>
           </Col>
         </Row>
       </>

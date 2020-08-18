@@ -406,6 +406,14 @@ class ReadAlignment extends React.Component {
                     <Option value='option3'>option3</Option>
                   </Select>
                 </Form.Item>
+                <Form.Item label='Filter threshold:'>
+                  <InputNumber
+                    disabled={!filtering}
+                    defaultValue={0}
+                    max={5}
+                    min={0}
+                  />
+                </Form.Item>
               </Panel>
               <PlotStyling
                 config={config}
