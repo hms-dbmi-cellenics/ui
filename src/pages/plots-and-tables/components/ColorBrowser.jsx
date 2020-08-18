@@ -12,7 +12,6 @@ const ColorBrowser = (props) => {
     <Select
       value='Browse ...'
       style={{ width: 300 }}
-      onChange={(e) => console.log('I changed: ', e)}
       open={colorPickerOpen}
       onFocus={() => setColorPickerOpen(true)}
       onBlur={() => setColorPickerOpen(false)}

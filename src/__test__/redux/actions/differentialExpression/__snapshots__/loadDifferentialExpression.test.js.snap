@@ -32,8 +32,8 @@ exports[`loadDifferentialExpression action Dispatches appropriately on success 2
 Object {
   "payload": Object {
     "cellSets": Object {
-      "first": "louvain-0",
-      "second": "louvain-1",
+      "cellSet": "louvain-0",
+      "compareWith": "louvain-1",
     },
     "data": Array [
       Object {
@@ -74,7 +74,7 @@ Object {
       },
     ],
     "experimentId": "1234",
-    "total": 6,
+    "total": undefined,
   },
   "type": "diffExpr/loaded",
 }

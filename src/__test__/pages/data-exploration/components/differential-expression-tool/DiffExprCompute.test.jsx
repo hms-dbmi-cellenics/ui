@@ -89,7 +89,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          selection={{ first: 'Select a cell set', second: 'Select a cell set' }}
+          cellSets={{ cellSet: 'Select a cell set', compareWith: 'Select a cell set' }}
           onCompute={jest.fn()}
         />
       </Provider>,
@@ -117,7 +117,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          selection={{ first: 'Select a cell set', second: 'Select a cell set' }}
+          cellSets={{ cellSet: 'Select a cell set', compareWith: 'Select a cell set' }}
           comparison='Versus rest'
           onCompute={jest.fn()}
         />
@@ -144,7 +144,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          selection={{ first: 'Select a cell set', second: 'Select a cell set' }}
+          cellSets={{ cellSet: 'Select a cell set', compareWith: 'Select a cell set' }}
           comparison='Across sets'
           onCompute={jest.fn()}
         />
@@ -170,7 +170,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          selection={{ first: 'Select a cell set', second: 'Select a cell set' }}
+          cellSets={{ cellSet: 'Select a cell set', compareWith: 'Select a cell set' }}
           comparison='Versus rest'
           onCompute={jest.fn()}
         />
@@ -201,7 +201,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          selection={{ first: 'cluster-a', second: 'cluster-b' }}
+          cellSets={{ cellSet: 'cluster-a', compareWith: 'cluster-b' }}
           comparison='Across sets'
           onCompute={jest.fn()}
         />
@@ -226,7 +226,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          selection={{ first: 'cluster-a', second: 'Select a cell set' }}
+          cellSets={{ cellSet: 'cluster-a', compareWith: 'Select a cell set' }}
           comparison='Versus rest'
           onCompute={jest.fn()}
         />

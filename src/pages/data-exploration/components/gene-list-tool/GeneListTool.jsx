@@ -5,17 +5,18 @@ import {
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
-import GeneTable from './GeneTable';
+import GeneTable from '../generic-gene-table/GeneTable';
 import { geneTableUpdateReason } from '../../../../utils/geneTable/geneTableUpdateReason';
 
 import { loadPaginatedGeneProperties } from '../../../../redux/actions/genes';
 
 
 const GeneListTool = (props) => {
-  const { experimentId, width, height } = props;
+  const {
+    experimentId, width, height, uuid,
+  } = props;
 
-  // eslint-disable-next-line react/destructuring-assignment
-  const [tableUuid] = useState(props.uuid);
+  const [tableUuid] = useState(uuid);
 
   const dispatch = useDispatch();
   const properties = useSelector((state) => state.genes.properties.data);
@@ -66,7 +67,6 @@ const GeneListTool = (props) => {
     if (reason === geneTableUpdateReason.loaded && !isTableLoading()) {
       return;
     }
-
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, newState));
   };
 

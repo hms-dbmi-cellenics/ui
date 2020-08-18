@@ -2,17 +2,12 @@ import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
 } from '../actionTypes/differentialExpression';
 
-import { fetchCachedWork } from '../../utils/cacheRequest';
-
-const ComparisonTypes = {
-  One: 'Versus rest',
-  Two: 'Across sets',
-};
+import sendWork from '../../utils/sendWork';
 
 const REQUEST_TIMEOUT = 60;
 
 const loadDifferentialExpression = (
-  experimentId, comparisonType, selectedCellSets,
+  experimentId, cellSets, tableState,
 ) => async (dispatch) => {
   dispatch({
     type: DIFF_EXPR_LOADING,
@@ -21,32 +16,39 @@ const loadDifferentialExpression = (
     },
   });
 
+  const currentPageSize = tableState.pagination.pageSize;
+
   const body = {
     name: 'DifferentialExpression',
-    maxNum: 500,
-    cellSet: selectedCellSets.first,
+    ...cellSets,
   };
 
-  if (comparisonType === ComparisonTypes.One) {
-    body.compareWith = 'rest';
-  } else {
-    body.compareWith = selectedCellSets.second;
-  }
+  const pagination = {
+    pagination: {
+      orderBy: tableState.sorter.field,
+      orderDirection: (tableState.sorter.order === 'ascend') ? 'ASC' : 'DESC',
+      offset: ((tableState.pagination.current - 1) * currentPageSize),
+      limit: currentPageSize,
+      responseKey: 0,
+    },
+  };
 
   try {
-    const data = await fetchCachedWork(experimentId, REQUEST_TIMEOUT, body);
-    const { rows } = data;
+    const response = await sendWork(experimentId, REQUEST_TIMEOUT, body, pagination);
+    const data = JSON.parse(response.results[0].body);
+    const { rows, total } = data;
 
     return dispatch({
       type: DIFF_EXPR_LOADED,
       payload: {
         experimentId,
         data: rows,
-        cellSets: selectedCellSets,
-        total: rows.length,
+        cellSets,
+        total,
       },
     });
   } catch (error) {
+    console.error(error);
     dispatch({
       type: DIFF_EXPR_ERROR,
       payload: {

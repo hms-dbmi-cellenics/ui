@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import {
-  useDispatch,
-} from 'react-redux';
 import _ from 'lodash';
 import DiffExprCompute from './DiffExprCompute';
 import DiffExprResults from './DiffExprResults';
-import loadDifferentialExpression from '../../../../redux/actions/differentialExpression';
+
+const DiffExprView = {
+  results: 'results',
+  compute: 'compute',
+};
 
 const DiffExprManager = (props) => {
   const {
@@ -14,47 +15,37 @@ const DiffExprManager = (props) => {
 
   const defaultSelected = 'Select a cell set';
   const [selectedCellSets, setSelectedCellSets] = useState({
-    first: defaultSelected,
-    second: defaultSelected,
+    cellSet: defaultSelected,
+    compareWith: defaultSelected,
   });
 
   const [currentView, setCurrentView] = useState(view);
-  const [comparisonType, setComparisonType] = useState(null);
 
-  const dispatch = useDispatch();
-
-  const onCompute = (comparison, selection) => {
-    if (comparison !== comparisonType
-      || !_.isEqual(selection, selectedCellSets)) {
-      dispatch(
-        loadDifferentialExpression(experimentId, comparison, selection),
-      );
-
-      setSelectedCellSets(selection);
+  const onCompute = (newSelectedCellSets) => {
+    if (!_.isEqual(newSelectedCellSets, selectedCellSets)) {
+      setSelectedCellSets(newSelectedCellSets);
     }
-
-    setCurrentView('results');
-    setComparisonType(comparison);
+    setCurrentView(DiffExprView.results);
   };
 
   const onGoBack = () => {
-    setCurrentView('compute');
+    setCurrentView(DiffExprView.compute);
   };
 
-  if (currentView === 'compute') {
+  if (currentView === DiffExprView.compute) {
     return (
       <DiffExprCompute
         experimentId={experimentId}
         onCompute={onCompute}
-        selection={selectedCellSets}
-        comparison={comparisonType}
+        cellSets={selectedCellSets}
       />
     );
   }
-  if (currentView === 'results') {
+  if (currentView === DiffExprView.results) {
     return (
       <DiffExprResults
         onGoBack={onGoBack}
+        cellSets={selectedCellSets}
         experimentId={experimentId}
         width={width}
         height={height}

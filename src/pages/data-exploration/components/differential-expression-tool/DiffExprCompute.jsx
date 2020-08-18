@@ -16,14 +16,9 @@ const { Text } = Typography;
 
 const { Option, OptGroup } = Select;
 
-const ComparisonTypes = {
-  One: 'Versus rest',
-  Two: 'Across sets',
-};
-
 const DiffExprCompute = (props) => {
   const {
-    experimentId, onCompute, selection, comparison,
+    experimentId, onCompute, cellSets,
   } = props;
 
   const dispatch = useDispatch();
@@ -31,12 +26,9 @@ const DiffExprCompute = (props) => {
   const properties = useSelector((state) => state.cellSets.properties);
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const [selectableClusters, setSelectableClusters] = useState(_.cloneDeep(hierarchy));
-
   const [isFormValid, setIsFormValid] = useState(false);
-  const [comparisonType, setComparisonType] = useState(comparison);
-
   const defaultSelected = 'Select a cell set';
-  const [selectedCellSets, setSelectedCellSets] = useState(selection);
+  const [selectedCellSets, setSelectedCellSets] = useState(cellSets);
 
   /**
    * Loads cell set on initial render if it does not already exist in the store.
@@ -64,32 +56,18 @@ const DiffExprCompute = (props) => {
 
 
   const validateForm = () => {
-    if (selectedCellSets.second === 'All') {
-      setComparisonType(ComparisonTypes.One);
-    } else {
-      setComparisonType(ComparisonTypes.Two);
-    }
-
-    if (selectedCellSets.first === defaultSelected) {
+    if (selectedCellSets.cellSet === defaultSelected) {
       setIsFormValid(false);
       return;
     }
-
-    if (selectedCellSets.second === defaultSelected) {
+    if (selectedCellSets.compareWith === defaultSelected) {
       setIsFormValid(false);
       return;
     }
-
-    if (selectedCellSets.first === selectedCellSets.second) {
+    if (selectedCellSets.cellSet === selectedCellSets.compareWith) {
       setIsFormValid(false);
       return;
     }
-
-    if (comparisonType === ComparisonTypes.Two && selectedCellSets.second === defaultSelected) {
-      setIsFormValid(false);
-      return;
-    }
-
     setIsFormValid(true);
   };
 
@@ -100,7 +78,7 @@ const DiffExprCompute = (props) => {
   /**
    * Updates the selected clusters.
    * @param {string} cellSet The key of the cell set.
-   * @param {string} option The option string (`first` or `second`).
+   * @param {string} option The option string (`cellSet` or `compareWith`).
    */
   const onSelectCluster = (cellSet, option) => {
     setSelectedCellSets({
@@ -134,7 +112,7 @@ const DiffExprCompute = (props) => {
           {
             selectableClusters && selectableClusters.map(({ key, children }) => (
               <OptGroup label={properties[key]?.name} key={key}>
-                {option === 'second' ? (
+                {option === 'compareWith' ? (
                   <Option key='All' disabled={Object.values(selectedCellSets).includes('All')}>
                     <Tooltip placement='left' title='Compare above selected set and its complements'>
                       <span style={{ display: 'flex', flexGrow: 1 }}>All</span>
@@ -152,8 +130,8 @@ const DiffExprCompute = (props) => {
 
   return (
     <Form size='small' layout='vertical'>
-      {renderClusterSelectorItem('Compare:', 'first')}
-      {renderClusterSelectorItem('Versus:', 'second')}
+      {renderClusterSelectorItem('Compare:', 'cellSet')}
+      {renderClusterSelectorItem('Versus:', 'compareWith')}
 
       <p>
         <Text type='secondary'>
@@ -172,8 +150,10 @@ const DiffExprCompute = (props) => {
           size='small'
           disabled={!isFormValid}
           onClick={() => onCompute(
-            comparisonType,
-            selectedCellSets,
+            {
+              cellSet: selectedCellSets.cellSet,
+              compareWith: selectedCellSets.compareWith === 'All' ? 'rest' : selectedCellSets.compareWith,
+            },
           )}
         >
           Compute
@@ -184,14 +164,12 @@ const DiffExprCompute = (props) => {
 };
 
 DiffExprCompute.defaultProps = {
-  comparison: null,
 };
 
 DiffExprCompute.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onCompute: PropTypes.func.isRequired,
-  selection: PropTypes.object.isRequired,
-  comparison: PropTypes.string,
+  cellSets: PropTypes.object.isRequired,
 };
 
 export default DiffExprCompute;

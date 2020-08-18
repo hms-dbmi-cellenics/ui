@@ -1,27 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   useSelector,
+  useDispatch,
 } from 'react-redux';
 
 import {
   Space, Button,
 } from 'antd';
 
-import _ from 'lodash';
-
 import PropTypes from 'prop-types';
 
-import GeneTable from '../gene-list-tool/GeneTable';
+import GeneTable from '../generic-gene-table/GeneTable';
+
+import { geneTableUpdateReason } from '../../../../utils/geneTable/geneTableUpdateReason';
+
+import loadDifferentialExpression from '../../../../redux/actions/loadDifferentialExpression';
 
 const DiffExprResults = (props) => {
   const {
-    experimentId, onGoBack, width, height,
+    experimentId, onGoBack, cellSets, width, height,
   } = props;
 
+  const dispatch = useDispatch();
   const loading = useSelector((state) => state.differentialExpression.properties.loading);
   const data = useSelector((state) => state.differentialExpression.properties.data);
   const total = useSelector((state) => state.differentialExpression.properties.total);
+  const error = useSelector((state) => state.differentialExpression.properties.error);
 
   const [dataShown, setDataShown] = useState(data);
 
@@ -46,18 +51,22 @@ const DiffExprResults = (props) => {
     },
   ];
 
+  // When data changes, update rows.
+  useEffect(() => {
+    if (data) {
+      setDataShown(data);
+    }
+  }, [data]);
 
-  const onUpdate = (newState) => {
-    // Apply sorting
-    const { field: sortField, order: sortOrder } = newState.sorter;
-    let newData = _.orderBy(data, [sortField], [(sortOrder === 'ascend') ? 'asc' : 'desc']);
+  const isTableLoading = () => data.length === 0 || loading;
 
-    // Apply pagination
-    const { current, pageSize: limit } = newState.pagination;
-    const offset = ((current - 1) * limit);
-    newData = newData.slice(offset, offset + limit);
-
-    setDataShown(newData);
+  const onUpdate = (newState, reason) => {
+    if (reason === geneTableUpdateReason.loaded && !isTableLoading()) {
+      return;
+    }
+    dispatch(
+      loadDifferentialExpression(experimentId, cellSets, newState),
+    );
   };
 
   return (
@@ -74,14 +83,8 @@ const DiffExprResults = (props) => {
         }}
         onUpdate={onUpdate}
         columns={columns}
-        loading={loading}
-
-        // This component only loads when we already have data saved in the store,
-        // so error conditions never happen.
-        // This will change once we use pagination to fetch partial views of
-        // differential expression dynamically.
-        error={false}
-
+        loading={isTableLoading()}
+        error={error}
         width={width}
         height={height}
         data={dataShown}
@@ -96,6 +99,7 @@ DiffExprResults.defaultProps = {};
 DiffExprResults.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onGoBack: PropTypes.func.isRequired,
+  cellSets: PropTypes.object.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };
