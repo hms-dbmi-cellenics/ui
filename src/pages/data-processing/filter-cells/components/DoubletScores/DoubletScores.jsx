@@ -78,9 +78,6 @@ class DoubletScores extends React.Component {
                 fontSize: { value: 12 },
                 fill: { value: 'black' },
               },
-              hover: {
-                fill: { value: 'firebrick' },
-              },
             },
             symbols: {
               update: {
@@ -232,7 +229,6 @@ class DoubletScores extends React.Component {
                 field: 'status',
               },
             },
-            hover: { fill: { value: 'firebrick' } },
           },
         },
         {

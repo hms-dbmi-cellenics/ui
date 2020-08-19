@@ -94,9 +94,6 @@ class MitochondrialContent extends React.Component {
                 fontSize: { value: 12 },
                 fill: { value: 'black' },
               },
-              hover: {
-                fill: { value: 'firebrick' },
-              },
             },
             symbols: {
               update: {
@@ -249,7 +246,6 @@ class MitochondrialContent extends React.Component {
                   field: 'status',
                 },
               },
-              hover: { fill: { value: 'firebrick' } },
             },
           },
           {
@@ -411,10 +407,11 @@ class MitochondrialContent extends React.Component {
                 field: 'status',
               },
             },
-            hover: { fill: { value: 'firebrick' } },
           },
         },
       ],
+      legends: legend,
+
       title:
       {
         text: { value: config.titleText },

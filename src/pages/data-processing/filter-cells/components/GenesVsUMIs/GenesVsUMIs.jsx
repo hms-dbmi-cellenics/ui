@@ -34,7 +34,10 @@ class GenesVsUMIs extends React.Component {
       titleAnchor: 'start',
       masterFont: 'sans-serif',
       masterSize: 13,
-      Stringency: 2.1,
+      Stringency: 4.8,
+      Stringency2: 3.6,
+      cutoff: 2.1,
+      cutoff2: 2.1,
       axisTitlesize: 13,
       axisTicks: 13,
       axisOffset: 0,
@@ -176,14 +179,13 @@ class GenesVsUMIs extends React.Component {
                 y2: { scale: 'yscale', value: 0 },
                 fill: { value: '#f5ce42' },
               },
-              hover: { fill: { value: 'firebrick' } },
             },
           },
           {
             type: 'rule',
             encode: {
               update: {
-                x: { scale: 'xscale', value: config.Stringency },
+                x: { scale: 'xscale', value: config.cutoff },
                 y: { value: 0 },
                 y2: { field: { group: 'height' } },
                 strokeWidth: { value: 2 },
@@ -196,7 +198,7 @@ class GenesVsUMIs extends React.Component {
             type: 'rule',
             encode: {
               update: {
-                x: { scale: 'xscale', value: 7 - config.Stringency },
+                x: { scale: 'xscale', value: config.Stringency },
                 y: { value: 0 },
                 y2: { field: { group: 'height' } },
                 strokeWidth: { value: 2 },
@@ -310,7 +312,7 @@ class GenesVsUMIs extends React.Component {
           type: 'rule',
           encode: {
             update: {
-              x: { scale: 'x', value: config.Stringency },
+              x: { scale: 'x', value: config.cutoff2 },
               y: { value: 0 },
               y2: { field: { group: 'height' } },
               strokeWidth: { value: 2 },
@@ -323,7 +325,7 @@ class GenesVsUMIs extends React.Component {
           type: 'rule',
           encode: {
             update: {
-              x: { scale: 'x', value: 6 - config.Stringency },
+              x: { scale: 'x', value: config.Stringency2 },
               y: { value: 0 },
               y2: { field: { group: 'height' } },
               strokeWidth: { value: 2 },
@@ -361,6 +363,20 @@ class GenesVsUMIs extends React.Component {
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
         });
+      }
+    };
+    const updateStringency = (val) => {
+      if (config.plotToDraw) {
+        this.updatePlotWithChanges({ Stringency: val.target.value })
+      } else {
+        this.updatePlotWithChanges({ Stringency2: val.target.value })
+      }
+    };
+    const updateCutoff = (val) => {
+      if (config.plotToDraw) {
+        this.updatePlotWithChanges({ cutoff: val.target.value })
+      } else {
+        this.updatePlotWithChanges({ cutoff2: val.target.value })
       }
     };
     return (
@@ -431,11 +447,22 @@ class GenesVsUMIs extends React.Component {
                 >
                   <InputNumber
                     disabled={!filtering}
-                    defaultValue={0.05}
-                    max={1}
+                    max={5}
                     min={0}
                     onPressEnter={
-                      (val) => this.updatePlotWithChanges({ Stringency: val.target.value })
+                      (val) => updateStringency(val)
+                    }
+                  />
+                </Form.Item>
+                <Form.Item
+                  label='Lower cutoff:'
+                >
+                  <InputNumber
+                    disabled={!filtering}
+                    max={5}
+                    min={0}
+                    onPressEnter={
+                      (val) => updateCutoff(val)
                     }
                   />
                 </Form.Item>
