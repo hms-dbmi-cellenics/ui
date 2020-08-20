@@ -41,6 +41,8 @@ class CellSizeDistribution extends React.Component {
       transGrid: 0,
       width: 530,
       height: 400,
+      maxWidth: 650,
+      maxHeight: 540,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -502,8 +504,8 @@ class CellSizeDistribution extends React.Component {
 
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse>
-              <Panel header='Filtering Settings' disabled={!filtering}>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header='Filtering Settings' disabled={!filtering} key='1'>
                 <Form.Item label='Min cell size:'>
                   <InputNumber
                     disabled={!filtering}

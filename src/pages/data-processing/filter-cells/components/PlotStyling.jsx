@@ -57,6 +57,8 @@ const PlotStyling = (props) => {
             <DimensionsRangeEditor
               config={config}
               onUpdate={onUpdate}
+              maxHeight={config.maxHeight}
+              maxWidth={config.maxWidth}
             />
           </Panel>
           <Panel header='Axes'>

@@ -47,6 +47,8 @@ class MitochondrialContent extends React.Component {
       transGrid: 0,
       width: 530,
       height: 400,
+      maxWidth: 660,
+      maxHeight: 560,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -490,8 +492,8 @@ class MitochondrialContent extends React.Component {
 
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse>
-              <Panel header='Filtering settings' disabled={!filtering}>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header='Filtering settings' disabled={!filtering} key='1'>
                 <Form.Item label='Method:'>
                   <Select
                     defaultValue='option1'
