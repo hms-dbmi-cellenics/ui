@@ -53,7 +53,7 @@ const store = mockStore({
     hierarchy: [
       {
         key: 'louvain',
-        children: ['cluster-a', 'cluster-b', 'cluster-c'],
+        children: [{ key: 'cluster-a' }, { key: 'cluster-b' }, { key: 'cluster-c' }],
       },
       {
         key: 'scratchpad',

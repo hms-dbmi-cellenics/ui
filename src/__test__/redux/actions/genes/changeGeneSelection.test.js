@@ -36,7 +36,7 @@ describe('changeGeneSelection action', () => {
       await store.dispatch(changeGeneSelection(experimentId, genes, 'maybeselect'));
     };
 
-    expect(t).rejects.toEqual(new Error());
+    expect(t).rejects.toEqual(new Error("'selectOrDeselect' must be either 'select' or 'deselect', maybeselect given."));
 
     expect(store.getActions().length).toEqual(0);
   });
