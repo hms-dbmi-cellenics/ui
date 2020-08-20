@@ -45,6 +45,8 @@ class GenesVsUMIs extends React.Component {
       transGrid: 10,
       width: 530,
       height: 400,
+      maxWidth: 660,
+      maxHeight: 560,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -368,16 +370,16 @@ class GenesVsUMIs extends React.Component {
     };
     const updateStringency = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ Stringency: val.target.value })
+        this.updatePlotWithChanges({ Stringency: val.target.value });
       } else {
-        this.updatePlotWithChanges({ Stringency2: val.target.value })
+        this.updatePlotWithChanges({ Stringency2: val.target.value });
       }
     };
     const updateCutoff = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ cutoff: val.target.value })
+        this.updatePlotWithChanges({ cutoff: val.target.value });
       } else {
-        this.updatePlotWithChanges({ cutoff2: val.target.value })
+        this.updatePlotWithChanges({ cutoff2: val.target.value });
       }
     };
     return (
@@ -418,8 +420,8 @@ class GenesVsUMIs extends React.Component {
           </Col>
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse>
-              <Panel header='Filtering Settings' disabled={!filtering}>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header='Filtering Settings' disabled={!filtering} key='1'>
                 <Form.Item
                   label='Regression type:'
                 >

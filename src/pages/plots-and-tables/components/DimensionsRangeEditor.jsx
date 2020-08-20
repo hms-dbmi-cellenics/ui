@@ -6,8 +6,15 @@ import {
 
 
 const DimensionsRangeEditor = (props) => {
-  const { onUpdate, config } = props;
-
+  const { onUpdate, config, maxHeight, maxWidth } = props;
+  let height = 1000;
+  let width = 1200;
+  if (maxHeight) {
+    height = maxHeight;
+  }
+  if (maxWidth) {
+    width = maxWidth;
+  }
   return (
     <>
       <Form
@@ -23,7 +30,7 @@ const DimensionsRangeEditor = (props) => {
           <Slider
             defaultValue={config.width}
             min={400}
-            max={1200}
+            max={width}
             onAfterChange={(value) => {
               onUpdate({ width: value });
             }}
@@ -35,7 +42,7 @@ const DimensionsRangeEditor = (props) => {
           <Slider
             defaultValue={config.height}
             min={200}
-            max={1000}
+            max={height}
             onAfterChange={(value) => {
               onUpdate({ height: value });
             }}

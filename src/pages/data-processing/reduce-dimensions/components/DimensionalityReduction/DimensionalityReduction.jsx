@@ -37,6 +37,8 @@ class Classifier extends React.Component {
       width: 530,
       height: 400,
       value: 'ribosomal',
+      maxWidth: 720,
+      maxHeight: 530,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -228,7 +230,7 @@ class Classifier extends React.Component {
             </Form.Item>
             <Form.Item label='Max PCs:'>
               <InputNumber
-                defaultValue={50}
+                defaultValue={10}
                 max={50}
                 min={1}
                 onPressEnter={(val) => minProbabilityChange(val)}

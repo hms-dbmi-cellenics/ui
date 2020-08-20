@@ -23,7 +23,7 @@ class ProcessingViewPage extends React.Component {
           style={{ width: '100%', paddingRight: '0px' }}
         />
 
-        <Collapse accordion>
+        <Collapse accordion defaultActiveKey={['1']}>
           <Panel
             header='Dimensionality Reduction'
             key='1'

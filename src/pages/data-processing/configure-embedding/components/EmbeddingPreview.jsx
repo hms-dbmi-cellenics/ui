@@ -40,8 +40,8 @@ class EmbeddingPreview extends React.Component {
     ];
 
     this.defaultConfig = {
-      width: 700,
-      height: 550,
+      width: 600,
+      height: 500,
       pointSize: 5,
       toggleInvert: '#FFFFFF',
       masterColour: '#000000',
@@ -79,6 +79,8 @@ class EmbeddingPreview extends React.Component {
       testVar: null,
       bounceX: 0,
       plotTitle: 'default clusters',
+      maxHeight: 600,
+      maxWidth: 700,
     };
 
     this.state = {
@@ -141,9 +143,6 @@ class EmbeddingPreview extends React.Component {
     }
     if (config.plotToDraw) {
       return {
-
-        $schema: 'https://vega.github.io/schema/vega/v5.json',
-        description: 'A basic scatter plot example depicting automobile statistics.',
         width: config.width || this.defaultConfig.width,
         height: config.height || this.defaultConfig.height,
         autosize: { type: 'fit', resize: true },
@@ -426,7 +425,6 @@ class EmbeddingPreview extends React.Component {
   }
 
   changePlot(val) {
-    const { config } = this.state;
     this.updatePlotWithChanges({ plotToDraw: val });
     if (val) {
       this.updatePlotWithChanges({ plotTitle: 'default clusters' });
@@ -487,8 +485,8 @@ class EmbeddingPreview extends React.Component {
 
 
           <Col span={5}>
-            <Collapse accordion>
-              <Panel header='Filtering Settings'>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header='Filtering Settings' key='1'>
                 <h1>Embedding Settings</h1>
                 <Form.Item
                   label='Name:'
