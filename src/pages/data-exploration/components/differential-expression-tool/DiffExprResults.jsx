@@ -32,21 +32,21 @@ const DiffExprResults = (props) => {
 
   const columns = [
     {
-      title: 'p-value',
+      title: 'p value',
       key: 'pval',
-      render: (num) => num.toExponential(3),
+      render: (num) => num.toExponential(1),
       sorter: true,
     },
     {
-      title: 'q-value',
+      title: 'q value',
       key: 'qval',
-      render: (num) => num.toExponential(3),
+      render: (num) => num.toExponential(1),
       sorter: true,
     },
     {
       title: 'log2 fold change',
       key: 'log2fc',
-      render: (num) => parseFloat(num.toFixed(3)),
+      render: (num) => parseFloat(num.toFixed(1)),
       sorter: true,
     },
   ];

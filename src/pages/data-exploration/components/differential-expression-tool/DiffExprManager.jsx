@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import DiffExprCompute from './DiffExprCompute';
 import DiffExprResults from './DiffExprResults';
 
@@ -53,5 +54,17 @@ const DiffExprManager = (props) => {
     );
   }
 };
+
+DiffExprManager.defaultProps = {
+  view: DiffExprView.compute,
+};
+
+DiffExprManager.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  view: PropTypes.string,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+};
+
 
 export default DiffExprManager;

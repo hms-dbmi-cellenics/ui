@@ -37,19 +37,34 @@ const DiffExprCompute = (props) => {
     dispatch(loadCellSets(experimentId));
   }, []);
 
+
+  const generateSpecialKey = (parentKey) => ({ key: ['all', parentKey].join('-') });
+  const isKeySpecial = (key) => (key === 'rest' || key.startsWith('all-'));
+
   /**
    * Re-renders the list of selections when the hierarchy or the properties change.
    *
    * If the cell set previously selected is deleted, the selection is reset to the default.
    */
   useEffect(() => {
-    setSelectableClusters(hierarchy);
+    if (hierarchy.length > 0) {
+      const newSelectableClusters = _.cloneDeep(hierarchy);
+      // create a new item for each hierarchy to represent All
+      newSelectableClusters.map(({ key, children }) => {
+        if (children && children.length > 0) {
+          children.push(generateSpecialKey(key));
+        }
+      });
+      setSelectableClusters(newSelectableClusters);
+    }
 
     setSelectedCellSets(_.mapValues(selectedCellSets, (cellSetKey) => {
+      if (isKeySpecial(cellSetKey)) {
+        return 'All';
+      }
       if (cellSetKey !== defaultSelected && !properties[cellSetKey]) {
         return defaultSelected;
       }
-
       return cellSetKey;
     }));
   }, [hierarchy, properties]);
@@ -93,12 +108,20 @@ const DiffExprCompute = (props) => {
   const renderClusterSelectorItem = (title, option) => {
     const renderChildren = (children) => {
       if (!children || children.length === 0) { return (<></>); }
-
-      return children.map(({ key }) => (
-        <Option key={key} disabled={Object.values(selectedCellSets).includes(key)}>
-          {properties[key]?.name}
-        </Option>
-      ));
+      return children.map(({ key }) => {
+        if (isKeySpecial(key) && title === 'Compare') {
+          return <></>;
+        }
+        return (
+          <Option key={key} disabled={Object.values(selectedCellSets).includes(key)}>
+            {isKeySpecial(key) ? (
+              <Tooltip placement='left' title='Compare above selected set and its complements'>
+                <span style={{ display: 'flex', flexGrow: 1 }}>All</span>
+              </Tooltip>
+            ) : properties[key]?.name}
+          </Option>
+        );
+      });
     };
 
     return (
@@ -112,13 +135,6 @@ const DiffExprCompute = (props) => {
           {
             selectableClusters && selectableClusters.map(({ key, children }) => (
               <OptGroup label={properties[key]?.name} key={key}>
-                {option === 'compareWith' ? (
-                  <Option key='All' disabled={Object.values(selectedCellSets).includes('All')}>
-                    <Tooltip placement='left' title='Compare above selected set and its complements'>
-                      <span style={{ display: 'flex', flexGrow: 1 }}>All</span>
-                    </Tooltip>
-                  </Option>
-                ) : <></>}
                 {renderChildren(children)}
               </OptGroup>
             ))
@@ -152,7 +168,7 @@ const DiffExprCompute = (props) => {
           onClick={() => onCompute(
             {
               cellSet: selectedCellSets.cellSet,
-              compareWith: selectedCellSets.compareWith === 'All' ? 'rest' : selectedCellSets.compareWith,
+              compareWith: isKeySpecial(selectedCellSets.compareWith) ? 'rest' : selectedCellSets.compareWith,
             },
           )}
         >

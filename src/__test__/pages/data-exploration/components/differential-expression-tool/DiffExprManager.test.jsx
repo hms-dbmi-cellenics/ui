@@ -9,27 +9,19 @@ import thunk from 'redux-thunk';
 import DiffExprManager from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprManager';
 import DiffExprCompute from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprCompute';
 import DiffExprResults from '../../../../../pages/data-exploration/components/differential-expression-tool/DiffExprResults';
-import connectionPromise from '../../../../../utils/socketConnection';
 import initialState from '../../../../../redux/reducers/differentialExpression/initialState';
 
 jest.mock('localforage');
-jest.mock('../../../../../utils/socketConnection');
 jest.mock('../../../../../utils/environment', () => false);
 
-let io;
-let mockOn;
-let mockEmit;
-
-connectionPromise.mockImplementation(() => new Promise((resolve) => {
-  resolve(io);
-}));
 
 const mockStore = configureMockStore([thunk]);
 
 const emptyStore = mockStore({
   differentialExpression: { ...initialState },
   cellSets: {
-    data: [],
+    hierarchy: [],
+    properties: {},
   },
   genes: {
     focused: undefined,
@@ -61,7 +53,7 @@ describe('DiffExprManager', () => {
   it('renders correctly a compute view', () => {
     const component = mount(
       <Provider store={emptyStore}>
-        <DiffExprManager experimentId='1234' view='compute' />
+        <DiffExprManager experimentId='1234' view='compute' width={100} height={200} />
       </Provider>,
     );
     expect(component.find(DiffExprCompute).length).toEqual(1);
@@ -70,52 +62,48 @@ describe('DiffExprManager', () => {
   it('renders correctly a results view', () => {
     const component = mount(
       <Provider store={emptyStore}>
-        <DiffExprManager experimentId='1234' view='results' />
+        <DiffExprManager experimentId='1234' view='results' width={100} height={200} />
       </Provider>,
     );
     expect(component.find(DiffExprResults).length).toEqual(1);
   });
 
-  it('on click of compute with changed parameters, DiffExprManager dispatches an action to fetch results', () => {
+  it('on click of compute with changed parameters, DiffExprManager calls the results view', () => {
     const component = mount(
       <Provider store={emptyStore}>
-        <DiffExprManager experimentId='1234' view='compute' />
+        <DiffExprManager experimentId='1234' view='compute' width={100} height={200} />
       </Provider>,
     );
     expect(component.find(DiffExprResults).length).toEqual(0);
+    expect(component.find(DiffExprCompute).length).toEqual(1);
 
+    const cellSets = { cellSet: 'cluster-1', compareWith: 'rest' };
     act(() => {
-      component.find(DiffExprCompute).getElement().props.onCompute('rest', ['cluster-a', 'cluster a'], [null, 'select cluster']);
+      component.find(DiffExprCompute).props().onCompute(cellSets);
     });
     component.update();
 
-    const finished = new Promise(() => { });
+    const results = component.find(DiffExprResults);
+    expect(results.length).toEqual(1);
+    expect(results.props().cellSets).toEqual(cellSets);
+    expect(component.find(DiffExprCompute).length).toEqual(0);
+  });
 
-    mockOn = jest.fn(async (x, f) => {
-      const res = {
-        results: [
-        ],
-      };
-      f(res).then((result) => {
-        finished.resolve(result);
-      }).catch((e) => finished.reject(e));
+  it('on click of go back, DiffExprManager calls the compute view', () => {
+    const component = mount(
+      <Provider store={emptyStore}>
+        <DiffExprManager experimentId='1234' view='results' width={100} height={200} />
+      </Provider>,
+    );
+    expect(component.find(DiffExprResults).length).toEqual(1);
+    expect(component.find(DiffExprCompute).length).toEqual(0);
+
+    act(() => {
+      component.find(DiffExprResults).props().onGoBack();
     });
+    component.update();
 
-    mockEmit = jest.fn();
-
-    io = {
-      emit: mockEmit,
-      on: mockOn,
-    };
-
-    finished.then(() => {
-      expect(component.find(DiffExprResults).length).toEqual(1);
-      expect(emptyStore.getActions().length).toEqual(2);
-      expect(emptyStore.getActions()[0].type).toEqual('DIFF_EXPR.LOAD');
-      expect(emptyStore.getActions()[1].type).toEqual('DIFF_EXPR.UPDATE');
-      expect(mockEmit).toHaveBeenCalledWith('WorkRequest');
-      expect(mockEmit).toHaveBeenCalledTimes(1);
-      expect(mockOn).toHaveBeenCalledTimes(1);
-    });
+    expect(component.find(DiffExprResults).length).toEqual(0);
+    expect(component.find(DiffExprCompute).length).toEqual(1);
   });
 });
