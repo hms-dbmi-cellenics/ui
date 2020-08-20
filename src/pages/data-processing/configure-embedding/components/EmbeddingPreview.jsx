@@ -503,8 +503,8 @@ class EmbeddingPreview extends React.Component {
                     defaultValue='option1'
                   >
                     <Option value='option1'>UMAP</Option>
-                    <Option value='option2'>option2</Option>
-                    <Option value='option3'>option3</Option>
+                    <Option value='option2'>t-SNE</Option>
+                    <Option value='option3'>PCA</Option>
                   </Select>
                 </Form.Item>
                 <Form.Item label='Min distance:'>
