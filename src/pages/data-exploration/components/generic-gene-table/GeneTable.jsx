@@ -172,7 +172,7 @@ const GeneTable = (props) => {
         &nbsp;gene
         {selectedGenes.length === 1 ? '' : 's'}
         &nbsp;selected
-        <Button type='link' onClick={clearAll}>Clear</Button>
+        <Button type='link' size='small' onClick={clearAll}>Clear</Button>
       </Text>
     );
   };

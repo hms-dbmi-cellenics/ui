@@ -44,7 +44,7 @@ const DiffExprResults = (props) => {
       sorter: true,
     },
     {
-      title: 'log2 fold change',
+      title: 'log2 FC',
       key: 'log2fc',
       render: (num) => parseFloat(num.toFixed(1)),
       sorter: true,
@@ -71,7 +71,7 @@ const DiffExprResults = (props) => {
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
-      <Button size='small' onClick={onGoBack}>Go Back</Button>
+      <Button type='primary' size='small' onClick={onGoBack}>Go Back</Button>
       <GeneTable
         experimentId={experimentId}
         initialTableState={{

@@ -195,7 +195,6 @@ HeatmapPlot.defaultProps = {};
 
 HeatmapPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  heatmapWidth: PropTypes.number.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };

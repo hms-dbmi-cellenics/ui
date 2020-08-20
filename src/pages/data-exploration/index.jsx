@@ -19,11 +19,10 @@ const experimentId = '5e959f9c9f4b120771249001';
 const { TabPane } = Tabs;
 
 const renderWindow = (tile, width, height) => (
-  <div style={{ margin: '8px' }}>
-    {tile(width, height)}
+  <div style={{ margin: '5px' }}>
+    {height && width ? tile(width, height) : <></>}
   </div>
 );
-
 
 const ExplorationViewPage = () => {
   const dispatch = useDispatch();
@@ -41,6 +40,7 @@ const ExplorationViewPage = () => {
     ),
     Tools: (width, height) => (
       <Tabs
+        size='small'
         activeKey={selectedTab}
         onChange={(key) => { setSelectedTab(key); }}
       >
@@ -62,6 +62,7 @@ const ExplorationViewPage = () => {
         <Mosaic
           renderTile={(id, path) => (
             <ReactResizeDetector
+              handleWidth
               handleHeight
               refreshMode='throttle'
               refreshRate={500}
