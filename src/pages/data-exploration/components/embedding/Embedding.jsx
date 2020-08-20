@@ -38,7 +38,7 @@ const Scatterplot = dynamic(
 
 const Embedding = (props) => {
   const { experimentId, embeddingType } = props;
-  const view = { target: [7, 5, 0], zoom: 4.00 };
+  const view = { target: [6, 9, 0], zoom: 4.00 };
   const selectedCellIds = new Set();
 
   const dispatch = useDispatch();

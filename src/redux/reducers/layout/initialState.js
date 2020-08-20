@@ -2,17 +2,14 @@ const initialState = {
   windows: {
     direction: 'row',
     first: {
-      first: 'UMAP Embedding',
+      first: {
+        first: 'UMAP Embedding', second: 'Cell set', direction: 'row', splitPercentage: 60,
+      },
       second: 'Heatmap',
       direction: 'column',
-      splitPercentage: 60,
+      splitPercentage: 50,
     },
-    second: {
-      direction: 'column',
-      first: 'Cell set',
-      second: 'Tools',
-      splitPercentage: 40,
-    },
+    second: 'Tools',
     splitPercentage: 70,
   },
   panel: 'Gene list',
