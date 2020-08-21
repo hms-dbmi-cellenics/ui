@@ -24,7 +24,7 @@ const GeneTable = (props) => {
   const dispatch = useDispatch();
   const focusedGene = useSelector((state) => state.genes.focused);
   const selectedGenes = useSelector((state) => state.genes.selected);
-  const [geneNamesFilter, setGeneNamesFilter] = useState(null);
+  const [geneNameFilterState, setGeneNameFilterState] = useState({});
 
   if (!isBrowser) {
     return (<Skeleton active />);
@@ -39,7 +39,7 @@ const GeneTable = (props) => {
           showSizeChanger: true,
           total,
         },
-        geneNamesFilter,
+        geneNamesFilter: null,
       },
       initialTableState,
     ),
@@ -58,22 +58,33 @@ const GeneTable = (props) => {
   };
 
   const handleTableChange = (newPagination, a, newSorter) => {
-    const newTableState = { pagination: newPagination, sorter: { ...newSorter }, geneNamesFilter };
+    const newTableState = { ...tableState, pagination: newPagination, sorter: { ...newSorter } };
 
     onUpdate(newTableState, geneTableUpdateReason.paginated);
     setTableState(newTableState);
   };
 
-  const filterGenes = (searchPattern) => {
+  const filterGenes = (filter) => {
+    const { filterOption, text } = filter;
+
+    let searchPattern;
+    if (filterOption === 'Starts with') {
+      searchPattern = text.concat('%');
+    } else if (filterOption === 'Ends with') {
+      searchPattern = '%'.concat(text);
+    } else if (filterOption === 'Contains') {
+      searchPattern = '%'.concat(text, '%');
+    }
+
     const newTableState = {
+      ...tableState,
       pagination: { ...tableState.pagination, current: 1 },
-      sorter: { ...tableState.sorter },
       geneNamesFilter: searchPattern,
     };
 
     onUpdate(newTableState, geneTableUpdateReason.filtered);
     setTableState(newTableState);
-    setGeneNamesFilter(searchPattern);
+    setGeneNameFilterState(filter);
   };
 
   const rowSelection = {
@@ -203,7 +214,11 @@ const GeneTable = (props) => {
     <Space direction='vertical' style={{ width: '100%' }}>
       {loading ? <></> : (
         <Space>
-          <FilterGenes filterGenes={filterGenes} />
+          <FilterGenes
+            onFilter={filterGenes}
+            defaultFilterOption={geneNameFilterState.filterOption}
+            defaultFilterString={geneNameFilterState.text}
+          />
           {selectionIndicator()}
         </Space>
       )}

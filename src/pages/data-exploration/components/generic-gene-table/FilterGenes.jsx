@@ -10,36 +10,31 @@ const { Search } = Input;
 const { Option } = Select;
 
 const FilterGenes = (props) => {
-  const { filterGenes } = props;
-  const [selectedOption, setSelectedOption] = useState('Contains');
+  const { onFilter, defaultFilterOption, defaultFilterString } = props;
+
+  const [filterOption, setFilterOption] = useState(defaultFilterOption);
+  const [filterString, setFilterString] = useState(defaultFilterString);
 
   const onSelectedOption = (newSelectedOption) => {
-    setSelectedOption(newSelectedOption);
+    setFilterOption(newSelectedOption);
+    onFilter({ filterOption: newSelectedOption, text: filterString });
   };
 
   const onSearch = (text) => {
-    let searchPattern;
-    if (selectedOption === 'Starts with') {
-      searchPattern = text.concat('%');
-    }
-    if (selectedOption === 'Ends with') {
-      searchPattern = '%'.concat(text);
-    }
-    if (selectedOption === 'Contains') {
-      searchPattern = '%'.concat(text, '%');
-    }
-    filterGenes(searchPattern);
+    setFilterString(text);
+    onFilter({ filterOption, text });
   };
 
   return (
-    <Input.Group>
-      <Select defaultValue={selectedOption} style={{ width: 100 }} size='small' onChange={onSelectedOption}>
+    <Input.Group compact>
+      <Select defaultValue={filterOption} style={{ width: 100 }} size='small' onChange={onSelectedOption}>
         <Option value='Starts with' size='small'>starts with</Option>
         <Option value='Ends with' size='small'>ends with</Option>
         <Option value='Contains' size='small'>contains</Option>
       </Select>
       <Search
         placeholder='Filter genes ...'
+        defaultValue={defaultFilterString}
         style={{ width: 160 }}
         onSearch={onSearch}
         allowClear
@@ -49,10 +44,15 @@ const FilterGenes = (props) => {
   );
 };
 
-FilterGenes.defaultProps = {};
+FilterGenes.defaultProps = {
+  defaultFilterOption: 'Contains',
+  defaultFilterString: null,
+};
 
 FilterGenes.propTypes = {
-  filterGenes: PropTypes.func.isRequired,
+  onFilter: PropTypes.func.isRequired,
+  defaultFilterOption: PropTypes.string,
+  defaultFilterString: PropTypes.string,
 };
 
 export default FilterGenes;
