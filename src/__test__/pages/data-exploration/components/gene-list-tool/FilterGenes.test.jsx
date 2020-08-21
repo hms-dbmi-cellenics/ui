@@ -16,7 +16,7 @@ describe('FilterGenes', () => {
   });
 
   test('renders correctly', () => {
-    const component = mount(<FilterGenes filterGenes={jest.fn()} />);
+    const component = mount(<FilterGenes onFilter={jest.fn()} />);
     const select = component.find(Select);
     const search = component.find(Search);
 
@@ -26,18 +26,18 @@ describe('FilterGenes', () => {
 
   test('sends correct search pattern on search', () => {
     const mockFilter = jest.fn();
-    const component = mount(<FilterGenes filterGenes={mockFilter} />);
+    const component = mount(<FilterGenes onFilter={mockFilter} />);
     const search = component.find(Search);
 
     search.getElement().props.onSearch('tgf');
 
     expect(mockFilter).toHaveBeenCalledTimes(1);
-    expect(mockFilter).toHaveBeenCalledWith('%tgf%');
+    expect(mockFilter).toHaveBeenCalledWith({ filterOption: 'Contains', text: 'tgf' });
   });
 
   test('change selected search option', () => {
     const mockFilter = jest.fn();
-    const component = mount(<FilterGenes filterGenes={mockFilter} />);
+    const component = mount(<FilterGenes onFilter={mockFilter} />);
     const select = component.find(Select);
 
     act(() => {
@@ -48,8 +48,9 @@ describe('FilterGenes', () => {
     const search = component.find(Search);
     search.getElement().props.onSearch('tgf');
 
-    expect(mockFilter).toHaveBeenCalledTimes(1);
-    expect(mockFilter).toHaveBeenCalledWith('tgf%');
+    expect(mockFilter).toHaveBeenCalledTimes(2);
+    expect(mockFilter).toHaveBeenNthCalledWith(1, { filterOption: 'Starts with', text: null });
+    expect(mockFilter).toHaveBeenNthCalledWith(2, { filterOption: 'Starts with', text: 'tgf' });
   });
 
   configure({ adapter: new Adapter() });

@@ -28,6 +28,7 @@ const loadPaginatedGeneProperties = (
   const orderDirection = tableState.sorter.order;
   const currentPage = tableState.pagination.current;
   const currentPageSize = tableState.pagination.pageSize;
+  const geneNameFilter = tableState.geneNamesFilter;
 
   const body = {
     name: 'ListGenes',
@@ -38,7 +39,7 @@ const loadPaginatedGeneProperties = (
     limit: currentPageSize,
   };
 
-  if (tableState.geneNamesFilter) {
+  if (geneNameFilter) {
     body.geneNamesFilter = tableState.geneNamesFilter;
   }
 

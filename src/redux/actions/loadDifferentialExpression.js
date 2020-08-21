@@ -24,17 +24,23 @@ const loadDifferentialExpression = (
   };
 
   const pagination = {
-    pagination: {
-      orderBy: tableState.sorter.field,
-      orderDirection: (tableState.sorter.order === 'ascend') ? 'ASC' : 'DESC',
-      offset: ((tableState.pagination.current - 1) * currentPageSize),
-      limit: currentPageSize,
-      responseKey: 0,
-    },
+    orderBy: tableState.sorter.field,
+    orderDirection: (tableState.sorter.order === 'ascend') ? 'ASC' : 'DESC',
+    offset: ((tableState.pagination.current - 1) * currentPageSize),
+    limit: currentPageSize,
+    responseKey: 0,
   };
 
+  if (tableState.geneNamesFilter) {
+    pagination.filters = [{
+      columnName: 'gene_names',
+      type: 'text',
+      expression: tableState.geneNamesFilter,
+    }];
+  }
+
   try {
-    const response = await sendWork(experimentId, REQUEST_TIMEOUT, body, pagination);
+    const response = await sendWork(experimentId, REQUEST_TIMEOUT, body, { pagination });
     const data = JSON.parse(response.results[0].body);
     const { rows, total } = data;
 
