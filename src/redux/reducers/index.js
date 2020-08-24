@@ -6,7 +6,7 @@ import embeddingsReducer from './embeddings';
 import genesReducer from './genes';
 import differentialExpressionReducer from './differentialExpression';
 import layoutReducer from './layout/layout';
-import embeddingCatReducer from './embeddingCat/index';
+import plotsReducer from './plots/index';
 
 import { UPDATE_CELL_INFO } from '../actionTypes';
 
@@ -30,5 +30,5 @@ export default combineReducers({
   differentialExpression: differentialExpressionReducer,
   cellInfo: cellInfoReducer,
   layout: layoutReducer,
-  embeddingCat: embeddingCatReducer,
+  plots: plotsReducer,
 });

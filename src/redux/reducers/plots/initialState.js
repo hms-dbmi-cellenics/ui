@@ -1,4 +1,4 @@
-const initialState = {
+const embeddingCategoricalInitialConfig = {
   width: 700,
   height: 550,
   pointSize: 5,
@@ -31,6 +31,14 @@ const initialState = {
   labelsEnabled: true,
   selectedClusters: [],
   testVar: null,
+};
+
+const initialState = {
+  // embeddingCategoricalMain is plotUuid
+  embeddingCategoricalMain: {
+    type: 'embeddingCategorical',
+    config: embeddingCategoricalInitialConfig,
+  },
 };
 
 export default initialState;
