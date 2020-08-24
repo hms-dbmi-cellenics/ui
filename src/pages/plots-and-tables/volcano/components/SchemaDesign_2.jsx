@@ -45,9 +45,9 @@ const SchemaDesign = (props) => {
           label='Y-axis Range'
         >
           <Slider
-            defaultValue={60}
+            defaultValue={Math.round(yMax)}
             min={0}
-            max={yMax}
+            max={Math.round(yMax)}
             onAfterChange={(value) => {
               onUpdate({ maxNegativeLogpValueDomain: value });
             }}
@@ -57,9 +57,9 @@ const SchemaDesign = (props) => {
           label='X-axis Range'
         >
           <Slider
-            defaultValue={25}
+            defaultValue={Math.round(yMax)}
             min={0}
-            max={xMax}
+            max={Math.round(xMax)}
             onAfterChange={(value) => {
               onUpdate({ logFoldChangeDomain: value });
             }}

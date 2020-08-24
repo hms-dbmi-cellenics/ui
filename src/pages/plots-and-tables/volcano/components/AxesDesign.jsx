@@ -5,7 +5,7 @@ import {
 } from 'antd';
 
 const AxesDesign = (props) => {
-  const { onUpdate } = props;
+  const { config, onUpdate } = props;
   return (
     <Form
       size='small'
@@ -17,7 +17,7 @@ const AxesDesign = (props) => {
         label='Axes Label Size'
       >
         <Slider
-          defaultValue={13}
+          defaultValue={config.axisTitlesize}
           min={5}
           max={21}
           onAfterChange={(value) => {
@@ -29,7 +29,7 @@ const AxesDesign = (props) => {
         label='Axes Ticks Size'
       >
         <Slider
-          defaultValue={13}
+          defaultValue={config.axisTicks}
           min={5}
           max={21}
           onAfterChange={(value) => {
@@ -41,7 +41,7 @@ const AxesDesign = (props) => {
         label='Grid-line weight'
       >
         <Slider
-          defaultValue={5}
+          defaultValue={config.transGrid}
           min={1}
           max={10}
           onAfterChange={(value) => {
@@ -54,7 +54,7 @@ const AxesDesign = (props) => {
         label='Edit x-axis'
       >
         <Input
-          placeholder='Enter x-axis title'
+          defaultValue={config.xaxisText}
           onPressEnter={(e) => {
             const { value } = e.target;
             onUpdate({ xaxisText: value });
@@ -65,7 +65,7 @@ const AxesDesign = (props) => {
         label='Edit y-axis'
       >
         <Input
-          placeholder='Enter y-axis title'
+          defaultValue={config.yaxisText}
           onPressEnter={(e) => {
             const { value } = e.target;
             onUpdate({ yaxisText: value });
@@ -78,6 +78,7 @@ const AxesDesign = (props) => {
 
 AxesDesign.propTypes = {
   onUpdate: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 

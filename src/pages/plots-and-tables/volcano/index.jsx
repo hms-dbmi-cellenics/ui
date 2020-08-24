@@ -37,6 +37,7 @@ const routes = [
 ];
 
 const plotUuid = 'volcanoPlotMain';
+
 const VolcanoPlot = () => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.plots[plotUuid].config);
@@ -446,7 +447,7 @@ const VolcanoPlot = () => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  generateData();
+  maxNegativeLogpValue = 6;
 
   return (
     <>
@@ -468,7 +469,7 @@ const VolcanoPlot = () => {
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
                 <center>
-                  <Vega data={generateData()} spec={generateSpec()} renderer='canvas' />
+                  <Vega data={{ differentialExpression: generateData() }} spec={generateSpec()} renderer='canvas' />
                 </center>
               </Panel>
             </Collapse>
@@ -483,7 +484,6 @@ const VolcanoPlot = () => {
                   onUpdate={updatePlotWithChanges}
                   xMax={xMax}
                   yMax={maxNegativeLogpValue + 2}
-                  l2fcMax={l2fcMax}
                 />
 
                 <Collapse defaultActiveKey={['1']} accordion>
@@ -541,7 +541,7 @@ const VolcanoPlot = () => {
               <Panel header='Text' key='12'>
                 <> Display Gene Labels Above (-log10 pvalue) </>
                 <Slider
-                  defaultValue={maxNegativeLogpValue}
+                  defaultValue={config.textThresholdValue}
                   min={0}
                   max={maxNegativeLogpValue + 5}
                   onChange={(val) => updatePlotWithChanges({ textThresholdValue: val })}
