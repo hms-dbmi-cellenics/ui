@@ -39,7 +39,7 @@ const routes = [
 // TODO: when we want to enable users to create their custom plots, we will need to change this to proper Uuid
 const plotUuid = 'embeddingCategoricalMain';
 
-const PlotsAndTablesViewPage = () => {
+const EmbeddingCategoricalPlot = () => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.plots[plotUuid].config);
 
@@ -271,7 +271,7 @@ const PlotsAndTablesViewPage = () => {
     <>
       <Row>
         <Col>
-          <div style={{ 'padding-top': '12px', 'padding-bottom': '12px' }}>
+          <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
             <PageHeader
               className='site-page-header'
               title='Edit collection'
@@ -355,4 +355,4 @@ const PlotsAndTablesViewPage = () => {
   );
 };
 
-export default PlotsAndTablesViewPage;
+export default EmbeddingCategoricalPlot;

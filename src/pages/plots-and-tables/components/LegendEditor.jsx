@@ -20,7 +20,7 @@ const LegendEditor = (props) => {
 
 LegendEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
-  defaultState: PropTypes.object.isRequired,
+  defaultState: PropTypes.bool.isRequired,
 };
 
 export default LegendEditor;
