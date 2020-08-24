@@ -18,11 +18,16 @@ const experimentId = '5e959f9c9f4b120771249001';
 
 const { TabPane } = Tabs;
 
-const renderWindow = (tile, width, height) => (
-  <div style={{ margin: '5px' }}>
-    {height && width ? tile(width, height) : <></>}
-  </div>
-);
+const renderWindow = (tile, width, height) => {
+  if (tile) {
+    return (
+      <div style={{ margin: '5px' }}>
+        {height && width ? tile(width, height) : <></>}
+      </div>
+    );
+  }
+  return <></>;
+};
 
 const ExplorationViewPage = () => {
   const dispatch = useDispatch();

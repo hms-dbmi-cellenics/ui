@@ -5,7 +5,6 @@ const layoutReducer = (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_LAYOUT:
       return {
-        ...state,
         ...action.data,
       };
     default:
