@@ -13,7 +13,7 @@ import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
 import LabelsDesign from './components/LabelsDesign';
-import setEmbeddingCatConfig from '../../../redux/actions/embeddingCat';
+import { updatePlotConfig } from '../../../redux/actions/plots/index';
 
 
 const { Panel } = Collapse;
@@ -36,9 +36,12 @@ const routes = [
   },
 ];
 
+// TODO: when we want to enable users to create their custom plots, we will need to change this to proper Uuid
+const plotUuid = 'embeddingCategoricalMain';
+
 const PlotsAndTablesViewPage = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.embeddingCat);
+  const config = useSelector((state) => state.plots[plotUuid].config);
 
   const generateSpec = () => {
     if (config.toggleInvert === '#000000') {
@@ -259,7 +262,7 @@ const PlotsAndTablesViewPage = () => {
   };
 
   const onUpdate = (obj) => {
-    dispatch(setEmbeddingCatConfig(obj));
+    dispatch(updatePlotConfig(plotUuid, obj));
   };
 
   const vegaData = { embeddingCat: categoricalUMAP };
