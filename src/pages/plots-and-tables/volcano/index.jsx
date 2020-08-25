@@ -7,12 +7,12 @@ import { Vega } from 'react-vega';
 import differentialExpression from './differential_expression.json';
 import ThresholdsGuidesEditor from './components/ThresholdsGuidesEditor';
 import MarkersEditor from './components/MarkersEditor';
-import PointDesign from './components/PointDesign';
-import TitleDesign from './components/TitleDesign';
-import SchemaDesign from './components/SchemaDesign_2';
-import AxesDesign from './components/AxesDesign';
+import PointDesign from '../components/PointDesign';
+import TitleDesign from '../components/TitleDesign';
+import DimensionsRangeEditorVolcano from './components/DimensionsRangeEditorVolcano';
+import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
-import ColourInversion from './components/ColourInversion';
+import ColourInversion from '../components/ColourInversion';
 import LegendEditor from '../components/LegendEditor';
 import { updatePlotConfig } from '../../../redux/actions/plots/index';
 
@@ -159,43 +159,6 @@ const VolcanoPlot = () => {
     const maxNegativeLogpValueDomain = config.maxNegativeLogpValueDomain
       ? [0, config.maxNegativeLogpValueDomain]
       : { data: 'differentialExpression', field: 'neglogpvalue' };
-    if (config.legendEnabled) {
-      config.legend = [
-        {
-          fill: 'color',
-          encode: {
-            title: {
-              update: {
-                fontSize: { value: 14 },
-              },
-            },
-            labels: {
-              interactive: true,
-              update: {
-                fontSize: { value: 12 },
-                fill: { value: config.masterColour },
-              },
-              hover: {
-                fill: { value: 'firebrick' },
-              },
-            },
-            symbols: {
-              update: {
-                stroke: { value: 'transparent' },
-              },
-            },
-            legend: {
-              update: {
-                stroke: { value: '#ccc' },
-                strokeWidth: { value: 1.5 },
-              },
-            },
-          },
-        },
-      ];
-    } else {
-      config.legend = null;
-    }
 
     const x = (config.textThresholdValue);
 
@@ -479,23 +442,15 @@ const VolcanoPlot = () => {
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']} accordion>
               <Panel header='Main Schema' key='1'>
-                <SchemaDesign
+                <DimensionsRangeEditorVolcano
                   config={config}
                   onUpdate={updatePlotWithChanges}
-                  xMax={xMax}
-                  yMax={maxNegativeLogpValue + 2}
+                  xMax={Math.round(xMax)}
+                  yMax={Math.round(maxNegativeLogpValue) + 2}
                 />
-
                 <Collapse defaultActiveKey={['1']} accordion>
                   <Panel header='Define and Edit Title' key='6'>
                     <TitleDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-
-                  <Panel header='Data Thresholding' key='8'>
-                    <ThresholdsGuidesEditor
                       config={config}
                       onUpdate={updatePlotWithChanges}
                     />
@@ -506,8 +461,13 @@ const VolcanoPlot = () => {
                       onUpdate={updatePlotWithChanges}
                     />
                   </Panel>
-
                 </Collapse>
+              </Panel>
+              <Panel header='Data Thresholding' key='8'>
+                <ThresholdsGuidesEditor
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
               </Panel>
               <Panel header='Axes and Margins' key='3'>
                 <AxesDesign
@@ -531,20 +491,51 @@ const VolcanoPlot = () => {
                   onUpdate={updatePlotWithChanges}
                 />
               </Panel>
-              <Panel header='Legend' key='11'>
-                <LegendEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                  defaultState={false}
-                />
-              </Panel>
-              <Panel header='Text' key='12'>
+              <Panel header='Text' key='11'>
                 <> Display Gene Labels Above (-log10 pvalue) </>
                 <Slider
                   defaultValue={config.textThresholdValue}
                   min={0}
                   max={maxNegativeLogpValue + 5}
                   onChange={(val) => updatePlotWithChanges({ textThresholdValue: val })}
+                />
+              </Panel>
+              <Panel header='Legend' key='12'>
+                <LegendEditor
+                  onUpdate={updatePlotWithChanges}
+                  legendConfig={[
+                    {
+                      fill: 'color',
+                      encode: {
+                        title: {
+                          update: {
+                            fontSize: { value: 14 },
+                          },
+                        },
+                        labels: {
+                          interactive: true,
+                          update: {
+                            fontSize: { value: 12 },
+                            fill: { value: config.masterColour },
+                          },
+                          hover: {
+                            fill: { value: 'firebrick' },
+                          },
+                        },
+                        symbols: {
+                          update: {
+                            stroke: { value: 'transparent' },
+                          },
+                        },
+                        legend: {
+                          update: {
+                            stroke: { value: '#ccc' },
+                            strokeWidth: { value: 1.5 },
+                          },
+                        },
+                      },
+                    },
+                  ]}
                 />
               </Panel>
             </Collapse>

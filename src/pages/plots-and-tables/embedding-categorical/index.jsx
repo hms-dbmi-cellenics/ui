@@ -6,13 +6,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import categoricalUMAP from './new_categoricalUMAP.json';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourInversion from './components/ColourInversion';
+import ColourInversion from '../components/ColourInversion';
 import AxesDesign from '../components/AxesDesign';
-import PointDesign from './components/PointDesign';
+import PointDesign from '../components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
-import LabelsDesign from './components/LabelsDesign';
+import LabelsDesign from '../components/LabelsDesign';
 import { updatePlotConfig } from '../../../redux/actions/plots/index';
 
 
@@ -61,43 +61,6 @@ const EmbeddingCategoricalPlot = () => {
       config.labelShow = 0;
     }
 
-    const UMAP1Domain = config.umap1Domain
-      ? [config.umap1Domain]
-      : { data: 'embeddingCat', field: 'UMAP_1' };
-
-    const UMAP2Domain = config.umap2Domain
-      ? [config.umap2Domain]
-      : { data: 'embeddingCat', field: 'UMAP_2' };
-    if (config.legendEnabled) {
-      config.legend = [
-        {
-          title: '',
-          titleColor: config.masterColour,
-          fill: 'color',
-          rowPadding: 5,
-          symbolSize: 200,
-
-          encode: {
-            title: {
-              update: {
-                fontSize: { value: 14 },
-              },
-            },
-            labels: {
-              interactive: true,
-              update: {
-                fontSize: { value: 17 },
-                fill: { value: config.legendTextColor },
-              },
-
-            },
-          },
-        },
-      ];
-    } else {
-      config.legend = null;
-    }
-
     return {
       $schema: 'https://vega.github.io/schema/vega/v5.json',
       description: 'A basic scatter plot example depicting automobile statistics.',
@@ -107,7 +70,7 @@ const EmbeddingCategoricalPlot = () => {
       background: config.toggleInvert,
       padding: 5,
       data: [{
-        name: 'embeddingCat',
+        name: 'embeddingCategorical',
         transform: [{
           type: 'joinaggregate',
           groupby: ['cluster_id'],
@@ -118,7 +81,7 @@ const EmbeddingCategoricalPlot = () => {
       },
       {
         name: 'cluster_labels',
-        source: 'embeddingCat',
+        source: 'embeddingCategorical',
         transform: [{
           type: 'joinaggregate',
           fields: ['UMAP_1', 'UMAP_2'],
@@ -132,7 +95,7 @@ const EmbeddingCategoricalPlot = () => {
           type: 'linear',
           round: true,
           nice: true,
-          domain: UMAP1Domain,
+          domain: config.umap1Domain,
           range: 'width',
         },
         {
@@ -141,7 +104,7 @@ const EmbeddingCategoricalPlot = () => {
           round: true,
           nice: true,
           zero: true,
-          domain: UMAP2Domain,
+          domain: config.umap2Domain,
           range: 'height',
         },
         {
@@ -152,7 +115,7 @@ const EmbeddingCategoricalPlot = () => {
               'red', 'green', 'blue', 'teal', 'orange', 'purple', 'cyan', 'magenta',
             ],
           domain: {
-            data: 'embeddingCat',
+            data: 'embeddingCategorical',
             field: 'cluster_id',
             sort: true,
           },
@@ -203,7 +166,7 @@ const EmbeddingCategoricalPlot = () => {
       marks: [
         {
           type: 'symbol',
-          from: { data: 'embeddingCat' },
+          from: { data: 'embeddingCategorical' },
           encode: {
             enter: {
               x: { scale: 'x', field: 'UMAP_1' },
@@ -224,7 +187,7 @@ const EmbeddingCategoricalPlot = () => {
         },
         {
           type: 'text',
-          from: { data: 'embeddingCat' },
+          from: { data: 'embeddingCategorical' },
           encode: {
             enter: {
               x: { scale: 'x', field: 'um1' },
@@ -265,7 +228,7 @@ const EmbeddingCategoricalPlot = () => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const vegaData = { embeddingCat: categoricalUMAP };
+  const vegaData = { embeddingCategorical: categoricalUMAP };
 
   return (
     <>
@@ -330,20 +293,42 @@ const EmbeddingCategoricalPlot = () => {
             </Panel>
             <Panel header='Markers' key='5'>
               <PointDesign
+                config={config}
                 onUpdate={onUpdate}
               />
             </Panel>
             <Panel header='Legend' key='10'>
               <LegendEditor
-                color={config.legendTextColor}
-                config={config}
                 onUpdate={onUpdate}
-                defaultState
+                legendConfig={[
+                  {
+                    title: '',
+                    titleColor: config.masterColour,
+                    fill: 'color',
+                    rowPadding: 5,
+                    symbolSize: 200,
+
+                    encode: {
+                      title: {
+                        update: {
+                          fontSize: { value: 14 },
+                        },
+                      },
+                      labels: {
+                        interactive: true,
+                        update: {
+                          fontSize: { value: 17 },
+                          fill: { value: config.legendTextColor },
+                        },
+
+                      },
+                    },
+                  },
+                ]}
               />
             </Panel>
             <Panel header='Labels' key='11'>
               <LabelsDesign
-                color={config.legendTextColor}
                 config={config}
                 onUpdate={onUpdate}
               />

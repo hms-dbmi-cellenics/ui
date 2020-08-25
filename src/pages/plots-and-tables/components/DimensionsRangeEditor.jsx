@@ -1,38 +1,44 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Slider, Form,
+  Slider, Form, Space,
 } from 'antd';
 
 
 const DimensionsRangeEditor = (props) => {
-  const { onUpdate, config, maxHeight, maxWidth } = props;
-  let height = 1000;
-  let width = 1200;
-  if (maxHeight) {
-    height = maxHeight;
-  }
-  if (maxWidth) {
-    width = maxWidth;
-  }
+  const {
+    onUpdate, config, maxHeight, maxWidth,
+  } = props;
+
+  const minWidth = 400;
+  const widthMarks = {};
+  widthMarks[minWidth] = minWidth;
+  widthMarks[maxWidth] = maxWidth;
+
+  const minHeight = 200;
+  const heighthMarks = {};
+  heighthMarks[minHeight] = minHeight;
+  heighthMarks[maxHeight] = maxHeight;
+
   return (
-    <>
+    <Space direction='vertical' style={{ width: '80%' }}>
+      Dimensions
       <Form
         size='small'
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Dimensions</div>
         <Form.Item
           label='Width'
         >
           <Slider
             defaultValue={config.width}
-            min={400}
-            max={width}
+            min={minWidth}
+            max={maxWidth}
             onAfterChange={(value) => {
               onUpdate({ width: value });
             }}
+            marks={widthMarks}
           />
         </Form.Item>
         <Form.Item
@@ -40,21 +46,30 @@ const DimensionsRangeEditor = (props) => {
         >
           <Slider
             defaultValue={config.height}
-            min={200}
-            max={height}
+            min={minHeight}
+            max={maxHeight}
             onAfterChange={(value) => {
               onUpdate({ height: value });
             }}
+            marks={heighthMarks}
           />
         </Form.Item>
       </Form>
-    </>
+    </Space>
   );
 };
+
+DimensionsRangeEditor.defaultProps = {
+  maxHeight: 1000,
+  maxWidth: 1200,
+};
+
 
 DimensionsRangeEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
+  maxHeight: PropTypes.number,
+  maxWidth: PropTypes.number,
 };
 
 export default DimensionsRangeEditor;

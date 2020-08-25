@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form,
-  Radio, Input,
+  Radio, Input, Space,
 } from 'antd';
 
 const TitleDesign = (props) => {
@@ -15,49 +15,49 @@ const TitleDesign = (props) => {
   };
 
   return (
-    <>
+    <Space direction='vertical' style={{ width: '80%' }}>
       <Form
         size='small'
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
         <div>Title Styles</div>
-
-        <Form.Item
-          label='Title Font Size'
-        >
-          <Slider
-            defaultValue={20}
-            min={15}
-            max={40}
-            onAfterChange={(value) => {
-              onUpdate({ titleSize: value });
-            }}
-          />
-        </Form.Item>
-
         <Form.Item
           label='Define Title'
         >
           <Input
             placeholder='Enter title'
             onPressEnter={(e) => {
-              const { value } = e.target;
-              onUpdate({ titleText: value });
+              onUpdate({ titleText: e.target.value });
             }}
           />
-
+        </Form.Item>
+        <Form.Item
+          label='Title Font Size'
+        >
+          <Slider
+            defaultValue={config.titleSize}
+            min={15}
+            max={40}
+            onAfterChange={(value) => {
+              onUpdate({ titleSize: value });
+            }}
+            marks={{ 15: 15, 40: 40 }}
+          />
         </Form.Item>
         <Form.Item
           label='Title Location'
         >
-          <Radio.Group onChange={onChange} value={titleAnchor}>
+          <Radio.Group
+            onChange={onChange}
+            value={titleAnchor}
+          >
             <Radio value='start'>Left</Radio>
             <Radio value='middle'>Middle</Radio>
           </Radio.Group>
         </Form.Item>
       </Form>
-    </>
+    </Space>
   );
 };
 

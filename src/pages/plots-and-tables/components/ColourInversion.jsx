@@ -20,7 +20,7 @@ const ColourInversion = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Powerpoint Inversion</div>
+        <div>Background</div>
         <Form.Item>
           <Radio.Group onChange={onChange} value={toggleInvert}>
             <Radio value='#FFFFFF'>Standard</Radio>

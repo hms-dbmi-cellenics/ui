@@ -7,9 +7,7 @@ import {
 
 const ColourbarDesign = (props) => {
   const { onUpdate, config } = props;
-
   const [radioval, setradioval] = useState(config.colGradient);
-
   const onChange = (e) => {
     setradioval(e.target.value);
     onUpdate({ colGradient: e.target.value });
@@ -28,6 +26,7 @@ const ColourbarDesign = (props) => {
             <Radio value='viridis'>Viridis</Radio>
             <Radio value='inferno'>Inferno</Radio>
             <Radio value='spectral'>Spectral</Radio>
+            <Radio value='redblue'>Red-Blue</Radio>
           </Radio.Group>
         </Form.Item>
       </Form>

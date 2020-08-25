@@ -3,11 +3,15 @@ import PropTypes from 'prop-types';
 import { Radio } from 'antd';
 
 const LegendEditor = (props) => {
-  const { defaultState, onUpdate } = props;
-  const [legendEnabled, setLegendEnabled] = useState(defaultState);
+  const { onUpdate, legendConfig } = props;
+  const [legendEnabled, setLegendEnabled] = useState(false);
   const onChange = (e) => {
+    if (e.target.value === true) {
+      onUpdate({ legend: legendConfig });
+    } else {
+      onUpdate({ legend: null });
+    }
     setLegendEnabled(e.target.value);
-    onUpdate({ legendEnabled: e.target.value });
   };
 
   return (
@@ -20,7 +24,7 @@ const LegendEditor = (props) => {
 
 LegendEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
-  defaultState: PropTypes.bool.isRequired,
+  legendConfig: PropTypes.array.isRequired,
 };
 
 export default LegendEditor;

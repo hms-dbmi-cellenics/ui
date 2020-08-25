@@ -5,7 +5,7 @@ import {
 } from 'antd';
 
 
-const LegendEditor = (props) => {
+const LegendEditorSpecial = (props) => {
   const { onUpdate } = props;
 
   const [legendLocation, setlegendLocation] = useState('horizontal');
@@ -25,8 +25,8 @@ const LegendEditor = (props) => {
   );
 };
 
-LegendEditor.propTypes = {
+LegendEditorSpecial.propTypes = {
   onUpdate: PropTypes.func.isRequired,
 };
 
-export default LegendEditor;
+export default LegendEditorSpecial;
