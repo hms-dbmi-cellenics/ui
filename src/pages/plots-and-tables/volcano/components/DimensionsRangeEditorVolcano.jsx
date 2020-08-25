@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Slider, Form,
+  Slider, Form, Space,
 } from 'antd';
 
 
-const SchemaDesign = (props) => {
-  const { onUpdate, yMax, xMax } = props;
+const DimensionsRangeEditorVolcano = (props) => {
+  const {
+    config, onUpdate, yMax, xMax,
+  } = props;
 
   return (
-    <>
+    <Space direction='vertical' style={{ width: '80%' }}>
       <Form
         size='small'
         labelCol={{ span: 12 }}
@@ -21,7 +23,7 @@ const SchemaDesign = (props) => {
           label='Width'
         >
           <Slider
-            defaultValue={500}
+            defaultValue={config.width}
             min={200}
             max={1000}
             onAfterChange={(value) => {
@@ -33,7 +35,7 @@ const SchemaDesign = (props) => {
           label='Height'
         >
           <Slider
-            defaultValue={500}
+            defaultValue={config.height}
             min={200}
             max={1000}
             onAfterChange={(value) => {
@@ -45,9 +47,9 @@ const SchemaDesign = (props) => {
           label='Y-axis Range'
         >
           <Slider
-            defaultValue={Math.round(yMax)}
+            defaultValue={yMax}
             min={0}
-            max={Math.round(yMax)}
+            max={yMax}
             onAfterChange={(value) => {
               onUpdate({ maxNegativeLogpValueDomain: value });
             }}
@@ -57,9 +59,9 @@ const SchemaDesign = (props) => {
           label='X-axis Range'
         >
           <Slider
-            defaultValue={Math.round(yMax)}
+            defaultValue={xMax}
             min={0}
-            max={Math.round(xMax)}
+            max={xMax}
             onAfterChange={(value) => {
               onUpdate({ logFoldChangeDomain: value });
             }}
@@ -68,14 +70,15 @@ const SchemaDesign = (props) => {
 
 
       </Form>
-    </>
+    </Space>
   );
 };
 
-SchemaDesign.propTypes = {
+DimensionsRangeEditorVolcano.propTypes = {
+  config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
   yMax: PropTypes.number.isRequired,
   xMax: PropTypes.number.isRequired,
 };
 
-export default SchemaDesign;
+export default DimensionsRangeEditorVolcano;

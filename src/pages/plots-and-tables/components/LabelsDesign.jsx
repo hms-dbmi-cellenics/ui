@@ -6,13 +6,16 @@ import {
 
 
 const LabelsDesign = (props) => {
-  const { onUpdate } = props;
+  const { config, onUpdate } = props;
   const [labelsEnabled, setlabelsEnabled] = useState(true);
 
   const onChange = (e) => {
     setlabelsEnabled(e.target.value);
     onUpdate({ labelsEnabled: e.target.value });
   };
+
+  const minLabelSize = 0;
+  const maxLabelSize = 50;
 
   return (
     <>
@@ -25,12 +28,14 @@ const LabelsDesign = (props) => {
         label='Size'
       >
         <Slider
-          defaultValue={28}
-          min={5}
-          max={50}
+          defaultValue={config.labelSize}
+          min={minLabelSize}
+          max={maxLabelSize}
+          disabled={!labelsEnabled}
           onAfterChange={(value) => {
             onUpdate({ labelSize: value });
           }}
+          marks={{ 0: minLabelSize, 50: maxLabelSize }}
         />
       </Form.Item>
     </>
@@ -39,6 +44,7 @@ const LabelsDesign = (props) => {
 
 LabelsDesign.propTypes = {
   onUpdate: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 export default LabelsDesign;

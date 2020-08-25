@@ -4,11 +4,10 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import _ from 'lodash';
 import heatmap from './heatmap.json';
-import DimensionsRangeEditor from './components/DimensionsRangeEditor';
-import ColourbarDesign from './components/ColourbarDesign';
-import LegendEditor from './components/LegendEditorSpecial';
+import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
+import ColourbarDesign from '../components/ColourbarDesign';
+import LegendEditorSpecial from './components/LegendEditorSpecial';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import { updatePlotConfig } from '../../../redux/actions/plots/index';
@@ -456,7 +455,7 @@ const HeatmapPlot = () => {
                 />
               </Panel>
               <Panel header='Legend' key='11'>
-                <LegendEditor
+                <LegendEditorSpecial
                   config={config}
                   onUpdate={updatePlotWithChanges}
                 />

@@ -4,15 +4,14 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import _ from 'lodash';
 // eslint-disable-next-line camelcase
 import new_basicUMAP from './new_basicUMAP.json';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
-import ColourInversion from './components/ColourInversion';
+import ColourInversion from '../components/ColourInversion';
 import LogExpression from './components/LogExpression';
 import AxesDesign from '../components/AxesDesign';
-import PointDesign from './components/PointDesign';
+import PointDesign from '../components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
@@ -58,45 +57,13 @@ const EmbeddingContinuousPlot = () => {
 
     if (config.toggleAnchor === 'middle') { config.bounceX = -50; }
     if (config.toggleAnchor === 'start') { config.bounceX = 50; }
-    if (config.legendEnabled) {
-      config.legend = [
-        {
-          fill: 'color',
-          type: 'gradient',
-          title: 'CST3 Expression',
-          titleFontSize: 12,
-          titlePadding: 4,
-          gradientLength: 100,
-          labelColor: { value: config.masterColour },
-          titleColor: { value: config.masterColour },
-
-          labels: {
-            interactive: true,
-            update: {
-              fontSize: { value: 12 },
-              fill: { value: config.masterColour },
-            },
-
-          },
-        }];
-    } else {
-      config.legend = null;
-    }
-    const UMAP1Domain = config.umap1Domain
-      ? [config.umap1Domain]
-      : { data: 'embedding', field: 'UMAP_1' };
-
-    const UMAP2Domain = config.umap2Domain
-      ? [config.umap2Domain]
-      : { data: 'embedding', field: 'UMAP_2' };
-
 
     return {
 
       $schema: 'https://vega.github.io/schema/vega/v5.json',
       description: 'A basic scatter plot example depicting gene expression in the context of UMAP.',
-      width: config.width || this.defaultConfig.width,
-      height: config.height || this.defaultConfig.height,
+      width: config.width,
+      height: config.height,
       autosize: { type: 'fit', resize: true },
 
       background: config.toggleInvert,
@@ -118,7 +85,7 @@ const EmbeddingContinuousPlot = () => {
           type: 'linear',
           round: true,
           nice: true,
-          domain: UMAP1Domain,
+          domain: config.umap1Domain,
           range: 'width',
         },
         {
@@ -126,7 +93,7 @@ const EmbeddingContinuousPlot = () => {
           type: 'linear',
           round: true,
           nice: true,
-          domain: UMAP2Domain,
+          domain: config.umap2Domain,
           range: 'height',
         },
         {
@@ -305,9 +272,24 @@ const EmbeddingContinuousPlot = () => {
             </Panel>
             <Panel header='Legend' key='12'>
               <LegendEditor
-                config={config}
                 onUpdate={updatePlotWithChanges}
-                defaultState
+                legendConfig={[
+                  {
+                    fill: 'color',
+                    type: 'gradient',
+                    title: 'CST3 Expression',
+                    gradientLength: 100,
+                    labelColor: { value: config.masterColour },
+                    titleColor: { value: config.masterColour },
+                    labels: {
+                      interactive: true,
+                      update: {
+                        fontSize: { value: 12 },
+                        fill: { value: config.masterColour },
+                      },
+
+                    },
+                  }]}
               />
             </Panel>
           </Collapse>

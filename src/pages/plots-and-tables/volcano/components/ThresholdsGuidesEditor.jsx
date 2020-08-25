@@ -78,27 +78,19 @@ const ThresholdsGuidesEditor = (props) => {
           <Space>
             <InputNumber
               min={0}
-              defaultValue={2}
+              defaultValue={config.pvalueThreshold}
               step={1}
               type='number'
-
               onPressEnter={(e) => {
                 const value = parseFloat(e.target.value);
                 const valueFinal = 5 ** -value;
                 onUpdate({ pvalueThreshold: valueFinal });
               }}
             />
-
-
             <Checkbox
+              checked={config.showpvalueThresholdGuides}
               onChange={(e) => {
-                const { checked } = e.target;
-
-                if (checked) {
-                  onUpdate({ showpvalueThresholdGuides: true });
-                } else {
-                  onUpdate({ showpvalueThresholdGuides: false });
-                }
+                onUpdate({ showpvalueThresholdGuides: e.target.checked });
               }}
             >
               Show Guideline
@@ -118,21 +110,15 @@ const ThresholdsGuidesEditor = (props) => {
           <Space>
             <InputNumber
               min={0}
-              defaultValue={1}
+              defaultValue={config.logFoldChangeThreshold}
               onPressEnter={(e) => {
-                const value = parseInt(e.target.value, 10);
-                onUpdate({ logFoldChangeThreshold: value });
+                onUpdate({ logFoldChangeThreshold: e.target.value });
               }}
             />
             <Checkbox
+              checked={config.showLogFoldChangeThresholdGuides}
               onChange={(e) => {
-                const { checked } = e.target;
-
-                if (checked) {
-                  onUpdate({ showLogFoldChangeThresholdGuides: true });
-                } else {
-                  onUpdate({ showLogFoldChangeThresholdGuides: false });
-                }
+                onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
               }}
             >
               Show Guideline
@@ -145,11 +131,10 @@ const ThresholdsGuidesEditor = (props) => {
           label='Width'
         >
           <InputNumber
-            min={0}
-            defaultValue={1}
+            min={1}
+            defaultValue={config.thresholdGuideWidth}
             onPressEnter={(e) => {
-              const value = parseFloat(e.target.value);
-              onUpdate({ thresholdGuideWidth: value });
+              onUpdate({ thresholdGuideWidth: e.target.value });
             }}
           />
         </Form.Item>
