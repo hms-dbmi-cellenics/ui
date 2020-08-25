@@ -33,11 +33,120 @@ const embeddingCategoricalInitialConfig = {
   testVar: null,
 };
 
+const embeddingContinuousInitialConfig = {
+  width: 700,
+  height: 550,
+  pointSize: 5,
+  colGradient: 'spectral',
+  toggleInvert: '#FFFFFF',
+  masterColour: '#000000',
+  reverseCbar: false,
+  umap1Domain: null,
+  umap2Domain: null,
+  logEquation: 'datum.CST3*1',
+  titleText: '',
+  titleSize: 20,
+  titleAnchor: 'start',
+  axisTitlesize: 13,
+  axisTicks: 13,
+  transGrid: 0,
+  axesOffset: 10,
+  masterFont: 'sans-serif',
+  xaxisText: 'UMAP 1',
+  yaxisText: 'UMAP 2',
+  pointStyle: 'circle',
+  pointOpa: 5,
+  bounceX: 0,
+  legend: null,
+  legendEnabled: true,
+};
+
+const heatmapInitialConfig = {
+  width: 500,
+  height: 500,
+  colGradient: 'viridis',
+  legend: null,
+  legendEnabled: true,
+  selectedGenes: [],
+  selectedData: {},
+  masterFont: 'sans-serif',
+  titleText: '',
+  titleSize: 20,
+  titleAnchor: 'start',
+  bounceX: 0,
+  masterColour: '#000000',
+  labelColour: 'transparent',
+  legendLocation: 'horizontal',
+};
+
+const volcanoInitialConfig = {
+  width: 500,
+  height: 500,
+  noDifferenceColor: '#aaaaaa',
+  significantUpregulatedColor: '#0000ffaa',
+  significantDownregulatedColor: '#ff0000',
+  notSignificantDownregulatedColor: '#aaaaaa',
+  notSignificantUpregulatedColor: '#aaaaaa',
+  significantChangeDirectionUnknownColor: '#aaaaaa',
+  logFoldChangeDomain: null,
+  maxNegativeLogpValueDomain: null,
+  pvalueThreshold: 0.05,
+  logFoldChangeThreshold: 1,
+  logFoldChangeTickCount: 5,
+  negativeLogpValueTickCount: 5,
+  downsampleRatio: 0,
+  showLogFoldChangeThresholdGuides: false,
+  showpvalueThresholdGuides: false,
+  thresholdGuideWidth: 1,
+  logFoldChangeThresholdColor: '#ff0000',
+  pvalueThresholdColor: '#ff0000',
+  pointSize: 32,
+  pointStyle: 'circle',
+  pointOpa: 5,
+  strokeOpa: 1,
+  strokeCol: '#000000',
+  legend: null,
+  legendEnabled: null,
+  axisTitlesize: 13,
+  axisTicks: 13,
+  colGrid: '#000000',
+  widthGrid: 10,
+  transGrid: 5,
+  axesOffset: 10,
+  lineWidth: 2,
+  xaxisText: 'Log2 Fold Change',
+  yaxisText: 'Log10 -p-value',
+  titleText: '',
+  titleSize: 20,
+  titleAnchor: 'start',
+  masterFont: 'sans-serif',
+  masterColour: '#000000',
+  toggleInvert: '#FFFFFF',
+  reverseCbar: false,
+  textThresholdValue: 10,
+};
+
+
 const initialState = {
   // embeddingCategoricalMain is plotUuid
   embeddingCategoricalMain: {
     type: 'embeddingCategorical',
     config: embeddingCategoricalInitialConfig,
+  },
+  // embeddingContinuousMain is plotUuid
+  embeddingContinuousMain: {
+    type: 'embeddingContinuous',
+    config: embeddingContinuousInitialConfig,
+  },
+  // heatmapPlotMain is plotUuid
+  heatmapPlotMain: {
+    type: 'heatmap',
+    config: heatmapInitialConfig,
+  },
+  // volcanoPlotMain is plotUuid
+  volcanoPlotMain: {
+    type: 'volcano',
+    config: volcanoInitialConfig,
   },
 };
 

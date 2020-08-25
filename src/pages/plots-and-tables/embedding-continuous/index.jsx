@@ -2,6 +2,7 @@ import React from 'react';
 import {
   PageHeader, Row, Col, Space, Collapse,
 } from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
 // eslint-disable-next-line camelcase
@@ -15,71 +16,37 @@ import PointDesign from './components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
+import { updatePlotConfig } from '../../../redux/actions/plots/index';
 
 const { Panel } = Collapse;
+const routes = [
+  {
+    path: 'index',
+    breadcrumbName: 'Experiments',
+  },
+  {
+    path: 'first',
+    breadcrumbName: '10x PBMC 3k',
+  },
+  {
+    path: 'second',
+    breadcrumbName: 'Plots and tables',
+  },
+  {
+    path: 'third',
+    breadcrumbName: 'Disease vs. control (Gene expression)',
+  },
+];
 
-class PlotsAndTablesViewPage extends React.Component {
-  constructor(props) {
-    super(props);
+// TODO: when we want to enable users to create their custom plots, we will need to change this to proper Uuid
+const plotUuid = 'embeddingContinuousMain';
 
-    this.routes = [
-      {
-        path: 'index',
-        breadcrumbName: 'Experiments',
-      },
-      {
-        path: 'first',
-        breadcrumbName: 'CST3 CABG study',
-      },
-      {
-        path: 'second',
-        breadcrumbName: 'Plots and tables',
-      },
-      {
-        path: 'third',
-        breadcrumbName: 'Disease vs. control (Gene expression)',
-      },
-    ];
+const EmbeddingContinuousPlot = () => {
+  const dispatch = useDispatch();
+  const config = useSelector((state) => state.plots[plotUuid].config);
 
-    this.defaultConfig = {
-      width: 700,
-      height: 550,
-      pointSize: 5,
-      colGradient: 'spectral',
-      toggleInvert: '#FFFFFF',
-      masterColour: '#000000',
-      reverseCbar: false,
-      umap1Domain: null,
-      umap2Domain: null,
-      logEquation: 'datum.CST3*1',
-      titleText: '',
-      titleSize: 20,
-      titleAnchor: 'start',
-      axisTitlesize: 13,
-      axisTicks: 13,
-      transGrid: 0,
-      axesOffset: 10,
-      masterFont: 'sans-serif',
-      xaxisText: 'UMAP 1',
-      yaxisText: 'UMAP 2',
-      pointStyle: 'circle',
-      pointOpa: 5,
-      bounceX: 0,
-      legend: null,
-      legendEnabled: true,
-    };
 
-    this.state = {
-      config: _.cloneDeep(this.defaultConfig),
-      data: new_basicUMAP,
-    };
-
-    this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
-  }
-
-  generateSpec() {
-    const { config } = this.state;
-
+  const generateSpec = () => {
     if (config.toggleInvert === '#000000') {
       config.reverseCbar = true;
       config.masterColour = '#FFFFFF';
@@ -246,121 +213,108 @@ class PlotsAndTablesViewPage extends React.Component {
         fontSize: { value: config.titleSize },
       },
     };
-  }
-
-  generateData() {
-    const { data } = this.state;
-    return data;
-  }
+  };
 
   // obj is a subset of what default config has and contains only the things we want change
-  updatePlotWithChanges(obj) {
-    this.setState((prevState) => {
-      const newState = _.cloneDeep(prevState);
-      _.merge(newState.config, obj);
-      return newState;
-    });
-  }
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
 
-  render() {
-    const { config } = this.state;
-    const data = { embedding: this.generateData() };
-
-    return (
-      <>
-        <Row>
-          <Col>
-            <div style={{ 'padding-top': '12px', 'padding-bottom': '12px' }}>
-              <PageHeader
-                className='site-page-header'
-                title='Edit collection'
-                breadcrumb={{ routes: this.routes }}
-                subTitle='Customize plots and tables in this collection'
-              />
-            </div>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']}>
-                <Panel header='Preview' key='1'>
-                  <center>
-                    <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
-                  </center>
-                </Panel>
-              </Collapse>
-            </Space>
-          </Col>
-          <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse accordion>
-              <Panel header='Main Schema' key='2'>
-                <DimensionsRangeEditor
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                />
-                <Collapse accordion>
-                  <Panel header='Define and Edit Title' key='6'>
-                    <TitleDesign
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                  </Panel>
-                  <Panel header='Font' key='9'>
-                    <FontDesign
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                  </Panel>
-                </Collapse>
-              </Panel>
-              <Panel header='Axes and Margins' key='3'>
-                <AxesDesign
-
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                />
-              </Panel>
-              <Panel header='Colours' key='10'>
-                <ColourbarDesign
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                />
-                <Collapse accordion>
-                  <Panel header='Colour Inversion' key='4'>
-                    <ColourInversion
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                  </Panel>
-                  <Panel header='Log Transformation' key='5'>
-                    <LogExpression
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                  </Panel>
-                </Collapse>
-              </Panel>
-              <Panel header='Markers' key='11'>
-                <PointDesign
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                />
-              </Panel>
-              <Panel header='Legend' key='12'>
-                <LegendEditor
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  defaultState
-                />
+  const vegaData = { embedding: new_basicUMAP };
+  return (
+    <>
+      <Row>
+        <Col>
+          <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
+            <PageHeader
+              className='site-page-header'
+              title='Edit collection'
+              breadcrumb={{ routes }}
+              subTitle='Customize plots and tables in this collection'
+            />
+          </div>
+        </Col>
+      </Row>
+      <Row gutter={16}>
+        <Col span={16}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header='Preview' key='1'>
+                <center>
+                  <Vega data={vegaData} spec={generateSpec()} renderer='canvas' />
+                </center>
               </Panel>
             </Collapse>
-          </Col>
-        </Row>
-      </>
-    );
-  }
-}
+          </Space>
+        </Col>
+        <Col span={8}>
+          <Space direction='vertical' style={{ width: '100%' }} />
+          <Collapse accordion>
+            <Panel header='Main Schema' key='2'>
+              <DimensionsRangeEditor
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
+              <Collapse accordion>
+                <Panel header='Define and Edit Title' key='6'>
+                  <TitleDesign
+                    config={config}
+                    onUpdate={updatePlotWithChanges}
+                  />
+                </Panel>
+                <Panel header='Font' key='9'>
+                  <FontDesign
+                    config={config}
+                    onUpdate={updatePlotWithChanges}
+                  />
+                </Panel>
+              </Collapse>
+            </Panel>
+            <Panel header='Axes and Margins' key='3'>
+              <AxesDesign
 
-export default PlotsAndTablesViewPage;
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
+            </Panel>
+            <Panel header='Colours' key='10'>
+              <ColourbarDesign
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
+              <Collapse accordion>
+                <Panel header='Colour Inversion' key='4'>
+                  <ColourInversion
+                    config={config}
+                    onUpdate={updatePlotWithChanges}
+                  />
+                </Panel>
+                <Panel header='Log Transformation' key='5'>
+                  <LogExpression
+                    config={config}
+                    onUpdate={updatePlotWithChanges}
+                  />
+                </Panel>
+              </Collapse>
+            </Panel>
+            <Panel header='Markers' key='11'>
+              <PointDesign
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
+            </Panel>
+            <Panel header='Legend' key='12'>
+              <LegendEditor
+                config={config}
+                onUpdate={updatePlotWithChanges}
+                defaultState
+              />
+            </Panel>
+          </Collapse>
+        </Col>
+      </Row>
+    </>
+  );
+};
+
+export default EmbeddingContinuousPlot;

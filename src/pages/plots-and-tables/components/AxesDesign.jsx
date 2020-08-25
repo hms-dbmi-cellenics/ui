@@ -84,8 +84,7 @@ const AxesDesign = (props) => {
           label='Y Axis Title'
         >
           <Input
-
-            placeholder='Enter y axis title'
+            placeholder={config.yaxisText}
             onPressEnter={(e) => {
               const { value } = e.target;
               onUpdate({ yaxisText: value });

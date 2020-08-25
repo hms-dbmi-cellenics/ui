@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   PageHeader, Row, Col, Space, Collapse, Select, Button,
 } from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
 import heatmap from './heatmap.json';
@@ -10,59 +11,42 @@ import ColourbarDesign from './components/ColourbarDesign';
 import LegendEditor from './components/LegendEditorSpecial';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
+import { updatePlotConfig } from '../../../redux/actions/plots/index';
 
 const { Panel } = Collapse;
+const routes = [
+  {
+    path: 'index',
+    breadcrumbName: 'Experiments',
+  },
+  {
+    path: 'first',
+    breadcrumbName: '10x PBMC 3k',
+  },
+  {
+    path: 'second',
+    breadcrumbName: 'Plots and tables',
+  },
+  {
+    path: 'third',
+    breadcrumbName: 'Disease vs. control (Differential expression)',
+  },
+];
 
-class PlotsAndTablesViewPage extends React.Component {
-  constructor(props) {
-    super(props);
 
-    this.routes = [
-      {
-        path: 'index',
-        breadcrumbName: 'Experiments',
-      },
-      {
-        path: 'first',
-        breadcrumbName: 'TGFB1 CABG study',
-      },
-      {
-        path: 'second',
-        breadcrumbName: 'Plots and tables',
-      },
-      {
-        path: 'third',
-        breadcrumbName: 'Disease vs. control (Differential expression)',
-      },
-    ];
+// TODO: when we want to enable users to create their custom plots, we will need to change this to proper Uuid
+const plotUuid = 'heatmapPlotMain';
 
-    this.defaultConfig = {
-      width: 500,
-      height: 500,
-      colGradient: 'viridis',
-      legend: null,
-      legendEnabled: true,
-      selectedGenes: [],
-      selectedData: heatmap.heatmapData,
-      masterFont: 'sans-serif',
-      titleText: '',
-      titleSize: 20,
-      titleAnchor: 'start',
-      bounceX: 0,
-      masterColour: '#000000',
-      labelColour: 'transparent',
-      legendLocation: 'horizontal',
-    };
+const HeatmapPlot = () => {
+  const dispatch = useDispatch();
+  const config = useSelector((state) => state.plots[plotUuid].config);
 
-    this.state = {
-      config: _.cloneDeep(this.defaultConfig),
-      data: heatmap,
-    };
-    this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
-  }
+  // draw the heatmap with all the data initially
+  useEffect(() => {
+    updatePlotWithChanges({ selectedData: heatmap.heatmapData });
+  }, []);
 
-  generateSpec() {
-    const { config } = this.state;
+  const generateSpec = () => {
     let legend = [];
     if (config.legendLocation === 'horizontal') {
       legend = [
@@ -122,8 +106,8 @@ class PlotsAndTablesViewPage extends React.Component {
 
     return {
       $schema: 'http//s:vega.github.io/schema/vega/v5.json',
-      width: config.width || this.defaultConfig.width,
-      height: config.height || this.defaultConfig.height,
+      width: config.width,
+      height: config.height,
       autosize: { type: 'fit', resize: true },
 
       data: [
@@ -338,23 +322,14 @@ class PlotsAndTablesViewPage extends React.Component {
         fontSize: { value: config.titleSize },
       },
     };
-  }
+  };
 
-  generateData() {
-    const { data } = this.state;
-    return data;
-  }
+  // obj is a subset of what default config has and contains only the things we want change
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
 
-  updatePlotWithChanges(obj) {
-    this.setState((prevState) => {
-      const newState = _.cloneDeep(prevState);
-      _.merge(newState.config, obj);
-      return newState;
-    });
-  }
-
-  populateData(value) {
-    const { config } = this.state;
+  const populateData = (value) => {
     const newSelectedData = [];
     config.selectedData = [];
     if (config.selectedGenes.length >= 53 || config.selectedGenes.length === 0) {
@@ -363,7 +338,7 @@ class PlotsAndTablesViewPage extends React.Component {
       config.labelColour = 'black';
     }
     if (config.selectedGenes.length === 0 || value === 'redraw') {
-      this.updatePlotWithChanges({ selectedData: heatmap.heatmapData });
+      updatePlotWithChanges({ selectedData: heatmap.heatmapData });
       config.labelColour = 'transparent';
 
       return 0;
@@ -378,22 +353,10 @@ class PlotsAndTablesViewPage extends React.Component {
       }
     }
 
-    this.updatePlotWithChanges({ selectedData: newSelectedData });
-  }
+    updatePlotWithChanges({ selectedData: newSelectedData });
+  };
 
-  resetPlot() {
-    this.populateData('redraw');
-  }
-
-  handleChange(value) {
-    const { config } = this.state;
-    config.selectedGenes = [];
-    config.selectedGenes = value;
-  }
-
-  render() {
-    const { config } = this.state;
-    const data = { heatmap: this.generateData() };
+  const getSortedGenes = () => {
     let i;
 
     const sortedGenes = [];
@@ -409,101 +372,102 @@ class PlotsAndTablesViewPage extends React.Component {
       });
     }
 
+    return sortedGenes;
+  };
 
-    return (
-      <>
-        <Row>
-          <Col>
-            <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
-              <PageHeader
-                className='site-page-header'
-                title='Edit collection'
-                breadcrumb={{ routes: this.routes }}
-                subTitle='Customize plots and tables in this collection'
-              />
-            </div>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']}>
-                <Panel header='Preview' key='1'>
-                  <center>
-                    <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
-                  </center>
-                </Panel>
-              </Collapse>
-            </Space>
-          </Col>
-          <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']} accordion>
-                <Panel header='Filter Genes' key='5'>
-                  <Select
-                    mode='multiple'
-                    style={{ width: '100%' }}
-                    placeholder='Please select'
-                    onChange={(val) => this.handleChange(val)}
-                    options={sortedGenes}
-                  />
-                  <Space>
-                    <Button
-                      type='primary'
+  return (
+    <>
+      <Row>
+        <Col>
+          <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
+            <PageHeader
+              className='site-page-header'
+              title='Edit collection'
+              breadcrumb={{ routes }}
+              subTitle='Customize plots and tables in this collection'
+            />
+          </div>
+        </Col>
+      </Row>
+      <Row gutter={16}>
+        <Col span={16}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header='Preview' key='1'>
+                <center>
+                  <Vega data={heatmap} spec={generateSpec()} renderer='canvas' />
+                </center>
+              </Panel>
+            </Collapse>
+          </Space>
+        </Col>
+        <Col span={8}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse defaultActiveKey={['1']} accordion>
+              <Panel header='Filter Genes' key='5'>
+                <Select
+                  mode='multiple'
+                  style={{ width: '100%' }}
+                  placeholder='Please select'
+                  onChange={(val) => updatePlotWithChanges({ selectedGenes: val })}
+                  options={getSortedGenes()}
+                />
+                <Space>
+                  <Button
+                    type='primary'
+                    config={config}
+                    onClick={() => populateData()}
+                  >
+                    Draw heatmap
+                  </Button>
+                  <Button
+                    type='primary'
+                    config={config}
+                    onClick={() => populateData('redraw')}
+                  >
+                    Reset
+                  </Button>
+                </Space>
+              </Panel>
+              <Panel header='Main Schema' key='1'>
+                <DimensionsRangeEditor
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+                <Collapse defaultActiveKey={['1']} accordion>
+                  <Panel header='Define and Edit Title' key='6'>
+                    <TitleDesign
                       config={config}
-                      onClick={() => this.populateData()}
-                    >
-                      Draw heatmap
-                    </Button>
-                    <Button
-                      type='primary'
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
+                  <Panel header='Font' key='9'>
+                    <FontDesign
                       config={config}
-                      onClick={() => this.resetPlot()}
-                    >
-                      Reset
-                    </Button>
-                  </Space>
-                </Panel>
-                <Panel header='Main Schema' key='1'>
-                  <DimensionsRangeEditor
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                  <Collapse defaultActiveKey={['1']} accordion>
-                    <Panel header='Define and Edit Title' key='6'>
-                      <TitleDesign
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                    </Panel>
-                    <Panel header='Font' key='9'>
-                      <FontDesign
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                    </Panel>
-                  </Collapse>
-                </Panel>
-                <Panel header='Colours' key='10'>
-                  <ColourbarDesign
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                </Panel>
-                <Panel header='Legend' key='11'>
-                  <LegendEditor
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
-            </Space>
-          </Col>
-        </Row>
-      </>
-    );
-  }
-}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
+                </Collapse>
+              </Panel>
+              <Panel header='Colours' key='10'>
+                <ColourbarDesign
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+              </Panel>
+              <Panel header='Legend' key='11'>
+                <LegendEditor
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+              </Panel>
+            </Collapse>
+          </Space>
+        </Col>
+      </Row>
+    </>
+  );
+};
 
 
-export default PlotsAndTablesViewPage;
+export default HeatmapPlot;

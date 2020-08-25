@@ -2,8 +2,8 @@ import React from 'react';
 import {
   PageHeader, Row, Col, Space, Collapse, Slider,
 } from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import _ from 'lodash';
 import differentialExpression from './differential_expression.json';
 import ThresholdsGuidesEditor from './components/ThresholdsGuidesEditor';
 import MarkersEditor from './components/MarkersEditor';
@@ -14,122 +14,41 @@ import AxesDesign from './components/AxesDesign';
 import FontDesign from '../components/FontDesign';
 import ColourInversion from './components/ColourInversion';
 import LegendEditor from '../components/LegendEditor';
-
-const minmaxData = differentialExpression;
-let maxNegativeLogpValue = 0;
-
-minmaxData.forEach((o) => {
-  Object.keys(o).forEach((k) => {
-    if (k === 'pvalue' && o[k] !== 'NA' && o[k] !== 0) {
-      maxNegativeLogpValue = Math.max(
-        maxNegativeLogpValue, -Math.log10(o[k]),
-      );
-    }
-  });
-});
-
-let l2fcMin = null;
-let l2fcMax = null;
-let xMax = null;
-minmaxData.forEach((o) => {
-  Object.keys(o).forEach((k) => {
-    if (k === 'log2FoldChange' && o[k] !== 'NA' && o[k] !== 1 && o[k] !== 0) {
-      l2fcMin = Math.min(l2fcMin, o[k]);
-      l2fcMax = Math.max(l2fcMax, o[k]);
-    }
-  });
-});
-
-if (Math.abs(l2fcMin) > Math.abs(l2fcMax)) {
-  xMax = Math.abs(l2fcMin);
-} else {
-  xMax = Math.abs(l2fcMax);
-}
+import { updatePlotConfig } from '../../../redux/actions/plots/index';
 
 const { Panel } = Collapse;
-class PlotsAndTablesViewPage extends React.Component {
-  constructor(props) {
-    super(props);
+const routes = [
+  {
+    path: 'index',
+    breadcrumbName: 'Experiments',
+  },
+  {
+    path: 'first',
+    breadcrumbName: '10x PBMC 3k',
+  },
+  {
+    path: 'second',
+    breadcrumbName: 'Plots and tables',
+  },
+  {
+    path: 'third',
+    breadcrumbName: 'Disease vs. control (Differential expression)',
+  },
+];
 
-    this.routes = [
-      {
-        path: 'index',
-        breadcrumbName: 'Experiments',
-      },
-      {
-        path: 'first',
-        breadcrumbName: 'TGFB1 CABG study',
-      },
-      {
-        path: 'second',
-        breadcrumbName: 'Plots and tables',
-      },
-      {
-        path: 'third',
-        breadcrumbName: 'Disease vs. control (Differential expression)',
-      },
-    ];
+const plotUuid = 'volcanoPlotMain';
 
-    this.defaultConfig = {
-      width: 500,
-      height: 500,
-      noDifferenceColor: '#aaaaaa',
-      significantUpregulatedColor: '#0000ffaa',
-      significantDownregulatedColor: '#ff0000',
-      notSignificantDownregulatedColor: '#aaaaaa',
-      notSignificantUpregulatedColor: '#aaaaaa',
-      significantChangeDirectionUnknownColor: '#aaaaaa',
-      logFoldChangeDomain: null,
-      maxNegativeLogpValueDomain: null,
-      pvalueThreshold: 0.05,
-      logFoldChangeThreshold: 1,
-      logFoldChangeTickCount: 5,
-      negativeLogpValueTickCount: 5,
-      downsampleRatio: 0,
-      showLogFoldChangeThresholdGuides: false,
-      showpvalueThresholdGuides: false,
-      thresholdGuideWidth: 1,
-      logFoldChangeThresholdColor: '#ff0000',
-      pvalueThresholdColor: '#ff0000',
-      pointSize: 32,
-      pointStyle: 'circle',
-      pointOpa: 5,
-      strokeOpa: 1,
-      strokeCol: '#000000',
-      legend: null,
-      legendEnabled: null,
-      axisTitlesize: 13,
-      axisTicks: 13,
-      colGrid: '#000000',
-      widthGrid: 10,
-      transGrid: 5,
-      axesOffset: 10,
-      lineWidth: 2,
-      xaxisText: 'Log2 Fold Change',
-      yaxisText: 'Log10 -p-value',
-      titleText: '',
-      titleSize: 20,
-      titleAnchor: 'start',
-      masterFont: 'sans-serif',
-      masterColour: '#000000',
-      toggleInvert: '#FFFFFF',
-      reverseCbar: false,
-      textThresholdValue: maxNegativeLogpValue,
-    };
+const VolcanoPlot = () => {
+  const dispatch = useDispatch();
+  const config = useSelector((state) => state.plots[plotUuid].config);
 
-    this.state = {
-      config: _.cloneDeep(this.defaultConfig),
-      data: differentialExpression,
-    };
+  let maxNegativeLogpValue = 0;
+  let l2fcMin = null;
+  let l2fcMax = null;
+  let xMax = null;
 
-    this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
-  }
-
-  generateData() {
-    let { data } = this.state;
-    const { config } = this.state;
-    data = _.cloneDeep(data);
-    data = data.filter((datum) => {
+  const generateData = () => {
+    const data = differentialExpression.filter((datum) => {
       // Downsample insignificant, not changing genes by the appropriate amount.
       const isSignificant = (
         datum.log2FoldChange < config.logFoldChangeThreshold * -1
@@ -177,11 +96,33 @@ class PlotsAndTablesViewPage extends React.Component {
     });
 
     return data;
-  }
+  };
 
-  generateSpec() {
-    const { config } = this.state;
+  const generateSpec = () => {
+    differentialExpression.forEach((o) => {
+      Object.keys(o).forEach((k) => {
+        if (k === 'pvalue' && o[k] !== 'NA' && o[k] !== 0) {
+          maxNegativeLogpValue = Math.max(
+            maxNegativeLogpValue, -Math.log10(o[k]),
+          );
+        }
+      });
+    });
 
+    differentialExpression.forEach((o) => {
+      Object.keys(o).forEach((k) => {
+        if (k === 'log2FoldChange' && o[k] !== 'NA' && o[k] !== 1 && o[k] !== 0) {
+          l2fcMin = Math.min(l2fcMin, o[k]);
+          l2fcMax = Math.max(l2fcMax, o[k]);
+        }
+      });
+    });
+
+    if (Math.abs(l2fcMin) > Math.abs(l2fcMax)) {
+      xMax = Math.abs(l2fcMin);
+    } else {
+      xMax = Math.abs(l2fcMax);
+    }
     const logFoldChangeFilterExpr = (config.logFoldChangeDomain)
       ? `datum.log2FoldChange > ${config.logFoldChangeDomain * -1} && datum.log2FoldChange < ${config.logFoldChangeDomain}`
       : 'true';
@@ -264,8 +205,8 @@ class PlotsAndTablesViewPage extends React.Component {
     return {
       $schema: 'https://vega.github.io/schema/vega/v5.json',
       description: 'A basic scatter plot example depicting automobile statistics.',
-      width: config.width || this.defaultConfig.width,
-      height: config.height || this.defaultConfig.height,
+      width: config.width,
+      height: config.height,
       background: config.toggleInvert,
       padding: 5,
       data: [
@@ -499,132 +440,119 @@ class PlotsAndTablesViewPage extends React.Component {
       ],
       legends: config.legend,
     };
-  }
+  };
 
   // obj is a subset of what default config has and contains only the things we want change
-  updatePlotWithChanges(obj) {
-    this.setState((prevState) => {
-      const newState = _.cloneDeep(prevState);
-      _.merge(newState.config, obj);
-      return newState;
-    });
-  }
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
 
-  handleChange(value) {
-    this.updatePlotWithChanges({ textThresholdValue: value });
-  }
+  maxNegativeLogpValue = 6;
 
-  render() {
-    const { config } = this.state;
-    const data = { differentialExpression: this.generateData() };
+  return (
+    <>
+      <Row>
+        <Col>
+          <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
+            <PageHeader
+              className='site-page-header'
+              title='Edit collection'
+              breadcrumb={{ routes }}
+              subTitle='Customize plots and tables in this collection'
+            />
+          </div>
+        </Col>
+      </Row>
+      <Row gutter={16}>
+        <Col span={16}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header='Preview' key='1'>
+                <center>
+                  <Vega data={{ differentialExpression: generateData() }} spec={generateSpec()} renderer='canvas' />
+                </center>
+              </Panel>
+            </Collapse>
+          </Space>
+        </Col>
+        <Col span={8}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse defaultActiveKey={['1']} accordion>
+              <Panel header='Main Schema' key='1'>
+                <SchemaDesign
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                  xMax={xMax}
+                  yMax={maxNegativeLogpValue + 2}
+                />
 
-    return (
-      <>
-        <Row>
-          <Col>
-            <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
-              <PageHeader
-                className='site-page-header'
-                title='Edit collection'
-                breadcrumb={{ routes: this.routes }}
-                subTitle='Customize plots and tables in this collection'
-              />
-            </div>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']}>
-                <Panel header='Preview' key='1'>
-                  <center>
-                    <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
-                  </center>
-                </Panel>
-              </Collapse>
-            </Space>
-          </Col>
-          <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']} accordion>
-                <Panel header='Main Schema' key='1'>
-                  <SchemaDesign
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                    xMax={xMax}
-                    yMax={maxNegativeLogpValue + 2}
-                    l2fcMax={l2fcMax}
-                  />
+                <Collapse defaultActiveKey={['1']} accordion>
+                  <Panel header='Define and Edit Title' key='6'>
+                    <TitleDesign
+                      config={config}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
 
-                  <Collapse defaultActiveKey={['1']} accordion>
-                    <Panel header='Define and Edit Title' key='6'>
-                      <TitleDesign
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                    </Panel>
+                  <Panel header='Data Thresholding' key='8'>
+                    <ThresholdsGuidesEditor
+                      config={config}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
+                  <Panel header='Font' key='9'>
+                    <FontDesign
+                      config={config}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
 
-                    <Panel header='Data Thresholding' key='8'>
-                      <ThresholdsGuidesEditor
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                    </Panel>
-                    <Panel header='Font' key='9'>
-                      <FontDesign
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                    </Panel>
+                </Collapse>
+              </Panel>
+              <Panel header='Axes and Margins' key='3'>
+                <AxesDesign
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+              </Panel>
+              <Panel header='Colours' key='10'>
+                <MarkersEditor
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+                <ColourInversion
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+              </Panel>
+              <Panel header='Markers' key='4'>
+                <PointDesign
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+              </Panel>
+              <Panel header='Legend' key='11'>
+                <LegendEditor
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                  defaultState={false}
+                />
+              </Panel>
+              <Panel header='Text' key='12'>
+                <> Display Gene Labels Above (-log10 pvalue) </>
+                <Slider
+                  defaultValue={config.textThresholdValue}
+                  min={0}
+                  max={maxNegativeLogpValue + 5}
+                  onChange={(val) => updatePlotWithChanges({ textThresholdValue: val })}
+                />
+              </Panel>
+            </Collapse>
+          </Space>
+        </Col>
+      </Row>
+    </>
+  );
+};
 
-                  </Collapse>
-                </Panel>
-                <Panel header='Axes and Margins' key='3'>
-                  <AxesDesign
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                </Panel>
-                <Panel header='Colours' key='10'>
-                  <MarkersEditor
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                  <ColourInversion
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                </Panel>
-                <Panel header='Markers' key='4'>
-                  <PointDesign
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                </Panel>
-                <Panel header='Legend' key='11'>
-                  <LegendEditor
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                    defaultState={false}
-                  />
-                </Panel>
-                <Panel header='Text' key='12'>
-                  <> Display Gene Labels Above (-log10 pvalue) </>
-                  <Slider
-
-                    defaultValue={maxNegativeLogpValue}
-                    min={0}
-                    max={maxNegativeLogpValue + 5}
-                    onChange={(val) => this.handleChange(val)}
-                  />
-                </Panel>
-              </Collapse>
-            </Space>
-          </Col>
-        </Row>
-      </>
-    );
-  }
-}
-
-export default PlotsAndTablesViewPage;
+export default VolcanoPlot;
