@@ -26,7 +26,7 @@ const routes = [
   },
   {
     path: 'first',
-    breadcrumbName: 'CST3 CABG study',
+    breadcrumbName: '10x PBMC 3k',
   },
   {
     path: 'second',
