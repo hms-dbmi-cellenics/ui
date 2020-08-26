@@ -47,6 +47,8 @@ class CellSizeDistribution extends React.Component {
       height: 400,
       maxWidth: 650,
       maxHeight: 540,
+      arrowStep: 1000,
+      placeholder: 10800,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -88,8 +90,8 @@ class CellSizeDistribution extends React.Component {
   generateSpec() {
     const { config } = this.state;
     let legend = null;
-    const coloringExpression = `(datum.bin1 < ${config.minCellSize - 2000}) ? 'low' : (datum.bin1 >${config.minCellSize}) ? 'high' : 'unknown'`;
-    const coloringExpression2 = `(datum.cell_rank < ${config.minCellSize2 - 20}) ? 'low' : (datum.cell_rank >${config.minCellSize2}) ? 'high' : 'unknown'`;
+    const coloringExpression = '(datum.bin1 < 8800) ? \'low\' : (datum.bin1 >10800) ? \'high\' : \'unknown\'';
+    const coloringExpression2 = '(datum.cell_rank < 30) ? \'low\' : (datum.cell_rank >50) ? \'high\' : \'unknown\'';
 
     if (config.legendEnabled) {
       config.legendOrientation = config.plotToDraw ? 'top-left' : 'bottom';
@@ -230,7 +232,7 @@ class CellSizeDistribution extends React.Component {
             scale: 'yscale',
             grid: true,
             zindex: 1,
-            title: { value: config.xAxisText },
+            title: { value: config.yAxisText },
             titleFont: { value: config.masterFont },
             labelFont: { value: config.masterFont },
             titleFontSize: { value: config.axisTitlesize },
@@ -263,7 +265,19 @@ class CellSizeDistribution extends React.Component {
 
             },
           },
-
+          {
+            type: 'rule',
+            encode: {
+              update: {
+                x: { scale: 'xscale', value: config.minCellSize },
+                y: { value: 0 },
+                y2: { field: { group: 'height' } },
+                strokeWidth: { value: 2 },
+                strokeDash: { value: [8, 4] },
+                stroke: { value: 'red' },
+              },
+            },
+          },
         ],
         legends: legend,
         title:
@@ -345,6 +359,8 @@ class CellSizeDistribution extends React.Component {
           orient: 'bottom',
           scale: 'xscale',
           labels: false,
+          tickCount: 15,
+
           zindex: 1,
           title: { value: config.xAxisText2 },
           titleFont: { value: config.masterFont },
@@ -409,6 +425,19 @@ class CellSizeDistribution extends React.Component {
             },
           },
         },
+        {
+          type: 'rule',
+          encode: {
+            update: {
+              x: { scale: 'xscale', value: config.minCellSize2 },
+              y: { value: 0 },
+              y2: { field: { group: 'height' } },
+              strokeWidth: { value: 2 },
+              strokeDash: { value: [8, 4] },
+              stroke: { value: 'red' },
+            },
+          },
+        },
       ],
       legends: legend,
       title:
@@ -437,15 +466,19 @@ class CellSizeDistribution extends React.Component {
     ];
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
-      if (!config.plotToDraw) {
+      if (val) {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
+          placeholder: 10800,
+          arrowStep: 1000,
         });
       } else {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
+          placeholder: 50,
+          arrowStep: 100,
         });
       }
     };
@@ -513,8 +546,9 @@ class CellSizeDistribution extends React.Component {
                 <Form.Item label='Min cell size:'>
                   <InputNumber
                     disabled={!filtering}
-                    defaultValue={1000}
                     onPressEnter={(val) => changeCellSize(val)}
+                    placeholder={config.placeholder}
+                    step={config.arrowStep}
                   />
                 </Form.Item>
               </Panel>

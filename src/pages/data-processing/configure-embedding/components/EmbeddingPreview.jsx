@@ -497,45 +497,6 @@ class EmbeddingPreview extends React.Component {
                 </Form.Item>
                 <Space direction='vertical' style={{ width: '90%' }} />
                 <Form.Item
-                  label='Method:'
-                >
-                  <Select
-                    defaultValue='option1'
-                  >
-                    <Option value='option1'>UMAP</Option>
-                    <Option value='option2'>t-SNE</Option>
-                    <Option value='option3'>PCA</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item label='Min distance:'>
-                  <InputNumber
-                    defaultValue={0.01}
-                  // onPressEnter={(val) => changeCellSize(val)}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label='Reduced space:'
-                >
-                  <Select
-                    defaultValue='option1'
-                  >
-                    <Option value='option1'>PCA</Option>
-                    <Option value='option2'>option2</Option>
-                    <Option value='option3'>option3</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  label='Distance metric:'
-                >
-                  <Select
-                    defaultValue='option1'
-                  >
-                    <Option value='option1'>Euclidean</Option>
-                    <Option value='option2'>option2</Option>
-                    <Option value='option3'>option3</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item
                   label='Dimensions to use:'
                 >
                   <Slider
@@ -544,6 +505,49 @@ class EmbeddingPreview extends React.Component {
                     max={30}
                   />
                 </Form.Item>
+                <Collapse>
+                  <Panel header='Advanced settings'>
+                    <Form.Item
+                      label='Method:'
+                    >
+                      <Select
+                        defaultValue='option1'
+                      >
+                        <Option value='option1'>UMAP</Option>
+                        <Option value='option2'>t-SNE</Option>
+                        <Option value='option3'>PCA</Option>
+                      </Select>
+                    </Form.Item>
+                    <Form.Item label='Min distance:'>
+                      <InputNumber
+                        defaultValue={0.01}
+                      // onPressEnter={(val) => changeCellSize(val)}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      label='Reduced space:'
+                    >
+                      <Select
+                        defaultValue='option1'
+                      >
+                        <Option value='option1'>PCA</Option>
+                        <Option value='option2'>option2</Option>
+                        <Option value='option3'>option3</Option>
+                      </Select>
+                    </Form.Item>
+                    <Form.Item
+                      label='Distance metric:'
+                    >
+                      <Select
+                        defaultValue='option1'
+                      >
+                        <Option value='option1'>Euclidean</Option>
+                        <Option value='option2'>option2</Option>
+                        <Option value='option3'>option3</Option>
+                      </Select>
+                    </Form.Item>
+                  </Panel>
+                </Collapse>
               </Panel>
               <PlotStyling
                 config={config}

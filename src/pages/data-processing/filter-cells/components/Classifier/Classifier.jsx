@@ -20,10 +20,10 @@ class Classifier extends React.Component {
 
     this.defaultConfig = {
       data: plotData,
-      xAxisText: 'log10[ cell size (molecules) ]',
+      xAxisText: 'log10[ cell size (UMIs) ]',
       yAxisText: 'classifier prob',
-      xDefaultTitle: 'log10[ cell size (molecules) ]',
-      yDefaultTitle: 'classifier prob',
+      xDefaultTitle: 'log10[ cell size (UMIs) ]',
+      yDefaultTitle: 'classifier probability',
       titleSize: 12,
       titleText: '',
       titleAnchor: 'start',
@@ -247,6 +247,7 @@ class Classifier extends React.Component {
                     max={1}
                     min={0}
                     onPressEnter={(val) => minProbabilityChange(val)}
+                    step={0.1}
                   />
                 </Form.Item>
               </Panel>

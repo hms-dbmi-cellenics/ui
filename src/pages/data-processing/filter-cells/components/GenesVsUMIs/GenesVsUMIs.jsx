@@ -47,6 +47,7 @@ class GenesVsUMIs extends React.Component {
       height: 400,
       maxWidth: 660,
       maxHeight: 560,
+      placeholder: 4.8,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -356,15 +357,17 @@ class GenesVsUMIs extends React.Component {
     const { filtering } = this.props;
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
-      if (!config.plotToDraw) {
+      if (val) {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
+          placeholder: 4.8,
         });
       } else {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
+          placeholder: 3.6,
         });
       }
     };
@@ -446,7 +449,7 @@ class GenesVsUMIs extends React.Component {
                   />
                 </Form.Item>
                 <Form.Item
-                  label='Stringency:'
+                  label='Upper cut-off:'
                 >
                   <InputNumber
                     disabled={!filtering}
@@ -455,10 +458,12 @@ class GenesVsUMIs extends React.Component {
                     onPressEnter={
                       (val) => updateStringency(val)
                     }
+                    step={0.1}
+                    placeholder={config.placeholder}
                   />
                 </Form.Item>
                 <Form.Item
-                  label='Lower cutoff:'
+                  label='Lower cut-off:'
                 >
                   <InputNumber
                     disabled={!filtering}
@@ -467,6 +472,8 @@ class GenesVsUMIs extends React.Component {
                     onPressEnter={
                       (val) => updateCutoff(val)
                     }
+                    step={0.1}
+                    placeholder={2.1}
                   />
                 </Form.Item>
               </Panel>

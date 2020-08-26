@@ -292,6 +292,7 @@ class DoubletScores extends React.Component {
                       disabled={!filtering}
                       defaultValue={0.2}
                       onPressEnter={(val) => changeThreshold(val)}
+                      step={0.1}
                     />
                   </Space>
                 </Form.Item>

@@ -26,7 +26,6 @@ class MitochondrialContent extends React.Component {
       plotToDraw: true,
       data: plotData,
       legendEnabled: true,
-      minCellSize: 1000,
       xAxisText: 'Fraction of mitochondrial reads',
       yAxisText: 'Fraction of cells',
       xAxisText2: 'log10(#UMI in cell)',
@@ -50,6 +49,7 @@ class MitochondrialContent extends React.Component {
       height: 400,
       maxWidth: 660,
       maxHeight: 560,
+      placeholder: 0.1,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -77,7 +77,7 @@ class MitochondrialContent extends React.Component {
     const { config } = this.state;
     let legend = null;
     const colorExpression = `(datum.bin1 <= ${config.maxFraction}) ? 'Real' : 'Mitochondrial'`;
-    const colorExpression2 = `(datum.bin1 <= ${config.maxFraction2 - 1}) ? 'Mitochondrial' : (datum.bin1 >=${config.maxFraction2}) ? 'Real' : 'Unknown'`;
+    const colorExpression2 = '(datum.bin1 <= 2.5) ? \'Dead\' : (datum.bin1 >=3.5) ? \'Live\' : \'Unknown\'';
     if (config.legendEnabled) {
       legend = [
         {
@@ -350,7 +350,7 @@ class MitochondrialContent extends React.Component {
           type: 'ordinal',
           range:
             [
-              '#f57b42', 'green', 'grey',
+              'blue', 'green', 'grey',
             ],
           domain: {
             data: 'binned',
@@ -412,6 +412,19 @@ class MitochondrialContent extends React.Component {
             },
           },
         },
+        {
+          type: 'rule',
+          encode: {
+            update: {
+              x: { scale: 'xscale', value: config.maxFraction2 },
+              y: { value: 0 },
+              y2: { field: { group: 'height' } },
+              strokeWidth: { value: 2 },
+              strokeDash: { value: [8, 4] },
+              stroke: { value: 'red' },
+            },
+          },
+        },
       ],
       legends: legend,
 
@@ -434,15 +447,17 @@ class MitochondrialContent extends React.Component {
 
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
-      if (!config.plotToDraw) {
+      if (val) {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
+          placeholder: 0.1,
         });
       } else {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
+          placeholder: 3.5,
         });
       }
     };
@@ -509,8 +524,9 @@ class MitochondrialContent extends React.Component {
                 <Form.Item label='Max fraction:'>
                   <InputNumber
                     disabled={!filtering}
-                    defaultValue={0}
+                    placeholder={config.placeholder}
                     onPressEnter={(val) => changeFraction(val)}
+                    step={0.1}
                   />
                 </Form.Item>
               </Panel>

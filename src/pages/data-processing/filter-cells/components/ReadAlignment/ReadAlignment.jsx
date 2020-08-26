@@ -24,11 +24,11 @@ class ReadAlignment extends React.Component {
     this.defaultConfig = {
       plotToDraw: true,
       data: plotData,
-      xAxisText: 'log10 [cell size (mol)]',
+      xAxisText: 'log10 [ #UMIs ]',
       yAxisText: 'fraction of intergenic reads',
       xAxisText2: 'fraction of intergenic reads',
       yAxisText2: 'Frequency',
-      xDefaultTitle: 'log10 [cell size (mol)]',
+      xDefaultTitle: 'log10 [ #UMIs ]',
       yDefaultTitle: 'fraction of intergenic reads',
       gridWeight: 0,
       titleSize: 12,
@@ -407,14 +407,6 @@ class ReadAlignment extends React.Component {
                     <Option value='option2'>option2</Option>
                     <Option value='option3'>option3</Option>
                   </Select>
-                </Form.Item>
-                <Form.Item label='Filter threshold:'>
-                  <InputNumber
-                    disabled={!filtering}
-                    defaultValue={0}
-                    max={5}
-                    min={0}
-                  />
                 </Form.Item>
               </Panel>
               <PlotStyling
