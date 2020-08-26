@@ -1,3 +1,5 @@
+import heatmap from '../../../pages/plots-and-tables/heatmap/heatmap.json';
+
 const embeddingCategoricalInitialConfig = {
   width: 700,
   height: 550,
@@ -66,7 +68,7 @@ const heatmapInitialConfig = {
   legend: null,
   legendEnabled: true,
   selectedGenes: [],
-  selectedData: {},
+  selectedData: heatmap.heatmapData.slice(0, 50),
   masterFont: 'sans-serif',
   titleText: '',
   titleSize: 20,
@@ -124,27 +126,14 @@ const volcanoInitialConfig = {
 };
 
 
-const initialState = {
-  // embeddingCategoricalMain is plotUuid
-  embeddingCategoricalMain: {
-    type: 'embeddingCategorical',
-    config: embeddingCategoricalInitialConfig,
-  },
-  // embeddingContinuousMain is plotUuid
-  embeddingContinuousMain: {
-    type: 'embeddingContinuous',
-    config: embeddingContinuousInitialConfig,
-  },
-  // heatmapPlotMain is plotUuid
-  heatmapPlotMain: {
-    type: 'heatmap',
-    config: heatmapInitialConfig,
-  },
-  // volcanoPlotMain is plotUuid
-  volcanoPlotMain: {
-    type: 'volcano',
-    config: volcanoInitialConfig,
-  },
+const initialPlotConfigStates = {
+  embeddingCategorical: embeddingCategoricalInitialConfig,
+  embeddingContinuous: embeddingContinuousInitialConfig,
+  heatmap: heatmapInitialConfig,
+  volcano: volcanoInitialConfig,
 };
 
+const initialState = {};
+
 export default initialState;
+export { initialPlotConfigStates };

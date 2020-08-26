@@ -1,7 +1,10 @@
-import updatePlotConfig from './updatePlotConfig';
+import loadPlotConfig from './loadPlotConfig';
 
+import updatePlotConfig from './updatePlotConfig';
+import savePlotConfig from './savePlotConfig';
 
 export {
-  // eslint-disable-next-line import/prefer-default-export
+  loadPlotConfig,
   updatePlotConfig,
+  savePlotConfig,
 };

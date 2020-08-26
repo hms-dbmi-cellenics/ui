@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
-  PageHeader, Row, Col, Space, Collapse, Slider,
+  Row, Col, Space, Collapse, Slider, Skeleton,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -14,7 +14,8 @@ import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
 import ColourInversion from '../components/ColourInversion';
 import LegendEditor from '../components/LegendEditor';
-import { updatePlotConfig } from '../../../redux/actions/plots/index';
+import { updatePlotConfig, loadPlotConfig } from '../../../redux/actions/plots/index';
+import Header from '../components/Header';
 
 const { Panel } = Collapse;
 const routes = [
@@ -32,15 +33,21 @@ const routes = [
   },
   {
     path: 'third',
-    breadcrumbName: 'Disease vs. control (Differential expression)',
+    breadcrumbName: 'Volcano plot',
   },
 ];
 
 const plotUuid = 'volcanoPlotMain';
+const plotType = 'volcano';
 
 const VolcanoPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid].config);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const experimentId = '5e959f9c9f4b120771249001';
+
+  useEffect(() => {
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+  }, []);
 
   let maxNegativeLogpValue = 0;
   let l2fcMin = null;
@@ -412,20 +419,13 @@ const VolcanoPlot = () => {
 
   maxNegativeLogpValue = 6;
 
+  if (!config) {
+    return (<Skeleton />);
+  }
+
   return (
     <>
-      <Row>
-        <Col>
-          <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
-            <PageHeader
-              className='site-page-header'
-              title='Edit collection'
-              breadcrumb={{ routes }}
-              subTitle='Customize plots and tables in this collection'
-            />
-          </div>
-        </Col>
-      </Row>
+      <Header plotUuid={plotUuid} experimentId={experimentId} routes={routes} />
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
