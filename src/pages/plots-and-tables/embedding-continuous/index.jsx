@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
-  PageHeader, Row, Col, Space, Collapse,
+  Row, Col, Space, Collapse, Skeleton,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -15,9 +15,11 @@ import PointDesign from '../components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
-import { updatePlotConfig } from '../../../redux/actions/plots/index';
+import { updatePlotConfig, loadPlotConfig } from '../../../redux/actions/plots/index';
+import Header from '../components/Header';
 
 const { Panel } = Collapse;
+
 const routes = [
   {
     path: 'index',
@@ -33,17 +35,23 @@ const routes = [
   },
   {
     path: 'third',
-    breadcrumbName: 'Disease vs. control (Gene expression)',
+    breadcrumbName: 'Continuous Embedding',
   },
 ];
 
 // TODO: when we want to enable users to create their custom plots, we will need to change this to proper Uuid
 const plotUuid = 'embeddingContinuousMain';
+const plotType = 'embeddingContinuous';
 
 const EmbeddingContinuousPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid].config);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
 
+  const experimentId = '5e959f9c9f4b120771249001';
+
+  useEffect(() => {
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+  }, []);
 
   const generateSpec = () => {
     if (config.toggleInvert === '#000000') {
@@ -187,21 +195,16 @@ const EmbeddingContinuousPlot = () => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
+
+  if (!config) {
+    return (<Skeleton />);
+  }
+
+
   const vegaData = { embedding: new_basicUMAP };
   return (
     <>
-      <Row>
-        <Col>
-          <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
-            <PageHeader
-              className='site-page-header'
-              title='Edit collection'
-              breadcrumb={{ routes }}
-              subTitle='Customize plots and tables in this collection'
-            />
-          </div>
-        </Col>
-      </Row>
+      <Header plotUuid={plotUuid} experimentId={experimentId} routes={routes} />
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>

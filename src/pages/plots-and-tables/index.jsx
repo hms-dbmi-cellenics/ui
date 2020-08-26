@@ -126,7 +126,7 @@ class PlotsTablesHome extends React.Component {
     );
 
     return (
-      <>
+      <div style={{ paddingLeft: 32, paddingRight: 32 }}>
         <Row gutter={16}>
           <Col span={18}>
             <PageHeader
@@ -181,7 +181,7 @@ class PlotsTablesHome extends React.Component {
           </Col>
           <Col span={7} />
         </Row>
-      </>
+      </div>
     );
   }
 }

@@ -5,6 +5,10 @@ import cache from './cache';
 import sendWork from './sendWork';
 import isBrowser from './environment';
 
+const createHash = (endpoint) => crypto.createHash('md5').update(endpoint).digest('hex');
+const createObjectHash = (object) => hash.MD5(object);
+
+// eslint-disable-next-line no-unused-vars
 const objectToSortedString = (object) => {
   let sortedString = '';
   Object.keys(object).sort().forEach((key) => {
@@ -13,29 +17,57 @@ const objectToSortedString = (object) => {
   return sortedString;
 };
 
-const createHash = (endpoint) => crypto.createHash('md5').update(endpoint).digest('hex');
-const createObjectHash = (object) => hash.MD5(object);
 
 const cacheFetch = async (endpoint, options = {}, ttl = 900) => {
+  throw new Error('not currently implemented -- buggy, needs concurrency support');
+
+  /* eslint-disable no-unreachable */
   if (isBrowser) {
-    const throughCache = Object.keys(options).length === 0 || options.method === 'GET';
-    let key;
-    if (throughCache) {
-      const orderedOptions = objectToSortedString(options);
-      key = createHash(`${endpoint}${orderedOptions}`);
+    // We ask the cache for a result if we don't specify a method or it's GET.
+    const isGet = !options.method || options.method === 'GET';
+
+    // IMPORTANT: endpoint needs to be converted into an ordered list of query args
+    // can use objectToSortedString for this with a URL parser.
+    const key = createHash(`${endpoint}`);
+
+    // Check if it's in the cache at all.
+    if (isGet) {
       const data = await cache.get(key);
       if (data) {
         return data;
       }
     }
+
+    // Get response.
     const response = await fetch(endpoint, options);
-    const json = await response.json();
-    if (throughCache) {
-      await cache._set(key, json, ttl);
+
+    // If not an OK code, throw error.
+    if (!response.ok) {
+      throw new Error(
+        `Fetch to endpoint ${endpoint} with options ${options} failed, response code is ${response.status}`,
+      );
     }
+
+    // Convert to JSON.
+    const json = await response.json();
+
+    // If get, set the cache with the new result.
+    // If not, reset the cache as the request has changed the values.
+    if (isGet) {
+      await cache._set(key, json, ttl);
+    } else {
+      try {
+        await cache._remove(key);
+      } catch (e) {
+        // Removal didn't happen as key is not in cache. Not a problem.
+      }
+    }
+
+    console.warn('7');
     return json;
   }
   throw new Error('Disabling network interaction on server');
+  /* eslint-enable no-unreachable */
 };
 
 const decomposeBody = async (body, experimentId) => {
@@ -94,5 +126,5 @@ const fetchCachedWork = async (experimentId, timeout, body, ttl = 900) => {
 
 
 export {
-  cacheFetch, fetchCachedWork, fetchCachedGeneExpressionWork, objectToSortedString,
+  cacheFetch, fetchCachedWork, fetchCachedGeneExpressionWork,
 };
