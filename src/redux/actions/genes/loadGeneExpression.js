@@ -50,7 +50,9 @@ const loadGeneExpression = (
 
   try {
     const data = await fetchCachedWork(experimentId, 30, body);
-
+    if (Object.keys(data).length === 0) {
+      throw Error('There is no information available for selected genes.');
+    }
     dispatch({
       type: GENES_EXPRESSION_LOADED,
       payload: {
