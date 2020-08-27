@@ -1,5 +1,3 @@
-import heatmap from '../../../pages/plots-and-tables/heatmap/heatmap.json';
-
 const embeddingCategoricalInitialConfig = {
   width: 700,
   height: 550,
@@ -66,7 +64,6 @@ const heatmapInitialConfig = {
   legend: null,
   legendEnabled: true,
   selectedGenes: [],
-  selectedData: heatmap.heatmapData.slice(0, 50),
   masterFont: 'sans-serif',
   titleText: '',
   titleSize: 20,
