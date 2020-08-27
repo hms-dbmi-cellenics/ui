@@ -42,9 +42,7 @@ const embeddingContinuousInitialConfig = {
   toggleInvert: '#FFFFFF',
   masterColour: '#000000',
   reverseCbar: false,
-  umap1Domain: { data: 'embedding', field: 'UMAP_1' },
-  umap2Domain: { data: 'embedding', field: 'UMAP_2' },
-  logEquation: 'datum.CST3*1',
+  logEquation: 'datum.expression*1',
   titleText: '',
   titleSize: 20,
   titleAnchor: 'start',
@@ -58,7 +56,7 @@ const embeddingContinuousInitialConfig = {
   pointStyle: 'circle',
   pointOpa: 5,
   bounceX: 0,
-  legend: null,
+  legend: [],
 };
 
 const heatmapInitialConfig = {

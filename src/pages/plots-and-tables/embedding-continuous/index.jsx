@@ -4,8 +4,7 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-// eslint-disable-next-line camelcase
-import new_basicUMAP from './new_basicUMAP.json';
+import data from './gene_expression.json';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
 import ColourInversion from '../components/ColourInversion';
@@ -16,6 +15,7 @@ import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
 import { updatePlotConfig, loadPlotConfig } from '../../../redux/actions/plots/index';
+import { generateSpec } from '../../../utils/plotSpecs/generateEmbeddingSpec';
 import Header from '../components/Header';
 
 const { Panel } = Collapse;
@@ -53,155 +53,25 @@ const EmbeddingContinuousPlot = () => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
-  const generateSpec = () => {
-    if (config.toggleInvert === '#000000') {
-      config.reverseCbar = true;
-      config.masterColour = '#FFFFFF';
-    }
-    if (config.toggleInvert === '#FFFFFF') {
-      config.reverseCbar = false;
-      config.masterColour = '#000000';
-    }
-
-    if (config.toggleAnchor === 'middle') { config.bounceX = -50; }
-    if (config.toggleAnchor === 'start') { config.bounceX = 50; }
-
-    return {
-
-      $schema: 'https://vega.github.io/schema/vega/v5.json',
-      description: 'A basic scatter plot example depicting gene expression in the context of UMAP.',
-      width: config.width,
-      height: config.height,
-      autosize: { type: 'fit', resize: true },
-
-      background: config.toggleInvert,
-      padding: 5,
-      data: {
-        name: 'embedding',
-        // normally log transform would apply without +10 but had to add
-        // here to make values positive
-        // current gene expression values arent what id expect them to be
-        transform: [
-          { type: 'formula', as: 'geneExpression', expr: config.logEquation },
-          { type: 'formula', as: 'umap1', expr: 'datum.UMAP_1*1' },
-          { type: 'formula', as: 'umap2', expr: 'datum.UMAP_2*1' },
-        ],
-      },
-      scales: [
-        {
-          name: 'x',
-          type: 'linear',
-          round: true,
-          nice: true,
-          domain: config.umap1Domain,
-          range: 'width',
-        },
-        {
-          name: 'y',
-          type: 'linear',
-          round: true,
-          nice: true,
-          domain: config.umap2Domain,
-          range: 'height',
-        },
-        {
-          name: 'color',
-          type: 'linear',
-          range: { scheme: config.colGradient },
-          domain: { data: 'embedding', field: 'geneExpression' },
-          reverse: config.reverseCbar,
-        },
-      ],
-      axes: [
-        {
-          scale: 'x',
-          grid: true,
-          domain: true,
-          orient: 'bottom',
-          title: { value: config.xaxisText },
-          titleFont: { value: config.masterFont },
-          labelFont: { value: config.masterFont },
-          labelColor: { value: config.masterColour },
-          tickColor: { value: config.masterColour },
-          gridColor: { value: config.masterColour },
-          gridOpacity: { value: (config.transGrid / 20) },
-          gridWidth: { value: (config.widthGrid / 20) },
-          offset: { value: config.axesOffset },
-          titleFontSize: { value: config.axisTitlesize },
-          titleColor: { value: config.masterColour },
-          labelFontSize: { value: config.axisTicks },
-          domainWidth: { value: config.lineWidth },
-        },
-        {
-          scale: 'y',
-          grid: true,
-          domain: true,
-          orient: 'left',
-          titlePadding: 5,
-          gridColor: { value: config.masterColour },
-          gridOpacity: { value: (config.transGrid / 20) },
-          gridWidth: { value: (config.widthGrid / 20) },
-          tickColor: { value: config.masterColour },
-          offset: { value: config.axesOffset },
-          title: { value: config.yaxisText },
-          titleFont: { value: config.masterFont },
-          labelFont: { value: config.masterFont },
-          labelColor: { value: config.masterColour },
-          titleFontSize: { value: config.axisTitlesize },
-          titleColor: { value: config.masterColour },
-          labelFontSize: { value: config.axisTicks },
-          domainWidth: { value: config.lineWidth },
-        },
-      ],
-      marks: [
-        {
-          type: 'symbol',
-          from: { data: 'embedding' },
-          encode: {
-            enter: {
-              x: { scale: 'x', field: 'umap1' },
-              y: { scale: 'y', field: 'umap2' },
-              size: { value: config.pointSize },
-              stroke: {
-                scale: 'color',
-                field: 'geneExpression',
-              },
-              fill: {
-                scale: 'color',
-                field: 'geneExpression',
-              },
-              shape: { value: config.pointStyle },
-              fillOpacity: { value: config.pointOpa / 10 },
-            },
-          },
-        },
-
-      ],
-      legends: config.legend,
-      title:
-      {
-        text: { value: config.titleText },
-        color: { value: config.masterColour },
-        anchor: { value: config.titleAnchor },
-        font: { value: config.masterFont },
-        dx: { value: config.bounceX },
-        fontSize: { value: config.titleSize },
-      },
-    };
-  };
-
   // obj is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
+  const generateData = (spec) => {
+    spec.data.forEach((datum) => {
+      // eslint-disable-next-line no-param-reassign
+      datum.values = data[datum.name];
+    });
+  };
 
   if (!config) {
     return (<Skeleton />);
   }
 
+  const spec = generateSpec(config);
+  generateData(spec);
 
-  const vegaData = { embedding: new_basicUMAP };
   return (
     <>
       <Header plotUuid={plotUuid} experimentId={experimentId} routes={routes} />
@@ -211,7 +81,7 @@ const EmbeddingContinuousPlot = () => {
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
                 <center>
-                  <Vega data={vegaData} spec={generateSpec()} renderer='canvas' />
+                  <Vega spec={spec} renderer='canvas' />
                 </center>
               </Panel>
             </Collapse>
@@ -280,7 +150,8 @@ const EmbeddingContinuousPlot = () => {
                   {
                     fill: 'color',
                     type: 'gradient',
-                    title: 'CST3 Expression',
+                    // todo: make this more generic when the plot starts using real data
+                    title: 'Gene Expression',
                     gradientLength: 100,
                     labelColor: { value: config.masterColour },
                     titleColor: { value: config.masterColour },

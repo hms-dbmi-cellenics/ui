@@ -9,7 +9,7 @@ const LegendEditor = (props) => {
     if (e.target.value === true) {
       onUpdate({ legend: legendConfig });
     } else {
-      onUpdate({ legend: null });
+      onUpdate({ legend: [] });
     }
     setLegendEnabled(e.target.value);
   };
