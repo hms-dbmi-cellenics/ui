@@ -14,21 +14,19 @@ const LogExpression = (props) => {
   };
 
   return (
-    <>
-      <Form
-        size='small'
-        labelCol={{ span: 12 }}
-        wrapperCol={{ span: 12 }}
-      >
-        <div>Transform Gene Expression</div>
-        <Form.Item>
-          <Radio.Group onChange={onChange} value={logEquation}>
-            <Radio value='datum.CST3*1'>Logged</Radio>
-            <Radio value='exp(datum.CST3)-1'>Actual</Radio>
-          </Radio.Group>
-        </Form.Item>
-      </Form>
-    </>
+    <Form
+      size='small'
+      labelCol={{ span: 12 }}
+      wrapperCol={{ span: 12 }}
+    >
+      <div>Transform Gene Expression</div>
+      <Form.Item>
+        <Radio.Group onChange={onChange} value={logEquation}>
+          <Radio value='datum.expression*1'>Logged</Radio>
+          <Radio value='exp(datum.expression)-1'>Actual</Radio>
+        </Radio.Group>
+      </Form.Item>
+    </Form>
   );
 };
 
