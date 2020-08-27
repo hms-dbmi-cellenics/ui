@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+/* eslint-disable no-param-reassign */
+import React, { useEffect, useState, useRef } from 'react';
 import {
-  Row, Col, Space, Collapse, Skeleton,
+  Row, Col, Space, Collapse, Spin, Skeleton, Input, Button, Typography, Empty,
 } from 'antd';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import data from './gene_expression.json';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
 import ColourInversion from '../components/ColourInversion';
@@ -15,10 +16,19 @@ import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
 import { updatePlotConfig, loadPlotConfig } from '../../../redux/actions/plots/index';
+import { loadGeneExpression } from '../../../redux/actions/genes';
+import loadEmbedding from '../../../redux/actions/loadEmbedding';
 import { generateSpec } from '../../../utils/plotSpecs/generateEmbeddingSpec';
+import { initialPlotConfigStates } from '../../../redux/reducers/plots/initialState';
 import Header from '../components/Header';
 
+import isBrowser from '../../../utils/environment';
+
+const { Text } = Typography;
+
+
 const { Panel } = Collapse;
+const { Search } = Input;
 
 const routes = [
   {
@@ -42,15 +52,29 @@ const routes = [
 // TODO: when we want to enable users to create their custom plots, we will need to change this to proper Uuid
 const plotUuid = 'embeddingContinuousMain';
 const plotType = 'embeddingContinuous';
+const embeddingType = 'umap';
+const experimentId = '5e959f9c9f4b120771249001';
+const defaultShownGene = initialPlotConfigStates[plotType].shownGene;
 
 const EmbeddingContinuousPlot = () => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.plots[plotUuid]?.config);
-
-  const experimentId = '5e959f9c9f4b120771249001';
+  const expressionLoading = useSelector((state) => state.genes.expression.loading);
+  const selectedGene = useRef(defaultShownGene);
+  const selectedExpression = useSelector((state) => state.genes.expression.data[selectedGene.current]);
+  const expressionError = useSelector((state) => state.genes.expression.error);
+  const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (isBrowser) {
+      if (!data) {
+        dispatch(loadEmbedding(experimentId, embeddingType));
+      }
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+      if (!selectedExpression) {
+        dispatch(loadGeneExpression(experimentId, [selectedGene.current]));
+      }
+    }
   }, []);
 
   // obj is a subset of what default config has and contains only the things we want change
@@ -60,8 +84,11 @@ const EmbeddingContinuousPlot = () => {
 
   const generateData = (spec) => {
     spec.data.forEach((datum) => {
-      // eslint-disable-next-line no-param-reassign
-      datum.values = data[datum.name];
+      if (datum.name === 'expression') {
+        datum.values = selectedExpression;
+      } else if (datum.name === 'embedding') {
+        datum.values = data;
+      }
     });
   };
 
@@ -72,6 +99,55 @@ const EmbeddingContinuousPlot = () => {
   const spec = generateSpec(config);
   generateData(spec);
 
+  const changeDislayedGene = (geneName) => {
+    updatePlotWithChanges({ shownGene: geneName });
+    selectedGene.current = geneName;
+    dispatch(loadGeneExpression(experimentId, [geneName]));
+  };
+
+
+  const renderError = (err) => (
+    <Empty
+      image={(
+        <Text type='danger'>
+          {err}
+          <ExclamationCircleFilled style={{ fontSize: 40 }} />
+        </Text>
+      )}
+      imageStyle={{
+        height: 40,
+      }}
+      description={
+        error
+      }
+    >
+      <Button
+        type='primary'
+        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+      >
+        Try again
+      </Button>
+    </Empty>
+  );
+
+  const renderPlot = () => {
+    // The embedding couldn't load. Display an error condition.
+    if (expressionError) {
+      return renderError(expressionError);
+    }
+    if (error) {
+      return renderError(error);
+    }
+    if (!config || !data || loading || !isBrowser || expressionLoading.includes(selectedGene.current)) {
+      return (<center><Spin size='large' /></center>);
+    }
+    return (
+      <center>
+        <Vega spec={spec} renderer='canvas' />
+      </center>
+    );
+  };
+
   return (
     <>
       <Header plotUuid={plotUuid} experimentId={experimentId} routes={routes} />
@@ -80,15 +156,31 @@ const EmbeddingContinuousPlot = () => {
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
-                <center>
-                  <Vega spec={spec} renderer='canvas' />
-                </center>
+                {renderPlot()}
               </Panel>
             </Collapse>
           </Space>
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }} />
+          <Collapse accordion>
+            <Panel header='Gene Selection' key='666'>
+              <Search
+                style={{ width: '100%' }}
+                enterButton='Search'
+                defaultValue={selectedGene.current}
+                onSearch={(val) => changeDislayedGene(val)}
+              />
+            </Panel>
+          </Collapse>
+          <Collapse accordion>
+            <Panel header='Log Transformation' key='5'>
+              <LogExpression
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
+            </Panel>
+          </Collapse>
           <Collapse accordion>
             <Panel header='Main Schema' key='2'>
               <DimensionsRangeEditor
@@ -129,12 +221,6 @@ const EmbeddingContinuousPlot = () => {
                     onUpdate={updatePlotWithChanges}
                   />
                 </Panel>
-                <Panel header='Log Transformation' key='5'>
-                  <LogExpression
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
               </Collapse>
             </Panel>
             <Panel header='Markers' key='11'>
@@ -150,8 +236,7 @@ const EmbeddingContinuousPlot = () => {
                   {
                     fill: 'color',
                     type: 'gradient',
-                    // todo: make this more generic when the plot starts using real data
-                    title: 'Gene Expression',
+                    title: selectedGene.current,
                     gradientLength: 100,
                     labelColor: { value: config.masterColour },
                     titleColor: { value: config.masterColour },
