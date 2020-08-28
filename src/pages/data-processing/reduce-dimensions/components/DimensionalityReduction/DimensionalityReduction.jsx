@@ -5,8 +5,11 @@
 import React from 'react';
 import {
   Row, Col, Space, Select,
-  InputNumber, Form, Radio,
+  InputNumber, Form, Radio, Button, Tooltip,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plotData from './new_data.json';
@@ -98,7 +101,7 @@ class Classifier extends React.Component {
             {
               type: 'formula',
               as: 'percent',
-              expr: 'datum.percentVariance*10',
+              expr: 'datum.percentVariance',
             },
           ],
         },
@@ -215,7 +218,12 @@ class Classifier extends React.Component {
           <Col span={16}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
-          <Col span={8}>
+          <Col span={1}>
+            <Tooltip title='Dimensionality reduction is necessary to summarise and visualise single cell data. The most common method is Principal Component Analysis (PCA). The user sets the maximum number of PCs.'>
+              <Button icon={<InfoCircleOutlined />} />
+            </Tooltip>
+          </Col>
+          <Col span={7}>
             <Space direction='vertical' style={{ width: '100%' }} />
             <Form.Item
               label='Method:'

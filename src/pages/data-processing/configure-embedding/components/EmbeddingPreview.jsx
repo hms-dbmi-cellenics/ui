@@ -4,9 +4,12 @@
 import React from 'react';
 
 import {
-  Row, Col, Slider, Space, Input,
+  Row, Col, Slider, Space, Input, Button, Tooltip,
   InputNumber, Form, Select, Collapse, PageHeader,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../static/media/plot9.png';
@@ -454,6 +457,9 @@ class EmbeddingPreview extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical'>
+              <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘data exploration’ page.'>
+                <Button icon={<InfoCircleOutlined />} />
+              </Tooltip>
               <img
                 alt=''
                 src={plot1Pic}

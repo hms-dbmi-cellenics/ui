@@ -5,8 +5,11 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Form,
+  InputNumber, Form, Button, Tooltip,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plotData from './new_data.json';
@@ -233,8 +236,14 @@ class Classifier extends React.Component {
       <>
         <Row>
 
-          <Col span={18}>
+          <Col span={17}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
+
+          </Col>
+          <Col span={1}>
+            <Tooltip title='The classifier combines several properties (mitochondrial content, entropy, etc.) into a single probability score and is used to refine the filtering of empty droplets. The cut-off is typically set around 0.6-0.9.'>
+              <Button icon={<InfoCircleOutlined />} />
+            </Tooltip>
           </Col>
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />

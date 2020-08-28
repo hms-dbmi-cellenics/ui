@@ -4,9 +4,12 @@
 
 import React from 'react';
 import {
-  Collapse, Row, Col, Space,
+  Collapse, Row, Col, Space, Button, Tooltip,
   InputNumber, Select, Slider, Form,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../../static/media/plot7.png';
@@ -395,6 +398,9 @@ class GenesVsUMIs extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical' style={{ width: '100%' }}>
+              <Tooltip title='The number of genes vs number of UMIs plot is used to exclude cell fragments and outliers. The user can set the stringency (to define the confidence band), and the min/max cell size (note that min cell size will change across filters).'>
+                <Button icon={<InfoCircleOutlined />} />
+              </Tooltip>
               <img
                 alt=''
                 src={plot1Pic}

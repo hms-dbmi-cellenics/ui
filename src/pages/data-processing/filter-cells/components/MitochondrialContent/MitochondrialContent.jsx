@@ -5,8 +5,11 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Select, Form,
+  InputNumber, Select, Form, Tooltip, Button,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../../static/media/plot3.png';
@@ -268,6 +271,19 @@ class MitochondrialContent extends React.Component {
               },
             },
           },
+          {
+            type: 'rule',
+            encode: {
+              update: {
+                x: { scale: 'xscale', value: config.maxFraction },
+                y: { value: 0 },
+                y2: { field: { group: 'height' } },
+                strokeWidth: { value: 2 },
+                strokeDash: { value: [8, 4] },
+                stroke: { value: 'red' },
+              },
+            },
+          },
         ],
         legends: legend,
         title:
@@ -478,6 +494,9 @@ class MitochondrialContent extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical'>
+              <Tooltip title='A high fraction of mitochondrial reads is an indicator of cell death. The usual range for this cut-off is 0.1-0.5.'>
+                <Button icon={<InfoCircleOutlined />} />
+              </Tooltip>
               <img
                 alt=''
                 src={plot1Pic}

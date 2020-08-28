@@ -5,8 +5,11 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Form,
+  InputNumber, Form, Button, Tooltip,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plotData from './new_data.json';
@@ -279,8 +282,13 @@ class DoubletScores extends React.Component {
       <>
         <Row>
 
-          <Col span={18}>
+          <Col span={17}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
+          </Col>
+          <Col span={1}>
+            <Tooltip title='Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The cut-off is typically set around 0.25.'>
+              <Button icon={<InfoCircleOutlined />} />
+            </Tooltip>
           </Col>
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
