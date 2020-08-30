@@ -22,7 +22,7 @@ const embeddingCategoricalInitialConfig = {
   g2mColor: 'green',
   sColor: 'blue',
   legendTextColor: '#FFFFFF',
-  legend: null,
+  legend: [],
   geneexpLegendloc: '',
   labelSize: 28,
   labelShow: 1,
