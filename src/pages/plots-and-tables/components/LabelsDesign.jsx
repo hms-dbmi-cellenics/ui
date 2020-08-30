@@ -11,7 +11,7 @@ const LabelsDesign = (props) => {
 
   const onChange = (e) => {
     setlabelsEnabled(e.target.value);
-    onUpdate({ labelsEnabled: e.target.value });
+    onUpdate({ labelsEnabled: e.target.value, labelShow: e.target.value ? 1 : 0 });
   };
 
   const minLabelSize = 0;

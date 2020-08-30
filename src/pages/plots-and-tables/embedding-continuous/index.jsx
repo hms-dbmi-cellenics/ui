@@ -1,11 +1,12 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Spin, Skeleton, Input, Button, Typography, Empty,
 } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
+import _ from 'lodash';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
 import ColourInversion from '../components/ColourInversion';
@@ -18,7 +19,7 @@ import LegendEditor from '../components/LegendEditor';
 import { updatePlotConfig, loadPlotConfig } from '../../../redux/actions/plots/index';
 import { loadGeneExpression } from '../../../redux/actions/genes';
 import loadEmbedding from '../../../redux/actions/loadEmbedding';
-import { generateSpec } from '../../../utils/plotSpecs/generateEmbeddingSpec';
+import { generateSpec } from '../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { initialPlotConfigStates } from '../../../redux/reducers/plots/initialState';
 import Header from '../components/Header';
 
@@ -57,10 +58,11 @@ const experimentId = '5e959f9c9f4b120771249001';
 const defaultShownGene = initialPlotConfigStates[plotType].shownGene;
 
 const EmbeddingContinuousPlot = () => {
+  const selectedGene = useRef(defaultShownGene);
+
   const dispatch = useDispatch();
   const config = useSelector((state) => state.plots[plotUuid]?.config);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
-  const selectedGene = useRef(defaultShownGene);
   const selectedExpression = useSelector((state) => state.genes.expression.data[selectedGene.current]);
   const expressionError = useSelector((state) => state.genes.expression.error);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
@@ -82,22 +84,12 @@ const EmbeddingContinuousPlot = () => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const generateData = (spec) => {
-    spec.data.forEach((datum) => {
-      if (datum.name === 'expression') {
-        datum.values = selectedExpression;
-      } else if (datum.name === 'embedding') {
-        datum.values = data;
-      }
-    });
-  };
+  const generateVegaData = () => ({ expression: selectedExpression, embedding: _.cloneDeep(data) });
+
 
   if (!config) {
     return (<Skeleton />);
   }
-
-  const spec = generateSpec(config);
-  generateData(spec);
 
   const changeDislayedGene = (geneName) => {
     updatePlotWithChanges({ shownGene: geneName });
@@ -143,7 +135,7 @@ const EmbeddingContinuousPlot = () => {
     }
     return (
       <center>
-        <Vega spec={spec} renderer='canvas' />
+        <Vega spec={generateSpec(config)} data={generateVegaData()} renderer='canvas' />
       </center>
     );
   };

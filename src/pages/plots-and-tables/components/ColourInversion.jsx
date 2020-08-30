@@ -10,7 +10,11 @@ const ColourInversion = (props) => {
   const [toggleInvert, settoggleInvert] = useState(config.toggleInvert);
   const onChange = (e) => {
     settoggleInvert(e.target.value);
-    onUpdate({ toggleInvert: e.target.value });
+    if (e.target.value === '#FFFFFF') {
+      onUpdate({ toggleInvert: e.target.value, masterColour: '#000000', reverseCbar: false });
+    } else {
+      onUpdate({ toggleInvert: e.target.value, masterColour: '#FFFFFF', reverseCbar: true });
+    }
   };
 
   return (

@@ -5,7 +5,6 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
-
 import cellSets from './cellSets.json';
 import expression from './expression.json';
 
