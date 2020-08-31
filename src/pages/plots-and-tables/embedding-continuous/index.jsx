@@ -102,7 +102,6 @@ const EmbeddingContinuousPlot = () => {
     <Empty
       image={(
         <Text type='danger'>
-          {err}
           <ExclamationCircleFilled style={{ fontSize: 40 }} />
         </Text>
       )}
@@ -110,7 +109,7 @@ const EmbeddingContinuousPlot = () => {
         height: 40,
       }}
       description={
-        error
+        err
       }
     >
       <Button
@@ -141,7 +140,7 @@ const EmbeddingContinuousPlot = () => {
   };
 
   return (
-    <>
+    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header plotUuid={plotUuid} experimentId={experimentId} routes={routes} />
       <Row gutter={16}>
         <Col span={16}>
@@ -246,7 +245,7 @@ const EmbeddingContinuousPlot = () => {
           </Collapse>
         </Col>
       </Row>
-    </>
+    </div>
   );
 };
 

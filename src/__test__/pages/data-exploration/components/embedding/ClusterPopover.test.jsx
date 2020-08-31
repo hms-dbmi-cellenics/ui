@@ -38,7 +38,7 @@ describe('ClusterPopover', () => {
     component.find(EditableField).find('Button').at(0).simulate('click');
     component.update();
     expect(mockCreate).toBeCalledTimes(1);
-    expect(mockCreate).toBeCalledWith('New Cluster', '#082213');
+    expect(mockCreate).toBeCalledWith('New Cluster', '#3957ff');
   });
   test('new cluster is not created on cancel', () => {
     component.find(EditableField).find('Button').at(1).simulate('click');

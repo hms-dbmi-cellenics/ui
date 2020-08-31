@@ -1,4 +1,4 @@
-const generateSpec = (config) => {
+const generateSpec = (config, groupName) => {
   let legend = [];
   if (config.legendLocation === 'horizontal') {
     legend = [
@@ -16,7 +16,7 @@ const generateSpec = (config) => {
       },
       {
         fill: 'cellSetColors',
-        title: 'Cluster ID',
+        title: groupName,
         type: 'symbol',
         orient: 'top',
         offset: 40,
@@ -149,7 +149,7 @@ const generateSpec = (config) => {
         },
         domain: {
           data: 'cellSets',
-          field: 'cellSetId',
+          field: 'key',
           sort: true,
         },
       },
@@ -162,7 +162,7 @@ const generateSpec = (config) => {
         },
         domain: {
           data: 'cellSets',
-          field: 'cellSetId',
+          field: 'key',
         },
       },
     ],
@@ -238,12 +238,12 @@ const generateSpec = (config) => {
           update: {
             fill: {
               scale: 'cellSetColors',
-              field: 'cellSetId',
+              field: 'key',
               opacity: { value: 1 },
             },
             stroke: {
               scale: 'cellSetColors',
-              field: 'cellSetId',
+              field: 'key',
               opacity: { value: 1 },
             },
           },

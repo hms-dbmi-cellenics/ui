@@ -65,6 +65,7 @@ const heatmapInitialConfig = {
   legend: null,
   legendEnabled: true,
   selectedGenes: [],
+  selectedCellSet: 'louvain',
   masterFont: 'sans-serif',
   titleText: '',
   titleSize: 20,

@@ -186,7 +186,7 @@ const HierarchicalTree = (props) => {
 
   const renderEditableField = (modified) => (
     <EditableField
-      onEdit={(e) => {
+      onAfterSubmit={(e) => {
         props.onNodeUpdate(modified.key, { name: e });
       }}
       onDelete={() => {
