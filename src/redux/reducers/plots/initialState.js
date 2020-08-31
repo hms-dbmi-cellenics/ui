@@ -4,8 +4,6 @@ const embeddingCategoricalInitialConfig = {
   pointSize: 5,
   toggleInvert: '#FFFFFF',
   masterColour: '#000000',
-  umap1Domain: { data: 'embeddingCategorical', field: 'UMAP_1' },
-  umap2Domain: { data: 'embeddingCategorical', field: 'UMAP_2' },
   titleText: '',
   titleSize: 20,
   titleAnchor: 'start',
@@ -28,7 +26,7 @@ const embeddingCategoricalInitialConfig = {
   labelShow: 1,
   labelFont: 2,
   labelsEnabled: true,
-  selectedClusters: [],
+  selectedCellSet: 'louvain',
   testVar: null,
 };
 
