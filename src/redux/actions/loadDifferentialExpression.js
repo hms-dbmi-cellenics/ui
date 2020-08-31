@@ -16,31 +16,40 @@ const loadDifferentialExpression = (
     },
   });
 
-  const currentPageSize = tableState.pagination.pageSize;
 
   const body = {
     name: 'DifferentialExpression',
     ...cellSets,
   };
 
-  const pagination = {
-    orderBy: tableState.sorter.field,
-    orderDirection: (tableState.sorter.order === 'ascend') ? 'ASC' : 'DESC',
-    offset: ((tableState.pagination.current - 1) * currentPageSize),
-    limit: currentPageSize,
-    responseKey: 0,
-  };
+  let pagination = {};
 
-  if (tableState.geneNamesFilter) {
-    pagination.filters = [{
-      columnName: 'gene_names',
-      type: 'text',
-      expression: tableState.geneNamesFilter,
-    }];
+  if (tableState) {
+    const currentPageSize = tableState.pagination.pageSize;
+
+    pagination = {
+      orderBy: tableState.sorter.field,
+      orderDirection: (tableState.sorter.order === 'ascend') ? 'ASC' : 'DESC',
+      offset: ((tableState.pagination.current - 1) * currentPageSize),
+      limit: currentPageSize,
+      responseKey: 0,
+    };
+
+    if (tableState.geneNamesFilter) {
+      pagination.filters = [{
+        columnName: 'gene_names',
+        type: 'text',
+        expression: tableState.geneNamesFilter,
+      }];
+    }
+
+    pagination = { pagination };
   }
 
   try {
-    const response = await sendWork(experimentId, REQUEST_TIMEOUT, body, { pagination });
+    const response = await sendWork(
+      experimentId, REQUEST_TIMEOUT, body, pagination,
+    );
     const data = JSON.parse(response.results[0].body);
     const { rows, total } = data;
 
