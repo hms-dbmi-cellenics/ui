@@ -58,9 +58,9 @@ const VolcanoPlot = () => {
     const data = differentialExpression.filter((datum) => {
       // Downsample insignificant, not changing genes by the appropriate amount.
       const isSignificant = (
-        datum.log2FoldChange < config.logFoldChangeThreshold * -1
-        || datum.log2FoldChange > config.logFoldChangeThreshold)
-        && datum.pvalue < config.pvalueThreshold;
+        datum.log2fc < config.logFoldChangeThreshold * -1
+        || datum.log2fc > config.logFoldChangeThreshold)
+        && datum.qval < config.pvalueThreshold;
 
       if (isSignificant) {
         return true;
@@ -77,21 +77,21 @@ const VolcanoPlot = () => {
       // order the colors by the names, and the names are declared sorted,
       // so they must be alphabetically ordered.
       let status;
-      if (datum.pvalue <= config.pvalueThreshold
-        && datum.log2FoldChange >= config.logFoldChangeThreshold) {
+      if (datum.qval <= config.pvalueThreshold
+        && datum.log2fc >= config.logFoldChangeThreshold) {
         status = '1_significantUpregulated';
-      } else if (datum.pvalue <= config.pvalueThreshold
-        && datum.log2FoldChange <= config.logFoldChangeThreshold * -1) {
+      } else if (datum.qval <= config.pvalueThreshold
+        && datum.log2fc <= config.logFoldChangeThreshold * -1) {
         status = '2_significantDownregulated';
-      } else if (datum.pvalue > config.pvalueThreshold
-        && datum.log2FoldChange >= config.logFoldChangeThreshold) {
+      } else if (datum.qval > config.pvalueThreshold
+        && datum.log2fc >= config.logFoldChangeThreshold) {
         status = '3_notSignificantUpregulated';
-      } else if (datum.pvalue > config.pvalueThreshold
-        && datum.log2FoldChange <= config.logFoldChangeThreshold * -1) {
+      } else if (datum.qval > config.pvalueThreshold
+        && datum.log2fc <= config.logFoldChangeThreshold * -1) {
         status = '4_notSignificantDownregulated';
-      } else if (datum.pvalue <= config.pvalueThreshold
-        && datum.log2FoldChange > config.logFoldChangeThreshold * -1
-        && datum.log2FoldChange < config.logFoldChangeThreshold) {
+      } else if (datum.qval <= config.pvalueThreshold
+        && datum.log2fc > config.logFoldChangeThreshold * -1
+        && datum.log2fc < config.logFoldChangeThreshold) {
         status = '5_significantChangeDirectionUnknown';
       } else {
         status = '6_noDifference';
@@ -118,7 +118,7 @@ const VolcanoPlot = () => {
 
     differentialExpression.forEach((o) => {
       Object.keys(o).forEach((k) => {
-        if (k === 'log2FoldChange' && o[k] !== 'NA' && o[k] !== 1 && o[k] !== 0) {
+        if (k === 'log2fc' && o[k] !== 'NA' && o[k] !== 1 && o[k] !== 0) {
           l2fcMin = Math.min(l2fcMin, o[k]);
           l2fcMax = Math.max(l2fcMax, o[k]);
         }
@@ -131,7 +131,7 @@ const VolcanoPlot = () => {
       xMax = Math.abs(l2fcMax);
     }
     const logFoldChangeFilterExpr = (config.logFoldChangeDomain)
-      ? `datum.log2FoldChange > ${config.logFoldChangeDomain * -1} && datum.log2FoldChange < ${config.logFoldChangeDomain}`
+      ? `datum.log2fc > ${config.logFoldChangeDomain * -1} && datum.log2fc < ${config.logFoldChangeDomain}`
       : 'true';
 
     const negativeLogpValueFilterExpr = (config.maxNegativeLogpValueDomain)
@@ -161,7 +161,7 @@ const VolcanoPlot = () => {
     // the data in the set.
     const logFoldChangeDomain = config.logFoldChangeDomain
       ? [config.logFoldChangeDomain * -1, config.logFoldChangeDomain]
-      : { data: 'differentialExpression', field: 'log2FoldChange' };
+      : { data: 'differentialExpression', field: 'log2fc' };
 
     const maxNegativeLogpValueDomain = config.maxNegativeLogpValueDomain
       ? [0, config.maxNegativeLogpValueDomain]
@@ -170,7 +170,7 @@ const VolcanoPlot = () => {
     const x = (config.textThresholdValue);
 
     const textThreshold = ` ${x}`;
-    const textEquation = `datum.log2FoldChange !== 'NA' && datum.neglogpvalue >${textThreshold}`;
+    const textEquation = `datum.log2fc !== 'NA' && datum.neglogpvalue >${textThreshold}`;
 
     return {
       $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -185,7 +185,7 @@ const VolcanoPlot = () => {
           transform: [
             {
               type: 'filter',
-              expr: "datum.log2FoldChange !== 'NA' && datum.pvalue !== 'NA'",
+              expr: "datum.log2fc !== 'NA' && datum.qval !== 'NA'",
             },
 
             {
@@ -193,7 +193,7 @@ const VolcanoPlot = () => {
               type: 'formula',
               as: 'neglogpvalue',
 
-              expr: '-(log(datum.pvalue) / LN10)',
+              expr: '-(log(datum.qval) / LN10)',
             },
             {
               type: 'filter',
@@ -314,7 +314,7 @@ const VolcanoPlot = () => {
           from: { data: 'differentialExpression' },
           encode: {
             enter: {
-              x: { scale: 'x', field: 'log2FoldChange' },
+              x: { scale: 'x', field: 'log2fc' },
               y: { scale: 'y', field: 'neglogpvalue' },
               size: { value: config.pointSize },
               shape: { value: config.pointStyle },
@@ -337,7 +337,7 @@ const VolcanoPlot = () => {
           from: { data: 'dex2' },
           encode: {
             enter: {
-              x: { scale: 'x', field: 'log2FoldChange' },
+              x: { scale: 'x', field: 'log2fc' },
               y: { scale: 'y', field: 'neglogpvalue' },
 
               fill: { value: config.masterColour },
