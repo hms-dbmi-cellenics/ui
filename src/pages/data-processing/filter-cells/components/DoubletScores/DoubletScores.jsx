@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Form, Button, Tooltip,
+  Slider, Form, Button, Tooltip,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -276,7 +276,7 @@ class DoubletScores extends React.Component {
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
     const changeThreshold = (val) => {
-      this.updatePlotWithChanges({ probThreshold: val.target.value });
+      this.updatePlotWithChanges({ probThreshold: val });
     };
     return (
       <>
@@ -295,14 +295,14 @@ class DoubletScores extends React.Component {
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Filtering settings' disabled={!filtering} key='1'>
                 <Form.Item label='Probability threshold'>
-                  <Space>
-                    <InputNumber
-                      disabled={!filtering}
-                      defaultValue={0.2}
-                      onPressEnter={(val) => changeThreshold(val)}
-                      step={0.1}
-                    />
-                  </Space>
+                  <Slider
+                    disabled={!filtering}
+                    defaultValue={0.2}
+                    min={0}
+                    max={1}
+                    onAfterChange={(val) => changeThreshold(val)}
+                    step={0.1}
+                  />
                 </Form.Item>
               </Panel>
               <PlotStyling

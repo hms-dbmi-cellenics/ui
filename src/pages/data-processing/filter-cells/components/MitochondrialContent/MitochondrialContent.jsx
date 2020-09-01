@@ -4,8 +4,8 @@
 
 import React from 'react';
 import {
-  Collapse, Row, Col, Space,
-  InputNumber, Select, Form, Tooltip, Button,
+  Collapse, Row, Col, Space, Slider,
+  Select, Form, Tooltip, Button,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -53,6 +53,8 @@ class MitochondrialContent extends React.Component {
       maxWidth: 660,
       maxHeight: 560,
       placeholder: 0.1,
+      sliderMax: 1,
+      sliderMin: 0,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -193,12 +195,12 @@ class MitochondrialContent extends React.Component {
             type: 'ordinal',
             range:
               [
-                'blue', 'green',
+                'green', 'blue',
               ],
             domain: {
               data: 'binned',
               field: 'status',
-              sort: true,
+              sort: false,
             },
           },
         ],
@@ -468,20 +470,24 @@ class MitochondrialContent extends React.Component {
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
           placeholder: 0.1,
+          sliderMax: 1,
+          sliderMin: 0,
         });
       } else {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
           placeholder: 3.5,
+          sliderMax: 4.5,
+          sliderMin: 1,
         });
       }
     };
     const changeFraction = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ maxFraction: val.target.value });
+        this.updatePlotWithChanges({ maxFraction: val });
       } else {
-        this.updatePlotWithChanges({ maxFraction2: val.target.value });
+        this.updatePlotWithChanges({ maxFraction2: val });
       }
     };
     return (
@@ -541,11 +547,13 @@ class MitochondrialContent extends React.Component {
                   </Select>
                 </Form.Item>
                 <Form.Item label='Max fraction:'>
-                  <InputNumber
-                    disabled={!filtering}
-                    placeholder={config.placeholder}
-                    onPressEnter={(val) => changeFraction(val)}
+                  <Slider
+                    defaultValue={config.placeholder}
+                    min={config.sliderMin}
+                    max={config.sliderMax}
                     step={0.1}
+                    disabled={!filtering}
+                    onAfterChange={(val) => changeFraction(val)}
                   />
                 </Form.Item>
               </Panel>

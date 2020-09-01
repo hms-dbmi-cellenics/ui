@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, List, Space, Slider,
-  InputNumber, Form, Tooltip, Button,
+  Form, Tooltip, Button, InputNumber,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -28,7 +28,7 @@ class CellSizeDistribution extends React.Component {
       plotToDraw: true,
       data: plotData,
       legendEnabled: true,
-      minCellSize: 10800,
+      minCellSize: 3000,
       minCellSize2: 2600,
       xAxisText: '#UMIs in cell',
       yAxisText: '#UMIs * #Cells',
@@ -102,8 +102,10 @@ class CellSizeDistribution extends React.Component {
   generateSpec() {
     const { config } = this.state;
     let legend = null;
-    const coloringExpression = '(datum.bin1 < 8800) ? \'low\' : (datum.bin1 >10800) ? \'high\' : \'unknown\'';
-    const coloringExpression2 = '(datum.u < 2300) ? \'low\' : (datum.u >2500) ? \'high\' : \'unknown\'';
+    const minHigh = 2500;
+    const minUnknown = 2300;
+    const coloringExpressionPlot1 = '(datum.bin1 < 8800) ? \'low\' : (datum.bin1 >10800) ? \'high\' : \'unknown\'';
+    const coloringExpressionPlot2 = `(datum.u < ${minUnknown}) ? \'low\' : (datum.u >${minHigh}) ? \'high\' : \'unknown\'`;
 
     if (config.legendEnabled) {
       config.legendOrientation = config.plotToDraw ? 'top-left' : 'bottom';
@@ -189,7 +191,7 @@ class CellSizeDistribution extends React.Component {
               {
                 type: 'formula',
                 as: 'status',
-                expr: coloringExpression,
+                expr: coloringExpressionPlot1,
               },
             ],
           },
@@ -210,6 +212,7 @@ class CellSizeDistribution extends React.Component {
             domain: { data: 'binned', field: 'count' },
             zero: true,
             nice: true,
+
           },
           {
             name: 'color',
@@ -337,7 +340,16 @@ class CellSizeDistribution extends React.Component {
           transform: [{
             type: 'formula',
             as: 'status2',
-            expr: coloringExpression2,
+            expr: coloringExpressionPlot2,
+          },
+          {
+            type: 'filter',
+            expr: 'datum.u > 0 && datum.rank > 0',
+          },
+          {
+            type: 'formula',
+            as: 'high',
+            expr: 'datum.u<950',
           },
           ],
         },
@@ -347,20 +359,16 @@ class CellSizeDistribution extends React.Component {
       scales: [
         {
           name: 'xscale',
-          type: 'linear',
+          type: 'log',
           range: 'width',
-          zero: false,
           domain: { data: 'plotData2', field: 'u' },
-          domainMin: 3,
         },
         {
           name: 'yscale',
           type: 'linear',
           range: 'height',
           nice: true,
-          zero: true,
           domain: { data: 'plotData2', field: 'rank' },
-          domainMin: 8,
         },
         {
           name: 'color',
@@ -476,7 +484,6 @@ class CellSizeDistribution extends React.Component {
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
           placeholder: 10800,
-          arrowStep: 1000,
           sliderMax: 17000,
         });
       } else {
@@ -484,7 +491,6 @@ class CellSizeDistribution extends React.Component {
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
           placeholder: 2600,
-          arrowStep: 100,
           sliderMax: 6000,
         });
       }
@@ -492,9 +498,9 @@ class CellSizeDistribution extends React.Component {
 
     const changeCellSize = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ minCellSize: val });
+        this.updatePlotWithChanges({ minCellSize: val.target.value });
       } else {
-        this.updatePlotWithChanges({ minCellSize2: val });
+        this.updatePlotWithChanges({ minCellSize2: val.target.value });
       }
     };
     return (
@@ -554,11 +560,11 @@ class CellSizeDistribution extends React.Component {
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Filtering Settings' disabled={!filtering} key='1'>
                 <Form.Item label='Min cell size:'>
-                  <Slider
-                    defaultValue={config.placeholder}
-                    min={0}
-                    max={config.sliderMax}
-                    onChange={(val) => changeCellSize(val)}
+                  <InputNumber
+                    disabled={!filtering}
+                    onPressEnter={(val) => changeCellSize(val)}
+                    placeholder={config.placeholder}
+                    step={1}
                   />
                 </Form.Item>
               </Panel>

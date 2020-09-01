@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Select, Form, Button, Tooltip,
+  Slider, Select, Form, Button, Tooltip,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -387,7 +387,7 @@ class ReadAlignment extends React.Component {
       }
     };
     const changeThreshold = (val) => {
-      this.updatePlotWithChanges({ threshold: val.target.value });
+      this.updatePlotWithChanges({ threshold: val });
     };
 
     return (
@@ -446,11 +446,12 @@ class ReadAlignment extends React.Component {
                   </Select>
                 </Form.Item>
                 <Form.Item label='Filter threshold:'>
-                  <InputNumber
-                    disabled={!filtering}
-                    onPressEnter={(val) => changeThreshold(val)}
-                    placeholder={config.threshold}
-                    step={0.1}
+                  <Slider
+                    defaultValue={0.5}
+                    min={0}
+                    max={0.8}
+                    step={0.01}
+                    onAfterChange={(val) => changeThreshold(val)}
                   />
                 </Form.Item>
               </Panel>

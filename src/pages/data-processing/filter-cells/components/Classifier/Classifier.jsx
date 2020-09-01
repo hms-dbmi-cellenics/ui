@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Form, Button, Tooltip,
+  Slider, Form, Button, Tooltip,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -230,7 +230,7 @@ class Classifier extends React.Component {
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
     const minProbabilityChange = (val) => {
-      this.updatePlotWithChanges({ minProbability: val.target.value });
+      this.updatePlotWithChanges({ minProbability: val });
     };
     return (
       <>
@@ -250,13 +250,12 @@ class Classifier extends React.Component {
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Filtering Settings' disabled={!filtering} key='1'>
                 <Form.Item label='Min probability:'>
-                  <InputNumber
-                    disabled={!filtering}
+                  <Slider
                     defaultValue={0.82}
-                    max={1}
                     min={0}
-                    onPressEnter={(val) => minProbabilityChange(val)}
-                    step={0.1}
+                    max={1}
+                    onAfterChange={(val) => minProbabilityChange(val)}
+                    step={0.05}
                   />
                 </Form.Item>
               </Panel>
