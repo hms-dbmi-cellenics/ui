@@ -38,6 +38,8 @@ const DiffExprCompute = (props) => {
   }, []);
 
 
+  console.log(cellSets, selectedCellSets);
+
   const generateSpecialKey = (parentKey) => ({ key: ['all', parentKey].join('-') });
   const isKeySpecial = (key) => (key === 'rest' || key.startsWith('all-'));
 
@@ -47,16 +49,16 @@ const DiffExprCompute = (props) => {
    * If the cell set previously selected is deleted, the selection is reset to the default.
    */
   useEffect(() => {
-    if (hierarchy.length > 0) {
-      const newSelectableClusters = _.cloneDeep(hierarchy);
-      // create a new item for each hierarchy to represent All
-      newSelectableClusters.map(({ key, children }) => {
-        if (children && children.length > 0) {
-          children.push(generateSpecialKey(key));
-        }
-      });
-      setSelectableClusters(newSelectableClusters);
-    }
+    if (hierarchy.length === 0) return;
+
+    const newSelectableClusters = _.cloneDeep(hierarchy);
+    // create a new item for each hierarchy to represent All
+    newSelectableClusters.map(({ key, children }) => {
+      if (children && children.length > 0) {
+        children.push(generateSpecialKey(key));
+      }
+    });
+    setSelectableClusters(newSelectableClusters);
 
     setSelectedCellSets(_.mapValues(selectedCellSets, (cellSetKey) => {
       if (isKeySpecial(cellSetKey)) {

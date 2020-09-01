@@ -1,9 +1,8 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect, useRef } from 'react';
 import {
-  Row, Col, Space, Collapse, Spin, Skeleton, Input, Button, Typography, Empty,
+  Row, Col, Space, Collapse, Spin, Skeleton, Input,
 } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
@@ -22,11 +21,8 @@ import loadEmbedding from '../../../redux/actions/loadEmbedding';
 import { generateSpec } from '../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { initialPlotConfigStates } from '../../../redux/reducers/plots/initialState';
 import Header from '../components/Header';
-
+import renderError from '../utils/renderError';
 import isBrowser from '../../../utils/environment';
-
-const { Text } = Typography;
-
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -97,41 +93,23 @@ const EmbeddingContinuousPlot = () => {
     dispatch(loadGeneExpression(experimentId, [geneName]));
   };
 
-
-  const renderError = (err) => (
-    <Empty
-      image={(
-        <Text type='danger'>
-          <ExclamationCircleFilled style={{ fontSize: 40 }} />
-        </Text>
-      )}
-      imageStyle={{
-        height: 40,
-      }}
-      description={
-        err
-      }
-    >
-      <Button
-        type='primary'
-        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
-      >
-        Try again
-      </Button>
-    </Empty>
-  );
-
   const renderPlot = () => {
     // The embedding couldn't load. Display an error condition.
     if (expressionError) {
-      return renderError(expressionError);
+      return renderError(expressionError,
+        () => dispatch(loadGeneExpression(experimentId, [selectedGene.current])));
     }
+
     if (error) {
-      return renderError(error);
+      return renderError(error,
+        () => dispatch(loadEmbedding(experimentId, embeddingType)));
     }
-    if (!config || !data || loading || !isBrowser || expressionLoading.includes(selectedGene.current)) {
+
+    if (!config || !data || loading
+      || !isBrowser || expressionLoading.includes(selectedGene.current)) {
       return (<center><Spin size='large' /></center>);
     }
+
     return (
       <center>
         <Vega spec={generateSpec(config)} data={generateVegaData()} renderer='canvas' />
@@ -140,7 +118,7 @@ const EmbeddingContinuousPlot = () => {
   };
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
+    <>
       <Header plotUuid={plotUuid} experimentId={experimentId} routes={routes} />
       <Row gutter={16}>
         <Col span={16}>
@@ -245,7 +223,7 @@ const EmbeddingContinuousPlot = () => {
           </Collapse>
         </Col>
       </Row>
-    </div>
+    </>
   );
 };
 
