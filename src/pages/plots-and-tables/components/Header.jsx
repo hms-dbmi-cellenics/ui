@@ -63,7 +63,6 @@ const Header = (props) => {
 
         <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
           <PageHeader
-            className='site-page-header'
             title='Edit collection'
             breadcrumb={{ routes }}
             subTitle={`Last saved: ${saveString}`}

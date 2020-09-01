@@ -441,7 +441,6 @@ class EmbeddingPreview extends React.Component {
     return (
       <>
         <PageHeader
-          className='site-page-header'
           title={`Embedding preview (${config.plotTitle})`}
           subTitle='Powerful data exploration'
           style={{ width: '100%', paddingRight: '0px' }}
