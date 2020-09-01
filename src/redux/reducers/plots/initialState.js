@@ -1,4 +1,5 @@
 const embeddingCategoricalInitialConfig = {
+  spec: '1.0.0',
   width: 700,
   height: 550,
   pointSize: 5,
@@ -31,6 +32,7 @@ const embeddingCategoricalInitialConfig = {
 };
 
 const embeddingContinuousInitialConfig = {
+  spec: '1.0.0',
   width: 700,
   height: 550,
   pointSize: 5,
@@ -57,6 +59,7 @@ const embeddingContinuousInitialConfig = {
 };
 
 const heatmapInitialConfig = {
+  spec: '1.0.0',
   width: 500,
   height: 500,
   colGradient: 'viridis',
@@ -75,17 +78,26 @@ const heatmapInitialConfig = {
 };
 
 const volcanoInitialConfig = {
+  spec: '1.0.0',
   width: 500,
   height: 500,
+  diffExpData: { cellSet: 'louvain-0', compareWith: 'rest' },
   noDifferenceColor: '#aaaaaa',
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',
   notSignificantDownregulatedColor: '#aaaaaa',
   notSignificantUpregulatedColor: '#aaaaaa',
   significantChangeDirectionUnknownColor: '#aaaaaa',
-  logFoldChangeDomain: null,
+
+  // `null` automatically scales to range. This is a problem
+  // because our DE is bad right now, so it throws off the
+  // range to extreme values. TODO: set this back when we have
+  // good DE
+  // logFoldChangeDomain: null,
+
+  logFoldChangeDomain: 20,
   maxNegativeLogpValueDomain: null,
-  pvalueThreshold: 0.05,
+  negLogpValueThreshold: 4,
   logFoldChangeThreshold: 1,
   logFoldChangeTickCount: 5,
   negativeLogpValueTickCount: 5,
@@ -108,8 +120,8 @@ const volcanoInitialConfig = {
   transGrid: 5,
   axesOffset: 10,
   lineWidth: 2,
-  xaxisText: 'Log2 Fold Change',
-  yaxisText: 'Log10 -p-value',
+  xaxisText: 'log2 fold change',
+  yaxisText: '-log10(adj. p-value)',
   titleText: '',
   titleSize: 20,
   titleAnchor: 'start',

@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import {
   Row, Col, Space, Collapse, Select, Button, Skeleton, Spin, Empty, Typography,
 } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 
@@ -17,6 +16,7 @@ import generateSpec from '../../../utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression } from '../../../redux/actions/genes';
 import { loadCellSets } from '../../../redux/actions/cellSets';
 import isBrowser from '../../../utils/environment';
+import renderError from '../utils/renderError';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -108,36 +108,16 @@ const HeatmapPlot = () => {
     updatePlotWithChanges({ selectedCellSet: value });
   };
 
-  const renderError = (err) => (
-    <Empty
-      image={(
-        <Text type='danger'>
-          <ExclamationCircleFilled style={{ fontSize: 40 }} />
-        </Text>
-      )}
-      imageStyle={{
-        height: 40,
-      }}
-      description={
-        err
-      }
-    >
-      <Button
-        type='primary'
-        onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes))}
-      >
-        Try again
-      </Button>
-    </Empty>
-  );
-
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading) {
       return (<Spin />);
     }
 
     if (error) {
-      return renderError('Could not load gene expression data.');
+      return renderError(
+        'Could not load gene expression data.',
+        () => dispatch(loadGeneExpression(experimentId, config.selectedGenes)),
+      );
     }
 
     if (config.selectedGenes.length === 0) {

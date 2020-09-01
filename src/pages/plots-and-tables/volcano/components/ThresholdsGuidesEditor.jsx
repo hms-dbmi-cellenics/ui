@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, InputNumber, Checkbox, Space, Select,
+  Form, InputNumber, Checkbox, Space, Select, Typography,
 } from 'antd';
 import ColorPicker from '../../../../components/ColorPicker';
 
 const { Option } = Select;
+const { Text } = Typography;
 
 const ColorPickerOption = (props) => {
   // See the z index here:
@@ -69,32 +70,36 @@ const ThresholdsGuidesEditor = (props) => {
         <Form.Item
           label={(
             <span>
-              p-value
-              {' '}
-              <em>(5x10^-)</em>
+              -log10(pvalue)
             </span>
           )}
         >
-          <Space>
-            <InputNumber
-              min={0}
-              defaultValue={config.pvalueThreshold}
-              step={1}
-              type='number'
-              onPressEnter={(e) => {
-                const value = parseFloat(e.target.value);
-                const valueFinal = 5 ** -value;
-                onUpdate({ pvalueThreshold: valueFinal });
-              }}
-            />
-            <Checkbox
-              checked={config.showpvalueThresholdGuides}
-              onChange={(e) => {
-                onUpdate({ showpvalueThresholdGuides: e.target.checked });
-              }}
-            >
-              Show Guideline
-            </Checkbox>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Space>
+              <InputNumber
+                min={0}
+                defaultValue={config.negLogpValueThreshold}
+                step={1}
+                type='number'
+                onPressEnter={(e) => {
+                  const value = parseFloat(e.target.value);
+                  onUpdate({ negLogpValueThreshold: value });
+                }}
+              />
+              <Checkbox
+                checked={config.showpvalueThresholdGuides}
+                onChange={(e) => {
+                  onUpdate({ showpvalueThresholdGuides: e.target.checked });
+                }}
+              >
+                Show Guideline
+              </Checkbox>
+            </Space>
+            <Text type='secondary'>
+              Equivalent to p &lt;
+              {' '}
+              {(10 ** (-1 * config.negLogpValueThreshold)).toExponential(3)}
+            </Text>
           </Space>
         </Form.Item>
 
