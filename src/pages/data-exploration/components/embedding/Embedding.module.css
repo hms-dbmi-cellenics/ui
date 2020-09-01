@@ -1,6 +1,0 @@
-.cell-info-container {
-  visibility: hidden;
-}
-#deckgl-wrapper:hover + .cell-info-container {
-  visibility: visible;
-}
