@@ -130,7 +130,6 @@ class PlotsTablesHome extends React.Component {
         <Row gutter={16}>
           <Col span={18}>
             <PageHeader
-              className='site-page-header'
               title='Plots and Tables'
               subTitle='Home'
               style={{ width: '100%', paddingRight: '0px' }}

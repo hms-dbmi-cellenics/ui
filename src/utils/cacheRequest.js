@@ -4,6 +4,7 @@ import hash from 'object-hash';
 import cache from './cache';
 import sendWork from './sendWork';
 import isBrowser from './environment';
+import CustomError from './customError';
 
 const createHash = (endpoint) => crypto.createHash('md5').update(endpoint).digest('hex');
 const createObjectHash = (object) => hash.MD5(object);
@@ -63,11 +64,21 @@ const cacheFetch = async (endpoint, options = {}, ttl = 900) => {
       }
     }
 
-    console.warn('7');
     return json;
   }
   throw new Error('Disabling network interaction on server');
   /* eslint-enable no-unreachable */
+};
+
+const getFromApiExpectOK = async (url) => {
+  const response = await fetch(url);
+
+  if (response.ok) {
+    const data = await response.json();
+    return data;
+  }
+
+  throw new CustomError('There has been an error fetching the data.', response);
 };
 
 const decomposeBody = async (body, experimentId) => {
@@ -126,5 +137,5 @@ const fetchCachedWork = async (experimentId, timeout, body, ttl = 900) => {
 
 
 export {
-  cacheFetch, fetchCachedWork, fetchCachedGeneExpressionWork,
+  cacheFetch, getFromApiExpectOK, fetchCachedWork, fetchCachedGeneExpressionWork,
 };

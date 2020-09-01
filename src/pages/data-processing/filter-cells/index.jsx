@@ -32,7 +32,6 @@ class ProcessingViewPage extends React.Component {
     return (
       <>
         <PageHeader
-          className='site-page-header'
           title='Data Processing'
           subTitle='Powerful data exploration'
           style={{ width: '100%', paddingRight: '0px' }}

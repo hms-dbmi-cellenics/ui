@@ -3,7 +3,7 @@ const initialState = {
     direction: 'row',
     first: {
       first: {
-        first: 'UMAP Embedding', second: 'Cell set', direction: 'row', splitPercentage: 60,
+        first: 'UMAP Embedding', second: 'Cell sets', direction: 'row', splitPercentage: 60,
       },
       second: 'Heatmap',
       direction: 'column',

@@ -196,5 +196,14 @@ module.exports = withSize(withCSS(
     env: {
       REACT_APP_API_URL: process.env.REACT_APP_API_URL,
     },
+    async redirects() {
+      return [
+        {
+          source: '/',
+          destination: '/experiments/5e959f9c9f4b120771249001/data-exploration',
+          permanent: false,
+        },
+      ];
+    },
   })),
 ));
