@@ -26,7 +26,7 @@ const MarkersEditor = (props) => {
     },
     {
       config: 'significantChangeDirectionUnknownColor',
-      name: 'Significant genes, undetermined direction',
+      name: 'Significant genes, either direction',
     },
     {
       config: 'noDifferenceColor',
