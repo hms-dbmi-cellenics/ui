@@ -41,7 +41,7 @@ const DiffExprCompute = (props) => {
   console.log(cellSets, selectedCellSets);
 
   const generateSpecialKey = (parentKey) => ({ key: ['all', parentKey].join('-') });
-  const isKeySpecial = (key) => (key === 'rest' || key.startsWith('all-'));
+  const isKeySpecial = (key) => (key === 'rest' || key === 'All' || key.startsWith('all-'));
 
   /**
    * Re-renders the list of selections when the hierarchy or the properties change.
