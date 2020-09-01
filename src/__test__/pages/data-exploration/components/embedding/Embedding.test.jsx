@@ -230,8 +230,11 @@ describe('Embedding', () => {
 
     // hover over cells
     act(() => {
+      component.find('div.vitessce-container').simulate('mouseenter');
       scatterplot.getElement().props.updateViewInfo(cellCoordinates);
     });
+
+    component.update();
 
     const crossHairs = component.find(CrossHair);
     const cellInfo = component.find(CellInfo);
@@ -249,6 +252,42 @@ describe('Embedding', () => {
     );
     expect(cellInfo.length).toEqual(1);
     expect(crossHairs.props().coordinates.current).toEqual(crossHairs.props().coordinates.current);
+  });
+
+  test('does not render CrossHair and CellInfo components when user hovers over cell outside of the embedding', () => {
+    store = mockStore(initialState);
+
+    const mockProject = jest.fn(([x, y]) => [x + 1, y + 1]);
+
+    const cellCoordinates = {
+      viewport: {
+        project: mockProject,
+        width: 100,
+        height: 200,
+      },
+    };
+
+    component = mount(
+      <Provider store={store}>
+        <Embedding experimentId='1234' embeddingType='pca' />
+      </Provider>,
+    );
+    const scatterplot = component.find(Scatterplot);
+
+    // hover over cells
+    act(() => {
+      scatterplot.getElement().props.updateViewInfo(cellCoordinates);
+    });
+
+    component.update();
+
+    const crossHairs = component.find(CrossHair);
+    const cellInfo = component.find(CellInfo);
+
+    expect(mockProject).toHaveBeenCalledTimes(1);
+    expect(mockProject).toHaveBeenCalledWith(store.getState().embeddings.pca.data[2]);
+    expect(crossHairs.length).toEqual(0);
+    expect(cellInfo.length).toEqual(0);
   });
 
   it('the gene expression view gets rendered correctly', () => {

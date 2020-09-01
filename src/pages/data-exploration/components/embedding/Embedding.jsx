@@ -27,7 +27,6 @@ import {
 } from '../../../../utils/embeddingPlotHelperFunctions/helpers';
 import legend from '../../../../../static/media/viridis.png';
 import isBrowser from '../../../../utils/environment';
-import './Embedding.module.css';
 
 const { Text } = Typography;
 
@@ -56,6 +55,7 @@ const Embedding = (props) => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [cellColors, setCellColors] = useState({});
   const currentView = useRef(focusedGene ? 'expression' : 'cellSet');
+  const [cellInfoVisible, setCellInfoVisible] = useState(false);
 
 
   useEffect(() => {
@@ -206,8 +206,10 @@ const Embedding = (props) => {
     <div
       className='vitessce-container vitessce-theme-light'
       style={{ height: '50vh', position: 'relative' }}
-
+      onMouseEnter={() => { setCellInfoVisible(true); }}
+      onMouseLeave={() => { setCellInfoVisible(false); }}
     >
+
       {renderExpressionView()}
       <Scatterplot
         cellOpacity={0.1}
@@ -233,16 +235,18 @@ const Embedding = (props) => {
               onCancel={onCancelCreateCluster}
             />
           ) : [
-            <div className='cell-info-container'>
-              <CellInfo
+            cellInfoVisible ? [
+              <div>
+                <CellInfo
+                  componentType={embeddingType}
+                  coordinates={cellCoordintes}
+                />
+              </div>,
+              <CrossHair
                 componentType={embeddingType}
                 coordinates={cellCoordintes}
-              />
-            </div>,
-            <CrossHair
-              componentType={embeddingType}
-              coordinates={cellCoordintes}
-            />,
+              />,
+            ] : <></>,
           ]
       }
     </div>
