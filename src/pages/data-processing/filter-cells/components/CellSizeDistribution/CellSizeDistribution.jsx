@@ -4,7 +4,7 @@
 
 import React from 'react';
 import {
-  Collapse, Row, Col, List, Space, Slider,
+  Collapse, Row, Col, List, Space,
   Form, Tooltip, Button, InputNumber,
 } from 'antd';
 import {
@@ -105,7 +105,7 @@ class CellSizeDistribution extends React.Component {
     const minHigh = 2500;
     const minUnknown = 2300;
     const coloringExpressionPlot1 = '(datum.bin1 < 8800) ? \'low\' : (datum.bin1 >10800) ? \'high\' : \'unknown\'';
-    const coloringExpressionPlot2 = `(datum.u < ${minUnknown}) ? \'low\' : (datum.u >${minHigh}) ? \'high\' : \'unknown\'`;
+    const coloringExpressionPlot2 = `(datum.u < ${minUnknown}) ? 'low' : (datum.u >${minHigh}) ? 'high' : 'unknown'`;
 
     if (config.legendEnabled) {
       config.legendOrientation = config.plotToDraw ? 'top-left' : 'top-right';
