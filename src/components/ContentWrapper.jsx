@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import {
   Layout, Menu,
 } from 'antd';
-
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import {
   DatabaseOutlined,
@@ -21,6 +21,8 @@ const { Sider } = Layout;
 const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(true);
   const { children } = props;
+  const router = useRouter();
+  const { experimentId } = router.query;
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -55,7 +57,7 @@ const ContentWrapper = (props) => {
           </Menu.Item>
           <SubMenu key='sub1' icon={<BuildOutlined />} title='Data Processing'>
             <Menu.Item key='5'>
-              <Link href='/data-processing/filter-cells' passHref>
+              <Link as={`/experiments/${experimentId}/data-processing/filter-cells`} href='/experiments/[experimentId]/data-processing/filter-cells' passHref>
                 <div>
                   <BuildOutlined />
                   <span>Filter Cells</span>
@@ -63,14 +65,14 @@ const ContentWrapper = (props) => {
               </Link>
             </Menu.Item>
             <Menu.Item key='6'>
-              <Link href='/data-processing/reduce-dimensions' passHref>
+              <Link as={`/experiments/${experimentId}/data-processing/reduce-dimensions`} href='/experiments/[experimentId]/data-processing/reduce-dimensions' passHref>
                 <div>
                   <span>Reduce Dimensions</span>
                 </div>
               </Link>
             </Menu.Item>
             <Menu.Item key='7'>
-              <Link href='/data-processing/configure-embedding' passHref>
+              <Link as={`/experiments/${experimentId}/data-processing/configure-embedding`} href='/experiments/[experimentId]/data-processing/configure-embedding' passHref>
                 <div>
                   <span>Configure Embedding</span>
                 </div>
@@ -78,7 +80,7 @@ const ContentWrapper = (props) => {
             </Menu.Item>
           </SubMenu>
           <Menu.Item key='3'>
-            <Link href='/data-exploration' passHref>
+            <Link as={`/experiments/${experimentId}/data-exploration`} href='/experiments/[experimentId]/data-exploration' passHref>
               <div>
                 <FundViewOutlined />
                 <span>Data Exploration</span>
@@ -86,7 +88,7 @@ const ContentWrapper = (props) => {
             </Link>
           </Menu.Item>
           <Menu.Item key='4'>
-            <Link href='/plots-and-tables' passHref>
+            <Link as={`/experiments/${experimentId}/plots-and-tables`} href='/experiments/[experimentId]/plots-and-tables' passHref>
               <div>
                 <DatabaseOutlined />
                 <span> Plots and Tables </span>

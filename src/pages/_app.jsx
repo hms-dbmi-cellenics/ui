@@ -27,6 +27,7 @@ class MyApp extends App {
     return (
       <Provider store={store}>
         <Head>
+          <meta name='viewport' content='width=device-width, initial-scale=1' />
           <title>Biomage</title>
         </Head>
         {this.mainContent(Component, pageProps)}
