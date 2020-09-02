@@ -4,7 +4,19 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
+import { Menu } from 'antd';
 import ContentWrapper from '../../../components/ContentWrapper';
+
+
+const { Item } = Menu;
+
+jest.mock('next/router', () => ({
+  useRouter: jest.fn().mockImplementation(() => ({
+    query: {
+      experimentId: '1234',
+    },
+  })),
+}));
 
 configure({ adapter: new Adapter() });
 
@@ -13,8 +25,8 @@ const store = mockStore({
   notifications: {},
 });
 
-describe('ColorPicker', () => {
-  test('renders correctly', () => {
+describe('ContentWrapper', () => {
+  it('renders correctly', () => {
     const wrapper = mount(
       <Provider store={store}>
         <ContentWrapper>
@@ -24,5 +36,14 @@ describe('ColorPicker', () => {
     );
     const sider = wrapper.find('Sider');
     expect(sider.length).toEqual(1);
+
+    const menus = wrapper.find(Menu).children().find(Item);
+    expect(menus.length).toEqual(4);
+
+    const dataExplorationLink = menus.at(2).find('Link');
+    expect(dataExplorationLink.props().as).toEqual('/experiments/1234/data-exploration');
+
+    const plotsTablesLink = menus.at(3).find('Link');
+    expect(plotsTablesLink.props().as).toEqual('/experiments/1234/plots-and-tables');
   });
 });
