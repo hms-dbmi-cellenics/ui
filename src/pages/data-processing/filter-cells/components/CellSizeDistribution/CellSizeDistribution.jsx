@@ -28,8 +28,8 @@ class CellSizeDistribution extends React.Component {
       plotToDraw: true,
       data: plotData,
       legendEnabled: true,
-      minCellSize: 3000,
-      minCellSize2: 2600,
+      minCellSize: 10800,
+      minCellSize2: 990,
       xAxisText: '#UMIs in cell',
       yAxisText: '#UMIs * #Cells',
       xAxisText2: 'Cell rank',
@@ -108,11 +108,11 @@ class CellSizeDistribution extends React.Component {
     const coloringExpressionPlot2 = `(datum.u < ${minUnknown}) ? \'low\' : (datum.u >${minHigh}) ? \'high\' : \'unknown\'`;
 
     if (config.legendEnabled) {
-      config.legendOrientation = config.plotToDraw ? 'top-left' : 'bottom';
+      config.legendOrientation = config.plotToDraw ? 'top-left' : 'top-right';
       legend = [
         {
           fill: 'color',
-          orient: 'top-left',
+          orient: config.legendOrientation,
           title: 'Quality',
           labelFont: config.masterFont,
           titleFont: config.masterFont,
@@ -348,8 +348,8 @@ class CellSizeDistribution extends React.Component {
           },
           {
             type: 'formula',
-            as: 'high',
-            expr: 'datum.u<950',
+            as: 'logRankValue',
+            expr: '(log(datum.rank) / LN10)*2200',
           },
           ],
         },
@@ -368,7 +368,7 @@ class CellSizeDistribution extends React.Component {
           type: 'linear',
           range: 'height',
           nice: true,
-          domain: { data: 'plotData2', field: 'rank' },
+          domain: { data: 'plotData2', field: 'logRankValue' },
         },
         {
           name: 'color',
@@ -421,7 +421,7 @@ class CellSizeDistribution extends React.Component {
           encode: {
             enter: {
               x: { scale: 'xscale', field: 'u' },
-              y: { scale: 'yscale', field: 'rank' },
+              y: { scale: 'yscale', field: 'logRankValue' },
               y2: { scale: 'yscale', value: 0 },
               fill: {
                 scale: 'color',
@@ -490,7 +490,7 @@ class CellSizeDistribution extends React.Component {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
-          placeholder: 2600,
+          placeholder: 990,
           sliderMax: 6000,
         });
       }

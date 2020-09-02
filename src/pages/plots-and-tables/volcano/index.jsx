@@ -292,10 +292,8 @@ class PlotsAndTablesViewPage extends React.Component {
             },
 
             {
-
               type: 'formula',
               as: 'neglogpvalue',
-
               expr: '-(log(datum.pvalue) / LN10)',
             },
             {
