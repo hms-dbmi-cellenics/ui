@@ -4,9 +4,12 @@
 import React from 'react';
 
 import {
-  Row, Col, Slider, Space, Input,
+  Row, Col, Slider, Space, Input, Button, Tooltip,
   InputNumber, Form, Select, Collapse, PageHeader,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../static/media/plot9.png';
@@ -453,6 +456,9 @@ class EmbeddingPreview extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical'>
+              <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘data exploration’ page.'>
+                <Button icon={<InfoCircleOutlined />} />
+              </Tooltip>
               <img
                 alt=''
                 src={plot1Pic}
@@ -496,45 +502,6 @@ class EmbeddingPreview extends React.Component {
                 </Form.Item>
                 <Space direction='vertical' style={{ width: '90%' }} />
                 <Form.Item
-                  label='Method:'
-                >
-                  <Select
-                    defaultValue='option1'
-                  >
-                    <Option value='option1'>UMAP</Option>
-                    <Option value='option2'>t-SNE</Option>
-                    <Option value='option3'>PCA</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item label='Min distance:'>
-                  <InputNumber
-                    defaultValue={0.01}
-                  // onPressEnter={(val) => changeCellSize(val)}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label='Reduced space:'
-                >
-                  <Select
-                    defaultValue='option1'
-                  >
-                    <Option value='option1'>PCA</Option>
-                    <Option value='option2'>option2</Option>
-                    <Option value='option3'>option3</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  label='Distance metric:'
-                >
-                  <Select
-                    defaultValue='option1'
-                  >
-                    <Option value='option1'>Euclidean</Option>
-                    <Option value='option2'>option2</Option>
-                    <Option value='option3'>option3</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item
                   label='Dimensions to use:'
                 >
                   <Slider
@@ -543,6 +510,49 @@ class EmbeddingPreview extends React.Component {
                     max={30}
                   />
                 </Form.Item>
+                <Collapse>
+                  <Panel header='Advanced settings'>
+                    <Form.Item
+                      label='Method:'
+                    >
+                      <Select
+                        defaultValue='option1'
+                      >
+                        <Option value='option1'>UMAP</Option>
+                        <Option value='option2'>t-SNE</Option>
+                        <Option value='option3'>PCA</Option>
+                      </Select>
+                    </Form.Item>
+                    <Form.Item label='Min distance:'>
+                      <InputNumber
+                        defaultValue={0.01}
+                      // onPressEnter={(val) => changeCellSize(val)}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      label='Reduced space:'
+                    >
+                      <Select
+                        defaultValue='option1'
+                      >
+                        <Option value='option1'>PCA</Option>
+                        <Option value='option2'>option2</Option>
+                        <Option value='option3'>option3</Option>
+                      </Select>
+                    </Form.Item>
+                    <Form.Item
+                      label='Distance metric:'
+                    >
+                      <Select
+                        defaultValue='option1'
+                      >
+                        <Option value='option1'>Euclidean</Option>
+                        <Option value='option2'>option2</Option>
+                        <Option value='option3'>option3</Option>
+                      </Select>
+                    </Form.Item>
+                  </Panel>
+                </Collapse>
               </Panel>
               <PlotStyling
                 config={config}

@@ -1,8 +1,11 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Form,
+  Slider, Form, Button, Tooltip,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plotData from './new_data.json';
@@ -16,10 +19,10 @@ class Classifier extends React.Component {
 
     this.defaultConfig = {
       data: plotData,
-      xAxisText: 'log10[ cell size (molecules) ]',
+      xAxisText: 'log10[ cell size (UMIs) ]',
       yAxisText: 'classifier prob',
-      xDefaultTitle: 'log10[ cell size (molecules) ]',
-      yDefaultTitle: 'classifier prob',
+      xDefaultTitle: 'log10[ cell size (UMIs) ]',
+      yDefaultTitle: 'classifier probability',
       titleSize: 12,
       titleText: '',
       titleAnchor: 'start',
@@ -223,26 +226,32 @@ class Classifier extends React.Component {
     // eslint-disable-next-line react/prop-types
     const { filtering } = this.props;
     const minProbabilityChange = (val) => {
-      this.updatePlotWithChanges({ minProbability: val.target.value });
+      this.updatePlotWithChanges({ minProbability: val });
     };
     return (
       <>
         <Row>
 
-          <Col span={18}>
+          <Col span={17}>
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
+
+          </Col>
+          <Col span={1}>
+            <Tooltip title='The classifier combines several properties (mitochondrial content, entropy, etc.) into a single probability score and is used to refine the filtering of empty droplets. The cut-off is typically set around 0.6-0.9.'>
+              <Button icon={<InfoCircleOutlined />} />
+            </Tooltip>
           </Col>
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Filtering Settings' disabled={!filtering} key='1'>
                 <Form.Item label='Min probability:'>
-                  <InputNumber
-                    disabled={!filtering}
+                  <Slider
                     defaultValue={0.82}
-                    max={1}
                     min={0}
-                    onPressEnter={(val) => minProbabilityChange(val)}
+                    max={1}
+                    onAfterChange={(val) => minProbabilityChange(val)}
+                    step={0.05}
                   />
                 </Form.Item>
               </Panel>

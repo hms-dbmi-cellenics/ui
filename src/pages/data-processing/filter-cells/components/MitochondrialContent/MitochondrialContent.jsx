@@ -3,9 +3,12 @@
 
 import React from 'react';
 import {
-  Collapse, Row, Col, Space,
-  InputNumber, Select, Form,
+  Collapse, Row, Col, Space, Slider,
+  Select, Form, Tooltip, Button,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../../static/media/plot3.png';
@@ -25,7 +28,6 @@ class MitochondrialContent extends React.Component {
       plotToDraw: true,
       data: plotData,
       legendEnabled: true,
-      minCellSize: 1000,
       xAxisText: 'Fraction of mitochondrial reads',
       yAxisText: 'Fraction of cells',
       xAxisText2: 'log10(#UMI in cell)',
@@ -49,6 +51,9 @@ class MitochondrialContent extends React.Component {
       height: 400,
       maxWidth: 660,
       maxHeight: 560,
+      placeholder: 0.1,
+      sliderMax: 1,
+      sliderMin: 0,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -76,7 +81,7 @@ class MitochondrialContent extends React.Component {
     const { config } = this.state;
     let legend = null;
     const colorExpression = `(datum.bin1 <= ${config.maxFraction}) ? 'Real' : 'Mitochondrial'`;
-    const colorExpression2 = `(datum.bin1 <= ${config.maxFraction2 - 1}) ? 'Mitochondrial' : (datum.bin1 >=${config.maxFraction2}) ? 'Real' : 'Unknown'`;
+    const colorExpression2 = '(datum.bin1 <= 2.5) ? \'Dead\' : (datum.bin1 >=3.5) ? \'Live\' : \'Unknown\'';
     if (config.legendEnabled) {
       legend = [
         {
@@ -189,12 +194,12 @@ class MitochondrialContent extends React.Component {
             type: 'ordinal',
             range:
               [
-                'blue', 'green',
+                'green', 'blue',
               ],
             domain: {
               data: 'binned',
               field: 'status',
-              sort: true,
+              sort: false,
             },
           },
         ],
@@ -264,6 +269,19 @@ class MitochondrialContent extends React.Component {
                   scale: 'color',
                   field: 'status',
                 },
+              },
+            },
+          },
+          {
+            type: 'rule',
+            encode: {
+              update: {
+                x: { scale: 'xscale', value: config.maxFraction },
+                y: { value: 0 },
+                y2: { field: { group: 'height' } },
+                strokeWidth: { value: 2 },
+                strokeDash: { value: [8, 4] },
+                stroke: { value: 'red' },
               },
             },
           },
@@ -349,7 +367,7 @@ class MitochondrialContent extends React.Component {
           type: 'ordinal',
           range:
             [
-              '#f57b42', 'green', 'grey',
+              'blue', 'green', 'grey',
             ],
           domain: {
             data: 'binned',
@@ -411,6 +429,19 @@ class MitochondrialContent extends React.Component {
             },
           },
         },
+        {
+          type: 'rule',
+          encode: {
+            update: {
+              x: { scale: 'xscale', value: config.maxFraction2 },
+              y: { value: 0 },
+              y2: { field: { group: 'height' } },
+              strokeWidth: { value: 2 },
+              strokeDash: { value: [8, 4] },
+              stroke: { value: 'red' },
+            },
+          },
+        },
       ],
       legends: legend,
 
@@ -433,23 +464,29 @@ class MitochondrialContent extends React.Component {
 
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
-      if (!config.plotToDraw) {
+      if (val) {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
+          placeholder: 0.1,
+          sliderMax: 1,
+          sliderMin: 0,
         });
       } else {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
+          placeholder: 3.5,
+          sliderMax: 4.5,
+          sliderMin: 1,
         });
       }
     };
     const changeFraction = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ maxFraction: val.target.value });
+        this.updatePlotWithChanges({ maxFraction: val });
       } else {
-        this.updatePlotWithChanges({ maxFraction2: val.target.value });
+        this.updatePlotWithChanges({ maxFraction2: val });
       }
     };
     return (
@@ -462,6 +499,9 @@ class MitochondrialContent extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical'>
+              <Tooltip title='A high fraction of mitochondrial reads is an indicator of cell death. The usual range for this cut-off is 0.1-0.5.'>
+                <Button icon={<InfoCircleOutlined />} />
+              </Tooltip>
               <img
                 alt=''
                 src={plot1Pic}
@@ -506,10 +546,13 @@ class MitochondrialContent extends React.Component {
                   </Select>
                 </Form.Item>
                 <Form.Item label='Max fraction:'>
-                  <InputNumber
+                  <Slider
+                    defaultValue={config.placeholder}
+                    min={config.sliderMin}
+                    max={config.sliderMax}
+                    step={0.1}
                     disabled={!filtering}
-                    defaultValue={0}
-                    onPressEnter={(val) => changeFraction(val)}
+                    onAfterChange={(val) => changeFraction(val)}
                   />
                 </Form.Item>
               </Panel>

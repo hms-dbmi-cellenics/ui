@@ -3,9 +3,12 @@
 
 import React from 'react';
 import {
-  Collapse, Row, Col, Space,
+  Collapse, Row, Col, Space, Button, Tooltip,
   InputNumber, Select, Slider, Form,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../../static/media/plot7.png';
@@ -34,10 +37,10 @@ class GenesVsUMIs extends React.Component {
       titleAnchor: 'start',
       masterFont: 'sans-serif',
       masterSize: 13,
-      Stringency: 4.8,
-      Stringency2: 3.6,
-      cutoff: 2.1,
-      cutoff2: 2.1,
+      upCutoff: 4.8,
+      upCutoff2: 3.6,
+      lowCutoff: 2.1,
+      lowCutoff2: 2.1,
       axisTitlesize: 13,
       axisTicks: 13,
       axisOffset: 0,
@@ -46,6 +49,8 @@ class GenesVsUMIs extends React.Component {
       height: 400,
       maxWidth: 660,
       maxHeight: 560,
+      placeholder: 4.8,
+      sliderMax: 5,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -187,7 +192,7 @@ class GenesVsUMIs extends React.Component {
             type: 'rule',
             encode: {
               update: {
-                x: { scale: 'xscale', value: config.cutoff },
+                x: { scale: 'xscale', value: config.lowCutoff },
                 y: { value: 0 },
                 y2: { field: { group: 'height' } },
                 strokeWidth: { value: 2 },
@@ -200,7 +205,7 @@ class GenesVsUMIs extends React.Component {
             type: 'rule',
             encode: {
               update: {
-                x: { scale: 'xscale', value: config.Stringency },
+                x: { scale: 'xscale', value: config.upCutoff },
                 y: { value: 0 },
                 y2: { field: { group: 'height' } },
                 strokeWidth: { value: 2 },
@@ -314,7 +319,7 @@ class GenesVsUMIs extends React.Component {
           type: 'rule',
           encode: {
             update: {
-              x: { scale: 'x', value: config.cutoff2 },
+              x: { scale: 'x', value: config.lowCutoff2 },
               y: { value: 0 },
               y2: { field: { group: 'height' } },
               strokeWidth: { value: 2 },
@@ -327,7 +332,7 @@ class GenesVsUMIs extends React.Component {
           type: 'rule',
           encode: {
             update: {
-              x: { scale: 'x', value: config.Stringency2 },
+              x: { scale: 'x', value: config.upCutoff2 },
               y: { value: 0 },
               y2: { field: { group: 'height' } },
               strokeWidth: { value: 2 },
@@ -355,30 +360,34 @@ class GenesVsUMIs extends React.Component {
     const { filtering } = this.props;
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
-      if (!config.plotToDraw) {
+      if (val) {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
+          placeholder: 4.8,
+          sliderMax: 5
         });
       } else {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
+          placeholder: 3.6,
+          sliderMax: 4,
         });
       }
     };
-    const updateStringency = (val) => {
+    const updateUpCutoff = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ Stringency: val.target.value });
+        this.updatePlotWithChanges({ upCutoff: val });
       } else {
-        this.updatePlotWithChanges({ Stringency2: val.target.value });
+        this.updatePlotWithChanges({ upCutoff2: val });
       }
     };
-    const updateCutoff = (val) => {
+    const updateLowCutoff = (val) => {
       if (config.plotToDraw) {
-        this.updatePlotWithChanges({ cutoff: val.target.value });
+        this.updatePlotWithChanges({ lowCutoff: val });
       } else {
-        this.updatePlotWithChanges({ cutoff2: val.target.value });
+        this.updatePlotWithChanges({ lowCutoff2: val });
       }
     };
     return (
@@ -391,6 +400,9 @@ class GenesVsUMIs extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical' style={{ width: '100%' }}>
+              <Tooltip title='The number of genes vs number of UMIs plot is used to exclude cell fragments and outliers. The user can set the stringency (to define the confidence band), and the min/max cell size (note that min cell size will change across filters).'>
+                <Button icon={<InfoCircleOutlined />} />
+              </Tooltip>
               <img
                 alt=''
                 src={plot1Pic}
@@ -445,27 +457,36 @@ class GenesVsUMIs extends React.Component {
                   />
                 </Form.Item>
                 <Form.Item
-                  label='Stringency:'
+                  label='Upper cut-off:'
                 >
-                  <InputNumber
+                  <Slider
+                    defaultValue={4.8}
                     disabled={!filtering}
-                    max={5}
-                    min={0}
-                    onPressEnter={
-                      (val) => updateStringency(val)
-                    }
+                    min={2}
+                    max={config.sliderMax}
+                    onAfterChange={(val) => updateUpCutoff(val)}
+                    step={0.1}
                   />
                 </Form.Item>
                 <Form.Item
-                  label='Lower cutoff:'
+                  label='Lower cut-off:'
                 >
+                  <Slider
+                    defaultValue={2.1}
+                    disabled={!filtering}
+                    min={2}
+                    max={config.sliderMax}
+                    onAfterChange={(val) => updateLowCutoff(val)}
+                    step={0.1}
+                  />
+                </Form.Item>
+                <Form.Item label='Stringency'>
                   <InputNumber
                     disabled={!filtering}
                     max={5}
                     min={0}
-                    onPressEnter={
-                      (val) => updateCutoff(val)
-                    }
+                    step={0.1}
+                    placeholder={2.1}
                   />
                 </Form.Item>
               </Panel>

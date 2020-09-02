@@ -47,7 +47,7 @@ const plotType = 'volcano';
 
 const VolcanoPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid] ?.config);
   const loading = useSelector((state) => state.differentialExpression.properties.loading);
   const differentialExpression = useSelector(
     (state) => state.differentialExpression.properties.data,
@@ -69,7 +69,7 @@ const VolcanoPlot = () => {
     if (_.isEmpty(config.diffExpData)) return;
 
     dispatch(loadDifferentialExpression(experimentId, config.diffExpData));
-  }, [config?.diffExpData]);
+  }, [config ?.diffExpData]);
 
   useEffect(() => {
     if (!config) return;

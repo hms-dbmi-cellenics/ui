@@ -5,8 +5,11 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space,
-  InputNumber, Select, Slider, Form,
+  Slider, Select, Form, Button, Tooltip,
 } from 'antd';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from '../../../../../../node_modules/react-vega';
 import plot1Pic from '../../../../../../static/media/plot5.png';
@@ -24,11 +27,11 @@ class ReadAlignment extends React.Component {
     this.defaultConfig = {
       plotToDraw: true,
       data: plotData,
-      xAxisText: 'log10 [cell size (mol)]',
-      yAxisText: 'fraction of intergenic reads',
+      xAxisText: 'fraction of intergenic reads',
+      yAxisText: 'log10 [ #UMIs ]',
       xAxisText2: 'fraction of intergenic reads',
       yAxisText2: 'Frequency',
-      xDefaultTitle: 'log10 [cell size (mol)]',
+      xDefaultTitle: 'log10 [ #UMIs ]',
       yDefaultTitle: 'fraction of intergenic reads',
       gridWeight: 0,
       titleSize: 12,
@@ -45,6 +48,7 @@ class ReadAlignment extends React.Component {
       height: 400,
       maxWidth: 660,
       maxHeight: 560,
+      threshold: 0.5,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -103,8 +107,8 @@ class ReadAlignment extends React.Component {
               {
                 type: 'kde2d',
                 size: [{ signal: 'width' }, { signal: 'height' }],
-                x: { expr: "scale('x', datum.cellSize)" },
-                y: { expr: "scale('y', datum.fracMito)" },
+                x: { expr: "scale('x', datum.fracMito)" },
+                y: { expr: "scale('y', datum.cellSize)" },
                 bandwidth: { signal: '[bandwidth, bandwidth]' },
                 cellSize: 15,
               },
@@ -123,8 +127,7 @@ class ReadAlignment extends React.Component {
             round: true,
             nice: true,
             zero: true,
-            domain: { data: 'plotData', field: 'cellSize' },
-            domainMin: 1,
+            domain: { data: 'plotData', field: 'fracMito' },
             range: 'width',
           },
           {
@@ -133,7 +136,8 @@ class ReadAlignment extends React.Component {
             round: true,
             nice: true,
             zero: true,
-            domain: { data: 'plotData', field: 'fracMito' },
+            domainMin: 1,
+            domain: { data: 'plotData', field: 'cellSize' },
             range: 'height',
           },
         ],
@@ -178,8 +182,8 @@ class ReadAlignment extends React.Component {
             from: { data: 'plotData' },
             encode: {
               update: {
-                x: { scale: 'x', field: 'cellSize' },
-                y: { scale: 'y', field: 'fracMito' },
+                x: { scale: 'x', field: 'fracMito' },
+                y: { scale: 'y', field: 'cellSize' },
                 size: { value: 4 },
                 fill: { value: '#ccc' },
               },
@@ -204,6 +208,19 @@ class ReadAlignment extends React.Component {
                 color: '#1361a8',
               },
             ],
+          },
+          {
+            type: 'rule',
+            encode: {
+              update: {
+                x: { scale: 'x', value: config.threshold },
+                y: { value: 0 },
+                y2: { field: { group: 'height' } },
+                strokeWidth: { value: 2 },
+                strokeDash: { value: [8, 4] },
+                stroke: { value: 'red' },
+              },
+            },
           },
         ],
         title:
@@ -325,6 +342,19 @@ class ReadAlignment extends React.Component {
             },
           },
         },
+        {
+          type: 'rule',
+          encode: {
+            update: {
+              x: { scale: 'xscale', value: config.threshold },
+              y: { value: 0 },
+              y2: { field: { group: 'height' } },
+              strokeWidth: { value: 2 },
+              strokeDash: { value: [8, 4] },
+              stroke: { value: 'red' },
+            },
+          },
+        },
       ],
       title:
       {
@@ -356,6 +386,10 @@ class ReadAlignment extends React.Component {
         });
       }
     };
+    const changeThreshold = (val) => {
+      this.updatePlotWithChanges({ threshold: val });
+    };
+
     return (
       <>
         <Row>
@@ -366,6 +400,9 @@ class ReadAlignment extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical'>
+              <Tooltip title='Dead and dying cells may display a high fraction of intergenic reads as a result of contaminating genomic DNA. The cut-off is typically set around 0.6-0.9.'>
+                <Button icon={<InfoCircleOutlined />} />
+              </Tooltip>
               <img
                 alt=''
                 src={plot1Pic}
@@ -409,11 +446,12 @@ class ReadAlignment extends React.Component {
                   </Select>
                 </Form.Item>
                 <Form.Item label='Filter threshold:'>
-                  <InputNumber
-                    disabled={!filtering}
-                    defaultValue={0}
-                    max={5}
+                  <Slider
+                    defaultValue={0.5}
                     min={0}
+                    max={0.8}
+                    step={0.01}
+                    onAfterChange={(val) => changeThreshold(val)}
                   />
                 </Form.Item>
               </Panel>
