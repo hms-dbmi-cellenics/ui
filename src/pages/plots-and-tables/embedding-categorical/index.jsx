@@ -1,445 +1,260 @@
-import React from 'react';
-
+/* eslint-disable no-param-reassign */
+import React, { useEffect } from 'react';
 import {
-  PageHeader, Row, Col, Space, Collapse,
+  Row, Col, Space, Collapse, Skeleton, Select, Spin, Typography, Empty, Button,
 } from 'antd';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 
+import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-
-import _ from 'lodash';
-import categoricalUMAP from './new_categoricalUMAP.json';
-
-
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourInversion from './components/ColourInversion';
-
+import ColourInversion from '../components/ColourInversion';
 import AxesDesign from '../components/AxesDesign';
-import PointDesign from './components/PointDesign';
+import PointDesign from '../components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
-import LabelsDesign from './components/LabelsDesign';
+import LabelsDesign from '../components/LabelsDesign';
+import { updatePlotConfig, loadPlotConfig } from '../../../redux/actions/plots/index';
+import { generateSpec } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import Header from '../components/Header';
+
+import loadEmbedding from '../../../redux/actions/loadEmbedding';
+import { loadCellSets } from '../../../redux/actions/cellSets';
+import isBrowser from '../../../utils/environment';
+
 
 const { Panel } = Collapse;
+const { Text } = Typography;
 
-class PlotsAndTablesViewPage extends React.Component {
-  constructor(props) {
-    super(props);
+const routes = [
+  {
+    path: 'index',
+    breadcrumbName: 'Experiments',
+  },
+  {
+    path: 'first',
+    breadcrumbName: '10x PBMC 3k',
+  },
+  {
+    path: 'second',
+    breadcrumbName: 'Plots and tables',
+  },
+  {
+    path: 'third',
+    breadcrumbName: 'Categorical Embedding',
+  },
+];
 
-    this.routes = [
-      {
-        path: 'index',
-        breadcrumbName: 'Experiments',
-      },
-      {
-        path: 'first',
-        breadcrumbName: 'TGFB1 CABG study',
-      },
-      {
-        path: 'second',
-        breadcrumbName: 'Plots and tables',
-      },
-      {
-        path: 'third',
-        breadcrumbName: 'Disease vs. control (Differential expression)',
-      },
-    ];
+// TODO: when we want to enable users to create their custom plots, we will need to change this to proper Uuid
+const plotUuid = 'embeddingCategoricalMain';
+const plotType = 'embeddingCategorical';
+const embeddingType = 'umap';
+const experimentId = '5e959f9c9f4b120771249001';
 
-    this.defaultConfig = {
-      width: 700,
-      height: 550,
-      pointSize: 5,
-      toggleInvert: '#FFFFFF',
-      masterColour: '#000000',
-      umap1Domain: null,
-      umap2Domain: null,
+const EmbeddingCategoricalPlot = () => {
+  const dispatch = useDispatch();
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const cellSets = useSelector((state) => state.cellSets);
+  const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
-      titleText: '',
-      titleSize: 20,
-      titleAnchor: 'start',
-      axisTitlesize: 13,
-      axisTicks: 13,
-      transGrid: 0,
-      axesOffset: 10,
-      masterFont: 'sans-serif',
-      xaxisText: 'UMAP 1',
-      yaxisText: 'UMAP 2',
-      pointStyle: 'circle',
-      pointOpa: 5,
-      g1Color: 'red',
-      g2mColor: 'green',
-      sColor: 'blue',
-      legendTextColor: '#FFFFFF',
-      legendEnabled: true,
-      legend: null,
-      geneexpLegendloc: '',
-
-      labelSize: 28,
-      labelShow: 1,
-      labelFont: 2,
-      labelsEnabled: true,
-
-      selectedClusters: [],
-      testVar: null,
-    };
-
-    this.state = {
-      config: _.cloneDeep(this.defaultConfig),
-      data: categoricalUMAP,
-    };
-
-    this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  generateSpec() {
-    const { config } = this.state;
-
-    if (config.toggleInvert === '#000000') {
-      config.reverseCbar = true;
-      config.masterColour = '#FFFFFF';
-      config.legendTextColor = '#FFFFFF';
+  useEffect(() => {
+    if (isBrowser) {
+      if (!data) {
+        dispatch(loadEmbedding(experimentId, embeddingType));
+      }
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+      dispatch(loadCellSets(experimentId));
     }
-    if (config.toggleInvert === '#FFFFFF') {
-      config.reverseCbar = false;
-      config.masterColour = '#000000';
-      config.legendTextColor = '#000000';
-    }
+  }, []);
 
-    if (config.labelsEnabled) {
-      config.labelShow = 1;
-    } else {
-      config.labelShow = 0;
-    }
+  const generateCellSetOptions = () => {
+    const hierarchy = cellSets.hierarchy.map((cellSet) => ({ key: cellSet.key, children: cellSet.children?.length || 0 }));
+    return hierarchy.map(({ key, children }) => ({
+      value: key,
+      label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
+    }));
+  };
 
-    const UMAP1Domain = config.umap1Domain
-      ? [config.umap1Domain]
-      : { data: 'embeddingCat', field: 'UMAP_1' };
+  const generateData = (spec) => {
+    // First, find the child nodes in the hirerarchy.
+    let newCellSets = cellSets.hierarchy
+      .find((rootNode) => rootNode.key === config.selectedCellSet)
+      ?.children || [];
 
-    const UMAP2Domain = config.umap2Domain
-      ? [config.umap2Domain]
-      : { data: 'embeddingCat', field: 'UMAP_2' };
-    if (config.legendEnabled) {
-      config.legend = [
-        {
-          title: '',
-          titleColor: config.masterColour,
-          fill: 'color',
-          rowPadding: 5,
-          symbolSize: 200,
+    // Build up the data source based on the properties. Note that the child nodes
+    // in the hierarchy are /objects/ with a `key` property, hence the destructuring
+    // in the function.
+    newCellSets = newCellSets.map(({ key }) => ({ cellSetId: key, ...cellSets.properties[key] }));
 
-          encode: {
-            title: {
-              update: {
-                fontSize: { value: 14 },
-              },
-            },
-            labels: {
-              interactive: true,
-              update: {
-                fontSize: { value: 17 },
-                fill: { value: config.legendTextColor },
-              },
-
-            },
-          },
-        },
-      ];
-    } else {
-      config.legend = null;
-    }
-
-    return {
-
-      $schema: 'https://vega.github.io/schema/vega/v5.json',
-      description: 'A basic scatter plot example depicting automobile statistics.',
-      width: config.width || this.defaultConfig.width,
-      height: config.height || this.defaultConfig.height,
-      autosize: { type: 'fit', resize: true },
-
-      background: config.toggleInvert,
-      padding: 5,
-      data: [{
-        name: 'embeddingCat',
-        transform: [{
-          type: 'joinaggregate',
-          groupby: ['cluster_id'],
-          fields: ['UMAP_1', 'UMAP_2'],
-          ops: ['mean', 'mean'],
-          as: ['um1', 'um2'],
-        }],
-      },
-
-      {
-        name: 'cluster_labels',
-        source: 'embeddingCat',
-        transform: [{
-          type: 'joinaggregate',
-          fields: ['UMAP_1', 'UMAP_2'],
-          ops: ['mean', 'mean'],
-          as: ['um1', 'um2'],
-        }],
-      }],
-
-
-      scales: [
-        {
-          name: 'x',
-          type: 'linear',
-          round: true,
-          nice: true,
-          domain: UMAP1Domain,
-          range: 'width',
-        },
-        {
-          name: 'y',
-          type: 'linear',
-          round: true,
-          nice: true,
-          zero: true,
-          domain: UMAP2Domain,
-          range: 'height',
-        },
-        {
-          name: 'color',
-          type: 'ordinal',
-          range:
-            [
-              'red', 'green', 'blue', 'teal', 'orange', 'purple', 'cyan', 'magenta',
-            ],
-          domain: {
-            data: 'embeddingCat',
-            field: 'cluster_id',
-            sort: true,
-          },
-
-        },
-      ],
-
-      axes: [
-        {
-          scale: 'x',
-          grid: true,
-          domain: true,
-          orient: 'bottom',
-          title: { value: config.xaxisText },
-          titleFont: { value: config.masterFont },
-          labelFont: { value: config.masterFont },
-          labelColor: { value: config.masterColour },
-          tickColor: { value: config.masterColour },
-          gridColor: { value: config.masterColour },
-          gridOpacity: { value: (config.transGrid / 20) },
-          gridWidth: { value: (config.widthGrid / 20) },
-          offset: { value: config.axesOffset },
-          titleFontSize: { value: config.axisTitlesize },
-          titleColor: { value: config.masterColour },
-          labelFontSize: { value: config.axisTicks },
-          domainWidth: { value: config.lineWidth },
-        },
-        {
-          scale: 'y',
-          grid: true,
-          domain: true,
-          orient: 'left',
-          titlePadding: 5,
-          gridColor: { value: config.masterColour },
-          gridOpacity: { value: (config.transGrid / 20) },
-          gridWidth: { value: (config.widthGrid / 20) },
-          tickColor: { value: config.masterColour },
-          offset: { value: config.axesOffset },
-          title: { value: config.yaxisText },
-          titleFont: { value: config.masterFont },
-          labelFont: { value: config.masterFont },
-          labelColor: { value: config.masterColour },
-          titleFontSize: { value: config.axisTitlesize },
-          titleColor: { value: config.masterColour },
-          labelFontSize: { value: config.axisTicks },
-          domainWidth: { value: config.lineWidth },
-        },
-      ],
-      marks: [
-        {
-          type: 'symbol',
-          from: { data: 'embeddingCat' },
-          encode: {
-            enter: {
-              x: { scale: 'x', field: 'UMAP_1' },
-              y: { scale: 'y', field: 'UMAP_2' },
-              size: { value: config.pointSize },
-              stroke: {
-                scale: 'color',
-                field: 'cluster_id',
-              },
-              fill: {
-                scale: 'color',
-                field: 'cluster_id',
-              },
-              shape: { value: config.pointStyle },
-              fillOpacity: { value: config.pointOpa / 10 },
-            },
-          },
-        },
-        {
-          type: 'text',
-          from: { data: 'embeddingCat' },
-          encode: {
-            enter: {
-              x: { scale: 'x', field: 'um1' },
-              y: { scale: 'y', field: 'um2' },
-
-
-              text: {
-                field: 'cluster_id',
-
-              },
-
-              fontSize: { value: config.labelSize },
-              strokeWidth: { value: 1.2 },
-              fill: { value: config.masterColour },
-              fillOpacity: { value: config.labelShow },
-              font: { value: config.masterFont },
-
-            },
-            transform: [
-              { type: 'label', size: ['width', 'height'] }],
-          },
-        },
-      ],
-
-      legends: config.legend,
-
-      title:
-      {
-        text: { value: config.titleText },
-        color: { value: config.masterColour },
-        anchor: { value: config.titleAnchor },
-        font: { value: config.masterFont },
-        dx: 10,
-        fontSize: { value: config.titleSize },
-      },
-    };
-  }
-
-  generateData() {
-    const { data } = this.state;
-
-    return data;
-  }
-
-  updatePlotWithChanges(obj) {
-    this.setState((prevState) => {
-      const newState = _.cloneDeep(prevState);
-
-      _.merge(newState.config, obj);
-
-      return newState;
+    spec.data.forEach((datum) => {
+      if (datum.name === 'cellSets') {
+        datum.values = newCellSets;
+      } else if (datum.name === 'embedding') {
+        datum.values = data;
+      }
     });
+  };
+
+  if (!config) {
+    return (<Skeleton />);
   }
 
-  render() {
-    const { config } = this.state;
+  const renderError = (err) => (
+    <Empty
+      image={(
+        <Text type='danger'>
+          {err}
+          <ExclamationCircleFilled style={{ fontSize: 40 }} />
+        </Text>
+      )}
+      imageStyle={{
+        height: 40,
+      }}
+      description={
+        error
+      }
+    >
+      <Button
+        type='primary'
+        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+      >
+        Try again
+      </Button>
+    </Empty>
+  );
 
-    const data = { embeddingCat: this.generateData() };
-
+  const renderPlot = () => {
+    if (error) {
+      return renderError(error);
+    }
+    if (!config || !data || loading || !isBrowser) {
+      return (<center><Spin size='large' /></center>);
+    }
     return (
-      <>
-        <Row>
-          <Col>
-            <div style={{ 'padding-top': '12px', 'padding-bottom': '12px' }}>
-              <PageHeader
-                className='site-page-header'
-                title='Edit collection'
-                breadcrumb={{ routes: this.routes }}
-                subTitle='Customize plots and tables in this collection'
+      <center>
+        <Vega spec={vegaSpec} renderer='canvas' />
+      </center>
+    );
+  };
+
+
+  const vegaSpec = generateSpec(config);
+  // due to a bug in vega with React with using data with source coming from other data,
+  // we have to inject the data in the Vega spec.
+  generateData(vegaSpec);
+
+  const onUpdate = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
+
+
+  const onCellSetSelect = ({ value }) => {
+    onUpdate({ selectedCellSet: value });
+  };
+
+  return (
+    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
+      <Header plotUuid={plotUuid} experimentId={experimentId} routes={routes} />
+      <Row gutter={16}>
+        <Col span={16}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header='Preview' key='1'>
+                {renderPlot()}
+              </Panel>
+            </Collapse>
+          </Space>
+        </Col>
+        <Col span={8}>
+          <Space direction='vertical' style={{ width: '100%' }} />
+          <Collapse accordion defaultActiveKey={['1']}>
+            <Panel header='Group by' key='6'>
+              <p>Select the cell set category you would like to group cells by.</p>
+              <Space direction='vertical' style={{ width: '100%' }}>
+                <Select
+                  labelInValue
+                  style={{ width: '100%' }}
+                  placeholder='Select cell set...'
+                  value={{ key: config.selectedCellSet }}
+                  options={generateCellSetOptions()}
+                  onChange={onCellSetSelect}
+                />
+              </Space>
+            </Panel>
+            <Panel header='Main Schema' key='2'>
+              <DimensionsRangeEditor
+                config={config}
+                onUpdate={onUpdate}
               />
-            </div>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']}>
-                <Panel header='Preview' key='1'>
-                  <center>
-                    <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
-                  </center>
+              <Collapse accordion defaultActiveKey={['1']}>
+                <Panel header='Define and Edit Title' key='6'>
+                  <TitleDesign
+                    config={config}
+                    onUpdate={onUpdate}
+                  />
+                </Panel>
+                <Panel header='Font' key='9'>
+                  <FontDesign
+                    config={config}
+                    onUpdate={onUpdate}
+                  />
                 </Panel>
               </Collapse>
-            </Space>
-          </Col>
-          <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse accordion defaultActiveKey={['1']}>
-              <Panel header='Main Schema' key='2'>
-                <DimensionsRangeEditor
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                />
-                <Collapse accordion defaultActiveKey={['1']}>
-                  <Panel header='Define and Edit Title' key='6'>
-                    <TitleDesign
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                  </Panel>
-                  <Panel header='Font' key='9'>
-                    <FontDesign
-                      config={config}
-                      onUpdate={this.updatePlotWithChanges}
-                    />
-                  </Panel>
-                </Collapse>
-              </Panel>
+            </Panel>
+            <Panel header='Axes and Margins' key='3'>
+              <AxesDesign
+                config={config}
+                onUpdate={onUpdate}
+              />
+            </Panel>
+            <Panel header='Colour Inversion' key='4'>
+              <ColourInversion
+                config={config}
+                onUpdate={onUpdate}
+              />
+            </Panel>
+            <Panel header='Markers' key='5'>
+              <PointDesign
+                config={config}
+                onUpdate={onUpdate}
+              />
+            </Panel>
+            <Panel header='Legend' key='10'>
+              <LegendEditor
+                onUpdate={onUpdate}
+                legendConfig={[
+                  {
+                    fill: 'cellSetColors',
+                    title: 'Cluster Name',
+                    type: 'symbol',
+                    orient: 'top',
+                    offset: 40,
+                    symbolType: 'square',
+                    symbolSize: { value: 200 },
+                    encode: {
+                      labels: {
+                        update: { text: { scale: 'cellSetIDToName', field: 'label' } },
+                      },
+                    },
+                    direction: 'horizontal',
+                    labelFont: { value: 'sans-serif' },
+                    titleFont: { value: 'sans-serif' },
+                  },
+                ]}
+              />
+            </Panel>
+            <Panel header='Labels' key='11'>
+              <LabelsDesign
+                config={config}
+                onUpdate={onUpdate}
+              />
+            </Panel>
+          </Collapse>
+        </Col>
+      </Row>
+    </div>
+  );
+};
 
-              <Panel header='Axes and Margins' key='3'>
-                <AxesDesign
-
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                />
-              </Panel>
-
-              <Panel header='Colour Inversion' key='4'>
-                <ColourInversion
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                />
-              </Panel>
-
-
-              <Panel header='Markers' key='5'>
-                <PointDesign
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                />
-              </Panel>
-
-              <Panel header='Legend' key='10'>
-                <LegendEditor
-                  color={config.legendTextColor}
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  defaultState
-                />
-              </Panel>
-
-
-              <Panel header='Labels' key='11'>
-                <LabelsDesign
-                  color={config.legendTextColor}
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                />
-              </Panel>
-
-            </Collapse>
-          </Col>
-
-
-        </Row>
-      </>
-    );
-  }
-}
-
-export default PlotsAndTablesViewPage;
+export default EmbeddingCategoricalPlot;

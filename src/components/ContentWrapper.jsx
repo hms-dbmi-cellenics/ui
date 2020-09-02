@@ -13,7 +13,7 @@ import {
   BuildOutlined,
   BarsOutlined,
 } from '@ant-design/icons';
-import NotificationManager from './NotificationManager';
+import NotificationManager from './notification/NotificationManager';
 
 const { SubMenu } = Menu;
 const { Sider } = Layout;

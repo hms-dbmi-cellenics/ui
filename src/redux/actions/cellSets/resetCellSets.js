@@ -1,6 +1,5 @@
 import getApiEndpoint from '../../../utils/apiEndpoint';
 import loadCellSets from './loadCellSets';
-import { cacheFetch } from '../../../utils/cacheRequest';
 import {
   CELL_SETS_LOADING, CELL_SETS_ERROR,
 } from '../../actionTypes/cellSets';
@@ -24,7 +23,7 @@ const resetCellSets = (experimentId) => async (dispatch, getState) => {
   });
 
   try {
-    await cacheFetch(`${getApiEndpoint()}/v1/experiments/generate`, requestOptions);
+    await fetch(`${getApiEndpoint()}/v1/experiments/generate`, requestOptions);
     dispatch(loadCellSets(experimentId));
   } catch (e) {
     dispatch({

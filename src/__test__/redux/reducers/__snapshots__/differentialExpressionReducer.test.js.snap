@@ -4,9 +4,10 @@ exports[`differentialExpressionReducer Sets error state on error action 1`] = `
 Object {
   "properties": Object {
     "cellSets": Object {},
-    "data": Object {},
+    "data": Array [],
     "error": "asd",
     "loading": false,
+    "total": 0,
   },
 }
 `;
@@ -67,9 +68,10 @@ exports[`differentialExpressionReducer Sets loading state on loading action 1`] 
 Object {
   "properties": Object {
     "cellSets": Object {},
-    "data": Object {},
+    "data": Array [],
     "error": false,
     "loading": true,
+    "total": 0,
   },
 }
 `;

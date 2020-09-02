@@ -13,7 +13,7 @@ const genes = ['a', 'b', 'c', 'd'];
 describe('changeGeneSelection action', () => {
   it('Dispatches select event when select event specified', async () => {
     const store = mockStore(initialState);
-    store.dispatch(changeGeneSelection(experimentId, genes, 'select'));
+    await store.dispatch(changeGeneSelection(experimentId, genes, 'select'));
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(GENES_SELECT);
@@ -22,7 +22,7 @@ describe('changeGeneSelection action', () => {
 
   it('Dispatches deselect event when select event specified', async () => {
     const store = mockStore(initialState);
-    store.dispatch(changeGeneSelection(experimentId, genes, 'deselect'));
+    await store.dispatch(changeGeneSelection(experimentId, genes, 'deselect'));
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(GENES_DESELECT);
@@ -31,7 +31,12 @@ describe('changeGeneSelection action', () => {
 
   it('Does not dispatch on other choice', async () => {
     const store = mockStore(initialState);
-    store.dispatch(changeGeneSelection(experimentId, genes, 'maybeselect'));
+
+    const t = async () => {
+      await store.dispatch(changeGeneSelection(experimentId, genes, 'maybeselect'));
+    };
+
+    expect(t).rejects.toEqual(new Error("'selectOrDeselect' must be either 'select' or 'deselect', maybeselect given."));
 
     expect(store.getActions().length).toEqual(0);
   });

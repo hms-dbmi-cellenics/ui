@@ -1,9 +1,10 @@
 const initialState = {
   properties: {
-    data: {},
+    data: [],
     cellSets: {},
     loading: false,
     error: false,
+    total: 0,
   },
 };
 

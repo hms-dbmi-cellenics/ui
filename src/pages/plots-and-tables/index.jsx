@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import {
   PageHeader, Row, Col, Space, Button, List, Card, Tooltip, Dropdown,
 } from 'antd';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
-
 import Link from 'next/link';
 import SearchMenu from '../../components/SearchMenu';
 import heatmapPic from '../../../static/media/heatmap.png';
@@ -101,7 +99,6 @@ class PlotsTablesHome extends React.Component {
 
     return (
       <Space>
-
         <Button
           icon={<CloseOutlined />}
           type='text'
@@ -118,7 +115,6 @@ class PlotsTablesHome extends React.Component {
 
   render() {
     const { openedPlots, addMenuVisible } = this.state;
-
     const searchMenu = (
       <SearchMenu
         options={{ Plots: this.plots }}
@@ -130,11 +126,10 @@ class PlotsTablesHome extends React.Component {
     );
 
     return (
-      <>
+      <div style={{ paddingLeft: 32, paddingRight: 32 }}>
         <Row gutter={16}>
           <Col span={18}>
             <PageHeader
-              className='site-page-header'
               title='Plots and Tables'
               subTitle='Home'
               style={{ width: '100%', paddingRight: '0px' }}
@@ -185,7 +180,7 @@ class PlotsTablesHome extends React.Component {
           </Col>
           <Col span={7} />
         </Row>
-      </>
+      </div>
     );
   }
 }

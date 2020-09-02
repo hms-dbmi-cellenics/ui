@@ -1,153 +1,104 @@
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
 import {
-  PageHeader, Row, Col, Space, Collapse, Slider,
+  Row, Col, Space, Collapse, Slider, Skeleton, Spin,
 } from 'antd';
-
-import { Vega } from 'react-vega';
-
 import _ from 'lodash';
-import differentialExpression from './differential_expression.json';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { Vega } from 'react-vega';
 import ThresholdsGuidesEditor from './components/ThresholdsGuidesEditor';
 import MarkersEditor from './components/MarkersEditor';
-import PointDesign from './components/PointDesign';
-import TitleDesign from './components/TitleDesign';
-
-import SchemaDesign from './components/SchemaDesign_2';
-import AxesDesign from './components/AxesDesign';
+import PointDesign from '../components/PointDesign';
+import TitleDesign from '../components/TitleDesign';
+import DimensionsRangeEditorVolcano from './components/DimensionsRangeEditorVolcano';
+import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
-import ColourInversion from './components/ColourInversion';
+import ColourInversion from '../components/ColourInversion';
 import LegendEditor from '../components/LegendEditor';
-
-const minmaxData = differentialExpression;
-let maxNegativeLogpValue = 0;
-
-minmaxData.forEach((o) => {
-  Object.keys(o).forEach((k) => {
-    if (k === 'pvalue' && o[k] !== 'NA' && o[k] !== 0) {
-      maxNegativeLogpValue = Math.max(
-        maxNegativeLogpValue, -Math.log10(o[k]),
-      );
-    }
-  });
-});
-
-let l2fcMin = null;
-let l2fcMax = null;
-let xMax = null;
-minmaxData.forEach((o) => {
-  Object.keys(o).forEach((k) => {
-    if (k === 'log2FoldChange' && o[k] !== 'NA' && o[k] !== 1 && o[k] !== 0) {
-      l2fcMin = Math.min(l2fcMin, o[k]);
-      l2fcMax = Math.max(l2fcMax, o[k]);
-    }
-  });
-});
-
-if (Math.abs(l2fcMin) > Math.abs(l2fcMax)) {
-  xMax = Math.abs(l2fcMin);
-} else {
-  xMax = Math.abs(l2fcMax);
-}
+import generateSpec from '../../../utils/plotSpecs/generateVolcanoSpec';
+import Header from '../components/Header';
+import DiffExprCompute from '../../experiments/[experimentId]/data-exploration/components/differential-expression-tool/DiffExprCompute';
+import isBrowser from '../../../utils/environment';
+import { updatePlotConfig, loadPlotConfig } from '../../../redux/actions/plots/index';
+import loadDifferentialExpression from '../../../redux/actions/loadDifferentialExpression';
+import renderError from '../utils/renderError';
 
 const { Panel } = Collapse;
+const routes = [
+  {
+    path: 'index',
+    breadcrumbName: 'Experiments',
+  },
+  {
+    path: 'first',
+    breadcrumbName: '10x PBMC 3k',
+  },
+  {
+    path: 'second',
+    breadcrumbName: 'Plots and tables',
+  },
+  {
+    path: 'third',
+    breadcrumbName: 'Volcano plot',
+  },
+];
+
+const plotUuid = 'volcanoPlotMain';
+const plotType = 'volcano';
+
+const VolcanoPlot = () => {
+  const dispatch = useDispatch();
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const loading = useSelector((state) => state.differentialExpression.properties.loading);
+  const differentialExpression = useSelector(
+    (state) => state.differentialExpression.properties.data,
+  );
+  const error = useSelector((state) => state.differentialExpression.properties.error);
+  const experimentId = '5e959f9c9f4b120771249001';
+
+  const [plotData, setPlotData] = useState([]);
+  const [spec, setSpec] = useState({ spec: null, maxNegativeLogpValue: null, xMax: null });
+
+  useEffect(() => {
+    if (!isBrowser) return;
+
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+  }, []);
+
+  useEffect(() => {
+    if (!config) return;
+    if (_.isEmpty(config.diffExpData)) return;
+
+    dispatch(loadDifferentialExpression(experimentId, config.diffExpData));
+  }, [config?.diffExpData]);
+
+  useEffect(() => {
+    if (!config) return;
+
+    const generatedSpec = generateSpec(config, plotData);
+    setSpec(generatedSpec);
+  }, [config]);
+
+  useEffect(() => {
+    if (differentialExpression.length === 0) return;
+
+    setPlotData(generateData(differentialExpression));
+  }, [differentialExpression]);
+
+  useEffect(() => {
+    if (plotData.length === 0) return;
+
+    const generatedSpec = generateSpec(config, plotData);
+    setSpec(generatedSpec);
+  }, [plotData]);
 
 
-class PlotsAndTablesViewPage extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.routes = [
-      {
-        path: 'index',
-        breadcrumbName: 'Experiments',
-      },
-      {
-        path: 'first',
-        breadcrumbName: 'TGFB1 CABG study',
-      },
-      {
-        path: 'second',
-        breadcrumbName: 'Plots and tables',
-      },
-      {
-        path: 'third',
-        breadcrumbName: 'Disease vs. control (Differential expression)',
-      },
-    ];
-
-    this.defaultConfig = {
-      width: 500,
-      height: 500,
-      noDifferenceColor: '#aaaaaa',
-      significantUpregulatedColor: '#0000ffaa',
-      significantDownregulatedColor: '#ff0000',
-      notSignificantDownregulatedColor: '#aaaaaa',
-      notSignificantUpregulatedColor: '#aaaaaa',
-      significantChangeDirectionUnknownColor: '#aaaaaa',
-      logFoldChangeDomain: null,
-      maxNegativeLogpValueDomain: null,
-      pvalueThreshold: 0.05,
-      logFoldChangeThreshold: 1,
-      logFoldChangeTickCount: 5,
-      negativeLogpValueTickCount: 5,
-      // Marcell, I removed downsampling for now because Vicky didnt like it
-      // downsampleRatio: 0.9,
-      downsampleRatio: 0,
-      showLogFoldChangeThresholdGuides: false,
-      showpvalueThresholdGuides: false,
-      thresholdGuideWidth: 1,
-      logFoldChangeThresholdColor: '#ff0000',
-      pvalueThresholdColor: '#ff0000',
-
-      pointSize: 32,
-      pointStyle: 'circle',
-      pointOpa: 5,
-      strokeOpa: 1,
-      strokeCol: '#000000',
-      legend: null,
-      legendEnabled: null,
-      axisTitlesize: 13,
-      axisTicks: 13,
-      colGrid: '#000000',
-      widthGrid: 10,
-      transGrid: 5,
-      axesOffset: 10,
-      lineWidth: 2,
-      xaxisText: 'Log2 Fold Change',
-      yaxisText: 'Log10 -p-value',
-
-      titleText: '',
-      titleSize: 20,
-      titleAnchor: 'start',
-
-      masterFont: 'sans-serif',
-      masterColour: '#000000',
-      toggleInvert: '#FFFFFF',
-      reverseCbar: false,
-      textThresholdValue: maxNegativeLogpValue,
-    };
-
-    this.state = {
-      config: _.cloneDeep(this.defaultConfig),
-      data: differentialExpression,
-    };
-
-    this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
-  }
-
-  generateData() {
-    let { data } = this.state;
-    const { config } = this.state;
-    data = _.cloneDeep(data);
-
-    data = data.filter((datum) => {
+  const generateData = (data) => {
+    const result = data.filter((datum) => {
       // Downsample insignificant, not changing genes by the appropriate amount.
       const isSignificant = (
-        datum.log2FoldChange < config.logFoldChangeThreshold * -1
-        || datum.log2FoldChange > config.logFoldChangeThreshold)
-        && datum.pvalue < config.pvalueThreshold;
+        datum.log2fc < config.logFoldChangeThreshold * -1
+        || datum.log2fc > config.logFoldChangeThreshold)
+        && datum.qval < config.pvalueThreshold;
 
       if (isSignificant) {
         return true;
@@ -164,30 +115,35 @@ class PlotsAndTablesViewPage extends React.Component {
       // order the colors by the names, and the names are declared sorted,
       // so they must be alphabetically ordered.
       let status;
-      if (datum.pvalue <= config.pvalueThreshold
-        && datum.log2FoldChange >= config.logFoldChangeThreshold) {
+
+      const pvalueThreshold = (10 ** (-1 * config.negLogpValueThreshold)).toExponential(3);
+
+      if (datum.qval <= pvalueThreshold
+        && datum.log2fc >= config.logFoldChangeThreshold) {
         status = '1_significantUpregulated';
-      } else if (datum.pvalue <= config.pvalueThreshold
-        && datum.log2FoldChange <= config.logFoldChangeThreshold * -1) {
+      } else if (datum.qval <= pvalueThreshold
+        && datum.log2fc <= config.logFoldChangeThreshold * -1) {
         status = '2_significantDownregulated';
-      } else if (datum.pvalue > config.pvalueThreshold
-        && datum.log2FoldChange >= config.logFoldChangeThreshold) {
+      } else if (datum.qval > pvalueThreshold
+        && datum.log2fc >= config.logFoldChangeThreshold) {
         status = '3_notSignificantUpregulated';
-      } else if (datum.pvalue > config.pvalueThreshold
-        && datum.log2FoldChange <= config.logFoldChangeThreshold * -1) {
+      } else if (datum.qval > pvalueThreshold
+        && datum.log2fc <= config.logFoldChangeThreshold * -1) {
         status = '4_notSignificantDownregulated';
-      } else if (datum.pvalue <= config.pvalueThreshold
-        && datum.log2FoldChange > config.logFoldChangeThreshold * -1
-        && datum.log2FoldChange < config.logFoldChangeThreshold) {
+      } else if (datum.qval <= pvalueThreshold
+        && datum.log2fc > config.logFoldChangeThreshold * -1
+        && datum.log2fc < config.logFoldChangeThreshold) {
         status = '5_significantChangeDirectionUnknown';
       } else {
         status = '6_noDifference';
       }
+      // eslint-disable-next-line no-param-reassign
       datum.status = status;
 
       return datum;
     });
 
+<<<<<<< HEAD
     return data;
   }
 
@@ -523,143 +479,178 @@ class PlotsAndTablesViewPage extends React.Component {
       legends: config.legend,
     };
   }
+=======
+    return result;
+  };
+>>>>>>> master
 
   // obj is a subset of what default config has and contains only the things we want change
-  updatePlotWithChanges(obj) {
-    this.setState((prevState) => {
-      const newState = _.cloneDeep(prevState);
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
 
-      _.merge(newState.config, obj);
+  const onComputeDiffExp = (diffExpData) => {
+    updatePlotWithChanges({
+      diffExpData,
 
-      return newState;
+      // These reset the ranges to `null`, which makes them automatically
+      // determined by the algorithm. Because of our bad DE, we have issues
+      // where we have extreme values, so this is not necessary right now.
+      // TODO: fix this when we have good DE
+
+      // maxNegativeLogpValueDomain: null,
+      // logFoldChangeDomain: null,
     });
+  };
+
+  if (!config) {
+    return (<Skeleton />);
   }
 
-  handleChange(value) {
-    this.updatePlotWithChanges({ textThresholdValue: value });
-  }
+  const renderPlot = () => {
+    if (error) {
+      return renderError('Could not load differential expression data.', () => {
+        dispatch(loadDifferentialExpression(experimentId, config.diffExpData));
+      });
+    }
 
-  render() {
-    const { config } = this.state;
-    const data = { differentialExpression: this.generateData() };
+    if (plotData.length === 0 || loading || _.isEmpty(spec.spec)) {
+      return <Spin />;
+    }
 
-    return (
-      <>
-        <Row>
-          <Col>
-            <div style={{ paddingTop: '12px', paddingBottom: '12px' }}>
-              <PageHeader
-                className='site-page-header'
-                title='Edit collection'
-                breadcrumb={{ routes: this.routes }}
-                subTitle='Customize plots and tables in this collection'
-              />
-            </div>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']}>
-                <Panel header='Preview' key='1'>
-                  <center>
-                    <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
-                  </center>
-                </Panel>
-              </Collapse>
-            </Space>
-          </Col>
-          <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey={['1']} accordion>
-                <Panel header='Main Schema' key='1'>
-                  <SchemaDesign
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                    xMax={xMax}
-                    yMax={maxNegativeLogpValue + 2}
-                    l2fcMax={l2fcMax}
-                  />
+    console.error(plotData);
 
-                  <Collapse defaultActiveKey={['1']} accordion>
-                    <Panel header='Define and Edit Title' key='6'>
-                      <TitleDesign
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                    </Panel>
+    return <Vega data={{ data: plotData }} spec={spec.spec} renderer='canvas' />;
+  };
 
-                    <Panel header='Data Thresholding' key='8'>
-                      <ThresholdsGuidesEditor
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                    </Panel>
-                    <Panel header='Font' key='9'>
-                      <FontDesign
-                        config={config}
-                        onUpdate={this.updatePlotWithChanges}
-                      />
-                    </Panel>
+  return (
+    <>
+      <Header plotUuid={plotUuid} experimentId={experimentId} routes={routes} />
+      <Row gutter={16}>
+        <Col span={16}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header='Preview' key='1'>
+                <center>
+                  {renderPlot()}
+                </center>
+              </Panel>
+            </Collapse>
+          </Space>
+        </Col>
+        <Col span={8}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse defaultActiveKey={['1']} accordion>
+              <Panel header='Differential Expression' key='15'>
+                <DiffExprCompute
+                  experimentId={experimentId}
+                  onCompute={onComputeDiffExp}
+                  cellSets={config.diffExpData}
+                />
+              </Panel>
+              <Panel header='Main Schema' key='1'>
+                <DimensionsRangeEditorVolcano
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                  xMax={Math.round(spec.xMax)}
+                  yMax={Math.round(spec.maxNegativeLogpValue) + 2}
+                />
+                <Collapse defaultActiveKey={['1']} accordion>
+                  <Panel header='Define and Edit Title' key='6'>
+                    <TitleDesign
+                      config={config}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
+                  <Panel header='Font' key='9'>
+                    <FontDesign
+                      config={config}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
+                </Collapse>
+              </Panel>
+              <Panel header='Data Thresholding' key='8'>
+                <ThresholdsGuidesEditor
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+              </Panel>
+              <Panel header='Axes and Margins' key='3'>
+                <AxesDesign
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+              </Panel>
+              <Panel header='Colours' key='10'>
+                <MarkersEditor
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+                <ColourInversion
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+              </Panel>
+              <Panel header='Markers' key='4'>
+                <PointDesign
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                />
+              </Panel>
+              <Panel header='Text' key='11'>
+                <> Display Gene Labels Above (-log10 pvalue) </>
+                <Slider
+                  defaultValue={config.textThresholdValue}
+                  min={0}
+                  max={spec.maxNegativeLogpValue + 5}
+                  onChange={(val) => updatePlotWithChanges({ textThresholdValue: val })}
+                />
+              </Panel>
+              <Panel header='Legend' key='12'>
+                <LegendEditor
+                  onUpdate={updatePlotWithChanges}
+                  legendConfig={[
+                    {
+                      fill: 'color',
+                      encode: {
+                        title: {
+                          update: {
+                            fontSize: { value: 14 },
+                          },
+                        },
+                        labels: {
+                          interactive: true,
+                          update: {
+                            fontSize: { value: 12 },
+                            fill: { value: config.masterColour },
+                          },
+                          hover: {
+                            fill: { value: 'firebrick' },
+                          },
+                        },
+                        symbols: {
+                          update: {
+                            stroke: { value: 'transparent' },
+                          },
+                        },
+                        legend: {
+                          update: {
+                            stroke: { value: '#ccc' },
+                            strokeWidth: { value: 1.5 },
+                          },
+                        },
+                      },
+                    },
+                  ]}
+                />
+              </Panel>
+            </Collapse>
+          </Space>
+        </Col>
+      </Row>
+    </>
+  );
+};
 
-                  </Collapse>
-                </Panel>
-
-                <Panel header='Axes and Margins' key='3'>
-                  <AxesDesign
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-                </Panel>
-                <Panel header='Colours' key='10'>
-
-
-                  <MarkersEditor
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-
-
-                  <ColourInversion
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-
-                </Panel>
-                <Panel header='Markers' key='4'>
-                  <PointDesign
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                  />
-
-                </Panel>
-
-
-                <Panel header='Legend' key='11'>
-                  <LegendEditor
-                    config={config}
-                    onUpdate={this.updatePlotWithChanges}
-                    defaultState={false}
-                  />
-                </Panel>
-                <Panel header='Text' key='12'>
-                  <> Display Gene Labels Above (-log10 pvalue) </>
-                  <Slider
-
-                    defaultValue={maxNegativeLogpValue}
-                    min={0}
-                    max={maxNegativeLogpValue + 5}
-                    onChange={(val) => this.handleChange(val)}
-                  />
-                </Panel>
-
-              </Collapse>
-            </Space>
-          </Col>
-        </Row>
-      </>
-    );
-  }
-}
-
-export default PlotsAndTablesViewPage;
+export default VolcanoPlot;

@@ -1,10 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import {
-  Form
-} from 'antd';
-
+import { Form } from 'antd';
 import ColorBrowser from '../../components/ColorBrowser';
 
 
@@ -30,7 +26,7 @@ const MarkersEditor = (props) => {
     },
     {
       config: 'significantChangeDirectionUnknownColor',
-      name: 'Significant genes, undetermined direction',
+      name: 'Significant genes, either direction',
     },
     {
       config: 'noDifferenceColor',

@@ -28,6 +28,7 @@ const loadPaginatedGeneProperties = (
   const orderDirection = tableState.sorter.order;
   const currentPage = tableState.pagination.current;
   const currentPageSize = tableState.pagination.pageSize;
+  const geneNameFilter = tableState.geneNamesFilter;
 
   const body = {
     name: 'ListGenes',
@@ -38,12 +39,13 @@ const loadPaginatedGeneProperties = (
     limit: currentPageSize,
   };
 
-  if (tableState.geneNamesFilter) {
+  if (geneNameFilter) {
     body.geneNamesFilter = tableState.geneNamesFilter;
   }
 
   try {
     const { rows, total } = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body);
+
     const loadedProperties = {};
     rows.forEach((row) => {
       const { gene_names: geneName, ...rest } = row;
@@ -51,7 +53,7 @@ const loadPaginatedGeneProperties = (
       loadedProperties[geneName] = rest;
     });
 
-    dispatch({
+    return dispatch({
       type: GENES_PROPERTIES_LOADED_PAGINATED,
       payload: {
         experimentId,
@@ -62,7 +64,7 @@ const loadPaginatedGeneProperties = (
       },
     });
   } catch (error) {
-    dispatch({
+    return dispatch({
       type: GENES_PROPERTIES_ERROR,
       payload: {
         experimentId,

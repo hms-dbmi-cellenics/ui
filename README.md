@@ -2,8 +2,14 @@
 
 ### Running without getting data from the backend
 
- Simply do:
+install homebrew
+install docker
+install yarn
+install vscode
+install iterm2
 
+ Simply do:
+    yarn install
     yarn run start
 
 ### Running with data coming from the backend

@@ -2,7 +2,7 @@ import getApiEndpoint from '../../../utils/apiEndpoint';
 import { CELL_SETS_SAVE } from '../../actionTypes/cellSets';
 import pushNotificationMessage from '../notifications';
 import composeTree from '../../../utils/composeTree';
-import { cacheFetch } from '../../../utils/cacheRequest';
+import messages from '../../../components/notification/messages';
 
 const saveCellSets = (experimentId) => async (dispatch, getState) => {
   const {
@@ -18,7 +18,7 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
 
   const treeData = composeTree(hierarchy, properties);
   try {
-    const json = await cacheFetch(
+    const response = await fetch(
       `${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`,
       {
         method: 'PUT',
@@ -29,6 +29,9 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
         ),
       },
     );
+
+    const json = await response.json();
+
     dispatch({
       type: CELL_SETS_SAVE,
       payload: {
@@ -37,7 +40,7 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
       },
     });
   } catch (e) {
-    dispatch(pushNotificationMessage('error', 'Could not connect to the server. Check your internet connection.', 5));
+    dispatch(pushNotificationMessage('error', messages.saveCellSets, 5));
   }
 };
 

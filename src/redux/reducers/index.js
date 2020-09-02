@@ -6,6 +6,8 @@ import embeddingsReducer from './embeddings';
 import genesReducer from './genes';
 import differentialExpressionReducer from './differentialExpression';
 import layoutReducer from './layout/layout';
+import plotsReducer from './plots/index';
+
 import { UPDATE_CELL_INFO } from '../actionTypes';
 
 const cellInfoReducer = (state = {}, action) => {
@@ -28,4 +30,5 @@ export default combineReducers({
   differentialExpression: differentialExpressionReducer,
   cellInfo: cellInfoReducer,
   layout: layoutReducer,
+  plots: plotsReducer,
 });
