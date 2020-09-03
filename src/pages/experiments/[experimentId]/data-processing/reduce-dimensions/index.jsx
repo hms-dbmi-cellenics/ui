@@ -3,6 +3,7 @@ import {
   PageHeader, Collapse,
 } from 'antd';
 import DimensionalityReduction from './components/DimensionalityReduction/DimensionalityReduction';
+import FeedbackButton from '../../../../../components/FeedbackButton';
 
 const { Panel } = Collapse;
 
@@ -18,8 +19,7 @@ class ProcessingViewPage extends React.Component {
       <>
         <PageHeader
           title='Reduce dimensions'
-          subTitle='Powerful data exploration'
-          style={{ width: '100%', paddingRight: '0px' }}
+          extra={<FeedbackButton />}
         />
 
         <Collapse accordion defaultActiveKey={['1']}>

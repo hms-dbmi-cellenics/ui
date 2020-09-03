@@ -194,7 +194,7 @@ module.exports = withSize(withCSS(
       isDev, // Pass through env variables
     },
     env: {
-      REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+      // You can add env variables that will be passed on to the client here.
     },
     async redirects() {
       return [

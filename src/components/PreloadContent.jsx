@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Row, Col, Skeleton, PageHeader,
+  Row, Col, Skeleton,
 } from 'antd';
 
 const PreloadContent = () => (
