@@ -6,6 +6,7 @@ const loadConfig = (state, action) => {
     [plotUuid]: {
       ...state[plotUuid],
       ...rest,
+      outstandingChanges: false,
     },
   };
 };

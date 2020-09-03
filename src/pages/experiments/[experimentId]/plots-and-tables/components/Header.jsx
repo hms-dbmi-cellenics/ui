@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import {
   PageHeader, Row, Col, Button, Skeleton,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
@@ -24,27 +25,45 @@ const Header = (props) => {
   } = props;
 
   const dispatch = useDispatch();
-  const [disabled, setDisabled] = useState(true);
+  const saved = !useSelector((state) => state.plots[plotUuid].outstandingChanges);
   const lastUpdated = useSelector((state) => state.plots[plotUuid].lastUpdated);
-  const config = useSelector((state) => state.plots[plotUuid].config);
-  const pastInitialRender = useRef(false);
+  const router = useRouter();
 
   // Add prompt to save if modified since last save if changes happened.
   useBeforeunload((e) => {
-    if (!disabled) {
+    if (!saved) {
       e.preventDefault();
     }
   });
 
-  // Re-enable save button on config change. Skip initial render (when the config)
-  // loads for the first time, so we default to a disabled state.
+
   useEffect(() => {
-    if (pastInitialRender.current) {
-      setDisabled(false);
-    } else {
-      pastInitialRender.current = true;
-    }
-  }, [config]);
+    const showPopupWhenUnsaved = (url) => {
+      // Only handle if we are navigating away.
+      if (router.asPath === url || saved) {
+        return;
+      }
+
+      // Show a confirmation dialog. Prevent moving away if the user decides not to.
+      // eslint-disable-next-line no-alert
+      if (!window.confirm('Are you sure you want to leave? Changes that you made will not be saved.')) {
+        router.events.emit('routeChangeError');
+
+        // Following is a hack-ish solution to abort a Next.js route change
+        // as there's currently no official API to do so
+        // See https://github.com/zeit/next.js/issues/2476#issuecomment-573460710
+        // eslint-disable-next-line no-throw-literal
+        throw `Route change to "${url}" was aborted (this error can be safely ignored). See https://github.com/zeit/next.js/issues/2476.`;
+      }
+    };
+
+    router.events.on('routeChangeStart', showPopupWhenUnsaved);
+
+    return () => {
+      router.events.off('routeChangeStart', showPopupWhenUnsaved);
+    };
+  }, [router.asPath, router.events, saved]);
+
 
   const { data } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
 
@@ -72,10 +91,9 @@ const Header = (props) => {
   const saveString = (lastUpdated) ? moment(lastUpdated).fromNow().toLowerCase() : 'never';
 
   const onClickSave = () => {
-    if (disabled) { return; }
+    if (saved) { return; }
 
     dispatch(savePlotConfig(experimentId, plotUuid));
-    setDisabled(true);
   };
 
   return (
@@ -98,7 +116,7 @@ const Header = (props) => {
             <Button
               key='save'
               type='primary'
-              disabled={disabled}
+              disabled={saved}
               onClick={onClickSave}
             >
               Save
