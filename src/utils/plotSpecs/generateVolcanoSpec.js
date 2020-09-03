@@ -108,8 +108,6 @@ const generateSpec = (configSrc, data) => {
         },
       },
     ];
-  } else {
-    legend = null;
   }
   const spec = {
     $schema: 'https://vega.github.io/schema/vega/v5.json',

@@ -6,6 +6,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
+import { useRouter } from 'next/router';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
 import ColourInversion from '../components/ColourInversion';
@@ -15,42 +16,28 @@ import PointDesign from '../components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
-import { updatePlotConfig, loadPlotConfig } from '../../../redux/actions/plots/index';
-import { loadGeneExpression } from '../../../redux/actions/genes';
-import loadEmbedding from '../../../redux/actions/loadEmbedding';
-import { generateSpec } from '../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import { initialPlotConfigStates } from '../../../redux/reducers/plots/initialState';
+import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/plots/index';
+import { loadGeneExpression } from '../../../../../redux/actions/genes';
+import loadEmbedding from '../../../../../redux/actions/loadEmbedding';
+import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
+import { initialPlotConfigStates } from '../../../../../redux/reducers/plots/initialState';
 import Header from '../components/Header';
 import renderError from '../utils/renderError';
-import isBrowser from '../../../utils/environment';
+import isBrowser from '../../../../../utils/environment';
 
 const { Panel } = Collapse;
 const { Search } = Input;
 
-const routes = [
-  {
-    path: 'index',
-    breadcrumbName: 'Experiments',
-  },
-  {
-    path: 'first',
-    breadcrumbName: '10x PBMC 3k',
-  },
-  {
-    path: 'second',
-    breadcrumbName: 'Plots and tables',
-  },
-  {
-    path: 'third',
-    breadcrumbName: 'Continuous Embedding',
-  },
-];
+const route = {
+  path: 'embedding-continuous',
+  breadcrumbName: 'Continuous Embedding',
+};
 
-// TODO: when we want to enable users to create their custom plots, we will need to change this to proper Uuid
+// TODO: when we want to enable users to create their custom plots,
+// we will need to change this to proper Uuid
 const plotUuid = 'embeddingContinuousMain';
 const plotType = 'embeddingContinuous';
 const embeddingType = 'umap';
-const experimentId = '5e959f9c9f4b120771249001';
 const defaultShownGene = initialPlotConfigStates[plotType].shownGene;
 
 const EmbeddingContinuousPlot = () => {
@@ -59,9 +46,14 @@ const EmbeddingContinuousPlot = () => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.plots[plotUuid] ?.config);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
-  const selectedExpression = useSelector((state) => state.genes.expression.data[selectedGene.current]);
+  const selectedExpression = useSelector(
+    (state) => state.genes.expression.data[selectedGene.current],
+  );
   const expressionError = useSelector((state) => state.genes.expression.error);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
+
+  const router = useRouter();
+  const { experimentId } = router.query;
 
   useEffect(() => {
     if (isBrowser) {
@@ -112,14 +104,18 @@ const EmbeddingContinuousPlot = () => {
 
     return (
       <center>
-        <Vega spec={generateSpec(config)} data={generateVegaData()} renderer='canvas' />
+        <Vega spec={generateSpec(config, selectedGene)} data={generateVegaData()} renderer='canvas' />
       </center>
     );
   };
 
   return (
     <>
-      <Header plotUuid={plotUuid} experimentId={experimentId} routes={routes} />
+      <Header
+        plotUuid={plotUuid}
+        experimentId={experimentId}
+        finalRoute={route}
+      />
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>

@@ -1,5 +1,5 @@
 
-const generateSpec = (config, selectedGene) => {
+const generateSpec = (config) => {
   let legend = [];
 
   if (config.legendEnabled) {
@@ -7,7 +7,7 @@ const generateSpec = (config, selectedGene) => {
       {
         fill: 'color',
         type: 'gradient',
-        title: selectedGene.current,
+        title: config.shownGene,
         gradientLength: 100,
         labelColor: { value: config.masterColour },
         titleColor: { value: config.masterColour },
@@ -20,8 +20,6 @@ const generateSpec = (config, selectedGene) => {
 
         },
       }];
-  } else {
-    legend = null;
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',

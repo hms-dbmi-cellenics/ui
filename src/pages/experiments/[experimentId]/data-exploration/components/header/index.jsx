@@ -95,7 +95,7 @@ const Header = (props) => {
         title='Data Exploration'
         style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
         breadcrumb={{ routes, itemRender }}
-        extra={[
+        extra={(
           <div>
             <Dropdown
               key='search-menu-dropdown'
@@ -109,8 +109,8 @@ const Header = (props) => {
                 <DownOutlined />
               </Button>
             </Dropdown>
-          </div>,
-        ]}
+          </div>
+        )}
       />
     </>
   );

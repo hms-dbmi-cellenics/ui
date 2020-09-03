@@ -170,25 +170,27 @@ const HeatmapPlot = (props) => {
     mouseOver: handleMouseOver,
   };
 
-  return [
-    <VegaHeatmap
-      spec={spec}
-      data={createVegaData()}
-      showAxes={selectedGenes?.length <= 30}
-      rowsNumber={selectedGenes.length}
-      defaultWidth={width + 35}
-      signalListeners={signalListeners}
-      width={width}
-      height={height}
-    />,
-    <div className='cell-info-container'>
-      <CellInfo
-        coordinates={hoverCoordinates}
-        componentType={componentType}
+  return (
+    <div>
+      <VegaHeatmap
+        spec={spec}
+        data={createVegaData()}
+        showAxes={selectedGenes?.length <= 30}
+        rowsNumber={selectedGenes.length}
+        defaultWidth={width + 35}
+        signalListeners={signalListeners}
+        width={width}
+        height={height}
       />
-    </div>,
-    <HeatmapCrossHairs />,
-  ];
+      <div className='cell-info-container'>
+        <CellInfo
+          coordinates={hoverCoordinates}
+          componentType={componentType}
+        />
+      </div>
+      <HeatmapCrossHairs />
+    </div>
+  );
 };
 
 HeatmapPlot.defaultProps = {};

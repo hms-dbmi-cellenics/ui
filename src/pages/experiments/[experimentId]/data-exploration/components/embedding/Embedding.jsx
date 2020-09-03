@@ -234,20 +234,20 @@ const Embedding = (props) => {
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
             />
-          ) : [
-            cellInfoVisible ? [
+          ) : (
+            cellInfoVisible ? (
               <div>
                 <CellInfo
                   componentType={embeddingType}
                   coordinates={cellCoordintes}
                 />
-              </div>,
-              <CrossHair
-                componentType={embeddingType}
-                coordinates={cellCoordintes}
-              />,
-            ] : <></>,
-          ]
+                <CrossHair
+                  componentType={embeddingType}
+                  coordinates={cellCoordintes}
+                />
+              </div>
+            ) : <></>
+          )
       }
     </div>
   );
