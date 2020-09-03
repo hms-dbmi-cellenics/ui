@@ -52,6 +52,7 @@
     "next": "^9.4.4",
     "next-images": "^1.4.0",
     "next-size": "^2.1.0",
+    "nprogress": "^0.2.0",
     "object-hash": "^2.0.3",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
