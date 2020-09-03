@@ -6,6 +6,7 @@ const updateConfig = (state, action) => {
     [plotUuid]: {
       ...state[plotUuid],
       config: { ...state[plotUuid].config, ...configChange },
+      outstandingChanges: true,
     },
   };
 };

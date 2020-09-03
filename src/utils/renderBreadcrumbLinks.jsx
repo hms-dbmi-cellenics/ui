@@ -17,11 +17,16 @@ function renderBreadcrumbLinks(route, params, routes, paths) {
     return path;
   }).join('/');
 
+  // We are using passHref, which will cause a `href` property
+  // to be rendered into the anchor. ESLint warning is not
+  // well-founded, therefore.
+  /* eslint-disable jsx-a11y/anchor-is-valid */
   return (
     <Link href={`/${href}`} as={`/${as}`} passHref>
-      {route.breadcrumbName}
+      <a>{route.breadcrumbName}</a>
     </Link>
   );
+  /* eslint-enable jsx-a11y/anchor-is-valid */
 }
 
 export default renderBreadcrumbLinks;

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
@@ -53,7 +54,7 @@ const ContentWrapper = (props) => {
           </Menu.Item>
           <Menu.Item disabled key='1'>
             <BarsOutlined />
-            <span> PBMC Dataset Experiment</span>
+            <span>Experiment Name</span>
           </Menu.Item>
           <SubMenu key='sub1' icon={<BuildOutlined />} title='Data Processing'>
             <Menu.Item key='5'>
@@ -79,20 +80,14 @@ const ContentWrapper = (props) => {
               </Link>
             </Menu.Item>
           </SubMenu>
-          <Menu.Item key='3'>
+          <Menu.Item key='3' icon={<FundViewOutlined />}>
             <Link as={`/experiments/${experimentId}/data-exploration`} href='/experiments/[experimentId]/data-exploration' passHref>
-              <div>
-                <FundViewOutlined />
-                <span>Data Exploration</span>
-              </div>
+              <a>Data Exploration</a>
             </Link>
           </Menu.Item>
-          <Menu.Item key='4'>
+          <Menu.Item key='4' icon={<DatabaseOutlined />}>
             <Link as={`/experiments/${experimentId}/plots-and-tables`} href='/experiments/[experimentId]/plots-and-tables' passHref>
-              <div>
-                <DatabaseOutlined />
-                <span> Plots and Tables </span>
-              </div>
+              <a>Plots and Tables</a>
             </Link>
           </Menu.Item>
         </Menu>

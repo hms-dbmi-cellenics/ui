@@ -163,7 +163,7 @@ const VolcanoPlot = () => {
   };
 
   return (
-    <>
+    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header plotUuid={plotUuid} experimentId={experimentId} finalRoute={route} />
       <Row gutter={16}>
         <Col span={16}>
@@ -288,7 +288,7 @@ const VolcanoPlot = () => {
           </Space>
         </Col>
       </Row>
-    </>
+    </div>
   );
 };
 

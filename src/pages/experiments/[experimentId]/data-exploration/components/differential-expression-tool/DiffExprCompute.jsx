@@ -37,9 +37,6 @@ const DiffExprCompute = (props) => {
     dispatch(loadCellSets(experimentId));
   }, []);
 
-
-  console.log(cellSets, selectedCellSets);
-
   const generateSpecialKey = (parentKey) => ({ key: ['all', parentKey].join('-') });
   const isKeySpecial = (key) => (key === 'rest' || key === 'All' || key.startsWith('all-'));
 
