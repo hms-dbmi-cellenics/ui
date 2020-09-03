@@ -13,15 +13,8 @@ import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
 
-Router.events.on('routeChangeStart', (url) => {
-  console.log(`Loading: ${url}`);
-  NProgress.start();
-});
-Router.events.on('routeChangeComplete', () => {
-  console.log('complete!');
-
-  NProgress.done();
-});
+Router.events.on('routeChangeStart', () => NProgress.start());
+Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 class MyApp extends App {
