@@ -35,12 +35,7 @@ const plotType = 'volcano';
 const VolcanoPlot = () => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.plots[plotUuid]?.config);
-  const loading = useSelector((state) => state.differentialExpression.properties.loading);
-  const differentialExpression = useSelector(
-    (state) => state.differentialExpression.properties.data,
-  );
-  const error = useSelector((state) => state.differentialExpression.properties.error);
-
+  const { loading, data, error } = useSelector((state) => state.differentialExpression.properties);
   const [plotData, setPlotData] = useState([]);
   const [spec, setSpec] = useState({ spec: null, maxNegativeLogpValue: null, xMax: null });
 
@@ -55,34 +50,33 @@ const VolcanoPlot = () => {
 
   useEffect(() => {
     if (!config) return;
-    if (_.isEmpty(config.diffExpData)) return;
+    if (_.isEmpty(config.cellSets)) return;
 
-    dispatch(loadDifferentialExpression(experimentId, config.diffExpData));
-  }, [config?.diffExpData]);
+    dispatch(loadDifferentialExpression(experimentId, config.cellSets));
+  }, [config?.cellSets]);
 
   useEffect(() => {
     if (!config) return;
-
+    setDataPointStatus();
     const generatedSpec = generateSpec(config, plotData);
     setSpec(generatedSpec);
   }, [config]);
 
   useEffect(() => {
-    if (differentialExpression.length === 0) return;
-
-    setPlotData(generateData(differentialExpression));
-  }, [differentialExpression]);
+    if (data.length === 0) return;
+    setDataPointStatus();
+  }, [data]);
 
   useEffect(() => {
     if (plotData.length === 0) return;
-
     const generatedSpec = generateSpec(config, plotData);
     setSpec(generatedSpec);
   }, [plotData]);
 
 
-  const generateData = (data) => {
-    const result = data.filter((datum) => {
+  const setDataPointStatus = () => {
+    const dataPoints = _.cloneDeep(data);
+    dataPoints.filter((datum) => {
       // Downsample insignificant, not changing genes by the appropriate amount.
       const isSignificant = (
         datum.log2fc < config.logFoldChangeThreshold * -1
@@ -131,8 +125,7 @@ const VolcanoPlot = () => {
 
       return datum;
     });
-
-    return result;
+    setPlotData(dataPoints);
   };
 
   // obj is a subset of what default config has and contains only the things we want change
@@ -140,18 +133,15 @@ const VolcanoPlot = () => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const onComputeDiffExp = (diffExpData) => {
-    updatePlotWithChanges({
-      diffExpData,
+  const onComputeDiffExp = (cellSets) => {
+    // These reset the ranges to `null`, which makes them automatically
+    // determined by the algorithm. Because of our bad DE, we have issues
+    // where we have extreme values, so this is not necessary right now.
+    // TODO: fix this when we have good DE
 
-      // These reset the ranges to `null`, which makes them automatically
-      // determined by the algorithm. Because of our bad DE, we have issues
-      // where we have extreme values, so this is not necessary right now.
-      // TODO: fix this when we have good DE
-
-      // maxNegativeLogpValueDomain: null,
-      // logFoldChangeDomain: null,
-    });
+    // maxNegativeLogpValueDomain: null,
+    // logFoldChangeDomain: null,
+    updatePlotWithChanges({ cellSets });
   };
 
   if (!config) {
@@ -194,7 +184,7 @@ const VolcanoPlot = () => {
                 <DiffExprCompute
                   experimentId={experimentId}
                   onCompute={onComputeDiffExp}
-                  cellSets={config.diffExpData}
+                  cellSets={config.cellSets}
                 />
               </Panel>
               <Panel header='Main Schema' key='1'>
