@@ -110,7 +110,7 @@ const EmbeddingContinuousPlot = () => {
   };
 
   return (
-    <>
+    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header
         plotUuid={plotUuid}
         experimentId={experimentId}
@@ -219,7 +219,7 @@ const EmbeddingContinuousPlot = () => {
           </Collapse>
         </Col>
       </Row>
-    </>
+    </div>
   );
 };
 
