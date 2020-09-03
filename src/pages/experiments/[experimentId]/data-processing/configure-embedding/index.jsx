@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-  Collapse,
+  Collapse, PageHeader,
 } from 'antd';
 import EmbeddingPreview from './components/EmbeddingPreview';
+import FeedbackButton from '../../../../../components/FeedbackButton';
 
 const { Panel } = Collapse;
 class ProcessingViewPage extends React.Component {
@@ -14,11 +15,17 @@ class ProcessingViewPage extends React.Component {
 
   render() {
     return (
-      <Collapse defaultActiveKey={['1']}>
-        <Panel key='1' header='Configure Embedding'>
-          <EmbeddingPreview />
-        </Panel>
-      </Collapse >
+      <>
+        <PageHeader
+          title='Data Processing'
+          extra={<FeedbackButton />}
+        />
+        <Collapse defaultActiveKey={['1']}>
+          <Panel key='1' header='Configure Embedding'>
+            <EmbeddingPreview />
+          </Panel>
+        </Collapse>
+      </>
     );
   }
 }

@@ -8,6 +8,7 @@ import MitochondrialContent from './components/MitochondrialContent/Mitochondria
 import Classifier from './components/Classifier/Classifier';
 import GenesVsUMIs from './components/GenesVsUMIs/GenesVsUMIs';
 import DoubletScores from './components/DoubletScores/DoubletScores';
+import FeedbackButton from '../../../../../components/FeedbackButton';
 
 const { Panel } = Collapse;
 
@@ -33,8 +34,7 @@ class ProcessingViewPage extends React.Component {
       <>
         <PageHeader
           title='Data Processing'
-          subTitle='Powerful data exploration'
-          style={{ width: '100%', paddingRight: '0px' }}
+          extra={<FeedbackButton />}
         />
 
         <Collapse accordion>

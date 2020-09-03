@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-  PageHeader, Button, Dropdown, Skeleton,
+  PageHeader, Button, Dropdown, Skeleton, Space,
 } from 'antd';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import SearchMenu from '../../../../../../components/SearchMenu';
+import FeedbackButton from '../../../../../../components/FeedbackButton';
 import { addWindow, addToWindow } from '../../../../../../redux/actions/layout';
 import getApiEndpoint from '../../../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../../../utils/cacheRequest';
@@ -96,7 +97,8 @@ const Header = (props) => {
         style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
         breadcrumb={{ routes, itemRender }}
         extra={(
-          <div>
+          <Space>
+            <FeedbackButton />
             <Dropdown
               key='search-menu-dropdown'
               overlay={searchMenu}
@@ -109,7 +111,7 @@ const Header = (props) => {
                 <DownOutlined />
               </Button>
             </Dropdown>
-          </div>
+          </Space>
         )}
       />
     </>

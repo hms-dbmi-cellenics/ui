@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import {
-  PageHeader, Row, Col, Button, Skeleton,
+  PageHeader, Row, Col, Button, Skeleton, Space,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -13,6 +13,7 @@ import { savePlotConfig } from '../../../../../redux/actions/plots/index';
 import itemRender from '../../../../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../../utils/cacheRequest';
+import FeedbackButton from '../../../../../components/FeedbackButton';
 
 const KeyboardEventHandler = dynamic(
   () => import('react-keyboard-event-handler'),
@@ -98,7 +99,7 @@ const Header = (props) => {
 
   return (
     <Row>
-      <Col>
+      <Col span={16}>
         <KeyboardEventHandler
           handleFocusableElements
           handleKeys={['ctrl+s', 'meta+s']}
@@ -112,16 +113,20 @@ const Header = (props) => {
           title='Edit collection'
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
-          extra={[
-            <Button
-              key='save'
-              type='primary'
-              disabled={saved}
-              onClick={onClickSave}
-            >
-              Save
-            </Button>,
-          ]}
+          extra={(
+            <Space>
+              <FeedbackButton />
+              <Button
+                key='save'
+                type='primary'
+                disabled={saved}
+                onClick={onClickSave}
+              >
+                Save
+              </Button>
+              ,
+            </Space>
+          )}
         />
       </Col>
     </Row>

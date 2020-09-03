@@ -4,7 +4,6 @@ import {
   PageHeader, Row, Col, Space, Button, List, Card, Tooltip, Dropdown,
 } from 'antd';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
-import _ from 'lodash';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import SearchMenu from '../../../../components/SearchMenu';
@@ -12,6 +11,7 @@ import heatmap from '../../../../../static/media/heatmap.png';
 import embeddingContinuous from '../../../../../static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../static/media/embeddingCategorical.png';
 import volcano from '../../../../../static/media/volcano.png';
+import FeedbackButton from '../../../../components/FeedbackButton';
 
 const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
   <Card.Grid
@@ -122,27 +122,32 @@ const PlotsTablesHome = () => {
             title='Plots and Tables'
             subTitle='Home'
             style={{ width: '100%', paddingRight: '0px' }}
-            extra={[
-              <Dropdown
-                overlay={searchMenu}
-                visible={addMenuVisible}
-                onVisibleChange={(visible) => setAddMenuVisible(visible)}
-              >
-                <Button
-                  type='primary'
-                  onClick={() => setAddMenuVisible(!addMenuVisible)}
+            extra={(
+              <Space>
+                <FeedbackButton />
+                <Dropdown
+                  overlay={searchMenu}
+                  visible={addMenuVisible}
+                  onVisibleChange={(visible) => setAddMenuVisible(visible)}
                 >
-                  Open Existing
-                  {' '}
-                  <DownOutlined />
-                </Button>
-              </Dropdown>,
-              <Tooltip title='Coming soon!'>
-                <Button type='primary' disabled>
-                  Create
-                </Button>
-              </Tooltip>,
-            ]}
+                  <Button
+                    type='primary'
+                    onClick={() => setAddMenuVisible(!addMenuVisible)}
+                  >
+                    Open Existing
+                    {' '}
+                    <DownOutlined />
+                  </Button>
+                </Dropdown>
+                ,
+                <Tooltip title='Coming soon!'>
+                  <Button type='primary' disabled>
+                    Create
+                  </Button>
+                </Tooltip>
+                ,
+              </Space>
+            )}
           />
           <Space direction='vertical' style={{ width: '100%' }}>
             <h1>Recent</h1>
