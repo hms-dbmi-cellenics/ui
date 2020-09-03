@@ -272,39 +272,7 @@ const VolcanoPlot = () => {
               <Panel header='Legend' key='12'>
                 <LegendEditor
                   onUpdate={updatePlotWithChanges}
-                  legendConfig={[
-                    {
-                      fill: 'color',
-                      encode: {
-                        title: {
-                          update: {
-                            fontSize: { value: 14 },
-                          },
-                        },
-                        labels: {
-                          interactive: true,
-                          update: {
-                            fontSize: { value: 12 },
-                            fill: { value: config.masterColour },
-                          },
-                          hover: {
-                            fill: { value: 'firebrick' },
-                          },
-                        },
-                        symbols: {
-                          update: {
-                            stroke: { value: 'transparent' },
-                          },
-                        },
-                        legend: {
-                          update: {
-                            stroke: { value: '#ccc' },
-                            strokeWidth: { value: 1.5 },
-                          },
-                        },
-                      },
-                    },
-                  ]}
+                  legendEnabled={config.legendEnabled}
                 />
               </Panel>
             </Collapse>

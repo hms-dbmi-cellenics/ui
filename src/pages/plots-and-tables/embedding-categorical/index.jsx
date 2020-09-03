@@ -54,7 +54,7 @@ const experimentId = '5e959f9c9f4b120771249001';
 
 const EmbeddingCategoricalPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid] ?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
@@ -69,7 +69,7 @@ const EmbeddingCategoricalPlot = () => {
   }, []);
 
   const generateCellSetOptions = () => {
-    const hierarchy = cellSets.hierarchy.map((cellSet) => ({ key: cellSet.key, children: cellSet.children?.length || 0 }));
+    const hierarchy = cellSets.hierarchy.map((cellSet) => ({ key: cellSet.key, children: cellSet.children ?.length || 0 }));
     return hierarchy.map(({ key, children }) => ({
       value: key,
       label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
@@ -223,25 +223,7 @@ const EmbeddingCategoricalPlot = () => {
             <Panel header='Legend' key='10'>
               <LegendEditor
                 onUpdate={onUpdate}
-                legendConfig={[
-                  {
-                    fill: 'cellSetColors',
-                    title: 'Cluster Name',
-                    type: 'symbol',
-                    orient: 'top',
-                    offset: 40,
-                    symbolType: 'square',
-                    symbolSize: { value: 200 },
-                    encode: {
-                      labels: {
-                        update: { text: { scale: 'cellSetIDToName', field: 'label' } },
-                      },
-                    },
-                    direction: 'horizontal',
-                    labelFont: { value: 'sans-serif' },
-                    titleFont: { value: 'sans-serif' },
-                  },
-                ]}
+                legendEnabled={config.legendEnabled}
               />
             </Panel>
             <Panel header='Labels' key='11'>
