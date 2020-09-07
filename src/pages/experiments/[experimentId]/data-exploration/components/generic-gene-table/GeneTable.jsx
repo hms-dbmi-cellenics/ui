@@ -19,7 +19,7 @@ const { Text } = Typography;
 
 const GeneTable = (props) => {
   const {
-    experimentId, onUpdate, error, loading, columns, data, total, initialTableState, width, height, cellSets,
+    experimentId, onUpdate, error, loading, columns, data, total, initialTableState, width, height,
   } = props;
 
   const dispatch = useDispatch();

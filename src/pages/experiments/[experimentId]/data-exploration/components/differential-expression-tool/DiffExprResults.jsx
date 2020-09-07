@@ -75,7 +75,6 @@ const DiffExprResults = (props) => {
     <Space direction='vertical' style={{ width: '100%' }}>
       <Button type='primary' size='small' onClick={onGoBack}>Go Back</Button>
       <GeneTable
-        renderKey={JSON.stringify(cellSets)}
         experimentId={experimentId}
         initialTableState={{
           sorter: {
