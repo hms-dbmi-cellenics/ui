@@ -13,6 +13,7 @@ import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTab
 
 import GeneLookupButton from './GeneLookupButton';
 import isBrowser from '../../../../../../utils/environment';
+import useLazyEffect from '../../../../../../utils/useLazyEffect';
 
 const { Text } = Typography;
 
@@ -46,9 +47,12 @@ const GeneTable = (props) => {
   );
 
   useEffect(() => {
+    onUpdate(tableState, geneTableUpdateReason.mounted);
+  }, []);
+
+  useLazyEffect(() => {
     onUpdate(tableState, loading ? geneTableUpdateReason.loading : geneTableUpdateReason.loaded);
   }, [loading]);
-
 
   const getSortOrder = (key) => {
     if (key === tableState.sorter.columnKey) {

@@ -26,6 +26,7 @@ const DiffExprManager = (props) => {
     if (!_.isEqual(newSelectedCellSets, selectedCellSets)) {
       setSelectedCellSets(newSelectedCellSets);
     }
+
     setCurrentView(DiffExprView.results);
   };
 

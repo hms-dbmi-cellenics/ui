@@ -61,9 +61,11 @@ const DiffExprResults = (props) => {
   const isTableLoading = () => data.length === 0 || loading;
 
   const onUpdate = (newState, reason) => {
-    if (reason === geneTableUpdateReason.loaded && !isTableLoading()) {
+    // We handle `loading` and `loaded` in the HOC, no need to react to these.
+    if (reason === geneTableUpdateReason.loaded || reason === geneTableUpdateReason.loading) {
       return;
     }
+
     dispatch(
       loadDifferentialExpression(experimentId, cellSets, newState),
     );
