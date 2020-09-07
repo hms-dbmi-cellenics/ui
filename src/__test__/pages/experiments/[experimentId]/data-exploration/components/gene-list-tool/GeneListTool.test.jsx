@@ -174,8 +174,8 @@ describe('GeneListTool', () => {
     onClick();
 
     // The store should have been updated.
-    expect(store.getActions().length).toEqual(1);
-    expect(store.getActions()[0]).toMatchSnapshot();
+    expect(store.getActions().length).toEqual(3);
+    expect(store.getActions()[2]).toMatchSnapshot();
   });
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
