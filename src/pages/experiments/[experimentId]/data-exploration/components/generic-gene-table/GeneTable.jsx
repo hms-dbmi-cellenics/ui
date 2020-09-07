@@ -13,7 +13,7 @@ import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTab
 
 import GeneLookupButton from './GeneLookupButton';
 import isBrowser from '../../../../../../utils/environment';
-import { useLazyEffect } from '../../../../../../utils/useLazyEffect';
+import useLazyEffect from '../../../../../../utils/useLazyEffect';
 
 const { Text } = Typography;
 
