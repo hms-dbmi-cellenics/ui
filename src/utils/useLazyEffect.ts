@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+// Custom useEffect hook that skips on initial render (mount).
 export const useLazyEffect:typeof React.useEffect = (cb, dep) => {
   const initializeRef = React.useRef<boolean>(false)
 
