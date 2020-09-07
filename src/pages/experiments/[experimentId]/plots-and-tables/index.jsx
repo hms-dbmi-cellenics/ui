@@ -139,13 +139,11 @@ const PlotsTablesHome = () => {
                     <DownOutlined />
                   </Button>
                 </Dropdown>
-                ,
                 <Tooltip title='Coming soon!'>
                   <Button type='primary' disabled>
                     Create
                   </Button>
                 </Tooltip>
-                ,
               </Space>
             )}
           />

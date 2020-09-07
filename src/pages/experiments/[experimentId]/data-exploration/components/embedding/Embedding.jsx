@@ -9,6 +9,7 @@ import {
   Spin, Button, Empty, Typography,
 } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
+
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import CrossHair from './CrossHair';
@@ -36,7 +37,9 @@ const Scatterplot = dynamic(
 );
 
 const Embedding = (props) => {
-  const { experimentId, embeddingType } = props;
+  const {
+    experimentId, embeddingType, height, width,
+  } = props;
   const view = { target: [6, 9, 0], zoom: 4.00 };
   const selectedCellIds = new Set();
 
@@ -202,10 +205,11 @@ const Embedding = (props) => {
     return <></>;
   };
 
+
   return (
     <div
       className='vitessce-container vitessce-theme-light'
-      style={{ height: '50vh', position: 'relative' }}
+      style={{ width, height, position: 'relative' }}
       onMouseEnter={() => { setCellInfoVisible(true); }}
       onMouseLeave={() => { setCellInfoVisible(false); }}
     >
@@ -252,9 +256,12 @@ const Embedding = (props) => {
     </div>
   );
 };
+
 Embedding.defaultProps = {};
 
 Embedding.propTypes = {
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
   experimentId: PropTypes.string.isRequired,
   embeddingType: PropTypes.string.isRequired,
 };

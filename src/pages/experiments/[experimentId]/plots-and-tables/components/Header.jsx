@@ -124,7 +124,6 @@ const Header = (props) => {
               >
                 Save
               </Button>
-              ,
             </Space>
           )}
         />
