@@ -1,4 +1,5 @@
 const geneTableUpdateReason = Object.freeze({
+  mounted: 'mounted',
   loading: 'setToLoaded',
   loaded: 'setToLoading',
   filtered: 'filtered',
