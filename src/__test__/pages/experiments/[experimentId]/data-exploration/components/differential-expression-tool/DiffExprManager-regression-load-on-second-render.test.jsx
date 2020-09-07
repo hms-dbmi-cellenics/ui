@@ -108,7 +108,6 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
 
     await waitForActions(store, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
-
     expect(store.getActions().length).toEqual(2);
     expect(store.getActions()[0]).toMatchSnapshot();
     expect(store.getActions()[1]).toMatchSnapshot();
