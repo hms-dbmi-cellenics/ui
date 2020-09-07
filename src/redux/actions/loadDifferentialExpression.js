@@ -9,6 +9,7 @@ const REQUEST_TIMEOUT = 60;
 const loadDifferentialExpression = (
   experimentId, cellSets, tableState,
 ) => async (dispatch) => {
+  console.warn('in load diff exp', cellSets);
   dispatch({
     type: DIFF_EXPR_LOADING,
     payload: {
