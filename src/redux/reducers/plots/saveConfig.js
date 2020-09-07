@@ -6,6 +6,7 @@ const saveConfig = (state, action) => {
     [plotUuid]: {
       ...state[plotUuid],
       lastUpdated,
+      outstandingChanges: false,
     },
   };
 };

@@ -194,7 +194,16 @@ module.exports = withSize(withCSS(
       isDev, // Pass through env variables
     },
     env: {
-      REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+      // You can add env variables that will be passed on to the client here.
+    },
+    async redirects() {
+      return [
+        {
+          source: '/',
+          destination: '/experiments/5e959f9c9f4b120771249001/data-exploration',
+          permanent: false,
+        },
+      ];
     },
   })),
 ));
