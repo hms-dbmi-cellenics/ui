@@ -2,9 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Empty, Spin, Button, Typography,
+  Empty, Spin, Button,
 } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import _ from 'lodash';
 import spec from '../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
@@ -13,8 +12,8 @@ import CellInfo from '../CellInfo';
 import { updateCellInfo } from '../../../../redux/actions';
 
 import { loadGeneExpression } from '../../../../redux/actions/genes';
+import PlatformError from '../../../../components/PlatformError';
 
-const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
   const { experimentId, width, height } = props;
@@ -93,28 +92,15 @@ const HeatmapPlot = (props) => {
 
   if (error) {
     return (
-      <Empty
-        image={<Text type='danger'><ExclamationCircleFilled style={{ fontSize: 40 }} /></Text>}
-        imageStyle={{
-          height: height / 2,
+      <PlatformError
+        description={error}
+        onClick={() => {
+          loadExpression.current(selectedGenes);
+          if (!heatmapLoading) {
+            setHeatmapLoading(true);
+          }
         }}
-        description={
-          error
-        }
-      >
-        <Button
-          type='primary'
-          onClick={() => {
-            loadExpression.current(selectedGenes);
-            if (!heatmapLoading) {
-              setHeatmapLoading(true);
-            }
-          }}
-        >
-          Try again
-        </Button>
-        <HeatmapCrossHairs />
-      </Empty>
+      />
     );
   }
 

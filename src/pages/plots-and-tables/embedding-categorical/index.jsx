@@ -1,9 +1,8 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import {
-  Row, Col, Space, Collapse, Skeleton, Select, Spin, Typography, Empty, Button,
+  Row, Col, Space, Collapse, Skeleton, Select, Spin,
 } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -22,10 +21,10 @@ import Header from '../components/Header';
 import loadEmbedding from '../../../redux/actions/loadEmbedding';
 import { loadCellSets } from '../../../redux/actions/cellSets';
 import isBrowser from '../../../utils/environment';
+import PlatformError from '../../../components/PlatformError';
 
 
 const { Panel } = Collapse;
-const { Text } = Typography;
 
 const routes = [
   {
@@ -101,27 +100,10 @@ const EmbeddingCategoricalPlot = () => {
   }
 
   const renderError = (err) => (
-    <Empty
-      image={(
-        <Text type='danger'>
-          {err}
-          <ExclamationCircleFilled style={{ fontSize: 40 }} />
-        </Text>
-      )}
-      imageStyle={{
-        height: 40,
-      }}
-      description={
-        error
-      }
-    >
-      <Button
-        type='primary'
-        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
-      >
-        Try again
-      </Button>
-    </Empty>
+    <PlatformError
+      description={error + err}
+      onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+    />
   );
 
   const renderPlot = () => {

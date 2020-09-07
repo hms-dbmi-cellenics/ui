@@ -6,9 +6,8 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Spin, Button, Empty, Typography,
+  Spin, Typography,
 } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import CrossHair from './CrossHair';
@@ -28,6 +27,8 @@ import {
 import legend from '../../../../../static/media/viridis.png';
 import isBrowser from '../../../../utils/environment';
 import './Embedding.module.css';
+import PlatformError from '../../../../components/PlatformError';
+
 
 const { Text } = Typography;
 
@@ -159,24 +160,7 @@ const Embedding = (props) => {
 
   // The embedding couldn't load. Display an error condition.
   if (error) {
-    return (
-      <Empty
-        image={<Text type='danger'><ExclamationCircleFilled style={{ fontSize: 40 }} /></Text>}
-        imageStyle={{
-          height: 40,
-        }}
-        description={
-          error
-        }
-      >
-        <Button
-          type='primary'
-          onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
-        >
-          Try again
-        </Button>
-      </Empty>
-    );
+    return <PlatformError description={error} onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))} />;
   }
 
   const renderExpressionView = () => {
