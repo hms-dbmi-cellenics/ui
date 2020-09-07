@@ -24,10 +24,8 @@ const DiffExprManager = (props) => {
 
   const onCompute = (newSelectedCellSets) => {
     if (!_.isEqual(newSelectedCellSets, selectedCellSets)) {
-      console.warn('computing with', newSelectedCellSets);
       setSelectedCellSets(newSelectedCellSets);
     }
-    console.warn('changing view', newSelectedCellSets);
 
     setCurrentView(DiffExprView.results);
   };

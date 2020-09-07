@@ -71,9 +71,6 @@ const DiffExprResults = (props) => {
     );
   };
 
-  console.warn('rendering results gene table', cellSets);
-
-
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
       <Button type='primary' size='small' onClick={onGoBack}>Go Back</Button>
