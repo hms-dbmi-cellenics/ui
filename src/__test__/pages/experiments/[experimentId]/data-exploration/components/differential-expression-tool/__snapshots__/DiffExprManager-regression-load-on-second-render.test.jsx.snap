@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DiffExprManager if we then go back and change the parameters again, the new differential expression data should be loading 1`] = `
+exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 1`] = `
 Object {
   "payload": Object {
     "experimentId": "1234",
@@ -9,11 +9,11 @@ Object {
 }
 `;
 
-exports[`DiffExprManager if we then go back and change the parameters again, the new differential expression data should be loading 2`] = `
+exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 2`] = `
 Object {
   "payload": Object {
     "cellSets": Object {
-      "cellSet": "cluster-869",
+      "cellSet": "cluster-2",
       "compareWith": "rest",
     },
     "data": Array [
@@ -55,7 +55,7 @@ Object {
 }
 `;
 
-exports[`DiffExprManager if we then go back and change the parameters again, the new differential expression data should be loading 3`] = `
+exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 3`] = `
 Object {
   "payload": Object {
     "experimentId": "1234",
@@ -64,12 +64,12 @@ Object {
 }
 `;
 
-exports[`DiffExprManager if we then go back and change the parameters again, the new differential expression data should be loading 4`] = `
+exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 4`] = `
 Object {
   "payload": Object {
     "cellSets": Object {
-      "cellSet": "cluster-867",
-      "compareWith": "cluster-866",
+      "cellSet": "cluster-3",
+      "compareWith": "rest",
     },
     "data": Array [
       Object {
@@ -110,7 +110,7 @@ Object {
 }
 `;
 
-exports[`DiffExprManager on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 1`] = `
+exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 1`] = `
 Object {
   "payload": Object {
     "experimentId": "1234",
@@ -119,11 +119,11 @@ Object {
 }
 `;
 
-exports[`DiffExprManager on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 2`] = `
+exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 2`] = `
 Object {
   "payload": Object {
     "cellSets": Object {
-      "cellSet": "cluster-866",
+      "cellSet": "cluster-1",
       "compareWith": "rest",
     },
     "data": Array [

@@ -64,7 +64,7 @@ const storeState = {
 
 let store = null;
 
-describe('DiffExprManager', () => {
+describe('DiffExprManager regression test -- diff exp would not reload after `go back` was hit and a new cluster selected', () => {
   beforeAll(async () => {
     await preloadAll();
   });
@@ -97,7 +97,7 @@ describe('DiffExprManager', () => {
       </Provider>,
     );
 
-    const cellSets = { cellSet: 'cluster-866', compareWith: 'rest' };
+    const cellSets = { cellSet: 'cluster-1', compareWith: 'rest' };
     act(() => {
       component.find(DiffExprCompute).props().onCompute(cellSets);
     });
@@ -122,7 +122,7 @@ describe('DiffExprManager', () => {
     );
 
     // Choose a cluster and hit compute.
-    let cellSets = { cellSet: 'cluster-869', compareWith: 'rest' };
+    let cellSets = { cellSet: 'cluster-2', compareWith: 'rest' };
     act(() => {
       component.find(DiffExprCompute).props().onCompute(cellSets);
     });
@@ -149,7 +149,7 @@ describe('DiffExprManager', () => {
     expect(component.find(DiffExprCompute).length).toEqual(1);
 
     // Choose another cell set.
-    cellSets = { cellSet: 'cluster-867', compareWith: 'cluster-866' };
+    cellSets = { cellSet: 'cluster-3', compareWith: 'rest' };
     act(() => {
       component.find(DiffExprCompute).props().onCompute(cellSets);
     });
