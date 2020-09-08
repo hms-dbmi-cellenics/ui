@@ -1,6 +1,6 @@
 import React from 'react';
 
-import PlatformError from '../../../components/PlatformError';
+import PlatformError from '../../../../../components/PlatformError';
 
 const renderError = (err, onTryAgain) => (
   <PlatformError
