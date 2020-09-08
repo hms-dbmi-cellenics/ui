@@ -70,7 +70,6 @@ const generateSpec = (configSrc, data) => {
     : { data: 'data', field: 'neglogpvalue' };
 
   const textEquation = `datum.log2fc !== 'NA' && datum.neglogpvalue >${config.textThresholdValue}`;
-  console.log('VALUE IS ', config.textThresholdValue);
   let legend = [];
   if (config.legendEnabled) {
     legend = [
