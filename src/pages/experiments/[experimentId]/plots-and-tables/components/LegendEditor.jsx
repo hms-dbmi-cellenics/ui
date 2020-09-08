@@ -1,25 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Radio } from 'antd';
 
 const LegendEditor = (props) => {
-  const { onUpdate, legendConfig } = props;
-  const [legendEnabled, setLegendEnabled] = useState(false);
+  const { onUpdate, legendEnabled } = props;
 
   const onChange = (e) => {
     if (e.target.value === true) {
-      onUpdate({ legend: legendConfig });
+      onUpdate({ legendEnabled: true });
     } else {
-      onUpdate({ legend: [] });
+      onUpdate({ legendEnabled: false });
     }
-    setLegendEnabled(e.target.value);
   };
-
-  useEffect(() => {
-    if (legendEnabled) {
-      onUpdate({ legend: legendConfig });
-    }
-  }, [legendConfig[0].title]);
 
   return (
     <Radio.Group onChange={onChange} value={legendEnabled}>
@@ -31,7 +23,7 @@ const LegendEditor = (props) => {
 
 LegendEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
-  legendConfig: PropTypes.array.isRequired,
+  legendEnabled: PropTypes.array.isRequired,
 };
 
 export default LegendEditor;
