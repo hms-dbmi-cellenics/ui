@@ -363,7 +363,7 @@ class GenesVsUMIs extends React.Component {
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
           placeholder: 4.8,
-          sliderMax: 5
+          sliderMax: 5,
         });
       } else {
         this.updatePlotWithChanges({
@@ -385,7 +385,7 @@ class GenesVsUMIs extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical' style={{ width: '100%' }}>
-              <Tooltip placement="bottom" title='The number of genes vs number of UMIs plot is used to exclude cell fragments and outliers. The user can set the stringency (to define the confidence band), and the min/max cell size (note that min cell size will change across filters).'>
+              <Tooltip placement='bottom' title='The number of genes vs number of UMIs plot is used to exclude cell fragments and outliers. The user can set the stringency (to define the confidence band), and the min/max cell size (note that min cell size will change across filters).'>
                 <Button icon={<InfoCircleOutlined />} />
               </Tooltip>
               <img
