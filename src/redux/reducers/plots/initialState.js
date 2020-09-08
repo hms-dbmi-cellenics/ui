@@ -130,7 +130,7 @@ const volcanoInitialConfig = {
   masterColour: '#000000',
   toggleInvert: '#FFFFFF',
   reverseCbar: false,
-  textThresholdValue: 10,
+  textThresholdValue: 240,
 };
 
 
