@@ -8,7 +8,7 @@ jest.mock('localforage');
 configure({ adapter: new Adapter() });
 
 describe('HierarchicalTree', () => {
-  test('renders correctly', () => {
+  it('renders correctly', () => {
     const treeData = [{
       key: '1',
       name: 'my element',
@@ -23,7 +23,7 @@ describe('HierarchicalTree', () => {
     expect(tree.length).toEqual(1);
   });
 
-  test('can drag first component at the last position', () => {
+  it('can drag first component at the last position', () => {
     const firstChild = {
       key: '1a',
       name: 'first child',
@@ -84,7 +84,7 @@ describe('HierarchicalTree', () => {
     expect(childrenKeys).toEqual(['2a', '3a', '1a']);
   });
 
-  test('Can have child component change parent', () => {
+  it('Can have child component change parent', () => {
     const child = {
       key: '1a',
       name: 'first child',
@@ -140,7 +140,7 @@ describe('HierarchicalTree', () => {
     expect(firstArgument[1].children.length).toEqual(1);
   });
 
-  test("Can't drop parent inside node", () => {
+  it("Can't drop parent inside node", () => {
     const firstParent = {
       key: '1',
       name: 'parent 1',
@@ -191,5 +191,37 @@ describe('HierarchicalTree', () => {
     expect(treeData.length).toEqual(2);
 
     expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(0);
+  });
+
+  it('when no tree data, no keys are checked by default', () => {
+    const treeData = [];
+    const mockOnCheck = jest.fn();
+    mount(
+      <HierarchicalTree treeData={treeData} onCheck={mockOnCheck} />,
+    );
+    expect(mockOnCheck).toHaveBeenCalledTimes(0);
+  });
+
+  it('correct keys in tree data with no children are checked by default', () => {
+    const treeData = [{ key: 'louvain' }];
+    const mockOnCheck = jest.fn((x) => console.log('my mock got called! ', x));
+    mount(
+      <HierarchicalTree treeData={treeData} onCheck={mockOnCheck} />,
+    );
+    expect(mockOnCheck).toHaveBeenCalledTimes(1);
+    expect(mockOnCheck).toHaveBeenCalledWith(['louvain']);
+  });
+
+  it('correct keys in tree data with children are checked by default', () => {
+    const treeData = [
+      { key: 'louvain', children: [{ key: 'one' }, { key: 'two' }, { key: 'three' }] },
+      { key: 'another-set', children: [{ key: 'four' }, { key: 'five' }, { key: 'six' }] },
+    ];
+    const mockOnCheck = jest.fn((x) => console.log('my mock got called! ', x));
+    mount(
+      <HierarchicalTree treeData={treeData} onCheck={mockOnCheck} />,
+    );
+    expect(mockOnCheck).toHaveBeenCalledTimes(1);
+    expect(mockOnCheck).toHaveBeenCalledWith(['louvain', 'one', 'two', 'three']);
   });
 });
