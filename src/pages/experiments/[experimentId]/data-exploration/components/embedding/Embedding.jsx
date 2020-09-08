@@ -124,10 +124,18 @@ const Embedding = (props) => {
 
   const updateCellsHover = (cell) => {
     if (cell) {
+      if (currentView.current === 'expression') {
+        return dispatch(updateCellInfo({
+          cellName: cell.cellId,
+          geneName: focusedGene,
+          expression: focusedExpression ? focusedExpression.expression[cell.cellId] : undefined,
+          componentType: embeddingType,
+        }));
+      }
       return dispatch(updateCellInfo({
         cellName: cell.cellId,
-        geneName: focusedGene,
-        expression: focusedExpression ? focusedExpression.expression[cell.cellId] : undefined,
+        geneName: undefined,
+        expression: undefined,
         componentType: embeddingType,
       }));
     }
