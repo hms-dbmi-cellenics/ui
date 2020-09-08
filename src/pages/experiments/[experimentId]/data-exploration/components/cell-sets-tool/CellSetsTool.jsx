@@ -32,8 +32,11 @@ const CellSetsTool = (props) => {
   } = cellSets;
 
   useEffect(() => {
-    if (isBrowser) dispatch(loadCellSets(experimentId));
+    if (isBrowser) {
+      dispatch(loadCellSets(experimentId));
+    }
   }, []);
+
 
   useEffect(() => {
     if (notifications

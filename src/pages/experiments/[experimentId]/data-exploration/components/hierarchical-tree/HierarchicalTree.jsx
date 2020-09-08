@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Tree, Space } from 'antd';
 import { transform, cloneDeep } from 'lodash';
@@ -19,11 +19,28 @@ const HierarchicalTree = (props) => {
 
   const [autoExpandParent, setAutoExpandParent] = useState(true);
 
+  // by default, the first entry of treeData and all its children is checked
+  const getDefaultCheckedKeys = () => {
+    if (!treeData || treeData.length === 0) return [];
+    const chKeys = [treeData[0].key];
+    if (!treeData[0].children) return chKeys;
+    treeData[0].children.filter((child) => chKeys.push(child.key));
+    return chKeys;
+  };
+
+  const [checkedKeys, setCheckedKeys] = useState(getDefaultCheckedKeys());
+
+  useEffect(() => {
+    if (checkedKeys.length > 0) {
+      onCheck(checkedKeys);
+    }
+  }, []);
+
   const onExpand = () => {
     setAutoExpandParent(false);
   };
 
-  const onCheck = (keys) => { propOnCheck(keys); };
+  const onCheck = (keys) => { setCheckedKeys(keys); propOnCheck(keys); };
 
   const onSelect = (keys) => { propOnSelect(keys); };
 
@@ -232,6 +249,7 @@ const HierarchicalTree = (props) => {
       onCheck={onCheck}
       onSelect={onSelect}
       treeData={treeDataToRender}
+      checkedKeys={checkedKeys}
       onDrop={onDrop}
 
       // eslint-disable-next-line react/jsx-props-no-spreading
