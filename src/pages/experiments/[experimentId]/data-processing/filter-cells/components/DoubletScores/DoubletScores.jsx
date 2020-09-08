@@ -282,7 +282,7 @@ class DoubletScores extends React.Component {
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
           <Col span={1}>
-            <Tooltip title='Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The cut-off is typically set around 0.25.'>
+            <Tooltip placement="bottom" title='Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The cut-off is typically set around 0.25.'>
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
           </Col>
@@ -297,7 +297,7 @@ class DoubletScores extends React.Component {
                     min={0}
                     max={1}
                     onAfterChange={(val) => changeThreshold(val)}
-                    step={0.1}
+                    step={0.05}
                   />
                 </Form.Item>
               </Panel>

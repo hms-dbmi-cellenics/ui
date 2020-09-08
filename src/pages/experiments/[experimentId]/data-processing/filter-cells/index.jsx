@@ -39,7 +39,7 @@ class ProcessingViewPage extends React.Component {
 
         <Collapse accordion>
           <Panel
-            header='Cell size Distribution'
+            header='Cell size distribution'
             extra={(
               <Tooltip title='disable filter'>
                 <Switch
@@ -124,7 +124,7 @@ class ProcessingViewPage extends React.Component {
             <GenesVsUMIs filtering={GeneVUmiFiltering} />
           </Panel>
           <Panel
-            header='Doublet Scores'
+            header='Doublet scores'
             extra={(
               <Tooltip title='disable filter'>
                 <Switch

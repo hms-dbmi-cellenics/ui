@@ -21,8 +21,6 @@ const generateSpec = (config) => {
         titleFont: { value: 'sans-serif' },
       },
     ];
-  } else {
-    legend = null;
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',

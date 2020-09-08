@@ -28,10 +28,10 @@ class ReadAlignment extends React.Component {
       plotToDraw: true,
       data: plotData,
       xAxisText: 'fraction of intergenic reads',
-      yAxisText: 'log10 [ #UMIs ]',
+      yAxisText: 'log10 ( #UMIs )',
       xAxisText2: 'fraction of intergenic reads',
       yAxisText2: 'Frequency',
-      xDefaultTitle: 'log10 [ #UMIs ]',
+      xDefaultTitle: 'log10 ( #UMIs )',
       yDefaultTitle: 'fraction of intergenic reads',
       gridWeight: 0,
       titleSize: 12,
@@ -400,7 +400,7 @@ class ReadAlignment extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical'>
-              <Tooltip title='Dead and dying cells may display a high fraction of intergenic reads as a result of contaminating genomic DNA. The cut-off is typically set around 0.6-0.9.'>
+              <Tooltip placement='bottom' title='Dead and dying cells may display a high fraction of intergenic reads as a result of contaminating genomic DNA. The cut-off is typically set around 0.6-0.9.'>
                 <Button icon={<InfoCircleOutlined />} />
               </Tooltip>
               <img

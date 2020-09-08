@@ -30,8 +30,8 @@ class MitochondrialContent extends React.Component {
       legendEnabled: true,
       xAxisText: 'Fraction of mitochondrial reads',
       yAxisText: 'Fraction of cells',
-      xAxisText2: 'log10(#UMI in cell)',
-      yAxisText2: 'Average % mitochondrial',
+      xAxisText2: 'log10(#UMIs in cell)',
+      yAxisText2: 'Fraction of mitochondrial reads',
       xDefaultTitle: 'Fraction of mitochondrial reads',
       yDefaultTitle: 'Fraction of cells',
       legendOrientation: 'top-right',
@@ -80,7 +80,7 @@ class MitochondrialContent extends React.Component {
   generateSpec() {
     const { config } = this.state;
     let legend = null;
-    const colorExpression = `(datum.bin1 <= ${config.maxFraction}) ? 'Real' : 'Mitochondrial'`;
+    const colorExpression = `(datum.bin1 <= ${config.maxFraction}) ? 'Alive' : 'Dead'`;
     const colorExpression2 = '(datum.bin1 <= 2.5) ? \'Dead\' : (datum.bin1 >=3.5) ? \'Live\' : \'Unknown\'';
     if (config.legendEnabled) {
       legend = [
@@ -550,7 +550,7 @@ class MitochondrialContent extends React.Component {
                     defaultValue={config.placeholder}
                     min={config.sliderMin}
                     max={config.sliderMax}
-                    step={0.1}
+                    step={0.05}
                     disabled={!filtering}
                     onAfterChange={(val) => changeFraction(val)}
                   />

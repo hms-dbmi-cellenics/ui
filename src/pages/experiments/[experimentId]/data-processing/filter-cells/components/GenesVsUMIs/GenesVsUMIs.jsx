@@ -38,9 +38,7 @@ class GenesVsUMIs extends React.Component {
       masterFont: 'sans-serif',
       masterSize: 13,
       upCutoff: 4.8,
-      upCutoff2: 3.6,
       lowCutoff: 2.1,
-      lowCutoff2: 2.1,
       axisTitlesize: 13,
       axisTicks: 13,
       axisOffset: 0,
@@ -250,7 +248,7 @@ class GenesVsUMIs extends React.Component {
           round: true,
           nice: true,
           zero: true,
-          domain: [0, 4],
+          domain: [0, 5],
           domainMin: 2,
           range: 'width',
         },
@@ -319,7 +317,7 @@ class GenesVsUMIs extends React.Component {
           type: 'rule',
           encode: {
             update: {
-              x: { scale: 'x', value: config.lowCutoff2 },
+              x: { scale: 'x', value: config.lowCutoff },
               y: { value: 0 },
               y2: { field: { group: 'height' } },
               strokeWidth: { value: 2 },
@@ -332,7 +330,7 @@ class GenesVsUMIs extends React.Component {
           type: 'rule',
           encode: {
             update: {
-              x: { scale: 'x', value: config.upCutoff2 },
+              x: { scale: 'x', value: config.upCutoff },
               y: { value: 0 },
               y2: { field: { group: 'height' } },
               strokeWidth: { value: 2 },
@@ -376,20 +374,7 @@ class GenesVsUMIs extends React.Component {
         });
       }
     };
-    const updateUpCutoff = (val) => {
-      if (config.plotToDraw) {
-        this.updatePlotWithChanges({ upCutoff: val });
-      } else {
-        this.updatePlotWithChanges({ upCutoff2: val });
-      }
-    };
-    const updateLowCutoff = (val) => {
-      if (config.plotToDraw) {
-        this.updatePlotWithChanges({ lowCutoff: val });
-      } else {
-        this.updatePlotWithChanges({ lowCutoff2: val });
-      }
-    };
+
     return (
       <>
         <Row>
@@ -400,7 +385,7 @@ class GenesVsUMIs extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical' style={{ width: '100%' }}>
-              <Tooltip title='The number of genes vs number of UMIs plot is used to exclude cell fragments and outliers. The user can set the stringency (to define the confidence band), and the min/max cell size (note that min cell size will change across filters).'>
+              <Tooltip placement="bottom" title='The number of genes vs number of UMIs plot is used to exclude cell fragments and outliers. The user can set the stringency (to define the confidence band), and the min/max cell size (note that min cell size will change across filters).'>
                 <Button icon={<InfoCircleOutlined />} />
               </Tooltip>
               <img
@@ -464,7 +449,7 @@ class GenesVsUMIs extends React.Component {
                     disabled={!filtering}
                     min={2}
                     max={config.sliderMax}
-                    onAfterChange={(val) => updateUpCutoff(val)}
+                    onAfterChange={(val) => this.updatePlotWithChanges({ upCutoff: val })}
                     step={0.1}
                   />
                 </Form.Item>
@@ -476,7 +461,7 @@ class GenesVsUMIs extends React.Component {
                     disabled={!filtering}
                     min={2}
                     max={config.sliderMax}
-                    onAfterChange={(val) => updateLowCutoff(val)}
+                    onAfterChange={(val) => this.updatePlotWithChanges({ lowCutoff: val })}
                     step={0.1}
                   />
                 </Form.Item>

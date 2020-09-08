@@ -201,7 +201,7 @@ class Classifier extends React.Component {
             update: {
               x: { value: 0 },
               x2: { field: { group: 'width' } },
-              y: { scale: 'y', value: config.minProbability, round: true },
+              y: { scale: 'y', value: config.minProbability, round: false },
               strokeWidth: { value: 2 },
               strokeDash: { value: [8, 4] },
               stroke: { value: 'red' },
@@ -237,7 +237,7 @@ class Classifier extends React.Component {
 
           </Col>
           <Col span={1}>
-            <Tooltip title='The classifier combines several properties (mitochondrial content, entropy, etc.) into a single probability score and is used to refine the filtering of empty droplets. The cut-off is typically set around 0.6-0.9.'>
+            <Tooltip placement='bottom' title='The classifier combines several properties (mitochondrial content, entropy, etc.) into a single probability score and is used to refine the filtering of empty droplets. The cut-off is typically set around 0.6-0.9.'>
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
           </Col>

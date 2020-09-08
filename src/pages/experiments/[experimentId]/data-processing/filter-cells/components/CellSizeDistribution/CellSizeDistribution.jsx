@@ -29,7 +29,7 @@ class CellSizeDistribution extends React.Component {
       xAxisText: '#UMIs in cell',
       yAxisText: '#UMIs * #Cells',
       xAxisText2: 'Cell rank',
-      yAxisText2: "#UMI's in cell",
+      yAxisText2: "#UMIs in cell",
       xDefaultTitle: '#UMIs in cell',
       yDefaultTitle: '#UMIs * #Cells',
       legendOrientation: 'top-left',
@@ -558,7 +558,7 @@ class CellSizeDistribution extends React.Component {
                     disabled={!filtering}
                     onPressEnter={(val) => changeCellSize(val)}
                     placeholder={config.placeholder}
-                    step={1}
+                    step={100}
                   />
                 </Form.Item>
               </Panel>
