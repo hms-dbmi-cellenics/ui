@@ -20,7 +20,6 @@ jobs:
 
     - id: install
       name: Install dependencies
-      if: steps.cache-seek.outputs.cache-hit == false
       run: |-
         yarn install --frozen-lockfile
 
