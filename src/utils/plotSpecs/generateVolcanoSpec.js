@@ -109,6 +109,7 @@ const generateSpec = (configSrc, data) => {
   const spec = {
     width: config.width,
     height: config.height,
+    $schema: 'https://vega.github.io/schema/vega/v5.json',
     background: config.toggleInvert,
     padding: 5,
     data: [
