@@ -5,7 +5,7 @@ on:
     - master
 jobs:
   test:
-    name: Install and test
+    name: Test
     runs-on: ubuntu-latest
     env:
       CI: "true"
@@ -28,3 +28,15 @@ jobs:
       name: Run unit tests
       run: |-
         npm test
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout
+        name: Check out source code
+        uses: actions/checkout@v2
+
+      - id: build
+        name: Build Docker image
+        run: |-
+          docker
