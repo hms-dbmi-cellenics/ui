@@ -16,7 +16,7 @@ jobs:
     
     - id: cache-seek
       name: Check for yarn cache hit
-      uses: - uses: c-hive/gha-yarn-cache@v1
+      uses: c-hive/gha-yarn-cache@v1
 
     - id: install
       name: Install dependencies
