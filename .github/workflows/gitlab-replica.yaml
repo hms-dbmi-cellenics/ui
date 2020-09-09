@@ -27,6 +27,12 @@ jobs:
       name: Run unit tests
       run: |-
         npm test
+    
+    - id: cancel
+      if: failure()
+      name: Cancel workflow if job failed.
+      uses: andymckay/cancel-action@0.2
+
   build:
     name: Build docker image
     runs-on: ubuntu-latest

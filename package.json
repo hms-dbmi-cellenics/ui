@@ -75,8 +75,9 @@
     "vega-lite": "^4.13.0",
     "vitessce": "^0.1.8",
     "webpack": "^4.43.0",
-    "webpack-bundle-analyzer": "^3.3.2"
-
+    "webpack-bundle-analyzer": "^3.3.2",
+    "terser-webpack-plugin": "^1.1.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.9.0",
@@ -107,13 +108,11 @@
     "less": "^3.8.1",
     "lint-staged": "^8.1.0",
     "null-loader": "^3.0.0",
-    "optimize-css-assets-webpack-plugin": "^5.0.3",
     "prettier": "^1.15.3",
     "react-app-polyfill": "^1.0.6",
     "redux-devtools-extension": "^2.13.5",
     "redux-mock-store": "^1.5.4",
     "redux-mock-store-await-actions": "^2.1.0",
-    "terser-webpack-plugin": "^1.1.0",
     "thread-loader": "^2.1.3"
   }
 }
