@@ -45,7 +45,7 @@ const EmbeddingContinuousPlot = () => {
   const selectedGene = useRef(defaultShownGene);
 
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid] ?.config);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const selectedExpression = useSelector(
     (state) => state.genes.expression.data[selectedGene.current],
@@ -99,7 +99,12 @@ const EmbeddingContinuousPlot = () => {
     }
 
     if (error) {
-      return <PlatformError description={error} onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))} />;
+      return (
+        <PlatformError
+          description={error}
+          onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+        />
+      );
     }
 
     if (!config || !data || loading
