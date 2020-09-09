@@ -69,10 +69,7 @@ const generateSpec = (configSrc, data) => {
     ? [0, config.maxNegativeLogpValueDomain]
     : { data: 'data', field: 'neglogpvalue' };
 
-  const x = (config.textThresholdValue);
-
-  const textThreshold = ` ${x}`;
-  const textEquation = `datum.log2fc !== 'NA' && datum.neglogpvalue >${textThreshold}`;
+  const textEquation = `datum.log2fc !== 'NA' && datum.neglogpvalue >${config.textThresholdValue}`;
   let legend = [];
   if (config.legendEnabled) {
     legend = [
@@ -110,10 +107,9 @@ const generateSpec = (configSrc, data) => {
     ];
   }
   const spec = {
-    $schema: 'https://vega.github.io/schema/vega/v5.json',
-    description: 'A basic scatter plot example depicting automobile statistics.',
     width: config.width,
     height: config.height,
+    $schema: 'https://vega.github.io/schema/vega/v5.json',
     background: config.toggleInvert,
     padding: 5,
     data: [
@@ -147,7 +143,6 @@ const generateSpec = (configSrc, data) => {
           {
             type: 'filter',
             expr: textEquation,
-
           }],
       },
 
@@ -276,7 +271,7 @@ const generateSpec = (configSrc, data) => {
             y: { scale: 'y', field: 'neglogpvalue' },
 
             fill: { value: config.masterColour },
-            text: { field: 'Rownames' },
+            text: { field: 'gene_names' },
           },
           transform: [
             { type: 'label', size: ['width', 'height'] }],
