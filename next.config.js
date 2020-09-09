@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 const withLess = require('@zeit/next-less');
 const withCSS = require('@zeit/next-css');
-const withSize = require('next-size');
 const withImages = require('next-images');
 const webpack = require('webpack');
 const lessToJS = require('less-vars-to-js');
@@ -73,7 +72,7 @@ const generalWebpackConfig = [
   },
 ];
 
-module.exports = withSize(withCSS(
+module.exports = withCSS(
   withLess(withImages({
     lessLoaderOptions: {
       javascriptEnabled: true,
@@ -172,6 +171,7 @@ module.exports = withSize(withCSS(
           enforce: 'pre',
           include: srcFolder,
           options: {
+            emitWarning: true,
             configFile: path.resolve('.eslintrc'),
             eslint: {
               configFile: path.resolve(__dirname, '.eslintrc'),
@@ -206,4 +206,4 @@ module.exports = withSize(withCSS(
       ];
     },
   })),
-));
+);
