@@ -18,7 +18,7 @@ import LabelsDesign from '../components/LabelsDesign';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/plots/index';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import Header from '../components/Header';
-import renderError from '../utils/renderError';
+import PlatformError from '../../../../../components/PlatformError';
 
 import loadEmbedding from '../../../../../redux/actions/loadEmbedding';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
@@ -92,7 +92,9 @@ const EmbeddingCategoricalPlot = () => {
 
   const renderPlot = () => {
     if (error) {
-      return renderError(error, () => dispatch(loadEmbedding(experimentId, embeddingType)));
+      return <PlatformError
+        description={error}
+        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))} />;
     }
     if (!config || !data || loading || !isBrowser) {
       return (<center><Spin size='large' /></center>);

@@ -21,7 +21,8 @@ import DiffExprCompute from '../../data-exploration/components/differential-expr
 import isBrowser from '../../../../../utils/environment';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/plots/index';
 import loadDifferentialExpression from '../../../../../redux/actions/loadDifferentialExpression';
-import renderError from '../utils/renderError';
+import PlatformError from '../../../../../components/PlatformError';
+
 
 const { Panel } = Collapse;
 const route = {
@@ -150,9 +151,14 @@ const VolcanoPlot = () => {
 
   const renderPlot = () => {
     if (error) {
-      return renderError('Could not load differential expression data.', () => {
-        dispatch(loadDifferentialExpression(experimentId, config.diffExpData));
-      });
+      return (
+        <PlatformError
+          description='Could not load differential expression data.'
+          onClick={() => {
+            dispatch(loadDifferentialExpression(experimentId, config.diffExpData));
+          }}
+        />
+      );
     }
 
     if (plotData.length === 0 || loading || _.isEmpty(spec.spec)) {
