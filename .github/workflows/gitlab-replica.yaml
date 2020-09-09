@@ -1,0 +1,21 @@
+name: Build
+on:
+  push:
+    branches:
+    - master
+jobs:
+  test:
+    name: Install and test
+    runs-on: ubuntu-latest
+    steps:
+    - id: checkout
+      name: Check out source code
+      uses: actions/checkout@v2
+    - id: install
+      name: Install dependencies
+      run: |-
+        yarn install --frozen-lockfile
+    - id: test
+      name: Run unit tests
+      run: |-
+        npm test
