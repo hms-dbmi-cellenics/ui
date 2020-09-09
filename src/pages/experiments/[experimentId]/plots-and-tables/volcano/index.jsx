@@ -35,7 +35,7 @@ const plotType = 'volcano';
 
 const VolcanoPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid] ?.config);
   const { loading, data, error } = useSelector((state) => state.differentialExpression.properties);
   const [plotData, setPlotData] = useState([]);
   const [spec, setSpec] = useState({ spec: null, maxNegativeLogpValue: null, xMax: null });
@@ -54,7 +54,7 @@ const VolcanoPlot = () => {
     if (_.isEmpty(config.cellSets)) return;
 
     dispatch(loadDifferentialExpression(experimentId, config.cellSets));
-  }, [config?.cellSets]);
+  }, [config ?.cellSets]);
 
   useEffect(() => {
     if (!config) return;
@@ -249,45 +249,13 @@ const VolcanoPlot = () => {
                   defaultValue={config.textThresholdValue}
                   min={0}
                   max={spec.maxNegativeLogpValue + 5}
-                  onChange={(val) => updatePlotWithChanges({ textThresholdValue: val })}
+                  onAfterChange={(val) => updatePlotWithChanges({ textThresholdValue: val })}
                 />
               </Panel>
               <Panel header='Legend' key='12'>
                 <LegendEditor
                   onUpdate={updatePlotWithChanges}
-                  legendConfig={[
-                    {
-                      fill: 'color',
-                      encode: {
-                        title: {
-                          update: {
-                            fontSize: { value: 14 },
-                          },
-                        },
-                        labels: {
-                          interactive: true,
-                          update: {
-                            fontSize: { value: 12 },
-                            fill: { value: config.masterColour },
-                          },
-                          hover: {
-                            fill: { value: 'firebrick' },
-                          },
-                        },
-                        symbols: {
-                          update: {
-                            stroke: { value: 'transparent' },
-                          },
-                        },
-                        legend: {
-                          update: {
-                            stroke: { value: '#ccc' },
-                            strokeWidth: { value: 1.5 },
-                          },
-                        },
-                      },
-                    },
-                  ]}
+                  legendEnabled={config.legendEnabled}
                 />
               </Panel>
             </Collapse>

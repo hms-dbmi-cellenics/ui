@@ -69,16 +69,47 @@ const generateSpec = (configSrc, data) => {
     ? [0, config.maxNegativeLogpValueDomain]
     : { data: 'data', field: 'neglogpvalue' };
 
-  const x = (config.textThresholdValue);
-
-  const textThreshold = ` ${x}`;
-  const textEquation = `datum.log2fc !== 'NA' && datum.neglogpvalue >${textThreshold}`;
-
+  const textEquation = `datum.log2fc !== 'NA' && datum.neglogpvalue >${config.textThresholdValue}`;
+  let legend = [];
+  if (config.legendEnabled) {
+    legend = [
+      {
+        fill: 'color',
+        encode: {
+          title: {
+            update: {
+              fontSize: { value: 14 },
+            },
+          },
+          labels: {
+            interactive: true,
+            update: {
+              fontSize: { value: 12 },
+              fill: { value: config.masterColour },
+            },
+            hover: {
+              fill: { value: 'firebrick' },
+            },
+          },
+          symbols: {
+            update: {
+              stroke: { value: 'transparent' },
+            },
+          },
+          legend: {
+            update: {
+              stroke: { value: '#ccc' },
+              strokeWidth: { value: 1.5 },
+            },
+          },
+        },
+      },
+    ];
+  }
   const spec = {
-    $schema: 'https://vega.github.io/schema/vega/v5.json',
-    description: 'A basic scatter plot example depicting automobile statistics.',
     width: config.width,
     height: config.height,
+    $schema: 'https://vega.github.io/schema/vega/v5.json',
     background: config.toggleInvert,
     padding: 5,
     data: [
@@ -112,7 +143,6 @@ const generateSpec = (configSrc, data) => {
           {
             type: 'filter',
             expr: textEquation,
-
           }],
       },
 
@@ -241,7 +271,7 @@ const generateSpec = (configSrc, data) => {
             y: { scale: 'y', field: 'neglogpvalue' },
 
             fill: { value: config.masterColour },
-            text: { field: 'Rownames' },
+            text: { field: 'gene_names' },
           },
           transform: [
             { type: 'label', size: ['width', 'height'] }],
@@ -308,7 +338,7 @@ const generateSpec = (configSrc, data) => {
         },
       },
     ],
-    legends: config.legend,
+    legends: legend,
   };
 
   return {

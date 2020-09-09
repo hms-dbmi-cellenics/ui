@@ -45,7 +45,7 @@ const EmbeddingContinuousPlot = () => {
   const selectedGene = useRef(defaultShownGene);
 
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid] ?.config);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const selectedExpression = useSelector(
     (state) => state.genes.expression.data[selectedGene.current],
@@ -109,7 +109,7 @@ const EmbeddingContinuousPlot = () => {
 
     return (
       <center>
-        <Vega spec={generateSpec(config)} data={generateVegaData()} renderer='canvas' />
+        <Vega spec={generateSpec(config, selectedGene)} data={generateVegaData()} renderer='canvas' />
       </center>
     );
   };
@@ -202,23 +202,7 @@ const EmbeddingContinuousPlot = () => {
             <Panel header='Legend' key='12'>
               <LegendEditor
                 onUpdate={updatePlotWithChanges}
-                legendConfig={[
-                  {
-                    fill: 'color',
-                    type: 'gradient',
-                    title: selectedGene.current,
-                    gradientLength: 100,
-                    labelColor: { value: config.masterColour },
-                    titleColor: { value: config.masterColour },
-                    labels: {
-                      interactive: true,
-                      update: {
-                        fontSize: { value: 12 },
-                        fill: { value: config.masterColour },
-                      },
-
-                    },
-                  }]}
+                legendEnabled={config.legendEnabled}
               />
             </Panel>
           </Collapse>

@@ -26,23 +26,23 @@ const CellInfo = (props) => {
     <Card
       size='small'
       style={{
-        // make sure that cell info renders on top of the cross hairs
         zIndex: 6,
+        border: 0,
         position: 'absolute',
-        left: `${coordinates.current.x + 100}px`,
-        top: `${coordinates.current.y}px`,
+        left: `${coordinates.current.x + 80}px`,
+        top: `${coordinates.current.y + 20}px`,
       }}
     >
-      {cellInfo.geneName ? (
-        <div>
-          Gene name:&nbsp;
-          {cellInfo.geneName}
-        </div>
-      ) : <></>}
       {cellInfo.cellName ? (
         <div>
           Cell id:&nbsp;
           {cellInfo.cellName}
+        </div>
+      ) : <></>}
+      {cellInfo.geneName ? (
+        <div>
+          Gene name:&nbsp;
+          {cellInfo.geneName}
         </div>
       ) : <></>}
       {cellInfo.expression !== undefined ? (

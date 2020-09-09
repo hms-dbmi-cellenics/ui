@@ -21,7 +21,6 @@ const embeddingCategoricalInitialConfig = {
   g2mColor: 'green',
   sColor: 'blue',
   legendTextColor: '#FFFFFF',
-  legend: [],
   geneexpLegendloc: '',
   labelSize: 28,
   labelShow: 1,
@@ -29,6 +28,7 @@ const embeddingCategoricalInitialConfig = {
   labelsEnabled: true,
   selectedCellSet: 'louvain',
   testVar: null,
+  legendEnabled: true,
 };
 
 const embeddingContinuousInitialConfig = {
@@ -55,7 +55,7 @@ const embeddingContinuousInitialConfig = {
   pointStyle: 'circle',
   pointOpa: 5,
   bounceX: 0,
-  legend: [],
+  legendEnabled: true,
 };
 
 const heatmapInitialConfig = {
@@ -78,6 +78,7 @@ const heatmapInitialConfig = {
 };
 
 const volcanoInitialConfig = {
+  legendEnabled: true,
   spec: '1.0.0',
   width: 500,
   height: 500,
@@ -129,7 +130,7 @@ const volcanoInitialConfig = {
   masterColour: '#000000',
   toggleInvert: '#FFFFFF',
   reverseCbar: false,
-  textThresholdValue: 10,
+  textThresholdValue: 240,
 };
 
 
