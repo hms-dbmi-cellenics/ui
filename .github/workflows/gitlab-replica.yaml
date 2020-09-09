@@ -47,7 +47,3 @@ jobs:
           tags:
             - ${{ join([github.repository, github.sha], ':') }}
             - ${{ join([github.repository, github.ref], ':') }}
-
-
-        run: |-
-          docker build -t sample-node-app .
