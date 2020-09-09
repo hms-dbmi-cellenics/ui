@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Collapse, Row, Col, List, Space,
+  Collapse, Row, Col, List, Space, Slider,
   Form, Tooltip, Button, InputNumber,
 } from 'antd';
 import {
@@ -50,6 +50,7 @@ class CellSizeDistribution extends React.Component {
       arrowStep: 1000,
       placeholder: 10800,
       sliderMax: 17000,
+      binStep: 200,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -151,15 +152,6 @@ class CellSizeDistribution extends React.Component {
 
         padding: 5,
 
-        signals: [
-          {
-            name: 'binStep',
-            value: 200,
-            bind: {
-              input: 'range', min: 100, max: 400, step: 1,
-            },
-          },
-        ],
         data: [
           {
             name: 'plotData',
@@ -172,7 +164,7 @@ class CellSizeDistribution extends React.Component {
                 type: 'bin',
                 field: 'u',
                 extent: [0, 17000],
-                step: { signal: 'binStep' },
+                step: config.binStep,
                 nice: false,
               },
               {
@@ -262,7 +254,6 @@ class CellSizeDistribution extends React.Component {
                 x2: {
                   scale: 'xscale',
                   field: 'bin1',
-                  offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
                 },
                 y: { scale: 'yscale', field: 'count' },
                 y2: { scale: 'yscale', value: 0 },
@@ -559,6 +550,15 @@ class CellSizeDistribution extends React.Component {
                     onPressEnter={(val) => changeCellSize(val)}
                     placeholder={config.placeholder}
                     step={100}
+                  />
+                </Form.Item>
+                <Form.Item label='Bin step:'>
+                  <Slider
+                    defaultValue={config.binStep}
+                    min={100}
+                    max={400}
+                    onAfterChange={(val) => this.updatePlotWithChanges({ binStep: val })}
+                    step={1}
                   />
                 </Form.Item>
               </Panel>

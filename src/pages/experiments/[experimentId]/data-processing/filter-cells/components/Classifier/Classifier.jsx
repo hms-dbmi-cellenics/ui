@@ -37,6 +37,7 @@ class Classifier extends React.Component {
       height: 500,
       maxWidth: 789,
       maxHeight: 560,
+      bandwidth: -1,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -68,15 +69,6 @@ class Classifier extends React.Component {
       autosize: { type: 'fit', resize: true },
       padding: 5,
       autoSize: 'pad',
-      signals: [
-        {
-          name: 'bandwidth',
-          value: -1,
-          bind: {
-            input: 'range', min: -1, max: 100, step: 1,
-          },
-        },
-      ],
       data: [
         {
           name: 'plotData',
@@ -96,7 +88,7 @@ class Classifier extends React.Component {
               size: [{ signal: 'width' }, { signal: 'height' }],
               x: { expr: "scale('x', datum.size)" },
               y: { expr: "scale('y', datum.classifierP)" },
-              bandwidth: { signal: '[bandwidth, bandwidth]' },
+              bandwidth: [config.bandwidth, config.bandwidth],
               cellSize: 25,
             },
             {
@@ -252,6 +244,15 @@ class Classifier extends React.Component {
                     max={1}
                     onAfterChange={(val) => minProbabilityChange(val)}
                     step={0.05}
+                  />
+                </Form.Item>
+                <Form.Item label='Bandwidth:'>
+                  <Slider
+                    defaultValue={-1}
+                    min={-1}
+                    max={100}
+                    onChange={(val) => this.updatePlotWithChanges({ bandwidth: val })}
+                    step={1}
                   />
                 </Form.Item>
               </Panel>

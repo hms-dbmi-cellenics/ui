@@ -54,6 +54,7 @@ class MitochondrialContent extends React.Component {
       placeholder: 0.1,
       sliderMax: 1,
       sliderMin: 0,
+      binStep: 0.05,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -126,16 +127,6 @@ class MitochondrialContent extends React.Component {
         autosize: { type: 'fit', resize: true },
         padding: 5,
 
-        signals: [
-          {
-            name: 'binStep',
-            value: 0.05,
-            bind: {
-              input: 'range', min: 0.001, max: 0.4, step: 0.001,
-            },
-          },
-        ],
-
         data: [
           {
             name: 'plotData',
@@ -148,7 +139,7 @@ class MitochondrialContent extends React.Component {
                 type: 'bin',
                 field: 'fracMito',
                 extent: [0, 1],
-                step: { signal: 'binStep' },
+                step: config.binStep,
                 nice: false,
               },
               {
@@ -244,7 +235,6 @@ class MitochondrialContent extends React.Component {
                 x2: {
                   scale: 'xscale',
                   field: 'bin1',
-                  offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
                 },
                 y: { scale: 'yscale', field: 'count' },
                 y2: { scale: 'yscale', value: 0 },
@@ -303,16 +293,6 @@ class MitochondrialContent extends React.Component {
       height: config.height,
       padding: 5,
       autosize: { type: 'fit', resize: true },
-      signals: [
-        {
-          name: 'binStep',
-          value: 0.05,
-          bind: {
-            input: 'range', min: 0.001, max: 0.5, step: 0.001,
-          },
-        },
-      ],
-
       data: [
         {
           name: 'plotData',
@@ -325,7 +305,7 @@ class MitochondrialContent extends React.Component {
               type: 'bin',
               field: 'cellSize',
               extent: [0, 6],
-              step: { signal: 'binStep' },
+              step: config.binStep,
               nice: false,
             },
             {
@@ -418,7 +398,6 @@ class MitochondrialContent extends React.Component {
               x2: {
                 scale: 'xscale',
                 field: 'bin1',
-                offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
               },
               y: { scale: 'yscale', field: 'averageFracMito' },
               y2: { scale: 'yscale', value: 0 },
@@ -553,6 +532,15 @@ class MitochondrialContent extends React.Component {
                     step={0.05}
                     disabled={!filtering}
                     onAfterChange={(val) => changeFraction(val)}
+                  />
+                </Form.Item>
+                <Form.Item label='Bin step:'>
+                  <Slider
+                    defaultValue={config.binStep}
+                    min={0.001}
+                    max={0.4}
+                    onAfterChange={(val) => this.updatePlotWithChanges({ binStep: val })}
+                    step={0.001}
                   />
                 </Form.Item>
               </Panel>

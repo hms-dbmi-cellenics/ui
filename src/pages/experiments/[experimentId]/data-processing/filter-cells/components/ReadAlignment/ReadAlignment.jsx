@@ -49,6 +49,19 @@ class ReadAlignment extends React.Component {
       maxWidth: 660,
       maxHeight: 560,
       threshold: 0.5,
+      binStep: 0.05,
+      bandwidth: -1,
+      differentControl: (
+        <Form.Item label='Bandwidth:'>
+          <Slider
+            defaultValue={-1}
+            min={-1}
+            max={100}
+            onChange={(value) => this.updatePlotWithChanges({ bandwidth: value })}
+            step={1}
+          />
+        </Form.Item>
+      ),
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -81,15 +94,7 @@ class ReadAlignment extends React.Component {
         autosize: { type: 'fit', resize: true },
         padding: 5,
         autoSize: 'pad',
-        signals: [
-          {
-            name: 'bandwidth',
-            value: -1,
-            bind: {
-              input: 'range', min: -1, max: 100, step: 1,
-            },
-          },
-        ],
+
         data: [
           {
             name: 'plotData',
@@ -109,7 +114,7 @@ class ReadAlignment extends React.Component {
                 size: [{ signal: 'width' }, { signal: 'height' }],
                 x: { expr: "scale('x', datum.fracMito)" },
                 y: { expr: "scale('y', datum.cellSize)" },
-                bandwidth: { signal: '[bandwidth, bandwidth]' },
+                bandwidth: [config.bandwidth, config.bandwidth],
                 cellSize: 15,
               },
               {
@@ -239,16 +244,6 @@ class ReadAlignment extends React.Component {
       autosize: { type: 'fit', resize: true },
       padding: 5,
 
-      signals: [
-        {
-          name: 'binStep',
-          value: 0.05,
-          bind: {
-            input: 'range', min: 0.001, max: 0.4, step: 0.001,
-          },
-        },
-      ],
-
       data: [
         {
           name: 'plotData',
@@ -261,7 +256,7 @@ class ReadAlignment extends React.Component {
               type: 'bin',
               field: 'fracMito',
               extent: [0, 1],
-              step: { signal: 'binStep' },
+              step: config.binStep,
               nice: false,
             },
             {
@@ -334,7 +329,6 @@ class ReadAlignment extends React.Component {
               x2: {
                 scale: 'xscale',
                 field: 'bin1',
-                offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
               },
               y: { scale: 'yscale', field: 'count' },
               y2: { scale: 'yscale', value: 0 },
@@ -374,22 +368,43 @@ class ReadAlignment extends React.Component {
     const { filtering } = this.props;
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
-      if (!config.plotToDraw) {
+      if (val) {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
+          differentControl: (
+            <Form.Item label='Bandwidth:'>
+              <Slider
+                defaultValue={-1}
+                min={-1}
+                max={100}
+                onAfterChange={(value) => this.updatePlotWithChanges({ bandwidth: value })}
+                step={1}
+              />
+            </Form.Item>
+          ),
         });
       } else {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
+          differentControl: (
+            <Form.Item label='Bin step:'>
+              <Slider
+                defaultValue={config.binStep}
+                min={0.001}
+                max={0.4}
+                onAfterChange={(value) => this.updatePlotWithChanges({ binStep: value })}
+                step={0.001}
+              />
+            </Form.Item>
+          ),
         });
       }
     };
     const changeThreshold = (val) => {
       this.updatePlotWithChanges({ threshold: val });
     };
-
     return (
       <>
         <Row>
@@ -454,6 +469,7 @@ class ReadAlignment extends React.Component {
                     onAfterChange={(val) => changeThreshold(val)}
                   />
                 </Form.Item>
+                {config.differentControl}
               </Panel>
               <PlotStyling
                 config={config}
