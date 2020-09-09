@@ -46,16 +46,13 @@ jobs:
         run: |-
           TAG_REF=$(echo $GITHUB_REF | sed 's/\//-/g')
           echo "::set-output name=tag-ref::$TAG_REF"
+
       - id: build
         name: Build Docker image
-        run: |-
-          docker build -t latest .
-      # - id: build
-      #   name: Build Docker image
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile
-      #     platforms: linux/amd64
-      #     push: false
-      #     tags: ${{ format('{0}:{1},{0}:{2}', github.repository, steps.ref.outputs.tag-ref, github.sha) }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: false
+          tags: ${{ format('{0}:{1},{0}:{2}', github.repository, steps.ref.outputs.tag-ref, github.sha) }}
