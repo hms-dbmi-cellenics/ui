@@ -44,6 +44,6 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: false
-          tags:
-            - ${{ join([github.repository, github.sha], ':') }}
-            - ${{ join([github.repository, github.ref], ':') }}
+          tags: |
+            ${{ join([github.repository, github.sha], ':') }}
+            ${{ join([github.repository, github.ref], ':') }}
