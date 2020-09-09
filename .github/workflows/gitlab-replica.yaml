@@ -7,14 +7,23 @@ jobs:
   test:
     name: Install and test
     runs-on: ubuntu-latest
+    env:
+      CI: "true"
     steps:
     - id: checkout
       name: Check out source code
       uses: actions/checkout@v2
+    
+    - id: cache-seek
+      name: Check for yarn cache hit
+      uses: - uses: c-hive/gha-yarn-cache@v1
+
     - id: install
       name: Install dependencies
+      if: steps.cache-seek.outputs.cache-hit == false
       run: |-
         yarn install --frozen-lockfile
+
     - id: test
       name: Run unit tests
       run: |-
