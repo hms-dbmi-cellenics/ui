@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
-
 import {
   useSelector,
   useDispatch,
 } from 'react-redux';
-
 import {
-  Space, Button,
+  Space, Button, Alert,
 } from 'antd';
-
+import Link from 'next/link';
+import { LeftOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
-
 import GeneTable from '../generic-gene-table/GeneTable';
-
 import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTableUpdateReason';
-
 import loadDifferentialExpression from '../../../../../../redux/actions/loadDifferentialExpression';
 
 const DiffExprResults = (props) => {
@@ -29,6 +25,7 @@ const DiffExprResults = (props) => {
   const error = useSelector((state) => state.differentialExpression.properties.error);
 
   const [dataShown, setDataShown] = useState(data);
+  const [exportAlert, setExportAlert] = useState(false);
 
   const columns = [
     {
@@ -71,9 +68,49 @@ const DiffExprResults = (props) => {
     );
   };
 
+  const renderExportAlert = () => {
+    if (!exportAlert) return null;
+    return (
+      <Alert
+        message={(
+          <span>
+            Exporting to CSV is not currently available here. Use the&nbsp;
+            <Link
+              target='_blank'
+              as={`/experiments/${experimentId}/plots-and-tables/volcano`}
+              href='/experiments/[experimentId]/plots-and-tables/volcano'
+              passHref
+            >
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a target='_blank'>volcano plot</a>
+            </Link>
+            &nbsp;in Plots and Tables to dump results (opens in new tab).
+          </span>
+        )}
+        type='info'
+        closable
+        showIcon
+        afterClose={() => {
+          setExportAlert(false);
+        }}
+      />
+    );
+  };
+
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
-      <Button type='primary' size='small' onClick={onGoBack}>Go Back</Button>
+
+      {/* This is needed so changes to the export alert don't cause the table to re-render. */}
+      <Space direction='vertical' style={{ width: '100%' }}>
+        <Button size='small' onClick={onGoBack}>
+          <span>
+            <LeftOutlined />
+            Go back
+          </span>
+        </Button>
+        {renderExportAlert()}
+      </Space>
+
       <GeneTable
         experimentId={experimentId}
         initialTableState={{
@@ -86,9 +123,10 @@ const DiffExprResults = (props) => {
         onUpdate={onUpdate}
         columns={columns}
         loading={isTableLoading()}
+        onExportCSV={() => { setExportAlert(true); }}
         error={error}
         width={width}
-        height={height}
+        height={height - 30 - (exportAlert ? 70 : 0)}
         data={dataShown}
         total={total}
       />

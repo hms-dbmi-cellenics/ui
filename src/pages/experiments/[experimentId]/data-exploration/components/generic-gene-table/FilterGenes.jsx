@@ -27,7 +27,7 @@ const FilterGenes = (props) => {
 
   return (
     <Input.Group compact>
-      <Select defaultValue={filterOption} style={{ width: 100 }} size='small' onChange={onSelectedOption}>
+      <Select defaultValue={filterOption} style={{ width: '25%' }} size='small' onChange={onSelectedOption}>
         <Option value='Starts with' size='small'>starts with</Option>
         <Option value='Ends with' size='small'>ends with</Option>
         <Option value='Contains' size='small'>contains</Option>
@@ -35,7 +35,7 @@ const FilterGenes = (props) => {
       <Search
         placeholder='Filter genes ...'
         defaultValue={defaultFilterString}
-        style={{ width: 160 }}
+        style={{ width: '75%' }}
         onSearch={onSearch}
         allowClear
         size='small'

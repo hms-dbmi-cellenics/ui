@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Row, Col, Space, Collapse, Slider, Skeleton, Spin,
+  Row, Col, Space, Collapse, Slider, Skeleton, Spin, Button,
 } from 'antd';
 import _ from 'lodash';
+import moment from 'moment';
+import { CSVLink } from 'react-csv';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -145,6 +147,21 @@ const VolcanoPlot = () => {
     updatePlotWithChanges({ cellSets });
   };
 
+  const generateExportDropdown = () => {
+    const { cellSet, compareWith } = config.cellSets;
+
+    const date = moment.utc().format('YYYY-MM-DD-HH-mm-ss');
+    const fileName = `de_${experimentId}_${cellSet}_vs_${compareWith}_${date}.csv`;
+
+    const disabled = plotData.length === 0 || loading || _.isEmpty(spec.spec) || error;
+
+    return (
+      <CSVLink data={data} filename={fileName}>
+        <Button disabled={disabled} onClick={(e) => e.stopPropagation()} size='small'>Export as CSV...</Button>
+      </CSVLink>
+    );
+  };
+
   if (!config) {
     return (<Skeleton />);
   }
@@ -175,7 +192,7 @@ const VolcanoPlot = () => {
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
-              <Panel header='Preview' key='1'>
+              <Panel header='Preview' key='1' extra={generateExportDropdown()}>
                 <center>
                   {renderPlot()}
                 </center>
