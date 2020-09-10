@@ -4,11 +4,9 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Skeleton, Space, Button,
-  Empty, Typography, Tooltip,
+  Skeleton, Space, Button, Tooltip,
 } from 'antd';
 import { Element, animateScroll } from 'react-scroll';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
   loadCellSets, deleteCellSet, updateCellSetHierarchy, updateCellSetSelected,
@@ -17,8 +15,9 @@ import {
 import composeTree from '../../../../../../utils/composeTree';
 import isBrowser from '../../../../../../utils/environment';
 import messages from '../../../../../../components/notification/messages';
+import PlatformError from '../../../../../../components/PlatformError';
 
-const { Text } = Typography;
+
 const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
 
@@ -71,22 +70,7 @@ const CellSetsTool = (props) => {
 
     if (error) {
       return (
-        <Empty
-          image={<Text type='danger'><ExclamationCircleFilled style={{ fontSize: 40 }} /></Text>}
-          imageStyle={{
-            height: 40,
-          }}
-          description={
-            error
-          }
-        >
-          <Button
-            type='primary'
-            onClick={() => dispatch(loadCellSets(experimentId))}
-          >
-            Try again
-          </Button>
-        </Empty>
+        <PlatformError description={error} onClick={() => dispatch(loadCellSets(experimentId))} />
       );
     }
 

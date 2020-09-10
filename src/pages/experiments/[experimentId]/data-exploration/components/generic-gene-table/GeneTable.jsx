@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Space, Button, Typography, Empty, Skeleton,
+  Table, Space, Button, Typography, Skeleton,
 } from 'antd';
 import _ from 'lodash';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import FilterGenes from './FilterGenes';
 import { changeGeneSelection, setFocusedGene } from '../../../../../../redux/actions/genes';
@@ -13,6 +12,7 @@ import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTab
 
 import GeneLookupButton from './GeneLookupButton';
 import isBrowser from '../../../../../../utils/environment';
+import PlatformError from '../../../../../../components/PlatformError';
 import useLazyEffect from '../../../../../../utils/useLazyEffect';
 
 const { Text } = Typography;
@@ -195,22 +195,10 @@ const GeneTable = (props) => {
   // The gene list couldn't load.
   if (error) {
     return (
-      <Empty
-        image={<Text type='danger'><ExclamationCircleFilled style={{ fontSize: 40 }} /></Text>}
-        imageStyle={{
-          height: 40,
-        }}
-        description={
-          error
-        }
-      >
-        <Button
-          type='primary'
-          onClick={() => onUpdate(tableState, geneTableUpdateReason.loading)}
-        >
-          Try again
-        </Button>
-      </Empty>
+      <PlatformError
+        description={error}
+        onClick={() => onUpdate(tableState, geneTableUpdateReason.loading)}
+      />
     );
   }
 

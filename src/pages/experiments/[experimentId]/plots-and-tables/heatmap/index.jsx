@@ -17,7 +17,7 @@ import generateSpec from '../../../../../utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression } from '../../../../../redux/actions/genes';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import isBrowser from '../../../../../utils/environment';
-import renderError from '../utils/renderError';
+import PlatformError from '../../../../../components/PlatformError';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -105,10 +105,9 @@ const HeatmapPlot = () => {
     }
 
     if (error) {
-      return renderError(
-        'Could not load gene expression data.',
-        () => dispatch(loadGeneExpression(experimentId, config.selectedGenes)),
-      );
+      return <PlatformError
+        description={'Could not load gene expression data.'}
+        onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes))} />
     }
 
     if (config.selectedGenes.length === 0) {

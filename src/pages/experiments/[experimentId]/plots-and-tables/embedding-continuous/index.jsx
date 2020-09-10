@@ -22,8 +22,9 @@ import loadEmbedding from '../../../../../redux/actions/loadEmbedding';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/plots/initialState';
 import Header from '../components/Header';
-import renderError from '../utils/renderError';
 import isBrowser from '../../../../../utils/environment';
+import PlatformError from '../../../../../components/PlatformError';
+
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -44,7 +45,7 @@ const EmbeddingContinuousPlot = () => {
   const selectedGene = useRef(defaultShownGene);
 
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid] ?.config);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const selectedExpression = useSelector(
     (state) => state.genes.expression.data[selectedGene.current],
@@ -85,16 +86,25 @@ const EmbeddingContinuousPlot = () => {
     dispatch(loadGeneExpression(experimentId, [geneName]));
   };
 
+
   const renderPlot = () => {
     // The embedding couldn't load. Display an error condition.
     if (expressionError) {
-      return renderError(expressionError,
-        () => dispatch(loadGeneExpression(experimentId, [selectedGene.current])));
+      return (
+        <PlatformError
+          description={expressionError}
+          onClick={() => dispatch(loadGeneExpression(experimentId, [selectedGene.current]))}
+        />
+      );
     }
 
     if (error) {
-      return renderError(error,
-        () => dispatch(loadEmbedding(experimentId, embeddingType)));
+      return (
+        <PlatformError
+          description={error}
+          onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+        />
+      );
     }
 
     if (!config || !data || loading
