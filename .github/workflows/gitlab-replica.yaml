@@ -84,3 +84,22 @@ jobs:
         name: Check size
         run: |-
           docker images
+
+      - id: modify
+        run: |-
+          touch src/my_shitty_file
+
+      - id: build
+        name: Build Docker image number 2
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: false
+          tags: ${{ format('{0}:{1}-a,{0}:{2}-a', github.repository, steps.ref.outputs.tag-ref, github.sha) }}
+
+      - id: check-size
+        name: Check size
+        run: |-
+          docker images
