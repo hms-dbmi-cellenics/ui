@@ -33,26 +33,40 @@ jobs:
       name: Cancel workflow if job failed.
       uses: andymckay/cancel-action@0.2
 
-  build:
-    name: Build docker image
+  build-next:
+    name: Build website
     runs-on: ubuntu-latest
     steps:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v2
 
-      - id: ref
-        name: Replace / to - in ref name for docker tag.
+      - id: cache-seek
+        name: Check for npm cache hit
+        uses: c-hive/gha-npm-cache@v1
+  
+      - id: install
+        name: Install dependencies
         run: |-
-          TAG_REF=$(echo $GITHUB_REF | sed 's/\//-/g')
-          echo "::set-output name=tag-ref::$TAG_REF"
-
+          npm ci
+  
       - id: build
-        name: Build Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64
-          push: false
-          tags: ${{ format('{0}:{1},{0}:{2}', github.repository, steps.ref.outputs.tag-ref, github.sha) }}
+        name: Build project
+        run: |-
+          npm run build
+  
+      # - id: ref
+      #   name: Replace / to - in ref name for docker tag.
+      #   run: |-
+      #     TAG_REF=$(echo $GITHUB_REF | sed 's/\//-/g')
+      #     echo "::set-output name=tag-ref::$TAG_REF"
+
+      # - id: build
+      #   name: Build Docker image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: .
+      #     file: ./Dockerfile
+      #     platforms: linux/amd64
+      #     push: false
+      #     tags: ${{ format('{0}:{1},{0}:{2}', github.repository, steps.ref.outputs.tag-ref, github.sha) }}
