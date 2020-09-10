@@ -15,6 +15,7 @@ import plot1Pic from '../../../../../../../../static/media/plot7.png';
 import plot2Pic from '../../../../../../../../static/media/plot8.png';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
+import BandwidthOrBinstep from '../ReadAlignment/BandwidthOrBinstep';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -49,6 +50,8 @@ class GenesVsUMIs extends React.Component {
       maxHeight: 560,
       placeholder: 4.8,
       sliderMax: 5,
+      type: 'bin step',
+      binStep: 0.05,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -81,16 +84,6 @@ class GenesVsUMIs extends React.Component {
         autosize: { type: 'fit', resize: true },
         padding: 5,
 
-        signals: [
-          {
-            name: 'binStep',
-            value: 0.05,
-            bind: {
-              input: 'range', min: 0.001, max: 0.4, step: 0.001,
-            },
-          },
-        ],
-
         data: [
           {
             name: 'plotData',
@@ -103,7 +96,7 @@ class GenesVsUMIs extends React.Component {
                 type: 'bin',
                 field: 'molecules',
                 extent: [2, 5],
-                step: { signal: 'binStep' },
+                step: config.binStep,
                 nice: false,
               },
               {
@@ -178,7 +171,7 @@ class GenesVsUMIs extends React.Component {
                 x2: {
                   scale: 'xscale',
                   field: 'bin1',
-                  offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
+                  //offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
                 },
                 y: { scale: 'yscale', field: 'count' },
                 y2: { scale: 'yscale', value: 0 },
@@ -364,6 +357,7 @@ class GenesVsUMIs extends React.Component {
           yDefaultTitle: config.yAxisText,
           placeholder: 4.8,
           sliderMax: 5,
+          type: 'bin step',
         });
       } else {
         this.updatePlotWithChanges({
@@ -371,6 +365,7 @@ class GenesVsUMIs extends React.Component {
           yDefaultTitle: config.yAxisText2,
           placeholder: 3.6,
           sliderMax: 4,
+          type: 'blank',
         });
       }
     };
@@ -474,6 +469,11 @@ class GenesVsUMIs extends React.Component {
                     placeholder={2.1}
                   />
                 </Form.Item>
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={config.type}
+                />
               </Panel>
               <PlotStyling
                 config={config}

@@ -16,6 +16,7 @@ import plot1Pic from '../../../../../../../../static/media/plot5.png';
 import plot2Pic from '../../../../../../../../static/media/plot6.png';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
+import BandwidthOrBinstep from './BandwidthOrBinstep';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -31,8 +32,8 @@ class ReadAlignment extends React.Component {
       yAxisText: 'log10 ( #UMIs )',
       xAxisText2: 'fraction of intergenic reads',
       yAxisText2: 'Frequency',
-      xDefaultTitle: 'log10 ( #UMIs )',
-      yDefaultTitle: 'fraction of intergenic reads',
+      xDefaultTitle: 'fraction of intergenic reads',
+      yDefaultTitle: 'log10 ( #UMIs )',
       gridWeight: 0,
       titleSize: 12,
       titleText: '',
@@ -51,18 +52,9 @@ class ReadAlignment extends React.Component {
       threshold: 0.5,
       binStep: 0.05,
       bandwidth: -1,
-      differentControl: (
-        <Form.Item label='Bandwidth:'>
-          <Slider
-            defaultValue={-1}
-            min={-1}
-            max={100}
-            onChange={(value) => this.updatePlotWithChanges({ bandwidth: value })}
-            step={1}
-          />
-        </Form.Item>
-      ),
+      type: 'bandwidth',
     };
+
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
       data: plotData,
@@ -329,6 +321,8 @@ class ReadAlignment extends React.Component {
               x2: {
                 scale: 'xscale',
                 field: 'bin1',
+                // offset: `${config.binStep} > 0.02 ? -0.5 : 0`,
+
               },
               y: { scale: 'yscale', field: 'count' },
               y2: { scale: 'yscale', value: 0 },
@@ -372,33 +366,13 @@ class ReadAlignment extends React.Component {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
-          differentControl: (
-            <Form.Item label='Bandwidth:'>
-              <Slider
-                defaultValue={-1}
-                min={-1}
-                max={100}
-                onAfterChange={(value) => this.updatePlotWithChanges({ bandwidth: value })}
-                step={1}
-              />
-            </Form.Item>
-          ),
+          type: 'bandwidth',
         });
       } else {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
-          differentControl: (
-            <Form.Item label='Bin step:'>
-              <Slider
-                defaultValue={config.binStep}
-                min={0.001}
-                max={0.4}
-                onAfterChange={(value) => this.updatePlotWithChanges({ binStep: value })}
-                step={0.001}
-              />
-            </Form.Item>
-          ),
+          type: 'bin step',
         });
       }
     };
@@ -469,7 +443,11 @@ class ReadAlignment extends React.Component {
                     onAfterChange={(val) => changeThreshold(val)}
                   />
                 </Form.Item>
-                {config.differentControl}
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={config.type}
+                />
               </Panel>
               <PlotStyling
                 config={config}

@@ -13,7 +13,7 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../../static/media/plot3.png';
 import plot2Pic from '../../../../../../../../static/media/plot4.png';
-
+import BandwidthOrBinstep from '../ReadAlignment/BandwidthOrBinstep';
 import plotData from './data2.json';
 
 import PlotStyling from '../PlotStyling';
@@ -534,15 +534,11 @@ class MitochondrialContent extends React.Component {
                     onAfterChange={(val) => changeFraction(val)}
                   />
                 </Form.Item>
-                <Form.Item label='Bin step:'>
-                  <Slider
-                    defaultValue={config.binStep}
-                    min={0.001}
-                    max={0.4}
-                    onAfterChange={(val) => this.updatePlotWithChanges({ binStep: val })}
-                    step={0.001}
-                  />
-                </Form.Item>
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={'bin step'}
+                />
               </Panel>
               <PlotStyling
                 config={config}

@@ -13,6 +13,7 @@ import plot2Pic from '../../../../../../../../static/media/plot2.png';
 import plotData2 from './cellRank_sorted.json';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
+import BandwidthOrBinstep from '../ReadAlignment/BandwidthOrBinstep';
 
 const { Panel } = Collapse;
 
@@ -51,6 +52,7 @@ class CellSizeDistribution extends React.Component {
       placeholder: 10800,
       sliderMax: 17000,
       binStep: 200,
+      type: 'bin step',
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -294,32 +296,10 @@ class CellSizeDistribution extends React.Component {
     }
     return {
       $schema: 'https://vega.github.io/schema/vega/v5.json',
-      description: 'A basic area chart example.',
       width: config.width,
       height: config.height,
       autosize: { type: 'fit', resize: true },
       padding: 5,
-
-      signals: [
-        {
-          name: 'interpolate',
-          value: 'monotone',
-          bind: {
-            input: 'select',
-            options: [
-              'basis',
-              'cardinal',
-              'catmull-rom',
-              'linear',
-              'monotone',
-              'natural',
-              'step',
-              'step-after',
-              'step-before',
-            ],
-          },
-        },
-      ],
 
       data: [
         {
@@ -416,7 +396,6 @@ class CellSizeDistribution extends React.Component {
               },
             },
             update: {
-              interpolate: { signal: 'interpolate' },
               fillOpacity: { value: 1 },
             },
           },
@@ -472,6 +451,7 @@ class CellSizeDistribution extends React.Component {
           yDefaultTitle: config.yAxisText,
           placeholder: 10800,
           sliderMax: 17000,
+          type: 'bin step',
         });
       } else {
         this.updatePlotWithChanges({
@@ -479,6 +459,7 @@ class CellSizeDistribution extends React.Component {
           yDefaultTitle: config.yAxisText2,
           placeholder: 990,
           sliderMax: 6000,
+          type: 'blank',
         });
       }
     };
@@ -552,15 +533,11 @@ class CellSizeDistribution extends React.Component {
                     step={100}
                   />
                 </Form.Item>
-                <Form.Item label='Bin step:'>
-                  <Slider
-                    defaultValue={config.binStep}
-                    min={100}
-                    max={400}
-                    onAfterChange={(val) => this.updatePlotWithChanges({ binStep: val })}
-                    step={1}
-                  />
-                </Form.Item>
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={config.type}
+                />
               </Panel>
               <PlotStyling
                 config={config}

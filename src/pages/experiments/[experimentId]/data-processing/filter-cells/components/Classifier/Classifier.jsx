@@ -10,6 +10,7 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
+import BandwidthOrBinstep from '../ReadAlignment/BandwidthOrBinstep';
 
 const { Panel } = Collapse;
 
@@ -246,15 +247,11 @@ class Classifier extends React.Component {
                     step={0.05}
                   />
                 </Form.Item>
-                <Form.Item label='Bandwidth:'>
-                  <Slider
-                    defaultValue={-1}
-                    min={-1}
-                    max={100}
-                    onChange={(val) => this.updatePlotWithChanges({ bandwidth: val })}
-                    step={1}
-                  />
-                </Form.Item>
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={'bandwidth'}
+                />
               </Panel>
               <PlotStyling
                 config={config}
