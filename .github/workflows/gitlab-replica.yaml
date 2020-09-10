@@ -101,10 +101,12 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          push: true
           tags: ${{ format('{0}/{1}:{2},{0}/{1}:{3}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag-ref, github.sha) }}
       
-      - id: check-size
-        name: Check size
+      - id: push
+        name: Push docker image to ECR
         run: |-
-          docker images
+          echo Pushing image $IMAGE_NAME to ECR.
+          docker push $IMAGE_NAME
+        env:
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, github.sha) }}
