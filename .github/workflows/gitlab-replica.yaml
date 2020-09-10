@@ -99,7 +99,7 @@ jobs:
           push: false
           tags: ${{ format('{0}:{1}-a,{0}:{2}-a', github.repository, steps.ref.outputs.tag-ref, github.sha) }}
 
-      - id: check-size
+      - id: check-size-alt
         name: Check size
         run: |-
           docker images
