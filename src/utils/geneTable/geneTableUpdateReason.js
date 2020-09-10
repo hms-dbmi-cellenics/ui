@@ -4,6 +4,7 @@ const geneTableUpdateReason = Object.freeze({
   loaded: 'setToLoading',
   filtered: 'filtered',
   paginated: 'paginated',
+  retry: 'retry',
 });
 
 export {

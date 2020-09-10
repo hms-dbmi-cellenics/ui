@@ -14,12 +14,13 @@ import GeneLookupButton from './GeneLookupButton';
 import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 import useLazyEffect from '../../../../../../utils/useLazyEffect';
+import SelectionIndicator from './SelectionIndicator';
 
 const { Text } = Typography;
 
 const GeneTable = (props) => {
   const {
-    experimentId, onUpdate, error, loading, columns, data, total, initialTableState, width, height,
+    experimentId, onUpdate, error, loading, columns, data, total, initialTableState, width, height, onExportCSV,
   } = props;
 
   const dispatch = useDispatch();
@@ -107,10 +108,6 @@ const GeneTable = (props) => {
     },
   };
 
-  const clearAll = () => {
-    dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
-  };
-
   /**
    * Render rows and decorate them appropriately (e.g., adding a focus button)
    */
@@ -177,21 +174,6 @@ const GeneTable = (props) => {
     return [...baseColumns, ...newColumns];
   };
 
-  const selectionIndicator = () => {
-    if (selectedGenes.length === 0) {
-      return <></>;
-    }
-    return (
-      <Text type='secondary'>
-        {selectedGenes.length}
-        &nbsp;gene
-        {selectedGenes.length === 1 ? '' : 's'}
-        &nbsp;selected
-        <Button type='link' size='small' onClick={clearAll}>Clear</Button>
-      </Text>
-    );
-  };
-
   // The gene list couldn't load.
   if (error) {
     return (
@@ -203,15 +185,22 @@ const GeneTable = (props) => {
   }
 
   return (
-    <Space direction='vertical' style={{ width: '100%' }}>
+    <Space
+      direction='vertical'
+      style={{ width: '100%' }}
+    >
       {loading ? <></> : (
-        <Space>
+        <Space direction='vertical' style={{ width: '100%' }}>
+          <SelectionIndicator
+            experimentId={experimentId}
+            showCSV={onExportCSV !== null}
+            onExportCSV={onExportCSV}
+          />
           <FilterGenes
             onFilter={filterGenes}
             defaultFilterOption={geneNameFilterState.filterOption}
             defaultFilterString={geneNameFilterState.text}
           />
-          {selectionIndicator()}
         </Space>
       )}
       <Table
@@ -235,6 +224,7 @@ const GeneTable = (props) => {
 
 GeneTable.defaultProps = {
   initialTableState: {},
+  onExportCSV: null,
 };
 
 GeneTable.propTypes = {
@@ -251,6 +241,7 @@ GeneTable.propTypes = {
   loading: PropTypes.bool.isRequired,
   onUpdate: PropTypes.func.isRequired,
   initialTableState: PropTypes.object,
+  onExportCSV: PropTypes.func,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };
