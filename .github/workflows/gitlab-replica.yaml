@@ -107,9 +107,9 @@ jobs:
       - id: check-history
         name: Check history
         run: |-
-          docker history biomage-ltd/ui
+          docker history biomage-ltd/ui:refs-heads-master-a
       
       - id: check-tree
-        name: Check tree
+        name: Check tree 2
         run: |-
-          docker images --tree
+          docker history biomage-ltd/ui:refs-heads-master
