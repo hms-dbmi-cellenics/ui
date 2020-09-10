@@ -103,3 +103,13 @@ jobs:
         name: Check size
         run: |-
           docker images
+      
+      - id: check-history
+        name: Check history
+        run: |-
+          docker history biomage-ltd/ui
+      
+      - id: check-tree
+        name: Check tree
+        run: |-
+          docker images --tree
