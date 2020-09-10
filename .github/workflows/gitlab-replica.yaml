@@ -14,23 +14,9 @@ jobs:
       name: Check out source code
       uses: actions/checkout@v2
 
-    - name: Get npm cache directory
-      id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
-
     - id: cache-seek
-      name: check for cache hit
-      uses: actions/cache@v1
-      with:
-        path: ${{ steps.npm-cache.outputs.dir }}
-        key: ${{ runner.os }}-nodez-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nodez-
-
-    # - id: cache-seek
-    #   name: Check for npm cache hit
-    #   uses: c-hive/gha-npm-cache@v1
+      name: Check for npm cache hit
+      uses: c-hive/gha-npm-cache@v1
 
     - id: install
       name: Install dependencies
@@ -95,5 +81,6 @@ jobs:
           tags: ${{ format('{0}:{1},{0}:{2}', github.repository, steps.ref.outputs.tag-ref, github.sha) }}
       
       - id: check-size
+        name: Check size
         run: |-
           docker images
