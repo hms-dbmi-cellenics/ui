@@ -8,16 +8,13 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 # copy package.json and yarn.lock
-COPY package.json yarn.lock /app/
+COPY package.json package-lock.json /app/
 
 # install dependencies
-RUN yarn install --prod --frozen-lockfile
+RUN npm ci --only=production
 
 # copy rest of app
 COPY . .
 
-# build the app
-RUN yarn build
-
 # start app in production mode
-CMD ["yarn", "prod"]
+CMD ["npm",  "run", "prod"]

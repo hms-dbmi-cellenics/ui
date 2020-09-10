@@ -4,8 +4,8 @@ on:
     branches:
     - master
 jobs:
-  test:
-    name: Run unit tests
+  build:
+    name: Build website
     runs-on: ubuntu-latest
     env:
       CI: "true"
@@ -23,50 +23,59 @@ jobs:
       run: |-
         npm ci
 
-    - id: test
-      name: Run unit tests
-      run: |-
-        npm test
-    
-    # - id: cancel
-    #   if: failure()
-    #   name: Cancel workflow if job failed.
-    #   uses: andymckay/cancel-action@0.2
+    # - id: test
+    #   name: Run unit tests
+    #   run: |-
+    #     npm test
 
-  build-next:
-    name: Build website
+    - id: next-cache-seek
+      name: Look up the Next.js build cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.workspace }}/.next/cache
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+  
+    - id: build
+      name: Build project
+      run: |-
+        npm run build
+  
+    - id: upload-build-out
+      name: Upload Next.js build output
+      uses: actions/upload-artifact@v2
+      with:
+        name: next-build-out
+        path: |
+          .next/
+          !.next/cache
+
+  build-docker:
+    name: Build Docker container
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v2
-
-      - id: cache-seek
-        name: Check for npm cache hit
-        uses: c-hive/gha-npm-cache@v1
   
-      - id: install
-        name: Install dependencies
+      - id: download-build-out
+        name: Download Next.js build output
+        uses: actions/download-artifact@v2
+        with:
+          name: next-build-out
+  
+      - id: ref
+        name: Replace / to - in ref name for docker tag.
         run: |-
-          npm ci
-  
+          TAG_REF=$(echo $GITHUB_REF | sed 's/\//-/g')
+          echo "::set-output name=tag-ref::$TAG_REF"
+
       - id: build
-        name: Build project
-        run: |-
-          npm run build
-  
-      # - id: ref
-      #   name: Replace / to - in ref name for docker tag.
-      #   run: |-
-      #     TAG_REF=$(echo $GITHUB_REF | sed 's/\//-/g')
-      #     echo "::set-output name=tag-ref::$TAG_REF"
-
-      # - id: build
-      #   name: Build Docker image
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile
-      #     platforms: linux/amd64
-      #     push: false
-      #     tags: ${{ format('{0}:{1},{0}:{2}', github.repository, steps.ref.outputs.tag-ref, github.sha) }}
+        name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: false
+          tags: ${{ format('{0}:{1},{0}:{2}', github.repository, steps.ref.outputs.tag-ref, github.sha) }}
