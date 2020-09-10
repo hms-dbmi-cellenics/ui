@@ -89,7 +89,7 @@ jobs:
         run: |-
           touch src/my_shitty_file
 
-      - id: build
+      - id: build-alt
         name: Build Docker image number 2
         uses: docker/build-push-action@v2
         with:
