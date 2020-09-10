@@ -7,7 +7,10 @@ WORKDIR /app
 # add `/app/node_modules/.bin` to $PATH
 ENV PATH /app/node_modules/.bin:$PATH
 
-# copy package.json and yarn.lock
+# copy rarely changing folders
+COPY static/ public/ config/ assets/ /app/
+
+# copy npm dependencies
 COPY package.json package-lock.json /app/
 
 # install dependencies

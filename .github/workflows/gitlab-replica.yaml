@@ -13,10 +13,24 @@ jobs:
     - id: checkout
       name: Check out source code
       uses: actions/checkout@v2
-    
+
+    - name: Get npm cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+
     - id: cache-seek
-      name: Check for npm cache hit
-      uses: c-hive/gha-npm-cache@v1
+      name: check for cache hit
+      uses: actions/cache@v1
+      with:
+        path: ${{ steps.npm-cache.outputs.dir }}
+        key: ${{ runner.os }}-nodez-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nodez-
+
+    # - id: cache-seek
+    #   name: Check for npm cache hit
+    #   uses: c-hive/gha-npm-cache@v1
 
     - id: install
       name: Install dependencies
