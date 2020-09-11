@@ -164,6 +164,7 @@ jobs:
           echo Now deploying to cluster `biomage-$CLUSTER_ENV`, namespace `$DEPLOYMENT_NAME-$REF_DASHED`.
 
           helm upgrade "$DEPLOYMENT_NAME" .chart/ \
+            --create-namespace \
             --install --wait \
             --set biomageCi.ref="$REF_DASHED" \
             --set biomageCi.repo="$GITHUB_REPOSITORY" \
