@@ -154,12 +154,14 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - id: deploy
-        name: Deploy to Kubernetes
+        name: Deploy to Kubernetes cluster
         env:
           ECR_URL: ${{ steps.login-ecr.outputs.registry }}
         run: |-
           REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
+
+          echo Now deploying to cluster `biomage-$CLUSTER_ENV`, namespace `$DEPLOYMENT_NAME-$REF_DASHED`.
 
           helm upgrade "$DEPLOYMENT_NAME" .chart/ \
             --install --wait \
