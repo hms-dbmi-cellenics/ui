@@ -131,14 +131,29 @@ jobs:
     strategy:
       matrix:
         environment: ['production']
+    env:
+      CLUSTER_ENV: ${{ matrix.environment }}
     steps:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v2
+
+      - id: setup-aws
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - id: add-kubeconfig
+        name: Add k8s config file for existing cluster.
+        run: |-
+          aws eks update-kubeconfig --name biomage-$CLUSTER_ENV
+
       - id: deploy
         name: Deploy to Kubernetes
         env:
-          CLUSTER_ENV: ${{ matrix.environment }}
           ECR_URL: ${{ needs.build-docker.outputs.ecr-registry }}
         run: |-
           REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
