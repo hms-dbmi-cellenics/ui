@@ -6,7 +6,6 @@ import connectionPromise from './socketConnection';
 const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();
   const timeoutDate = moment().add(timeout, 's').toISOString();
-
   const io = await connectionPromise();
 
   const request = {
@@ -20,8 +19,13 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
 
   io.emit('WorkRequest', request);
 
-  const responsePromise = new Promise((resolve) => {
-    io.on(`WorkResponse-${requestUuid}`, (res) => resolve(res));
+  const responsePromise = new Promise((resolve, reject) => {
+    io.on(`WorkResponse-${requestUuid}`, (res) => {
+      if (res.response.error) {
+        return reject(Error('The backend returned an error'));
+      }
+      return resolve(res);
+    });
   });
 
   const timeoutPromise = new Promise((resolve, reject) => {

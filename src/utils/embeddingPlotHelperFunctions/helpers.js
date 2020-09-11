@@ -15,6 +15,9 @@ const renderCellSetColors = (cellSets, cellSetProperties) => {
   const colors = {};
 
   cellSets.forEach((key) => {
+    if (!(key in cellSetProperties)) {
+      return {};
+    }
     const { color: stringColor, cellIds } = cellSetProperties[key];
     const color = hexToRgb(stringColor);
 

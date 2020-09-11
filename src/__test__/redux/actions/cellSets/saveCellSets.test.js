@@ -19,8 +19,17 @@ describe('saveCellSets action', () => {
     child2: { name: 'child 2', color: '#ff00ff' },
   };
 
+  const treeData = [{
+    key: 'root',
+    children: [
+      { key: 'child1', name: 'child 1', color: '#ffff00' },
+      { key: 'child2', name: 'child 2', color: '#ff00ff' }],
+    name: 'root node',
+    rootNode: true,
+  }];
+
   beforeEach(() => {
-    const response = new Response(JSON.stringify({}));
+    const response = new Response(JSON.stringify({ one: 'one' }));
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -45,10 +54,21 @@ describe('saveCellSets action', () => {
         ...initialState, loading: false, hierarchy, properties,
       },
     });
+    const flushPromises = () => new Promise(setImmediate);
     store.dispatch(saveCellSets(experimentId));
+
+    await flushPromises();
 
     const firstAction = store.getActions()[0];
 
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3000/v1/experiments/1234/cellSets',
+      {
+        body: JSON.stringify(treeData),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'PUT',
+      },
+    );
     expect(firstAction).toMatchSnapshot();
   });
 
