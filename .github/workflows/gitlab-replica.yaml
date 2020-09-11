@@ -83,7 +83,6 @@ jobs:
         run: |-
           pwd
           ls -la .
-          ls -la .next
 
       - id: set-up-creds
         name: Configure AWS credentials
