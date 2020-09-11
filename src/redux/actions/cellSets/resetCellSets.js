@@ -1,8 +1,10 @@
-import getApiEndpoint from '../../../utils/apiEndpoint';
-import loadCellSets from './loadCellSets';
 import {
-  CELL_SETS_LOADING, CELL_SETS_ERROR,
+  CELL_SETS_LOADING, CELL_SETS_LOADED, CELL_SETS_ERROR,
 } from '../../actionTypes/cellSets';
+import sendWork from '../../../utils/sendWork';
+import saveCellSets from './saveCellSets';
+
+const REQUEST_TIMEOUT = 30;
 
 const resetCellSets = (experimentId) => async (dispatch, getState) => {
   const {
@@ -13,9 +15,12 @@ const resetCellSets = (experimentId) => async (dispatch, getState) => {
     return null;
   }
 
-  const requestOptions = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const body = {
+    name: 'ClusterCells',
+    cellSetName: 'Louvain clusters',
+    type: 'louvain',
+    cellSetKey: 'louvain',
+    params: {},
   };
 
   dispatch({
@@ -23,8 +28,27 @@ const resetCellSets = (experimentId) => async (dispatch, getState) => {
   });
 
   try {
-    await fetch(`${getApiEndpoint()}/v1/experiments/generate`, requestOptions);
-    dispatch(loadCellSets(experimentId));
+    const response = await sendWork(
+      experimentId, REQUEST_TIMEOUT, body,
+    );
+
+    const louvainSets = JSON.parse(response.results[0].body);
+    const newCellSets = [
+      louvainSets,
+      {
+        key: 'scratchpad',
+        name: 'Scratchpad',
+        rootNode: true,
+      },
+    ];
+    await dispatch({
+      type: CELL_SETS_LOADED,
+      payload: {
+        experimentId,
+        data: newCellSets,
+      },
+    });
+    dispatch(saveCellSets(experimentId));
   } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,
