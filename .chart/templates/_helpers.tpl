@@ -15,7 +15,11 @@ Expand the name of the chart.
 {{- end -}}
 
 {{- define "hostname" -}}
+{{- if (eq .Values.kubernetes.env "production") -}}
 {{- printf "%s.scp.biomage.net" (split "/" .Values.biomageCi.repo)._1 -}}
+{{- else -}}
+{{- printf "%s.scp-%s.biomage.net" (split "/" .Values.biomageCi.repo)._1 .Values.kubernetes.env -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
