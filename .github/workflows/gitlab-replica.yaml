@@ -96,6 +96,9 @@ jobs:
       
       - id: create-ecr-registry
         name: Create an ECR registry (if needed)
+        # This will fail if the registry already exists, which is fine. If there is some other
+        # error, the `push` step will fail instead.
+        continue-on-error: true
         run: |-
           aws ecr create-repository --repository-name $REPO_NAME --image-tag-mutability IMMUTABLE
         env:
