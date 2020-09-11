@@ -53,6 +53,8 @@ jobs:
     name: Build Docker container
     runs-on: ubuntu-latest
     needs: build
+    outputs:
+      ecr-registry: ${{ steps.login-ecr.outputs.registry }}
     steps:
       - id: checkout
         name: Check out source code
@@ -95,7 +97,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       
       - id: create-ecr-registry
-        name: Create an ECR registry (if needed)
+        name: Create an ECR repository (if needed)
         # This will fail if the registry already exists, which is fine. If there is some other
         # error, the `push` step will fail instead.
         continue-on-error: true
@@ -111,7 +113,7 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          tags: ${{ format('{0}/{1}:{2},{0}/{1}:{3}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag-ref, github.sha) }}
+          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, github.sha) }}
           push: false
 
       - id: push
@@ -121,3 +123,34 @@ jobs:
           docker push $IMAGE_NAME
         env:
           IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, github.sha) }}
+
+  deploy:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: build-docker
+    strategy:
+      matrix:
+        environment: ['production']
+    steps:
+      - id: checkout
+        name: Check out source code
+        uses: actions/checkout@v2
+      - id: deploy
+        name: Deploy to Kubernetes
+        env:
+          CLUSTER_ENV: ${{ matrix.environment }}
+          ECR_URL: ${{ needs.build-docker.outputs.ecr-registry }}
+        run: |-
+          REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
+          DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
+
+          helm upgrade \
+            --install --wait \
+            --set biomageCi.ref="$REF_DASHED" \
+            --set biomageCi.repo="$GITHUB_REPOSITORY" \
+            --set kubernetes.env="$CLUSTER_ENV" \
+            --set image.registry="$ECR_URL" \
+            --set image.tag="$GITHUB_SHA" \
+            --namespace="$DEPLOYMENT_NAME-$REF_DASHED"
+            "$DEPLOYMENT_NAME" \
+            .chart/

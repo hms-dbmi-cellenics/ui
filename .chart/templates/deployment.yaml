@@ -1,0 +1,99 @@
+{{- if not .Values.application.initializeCommand -}}
+apiVersion: {{ default "apps/v1" .Values.deploymentApiVersion }}
+kind: Deployment
+
+metadata:
+  name: {{ template "appname_with_ref" . }}
+  labels:
+    app: {{ template "appname" . }}
+    ref: "{{ .Values.biomageCi.ref }}"
+    release: {{ .Release.Name }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    heritage: {{ .Release.Service }}
+
+spec:
+  # This describes how the deployment will find the pods to manage.
+  selector:
+    matchLabels:
+      app: {{ template "appname" . }}
+      ref: "{{ .Values.biomageCi.ref }}"
+      release: {{ .Release.Name }}
+
+  replicas: {{ .Values.replicaCount }}
+
+{{- if .Values.strategyType }}
+  strategy:
+    type: {{ .Values.strategyType | quote }}
+{{- end }}
+
+  template:
+    metadata:
+      annotations:
+{{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app: {{ template "appname" . }}
+        ref: "{{ .Values.biomageCi.ref }}"
+        release: {{ .Release.Name }}
+
+    spec:
+      imagePullSecrets:
+{{ toYaml .Values.image.secrets | indent 10 }}
+
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.registry }}/{{ (split "/" .Values.biomageCi.repo)._1 }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.application.secretName }}
+
+        envFrom:
+        - secretRef:
+            name: {{ .Values.application.secretName }}
+        {{- end }}
+
+        env:
+        - name: K8S_ENV
+          value: {{ .Values.kubernetes.env | quote }}
+        
+        ports:
+        - name: "{{ .Values.service.name }}"
+          containerPort: {{ .Values.service.internalPort }}
+        
+        livenessProbe:
+{{- if eq .Values.livenessProbe.probeType "httpGet" }}
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+            port: {{ .Values.service.internalPort }}
+{{- else if eq .Values.livenessProbe.probeType "tcpSocket" }}
+          tcpSocket:
+            port: {{ .Values.service.internalPort }}
+{{- else if eq .Values.livenessProbe.probeType "exec" }}
+          exec:
+            command:
+{{ toYaml .Values.livenessProbe.command | indent 14 }}
+{{- end }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        
+        readinessProbe:
+{{- if eq .Values.readinessProbe.probeType "httpGet" }}
+          httpGet:
+            path: {{ .Values.readinessProbe.path }}
+            scheme: {{ .Values.readinessProbe.scheme }}
+            port: {{ .Values.service.internalPort }}
+{{- else if eq .Values.readinessProbe.probeType "tcpSocket" }}
+          tcpSocket:
+            port: {{ .Values.service.internalPort }}
+{{- else if eq .Values.readinessProbe.probeType "exec" }}
+          exec:
+            command:
+{{ toYaml .Values.readinessProbe.command | indent 14 }}
+{{- end }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+        
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+{{- end -}}

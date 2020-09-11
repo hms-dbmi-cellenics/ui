@@ -1,0 +1,34 @@
+{{- if and (.Values.service.enabled) (eq .Values.biomageCi.ref "refs-heads-master") -}}
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{ template "appname" . }}
+  annotations:
+{{- if .Values.service.annotations }}
+{{ toYaml .Values.service.annotations | indent 4 }}
+{{- end }}
+{{- if .Values.prometheus.metrics }}
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ .Values.service.internalPort }}"
+{{- end }}
+  labels:
+    app: {{ template "appname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+
+spec:
+  type: {{ .Values.service.type }}
+
+  ports:
+  - port: {{ .Values.service.externalPort }}
+    targetPort: {{ .Values.service.internalPort }}
+    protocol: TCP
+    name: {{ .Values.service.name }}
+
+  selector:
+    app: {{ template "appname" . }}
+    ref: "{{ .Values.biomageCi.ref }}"
+    release: {{ .Release.Name }}
+{{- end -}}
