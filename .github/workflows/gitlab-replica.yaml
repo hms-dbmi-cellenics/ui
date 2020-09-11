@@ -93,6 +93,13 @@ jobs:
       - id: login-ecr
         name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
+      
+      - id: create-ecr-registry
+        name: Create an ECR registry (if needed)
+        run: |-
+          aws ecr create-repository --repository-name $REPO_NAME --image-tag-mutability IMMUTABLE
+        env:
+          REPO_NAME: ${{ steps.ref.outputs.repo-name }}
 
       - id: build
         name: Build Docker image
