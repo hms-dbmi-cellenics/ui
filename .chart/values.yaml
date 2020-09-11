@@ -37,7 +37,7 @@ ingress:
     enabled: true
     secretName: ""
   annotations:
-    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
     kubernetes.io/ingress.class: "nginx"
   modSecurity:
     enabled: false
