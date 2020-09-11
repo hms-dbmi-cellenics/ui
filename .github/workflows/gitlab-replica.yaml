@@ -53,8 +53,6 @@ jobs:
     name: Build Docker container
     runs-on: ubuntu-latest
     needs: build
-    outputs:
-      ecr-registry: ${{ steps.login-ecr.outputs.registry }}
     steps:
       - id: checkout
         name: Check out source code
@@ -151,10 +149,14 @@ jobs:
         run: |-
           aws eks update-kubeconfig --name biomage-$CLUSTER_ENV
 
+      - id: login-ecr
+        name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
       - id: deploy
         name: Deploy to Kubernetes
         env:
-          ECR_URL: ${{ needs.build-docker.outputs.ecr-registry }}
+          ECR_URL: ${{ steps.login-ecr.outputs.registry }}
         run: |-
           REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
