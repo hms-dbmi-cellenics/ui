@@ -141,12 +141,13 @@ jobs:
           sudo snap install yq
       
       - id: fill-metadata
-        name: Add name and region to the eksctl file.
+        name: Fill out a new HelmRelease resource
         run: |-
           REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
+          echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
 
-          mkdir -p flux/releases/${{ matrix.environment }}
+          mkdir -p /tmp/flux/
 
           yq w .chart/flux.yaml metadata.name "$DEPLOYMENT_NAME" \
           | yq w - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
@@ -155,14 +156,15 @@ jobs:
           | yq w - "spec.values.kubernetes.env" "${{ matrix.environment }}" \
           | yq w - "spec.values.image.registry" "$ECR_URL" \
           | yq w - "spec.values.image.tag" "$REF_DASHED-$GITHUB_SHA" \
-          > flux/releases/${{ matrix.environment }}/$DEPLOYMENT_NAME.yaml
+          > /tmp/flux/${{ matrix.environment }}/$DEPLOYMENT_NAME.yaml
       
       - name: Push changes to iac repo
-        uses: cpina/github-action-push-to-another-repository@master
+        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: 'flux'
-          destination-github-username: 'biomage-ltd'
-          destination-repository-name: 'iac'
-          user-email: ci@biomage.net
+          source_file: '/tmp/flux/${{ matrix.environment }}/${{ steps.fill-metadata.outputs.deployment-name }}.yaml'
+          destination_repo: '${{ github.repository_owner }}/iac'
+          destination_folder: 'releases/dev'
+          user_email: 'ci@biomage.net'
+          user_name: 'Biomage CI/CD'
