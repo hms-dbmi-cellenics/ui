@@ -156,6 +156,8 @@ jobs:
           | yq w -d1 - "spec.values.image.tag" "$REF_DASHED-$GITHUB_SHA" \
           | yq w -d0 - "metadata.name" "$DEPLOYMENT_NAME-$REF_DASHED" \
           > $DEPLOYMENT_NAME.yaml
+
+          cat $DEPLOYMENT_NAME.yaml
       
       - name: Push changes to iac repo
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
