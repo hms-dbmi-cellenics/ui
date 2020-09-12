@@ -163,10 +163,10 @@ jobs:
           | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
           | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
           | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
+          | yq w -d1 - spec.chart.git "git@github.com:$GITHUB_REPOSITORY" \
           | yq w -d1 - spec.values.kubernetes.env "${{ matrix.environment }}" \
           | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
           | yq w -d1 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
-          | yq w -d1 - spec.values.chart.git "git@github.com:$GITHUB_REPOSITORY" \
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$REF_DASHED" \
           > $DEPLOYMENT_NAME.yaml
 
