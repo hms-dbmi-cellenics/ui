@@ -3,14 +3,6 @@ kind: Namespace
 metadata:
   name: FILLED_IN_BY_CI
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: default
-  namespace: FILLED_IN_BY_CI
-  annotations:
-    eks.amazonaws.com/role-arn: FILLED_IN_BY_CI
----
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
