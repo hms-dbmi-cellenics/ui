@@ -147,13 +147,14 @@ jobs:
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
 
-          yq w .chart/flux.yaml metadata.name "$DEPLOYMENT_NAME" \
-          | yq w - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
-          | yq w - metadata.spec.releaseName "$DEPLOYMENT_NAME" \
-          | yq w - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
-          | yq w - "spec.values.kubernetes.env" "${{ matrix.environment }}" \
-          | yq w - "spec.values.image.registry" "$ECR_URL" \
-          | yq w - "spec.values.image.tag" "$REF_DASHED-$GITHUB_SHA" \
+          yq w -d1 .releases/flux.yaml metadata.name "$DEPLOYMENT_NAME" \
+          | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
+          | yq w -d1 - metadata.spec.releaseName "$DEPLOYMENT_NAME" \
+          | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
+          | yq w -d1 - "spec.values.kubernetes.env" "${{ matrix.environment }}" \
+          | yq w -d1 - "spec.values.image.registry" "$ECR_URL" \
+          | yq w -d1 - "spec.values.image.tag" "$REF_DASHED-$GITHUB_SHA" \
+          | yq w -d0 - "metadata.name" "$DEPLOYMENT_NAME-$REF_DASHED" \
           > $DEPLOYMENT_NAME.yaml
       
       - name: Push changes to iac repo

@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: FILLED_IN_BY_CI
+---
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
