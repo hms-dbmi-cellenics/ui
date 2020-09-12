@@ -166,7 +166,7 @@ jobs:
           | yq w -d2 - spec.values.kubernetes.env "${{ matrix.environment }}" \
           | yq w -d2 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
           | yq w -d2 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
-          | yq w -d1 - "metadata.annotations[eks.amazonaws.com/role-arn]" "arn:aws:iam::242905224710:role/can-submit-work-production" \
+          | yq w -d1 - "metadata.annotations[eks.amazonaws.com/role-arn]" "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/can-submit-work-production" \
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$REF_DASHED" \
           > $DEPLOYMENT_NAME.yaml
 
