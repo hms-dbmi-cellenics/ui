@@ -159,13 +159,14 @@ jobs:
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
 
-          yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
-          | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
-          | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
-          | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
-          | yq w -d1 - spec.values.kubernetes.env "${{ matrix.environment }}" \
-          | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
-          | yq w -d1 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
+          yq w -d2 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
+          | yq w -d2 - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
+          | yq w -d2 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
+          | yq w -d2 - spec.releaseName "$DEPLOYMENT_NAME" \
+          | yq w -d2 - spec.values.kubernetes.env "${{ matrix.environment }}" \
+          | yq w -d2 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
+          | yq w -d2 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
+          | yq w -d1 - "metadata.annotations[eks.amazonaws.com/role-arn]" "arn:aws:iam::242905224710:role/can-submit-work-production" \
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$REF_DASHED" \
           > $DEPLOYMENT_NAME.yaml
 
