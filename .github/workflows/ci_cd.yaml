@@ -146,7 +146,7 @@ jobs:
           REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
 
-          mkdir -p releases/${{ matrix.environment }}
+          mkdir -p flux/releases/${{ matrix.environment }}
 
           yq w .chart/flux.yaml metadata.name "$DEPLOYMENT_NAME" \
           | yq w - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
@@ -155,14 +155,14 @@ jobs:
           | yq w - "spec.values.kubernetes.env" "${{ matrix.environment }}" \
           | yq w - "spec.values.image.registry" "$ECR_URL" \
           | yq w - "spec.values.image.tag" "$REF_DASHED-$GITHUB_SHA" \
-          > releases/${{ matrix.environment }}/$DEPLOYMENT_NAME.yaml
+          > flux/releases/${{ matrix.environment }}/$DEPLOYMENT_NAME.yaml
       
       - name: Push changes to iac repo
         uses: cpina/github-action-push-to-another-repository@master
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: 'releases'
+          source-directory: 'flux'
           destination-github-username: 'biomage-ltd'
           destination-repository-name: 'iac'
           user-email: ci@biomage.net
