@@ -164,6 +164,8 @@ jobs:
           | yq w -d2 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
           | yq w -d2 - spec.releaseName "$DEPLOYMENT_NAME" \
           | yq w -d2 - spec.values.kubernetes.env "${{ matrix.environment }}" \
+          | yq w -d2 - spec.values.biomageCi.ref "$GITHUB_REF" \
+          | yq w -d2 - spec.values.biomageCi.repo "$GITHUB_REPOSITORY" \
           | yq w -d2 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
           | yq w -d2 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
           | yq w -d1 - "metadata.namespace" "$DEPLOYMENT_NAME-$REF_DASHED" \
