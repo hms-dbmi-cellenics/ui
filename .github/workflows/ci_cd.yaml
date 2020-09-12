@@ -58,12 +58,12 @@ jobs:
         name: Check out source code
         uses: actions/checkout@v2
   
-      - id: download-build-out
-        name: Download Next.js build output
-        uses: actions/download-artifact@v2
-        with:
-          name: next-build-out
-          path: .next/
+      # - id: download-build-out
+      #   name: Download Next.js build output
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: next-build-out
+      #     path: .next/
   
       - id: ref
         name: Format docker tag and repository name.
