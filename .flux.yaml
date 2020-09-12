@@ -26,7 +26,4 @@ spec:
     path: charts/nodejs
     ref: master
   values:
-    service:
-      additionalHosts:
-        - scp.biomage.net
     # filled in by CI. do not modify.

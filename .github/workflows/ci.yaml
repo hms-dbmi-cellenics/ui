@@ -171,7 +171,7 @@ jobs:
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$REF_DASHED" \
           > $DEPLOYMENT_NAME-without-host.yaml
 
-          if [ "${{ matrix.environment }}" -eq "production" ]
+          if [ "${{ matrix.environment }}" = "production" ]
           then
             yq w -d2 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp.biomage.net" > $DEPLOYMENT_NAME.yaml
           else
