@@ -1,3 +1,0 @@
-Application should be accessible at
-
-    {{ template "hostname" . }}
