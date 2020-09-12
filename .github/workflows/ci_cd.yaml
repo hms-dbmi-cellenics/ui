@@ -154,14 +154,14 @@ jobs:
           | yq w - "spec.values.kubernetes.env" "${{ matrix.environment }}" \
           | yq w - "spec.values.image.registry" "$ECR_URL" \
           | yq w - "spec.values.image.tag" "$REF_DASHED-$GITHUB_SHA" \
-          > /tmp/$DEPLOYMENT_NAME.yaml
+          > $DEPLOYMENT_NAME.yaml
       
       - name: Push changes to iac repo
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: '/tmp/${{ steps.fill-metadata.outputs.deployment-name }}.yaml'
+          source_file: '${{ steps.fill-metadata.outputs.deployment-name }}.yaml'
           destination_repo: '${{ github.repository_owner }}/iac'
           destination_folder: 'releases/${{ matrix.environment }}'
           user_email: 'ci@biomage.net'
