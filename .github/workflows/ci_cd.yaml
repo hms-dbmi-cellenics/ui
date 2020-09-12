@@ -1,4 +1,4 @@
-name: Build
+name: Build Docker image
 on:
   push:
     branches:
@@ -35,10 +35,10 @@ jobs:
         path: ${{ github.workspace }}/.next/cache
         key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
   
-    - id: build
-      name: Build project
-      run: |-
-        npm run build
+    # - id: build
+    #   name: Build project
+    #   run: |-
+    #     npm run build
   
     - id: upload-build-out
       name: Upload Next.js build output
@@ -70,19 +70,18 @@ jobs:
         run: |-
           # This will take a ref like `refs/heads/master`
           # and turn it into `refs-heads-master`
-          TAG_REF=$(echo $GITHUB_REF | sed 's/\//-/g')
-          echo "::set-output name=tag-ref::$TAG_REF"
+          REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
 
-          # This will take a repo name like `biomage-ltd/iac`
-          # and turns it into `iac`
+          # the final tag is something like:
+          # refs-heads-master-a4f8bc313dae
+          # this is what we push to ECR
+          echo "::set-output name=tag::$REF_ID-$GITHUB_SHA"
+
+          # This will take a GitHub repo name like `biomage-ltd/iac`
+          # and turns it into `iac`. This will be the name of the
+          # ECR repository.
           IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=repo-name::$IMAGE_REPO_NAME"
-
-      - id: remove-cache
-        name: Check what's here
-        run: |-
-          pwd
-          ls -la .
 
       - id: set-up-creds
         name: Configure AWS credentials
@@ -113,7 +112,7 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, github.sha) }}
+          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
           push: false
 
       - id: push
@@ -122,7 +121,7 @@ jobs:
           echo Pushing image $IMAGE_NAME to ECR.
           docker push $IMAGE_NAME
         env:
-          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, github.sha) }}
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
 
   deploy:
     name: Deploy to Kubernetes
@@ -131,46 +130,39 @@ jobs:
     strategy:
       matrix:
         environment: ['production']
-    env:
-      CLUSTER_ENV: ${{ matrix.environment }}
     steps:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v2
 
-      - id: setup-aws
-        name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1
-
-      - id: add-kubeconfig
-        name: Add k8s config file for existing cluster.
+      - id: install-yq
+        name: Install yq for modifying the eksctl yaml spec.
         run: |-
-          aws eks update-kubeconfig --name biomage-$CLUSTER_ENV
-
-      - id: login-ecr
-        name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - id: deploy
-        name: Deploy to Kubernetes cluster
-        env:
-          ECR_URL: ${{ steps.login-ecr.outputs.registry }}
+          sudo snap install yq
+      
+      - id: fill-metadata
+        name: Add name and region to the eksctl file.
         run: |-
           REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
 
-          echo Now deploying to cluster 'biomage-$CLUSTER_ENV' and namespace '$DEPLOYMENT_NAME-$REF_DASHED'.
+          mkdir releases
 
-          helm upgrade "$DEPLOYMENT_NAME" .chart/ \
-            --create-namespace \
-            --install --wait \
-            --set biomageCi.ref="$REF_DASHED" \
-            --set biomageCi.repo="$GITHUB_REPOSITORY" \
-            --set kubernetes.env="$CLUSTER_ENV" \
-            --set image.registry="$ECR_URL" \
-            --set image.tag="$GITHUB_SHA" \
-            --namespace="$DEPLOYMENT_NAME-$REF_DASHED"
+          yq w .chart/flux.yaml metadata.name "$DEPLOYMENT_NAME" \
+          | yq w - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
+          | yq w - metadata.spec.releaseName "$DEPLOYMENT_NAME" \
+          | yq w - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
+          | yq w - "spec.values.kubernetes.env" "${{ matrix.environment }}" \
+          | yq w - "spec.values.image.registry" "$ECR_URL" \
+          | yq w - "spec.values.image.tag" "$REF_DASHED-$GITHUB_SHA" \
+          > releases/${{ matrix.environment }}/$DEPLOYMENT_NAME.yaml
+      
+      - name: Push changes to iac repo
+        uses: cpina/github-action-push-to-another-repository@master
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'releases'
+          destination-github-username: 'biomage-ltd'
+          destination-repository-name: 'iac'
+          user-email: ci@biomage.net

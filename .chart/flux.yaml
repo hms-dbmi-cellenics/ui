@@ -1,0 +1,16 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: FILLED_IN_BY_CI
+  namespace: FILLED_IN_BY_CI
+  annotations:
+    fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: FILLED_IN_BY_CI
+spec:
+  releaseName: FILLED_IN_BY_CI
+  chart:
+    git: FILLED_IN_BY_CI
+    path: .chart/
+    ref: master
+  values:
+    # filled in by CI. do not modify.
