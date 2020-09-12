@@ -147,8 +147,6 @@ jobs:
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
 
-          mkdir -p /tmp/flux/
-
           yq w .chart/flux.yaml metadata.name "$DEPLOYMENT_NAME" \
           | yq w - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
           | yq w - metadata.spec.releaseName "$DEPLOYMENT_NAME" \
@@ -156,15 +154,15 @@ jobs:
           | yq w - "spec.values.kubernetes.env" "${{ matrix.environment }}" \
           | yq w - "spec.values.image.registry" "$ECR_URL" \
           | yq w - "spec.values.image.tag" "$REF_DASHED-$GITHUB_SHA" \
-          > /tmp/flux/${{ matrix.environment }}/$DEPLOYMENT_NAME.yaml
+          > /tmp/$DEPLOYMENT_NAME.yaml
       
       - name: Push changes to iac repo
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: '/tmp/flux/${{ matrix.environment }}/${{ steps.fill-metadata.outputs.deployment-name }}.yaml'
+          source_file: '/tmp/${{ steps.fill-metadata.outputs.deployment-name }}.yaml'
           destination_repo: '${{ github.repository_owner }}/iac'
-          destination_folder: 'releases/dev'
+          destination_folder: 'releases/${{ matrix.environment }}'
           user_email: 'ci@biomage.net'
           user_name: 'Biomage CI/CD'
