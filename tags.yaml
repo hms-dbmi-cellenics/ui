@@ -25,4 +25,4 @@ ci-policies:
             - "ecr:UploadLayerPart"
             - "ecr:CompleteLayerUpload"
             - "ecr:PutImage"
-          Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${Repository}"
+          Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/ui"
