@@ -10,6 +10,7 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
+import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;
 class DoubletScores extends React.Component {
@@ -39,6 +40,7 @@ class DoubletScores extends React.Component {
       height: 500,
       maxWidth: 789,
       maxHeight: 560,
+      binStep: 0.05,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -107,16 +109,6 @@ class DoubletScores extends React.Component {
       autosize: { type: 'fit', resize: true },
       padding: 5,
 
-      signals: [
-        {
-          name: 'binStep',
-          value: 0.05,
-          bind: {
-            input: 'range', min: 0.001, max: 0.4, step: 0.001,
-          },
-        },
-      ],
-
       data: [
         {
           name: 'plotData',
@@ -129,7 +121,7 @@ class DoubletScores extends React.Component {
               type: 'bin',
               field: 'doubletP',
               extent: [0, 1],
-              step: { signal: 'binStep' },
+              step: config.binStep,
               nice: false,
             },
             {
@@ -225,7 +217,6 @@ class DoubletScores extends React.Component {
               x2: {
                 scale: 'xscale',
                 field: 'bin1',
-                offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
               },
               y: { scale: 'yscale', field: 'count' },
               y2: { scale: 'yscale', value: 0 },
@@ -282,7 +273,7 @@ class DoubletScores extends React.Component {
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
           <Col span={1}>
-            <Tooltip title='Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The cut-off is typically set around 0.25.'>
+            <Tooltip placement="bottom" title='Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The cut-off is typically set around 0.25.'>
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
           </Col>
@@ -297,9 +288,14 @@ class DoubletScores extends React.Component {
                     min={0}
                     max={1}
                     onAfterChange={(val) => changeThreshold(val)}
-                    step={0.1}
+                    step={0.05}
                   />
                 </Form.Item>
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={'bin step'}
+                />
               </Panel>
               <PlotStyling
                 config={config}

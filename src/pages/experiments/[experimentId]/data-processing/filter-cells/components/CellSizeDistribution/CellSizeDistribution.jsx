@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Collapse, Row, Col, List, Space,
+  Collapse, Row, Col, List, Space, Slider,
   Form, Tooltip, Button, InputNumber,
 } from 'antd';
 import {
@@ -13,6 +13,7 @@ import plot2Pic from '../../../../../../../../static/media/plot2.png';
 import plotData2 from './cellRank_sorted.json';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
+import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;
 
@@ -29,7 +30,7 @@ class CellSizeDistribution extends React.Component {
       xAxisText: '#UMIs in cell',
       yAxisText: '#UMIs * #Cells',
       xAxisText2: 'Cell rank',
-      yAxisText2: "#UMI's in cell",
+      yAxisText2: "#UMIs in cell",
       xDefaultTitle: '#UMIs in cell',
       yDefaultTitle: '#UMIs * #Cells',
       legendOrientation: 'top-left',
@@ -50,6 +51,8 @@ class CellSizeDistribution extends React.Component {
       arrowStep: 1000,
       placeholder: 10800,
       sliderMax: 17000,
+      binStep: 200,
+      type: 'bin step',
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -151,15 +154,6 @@ class CellSizeDistribution extends React.Component {
 
         padding: 5,
 
-        signals: [
-          {
-            name: 'binStep',
-            value: 200,
-            bind: {
-              input: 'range', min: 100, max: 400, step: 1,
-            },
-          },
-        ],
         data: [
           {
             name: 'plotData',
@@ -172,7 +166,7 @@ class CellSizeDistribution extends React.Component {
                 type: 'bin',
                 field: 'u',
                 extent: [0, 17000],
-                step: { signal: 'binStep' },
+                step: config.binStep,
                 nice: false,
               },
               {
@@ -262,7 +256,6 @@ class CellSizeDistribution extends React.Component {
                 x2: {
                   scale: 'xscale',
                   field: 'bin1',
-                  offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
                 },
                 y: { scale: 'yscale', field: 'count' },
                 y2: { scale: 'yscale', value: 0 },
@@ -303,32 +296,10 @@ class CellSizeDistribution extends React.Component {
     }
     return {
       $schema: 'https://vega.github.io/schema/vega/v5.json',
-      description: 'A basic area chart example.',
       width: config.width,
       height: config.height,
       autosize: { type: 'fit', resize: true },
       padding: 5,
-
-      signals: [
-        {
-          name: 'interpolate',
-          value: 'monotone',
-          bind: {
-            input: 'select',
-            options: [
-              'basis',
-              'cardinal',
-              'catmull-rom',
-              'linear',
-              'monotone',
-              'natural',
-              'step',
-              'step-after',
-              'step-before',
-            ],
-          },
-        },
-      ],
 
       data: [
         {
@@ -425,7 +396,6 @@ class CellSizeDistribution extends React.Component {
               },
             },
             update: {
-              interpolate: { signal: 'interpolate' },
               fillOpacity: { value: 1 },
             },
           },
@@ -481,6 +451,7 @@ class CellSizeDistribution extends React.Component {
           yDefaultTitle: config.yAxisText,
           placeholder: 10800,
           sliderMax: 17000,
+          type: 'bin step',
         });
       } else {
         this.updatePlotWithChanges({
@@ -488,6 +459,7 @@ class CellSizeDistribution extends React.Component {
           yDefaultTitle: config.yAxisText2,
           placeholder: 990,
           sliderMax: 6000,
+          type: 'blank',
         });
       }
     };
@@ -558,9 +530,15 @@ class CellSizeDistribution extends React.Component {
                     disabled={!filtering}
                     onPressEnter={(val) => changeCellSize(val)}
                     placeholder={config.placeholder}
-                    step={1}
+                    step={100}
                   />
                 </Form.Item>
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={config.type}
+                  max={400}
+                />
               </Panel>
               <PlotStyling
                 config={config}

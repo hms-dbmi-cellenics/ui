@@ -16,6 +16,7 @@ import plot1Pic from '../../../../../../../../static/media/plot5.png';
 import plot2Pic from '../../../../../../../../static/media/plot6.png';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
+import BandwidthOrBinstep from './PlotStyleMisc';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -28,11 +29,11 @@ class ReadAlignment extends React.Component {
       plotToDraw: true,
       data: plotData,
       xAxisText: 'fraction of intergenic reads',
-      yAxisText: 'log10 [ #UMIs ]',
+      yAxisText: 'log10 ( #UMIs )',
       xAxisText2: 'fraction of intergenic reads',
       yAxisText2: 'Frequency',
-      xDefaultTitle: 'log10 [ #UMIs ]',
-      yDefaultTitle: 'fraction of intergenic reads',
+      xDefaultTitle: 'fraction of intergenic reads',
+      yDefaultTitle: 'log10 ( #UMIs )',
       gridWeight: 0,
       titleSize: 12,
       titleText: '',
@@ -49,7 +50,11 @@ class ReadAlignment extends React.Component {
       maxWidth: 660,
       maxHeight: 560,
       threshold: 0.5,
+      binStep: 0.05,
+      bandwidth: -1,
+      type: 'bandwidth',
     };
+
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
       data: plotData,
@@ -81,15 +86,7 @@ class ReadAlignment extends React.Component {
         autosize: { type: 'fit', resize: true },
         padding: 5,
         autoSize: 'pad',
-        signals: [
-          {
-            name: 'bandwidth',
-            value: -1,
-            bind: {
-              input: 'range', min: -1, max: 100, step: 1,
-            },
-          },
-        ],
+
         data: [
           {
             name: 'plotData',
@@ -109,7 +106,7 @@ class ReadAlignment extends React.Component {
                 size: [{ signal: 'width' }, { signal: 'height' }],
                 x: { expr: "scale('x', datum.fracMito)" },
                 y: { expr: "scale('y', datum.cellSize)" },
-                bandwidth: { signal: '[bandwidth, bandwidth]' },
+                bandwidth: [config.bandwidth, config.bandwidth],
                 cellSize: 15,
               },
               {
@@ -239,16 +236,6 @@ class ReadAlignment extends React.Component {
       autosize: { type: 'fit', resize: true },
       padding: 5,
 
-      signals: [
-        {
-          name: 'binStep',
-          value: 0.05,
-          bind: {
-            input: 'range', min: 0.001, max: 0.4, step: 0.001,
-          },
-        },
-      ],
-
       data: [
         {
           name: 'plotData',
@@ -261,7 +248,7 @@ class ReadAlignment extends React.Component {
               type: 'bin',
               field: 'fracMito',
               extent: [0, 1],
-              step: { signal: 'binStep' },
+              step: config.binStep,
               nice: false,
             },
             {
@@ -334,7 +321,8 @@ class ReadAlignment extends React.Component {
               x2: {
                 scale: 'xscale',
                 field: 'bin1',
-                offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
+                // offset: `${config.binStep} > 0.02 ? -0.5 : 0`,
+
               },
               y: { scale: 'yscale', field: 'count' },
               y2: { scale: 'yscale', value: 0 },
@@ -374,22 +362,23 @@ class ReadAlignment extends React.Component {
     const { filtering } = this.props;
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
-      if (!config.plotToDraw) {
+      if (val) {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText,
           yDefaultTitle: config.yAxisText,
+          type: 'bandwidth',
         });
       } else {
         this.updatePlotWithChanges({
           xDefaultTitle: config.xAxisText2,
           yDefaultTitle: config.yAxisText2,
+          type: 'bin step',
         });
       }
     };
     const changeThreshold = (val) => {
       this.updatePlotWithChanges({ threshold: val });
     };
-
     return (
       <>
         <Row>
@@ -400,7 +389,7 @@ class ReadAlignment extends React.Component {
 
           <Col span={3}>
             <Space direction='vertical'>
-              <Tooltip title='Dead and dying cells may display a high fraction of intergenic reads as a result of contaminating genomic DNA. The cut-off is typically set around 0.6-0.9.'>
+              <Tooltip placement='bottom' title='Dead and dying cells may display a high fraction of intergenic reads as a result of contaminating genomic DNA. The cut-off is typically set around 0.6-0.9.'>
                 <Button icon={<InfoCircleOutlined />} />
               </Tooltip>
               <img
@@ -454,6 +443,11 @@ class ReadAlignment extends React.Component {
                     onAfterChange={(val) => changeThreshold(val)}
                   />
                 </Form.Item>
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={config.type}
+                />
               </Panel>
               <PlotStyling
                 config={config}

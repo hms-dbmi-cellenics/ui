@@ -13,7 +13,7 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../../static/media/plot3.png';
 import plot2Pic from '../../../../../../../../static/media/plot4.png';
-
+import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 import plotData from './data2.json';
 
 import PlotStyling from '../PlotStyling';
@@ -30,8 +30,8 @@ class MitochondrialContent extends React.Component {
       legendEnabled: true,
       xAxisText: 'Fraction of mitochondrial reads',
       yAxisText: 'Fraction of cells',
-      xAxisText2: 'log10(#UMI in cell)',
-      yAxisText2: 'Average % mitochondrial',
+      xAxisText2: 'log10(#UMIs in cell)',
+      yAxisText2: 'Fraction of mitochondrial reads',
       xDefaultTitle: 'Fraction of mitochondrial reads',
       yDefaultTitle: 'Fraction of cells',
       legendOrientation: 'top-right',
@@ -54,6 +54,7 @@ class MitochondrialContent extends React.Component {
       placeholder: 0.1,
       sliderMax: 1,
       sliderMin: 0,
+      binStep: 0.05,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -80,7 +81,7 @@ class MitochondrialContent extends React.Component {
   generateSpec() {
     const { config } = this.state;
     let legend = null;
-    const colorExpression = `(datum.bin1 <= ${config.maxFraction}) ? 'Real' : 'Mitochondrial'`;
+    const colorExpression = `(datum.bin1 <= ${config.maxFraction}) ? 'Alive' : 'Dead'`;
     const colorExpression2 = '(datum.bin1 <= 2.5) ? \'Dead\' : (datum.bin1 >=3.5) ? \'Live\' : \'Unknown\'';
     if (config.legendEnabled) {
       legend = [
@@ -126,16 +127,6 @@ class MitochondrialContent extends React.Component {
         autosize: { type: 'fit', resize: true },
         padding: 5,
 
-        signals: [
-          {
-            name: 'binStep',
-            value: 0.05,
-            bind: {
-              input: 'range', min: 0.001, max: 0.4, step: 0.001,
-            },
-          },
-        ],
-
         data: [
           {
             name: 'plotData',
@@ -148,7 +139,7 @@ class MitochondrialContent extends React.Component {
                 type: 'bin',
                 field: 'fracMito',
                 extent: [0, 1],
-                step: { signal: 'binStep' },
+                step: config.binStep,
                 nice: false,
               },
               {
@@ -244,7 +235,6 @@ class MitochondrialContent extends React.Component {
                 x2: {
                   scale: 'xscale',
                   field: 'bin1',
-                  offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
                 },
                 y: { scale: 'yscale', field: 'count' },
                 y2: { scale: 'yscale', value: 0 },
@@ -303,16 +293,6 @@ class MitochondrialContent extends React.Component {
       height: config.height,
       padding: 5,
       autosize: { type: 'fit', resize: true },
-      signals: [
-        {
-          name: 'binStep',
-          value: 0.05,
-          bind: {
-            input: 'range', min: 0.001, max: 0.5, step: 0.001,
-          },
-        },
-      ],
-
       data: [
         {
           name: 'plotData',
@@ -325,7 +305,7 @@ class MitochondrialContent extends React.Component {
               type: 'bin',
               field: 'cellSize',
               extent: [0, 6],
-              step: { signal: 'binStep' },
+              step: config.binStep,
               nice: false,
             },
             {
@@ -418,7 +398,6 @@ class MitochondrialContent extends React.Component {
               x2: {
                 scale: 'xscale',
                 field: 'bin1',
-                offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
               },
               y: { scale: 'yscale', field: 'averageFracMito' },
               y2: { scale: 'yscale', value: 0 },
@@ -550,11 +529,16 @@ class MitochondrialContent extends React.Component {
                     defaultValue={config.placeholder}
                     min={config.sliderMin}
                     max={config.sliderMax}
-                    step={0.1}
+                    step={0.05}
                     disabled={!filtering}
                     onAfterChange={(val) => changeFraction(val)}
                   />
                 </Form.Item>
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={'bin step'}
+                />
               </Panel>
               <PlotStyling
                 config={config}

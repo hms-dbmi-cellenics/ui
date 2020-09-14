@@ -39,8 +39,7 @@ const PlotStyling = (props) => {
     legend = (
       <Form.Item label='Legend'>
         <LegendEditor
-          defaultState
-          config={config}
+          legendEnabled={config.legendEnabled}
           onUpdate={onUpdate}
         />
       </Form.Item>

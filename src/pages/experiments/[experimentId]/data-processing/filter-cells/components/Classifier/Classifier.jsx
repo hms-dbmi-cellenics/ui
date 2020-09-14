@@ -10,6 +10,7 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
+import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;
 
@@ -37,6 +38,7 @@ class Classifier extends React.Component {
       height: 500,
       maxWidth: 789,
       maxHeight: 560,
+      bandwidth: -1,
     };
     this.state = {
       config: _.cloneDeep(this.defaultConfig),
@@ -68,15 +70,6 @@ class Classifier extends React.Component {
       autosize: { type: 'fit', resize: true },
       padding: 5,
       autoSize: 'pad',
-      signals: [
-        {
-          name: 'bandwidth',
-          value: -1,
-          bind: {
-            input: 'range', min: -1, max: 100, step: 1,
-          },
-        },
-      ],
       data: [
         {
           name: 'plotData',
@@ -96,7 +89,7 @@ class Classifier extends React.Component {
               size: [{ signal: 'width' }, { signal: 'height' }],
               x: { expr: "scale('x', datum.size)" },
               y: { expr: "scale('y', datum.classifierP)" },
-              bandwidth: { signal: '[bandwidth, bandwidth]' },
+              bandwidth: [config.bandwidth, config.bandwidth],
               cellSize: 25,
             },
             {
@@ -201,7 +194,7 @@ class Classifier extends React.Component {
             update: {
               x: { value: 0 },
               x2: { field: { group: 'width' } },
-              y: { scale: 'y', value: config.minProbability, round: true },
+              y: { scale: 'y', value: config.minProbability, round: false },
               strokeWidth: { value: 2 },
               strokeDash: { value: [8, 4] },
               stroke: { value: 'red' },
@@ -237,7 +230,7 @@ class Classifier extends React.Component {
 
           </Col>
           <Col span={1}>
-            <Tooltip title='The classifier combines several properties (mitochondrial content, entropy, etc.) into a single probability score and is used to refine the filtering of empty droplets. The cut-off is typically set around 0.6-0.9.'>
+            <Tooltip placement='bottom' title='The classifier combines several properties (mitochondrial content, entropy, etc.) into a single probability score and is used to refine the filtering of empty droplets. The cut-off is typically set around 0.6-0.9.'>
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
           </Col>
@@ -254,6 +247,11 @@ class Classifier extends React.Component {
                     step={0.05}
                   />
                 </Form.Item>
+                <BandwidthOrBinstep
+                  config={config}
+                  onUpdate={this.updatePlotWithChanges}
+                  type={'bandwidth'}
+                />
               </Panel>
               <PlotStyling
                 config={config}
