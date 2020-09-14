@@ -16,7 +16,7 @@ import plot1Pic from '../../../../../../../../static/media/plot5.png';
 import plot2Pic from '../../../../../../../../static/media/plot6.png';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
-import BandwidthOrBinstep from './BandwidthOrBinstep';
+import BandwidthOrBinstep from './PlotStyleMisc';
 
 const { Panel } = Collapse;
 const { Option } = Select;

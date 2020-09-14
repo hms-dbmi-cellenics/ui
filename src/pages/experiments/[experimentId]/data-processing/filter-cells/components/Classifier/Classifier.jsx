@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
-import BandwidthOrBinstep from '../ReadAlignment/BandwidthOrBinstep';
+import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;
 

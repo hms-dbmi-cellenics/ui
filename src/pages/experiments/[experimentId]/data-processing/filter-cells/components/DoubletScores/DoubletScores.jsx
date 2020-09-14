@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
 import PlotStyling from '../PlotStyling';
-import BandwidthOrBinstep from '../ReadAlignment/BandwidthOrBinstep';
+import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;
 class DoubletScores extends React.Component {
@@ -217,7 +217,6 @@ class DoubletScores extends React.Component {
               x2: {
                 scale: 'xscale',
                 field: 'bin1',
-                //offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
               },
               y: { scale: 'yscale', field: 'count' },
               y2: { scale: 'yscale', value: 0 },

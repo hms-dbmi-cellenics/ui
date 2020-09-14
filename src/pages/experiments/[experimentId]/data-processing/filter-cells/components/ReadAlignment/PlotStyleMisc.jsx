@@ -5,16 +5,26 @@ import {
 } from 'antd';
 
 const BandwidthOrBinstep = (props) => {
-  const { onUpdate, config, type } = props;
+  const {
+    onUpdate, config, type, max,
+  } = props;
+  let min = 0.001;
+  let maxDefault = 0.2;
+  console.log(max);
+  if (max) {
+    min = max / 4;
+    maxDefault = max;
+  }
+  const step = maxDefault / 200;
   if (type === 'bin step') {
     return (
       <Form.Item label='Bin step:'>
         <Slider
           defaultValue={config.binStep}
-          min={0.001}
-          max={0.2}
+          min={min}
+          max={maxDefault}
           onAfterChange={(value) => onUpdate({ binStep: value })}
-          step={0.001}
+          step={step}
         />
       </Form.Item>
     );
@@ -39,6 +49,7 @@ BandwidthOrBinstep.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   type: PropTypes.object.isRequired,
+  max: PropTypes.object.isRequired,
 };
 
 export default BandwidthOrBinstep;

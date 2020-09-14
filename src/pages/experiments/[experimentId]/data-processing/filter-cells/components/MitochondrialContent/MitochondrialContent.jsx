@@ -13,7 +13,7 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../../static/media/plot3.png';
 import plot2Pic from '../../../../../../../../static/media/plot4.png';
-import BandwidthOrBinstep from '../ReadAlignment/BandwidthOrBinstep';
+import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 import plotData from './data2.json';
 
 import PlotStyling from '../PlotStyling';
