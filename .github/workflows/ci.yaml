@@ -113,6 +113,7 @@ jobs:
           push: false
 
       - id: push
+        if: github.ref == 'refs/heads/master'
         name: Push docker image to ECR
         run: |-
           echo Pushing image $IMAGE_NAME to ECR.
