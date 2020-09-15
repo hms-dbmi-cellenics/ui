@@ -9,7 +9,6 @@ import {
   GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
 } from '../../../../redux/actionTypes/genes';
 
-
 jest.mock('localforage');
 jest.mock('../../../../utils/sendWork', () => ({
   __esModule: true, // this property makes it work
@@ -131,7 +130,6 @@ describe('loadGeneExpression action', () => {
     });
 
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, true));
-
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);

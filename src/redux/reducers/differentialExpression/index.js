@@ -9,7 +9,6 @@ import differentialExpressionLoading from './differentialExpressionLoading';
 import differentialExpressionLoaded from './differentialExpressionLoaded';
 import differentialExpressionError from './differentialExpressionError';
 
-
 const differentialExpressionReducer = (state = initialState, action) => {
   switch (action.type) {
     case DIFF_EXPR_LOADING: {

@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
+import { createWrapper } from 'next-redux-wrapper';
 import rootReducer from './reducers/index';
 
 const bindMiddleware = (middleware) => {
@@ -32,4 +33,6 @@ const getStore = (initialState) => {
   return store;
 };
 
-export default getStore;
+const wrapper = createWrapper(getStore, { debug: true });
+
+export default wrapper;

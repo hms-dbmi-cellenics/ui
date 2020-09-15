@@ -16,7 +16,6 @@ const loadDifferentialExpression = (
     },
   });
 
-
   const body = {
     name: 'DifferentialExpression',
     ...cellSets,

@@ -1,4 +1,3 @@
-
 const differentialExpressionLoaded = (state, action) => {
   const { data, total, cellSets } = action.payload;
 
