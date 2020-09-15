@@ -126,6 +126,7 @@ const PlotsTablesHome = () => {
               <Space>
                 <FeedbackButton />
                 <Dropdown
+                  trigger={['click']}
                   overlay={searchMenu}
                   visible={addMenuVisible}
                   onVisibleChange={(visible) => setAddMenuVisible(visible)}
