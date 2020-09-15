@@ -4,7 +4,6 @@ import loadConfig from './loadConfig';
 import updateConfig from './updateConfig';
 import saveConfig from './saveConfig';
 
-
 const plotsReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOAD_PLOT_CONFIG:

@@ -72,7 +72,6 @@ const generateSpec = (config, groupName) => {
     legend = null;
   }
 
-
   return {
     $schema: 'http//s:vega.github.io/schema/vega/v5.json',
     width: config.width,

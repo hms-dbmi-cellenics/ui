@@ -1,4 +1,3 @@
-
 const differentialExpressionLoading = (state) => ({
   ...state,
   properties: {

@@ -15,7 +15,7 @@
   },
   "rules":{
     "no-console":0,
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["next.config.js", "./src/__test__/**"]}],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
     "indent": [
       2,
       2,

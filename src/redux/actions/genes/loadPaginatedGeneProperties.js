@@ -77,5 +77,4 @@ const loadPaginatedGeneProperties = (
   }
 };
 
-
 export default loadPaginatedGeneProperties;
