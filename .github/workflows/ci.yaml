@@ -20,10 +20,10 @@ jobs:
       run: |-
         npm ci
 
-    # - id: test
-    #   name: Run unit tests
-    #   run: |-
-    #     npm test
+    - id: test
+      name: Run unit tests
+      run: |-
+        npm test
 
     - id: next-cache-seek
       name: Look up the Next.js build cache

@@ -12,7 +12,6 @@ jest.mock('../../../../utils/sendWork', () => ({
   default: jest.fn(),
 }));
 
-
 describe('resetCellSets action', () => {
   const experimentId = '1234';
 

@@ -133,7 +133,6 @@ const volcanoInitialConfig = {
   textThresholdValue: 240,
 };
 
-
 const initialPlotConfigStates = {
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,

@@ -1,4 +1,3 @@
-
 const differentialExpressionError = (state, action) => {
   const { error } = action.payload;
 

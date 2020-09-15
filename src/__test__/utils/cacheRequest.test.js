@@ -51,7 +51,6 @@ const mockGet = jest.fn((x) => {
 const mockSet = jest.fn();
 const mockRemove = jest.fn();
 
-
 const mockSendWork = jest.fn((experimentId, timeout, body) => {
   const wantedGenes = body.genes;
   const returnedBody = {};

@@ -1,4 +1,3 @@
-
 const generateSpec = (config) => {
   let legend = [];
 

@@ -18,7 +18,6 @@ const objectToSortedString = (object) => {
   return sortedString;
 };
 
-
 const cacheFetch = async (endpoint, options = {}, ttl = 900) => {
   throw new Error('not currently implemented -- buggy, needs concurrency support');
 
@@ -134,7 +133,6 @@ const fetchCachedWork = async (experimentId, timeout, body, ttl = 900) => {
   }
   throw new Error('Disabling network interaction on server');
 };
-
 
 export {
   cacheFetch, getFromApiExpectOK, fetchCachedWork, fetchCachedGeneExpressionWork,
