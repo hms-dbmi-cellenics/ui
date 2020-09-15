@@ -100,6 +100,7 @@ const Header = (props) => {
           <Space>
             <FeedbackButton />
             <Dropdown
+              trigger={['click']}
               key='search-menu-dropdown'
               overlay={searchMenu}
               visible={addMenuVisible}
