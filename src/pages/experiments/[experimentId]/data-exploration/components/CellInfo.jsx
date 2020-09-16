@@ -19,8 +19,6 @@ const CellInfo = (props) => {
       setCellInfoVisible(false);
     } else {
       setCellInfoVisible(true);
-
-
     }
   }, [cellInfo]);
 
