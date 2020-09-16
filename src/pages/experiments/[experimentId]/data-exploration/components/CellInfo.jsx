@@ -19,8 +19,6 @@ const CellInfo = (props) => {
       setCellInfoVisible(false);
     } else {
       setCellInfoVisible(true);
-
-
     }
   }, [cellInfo]);
 
@@ -28,7 +26,7 @@ const CellInfo = (props) => {
     <Card
       size='small'
       style={{
-        zIndex: 6,
+        zIndex: 0,
         border: 0,
         position: 'absolute',
         left: `${coordinates.current.x + 80}px`,

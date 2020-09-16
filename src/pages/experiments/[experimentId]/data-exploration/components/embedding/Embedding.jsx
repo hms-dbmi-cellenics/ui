@@ -6,7 +6,7 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Spin, Typography,
+  Spin,
 } from 'antd';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
@@ -28,7 +28,6 @@ import legend from '../../../../../../../static/media/viridis.png';
 import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 
-
 const Scatterplot = dynamic(
   () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
   { ssr: false },
@@ -38,7 +37,7 @@ const Embedding = (props) => {
   const {
     experimentId, embeddingType, height, width,
   } = props;
-  const view = { target: [6, 9, 0], zoom: 4.00 };
+  const view = { target: [4, -4, 0], zoom: 4.00 };
   const selectedCellIds = new Set();
 
   const dispatch = useDispatch();
@@ -57,7 +56,6 @@ const Embedding = (props) => {
   const [cellColors, setCellColors] = useState({});
   const currentView = useRef(focusedGene ? 'expression' : 'cellSet');
   const [cellInfoVisible, setCellInfoVisible] = useState(false);
-
 
   useEffect(() => {
     if (!data && isBrowser) {
@@ -108,14 +106,15 @@ const Embedding = (props) => {
     setCellColors(getCellColors('expression'));
   }, [focusedExpression]);
 
-  const updateCellCoordinates = (newView) => {
-    if (selectedCell && newView.viewport.project) {
-      const [x, y] = newView.viewport.project([data[selectedCell][0], data[selectedCell][1]]);
+  const updateCellCoordinates = (newView, _) => {
+    console.log('PROJET FUNCTION', newView);
+    if (selectedCell && newView.project) {
+      const [x, y] = newView.project(selectedCell);
       cellCoordintes.current = {
         x,
         y,
-        width: newView.viewport.width,
-        height: newView.viewport.height,
+        width,
+        height,
       };
     }
   };
@@ -194,7 +193,6 @@ const Embedding = (props) => {
     return <></>;
   };
 
-
   return (
     <div
       className='vitessce-container vitessce-theme-light'
@@ -212,7 +210,7 @@ const Embedding = (props) => {
         cells={convertCellsData(data)}
         mapping='PCA'
         selectedCellIds={selectedCellIds}
-        cellColors={(selectedCell) ? { ...cellColors, [selectedCell]: [0, 0, 0] } : cellColors}
+        cellColors={(selectedCell) ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] })) : new Map(Object.entries(cellColors))}
         updateStatus={updateStatus}
         updateCellsSelection={updateCellsSelection}
         updateCellsHover={updateCellsHover}
