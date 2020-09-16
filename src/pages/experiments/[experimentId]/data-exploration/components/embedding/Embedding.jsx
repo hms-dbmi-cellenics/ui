@@ -106,8 +106,7 @@ const Embedding = (props) => {
     setCellColors(getCellColors('expression'));
   }, [focusedExpression]);
 
-  const updateCellCoordinates = (newView, _) => {
-    console.log('PROJET FUNCTION', newView);
+  const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
       cellCoordintes.current = {
