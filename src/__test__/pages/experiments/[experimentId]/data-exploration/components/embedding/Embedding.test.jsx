@@ -58,6 +58,9 @@ const initialState = {
   },
 };
 
+const width = 100;
+const height = 200;
+
 describe('Embedding', () => {
   beforeAll(async () => {
     await preloadAll();
@@ -68,7 +71,7 @@ describe('Embedding', () => {
 
     component = mount(
       <Provider store={store}>
-        <Embedding experimentId='1234' embeddingType='pca' />
+        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
       </Provider>,
     );
   });
@@ -208,7 +211,7 @@ describe('Embedding', () => {
   test('renders CrossHair and CellInfo components when user hovers over cell', () => {
     store = mockStore(initialState);
 
-    const mockProject = jest.fn(() => [44, 10]);
+    const mockProject = jest.fn((cellId) => store.getState().embeddings.pca.data[cellId]);
 
     const cellCoordinates = {
       project: mockProject,
@@ -216,7 +219,7 @@ describe('Embedding', () => {
 
     component = mount(
       <Provider store={store}>
-        <Embedding experimentId='1234' embeddingType='pca' />
+        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
       </Provider>,
     );
     const scatterplot = component.find(Scatterplot);
@@ -233,12 +236,14 @@ describe('Embedding', () => {
     const cellInfo = component.find(CellInfo);
 
     expect(mockProject).toHaveBeenCalledTimes(1);
-    expect(mockProject).toHaveBeenCalledWith(2);
+    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellName);
     expect(crossHairs.length).toEqual(1);
     expect(crossHairs.props().coordinates.current).toEqual(
       {
-        x: 44,
-        y: 10,
+        x: store.getState().embeddings.pca.data[2][0],
+        y: store.getState().embeddings.pca.data[2][1],
+        width,
+        height,
       },
     );
     expect(cellInfo.length).toEqual(1);
@@ -248,7 +253,7 @@ describe('Embedding', () => {
   test('does not render CrossHair and CellInfo components when user hovers over cell outside of the embedding', () => {
     store = mockStore(initialState);
 
-    const mockProject = jest.fn(() => [44, 10]);
+    const mockProject = jest.fn((cellId) => store.getState().embeddings.pca.data[cellId]);
 
     const cellCoordinates = {
       project: mockProject,
@@ -256,7 +261,7 @@ describe('Embedding', () => {
 
     component = mount(
       <Provider store={store}>
-        <Embedding experimentId='1234' embeddingType='pca' />
+        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
       </Provider>,
     );
     const scatterplot = component.find(Scatterplot);
@@ -272,7 +277,7 @@ describe('Embedding', () => {
     const cellInfo = component.find(CellInfo);
 
     expect(mockProject).toHaveBeenCalledTimes(1);
-    expect(mockProject).toHaveBeenCalledWith(2);
+    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellName);
     expect(crossHairs.length).toEqual(0);
     expect(cellInfo.length).toEqual(0);
   });
@@ -304,7 +309,7 @@ describe('Embedding', () => {
 
     const embedding = mount(
       <Provider store={geneExprStore}>
-        <Embedding experimentId='1234' embeddingType='pca' />
+        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
       </Provider>,
     );
 

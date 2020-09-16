@@ -26,7 +26,7 @@ const CellInfo = (props) => {
     <Card
       size='small'
       style={{
-        zIndex: 0,
+        zIndex: 6,
         border: 0,
         position: 'absolute',
         left: `${coordinates.current.x + 80}px`,
