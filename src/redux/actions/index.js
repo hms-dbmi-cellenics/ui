@@ -6,7 +6,7 @@ import {
 const updateCellInfo = (cellData) => (dispatch) => {
   dispatch({
     type: UPDATE_CELL_INFO,
-    data: {
+    payload: {
       ...cellData,
     },
   });
