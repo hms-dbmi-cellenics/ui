@@ -179,7 +179,7 @@ const GeneTable = (props) => {
     return (
       <PlatformError
         description={error}
-        onClick={() => onUpdate(tableState, geneTableUpdateReason.loading)}
+        onClick={() => onUpdate(tableState, geneTableUpdateReason.retry)}
       />
     );
   }
