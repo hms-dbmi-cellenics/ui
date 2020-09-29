@@ -24,7 +24,6 @@ const cellSetsReducer = (state = initialState, action) => {
     }
 
     case CELL_SETS_LOADED: {
-      console.log("LOADED");
       return cellSetsLoaded(state, action);
     }
 
