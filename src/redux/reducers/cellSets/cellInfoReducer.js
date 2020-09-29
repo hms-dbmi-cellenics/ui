@@ -5,7 +5,7 @@ const cellInfoReducer = (state = {}, action) => {
     case UPDATE_CELL_INFO:
       return {
         ...state,
-        ...action.data,
+        ...action.payload,
       };
     default:
       return state;
