@@ -47,7 +47,7 @@ describe('updateCellInfo action', () => {
 
     expect(dispatch).toBeCalledTimes(1);
     expect(dispatch).toBeCalledWith({
-      data: {
+      payload: {
         cellName: 'C1',
         geneName: 'G1',
         expression: 1,

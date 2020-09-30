@@ -4,7 +4,7 @@ import * as types from '../../../redux/actionTypes';
 describe('cellInfoReducer', () => {
   it('Reduces the correct state', () => expect(
     reducers({}, {
-      data: {
+      payload: {
         cellName: 'C1',
         geneName: 'G1',
         expression: 1,

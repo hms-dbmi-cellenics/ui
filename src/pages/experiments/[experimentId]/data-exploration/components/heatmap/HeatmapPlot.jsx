@@ -2,18 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Empty, Spin, Button,
+  Empty, Spin,
 } from 'antd';
 import _ from 'lodash';
 import spec from '../../../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
 import HeatmapCrossHairs from './HeatmapCrossHairs';
 import CellInfo from '../CellInfo';
-import { updateCellInfo } from '../../../../../../redux/actions';
+import { updateCellInfo } from '../../../../../../redux/actions/updateCellInfo';
 
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
 import PlatformError from '../../../../../../components/PlatformError';
-
 
 const HeatmapPlot = (props) => {
   const { experimentId, width, height } = props;
@@ -25,7 +24,6 @@ const HeatmapPlot = (props) => {
   const hoverCoordinates = useRef({});
 
   const cellSetData = useSelector((state) => state.cellSets);
-
 
   const { error } = expressionData;
   const loadExpression = useRef(_.debounce((genes) => {

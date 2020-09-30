@@ -7,7 +7,7 @@ import genesReducer from './genes';
 import differentialExpressionReducer from './differentialExpression';
 import layoutReducer from './layout/layout';
 import plotsReducer from './plots/index';
-import cellInfoReducer from './cellSets/cellInfoReducer';
+import cellInfoReducer from './cellInfoReducer';
 
 export default combineReducers({
   cellSets: cellSetsReducer,

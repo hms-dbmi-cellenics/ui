@@ -205,7 +205,7 @@ describe('Embedding', () => {
 
     expect(store.getActions().length).toEqual(1);
     expect(store.getActions()[0].type).toEqual('UPDATE_CELL_INFO');
-    expect(store.getActions()[0].data.cellName).toEqual(hoveredCell.cellId);
+    expect(store.getActions()[0].payload.cellName).toEqual(hoveredCell.cellId);
   });
 
   test('renders CrossHair and CellInfo components when user hovers over cell', () => {
