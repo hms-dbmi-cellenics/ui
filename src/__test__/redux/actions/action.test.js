@@ -1,6 +1,6 @@
 import {
   updateCellInfo,
-} from '../../../redux/actions';
+} from '../../../redux/actions/updateCellInfo';
 import * as types from '../../../redux/actionTypes';
 import connectionPromise from '../../../utils/socketConnection';
 
