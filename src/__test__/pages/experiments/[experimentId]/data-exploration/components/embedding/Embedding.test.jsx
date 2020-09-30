@@ -82,7 +82,7 @@ describe('Embedding', () => {
 
   configure({ adapter: new Adapter() });
 
-  test('renders correctly a PCA embedding', () => {
+  it('renders correctly a PCA embedding', () => {
     const scatterplot = component.find(Scatterplot);
     expect(component.find('Embedding').length).toEqual(1);
     expect(scatterplot.length).toEqual(1);
@@ -118,7 +118,7 @@ describe('Embedding', () => {
     );
   });
 
-  test('renders correctly a popover on lasso selection and closes it on cancel', () => {
+  it('renders correctly a popover on lasso selection and closes it on cancel', () => {
     const scatterplot = component.find(Scatterplot);
     expect(component.find('ClusterPopover').length).toEqual(0);
 
@@ -141,7 +141,7 @@ describe('Embedding', () => {
     expect(store.getActions().length).toEqual(0);
   });
 
-  test('does not render the popover after lasso selection of 0 cells', () => {
+  it('does not render the popover after lasso selection of 0 cells', () => {
     const scatterplot = component.find(Scatterplot);
     const selectedCellIds = new Set();
 
@@ -154,7 +154,7 @@ describe('Embedding', () => {
     expect(component.find('ClusterPopover').length).toEqual(0);
   });
 
-  test('does not render cell info and crosshair when the popover is open', () => {
+  it('does not render cell info and crosshair when the popover is open', () => {
     const scatterplot = component.find(Scatterplot);
     // lasso select cells 1 and 2
     const selectedCellIds = new Set(['1', '2']);
@@ -168,7 +168,7 @@ describe('Embedding', () => {
     expect(component.find(CellInfo).length).toEqual(0);
   });
 
-  test('renders correctly a popover on lasso selection and creates a new cluster on create', () => {
+  it('renders correctly a popover on lasso selection and creates a new cluster on create', () => {
     const scatterplot = component.find(Scatterplot);
     expect(component.find('ClusterPopover').length).toEqual(0);
 
@@ -193,7 +193,7 @@ describe('Embedding', () => {
     expect(store.getActions()[0].payload.cellIds).toEqual(Array.from(selectedCellIds));
   });
 
-  test('dispatches an action with updated cell information on hover', () => {
+  it('dispatches an action with updated cell information on hover', () => {
     const scatterplot = component.find(Scatterplot);
 
     const hoveredCell = { cellId: 1 };
@@ -208,7 +208,7 @@ describe('Embedding', () => {
     expect(store.getActions()[0].payload.cellName).toEqual(hoveredCell.cellId);
   });
 
-  test('renders CrossHair and CellInfo components when user hovers over cell', () => {
+  it('renders CrossHair and CellInfo components when user hovers over cell', () => {
     store = mockStore(initialState);
 
     const mockProject = jest.fn((cellId) => store.getState().embeddings.pca.data[cellId]);
@@ -226,7 +226,7 @@ describe('Embedding', () => {
 
     // hover over cells
     act(() => {
-      component.find('div.vitessce-container').simulate('mouseenter');
+      component.find('div.vitessce-container').simulate('mouseMove');
       scatterplot.getElement().props.updateViewInfo(cellCoordinates);
     });
 
@@ -250,7 +250,7 @@ describe('Embedding', () => {
     expect(crossHairs.props().coordinates.current).toEqual(crossHairs.props().coordinates.current);
   });
 
-  test('does not render CrossHair and CellInfo components when user hovers over cell outside of the embedding', () => {
+  it('does not render CrossHair and CellInfo components when user hovers over cell outside of the embedding', () => {
     store = mockStore(initialState);
 
     const mockProject = jest.fn((cellId) => store.getState().embeddings.pca.data[cellId]);
@@ -268,6 +268,40 @@ describe('Embedding', () => {
 
     // hover over cells
     act(() => {
+      scatterplot.getElement().props.updateViewInfo(cellCoordinates);
+    });
+
+    component.update();
+
+    const crossHairs = component.find(CrossHair);
+    const cellInfo = component.find(CellInfo);
+
+    expect(mockProject).toHaveBeenCalledTimes(1);
+    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellName);
+    expect(crossHairs.length).toEqual(0);
+    expect(cellInfo.length).toEqual(0);
+  });
+
+  it('does not render CrossHair and CellInfo components when user zooms in or out of the embedding', () => {
+    store = mockStore(initialState);
+
+    const mockProject = jest.fn((cellId) => store.getState().embeddings.pca.data[cellId]);
+
+    const cellCoordinates = {
+      project: mockProject,
+    };
+
+    component = mount(
+      <Provider store={store}>
+        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
+      </Provider>,
+    );
+    const scatterplot = component.find(Scatterplot);
+
+    // hover over cells
+    act(() => {
+      component.find('div.vitessce-container').simulate('mouseMove');
+      component.find('div.vitessce-container').simulate('wheel');
       scatterplot.getElement().props.updateViewInfo(cellCoordinates);
     });
 
