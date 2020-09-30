@@ -1,8 +1,9 @@
 /* eslint-disable jsx-quotes */
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Space, Typography,
+  Button, Space, Typography, Select,
 } from 'antd';
+
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckCircleOutlined } from '@ant-design/icons';
@@ -20,7 +21,6 @@ const SelectionIndicator = (props) => {
 
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [copied, setCopied] = useState(false);
-
   const clearAll = () => {
     dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
   };
@@ -68,7 +68,6 @@ const SelectionIndicator = (props) => {
       </CopyToClipboard>
     );
   };
-
   return (
     <Space style={{ float: 'right' }}>
       {selectedGenes.length !== 0 ? (
@@ -103,3 +102,6 @@ SelectionIndicator.propTypes = {
 
 
 export default SelectionIndicator;
+
+
+
