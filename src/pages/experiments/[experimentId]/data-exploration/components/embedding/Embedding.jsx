@@ -16,7 +16,7 @@ import loadEmbedding from '../../../../../../redux/actions/loadEmbedding';
 import { createCellSet } from '../../../../../../redux/actions/cellSets';
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
 
-import { updateCellInfo } from '../../../../../../redux/actions';
+import { updateCellInfo } from '../../../../../../redux/actions/updateCellInfo';
 import {
   convertCellsData,
   updateStatus,

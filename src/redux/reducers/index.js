@@ -7,20 +7,7 @@ import genesReducer from './genes';
 import differentialExpressionReducer from './differentialExpression';
 import layoutReducer from './layout/layout';
 import plotsReducer from './plots/index';
-
-import { UPDATE_CELL_INFO } from '../actionTypes';
-
-const cellInfoReducer = (state = {}, action) => {
-  switch (action.type) {
-    case UPDATE_CELL_INFO:
-      return {
-        ...state,
-        ...action.data,
-      };
-    default:
-      return state;
-  }
-};
+import cellInfoReducer from './cellInfoReducer';
 
 export default combineReducers({
   cellSets: cellSetsReducer,

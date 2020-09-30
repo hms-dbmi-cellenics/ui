@@ -1,6 +1,6 @@
 import {
   updateCellInfo,
-} from '../../../redux/actions';
+} from '../../../redux/actions/updateCellInfo';
 import * as types from '../../../redux/actionTypes';
 import connectionPromise from '../../../utils/socketConnection';
 
@@ -47,7 +47,7 @@ describe('updateCellInfo action', () => {
 
     expect(dispatch).toBeCalledTimes(1);
     expect(dispatch).toBeCalledWith({
-      data: {
+      payload: {
         cellName: 'C1',
         geneName: 'G1',
         expression: 1,
