@@ -300,6 +300,7 @@ describe('Embedding', () => {
 
     // hover over cells
     act(() => {
+      component.find('div.vitessce-container').simulate('mouseMove');
       component.find('div.vitessce-container').simulate('wheel');
       scatterplot.getElement().props.updateViewInfo(cellCoordinates);
     });
