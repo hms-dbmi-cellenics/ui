@@ -226,7 +226,7 @@ describe('Embedding', () => {
 
     // hover over cells
     act(() => {
-      component.find('div.vitessce-container').simulate('mouseenter');
+      component.find('div.vitessce-container').simulate('mouseMove');
       scatterplot.getElement().props.updateViewInfo(cellCoordinates);
     });
 
