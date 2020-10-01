@@ -1,19 +1,17 @@
 import React from 'react';
 import { mount, configure } from 'enzyme';
-import { act } from 'react-dom/test-utils';
 import Adapter from 'enzyme-adapter-react-16';
-import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
+import { Button, Select } from 'antd';
+import preloadAll from 'jest-next-dynamic';
 import _ from 'lodash';
-import { ExclamationCircleFilled } from '@ant-design/icons';
-import waitForActions from 'redux-mock-store-await-actions';
-import GeneListTool from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/gene-list-tool/GeneListTool';
-import { fetchCachedWork } from '../../../../../../../utils/cacheRequest';
-
-import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../../../../../../../redux/actionTypes/genes';
 import ListSelected from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/generic-gene-table/ListSelected'
+const TEST_UUID = 'testList';
+const mockStore = configureMockStore([thunk]);
+let component;
+let store;
 const initialState = {
   genes: {
     properties: {
@@ -47,14 +45,49 @@ const initialState = {
 
 describe('ListSelected', () => {
   beforeAll(async () => {
+
     await preloadAll();
+    store = mockStore(initialState);
+
+    component = mount(
+      <Provider store={store}>
+        <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
+      </Provider>,
+    );
   });
+  configure({ adapter: new Adapter() });
+
   test('renders correctly', () => {
-    const component = mount(<ListSelected onFilter={jest.fn()} />);
-    const select = component.find(Select);
+
+    component = mount(
+      <Provider store={store}>
+        <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
+      </Provider>,
+    ); const select = component.find(Select);
     const search = component.find(Button);
 
     expect(select.length).toEqual(1);
     expect(search.length).toEqual(1);
+  });
+
+  test('components are present', () => {
+    const mockFilter = jest.fn();
+
+    component = mount(
+      <Provider store={store}>
+        <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
+      </Provider>,
+    );
+    const button = component.find(Button);
+    button.simulate('click');
+  });
+  test('show selected genes', () => {
+    const mockFilter = jest.fn();
+    component = mount(
+      <Provider store={store}>
+        <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
+      </Provider>,
+    );
+    const select = component.find(lol);
   });
 });
