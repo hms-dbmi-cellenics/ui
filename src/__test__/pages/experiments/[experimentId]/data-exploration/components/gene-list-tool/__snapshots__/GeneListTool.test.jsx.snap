@@ -10,6 +10,21 @@ Object {
 }
 `;
 
+exports[`GeneListTool all genes from the first page are selected by default on load 1`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+    "genes": Array [
+      "J",
+      "I",
+      "K",
+      "CEMIP",
+    ],
+  },
+  "type": "genes/select",
+}
+`;
+
 exports[`GeneListTool can sort the gene names in alphabetical order 1`] = `
 Object {
   "payload": Object {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
@@ -8,8 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import GeneTable from '../generic-gene-table/GeneTable';
 import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTableUpdateReason';
 
-import { loadPaginatedGeneProperties } from '../../../../../../redux/actions/genes';
-
+import { changeGeneSelection, loadPaginatedGeneProperties } from '../../../../../../redux/actions/genes';
+import GeneSelectionStatus from '../../../../../../redux/actions/genes/geneSelectionStatus';
 
 const GeneListTool = (props) => {
   const {
@@ -29,6 +29,8 @@ const GeneListTool = (props) => {
   );
   const tableRowKeys = useSelector((state) => state.genes.properties.views[tableUuid]?.data);
   const total = useSelector((state) => state.genes.properties.views[tableUuid]?.total);
+
+  const initialLoad = useRef(true);
 
   const PROPERTIES = ['dispersions'];
 
@@ -74,8 +76,12 @@ const GeneListTool = (props) => {
 
   // When data changes, update rows.
   useEffect(() => {
-    if (!tableRowKeys) {
+    if (!tableRowKeys || tableRowKeys.length === 0) {
       return;
+    }
+
+    if (initialLoad.current) {
+      dispatch(changeGeneSelection(experimentId, tableRowKeys, GeneSelectionStatus.select));
     }
 
     const newRows = [];
@@ -88,6 +94,8 @@ const GeneListTool = (props) => {
     });
 
     setDataShown(newRows);
+
+    initialLoad.current = false;
   }, [tableRowKeys]);
 
   return (
@@ -122,6 +130,5 @@ GeneListTool.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };
-
 
 export default GeneListTool;
