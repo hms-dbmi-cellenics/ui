@@ -250,38 +250,6 @@ describe('Embedding', () => {
     expect(crossHairs.props().coordinates.current).toEqual(crossHairs.props().coordinates.current);
   });
 
-  it('does not render CrossHair and CellInfo components when user hovers over cell outside of the embedding', () => {
-    store = mockStore(initialState);
-
-    const mockProject = jest.fn((cellId) => store.getState().embeddings.pca.data[cellId]);
-
-    const cellCoordinates = {
-      project: mockProject,
-    };
-
-    component = mount(
-      <Provider store={store}>
-        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
-      </Provider>,
-    );
-    const scatterplot = component.find(Scatterplot);
-
-    // hover over cells
-    act(() => {
-      scatterplot.getElement().props.updateViewInfo(cellCoordinates);
-    });
-
-    component.update();
-
-    const crossHairs = component.find(CrossHair);
-    const cellInfo = component.find(CellInfo);
-
-    expect(mockProject).toHaveBeenCalledTimes(1);
-    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellName);
-    expect(crossHairs.length).toEqual(0);
-    expect(cellInfo.length).toEqual(0);
-  });
-
   it('does not render CrossHair and CellInfo components when user zooms in or out of the embedding', () => {
     store = mockStore(initialState);
 
