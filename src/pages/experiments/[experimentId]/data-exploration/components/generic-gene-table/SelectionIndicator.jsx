@@ -1,7 +1,7 @@
 /* eslint-disable jsx-quotes */
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Space, Typography, Select,
+  Button, Space, Typography,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -102,6 +102,3 @@ SelectionIndicator.propTypes = {
 
 
 export default SelectionIndicator;
-
-
-

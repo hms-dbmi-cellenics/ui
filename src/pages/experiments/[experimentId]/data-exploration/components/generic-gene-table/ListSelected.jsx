@@ -7,10 +7,8 @@ import { useSelector } from 'react-redux';
 const ListSelected = () => {
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [listed, setListed] = useState(false);
-
-  useEffect(() => {
-    setListed(false);
-  }, [selectedGenes])
+  console.log(selectedGenes, listed);
+  if (listed && !selectedGenes.length) setListed(false);
   if (listed) {
     return (
       <>
@@ -19,7 +17,8 @@ const ListSelected = () => {
         >Hide selected</Button>
         <Select
           value={selectedGenes}
-          mode='tags'
+          mode='multiple'
+          showArrow={false}
           style={{ width: '100%' }}
         />
       </>

@@ -49,11 +49,6 @@ describe('ListSelected', () => {
     await preloadAll();
     store = mockStore(initialState);
 
-    component = mount(
-      <Provider store={store}>
-        <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
-      </Provider>,
-    );
   });
   configure({ adapter: new Adapter() });
 
@@ -76,18 +71,16 @@ describe('ListSelected', () => {
     );
     const button = component.find(Button);
     expect(button.length).toEqual(1)
-    button.simulate('click');
   });
   test('show selected genes', () => {
-    debugger;
     component = mount(
       <Provider store={store}>
         <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
+    const button = component.find(Button);
+    button.simulate('click');
     const select = component.find(Select);
-    console.log(select.length);
-    expect(select.length).toEqual(1)
-
+    expect(select.getElement().props.value).toEqual(initialState['genes']['selected']);
   });
 });
