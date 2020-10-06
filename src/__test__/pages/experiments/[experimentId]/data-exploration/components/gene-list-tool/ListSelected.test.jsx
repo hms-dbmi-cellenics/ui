@@ -63,31 +63,31 @@ describe('ListSelected', () => {
       <Provider store={store}>
         <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
-    ); const select = component.find(Select);
+    );
     const search = component.find(Button);
-
-    expect(select.length).toEqual(1);
-    expect(search.length).toEqual(1);
+    expect(search.length).toEqual(1)
   });
 
   test('components are present', () => {
-    const mockFilter = jest.fn();
-
     component = mount(
       <Provider store={store}>
         <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
     const button = component.find(Button);
+    expect(button.length).toEqual(1)
     button.simulate('click');
   });
   test('show selected genes', () => {
-    const mockFilter = jest.fn();
+    debugger;
     component = mount(
       <Provider store={store}>
         <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
-    const select = component.find(lol);
+    const select = component.find(Select);
+    console.log(select.length);
+    expect(select.length).toEqual(1)
+
   });
 });
