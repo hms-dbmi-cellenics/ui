@@ -55,7 +55,7 @@ const Embedding = (props) => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [cellColors, setCellColors] = useState({});
   const currentView = useRef(focusedGene ? 'expression' : 'cellSet');
-  const [cellInfoVisible, setCellInfoVisible] = useState(false);
+  const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
   useEffect(() => {
     if (!data && isBrowser) {
@@ -196,10 +196,14 @@ const Embedding = (props) => {
     <div
       className='vitessce-container vitessce-theme-light'
       style={{ width, height, position: 'relative' }}
-      onMouseEnter={() => { setCellInfoVisible(true); }}
-      onMouseLeave={() => { setCellInfoVisible(false); }}
+      // make sure that the crosshairs don't break zooming in and out of the embedding
+      onWheel={() => { setCellInfoVisible(false); }}
+      onMouseMove={() => {
+        if (!cellInfoVisible) {
+          setCellInfoVisible(true);
+        }
+      }}
     >
-
       {renderExpressionView()}
       <Scatterplot
         cellOpacity={0.1}

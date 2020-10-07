@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Space, Button, Typography, Skeleton,
+  Table, Space, Skeleton,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -17,11 +17,10 @@ import useLazyEffect from '../../../../../../utils/useLazyEffect';
 import SelectionIndicator from './SelectionIndicator';
 import ListSelected from './ListSelected';
 
-const { Text } = Typography;
-
 const GeneTable = (props) => {
   const {
-    experimentId, onUpdate, error, loading, columns, data, total, initialTableState, width, height, onExportCSV,
+    experimentId, onUpdate, error, loading, columns, data,
+    total, initialTableState, width, height, onExportCSV,
   } = props;
 
   const dispatch = useDispatch();
