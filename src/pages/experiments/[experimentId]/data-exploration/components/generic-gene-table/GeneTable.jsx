@@ -15,6 +15,7 @@ import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 import useLazyEffect from '../../../../../../utils/useLazyEffect';
 import SelectionIndicator from './SelectionIndicator';
+import ListSelected from './ListSelected';
 
 const GeneTable = (props) => {
   const {
@@ -195,6 +196,7 @@ const GeneTable = (props) => {
             showCSV={onExportCSV !== null}
             onExportCSV={onExportCSV}
           />
+          <ListSelected />
           <FilterGenes
             onFilter={filterGenes}
             defaultFilterOption={geneNameFilterState.filterOption}
@@ -207,8 +209,8 @@ const GeneTable = (props) => {
         dataSource={renderRows(data)}
         loading={loading}
         size='small'
-        pagination={{ ...tableState?.pagination, total }}
-        sorter={tableState?.sorter}
+        pagination={{ ...tableState ?.pagination, total }}
+        sorter={tableState ?.sorter}
         scroll={{ x: width, y: height - 260 }}
         onChange={handleTableChange}
         rowSelection={{
