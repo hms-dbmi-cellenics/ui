@@ -211,7 +211,7 @@ const HierarchicalTree = (props) => {
       }}
       value={modified.name}
       showEdit={modified.key !== 'scratchpad'}
-      deleteEnabled={modified.key !== 'scratchpad'}
+      deleteEnabled={modified.key !== 'scratchpad' && modified.key !== 'louvain'}
       renderBold={!!modified.rootNode}
     />
   );
