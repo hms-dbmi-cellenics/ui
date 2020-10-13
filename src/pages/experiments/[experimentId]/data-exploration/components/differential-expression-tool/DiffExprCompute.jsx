@@ -128,7 +128,6 @@ const DiffExprCompute = (props) => {
         );
       });
     };
-    //console.log("******", selectedCellSets)
     return (
       <Form.Item label={title}>
         <Select
