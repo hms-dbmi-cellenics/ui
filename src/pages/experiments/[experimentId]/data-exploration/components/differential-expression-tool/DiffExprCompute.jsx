@@ -11,7 +11,6 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 
-
 const { Text } = Typography;
 
 const { Option, OptGroup } = Select;
@@ -69,7 +68,6 @@ const DiffExprCompute = (props) => {
     }));
   }, [hierarchy, properties]);
 
-
   const validateForm = () => {
     if (selectedCellSets.cellSet === defaultSelected) {
       setIsFormValid(false);
@@ -108,7 +106,14 @@ const DiffExprCompute = (props) => {
   const renderClusterSelectorItem = (title, option) => {
     const renderChildren = (children) => {
       if (!children || children.length === 0) { return (<></>); }
+
+      if (children[0].key !== 'all-louvain') {
+        const helper = children[0]
+        children[0] = children[children.length - 1];
+        children[children.length - 1] = helper;
+      }
       return children.map(({ key }) => {
+
         if (isKeySpecial(key) && title === 'Compare') {
           return <></>;
         }
@@ -118,12 +123,12 @@ const DiffExprCompute = (props) => {
               <Tooltip placement='left' title='Compare above selected set and its complements'>
                 <span style={{ display: 'flex', flexGrow: 1 }}>All</span>
               </Tooltip>
-            ) : properties[key]?.name}
+            ) : properties[key] ?.name}
           </Option>
         );
       });
     };
-
+    //console.log("******", selectedCellSets)
     return (
       <Form.Item label={title}>
         <Select
@@ -134,7 +139,7 @@ const DiffExprCompute = (props) => {
         >
           {
             selectableClusters && selectableClusters.map(({ key, children }) => (
-              <OptGroup label={properties[key]?.name} key={key}>
+              <OptGroup label={properties[key] ?.name} key={key}>
                 {renderChildren(children)}
               </OptGroup>
             ))
