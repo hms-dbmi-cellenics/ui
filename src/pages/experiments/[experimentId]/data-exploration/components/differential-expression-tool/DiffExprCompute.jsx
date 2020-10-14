@@ -11,7 +11,6 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 
-
 const { Text } = Typography;
 
 const { Option, OptGroup } = Select;
@@ -29,7 +28,6 @@ const DiffExprCompute = (props) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const defaultSelected = 'Select a cell set';
   const [selectedCellSets, setSelectedCellSets] = useState(cellSets);
-
   /**
    * Loads cell set on initial render if it does not already exist in the store.
    */
@@ -53,11 +51,10 @@ const DiffExprCompute = (props) => {
     // eslint-disable-next-line array-callback-return
     newSelectableClusters.map(({ key, children }) => {
       if (children && children.length > 0) {
-        children.push(generateSpecialKey(key));
+        children.unshift(generateSpecialKey(key));
       }
     });
     setSelectableClusters(newSelectableClusters);
-
     setSelectedCellSets(_.mapValues(selectedCellSets, (cellSetKey) => {
       if (isKeySpecial(cellSetKey)) {
         return 'All';
@@ -68,7 +65,6 @@ const DiffExprCompute = (props) => {
       return cellSetKey;
     }));
   }, [hierarchy, properties]);
-
 
   const validateForm = () => {
     if (selectedCellSets.cellSet === defaultSelected) {
@@ -108,6 +104,7 @@ const DiffExprCompute = (props) => {
   const renderClusterSelectorItem = (title, option) => {
     const renderChildren = (children) => {
       if (!children || children.length === 0) { return (<></>); }
+
       return children.map(({ key }) => {
         if (isKeySpecial(key) && title === 'Compare') {
           return <></>;
@@ -118,12 +115,11 @@ const DiffExprCompute = (props) => {
               <Tooltip placement='left' title='Compare above selected set and its complements'>
                 <span style={{ display: 'flex', flexGrow: 1 }}>All</span>
               </Tooltip>
-            ) : properties[key]?.name}
+            ) : properties[key] ?.name}
           </Option>
         );
       });
     };
-
     return (
       <Form.Item label={title}>
         <Select
@@ -134,7 +130,7 @@ const DiffExprCompute = (props) => {
         >
           {
             selectableClusters && selectableClusters.map(({ key, children }) => (
-              <OptGroup label={properties[key]?.name} key={key}>
+              <OptGroup label={properties[key] ?.name} key={key}>
                 {renderChildren(children)}
               </OptGroup>
             ))
