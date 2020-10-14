@@ -28,7 +28,6 @@ const DiffExprCompute = (props) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const defaultSelected = 'Select a cell set';
   const [selectedCellSets, setSelectedCellSets] = useState(cellSets);
-
   /**
    * Loads cell set on initial render if it does not already exist in the store.
    */
@@ -52,11 +51,10 @@ const DiffExprCompute = (props) => {
     // eslint-disable-next-line array-callback-return
     newSelectableClusters.map(({ key, children }) => {
       if (children && children.length > 0) {
-        children.push(generateSpecialKey(key));
+        children.unshift(generateSpecialKey(key));
       }
     });
     setSelectableClusters(newSelectableClusters);
-
     setSelectedCellSets(_.mapValues(selectedCellSets, (cellSetKey) => {
       if (isKeySpecial(cellSetKey)) {
         return 'All';
@@ -107,13 +105,7 @@ const DiffExprCompute = (props) => {
     const renderChildren = (children) => {
       if (!children || children.length === 0) { return (<></>); }
 
-      if (children[0].key !== 'all-louvain') {
-        const helper = children[0]
-        children[0] = children[children.length - 1];
-        children[children.length - 1] = helper;
-      }
       return children.map(({ key }) => {
-
         if (isKeySpecial(key) && title === 'Compare') {
           return <></>;
         }
