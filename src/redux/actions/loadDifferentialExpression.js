@@ -51,7 +51,9 @@ const loadDifferentialExpression = (
     const data = JSON.parse(response.results[0].body);
     let { total } = data;
     const { rows } = data;
-    total = !total ? data.rows.length : data;
+    if (!total) {
+      total = rows.length;
+    }
     return dispatch({
       type: DIFF_EXPR_LOADED,
       payload: {
