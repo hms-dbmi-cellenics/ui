@@ -5,7 +5,6 @@ import {
 import sendWork from '../../utils/sendWork';
 
 const REQUEST_TIMEOUT = 60;
-
 const loadDifferentialExpression = (
   experimentId, cellSets, tableState,
 ) => async (dispatch) => {
@@ -50,8 +49,9 @@ const loadDifferentialExpression = (
       experimentId, REQUEST_TIMEOUT, body, pagination,
     );
     const data = JSON.parse(response.results[0].body);
-    const { rows, total } = data;
-
+    let { total } = data;
+    const { rows } = data;
+    total = !total ? data.rows.length : data;
     return dispatch({
       type: DIFF_EXPR_LOADED,
       payload: {
