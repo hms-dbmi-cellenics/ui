@@ -69,28 +69,28 @@ const PlotsTablesHome = () => {
       image: embeddingContinuous,
       key: 'embedding-continuous-key',
       link: 'embedding-continuous',
-      description: `Last modified: ${lastUpdatedContinuous}`,
+      description: `Last updated: ${lastUpdatedContinuous}`,
     },
     {
       name: 'Categorical Embedding',
       image: embeddingCategorical,
       key: 'embedding-categorical-key',
       link: 'embedding-categorical',
-      description: `Last modified: ${lastUpdatedCategorical}`,
+      description: `Last updated: ${lastUpdatedCategorical}`,
     },
     {
       name: 'Heatmap',
       image: heatmap,
       key: 'heatmap-key',
       link: 'heatmap',
-      description: `Last modified: ${lastUpdatedHeatmap}`,
+      description: `Last updated: ${lastUpdatedHeatmap}`,
     },
     {
       name: 'Volcano plot',
       image: volcano,
       key: 'volcano-key',
       link: 'volcano',
-      description: `Last modified: ${lastUpdatedVolcano}`,
+      description: `Last updated: ${lastUpdatedVolcano}`,
     },
   ];
 
