@@ -51,7 +51,8 @@ const loadDifferentialExpression = (
     const data = JSON.parse(response.results[0].body);
     let { total } = data;
     const { rows } = data;
-    if (!total) {
+
+    if (!total && !Object.keys(pagination).length) {
       total = rows.length;
     }
     return dispatch({
