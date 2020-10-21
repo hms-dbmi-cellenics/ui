@@ -260,7 +260,7 @@ const VolcanoPlot = () => {
                   onUpdate={updatePlotWithChanges}
                 />
               </Panel>
-              <Panel header='Text' key='11'>
+              <Panel header='Add Labels' key='11'>
                 <> Display Gene Labels Above (-log10 pvalue) </>
                 <Slider
                   defaultValue={config.textThresholdValue}
