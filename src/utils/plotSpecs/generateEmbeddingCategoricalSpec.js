@@ -1,5 +1,4 @@
 const generateSpec = (config) => {
-  console.log('THIS- ', config.legendEnabled);
   let legend = [];
   if (config.legendEnabled) {
     legend = [

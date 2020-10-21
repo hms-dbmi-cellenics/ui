@@ -13,9 +13,7 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
       body: JSON.stringify(content),
     },
   );
-
   const { lastUpdated } = await response.json();
-
   dispatch({
     type: SAVE_PLOT_CONFIG,
     payload:
