@@ -90,7 +90,6 @@ const Header = (props) => {
   ];
 
   const saveString = (lastUpdated) ? moment(lastUpdated).fromNow().toLowerCase() : 'never';
-  console.log('LAST UPDATED ', lastUpdated);
   const onClickSave = () => {
     if (saved) { return; }
 

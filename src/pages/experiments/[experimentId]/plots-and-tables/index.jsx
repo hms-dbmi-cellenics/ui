@@ -35,7 +35,6 @@ const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
   </Card.Grid>
 ));
 
-
 CardItem.defaultProps = {};
 
 CardItem.propTypes = {
