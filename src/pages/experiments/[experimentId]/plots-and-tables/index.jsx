@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   PageHeader, Row, Col, Space, Button, List, Card, Tooltip, Dropdown,
 } from 'antd';
+import { useSelector } from 'react-redux';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -44,6 +45,23 @@ CardItem.propTypes = {
 };
 
 const PlotsTablesHome = () => {
+  let lastUpdatedVolcano = useSelector((state) => state.plots['volcanoPlotMain'] ?.lastUpdated);
+  let lastUpdatedContinuous = useSelector((state) => state.plots['embeddingContinuousMain'] ?.lastUpdated);
+  let lastUpdatedCategorical = useSelector((state) => state.plots['embeddingCategoricalMain'] ?.lastUpdated);
+  let lastUpdatedHeatmap = useSelector((state) => state.plots['lastUpdatedHeatmap'] ?.lastUpdated);
+
+  if (!lastUpdatedVolcano) {
+    lastUpdatedVolcano = 'never';
+  }
+  if (!lastUpdatedContinuous) {
+    lastUpdatedContinuous = 'never';
+  }
+  if (!lastUpdatedCategorical) {
+    lastUpdatedCategorical = 'never';
+  }
+  if (!lastUpdatedHeatmap) {
+    lastUpdatedHeatmap = 'never';
+  }
   const router = useRouter();
   const { experimentId } = router.query;
   const plots = [
@@ -52,28 +70,28 @@ const PlotsTablesHome = () => {
       image: embeddingContinuous,
       key: 'embedding-continuous-key',
       link: 'embedding-continuous',
-      description: 'Last modified: 2nd June 20:20',
+      description: `Last modified: ${lastUpdatedContinuous}`,
     },
     {
       name: 'Categorical Embedding',
       image: embeddingCategorical,
       key: 'embedding-categorical-key',
       link: 'embedding-categorical',
-      description: 'Last modified: 2nd June 20:20',
+      description: `Last modified: ${lastUpdatedCategorical}`,
     },
     {
       name: 'Heatmap',
       image: heatmap,
       key: 'heatmap-key',
       link: 'heatmap',
-      description: 'Last modified: 2nd June 20:20',
+      description: `Last modified: ${lastUpdatedHeatmap}`,
     },
     {
       name: 'Volcano plot',
       image: volcano,
       key: 'volcano-key',
       link: 'volcano',
-      description: 'Last modified: 2nd June 20:20',
+      description: `Last modified: ${lastUpdatedVolcano}`,
     },
   ];
 
