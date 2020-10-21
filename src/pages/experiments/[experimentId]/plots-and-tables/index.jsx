@@ -25,7 +25,7 @@ const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
       alt={item.name}
       src={item.image}
       style={{
-        height: '250px', width: '300px', align: 'center', padding: '8px',
+        height: '250px', width: '100%', align: 'center', padding: '8px',
       }}
     />
     <div style={{ paddingBottom: '8px' }}>
