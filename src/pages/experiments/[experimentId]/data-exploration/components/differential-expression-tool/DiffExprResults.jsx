@@ -29,15 +29,13 @@ const DiffExprResults = (props) => {
 
   const columns = [
     {
-      title: 'p value',
-      key: 'pval',
-      render: (num) => num.toExponential(1),
+      title: 'Z-score',
+      key: 'zscore',
       sorter: true,
     },
     {
-      title: 'q value',
-      key: 'qval',
-      render: (num) => num.toExponential(1),
+      title: 'Absolute Z-score',
+      key: 'abszscore',
       sorter: true,
     },
     {
@@ -51,7 +49,9 @@ const DiffExprResults = (props) => {
   // When data changes, update rows.
   useEffect(() => {
     if (data) {
-      setDataShown(data);
+      setDataShown(
+        data.map((d) => ({ ...d, abszscore: Math.abs(d.zscore) })),
+      );
     }
   }, [data]);
 
@@ -115,9 +115,9 @@ const DiffExprResults = (props) => {
         experimentId={experimentId}
         initialTableState={{
           sorter: {
-            field: 'qval',
-            columnKey: 'qval',
-            order: 'ascend',
+            field: 'zscore',
+            columnKey: 'abszscore',
+            order: 'descend',
           },
         }}
         onUpdate={onUpdate}
@@ -126,7 +126,7 @@ const DiffExprResults = (props) => {
         onExportCSV={() => { setExportAlert(true); }}
         error={error}
         width={width}
-        height={height - 30 - (exportAlert ? 70 : 0)}
+        height={height - 70 - (exportAlert ? 70 : 0)}
         data={dataShown}
         total={total}
       />
@@ -143,6 +143,5 @@ DiffExprResults.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };
-
 
 export default DiffExprResults;
