@@ -49,9 +49,7 @@ const DiffExprResults = (props) => {
   // When data changes, update rows.
   useEffect(() => {
     if (data) {
-      setDataShown(
-        data.map((d) => ({ ...d, abszscore: Math.abs(d.zscore) })),
-      );
+      setDataShown(data);
     }
   }, [data]);
 
@@ -115,7 +113,7 @@ const DiffExprResults = (props) => {
         experimentId={experimentId}
         initialTableState={{
           sorter: {
-            field: 'zscore',
+            field: 'abszscore',
             columnKey: 'abszscore',
             order: 'descend',
           },
