@@ -39,7 +39,7 @@ const route = {
 
 const EmbeddingCategoricalPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid] ?.config);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
@@ -54,7 +54,7 @@ const EmbeddingCategoricalPlot = () => {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
       dispatch(loadCellSets(experimentId));
     }
-  }, []);
+  }, [experimentId]);
 
   const generateCellSetOptions = () => {
     const hierarchy = cellSets.hierarchy.map(
@@ -92,9 +92,12 @@ const EmbeddingCategoricalPlot = () => {
 
   const renderPlot = () => {
     if (error) {
-      return <PlatformError
-        description={error}
-        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))} />;
+      return (
+        <PlatformError
+          description={error}
+          onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+        />
+      );
     }
     if (!config || !data || loading || !isBrowser) {
       return (<center><Spin size='large' /></center>);
@@ -106,7 +109,6 @@ const EmbeddingCategoricalPlot = () => {
     );
   };
 
-
   const vegaSpec = generateSpec(config);
   // due to a bug in vega with React with using data with source coming from other data,
   // we have to inject the data in the Vega spec.
@@ -115,7 +117,6 @@ const EmbeddingCategoricalPlot = () => {
   const onUpdate = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
-
 
   const onCellSetSelect = ({ value }) => {
     onUpdate({ selectedCellSet: value });

@@ -4,7 +4,7 @@ import {
   useDispatch,
 } from 'react-redux';
 import {
-  Space, Button, Alert,
+  Space, Button, Alert, Tooltip,
 } from 'antd';
 import Link from 'next/link';
 import { LeftOutlined } from '@ant-design/icons';
@@ -37,6 +37,7 @@ const DiffExprResults = (props) => {
       title: 'Absolute Z-score',
       key: 'abszscore',
       sorter: true,
+      render: (score, record) => <Tooltip title={`q-value: ${record.qval}`}>{score}</Tooltip>,
     },
     {
       title: 'log2 FC',
@@ -94,6 +95,8 @@ const DiffExprResults = (props) => {
       />
     );
   };
+
+  console.log(dataShown);
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>

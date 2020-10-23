@@ -25,7 +25,6 @@ import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/p
 import loadDifferentialExpression from '../../../../../redux/actions/loadDifferentialExpression';
 import PlatformError from '../../../../../components/PlatformError';
 
-
 const { Panel } = Collapse;
 const route = {
   path: 'volcano',
@@ -37,26 +36,26 @@ const plotType = 'volcano';
 
 const VolcanoPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid] ?.config);
+  const router = useRouter();
+  const { experimentId } = router.query;
+
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
   const { loading, data, error } = useSelector((state) => state.differentialExpression.properties);
   const [plotData, setPlotData] = useState([]);
   const [spec, setSpec] = useState({ spec: null, maxNegativeLogpValue: null, xMax: null });
 
-  const router = useRouter();
-  const { experimentId } = router.query;
-
   useEffect(() => {
     if (!isBrowser) return;
-
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }, []);
+  }, [experimentId]);
 
   useEffect(() => {
     if (!config) return;
     if (_.isEmpty(config.cellSets)) return;
 
+    console.warn(config);
     dispatch(loadDifferentialExpression(experimentId, config.cellSets));
-  }, [config ?.cellSets]);
+  }, [config?.cellSets]);
 
   useEffect(() => {
     if (!config) return;
@@ -76,15 +75,17 @@ const VolcanoPlot = () => {
     setSpec(generatedSpec);
   }, [plotData]);
 
-
   const setDataPointStatus = () => {
     const dataPoints = _.cloneDeep(data);
     dataPoints.filter((datum) => {
+      const { log2fc } = datum;
+      const qval = parseFloat(datum.qval);
+
       // Downsample insignificant, not changing genes by the appropriate amount.
       const isSignificant = (
-        datum.log2fc < config.logFoldChangeThreshold * -1
-        || datum.log2fc > config.logFoldChangeThreshold)
-        && datum.qval < config.pvalueThreshold;
+        log2fc < config.logFoldChangeThreshold * -1
+        || log2fc > config.logFoldChangeThreshold)
+        && qval < config.pvalueThreshold;
 
       if (isSignificant) {
         return true;
@@ -101,24 +102,26 @@ const VolcanoPlot = () => {
       // order the colors by the names, and the names are declared sorted,
       // so they must be alphabetically ordered.
       let status;
+      const { log2fc } = datum;
+      const qval = parseFloat(datum.qval);
 
       const pvalueThreshold = (10 ** (-1 * config.negLogpValueThreshold)).toExponential(3);
 
-      if (datum.qval <= pvalueThreshold
-        && datum.log2fc >= config.logFoldChangeThreshold) {
+      if (qval <= pvalueThreshold
+        && log2fc >= config.logFoldChangeThreshold) {
         status = '1_significantUpregulated';
-      } else if (datum.qval <= pvalueThreshold
-        && datum.log2fc <= config.logFoldChangeThreshold * -1) {
+      } else if (qval <= pvalueThreshold
+        && log2fc <= config.logFoldChangeThreshold * -1) {
         status = '2_significantDownregulated';
-      } else if (datum.qval > pvalueThreshold
+      } else if (qval > pvalueThreshold
         && datum.log2fc >= config.logFoldChangeThreshold) {
         status = '3_notSignificantUpregulated';
-      } else if (datum.qval > pvalueThreshold
-        && datum.log2fc <= config.logFoldChangeThreshold * -1) {
+      } else if (qval > pvalueThreshold
+        && log2fc <= config.logFoldChangeThreshold * -1) {
         status = '4_notSignificantDownregulated';
-      } else if (datum.qval <= pvalueThreshold
-        && datum.log2fc > config.logFoldChangeThreshold * -1
-        && datum.log2fc < config.logFoldChangeThreshold) {
+      } else if (qval <= pvalueThreshold
+        && log2fc > config.logFoldChangeThreshold * -1
+        && log2fc < config.logFoldChangeThreshold) {
         status = '5_significantChangeDirectionUnknown';
       } else {
         status = '6_noDifference';
