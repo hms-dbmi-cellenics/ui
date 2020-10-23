@@ -46,7 +46,7 @@ const HeatmapPlot = () => {
 
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-  }, []);
+  }, [experimentId]);
 
   useEffect(() => {
     if (!config || config.selectedGenes?.length === 0) return;
@@ -105,9 +105,12 @@ const HeatmapPlot = () => {
     }
 
     if (error) {
-      return <PlatformError
-        description={'Could not load gene expression data.'}
-        onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes))} />
+      return (
+        <PlatformError
+          description='Could not load gene expression data.'
+          onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes))}
+        />
+      );
     }
 
     if (config.selectedGenes.length === 0) {
@@ -235,6 +238,5 @@ const HeatmapPlot = () => {
     </div>
   );
 };
-
 
 export default HeatmapPlot;

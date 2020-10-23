@@ -116,8 +116,8 @@ describe('DiffExprResults', () => {
     expect(table.getElement().props.columns.length).toEqual(5);
     expect(table.getElement().props.columns[0].key).toEqual('lookup');
     expect(table.getElement().props.columns[1].title).toEqual('Gene');
-    expect(table.getElement().props.columns[2].key).toEqual('pval');
-    expect(table.getElement().props.columns[3].key).toEqual('qval');
+    expect(table.getElement().props.columns[2].key).toEqual('zscore');
+    expect(table.getElement().props.columns[3].key).toEqual('abszscore');
     expect(table.getElement().props.columns[4].key).toEqual('log2fc');
 
     expect(table.getElement().props.dataSource.length).toEqual(5);

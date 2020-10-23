@@ -25,7 +25,6 @@ import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
 import PlatformError from '../../../../../components/PlatformError';
 
-
 const { Panel } = Collapse;
 const { Search } = Input;
 
@@ -66,7 +65,7 @@ const EmbeddingContinuousPlot = () => {
         dispatch(loadGeneExpression(experimentId, [selectedGene.current]));
       }
     }
-  }, []);
+  }, [experimentId]);
 
   // obj is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (obj) => {
@@ -74,7 +73,6 @@ const EmbeddingContinuousPlot = () => {
   };
 
   const generateVegaData = () => ({ expression: selectedExpression, embedding: _.cloneDeep(data) });
-
 
   if (!config) {
     return (<Skeleton />);
@@ -85,7 +83,6 @@ const EmbeddingContinuousPlot = () => {
     selectedGene.current = geneName;
     dispatch(loadGeneExpression(experimentId, [geneName]));
   };
-
 
   const renderPlot = () => {
     // The embedding couldn't load. Display an error condition.

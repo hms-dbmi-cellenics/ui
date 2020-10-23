@@ -4,7 +4,7 @@ import {
   useDispatch,
 } from 'react-redux';
 import {
-  Space, Button, Alert,
+  Space, Button, Alert, Tooltip,
 } from 'antd';
 import Link from 'next/link';
 import { LeftOutlined } from '@ant-design/icons';
@@ -29,16 +29,15 @@ const DiffExprResults = (props) => {
 
   const columns = [
     {
-      title: 'p value',
-      key: 'pval',
-      render: (num) => num.toExponential(1),
+      title: 'Z-score',
+      key: 'zscore',
       sorter: true,
     },
     {
-      title: 'q value',
-      key: 'qval',
-      render: (num) => num.toExponential(1),
+      title: 'Absolute Z-score',
+      key: 'abszscore',
       sorter: true,
+      render: (score, record) => <Tooltip title={`q-value: ${record.qval}`}>{score}</Tooltip>,
     },
     {
       title: 'log2 FC',
@@ -97,6 +96,8 @@ const DiffExprResults = (props) => {
     );
   };
 
+  console.log(dataShown);
+
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
 
@@ -115,9 +116,9 @@ const DiffExprResults = (props) => {
         experimentId={experimentId}
         initialTableState={{
           sorter: {
-            field: 'qval',
-            columnKey: 'qval',
-            order: 'ascend',
+            field: 'abszscore',
+            columnKey: 'abszscore',
+            order: 'descend',
           },
         }}
         onUpdate={onUpdate}
@@ -126,7 +127,7 @@ const DiffExprResults = (props) => {
         onExportCSV={() => { setExportAlert(true); }}
         error={error}
         width={width}
-        height={height - 30 - (exportAlert ? 70 : 0)}
+        height={height - 70 - (exportAlert ? 70 : 0)}
         data={dataShown}
         total={total}
       />
@@ -143,6 +144,5 @@ DiffExprResults.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };
-
 
 export default DiffExprResults;
