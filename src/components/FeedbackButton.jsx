@@ -14,7 +14,7 @@ const FeedbackButton = () => {
   const [visible, setVisible] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
 
-  const HOOK_URL = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDAxNTVEWkZWTTAvQjAxOVlCQVJYSjkvTWNwRnF5RGtHSmE1WTd0dGFSZHpoQXNQ';
+  const HOOK_URL = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDAxNTVEWkZWTTAvQjAxOVlCQVJYSjkvTWNwRnF5RGtHSmE1WTd0dGFSZHpoQXNQ'; // pragma: allowlist secret
 
   const submitFeedback = async () => {
     setVisible(false);
@@ -102,6 +102,5 @@ const FeedbackButton = () => {
     </Dropdown>
   );
 };
-
 
 export default FeedbackButton;

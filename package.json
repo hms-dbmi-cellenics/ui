@@ -22,8 +22,10 @@
     "pretest": "eslint ./src",
     "test": "jest",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "detect-secrets": "pip3 install detect-secrets && git diff --staged --name-only | xargs detect-secrets-hook --baseline .secrets.baseline"
   },
+  "pre-commit": ["lint", "detect-secrets"],
   "keywords": [
     "nextjs",
     "antd",
@@ -94,6 +96,7 @@
     "lodash": "^4.17.13",
     "moment": "^2.27.0",
     "object-hash": "^2.0.3",
+    "pre-commit": "^1.2.2",
     "prettier": "^1.15.3",
     "prop-types": "^15.7.2",
     "react-app-polyfill": "^1.0.6",
