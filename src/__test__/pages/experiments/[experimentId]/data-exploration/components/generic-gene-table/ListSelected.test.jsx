@@ -6,8 +6,8 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { Button, Select } from 'antd';
 import preloadAll from 'jest-next-dynamic';
-import _ from 'lodash';
-import ListSelected from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/generic-gene-table/ListSelected'
+import ListSelected from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/generic-gene-table/ListSelected';
+
 const TEST_UUID = 'testList';
 const mockStore = configureMockStore([thunk]);
 let component;
@@ -45,22 +45,19 @@ const initialState = {
 
 describe('ListSelected', () => {
   beforeAll(async () => {
-
     await preloadAll();
     store = mockStore(initialState);
-
   });
   configure({ adapter: new Adapter() });
 
   test('renders correctly', () => {
-
     component = mount(
       <Provider store={store}>
         <ListSelected experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
     const search = component.find(Button);
-    expect(search.length).toEqual(1)
+    expect(search.length).toEqual(1);
   });
 
   test('components are present', () => {
@@ -70,7 +67,7 @@ describe('ListSelected', () => {
       </Provider>,
     );
     const button = component.find(Button);
-    expect(button.length).toEqual(1)
+    expect(button.length).toEqual(1);
   });
   test('show selected genes', () => {
     component = mount(
