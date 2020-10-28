@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Collapse, Row, Col, List, Space, Slider,
+  Collapse, Row, Col, List, Space,
   Form, Tooltip, Button, InputNumber,
 } from 'antd';
 import {
