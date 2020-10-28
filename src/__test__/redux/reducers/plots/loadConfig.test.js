@@ -1,17 +1,13 @@
 import loadReducer from '../../../../redux/reducers/plots/loadConfig';
-import * as types from '../../../../redux/actionTypes';
 
 describe('loadConfig', () => {
-  it('Config loaded', () => expect(
-    loadReducer({}, {
+  it('Config loaded', () => {
+    const newState = loadReducer({}, {
       payload: {
-        experimentId: '1234',
         plotUuid: 'embeddingCategoricalMain',
+        experimentId: '1234',
       },
-      type: types.LOAD_PLOT_CONFIG,
-    }),
-  ).toEqual({
-    experimentId: '1234',
-    plotUuid: 'embeddingCategoricalMain',
-  }));
+    });
+    expect(newState).toMatchSnapshot();
+  });
 });
