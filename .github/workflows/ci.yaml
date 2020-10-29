@@ -187,6 +187,8 @@ jobs:
           access-token: ${{ secrets.API_TOKEN_GITHUB }}
           owner: biomage-ltd
           repo: iac
+          enforce_admins: false
+          retries: 8
 
       - name: Push changes to iac repo
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
@@ -199,11 +201,19 @@ jobs:
           user_email: 'ci@biomage.net'
           user_name: 'Biomage CI/CD'
 
+  enable-enforcement:
+    name: Enable admin enforcement
+    runs-on: ubuntu-latest
+    needs: deploy
+    if:
+      always() && github.ref == 'refs/heads/master'
+    steps:
       - id: enable-admin-enforcement
-        name: Re-enable admin enforcement
+        name: Enable admin enforcement
         uses: benjefferies/branch-protection-bot@master
-        if: always()
         with:
           access-token: ${{ secrets.API_TOKEN_GITHUB }}
           owner: biomage-ltd
           repo: iac
+          enforce_admins: true
+          retries: 8
