@@ -1,6 +1,5 @@
 const updateConfig = (state, action) => {
   const { plotUuid, configChange } = action.payload;
-
   return {
     ...state,
     [plotUuid]: {

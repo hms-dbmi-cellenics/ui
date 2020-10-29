@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`saveconfig Last updated date is set 1`] = `
+Object {
+  "embeddingCategoricalMain": Object {
+    "lastUpdated": "Wed Oct 28 2020",
+    "outstandingChanges": false,
+  },
+}
+`;
