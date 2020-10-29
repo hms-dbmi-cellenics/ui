@@ -206,12 +206,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy
     if:
-      always()
+      always() && github.ref == 'refs/heads/master'
     steps:
       - id: enable-admin-enforcement
         name: Enable admin enforcement
         uses: benjefferies/branch-protection-bot@master
-        if: always()
         with:
           access-token: ${{ secrets.API_TOKEN_GITHUB }}
           owner: biomage-ltd
