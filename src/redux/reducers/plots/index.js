@@ -5,7 +5,6 @@ import updateConfig from './updateConfig';
 import saveConfig from './saveConfig';
 
 const plotsReducer = (state = initialState, action) => {
-  console.log('STATE IN INDEX', state);
   switch (action.type) {
     case LOAD_PLOT_CONFIG:
       return loadConfig(state, action);

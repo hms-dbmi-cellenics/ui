@@ -1,33 +1,44 @@
-// import configureMockStore from 'redux-mock-store';
-//  import thunk from 'redux-thunk';
 import _ from 'lodash';
 import updateReducer from '../../../../redux/reducers/plots/updateConfig';
 import { initialPlotConfigStates } from '../../../../redux/reducers/plots/initialState';
-import { UPDATE_PLOT_CONFIG } from '../../../../redux/actionTypes/plots';
-import plotsReducer from '../../../../redux/reducers/plots/index';
-//  import initialState from '../../../../redux/reducers/plots/initialState';
+import { UPDATE_PLOT_CONFIG, LOAD_PLOT_CONFIG } from '../../../../redux/actionTypes/plots';
+import loadReducer from '../../../../redux/reducers/plots/loadConfig';
 
 describe('updateConfig', () => {
   it('Checking if fields changed', () => {
-    //  const mockStore = configureMockStore([thunk]);
-    //  const store = mockStore(initialPlotConfigStates.volcanoPlotMain);
-
-    const action = {
-      type: UPDATE_PLOT_CONFIG,
+    const newState = loadReducer({}, {
+      type: LOAD_PLOT_CONFIG,
       payload: {
-        configChange: { height: 500 },
+        experimentId: '1234',
         plotUuid: 'volcanoPlotMain',
         config: _.cloneDeep(initialPlotConfigStates.volcano),
       },
-    };
-    //  const executeReducer = (state = initialState) => updateReducer(state, action);
-    // const reducerOutput = executeReducer();
-    //  const reducerOutput = () => executeReducer(initialState);
-    //  const reducerOutput = updateReducer(initialState, action);
-    //  console.log('FAKE STORE IS ', store);
-    console.log('REDUCER OUTPUT from INDEX ', plotsReducer(undefined, action));
-    console.log('REDUCER OUTPUT from DIRECTLY ', updateReducer(undefined, action));
-
-    //  expect(reducerOutput).toMatchSnapshot();
+    });
+    const updateReturn = updateReducer(newState, {
+      type: UPDATE_PLOT_CONFIG,
+      payload: {
+        configChange: { height: 2000 },
+        plotUuid: 'volcanoPlotMain',
+      },
+    });
+    expect(updateReturn).toMatchSnapshot();
+  });
+  it('Checking if empty update doesnt change anything', () => {
+    const newState = loadReducer({}, {
+      type: LOAD_PLOT_CONFIG,
+      payload: {
+        experimentId: '1234',
+        plotUuid: 'embeddingCategoricalMain',
+        config: _.cloneDeep(initialPlotConfigStates.embeddingCategorical),
+      },
+    });
+    const updateReturn = updateReducer(newState, {
+      type: UPDATE_PLOT_CONFIG,
+      payload: {
+        configChange: {},
+        plotUuid: 'embeddingCategoricalMain',
+      },
+    });
+    expect(updateReturn).toMatchSnapshot();
   });
 });
