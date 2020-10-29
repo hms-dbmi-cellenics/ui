@@ -8,7 +8,6 @@ import {
   EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined,
 } from '@ant-design/icons';
 
-
 const EditableField = (props) => {
   const {
     value, deleteEnabled, showEdit, onAfterSubmit, onAfterCancel, renderBold, defaultEditing,
