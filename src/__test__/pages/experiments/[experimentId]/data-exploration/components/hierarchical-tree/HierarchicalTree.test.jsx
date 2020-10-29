@@ -160,7 +160,6 @@ describe('HierarchicalTree', () => {
       secondParent,
     ];
 
-
     const dropInfo = {
       dragNode: {
         ...secondParent,
@@ -204,7 +203,7 @@ describe('HierarchicalTree', () => {
 
   it('correct keys in tree data with no children are checked by default', () => {
     const treeData = [{ key: 'louvain' }];
-    const mockOnCheck = jest.fn((x) => console.log('my mock got called! ', x));
+    const mockOnCheck = jest.fn();
     mount(
       <HierarchicalTree treeData={treeData} onCheck={mockOnCheck} />,
     );
@@ -217,7 +216,7 @@ describe('HierarchicalTree', () => {
       { key: 'louvain', children: [{ key: 'one' }, { key: 'two' }, { key: 'three' }] },
       { key: 'another-set', children: [{ key: 'four' }, { key: 'five' }, { key: 'six' }] },
     ];
-    const mockOnCheck = jest.fn((x) => console.log('my mock got called! ', x));
+    const mockOnCheck = jest.fn();
     mount(
       <HierarchicalTree treeData={treeData} onCheck={mockOnCheck} />,
     );

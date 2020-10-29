@@ -69,7 +69,7 @@ const mockSendWork = jest.fn((experimentId, timeout, body) => {
 
 jest.mock('../../utils/cache', () => ({
   get: jest.fn((x) => mockGet(x)),
-  _set: jest.fn((key, val) => mockSet(key, val)),
+  set: jest.fn((key, val) => mockSet(key, val)),
   _remove: jest.fn((key) => mockRemove(key)),
 }));
 

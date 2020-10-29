@@ -72,14 +72,14 @@ describe('cache set', () => {
     cache.initialised = false;
   });
   it('set items to cache correctly', async () => {
-    let result = await cache._set('key1', 'value1');
+    let result = await cache.set('key1', 'value1');
     expect(result).toBe(true);
     expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(1);
     expect(cache.head).toBe('key1');
     expect(cache.tail).toBe('key1');
     expect(localForage.setItem).toBeCalledWith('key1', { ttl: expect.any(Number), value: 'value1' });
-    result = await cache._set('key2', 'value2');
+    result = await cache.set('key2', 'value2');
     expect(result).toBe(true);
     expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(2);
@@ -88,7 +88,7 @@ describe('cache set', () => {
     expect(localForage.setItem).toBeCalledWith('key2', { ttl: expect.any(Number), value: 'value2' });
   });
   it('Rejects invalid cache', async () => {
-    const result = await cache._set('invalid', 'value');
+    const result = await cache.set('invalid', 'value');
     expect(result).toBe(false);
     expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(0);
@@ -97,8 +97,8 @@ describe('cache set', () => {
   });
   it('Evicts item if cache size exceeds', async () => {
     cache.maxSize = 1;
-    await cache._set('key1', 'value1');
-    await cache._set('key2', 'value2');
+    await cache.set('key1', 'value1');
+    await cache.set('key2', 'value2');
     expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(1);
     expect(cache.head).toBe('key2');
@@ -117,7 +117,7 @@ describe('cache get', () => {
     cache.initialised = false;
   });
   it('get items from cache correctly', async () => {
-    await cache._set('key1', 'value1');
+    await cache.set('key1', 'value1');
     const value = await cache.get('key1');
     expect(value).toBe('value');
   });
@@ -126,9 +126,9 @@ describe('cache get', () => {
     expect(value).toBe(null);
   });
   it('if cache hit, put item on top', async () => {
-    await cache._set('key1', 'value1');
-    await cache._set('key2', 'value2');
-    await cache._set('key3', 'value3');
+    await cache.set('key1', 'value1');
+    await cache.set('key2', 'value2');
+    await cache.set('key3', 'value3');
     await cache.get('key1');
     expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(3);

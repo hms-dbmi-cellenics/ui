@@ -8,7 +8,6 @@ import { ExclamationCircleFilled } from '@ant-design/icons';
 import HeatmapPlot from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/HeatmapPlot';
 import VegaHeatmap from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/VegaHeatmap';
 
-
 jest.mock('localforage');
 jest.mock('../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/VegaHeatmap');
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
@@ -82,7 +81,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' heatmapWidth={200} />
+        <HeatmapPlot experimentId='123' width={200} height={200} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
@@ -104,7 +103,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' heatmapWidth={200} />
+        <HeatmapPlot experimentId='123' width={200} height={200} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
@@ -116,7 +115,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' heatmapWidth={200} />
+        <HeatmapPlot experimentId='123' width={200} height={200} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
@@ -138,7 +137,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' heatmapWidth={200} />
+        <HeatmapPlot experimentId='123' width={200} height={200} />
       </Provider>,
     );
 

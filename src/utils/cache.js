@@ -12,7 +12,9 @@ const deleteOldVersions = () => {
     || window.mozIndexedDB
     || window.webkitIndexedDB
     || window.msIndexedDB;
-  previousCacheVersions.forEach((db) => indexedDbInstace.deleteDatabase(db));
+  if (indexedDbInstace) {
+    previousCacheVersions.forEach((db) => indexedDbInstace.deleteDatabase(db));
+  }
 };
 
 class BrowserCache {
@@ -78,7 +80,8 @@ class BrowserCache {
   }
 
   // set value should not be used independently as it might cause cache poisoning
-  async _set(key, value, ttl = 60) {
+  // ttl is set to 12 hours by default
+  async set(key, value, ttl = 43200) {
     if (this.size >= this.maxSize) {
       await this._remove(this.tail);
     }

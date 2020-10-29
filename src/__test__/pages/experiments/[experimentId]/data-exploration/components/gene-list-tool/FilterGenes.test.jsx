@@ -29,7 +29,9 @@ describe('FilterGenes', () => {
     const component = mount(<FilterGenes onFilter={mockFilter} />);
     const search = component.find(Search);
 
-    search.getElement().props.onSearch('tgf');
+    act(() => {
+      search.getElement().props.onSearch('tgf');
+    });
 
     expect(mockFilter).toHaveBeenCalledTimes(1);
     expect(mockFilter).toHaveBeenCalledWith({ filterOption: 'Contains', text: 'tgf' });
@@ -46,7 +48,9 @@ describe('FilterGenes', () => {
 
     component.update();
     const search = component.find(Search);
-    search.getElement().props.onSearch('tgf');
+    act(() => {
+      search.getElement().props.onSearch('tgf');
+    });
 
     expect(mockFilter).toHaveBeenCalledTimes(2);
     expect(mockFilter).toHaveBeenNthCalledWith(1, { filterOption: 'Starts with', text: null });
