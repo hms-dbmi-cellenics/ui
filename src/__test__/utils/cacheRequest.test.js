@@ -4,11 +4,11 @@ import { /* cacheFetch, */ fetchCachedWork } from '../../utils/cacheRequest';
 enableFetchMocks();
 
 const fakeCacheKeyMappings = {
-  A: 'fd3161a878f67ebf54018720cffd6a66',
-  B: '10250a11679234110a1c260d6fd81d3c',
-  C: '76bf160685c4c80c67abd9a701da23e6',
-  D: '21671038b9ac73c1f08a94c8213cb872',
-  E: '33faa711a94a2028b5bae1778126aec0',
+  A: 'fd3161a878f67ebf54018720cffd6a66', // pragma: allowlist secret
+  B: '10250a11679234110a1c260d6fd81d3c', // pragma: allowlist secret
+  C: '76bf160685c4c80c67abd9a701da23e6', // pragma: allowlist secret
+  D: '21671038b9ac73c1f08a94c8213cb872', // pragma: allowlist secret
+  E: '33faa711a94a2028b5bae1778126aec0', // pragma: allowlist secret
 };
 
 const fakeData = {
@@ -36,10 +36,10 @@ const fakeData = {
 };
 
 const fakeCacheContents = {
-  fd3161a878f67ebf54018720cffd6a66: 'A',
-  '10250a11679234110a1c260d6fd81d3c': 'B',
-  f5c957411a28de68f35e1f5c8a29da7e: 'C',
-  '33faa711a94a2028b5bae1778126aec0': 'E',
+  fd3161a878f67ebf54018720cffd6a66: 'A', // pragma: allowlist secret
+  '10250a11679234110a1c260d6fd81d3c': 'B', // pragma: allowlist secret
+  f5c957411a28de68f35e1f5c8a29da7e: 'C', // pragma: allowlist secret
+  '33faa711a94a2028b5bae1778126aec0': 'E', // pragma: allowlist secret
 };
 
 const mockGet = jest.fn((x) => {
