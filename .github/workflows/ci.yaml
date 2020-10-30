@@ -130,10 +130,6 @@ jobs:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     needs: build-docker
-    strategy:
-      max-parallel: 1
-      matrix:
-        environment: ['production', 'staging']
     steps:
       - id: checkout
         name: Check out source code
@@ -179,6 +175,8 @@ jobs:
           if [ "${{ matrix.environment }}" = "production" ]
           then
             yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp.biomage.net" > $DEPLOYMENT_NAME.yaml
+          else
+            mv $DEPLOYMENT_NAME-without-host.yaml $DEPLOYMENT_NAME.yaml
           fi
 
           cat $DEPLOYMENT_NAME.yaml
@@ -195,7 +193,7 @@ jobs:
 
       - name: Push production deployment to iac for deployment
         if:
-          github.ref == 'refs/heads/master' && matrix.environment == 'production'
+          github.ref == 'refs/heads/master' && github.event_name == 'push'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
@@ -208,7 +206,7 @@ jobs:
 
       - name: Change name of deployment file for staging deployment
         if:
-          github.event_name == 'pull_request' && matrix.environment == 'staging'
+          github.event_name == 'pull_request'
         env:
           DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
           REF_DASHED: ${{ steps.fill-metadata.outputs.ref-dashed }}
@@ -217,7 +215,7 @@ jobs:
 
       - name: Push staging deployment template to iac
         if:
-          github.event_name == 'pull_request' && matrix.environment == 'staging'
+          github.event_name == 'pull_request'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
