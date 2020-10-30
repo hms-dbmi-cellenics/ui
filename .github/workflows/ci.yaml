@@ -130,8 +130,6 @@ jobs:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     needs: build-docker
-    if:
-      github.ref == 'refs/heads/master'
     strategy:
       max-parallel: 1
       matrix:
@@ -180,8 +178,6 @@ jobs:
           if [ "${{ matrix.environment }}" = "production" ]
           then
             yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp.biomage.net" > $DEPLOYMENT_NAME.yaml
-          else
-            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp-${{ matrix.environment }}.biomage.net" > $DEPLOYMENT_NAME.yaml
           fi
 
           cat $DEPLOYMENT_NAME.yaml
@@ -197,6 +193,8 @@ jobs:
           retries: 8
 
       - name: Push changes to iac repo
+        if:
+          github.ref == 'refs/heads/master'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
