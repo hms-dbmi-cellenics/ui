@@ -130,6 +130,10 @@ jobs:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     needs: build-docker
+    strategy:
+      max-parallel: 1
+      matrix:
+        environment: ['production', 'staging']
     steps:
       - id: checkout
         name: Check out source code
@@ -193,7 +197,7 @@ jobs:
 
       - name: Push production deployment to iac for deployment
         if:
-          github.ref == 'refs/heads/master' && github.event_name == 'push'
+          github.ref == 'refs/heads/master' && github.event_name == 'push' && matrix.environment == "staging"
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
@@ -206,7 +210,7 @@ jobs:
 
       - name: Change name of deployment file for staging deployment
         if:
-          github.event_name == 'pull_request'
+          github.event_name == 'pull_request' && matrix.environment == "staging"
         env:
           DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
           REF_DASHED: ${{ steps.fill-metadata.outputs.ref-dashed }}
@@ -215,7 +219,7 @@ jobs:
 
       - name: Push staging deployment template to iac
         if:
-          github.event_name == 'pull_request'
+          github.event_name == 'pull_request' && matrix.environment == "staging"
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
