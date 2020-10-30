@@ -1,5 +1,11 @@
 name: Build and deploy the UI
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
   build:
     name: Build website
@@ -113,7 +119,6 @@ jobs:
           push: false
 
       - id: push
-        if: github.ref == 'refs/heads/master'
         name: Push docker image to ECR
         run: |-
           echo Pushing image $IMAGE_NAME to ECR.
@@ -125,12 +130,6 @@ jobs:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     needs: build-docker
-    if:
-      github.ref == 'refs/heads/master'
-    strategy:
-      max-parallel: 1
-      matrix:
-        environment: ['production', 'staging']
     steps:
       - id: checkout
         name: Check out source code
@@ -159,6 +158,7 @@ jobs:
           REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
+          echo "::set-output name=ref-dashed::$REF_DASHED"
 
           yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
           | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
@@ -176,7 +176,7 @@ jobs:
           then
             yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp.biomage.net" > $DEPLOYMENT_NAME.yaml
           else
-            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp-${{ matrix.environment }}.biomage.net" > $DEPLOYMENT_NAME.yaml
+            mv $DEPLOYMENT_NAME-without-host.yaml $DEPLOYMENT_NAME.yaml
           fi
 
           cat $DEPLOYMENT_NAME.yaml
@@ -191,7 +191,9 @@ jobs:
           enforce_admins: false
           retries: 8
 
-      - name: Push changes to iac repo
+      - name: Push production deployment to iac for deployment
+        if:
+          github.ref == 'refs/heads/master' && github.event_name == 'push'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
@@ -199,6 +201,28 @@ jobs:
           source_file: '${{ steps.fill-metadata.outputs.deployment-name }}.yaml'
           destination_repo: '${{ github.repository_owner }}/iac'
           destination_folder: 'releases/${{ matrix.environment }}'
+          user_email: 'ci@biomage.net'
+          user_name: 'Biomage CI/CD'
+
+      - name: Change name of deployment file for staging deployment
+        if:
+          github.event_name == 'pull_request'
+        env:
+          DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
+          REF_DASHED: ${{ steps.fill-metadata.outputs.ref-dashed }}
+        run: |-
+          mv $DEPLOYMENT_NAME.yaml $REF_DASHED.yaml
+
+      - name: Push staging deployment template to iac
+        if:
+          github.event_name == 'pull_request'
+        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: '${{ steps.fill-metadata.outputs.ref-dashed }}.yaml'
+          destination_repo: '${{ github.repository_owner }}/iac'
+          destination_folder: 'releases/staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}'
           user_email: 'ci@biomage.net'
           user_name: 'Biomage CI/CD'
 
