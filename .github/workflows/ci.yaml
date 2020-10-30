@@ -222,7 +222,7 @@ jobs:
         with:
           source_file: '${{ steps.fill-metadata.outputs.ref-dashed }}.yaml'
           destination_repo: '${{ github.repository_owner }}/iac'
-          destination_folder: 'releases/staging-candidates/${{ matrix.environment }}'
+          destination_folder: 'releases/staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}'
           user_email: 'ci@biomage.net'
           user_name: 'Biomage CI/CD'
 
