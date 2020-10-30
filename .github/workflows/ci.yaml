@@ -1,5 +1,11 @@
 name: Build and deploy the UI
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
   build:
     name: Build website
@@ -113,7 +119,6 @@ jobs:
           push: false
 
       - id: push
-        if: github.ref == 'refs/heads/master'
         name: Push docker image to ECR
         run: |-
           echo Pushing image $IMAGE_NAME to ECR.
