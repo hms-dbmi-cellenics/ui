@@ -164,16 +164,24 @@ jobs:
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
           echo "::set-output name=ref-dashed::$REF_DASHED"
 
+          if [ "${{ matrix.environment }}" = "production" ]; then
+            SANDBOX_ID="default"
+          fi
+          if [ "${{ matrix.environment }}" = "staging" ]; then
+            SANDBOX_ID="STAGING_SANDBOX_ID"
+          fi
+          
+          echo "::set-output name=sandbox-id::$SANDBOX_ID"
+
           yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
-          | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$REF_DASHED" \
+          | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
+          | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
           | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
           | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.values.kubernetes.env "${{ matrix.environment }}" \
-          | yq w -d1 - spec.values.biomageCi.ref "$REF_DASHED" \
           | yq w -d1 - spec.values.biomageCi.repo "$GITHUB_REPOSITORY" \
           | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
           | yq w -d1 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
-          | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$REF_DASHED" \
           > $DEPLOYMENT_NAME-without-host.yaml
 
           if [ "${{ matrix.environment }}" = "production" ]
@@ -184,6 +192,8 @@ jobs:
           fi
 
           cat $DEPLOYMENT_NAME.yaml
+        env:
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, needs.build-docker.outputs.repo-name, needs.build-docker.outputs.tag) }}
 
       - id: disable-admin-enforcement
         name: Temporarily disable admin enforcement
@@ -210,7 +220,7 @@ jobs:
 
       - name: Change name of deployment file for staging deployment
         if:
-          github.event_name == 'pull_request' && matrix.environment == 'staging'
+          matrix.environment == 'staging'
         env:
           DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
           REF_DASHED: ${{ steps.fill-metadata.outputs.ref-dashed }}
@@ -219,7 +229,7 @@ jobs:
 
       - name: Push staging deployment template to iac
         if:
-          github.event_name == 'pull_request' && matrix.environment == 'staging'
+          matrix.environment == 'staging'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
