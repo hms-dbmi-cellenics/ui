@@ -170,6 +170,7 @@ jobs:
           if [ "${{ matrix.environment }}" = "staging" ]; then
             SANDBOX_ID="STAGING_SANDBOX_ID"
           fi
+          
           echo "::set-output name=sandbox-id::$SANDBOX_ID"
 
           yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
