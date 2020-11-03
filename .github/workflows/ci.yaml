@@ -167,10 +167,17 @@ jobs:
           if [ "${{ matrix.environment }}" = "production" ]; then
             SANDBOX_ID="default"
           fi
+
           if [ "${{ matrix.environment }}" = "staging" ]; then
             SANDBOX_ID="STAGING_SANDBOX_ID"
           fi
           
+          if [ "${{ github.ref }}" = "refs/heads/master"]; then
+            CHART_REF="$GITHUB_SHA"
+          else
+            CHART_REF="$GITHUB_REF"
+          fi
+
           echo "::set-output name=sandbox-id::$SANDBOX_ID"
 
           yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
@@ -178,8 +185,10 @@ jobs:
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
           | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
           | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
+          | yq w -d1 - spec.chart.ref "$CHART_REF" \
           | yq w -d1 - spec.values.kubernetes.env "${{ matrix.environment }}" \
           | yq w -d1 - spec.values.biomageCi.repo "$GITHUB_REPOSITORY" \
+          | yq w -d1 - spec.values.biomageCi.sandboxId "$SANDBOX_ID" \
           | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
           | yq w -d1 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
           > $DEPLOYMENT_NAME-without-host.yaml
