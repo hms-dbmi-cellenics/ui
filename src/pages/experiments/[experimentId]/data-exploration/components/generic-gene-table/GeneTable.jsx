@@ -211,7 +211,7 @@ const GeneTable = (props) => {
         size='small'
         pagination={{ ...tableState ?.pagination, total }}
         sorter={tableState ?.sorter}
-        scroll={{ x: width, y: height - 260 }}
+        scroll={{ x: width, y: height - 294 }}
         onChange={handleTableChange}
         rowSelection={{
           type: 'checkbox',
