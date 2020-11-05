@@ -172,7 +172,7 @@ jobs:
             SANDBOX_ID="STAGING_SANDBOX_ID"
           fi
           
-          if [ "${{ github.ref }}" = "refs/heads/master"]; then
+          if [ "${{ github.ref }}" = "refs/heads/master" ]; then
             CHART_REF="$GITHUB_SHA"
           else
             CHART_REF="$GITHUB_REF"
@@ -183,6 +183,8 @@ jobs:
           yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
           | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
+          | yq w -d0 - metadata.tags.sandboxId "$SANDBOX_ID" \
+          | yq w -d1 - metadata.tags.sandboxId "$SANDBOX_ID" \
           | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
           | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.chart.ref "$CHART_REF" \
