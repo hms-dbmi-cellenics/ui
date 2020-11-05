@@ -161,7 +161,6 @@ jobs:
         run: |-
           REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
-          IAC_MASTER_HASH = $(curl https://api.github.com/repos/${{ github.repository_owner }}/iac/git/refs | jq -r '.[] | select(.ref=="refs/heads/master") | .object.sha')
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
           echo "::set-output name=ref-dashed::$REF_DASHED"
 
@@ -173,9 +172,8 @@ jobs:
             SANDBOX_ID="STAGING_SANDBOX_ID"
           fi
           
-          CHART_REF="refs/heads/master"
           if [ "${{ github.ref }}" = "refs/heads/master" ] && [ "${{ matrix.environment }}" = "staging" ]; then
-            CHART_REF="$IAC_MASTER_HASH"
+            CHART_REF="STAGING_CHART_REF"
           fi
 
           echo "::set-output name=sandbox-id::$SANDBOX_ID"
