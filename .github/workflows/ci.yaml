@@ -166,23 +166,19 @@ jobs:
 
           if [ "${{ matrix.environment }}" = "production" ]; then
             SANDBOX_ID="default"
+            CHART_REF="master"
           fi
 
           if [ "${{ matrix.environment }}" = "staging" ]; then
             SANDBOX_ID="STAGING_SANDBOX_ID"
+            CHART_REF="STAGING_CHART_REF"
           fi
           
-          if [ "${{ github.ref }}" = "refs/heads/master"]; then
-            CHART_REF="$GITHUB_SHA"
-          else
-            CHART_REF="$GITHUB_REF"
-          fi
-
-          echo "::set-output name=sandbox-id::$SANDBOX_ID"
-
           yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
           | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
+          | yq w -d0 - metadata.tags.sandboxId "$SANDBOX_ID" \
+          | yq w -d1 - metadata.tags.sandboxId "$SANDBOX_ID" \
           | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
           | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.chart.ref "$CHART_REF" \
