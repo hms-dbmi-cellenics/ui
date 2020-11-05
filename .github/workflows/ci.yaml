@@ -172,7 +172,7 @@ jobs:
             SANDBOX_ID="STAGING_SANDBOX_ID"
           fi
           
-          if [ "${{ github.ref }}" = "refs/heads/master" ]; then
+          if [ "${{ github.ref }}" = "refs/heads/master" ] && [ "${{ matrix.environment }}" = "staging" ]; then
             CHART_REF="$GITHUB_SHA"
           else
             CHART_REF="$GITHUB_REF"
