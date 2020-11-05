@@ -166,6 +166,7 @@ jobs:
 
           if [ "${{ matrix.environment }}" = "production" ]; then
             SANDBOX_ID="default"
+            CHART_REF="master"
           fi
 
           if [ "${{ matrix.environment }}" = "staging" ]; then

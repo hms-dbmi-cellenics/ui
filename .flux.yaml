@@ -20,6 +20,6 @@ spec:
   chart:
     git: git@github.com:biomage-ltd/iac
     path: charts/nodejs
-    ref: master
+    ref: FILLED_IN_BY_CI
   values:
     # filled in by CI. do not modify.
