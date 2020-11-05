@@ -2,12 +2,16 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: FILLED_IN_BY_CI
+  tags:
+    sandboxId: FILLED_IN_BY_CI
 ---
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: FILLED_IN_BY_CI
   namespace: FILLED_IN_BY_CI
+  tags:
+    sandboxId: FILLED_IN_BY_CI
   annotations:
     fluxcd.io/automated: "true"
     filter.fluxcd.io/chart-image: FILLED_IN_BY_CI
