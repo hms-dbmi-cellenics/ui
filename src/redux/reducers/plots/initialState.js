@@ -29,6 +29,7 @@ const embeddingCategoricalInitialConfig = {
   selectedCellSet: 'louvain',
   testVar: null,
   legendEnabled: true,
+  legendPosition: 'top',
 };
 
 const embeddingContinuousInitialConfig = {
@@ -131,6 +132,7 @@ const volcanoInitialConfig = {
   toggleInvert: '#FFFFFF',
   reverseCbar: false,
   textThresholdValue: 240,
+  legendPosition: 'top-right',
 };
 
 const initialPlotConfigStates = {

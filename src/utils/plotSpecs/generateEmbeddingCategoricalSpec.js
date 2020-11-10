@@ -6,7 +6,7 @@ const generateSpec = (config) => {
         fill: 'cellSetColors',
         title: 'Cluster Name',
         type: 'symbol',
-        orient: 'top',
+        orient: config.legendPosition,
         offset: 40,
         symbolType: 'square',
         symbolSize: { value: 200 },

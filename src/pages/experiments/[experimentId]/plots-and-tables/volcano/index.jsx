@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Row, Col, Space, Collapse, Slider, Skeleton, Spin, Button,
+  Row, Col, Space, Collapse, Slider, Skeleton, Spin, Button, Radio, Form,
 } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -39,7 +39,7 @@ const VolcanoPlot = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid] ?.config);
   const { loading, data, error } = useSelector((state) => state.differentialExpression.properties);
   const [plotData, setPlotData] = useState([]);
   const [spec, setSpec] = useState({ spec: null, maxNegativeLogpValue: null, xMax: null });
@@ -55,7 +55,7 @@ const VolcanoPlot = () => {
 
     console.warn(config);
     dispatch(loadDifferentialExpression(experimentId, config.cellSets));
-  }, [config?.cellSets]);
+  }, [config ?.cellSets]);
 
   useEffect(() => {
     if (!config) return;
@@ -277,6 +277,15 @@ const VolcanoPlot = () => {
                   onUpdate={updatePlotWithChanges}
                   legendEnabled={config.legendEnabled}
                 />
+                <div>Position</div>
+                <Form.Item>
+                  <Radio.Group onChange={(value) => updatePlotWithChanges({ legendPosition: value.target.value })} value={config.legendPosition}>
+                    <Radio value='top-left'>Top-Left</Radio>
+                    <Radio value='top-right'>Top-Right</Radio>
+                    <Radio value='bottom-left'>Bot-Left</Radio>
+                    <Radio value='bottom-right'>Bot-Right</Radio>
+                  </Radio.Group>
+                </Form.Item>
               </Panel>
             </Collapse>
           </Space>

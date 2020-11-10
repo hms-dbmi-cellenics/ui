@@ -1,7 +1,10 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import {
-  Row, Col, Space, Collapse, Skeleton, Select, Spin,
+  InfoCircleOutlined,
+} from '@ant-design/icons';
+import {
+  Row, Col, Space, Collapse, Skeleton, Select, Spin, Radio, Form, Button, Tooltip,
 } from 'antd';
 
 import { useRouter } from 'next/router';
@@ -39,7 +42,7 @@ const route = {
 
 const EmbeddingCategoricalPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid] ?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
@@ -58,7 +61,7 @@ const EmbeddingCategoricalPlot = () => {
 
   const generateCellSetOptions = () => {
     const hierarchy = cellSets.hierarchy.map(
-      (cellSet) => ({ key: cellSet.key, children: cellSet.children?.length || 0 }),
+      (cellSet) => ({ key: cellSet.key, children: cellSet.children ?.length || 0 }),
     );
     return hierarchy.map(({ key, children }) => ({
       value: key,
@@ -133,7 +136,15 @@ const EmbeddingCategoricalPlot = () => {
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
-              <Panel header='Preview' key='1'>
+              <Panel
+                header='Preview'
+                key='1'
+                extra={(
+                  <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
+                    <Button icon={<InfoCircleOutlined />} />
+                  </Tooltip>
+                )}
+              >
                 {renderPlot()}
               </Panel>
             </Collapse>
@@ -197,7 +208,15 @@ const EmbeddingCategoricalPlot = () => {
               <LegendEditor
                 onUpdate={onUpdate}
                 legendEnabled={config.legendEnabled}
+                legendPosition={config.legendPosition}
               />
+              <div>Position</div>
+              <Form.Item>
+                <Radio.Group onChange={(value) => onUpdate({ legendPosition: value.target.value })} value={config.legendPosition}>
+                  <Radio value='top'>Top</Radio>
+                  <Radio value='bottom'>Bottom</Radio>
+                </Radio.Group>
+              </Form.Item>
             </Panel>
             <Panel header='Labels' key='11'>
               <LabelsDesign
