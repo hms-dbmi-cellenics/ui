@@ -32,6 +32,7 @@ const DimensionsRangeEditor = (props) => {
           label='Width'
         >
           <Slider
+            //  defaultValue={config.width}
             defaultValue={config.width}
             min={minWidth}
             max={maxWidth}
