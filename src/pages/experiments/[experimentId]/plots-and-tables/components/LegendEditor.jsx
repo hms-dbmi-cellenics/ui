@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Radio, Form, Space } from 'antd';
 
 const LegendEditor = (props) => {
-  const { onUpdate, legendEnabled, legendPosition } = props;
+  const { onUpdate, legendEnabled, legendPosition, legendOptions } = props;
 
   const toggleChange = (e) => {
     if (e.target.value === true) {
@@ -16,7 +16,36 @@ const LegendEditor = (props) => {
     console.log('Position is changed ', value.target.value);
     onUpdate({ legendPosition: value.target.value });
   };
+  let position = null;
 
+  if (legendOptions === 'top-bot') {
+    position = (
+      <>
+        <div> Position</div>
+        <Form.Item>
+          <Radio.Group onChange={(value) => changePosition(value)} value={legendPosition}>
+            <Radio value='top'>Top</Radio>
+            <Radio value='bottom'>Bottom</Radio>
+          </Radio.Group>
+        </Form.Item>
+      </>
+    );
+  }
+  if (legendOptions === 'corners') {
+    position = (
+      <>
+        <div>Position</div>
+        <Form.Item>
+          <Radio.Group onChange={(value) => changePosition(value)} value={legendPosition}>
+            <Radio value='top-left'>Top-Left</Radio>
+            <Radio value='top-right'>Top-Right</Radio>
+            <Radio value='bottom-left'>Bot-Left</Radio>
+            <Radio value='bottom-right'>Bot-Right</Radio>
+          </Radio.Group>
+        </Form.Item>
+      </>
+    );
+  }
   return (
     <Form
       size='small'
@@ -29,7 +58,7 @@ const LegendEditor = (props) => {
           <Radio value={false}>Hide</Radio>
         </Radio.Group>
       </Form.Item>
-
+      {position}
     </Form>
 
   );
@@ -39,6 +68,7 @@ LegendEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   legendEnabled: PropTypes.array.isRequired,
   legendPosition: PropTypes.array.isRequired,
+  legendOptions: PropTypes.array.isRequired,
 };
 
 export default LegendEditor;

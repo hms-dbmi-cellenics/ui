@@ -206,16 +206,8 @@ const EmbeddingContinuousPlot = () => {
                 onUpdate={updatePlotWithChanges}
                 legendEnabled={config.legendEnabled}
                 legendPosition={config.legendPosition}
+                legendOptions='corners'
               />
-              <div>Position</div>
-              <Form.Item>
-                <Radio.Group onChange={(value) => updatePlotWithChanges({ legendPosition: value.target.value })} value={config.legendPosition}>
-                  <Radio value='top-left'>Top-Left</Radio>
-                  <Radio value='top-right'>Top-Right</Radio>
-                  <Radio value='bottom-left'>Bot-Left</Radio>
-                  <Radio value='bottom-right'>Bot-Right</Radio>
-                </Radio.Group>
-              </Form.Item>
             </Panel>
           </Collapse>
         </Col>

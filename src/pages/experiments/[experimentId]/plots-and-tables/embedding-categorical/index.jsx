@@ -209,14 +209,8 @@ const EmbeddingCategoricalPlot = () => {
                 onUpdate={onUpdate}
                 legendEnabled={config.legendEnabled}
                 legendPosition={config.legendPosition}
+                legendOptions='top-bot'
               />
-              <div>Position</div>
-              <Form.Item>
-                <Radio.Group onChange={(value) => onUpdate({ legendPosition: value.target.value })} value={config.legendPosition}>
-                  <Radio value='top'>Top</Radio>
-                  <Radio value='bottom'>Bottom</Radio>
-                </Radio.Group>
-              </Form.Item>
             </Panel>
             <Panel header='Labels' key='11'>
               <LabelsDesign
