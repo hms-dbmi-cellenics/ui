@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -19,6 +20,7 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
+  const onUpdateThrottled = _.throttle(onUpdate, 100);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -32,12 +34,11 @@ const DimensionsRangeEditor = (props) => {
           label='Width'
         >
           <Slider
-            //  defaultValue={config.width}
-            defaultValue={config.width}
+            value={config.width}
             min={minWidth}
             max={maxWidth}
-            onAfterChange={(value) => {
-              onUpdate({ width: value });
+            onChange={(value) => {
+              onUpdateThrottled({ width: value });
             }}
             marks={widthMarks}
           />
@@ -46,11 +47,11 @@ const DimensionsRangeEditor = (props) => {
           label='Height'
         >
           <Slider
-            defaultValue={config.height}
+            value={config.height}
             min={minHeight}
             max={maxHeight}
-            onAfterChange={(value) => {
-              onUpdate({ height: value });
+            onChange={(value) => {
+              onUpdateThrottled({ height: value });
             }}
             marks={heighthMarks}
           />
@@ -64,7 +65,6 @@ DimensionsRangeEditor.defaultProps = {
   maxHeight: 1000,
   maxWidth: 1200,
 };
-
 
 DimensionsRangeEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,

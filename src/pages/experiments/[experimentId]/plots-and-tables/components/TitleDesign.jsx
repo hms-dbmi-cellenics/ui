@@ -36,10 +36,10 @@ const TitleDesign = (props) => {
           label='Title Font Size'
         >
           <Slider
-            defaultValue={config.titleSize}
+            value={config.titleSize}
             min={15}
             max={40}
-            onAfterChange={(value) => {
+            onChange={(value) => {
               onUpdate({ titleSize: value });
             }}
             marks={{ 15: 15, 40: 40 }}
@@ -50,7 +50,7 @@ const TitleDesign = (props) => {
         >
           <Radio.Group
             onChange={onChange}
-            value={titleAnchor}
+            defaultValue={titleAnchor}
           >
             <Radio value='start'>Left</Radio>
             <Radio value='middle'>Middle</Radio>

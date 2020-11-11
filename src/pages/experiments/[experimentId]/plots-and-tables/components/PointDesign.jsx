@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -14,6 +15,7 @@ const PointDesign = (props) => {
     setradioval(e.target.value);
     onUpdate({ pointStyle: e.target.value });
   };
+  const onUpdateThrottled = _.throttle(onUpdate, 20);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -27,11 +29,11 @@ const PointDesign = (props) => {
           label='Point Size'
         >
           <Slider
-            defaultValue={config.pointSize}
+            value={config.pointSize}
             min={1}
             max={100}
-            onAfterChange={(value) => {
-              onUpdate({ pointSize: value });
+            onChange={(value) => {
+              onUpdateThrottled({ pointSize: value });
             }}
             marks={{ 1: 1, 100: 100 }}
           />
@@ -40,11 +42,11 @@ const PointDesign = (props) => {
           label='Point Fill Opacity'
         >
           <Slider
-            defaultValue={config.pointOpa}
+            value={config.pointOpa}
             min={1}
             max={10}
-            onAfterChange={(value) => {
-              onUpdate({ pointOpa: value });
+            onChange={(value) => {
+              onUpdateThrottled({ pointOpa: value });
             }}
             marks={{ 1: 1, 10: 10 }}
           />

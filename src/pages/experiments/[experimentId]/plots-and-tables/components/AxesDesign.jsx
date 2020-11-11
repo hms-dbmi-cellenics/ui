@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -6,6 +7,7 @@ import {
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
+  const onUpdateThrottled = _.throttle(onUpdate, 50);
 
   return (
     <Form
@@ -15,11 +17,11 @@ const AxesDesign = (props) => {
     >
       <Form.Item label='Axes Label Size'>
         <Slider
-          defaultValue={config.axisTitlesize}
+          value={config.axisTitlesize}
           min={5}
           max={21}
-          onAfterChange={(value) => {
-            onUpdate({ axisTitlesize: value });
+          onChange={(value) => {
+            onUpdateThrottled({ axisTitlesize: value });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -27,11 +29,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Axes Ticks Size'>
         <Slider
-          defaultValue={config.axisTicks}
+          value={config.axisTicks}
           min={5}
           max={21}
-          onAfterChange={(value) => {
-            onUpdate({ axisTicks: value });
+          onChange={(value) => {
+            onUpdateThrottled({ axisTicks: value });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -39,11 +41,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Offset Margins'>
         <Slider
-          defaultValue={config.axesOffset}
+          value={config.axesOffset}
           min={0}
           max={20}
-          onAfterChange={(value) => {
-            onUpdate({ axesOffset: value });
+          onChange={(value) => {
+            onUpdateThrottled({ axesOffset: value });
           }}
           marks={{ 0: 0, 20: 20 }}
         />
@@ -51,11 +53,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Grid-line weight'>
         <Slider
-          defaultValue={config.transGrid}
+          value={config.transGrid}
           min={0}
           max={10}
-          onAfterChange={(value) => {
-            onUpdate({ transGrid: value });
+          onChange={(value) => {
+            onUpdateThrottled({ transGrid: value });
           }}
           marks={{ 0: 0, 10: 10 }}
         />

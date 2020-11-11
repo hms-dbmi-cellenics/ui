@@ -1,13 +1,14 @@
+import _ from 'lodash';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Radio, Form, Slider,
 } from 'antd';
 
-
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;
   const [labelsEnabled, setlabelsEnabled] = useState(true);
+  const onUpdateThrottled = _.throttle(onUpdate, 20);
 
   const onChange = (e) => {
     setlabelsEnabled(e.target.value);
@@ -28,12 +29,12 @@ const LabelsDesign = (props) => {
         label='Size'
       >
         <Slider
-          defaultValue={config.labelSize}
+          value={config.labelSize}
           min={minLabelSize}
           max={maxLabelSize}
           disabled={!labelsEnabled}
-          onAfterChange={(value) => {
-            onUpdate({ labelSize: value });
+          onChange={(value) => {
+            onUpdateThrottled({ labelSize: value });
           }}
           marks={{ 0: minLabelSize, 50: maxLabelSize }}
         />
