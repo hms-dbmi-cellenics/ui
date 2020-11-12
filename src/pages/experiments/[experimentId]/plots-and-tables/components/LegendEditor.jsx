@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Radio, Form, Space } from 'antd';
+import { Radio, Form } from 'antd';
 
 const LegendEditor = (props) => {
-  const { onUpdate, legendEnabled, legendPosition, legendOptions } = props;
+  const {
+    onUpdate, legendEnabled, legendPosition, legendOptions,
+  } = props;
 
   const toggleChange = (e) => {
     if (e.target.value === true) {
@@ -13,11 +15,10 @@ const LegendEditor = (props) => {
     }
   };
   const changePosition = (value) => {
-    console.log('Position is changed ', value.target.value);
     onUpdate({ legendPosition: value.target.value });
   };
   let position = null;
-
+  console.log('LEGEND POSITION IS', legendPosition);
   if (legendOptions === 'top-bot') {
     position = (
       <>
