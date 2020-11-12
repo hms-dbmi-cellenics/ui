@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import {
   Row, Col, Space, Collapse, Skeleton, Select, Spin,
 } from 'antd';
-
+import _ from 'lodash';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -39,7 +39,7 @@ const route = {
 
 const EmbeddingCategoricalPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid] ?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
@@ -58,7 +58,7 @@ const EmbeddingCategoricalPlot = () => {
 
   const generateCellSetOptions = () => {
     const hierarchy = cellSets.hierarchy.map(
-      (cellSet) => ({ key: cellSet.key, children: cellSet.children?.length || 0 }),
+      (cellSet) => ({ key: cellSet.key, children: cellSet.children ?.length || 0 }),
     );
     return hierarchy.map(({ key, children }) => ({
       value: key,
@@ -197,6 +197,7 @@ const EmbeddingCategoricalPlot = () => {
               <LegendEditor
                 onUpdate={onUpdate}
                 legendEnabled={config.legendEnabled}
+                plotUuid={plotUuid}
               />
             </Panel>
             <Panel header='Labels' key='11'>

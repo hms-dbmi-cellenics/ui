@@ -6,11 +6,7 @@ const LegendEditor = (props) => {
   const { onUpdate, legendEnabled } = props;
 
   const onChange = (e) => {
-    if (e.target.value === true) {
-      onUpdate({ legendEnabled: true });
-    } else {
-      onUpdate({ legendEnabled: false });
-    }
+    onUpdate({ legendEnabled: e.target.value });
   };
 
   return (

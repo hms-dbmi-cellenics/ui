@@ -7,11 +7,10 @@ import {
 
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;
-  const [labelsEnabled, setlabelsEnabled] = useState(true);
-  const onUpdateThrottled = _.throttle(onUpdate, 20);
+  // const [labelsEnabled, setlabelsEnabled] = useState(true);
+  const onUpdateThrottled = _.throttle((obj) => onUpdate(obj), 20);
 
   const onChange = (e) => {
-    setlabelsEnabled(e.target.value);
     onUpdate({ labelsEnabled: e.target.value, labelShow: e.target.value ? 1 : 0 });
   };
 
@@ -20,7 +19,7 @@ const LabelsDesign = (props) => {
 
   return (
     <>
-      <Radio.Group onChange={onChange} value={labelsEnabled}>
+      <Radio.Group onChange={onChange} value={config.labelsEnabled}>
         <Radio value>Show</Radio>
         <Radio value={false}>Hide</Radio>
       </Radio.Group>
@@ -32,7 +31,7 @@ const LabelsDesign = (props) => {
           value={config.labelSize}
           min={minLabelSize}
           max={maxLabelSize}
-          disabled={!labelsEnabled}
+          disabled={!config.labelsEnabled}
           onChange={(value) => {
             onUpdateThrottled({ labelSize: value });
           }}

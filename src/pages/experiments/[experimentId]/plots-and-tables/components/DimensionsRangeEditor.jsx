@@ -5,7 +5,6 @@ import {
   Slider, Form, Space,
 } from 'antd';
 
-
 const DimensionsRangeEditor = (props) => {
   const {
     onUpdate, config, maxHeight, maxWidth,
@@ -20,7 +19,7 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
-  const onUpdateThrottled = _.throttle(onUpdate, 100);
+  const onUpdateThrottled = _.throttle((obj) => onUpdate(obj), 20);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>

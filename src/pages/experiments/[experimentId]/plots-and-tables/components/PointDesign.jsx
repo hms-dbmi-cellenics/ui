@@ -15,7 +15,7 @@ const PointDesign = (props) => {
     setradioval(e.target.value);
     onUpdate({ pointStyle: e.target.value });
   };
-  const onUpdateThrottled = _.throttle(onUpdate, 20);
+  const onUpdateThrottled = _.throttle((obj) => onUpdate(obj), 20);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>

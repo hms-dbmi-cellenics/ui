@@ -7,7 +7,7 @@ import {
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
-  const onUpdateThrottled = _.throttle(onUpdate, 50);
+  const onUpdateThrottled = _.debounce((obj) => onUpdate(obj), 10);
 
   return (
     <Form
@@ -65,19 +65,19 @@ const AxesDesign = (props) => {
 
       <Form.Item label='X axis Title'>
         <Input
-          defaultValue={config.xaxisText}
-          onPressEnter={(e) => {
-            onUpdate({ xaxisText: e.target.value });
+          value={config.xaxisText}
+          onChange={(e) => {
+            onUpdateThrottled({ xaxisText: e.target.value });
           }}
         />
       </Form.Item>
 
       <Form.Item label='Y Axis Title'>
         <Input
-          defaultValue={config.yaxisText}
-          onPressEnter={(e) => {
+          value={config.yaxisText}
+          onChange={(e) => {
             const { value } = e.target;
-            onUpdate({ yaxisText: value });
+            onUpdateThrottled({ yaxisText: value });
           }}
         />
       </Form.Item>
