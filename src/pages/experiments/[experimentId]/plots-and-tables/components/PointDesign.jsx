@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form,
@@ -9,10 +9,7 @@ import {
 const PointDesign = (props) => {
   const { onUpdate, config } = props;
 
-  const [radioval, setradioval] = useState(config.pointStyle);
-
   const onChange = (e) => {
-    setradioval(e.target.value);
     onUpdate({ pointStyle: e.target.value });
   };
   const onUpdateThrottled = _.throttle((obj) => onUpdate(obj), 20);
@@ -53,7 +50,7 @@ const PointDesign = (props) => {
         </Form.Item>
         <div>Point Shape</div>
         <Form.Item>
-          <Radio.Group onChange={onChange} value={radioval}>
+          <Radio.Group onChange={onChange} value={config.pointStyle}>
             <Radio value='circle'>Circle</Radio>
             <Radio value='diamond'>Diamond</Radio>
           </Radio.Group>

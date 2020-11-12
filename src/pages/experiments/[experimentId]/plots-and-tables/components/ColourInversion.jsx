@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Form,
@@ -7,9 +7,7 @@ import {
 
 const ColourInversion = (props) => {
   const { onUpdate, config } = props;
-  const [toggleInvert, settoggleInvert] = useState(config.toggleInvert);
   const onChange = (e) => {
-    settoggleInvert(e.target.value);
     if (e.target.value === '#FFFFFF') {
       onUpdate({ toggleInvert: e.target.value, masterColour: '#000000', reverseCbar: false });
     } else {
@@ -26,7 +24,7 @@ const ColourInversion = (props) => {
       >
         <div>Background</div>
         <Form.Item>
-          <Radio.Group onChange={onChange} value={toggleInvert}>
+          <Radio.Group onChange={onChange} value={config.toggleInvert}>
             <Radio value='#FFFFFF'>Standard</Radio>
             <Radio value='#000000'>Invert</Radio>
           </Radio.Group>

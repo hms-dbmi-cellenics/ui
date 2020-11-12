@@ -7,7 +7,7 @@ import {
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
-  const onUpdateThrottled = _.debounce((obj) => onUpdate(obj), 10);
+  const onUpdateThrottled = _.throttle((obj) => onUpdate(obj), 20);
 
   return (
     <Form
