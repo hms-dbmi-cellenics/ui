@@ -18,7 +18,6 @@ const LegendEditor = (props) => {
     onUpdate({ legendPosition: value.target.value });
   };
   let position = null;
-  console.log('LEGEND POSITION IS', legendPosition);
   if (legendOptions === 'top-bot') {
     position = (
       <>

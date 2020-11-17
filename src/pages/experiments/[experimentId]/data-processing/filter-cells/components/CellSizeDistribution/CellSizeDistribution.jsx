@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import {
   Collapse, Row, Col, List, Space,
@@ -30,10 +32,10 @@ class CellSizeDistribution extends React.Component {
       xAxisText: '#UMIs in cell',
       yAxisText: '#UMIs * #Cells',
       xAxisText2: 'Cell rank',
-      yAxisText2: "#UMIs in cell",
+      yAxisText2: '#UMIs in cell',
       xDefaultTitle: '#UMIs in cell',
       yDefaultTitle: '#UMIs * #Cells',
-      legendOrientation: 'top-left',
+      legendPosition: 'top-left',
       gridWeight: 0,
       titleSize: 12,
       titleText: '',
@@ -107,11 +109,11 @@ class CellSizeDistribution extends React.Component {
     const coloringExpressionPlot2 = `(datum.u < ${minUnknown}) ? 'low' : (datum.u >${minHigh}) ? 'high' : 'unknown'`;
 
     if (config.legendEnabled) {
-      config.legendOrientation = config.plotToDraw ? 'top-left' : 'top-right';
+      // config.legendPosition = config.plotToDraw ? 'top-left' : 'top-right';
       legend = [
         {
           fill: 'color',
-          orient: config.legendOrientation,
+          orient: config.legendPosition,
           title: 'Quality',
           labelFont: config.masterFont,
           titleFont: config.masterFont,
@@ -519,7 +521,6 @@ class CellSizeDistribution extends React.Component {
               )}
             />
           </Col>
-
 
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />

@@ -24,7 +24,7 @@ class DoubletScores extends React.Component {
       yAxisText: 'Frequency',
       xDefaultTitle: 'Probability of being a doublet',
       yDefaultTitle: 'Frequency',
-      legendOrientation: 'top-right',
+      legendPosition: 'top-right',
       gridWeight: 0,
       titleSize: 12,
       titleText: '',
@@ -72,7 +72,7 @@ class DoubletScores extends React.Component {
       legend = [
         {
           fill: 'color',
-          orient: config.legendOrientation,
+          orient: config.legendPosition,
           encode: {
             title: {
               update: {
