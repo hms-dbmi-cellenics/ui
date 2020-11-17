@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Input,
@@ -7,7 +7,7 @@ import {
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
-  const onUpdateThrottled = _.throttle((obj) => onUpdate(obj), 20);
+  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
 
   return (
     <Form
@@ -21,7 +21,7 @@ const AxesDesign = (props) => {
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled({ axisTitlesize: value });
+            onUpdateThrottled.current({ axisTitlesize: value });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -33,7 +33,7 @@ const AxesDesign = (props) => {
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled({ axisTicks: value });
+            onUpdateThrottled.current({ axisTicks: value });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -45,7 +45,7 @@ const AxesDesign = (props) => {
           min={0}
           max={20}
           onChange={(value) => {
-            onUpdateThrottled({ axesOffset: value });
+            onUpdateThrottled.current({ axesOffset: value });
           }}
           marks={{ 0: 0, 20: 20 }}
         />
@@ -57,7 +57,7 @@ const AxesDesign = (props) => {
           min={0}
           max={10}
           onChange={(value) => {
-            onUpdateThrottled({ transGrid: value });
+            onUpdateThrottled.current({ transGrid: value });
           }}
           marks={{ 0: 0, 10: 10 }}
         />
@@ -67,7 +67,7 @@ const AxesDesign = (props) => {
         <Input
           value={config.xaxisText}
           onChange={(e) => {
-            onUpdateThrottled({ xaxisText: e.target.value });
+            onUpdateThrottled.current({ xaxisText: e.target.value });
           }}
         />
       </Form.Item>
@@ -77,7 +77,7 @@ const AxesDesign = (props) => {
           value={config.yaxisText}
           onChange={(e) => {
             const { value } = e.target;
-            onUpdateThrottled({ yaxisText: value });
+            onUpdateThrottled.current({ yaxisText: value });
           }}
         />
       </Form.Item>

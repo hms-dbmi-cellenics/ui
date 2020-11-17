@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,
@@ -9,7 +9,7 @@ const DimensionsRangeEditorVolcano = (props) => {
   const {
     config, onUpdate, yMax, xMax,
   } = props;
-  const onUpdateThrottled = _.throttle((obj) => onUpdate(obj), 20);
+  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -28,7 +28,7 @@ const DimensionsRangeEditorVolcano = (props) => {
             min={200}
             max={1000}
             onChange={(value) => {
-              onUpdateThrottled({ width: value });
+              onUpdateThrottled.current({ width: value });
             }}
           />
         </Form.Item>
@@ -40,7 +40,7 @@ const DimensionsRangeEditorVolcano = (props) => {
             min={200}
             max={1000}
             onChange={(value) => {
-              onUpdateThrottled({ height: value });
+              onUpdateThrottled.current({ height: value });
             }}
           />
         </Form.Item>
@@ -52,7 +52,7 @@ const DimensionsRangeEditorVolcano = (props) => {
             min={0}
             max={yMax}
             onChange={(value) => {
-              onUpdateThrottled({ maxNegativeLogpValueDomain: value });
+              onUpdateThrottled.current({ maxNegativeLogpValueDomain: value });
             }}
           />
         </Form.Item>
@@ -64,11 +64,10 @@ const DimensionsRangeEditorVolcano = (props) => {
             min={0}
             max={xMax}
             onChange={(value) => {
-              onUpdateThrottled({ logFoldChangeDomain: value });
+              onUpdateThrottled.current({ logFoldChangeDomain: value });
             }}
           />
         </Form.Item>
-
 
       </Form>
     </Space>

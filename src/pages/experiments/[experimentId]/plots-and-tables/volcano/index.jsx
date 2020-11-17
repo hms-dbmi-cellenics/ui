@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Slider, Skeleton, Spin, Button,
 } from 'antd';
@@ -270,7 +270,7 @@ const VolcanoPlot = () => {
                   min={0}
                   max={spec.maxNegativeLogpValue + 5}
                   onChange={(value) => {
-                    _.throttle(() => updatePlotWithChanges({ textThresholdValue: value }), 20);
+                    useRef(_.throttle(() => updatePlotWithChanges({ textThresholdValue: value }), 20));
                   }}
                 />
               </Panel>

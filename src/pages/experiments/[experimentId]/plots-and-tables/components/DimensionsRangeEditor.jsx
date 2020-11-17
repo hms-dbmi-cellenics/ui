@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,
@@ -19,8 +19,7 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
-  const onUpdateThrottled = _.throttle((obj) => onUpdate(obj), 20);
-
+  const onUpdateThrottled = useRef(_.throttle((obj) => { onUpdate(obj); }, 10));
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       Dimensions
@@ -37,7 +36,7 @@ const DimensionsRangeEditor = (props) => {
             min={minWidth}
             max={maxWidth}
             onChange={(value) => {
-              onUpdateThrottled({ width: value });
+              onUpdateThrottled.current({ width: value });
             }}
             marks={widthMarks}
           />
@@ -50,7 +49,7 @@ const DimensionsRangeEditor = (props) => {
             min={minHeight}
             max={maxHeight}
             onChange={(value) => {
-              onUpdateThrottled({ height: value });
+              onUpdateThrottled.current({ height: value });
             }}
             marks={heighthMarks}
           />
