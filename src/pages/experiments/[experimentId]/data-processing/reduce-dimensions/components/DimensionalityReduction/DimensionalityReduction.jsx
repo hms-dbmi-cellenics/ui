@@ -5,7 +5,7 @@
 import React from 'react';
 import {
   Row, Col, Space, Select,
-  InputNumber, Form, Radio, Button, Tooltip,
+  InputNumber, Form, Checkbox, Button, Tooltip,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -208,7 +208,7 @@ class Classifier extends React.Component {
     };
     const geneCategoryChange = (val) => {
       this.updatePlotWithChanges({
-        value: val.target.value,
+        value: val,
       });
     };
     return (
@@ -245,13 +245,13 @@ class Classifier extends React.Component {
               />
             </Form.Item>
             <Form.Item label='Exclude genes categories:'>
-              <Radio.Group onChange={geneCategoryChange} value={config.value}>
+              <Checkbox.Group onChange={geneCategoryChange}>
                 <Space direction='vertical'>
-                  <Radio value='ribosomal'>ribosomal</Radio>
-                  <Radio value='mitochondrial'>mitochondrial</Radio>
-                  <Radio value='cellCycle'>cell cycle</Radio>
+                  <Checkbox value='ribosomal'>ribosomal</Checkbox>
+                  <Checkbox value='mitochondrial'>mitochondrial</Checkbox>
+                  <Checkbox value='cellCycle'>cell cycle</Checkbox>
                 </Space>
-              </Radio.Group>
+              </Checkbox.Group>
             </Form.Item>
             <PlotStyling
               config={config}
