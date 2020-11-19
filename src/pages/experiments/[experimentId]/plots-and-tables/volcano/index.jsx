@@ -61,6 +61,9 @@ const VolcanoPlot = () => {
     maxNegativeLogpValue: null,
     xMax: null,
   });
+  const onUpdateThrottled = useRef(
+    _.throttle(obj => updatePlotWithChanges(obj), 10),
+  );
 
   useEffect(() => {
     if (!isBrowser) return;
@@ -310,13 +313,7 @@ const VolcanoPlot = () => {
                   min={0}
                   max={spec.maxNegativeLogpValue + 5}
                   onChange={value => {
-                    useRef(
-                      _.throttle(
-                        () =>
-                          updatePlotWithChanges({ textThresholdValue: value }),
-                        20,
-                      ),
-                    );
+                    onUpdateThrottled.current({ textThresholdValue: value });
                   }}
                 />
               </Panel>

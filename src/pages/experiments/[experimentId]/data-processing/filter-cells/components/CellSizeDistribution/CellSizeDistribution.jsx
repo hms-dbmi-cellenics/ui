@@ -2,12 +2,17 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import {
-  Collapse, Row, Col, List, Space,
-  Form, Tooltip, Button, InputNumber,
+  Collapse,
+  Row,
+  Col,
+  List,
+  Space,
+  Form,
+  Tooltip,
+  Button,
+  InputNumber,
 } from 'antd';
-import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../../static/media/plot1.png';
@@ -65,7 +70,7 @@ class CellSizeDistribution extends React.Component {
   }
 
   updatePlotWithChanges(obj) {
-    this.setState((prevState) => {
+    this.setState(prevState => {
       const newState = _.cloneDeep(prevState);
 
       _.merge(newState.config, obj);
@@ -77,7 +82,7 @@ class CellSizeDistribution extends React.Component {
   generateData() {
     let { data } = this.state;
     data = _.cloneDeep(data);
-    data = data.map((datum) => {
+    data = data.map(datum => {
       let newStatus;
 
       if (datum.u <= 8800) {
@@ -105,11 +110,11 @@ class CellSizeDistribution extends React.Component {
     let legend = null;
     const minHigh = 2500;
     const minUnknown = 2300;
-    const coloringExpressionPlot1 = '(datum.bin1 < 8800) ? \'low\' : (datum.bin1 >10800) ? \'high\' : \'unknown\'';
+    const coloringExpressionPlot1 =
+      "(datum.bin1 < 8800) ? 'low' : (datum.bin1 >10800) ? 'high' : 'unknown'";
     const coloringExpressionPlot2 = `(datum.u < ${minUnknown}) ? 'low' : (datum.u >${minHigh}) ? 'high' : 'unknown'`;
 
     if (config.legendEnabled) {
-      // config.legendPosition = config.plotToDraw ? 'top-left' : 'top-right';
       legend = [
         {
           fill: 'color',
@@ -204,15 +209,11 @@ class CellSizeDistribution extends React.Component {
             domain: { data: 'binned', field: 'count' },
             zero: true,
             nice: true,
-
           },
           {
             name: 'color',
             type: 'ordinal',
-            range:
-              [
-                'green', '#f57b42', 'grey',
-              ],
+            range: ['green', '#f57b42', 'grey'],
             domain: {
               data: 'plotData',
               field: 'status',
@@ -232,7 +233,7 @@ class CellSizeDistribution extends React.Component {
             titleFontSize: { value: config.axisTitlesize },
             labelFontSize: { value: config.axisTicks },
             offset: { value: config.axisOffset },
-            gridOpacity: { value: (config.transGrid / 20) },
+            gridOpacity: { value: config.transGrid / 20 },
           },
           {
             orient: 'left',
@@ -245,7 +246,7 @@ class CellSizeDistribution extends React.Component {
             titleFontSize: { value: config.axisTitlesize },
             labelFontSize: { value: config.axisTicks },
             offset: { value: config.axisOffset },
-            gridOpacity: { value: (config.transGrid / 20) },
+            gridOpacity: { value: config.transGrid / 20 },
           },
         ],
         marks: [
@@ -268,7 +269,6 @@ class CellSizeDistribution extends React.Component {
                   field: 'status',
                 },
               },
-
             },
           },
           {
@@ -286,8 +286,7 @@ class CellSizeDistribution extends React.Component {
           },
         ],
         legends: legend,
-        title:
-        {
+        title: {
           text: { value: config.titleText },
           anchor: { value: config.titleAnchor },
           font: { value: config.masterFont },
@@ -306,23 +305,23 @@ class CellSizeDistribution extends React.Component {
       data: [
         {
           name: 'plotData2',
-          transform: [{
-            type: 'formula',
-            as: 'status2',
-            expr: coloringExpressionPlot2,
-          },
-          {
-            type: 'filter',
-            expr: 'datum.u > 0 && datum.rank > 0',
-          },
-          {
-            type: 'formula',
-            as: 'logRankValue',
-            expr: '(log(datum.rank) / LN10)*2200',
-          },
+          transform: [
+            {
+              type: 'formula',
+              as: 'status2',
+              expr: coloringExpressionPlot2,
+            },
+            {
+              type: 'filter',
+              expr: 'datum.u > 0 && datum.rank > 0',
+            },
+            {
+              type: 'formula',
+              as: 'logRankValue',
+              expr: '(log(datum.rank) / LN10)*2200',
+            },
           ],
         },
-
       ],
 
       scales: [
@@ -342,10 +341,7 @@ class CellSizeDistribution extends React.Component {
         {
           name: 'color',
           type: 'ordinal',
-          range:
-            [
-              'green', '#f57b42', 'grey',
-            ],
+          range: ['green', '#f57b42', 'grey'],
           domain: {
             data: 'plotData2',
             field: 'status2',
@@ -366,7 +362,7 @@ class CellSizeDistribution extends React.Component {
           titleFontSize: { value: config.axisTitlesize },
           labelFontSize: { value: config.axisTicks },
           offset: { value: config.axisOffset },
-          gridOpacity: { value: (config.transGrid / 20) },
+          gridOpacity: { value: config.transGrid / 20 },
         },
         {
           orient: 'left',
@@ -379,7 +375,7 @@ class CellSizeDistribution extends React.Component {
           titleFontSize: { value: config.axisTitlesize },
           labelFontSize: { value: config.axisTicks },
           offset: { value: config.axisOffset },
-          gridOpacity: { value: (config.transGrid / 20) },
+          gridOpacity: { value: config.transGrid / 20 },
         },
       ],
 
@@ -417,8 +413,7 @@ class CellSizeDistribution extends React.Component {
         },
       ],
       legends: legend,
-      title:
-      {
+      title: {
         text: { value: config.titleText },
         anchor: { value: config.titleAnchor },
         font: { value: config.masterFont },
@@ -445,7 +440,7 @@ class CellSizeDistribution extends React.Component {
       'Total genes detected   21,425',
       'Median UMI counts per cell   4,064',
     ];
-    const changePlot = (val) => {
+    const changePlot = val => {
       this.updatePlotWithChanges({ plotToDraw: val });
       if (val) {
         this.updatePlotWithChanges({
@@ -466,7 +461,7 @@ class CellSizeDistribution extends React.Component {
       }
     };
 
-    const changeCellSize = (val) => {
+    const changeCellSize = val => {
       if (config.plotToDraw) {
         this.updatePlotWithChanges({ minCellSize: val.target.value });
       } else {
@@ -476,18 +471,17 @@ class CellSizeDistribution extends React.Component {
     return (
       <>
         <Row>
-
           <Col span={13}>
-            <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
+            <Vega data={data} spec={this.generateSpec()} renderer="canvas" />
           </Col>
 
           <Col span={5}>
-            <Space direction='vertical'>
-              <Tooltip title='The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). Look for bimodal distribution to set the cut-off.'>
+            <Space direction="vertical">
+              <Tooltip title="The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). Look for bimodal distribution to set the cut-off.">
                 <Button icon={<InfoCircleOutlined />} />
               </Tooltip>
               <img
-                alt=''
+                alt=""
                 src={plot1Pic}
                 style={{
                   height: '100px',
@@ -499,7 +493,7 @@ class CellSizeDistribution extends React.Component {
                 onClick={() => changePlot(true)}
               />
               <img
-                alt=''
+                alt=""
                 src={plot2Pic}
                 style={{
                   height: '100px',
@@ -513,23 +507,19 @@ class CellSizeDistribution extends React.Component {
             </Space>
             <List
               dataSource={listData}
-              size='small'
-              renderItem={(item) => (
-                <List.Item>
-                  {item}
-                </List.Item>
-              )}
+              size="small"
+              renderItem={item => <List.Item>{item}</List.Item>}
             />
           </Col>
 
           <Col span={6}>
-            <Space direction='vertical' style={{ width: '100%' }} />
+            <Space direction="vertical" style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['1']}>
-              <Panel header='Filtering Settings' disabled={!filtering} key='1'>
-                <Form.Item label='Min cell size:'>
+              <Panel header="Filtering Settings" disabled={!filtering} key="1">
+                <Form.Item label="Min cell size:">
                   <InputNumber
                     disabled={!filtering}
-                    onPressEnter={(val) => changeCellSize(val)}
+                    onPressEnter={val => changeCellSize(val)}
                     placeholder={config.placeholder}
                     step={100}
                   />
