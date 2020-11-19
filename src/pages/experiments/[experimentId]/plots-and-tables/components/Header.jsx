@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import {
@@ -9,11 +10,13 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import { useBeforeunload } from 'react-beforeunload';
-import { savePlotConfig } from '../../../../../redux/actions/plots/index';
+import { savePlotConfig, updatePlotConfig } from '../../../../../redux/actions/plots/index';
 import itemRender from '../../../../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../../utils/cacheRequest';
 import FeedbackButton from '../../../../../components/FeedbackButton';
+import { LOAD_PLOT_CONFIG } from '../../../../../redux/actionTypes/plots';
+import { initialPlotConfigStates } from '../../../../../redux/reducers/plots/initialState';
 
 const KeyboardEventHandler = dynamic(
   () => import('react-keyboard-event-handler'),
@@ -29,6 +32,7 @@ const Header = (props) => {
   const saved = !useSelector((state) => state.plots[plotUuid].outstandingChanges);
   const lastUpdated = useSelector((state) => state.plots[plotUuid].lastUpdated);
   const router = useRouter();
+  const type = useSelector((state) => state.plots[plotUuid].type);
 
   // Add prompt to save if modified since last save if changes happened.
   useBeforeunload((e) => {
@@ -36,7 +40,6 @@ const Header = (props) => {
       e.preventDefault();
     }
   });
-
 
   useEffect(() => {
     const showPopupWhenUnsaved = (url) => {
@@ -64,7 +67,6 @@ const Header = (props) => {
       router.events.off('routeChangeStart', showPopupWhenUnsaved);
     };
   }, [router.asPath, router.events, saved]);
-
 
   const { data } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
 
@@ -96,6 +98,18 @@ const Header = (props) => {
     dispatch(savePlotConfig(experimentId, plotUuid));
   };
 
+  const onClickReset = () => {
+    dispatch({
+      type: LOAD_PLOT_CONFIG,
+      payload: {
+        experimentId,
+        plotUuid,
+        type,
+        config: _.cloneDeep(initialPlotConfigStates[type]),
+      },
+    });
+  };
+
   return (
     <Row>
       <Col span={16}>
@@ -112,7 +126,7 @@ const Header = (props) => {
           title='Edit collection'
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
-          extra={(
+          extra={[
             <Space>
               <FeedbackButton />
               <Button
@@ -123,8 +137,18 @@ const Header = (props) => {
               >
                 Save
               </Button>
-            </Space>
-          )}
+            </Space>,
+            <Space>
+              <Button
+                key='reset'
+                type='primary'
+                onClick={onClickReset}
+              >
+                Reset
+              </Button>
+            </Space>,
+
+          ]}
         />
       </Col>
     </Row>

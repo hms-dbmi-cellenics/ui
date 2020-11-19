@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Slider, Skeleton, Spin, Button, Radio, Form,
 } from 'antd';
@@ -266,10 +266,12 @@ const VolcanoPlot = () => {
               <Panel header='Add Labels' key='11'>
                 <> Display Gene Labels Above (-log10 pvalue) </>
                 <Slider
-                  defaultValue={config.textThresholdValue}
+                  value={config.textThresholdValue}
                   min={0}
                   max={spec.maxNegativeLogpValue + 5}
-                  onAfterChange={(val) => updatePlotWithChanges({ textThresholdValue: val })}
+                  onChange={(value) => {
+                    useRef(_.throttle(() => updatePlotWithChanges({ textThresholdValue: value }), 20));
+                  }}
                 />
               </Panel>
               <Panel header='Legend' key='12'>

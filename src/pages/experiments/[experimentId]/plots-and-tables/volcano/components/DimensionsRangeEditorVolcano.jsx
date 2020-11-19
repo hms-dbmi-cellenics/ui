@@ -1,14 +1,15 @@
-import React from 'react';
+import _ from 'lodash';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,
 } from 'antd';
 
-
 const DimensionsRangeEditorVolcano = (props) => {
   const {
     config, onUpdate, yMax, xMax,
   } = props;
+  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -23,11 +24,11 @@ const DimensionsRangeEditorVolcano = (props) => {
           label='Width'
         >
           <Slider
-            defaultValue={config.width}
+            value={config.width}
             min={200}
             max={1000}
-            onAfterChange={(value) => {
-              onUpdate({ width: value });
+            onChange={(value) => {
+              onUpdateThrottled.current({ width: value });
             }}
           />
         </Form.Item>
@@ -35,11 +36,11 @@ const DimensionsRangeEditorVolcano = (props) => {
           label='Height'
         >
           <Slider
-            defaultValue={config.height}
+            value={config.height}
             min={200}
             max={1000}
-            onAfterChange={(value) => {
-              onUpdate({ height: value });
+            onChange={(value) => {
+              onUpdateThrottled.current({ height: value });
             }}
           />
         </Form.Item>
@@ -47,11 +48,11 @@ const DimensionsRangeEditorVolcano = (props) => {
           label='Y-axis Range'
         >
           <Slider
-            defaultValue={yMax}
+            value={yMax}
             min={0}
             max={yMax}
-            onAfterChange={(value) => {
-              onUpdate({ maxNegativeLogpValueDomain: value });
+            onChange={(value) => {
+              onUpdateThrottled.current({ maxNegativeLogpValueDomain: value });
             }}
           />
         </Form.Item>
@@ -59,15 +60,14 @@ const DimensionsRangeEditorVolcano = (props) => {
           label='X-axis Range'
         >
           <Slider
-            defaultValue={xMax}
+            value={xMax}
             min={0}
             max={xMax}
-            onAfterChange={(value) => {
-              onUpdate({ logFoldChangeDomain: value });
+            onChange={(value) => {
+              onUpdateThrottled.current({ logFoldChangeDomain: value });
             }}
           />
         </Form.Item>
-
 
       </Form>
     </Space>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Form,
@@ -8,10 +8,7 @@ import {
 const FontDesign = (props) => {
   const { onUpdate, config } = props;
 
-  const [masterfont, setMasterFont] = useState(config.masterFont);
-
   const onChange = (e) => {
-    setMasterFont(e.target.value);
     onUpdate({ masterFont: e.target.value });
   };
 
@@ -20,7 +17,7 @@ const FontDesign = (props) => {
       <Form.Item>
         <Space direction='vertical' style={{ width: '80%' }}>
           <div> Font Styles </div>
-          <Radio.Group onChange={onChange} value={masterfont}>
+          <Radio.Group onChange={onChange} value={config.masterFont}>
             <Radio value='sans-serif'>Sans-serif</Radio>
             <Radio value='sans'>Sans</Radio>
             <Radio value='monospace'>Monospace</Radio>

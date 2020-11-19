@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Form,
@@ -7,9 +7,7 @@ import {
 
 const ColourbarDesign = (props) => {
   const { onUpdate, config } = props;
-  const [radioval, setradioval] = useState(config.colGradient);
   const onChange = (e) => {
-    setradioval(e.target.value);
     onUpdate({ colGradient: e.target.value });
   };
 
@@ -22,7 +20,7 @@ const ColourbarDesign = (props) => {
       >
         <div>Styles</div>
         <Form.Item>
-          <Radio.Group onChange={onChange} value={radioval}>
+          <Radio.Group onChange={onChange} value={config.colGradient}>
             <Radio value='viridis'>Viridis</Radio>
             <Radio value='inferno'>Inferno</Radio>
             <Radio value='spectral'>Spectral</Radio>

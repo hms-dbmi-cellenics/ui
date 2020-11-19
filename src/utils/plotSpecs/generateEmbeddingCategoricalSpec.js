@@ -5,6 +5,7 @@ const generateSpec = (config) => {
       {
         fill: 'cellSetColors',
         title: 'Cluster Name',
+        titleColor: config.masterColour,
         type: 'symbol',
         orient: config.legendPosition,
         offset: 40,
@@ -12,7 +13,13 @@ const generateSpec = (config) => {
         symbolSize: { value: 200 },
         encode: {
           labels: {
-            update: { text: { scale: 'cellSetIDToName', field: 'label' } },
+            update: {
+              text: {
+                scale: 'cellSetIDToName', field: 'label',
+              },
+              fill: { value: config.masterColour },
+            },
+
           },
         },
         direction: 'horizontal',
