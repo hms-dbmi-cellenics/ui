@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form,
@@ -7,10 +7,8 @@ import {
 
 const TitleDesign = (props) => {
   const { onUpdate, config } = props;
-  const [titleAnchor, settitleAnchor] = useState(config.titleAnchor);
 
   const onChange = (e) => {
-    settitleAnchor(e.target.value);
     onUpdate({ titleAnchor: e.target.value });
   };
 
@@ -36,10 +34,10 @@ const TitleDesign = (props) => {
           label='Title Font Size'
         >
           <Slider
-            defaultValue={config.titleSize}
+            value={config.titleSize}
             min={15}
             max={40}
-            onAfterChange={(value) => {
+            onChange={(value) => {
               onUpdate({ titleSize: value });
             }}
             marks={{ 15: 15, 40: 40 }}
@@ -50,7 +48,7 @@ const TitleDesign = (props) => {
         >
           <Radio.Group
             onChange={onChange}
-            value={titleAnchor}
+            value={config.titleAnchor}
           >
             <Radio value='start'>Left</Radio>
             <Radio value='middle'>Middle</Radio>

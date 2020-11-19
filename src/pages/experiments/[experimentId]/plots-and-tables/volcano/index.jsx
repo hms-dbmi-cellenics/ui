@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Slider, Skeleton, Spin, Button,
 } from 'antd';
@@ -39,7 +39,7 @@ const VolcanoPlot = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid] ?.config);
   const { loading, data, error } = useSelector((state) => state.differentialExpression.properties);
   const [plotData, setPlotData] = useState([]);
   const [spec, setSpec] = useState({ spec: null, maxNegativeLogpValue: null, xMax: null });
@@ -55,7 +55,7 @@ const VolcanoPlot = () => {
 
     console.warn(config);
     dispatch(loadDifferentialExpression(experimentId, config.cellSets));
-  }, [config?.cellSets]);
+  }, [config ?.cellSets]);
 
   useEffect(() => {
     if (!config) return;
@@ -266,10 +266,12 @@ const VolcanoPlot = () => {
               <Panel header='Add Labels' key='11'>
                 <> Display Gene Labels Above (-log10 pvalue) </>
                 <Slider
-                  defaultValue={config.textThresholdValue}
+                  value={config.textThresholdValue}
                   min={0}
                   max={spec.maxNegativeLogpValue + 5}
-                  onAfterChange={(val) => updatePlotWithChanges({ textThresholdValue: val })}
+                  onChange={(value) => {
+                    useRef(_.throttle(() => updatePlotWithChanges({ textThresholdValue: value }), 20));
+                  }}
                 />
               </Panel>
               <Panel header='Legend' key='12'>
