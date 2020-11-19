@@ -57,6 +57,7 @@ const embeddingContinuousInitialConfig = {
   pointOpa: 5,
   bounceX: 0,
   legendEnabled: true,
+  legendPosition: 'top-right',
 };
 
 const heatmapInitialConfig = {
