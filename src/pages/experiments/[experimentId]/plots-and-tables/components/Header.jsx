@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import useSWR from 'swr';
 import { PageHeader, Row, Col, Button, Skeleton, Space } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
@@ -32,8 +32,17 @@ const Header = props => {
   const lastUpdated = useSelector(state => state.plots[plotUuid].lastUpdated);
   const router = useRouter();
   const type = useSelector(state => state.plots[plotUuid].type);
+  const config = useSelector(state => state.plots[plotUuid]?.config);
+  const reset = useRef(true);
 
+  if (!_.isEqual(config, initialPlotConfigStates[type])) {
+    reset.current = false;
+  }
   // Add prompt to save if modified since last save if changes happened.
+  console.log(
+    'same configs ',
+    _.isEqual(config, initialPlotConfigStates[type]),
+  );
   useBeforeunload(e => {
     if (!saved) {
       e.preventDefault();
@@ -121,8 +130,8 @@ const Header = props => {
       },
     });
     dispatch(savePlotConfig(experimentId, plotUuid));
+    reset.current = true;
   };
-
   return (
     <Row>
       <Col span={16}>
@@ -152,7 +161,12 @@ const Header = props => {
               </Button>
             </Space>,
             <Space>
-              <Button key="reset" type="primary" onClick={onClickReset}>
+              <Button
+                key="reset"
+                type="primary"
+                onClick={onClickReset}
+                disabled={reset.current}
+              >
                 Reset
               </Button>
             </Space>,
