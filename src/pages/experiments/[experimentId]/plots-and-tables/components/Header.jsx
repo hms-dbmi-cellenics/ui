@@ -1,16 +1,17 @@
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import useSWR from 'swr';
-import {
-  PageHeader, Row, Col, Button, Skeleton, Space,
-} from 'antd';
+import { PageHeader, Row, Col, Button, Skeleton, Space } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import { useBeforeunload } from 'react-beforeunload';
-import { savePlotConfig, updatePlotConfig } from '../../../../../redux/actions/plots/index';
+import {
+  savePlotConfig,
+  updatePlotConfig,
+} from '../../../../../redux/actions/plots/index';
 import itemRender from '../../../../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../../utils/cacheRequest';
@@ -23,26 +24,24 @@ const KeyboardEventHandler = dynamic(
   { ssr: false },
 );
 
-const Header = (props) => {
-  const {
-    experimentId, plotUuid, finalRoute,
-  } = props;
+const Header = props => {
+  const { experimentId, plotUuid, finalRoute } = props;
 
   const dispatch = useDispatch();
-  const saved = !useSelector((state) => state.plots[plotUuid].outstandingChanges);
-  const lastUpdated = useSelector((state) => state.plots[plotUuid].lastUpdated);
+  const saved = !useSelector(state => state.plots[plotUuid].outstandingChanges);
+  const lastUpdated = useSelector(state => state.plots[plotUuid].lastUpdated);
   const router = useRouter();
-  const type = useSelector((state) => state.plots[plotUuid].type);
+  const type = useSelector(state => state.plots[plotUuid].type);
 
   // Add prompt to save if modified since last save if changes happened.
-  useBeforeunload((e) => {
+  useBeforeunload(e => {
     if (!saved) {
       e.preventDefault();
     }
   });
 
   useEffect(() => {
-    const showPopupWhenUnsaved = (url) => {
+    const showPopupWhenUnsaved = url => {
       // Only handle if we are navigating away.
       if (router.asPath === url || saved) {
         return;
@@ -50,7 +49,11 @@ const Header = (props) => {
 
       // Show a confirmation dialog. Prevent moving away if the user decides not to.
       // eslint-disable-next-line no-alert
-      if (!window.confirm('Are you sure you want to leave? Changes that you made will not be saved.')) {
+      if (
+        !window.confirm(
+          'Are you sure you want to leave? Changes that you made will not be saved.',
+        )
+      ) {
         router.events.emit('routeChangeError');
 
         // Following is a hack-ish solution to abort a Next.js route change
@@ -68,7 +71,10 @@ const Header = (props) => {
     };
   }, [router.asPath, router.events, saved]);
 
-  const { data } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
+  const { data } = useSWR(
+    `${getApiEndpoint()}/v1/experiments/${experimentId}`,
+    getFromApiExpectOK,
+  );
 
   if (!data) {
     return <Skeleton.Input style={{ width: 200 }} active />;
@@ -91,9 +97,15 @@ const Header = (props) => {
     finalRoute,
   ];
 
-  const saveString = (lastUpdated) ? moment(lastUpdated).fromNow().toLowerCase() : 'never';
+  const saveString = lastUpdated
+    ? moment(lastUpdated)
+        .fromNow()
+        .toLowerCase()
+    : 'never';
   const onClickSave = () => {
-    if (saved) { return; }
+    if (saved) {
+      return;
+    }
 
     dispatch(savePlotConfig(experimentId, plotUuid));
   };
@@ -108,6 +120,7 @@ const Header = (props) => {
         config: _.cloneDeep(initialPlotConfigStates[type]),
       },
     });
+    dispatch(savePlotConfig(experimentId, plotUuid));
   };
 
   return (
@@ -123,15 +136,15 @@ const Header = (props) => {
         />
         <PageHeader
           style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
-          title='Edit collection'
+          title="Edit collection"
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
           extra={[
             <Space>
               <FeedbackButton />
               <Button
-                key='save'
-                type='primary'
+                key="save"
+                type="primary"
                 disabled={saved}
                 onClick={onClickSave}
               >
@@ -139,15 +152,10 @@ const Header = (props) => {
               </Button>
             </Space>,
             <Space>
-              <Button
-                key='reset'
-                type='primary'
-                onClick={onClickReset}
-              >
+              <Button key="reset" type="primary" onClick={onClickReset}>
                 Reset
               </Button>
             </Space>,
-
           ]}
         />
       </Col>
@@ -159,7 +167,6 @@ Header.propTypes = {
   finalRoute: PropTypes.object.isRequired,
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
-
 };
 
 export default Header;
