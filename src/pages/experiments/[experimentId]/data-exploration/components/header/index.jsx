@@ -80,8 +80,8 @@ const Header = (props) => {
       breadcrumbName: 'Experiments',
     },
     {
-      path: '[experimentId]',
-      params: data.experimentId,
+      path: '[experimentId]/data-exploration',
+      params: [data.experimentId, 'data-exploration'].join('/'),
       breadcrumbName: data.experimentName,
     },
     {
@@ -118,7 +118,6 @@ const Header = (props) => {
     </>
   );
 };
-
 
 Header.propTypes = {
   experimentId: PropTypes.string.isRequired,
