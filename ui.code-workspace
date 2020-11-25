@@ -17,7 +17,7 @@
 		},
 		"[javascript]": {
 			"editor.tabSize": 2,
-			"editor.insertSpaces": true,
+			"editor.insertSpaces": false,
 			"editor.detectIndentation": false,
 			"editor.formatOnPaste": true,
 			"editor.formatOnSave": true,
