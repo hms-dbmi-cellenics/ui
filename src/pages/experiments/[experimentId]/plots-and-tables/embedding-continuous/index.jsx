@@ -217,6 +217,8 @@ const EmbeddingContinuousPlot = () => {
               <LegendEditor
                 onUpdate={updatePlotWithChanges}
                 legendEnabled={config.legendEnabled}
+                legendPosition={config.legendPosition}
+                legendOptions="corners"
               />
             </Panel>
           </Collapse>

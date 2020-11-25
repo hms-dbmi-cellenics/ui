@@ -1,6 +1,17 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
-import { Row, Col, Space, Collapse, Skeleton, Select, Spin } from 'antd';
+import {
+  Row,
+  Col,
+  Space,
+  Collapse,
+  Skeleton,
+  Select,
+  Spin,
+  Tooltip,
+  Button,
+} from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -146,7 +157,15 @@ const EmbeddingCategoricalPlot = () => {
         <Col span={16}>
           <Space direction="vertical" style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
-              <Panel header="Preview" key="1">
+              <Panel
+                header="Preview"
+                key="1"
+                extra={
+                  <Tooltip title="In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.">
+                    <Button icon={<InfoCircleOutlined />} />
+                  </Tooltip>
+                }
+              >
                 {renderPlot()}
               </Panel>
             </Collapse>
@@ -194,6 +213,8 @@ const EmbeddingCategoricalPlot = () => {
               <LegendEditor
                 onUpdate={onUpdate}
                 legendEnabled={config.legendEnabled}
+                legendPosition={config.legendPosition}
+                legendOptions="top-bot"
                 plotUuid={plotUuid}
               />
             </Panel>
