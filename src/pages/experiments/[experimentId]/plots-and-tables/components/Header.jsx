@@ -80,8 +80,8 @@ const Header = (props) => {
       breadcrumbName: 'Experiments',
     },
     {
-      path: '[experimentId]',
-      params: data.experimentId,
+      path: '[experimentId]/plots-and-tables',
+      params: [data.experimentId, 'plots-and-tables'].join('/'),
       breadcrumbName: data.experimentName,
     },
     {

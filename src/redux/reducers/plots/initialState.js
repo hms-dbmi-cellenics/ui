@@ -29,6 +29,7 @@ const embeddingCategoricalInitialConfig = {
   selectedCellSet: 'louvain',
   testVar: null,
   legendEnabled: true,
+  legendPosition: 'top',
 };
 
 const embeddingContinuousInitialConfig = {
@@ -56,6 +57,7 @@ const embeddingContinuousInitialConfig = {
   pointOpa: 5,
   bounceX: 0,
   legendEnabled: true,
+  legendPosition: 'top-right',
 };
 
 const heatmapInitialConfig = {
@@ -131,6 +133,7 @@ const volcanoInitialConfig = {
   toggleInvert: '#FFFFFF',
   reverseCbar: false,
   textThresholdValue: 240,
+  legendPosition: 'top-right',
 };
 
 const initialPlotConfigStates = {

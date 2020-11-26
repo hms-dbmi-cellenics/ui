@@ -37,12 +37,14 @@ const PlotStyling = (props) => {
   let legend;
   if (legendMenu) {
     legend = (
-      <Form.Item label='Legend'>
+      <Panel header='Legend'>
         <LegendEditor
           legendEnabled={config.legendEnabled}
           onUpdate={onUpdate}
+          legendOptions='corners'
+          legendPosition={config.legendPosition}
         />
-      </Form.Item>
+      </Panel>
     );
   } else {
     legend = null;
@@ -50,8 +52,8 @@ const PlotStyling = (props) => {
   return (
     <Collapse>
       <Panel header='Plot Styling'>
-        {legend}
         <Collapse accordion>
+          {legend}
           <Panel header='Plot Dimensions'>
             <DimensionsRangeEditor
               config={config}

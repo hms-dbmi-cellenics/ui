@@ -6,6 +6,7 @@ const generateSpec = (config) => {
       {
         fill: 'color',
         type: 'gradient',
+        orient: config.legendPosition,
         title: config.shownGene,
         gradientLength: 100,
         labelColor: { value: config.masterColour },
