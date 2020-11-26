@@ -17,12 +17,10 @@
 		},
 		"[javascript]": {
 			"editor.tabSize": 2,
-			"editor.insertSpaces": false,
+			"editor.insertSpaces": true,
 			"editor.detectIndentation": false,
 			"editor.formatOnPaste": true,
 			"editor.formatOnSave": true,
-		},
-		"prettier.jsxSingleQuote": true,
-		"prettier.singleQuote": true
+		}
 	}
 }
