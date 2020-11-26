@@ -18,14 +18,15 @@ const createPropertiesFromTree = (data) => {
     if (nodes) {
       nodes.forEach((node) => {
         const {
-          key, name, color, cellIds, rootNode,
+          key, name, color, cellIds, rootNode, type,
         } = node;
 
         properties[key] = {
           name,
           color,
-          cellIds,
+          cellIds: new Set(cellIds),
           rootNode,
+          type,
         };
 
         if (node.children) {
