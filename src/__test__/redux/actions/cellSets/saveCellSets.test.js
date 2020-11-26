@@ -14,18 +14,23 @@ describe('saveCellSets action', () => {
 
   const hierarchy = [{ key: 'root', children: [{ key: 'child1' }, { key: 'child2' }] }];
   const properties = {
-    root: { name: 'root node', rootNode: true },
-    child1: { name: 'child 1', color: '#ffff00' },
-    child2: { name: 'child 2', color: '#ff00ff' },
+    root: { name: 'root node', rootNode: true, cellIds: new Set() },
+    child1: { name: 'child 1', color: '#ffff00', cellIds: new Set() },
+    child2: { name: 'child 2', color: '#ff00ff', cellIds: new Set() },
   };
 
   const treeData = [{
     key: 'root',
     children: [
-      { key: 'child1', name: 'child 1', color: '#ffff00' },
-      { key: 'child2', name: 'child 2', color: '#ff00ff' }],
+      {
+        key: 'child1', name: 'child 1', color: '#ffff00', cellIds: [],
+      },
+      {
+        key: 'child2', name: 'child 2', color: '#ff00ff', cellIds: [],
+      }],
     name: 'root node',
     rootNode: true,
+    cellIds: [],
   }];
 
   beforeEach(() => {

@@ -190,7 +190,7 @@ describe('Embedding', () => {
     expect(component.find('ClusterPopover').length).toEqual(0);
     expect(store.getActions().length).toEqual(2);
     expect(store.getActions()[0].type).toEqual(CELL_SETS_CREATE);
-    expect(store.getActions()[0].payload.cellIds).toEqual(Array.from(selectedCellIds));
+    expect(store.getActions()[0].payload.cellIds).toEqual(selectedCellIds);
   });
 
   it('dispatches an action with updated cell information on hover', () => {
