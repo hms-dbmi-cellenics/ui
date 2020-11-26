@@ -7,7 +7,7 @@ const generateSpec = (config) => {
         title: 'Cluster Name',
         titleColor: config.masterColour,
         type: 'symbol',
-        orient: 'top',
+        orient: config.legendPosition,
         offset: 40,
         symbolType: 'square',
         symbolSize: { value: 200 },

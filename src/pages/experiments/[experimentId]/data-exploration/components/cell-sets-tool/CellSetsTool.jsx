@@ -17,7 +17,6 @@ import isBrowser from '../../../../../../utils/environment';
 import messages from '../../../../../../components/notification/messages';
 import PlatformError from '../../../../../../components/PlatformError';
 
-
 const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
 
@@ -35,7 +34,6 @@ const CellSetsTool = (props) => {
       dispatch(loadCellSets(experimentId));
     }
   }, []);
-
 
   useEffect(() => {
     if (notifications
@@ -116,7 +114,6 @@ const CellSetsTool = (props) => {
     </Element>
   );
 };
-
 
 CellSetsTool.defaultProps = {};
 

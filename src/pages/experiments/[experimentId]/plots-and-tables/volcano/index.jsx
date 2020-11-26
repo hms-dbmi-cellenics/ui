@@ -49,9 +49,9 @@ const VolcanoPlot = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
-  const config = useSelector(state => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
   const { loading, data, error } = useSelector(
-    state => state.differentialExpression.properties,
+    (state) => state.differentialExpression.properties,
   );
   const [plotData, setPlotData] = useState([]);
   const [spec, setSpec] = useState({
@@ -60,10 +60,9 @@ const VolcanoPlot = () => {
     xMax: null,
   });
   const onUpdateThrottled = useRef(
-    _.throttle(obj => {
-      updatePlotWithChanges(obj);
-    }, 10),
+    _.throttle((obj) => updatePlotWithChanges(obj), 10),
   );
+
   useEffect(() => {
     if (!isBrowser) return;
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -98,15 +97,14 @@ const VolcanoPlot = () => {
   const setDataPointStatus = () => {
     const dataPoints = _.cloneDeep(data);
     dataPoints
-      .filter(datum => {
+      .filter((datum) => {
         const { log2fc } = datum;
         const qval = parseFloat(datum.qval);
 
         // Downsample insignificant, not changing genes by the appropriate amount.
-        const isSignificant =
-          (log2fc < config.logFoldChangeThreshold * -1 ||
-            log2fc > config.logFoldChangeThreshold) &&
-          qval < config.pvalueThreshold;
+        const isSignificant = (log2fc < config.logFoldChangeThreshold * -1
+          || log2fc > config.logFoldChangeThreshold)
+          && qval < config.pvalueThreshold;
 
         if (isSignificant) {
           return true;
@@ -118,7 +116,7 @@ const VolcanoPlot = () => {
 
         return false;
       })
-      .map(datum => {
+      .map((datum) => {
         // Add a status to each gene depending on where they lie in the system.
         // Note: the numbers in these names are important. In the schema, we
         // order the colors by the names, and the names are declared sorted,
@@ -128,34 +126,34 @@ const VolcanoPlot = () => {
         const qval = parseFloat(datum.qval);
 
         const pvalueThreshold = (
-          10 **
-          (-1 * config.negLogpValueThreshold)
+          10
+          ** (-1 * config.negLogpValueThreshold)
         ).toExponential(3);
 
         if (
-          qval <= pvalueThreshold &&
-          log2fc >= config.logFoldChangeThreshold
+          qval <= pvalueThreshold
+          && log2fc >= config.logFoldChangeThreshold
         ) {
           status = '1_significantUpregulated';
         } else if (
-          qval <= pvalueThreshold &&
-          log2fc <= config.logFoldChangeThreshold * -1
+          qval <= pvalueThreshold
+          && log2fc <= config.logFoldChangeThreshold * -1
         ) {
           status = '2_significantDownregulated';
         } else if (
-          qval > pvalueThreshold &&
-          datum.log2fc >= config.logFoldChangeThreshold
+          qval > pvalueThreshold
+          && datum.log2fc >= config.logFoldChangeThreshold
         ) {
           status = '3_notSignificantUpregulated';
         } else if (
-          qval > pvalueThreshold &&
-          log2fc <= config.logFoldChangeThreshold * -1
+          qval > pvalueThreshold
+          && log2fc <= config.logFoldChangeThreshold * -1
         ) {
           status = '4_notSignificantDownregulated';
         } else if (
-          qval <= pvalueThreshold &&
-          log2fc > config.logFoldChangeThreshold * -1 &&
-          log2fc < config.logFoldChangeThreshold
+          qval <= pvalueThreshold
+          && log2fc > config.logFoldChangeThreshold * -1
+          && log2fc < config.logFoldChangeThreshold
         ) {
           status = '5_significantChangeDirectionUnknown';
         } else {
@@ -170,11 +168,11 @@ const VolcanoPlot = () => {
   };
 
   // obj is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = obj => {
+  const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const onComputeDiffExp = cellSets => {
+  const onComputeDiffExp = (cellSets) => {
     // These reset the ranges to `null`, which makes them automatically
     // determined by the algorithm. Because of our bad DE, we have issues
     // where we have extreme values, so this is not necessary right now.
@@ -191,15 +189,14 @@ const VolcanoPlot = () => {
     const date = moment.utc().format('YYYY-MM-DD-HH-mm-ss');
     const fileName = `de_${experimentId}_${cellSet}_vs_${compareWith}_${date}.csv`;
 
-    const disabled =
-      plotData.length === 0 || loading || _.isEmpty(spec.spec) || error;
+    const disabled = plotData.length === 0 || loading || _.isEmpty(spec.spec) || error;
 
     return (
       <CSVLink data={data} filename={fileName}>
         <Button
           disabled={disabled}
-          onClick={e => e.stopPropagation()}
-          size="small"
+          onClick={(e) => e.stopPropagation()}
+          size='small'
         >
           Export as CSV...
         </Button>
@@ -214,7 +211,7 @@ const VolcanoPlot = () => {
     if (error) {
       return (
         <PlatformError
-          description="Could not load differential expression data."
+          description='Could not load differential expression data.'
           onClick={() => {
             dispatch(
               loadDifferentialExpression(experimentId, config.diffExpData),
@@ -229,7 +226,7 @@ const VolcanoPlot = () => {
     }
 
     return (
-      <Vega data={{ data: plotData }} spec={spec.spec} renderer="canvas" />
+      <Vega data={{ data: plotData }} spec={spec.spec} renderer='canvas' />
     );
   };
 
@@ -242,25 +239,25 @@ const VolcanoPlot = () => {
       />
       <Row gutter={16}>
         <Col span={16}>
-          <Space direction="vertical" style={{ width: '100%' }}>
+          <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
-              <Panel header="Preview" key="1" extra={generateExportDropdown()}>
+              <Panel header='Preview' key='1' extra={generateExportDropdown()}>
                 <center>{renderPlot()}</center>
               </Panel>
             </Collapse>
           </Space>
         </Col>
         <Col span={8}>
-          <Space direction="vertical" style={{ width: '100%' }}>
+          <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']} accordion>
-              <Panel header="Differential Expression" key="15">
+              <Panel header='Differential Expression' key='15'>
                 <DiffExprCompute
                   experimentId={experimentId}
                   onCompute={onComputeDiffExp}
                   cellSets={config.cellSets}
                 />
               </Panel>
-              <Panel header="Main Schema" key="1">
+              <Panel header='Main Schema' key='1'>
                 <DimensionsRangeEditorVolcano
                   config={config}
                   onUpdate={updatePlotWithChanges}
@@ -268,13 +265,13 @@ const VolcanoPlot = () => {
                   yMax={Math.round(spec.maxNegativeLogpValue) + 2}
                 />
                 <Collapse defaultActiveKey={['1']} accordion>
-                  <Panel header="Define and Edit Title" key="6">
+                  <Panel header='Define and Edit Title' key='6'>
                     <TitleDesign
                       config={config}
                       onUpdate={updatePlotWithChanges}
                     />
                   </Panel>
-                  <Panel header="Font" key="9">
+                  <Panel header='Font' key='9'>
                     <FontDesign
                       config={config}
                       onUpdate={updatePlotWithChanges}
@@ -282,16 +279,16 @@ const VolcanoPlot = () => {
                   </Panel>
                 </Collapse>
               </Panel>
-              <Panel header="Data Thresholding" key="8">
+              <Panel header='Data Thresholding' key='8'>
                 <ThresholdsGuidesEditor
                   config={config}
                   onUpdate={updatePlotWithChanges}
                 />
               </Panel>
-              <Panel header="Axes and Margins" key="3">
+              <Panel header='Axes and Margins' key='3'>
                 <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
               </Panel>
-              <Panel header="Colours" key="10">
+              <Panel header='Colours' key='10'>
                 <MarkersEditor
                   config={config}
                   onUpdate={updatePlotWithChanges}
@@ -301,24 +298,26 @@ const VolcanoPlot = () => {
                   onUpdate={updatePlotWithChanges}
                 />
               </Panel>
-              <Panel header="Markers" key="4">
+              <Panel header='Markers' key='4'>
                 <PointDesign config={config} onUpdate={updatePlotWithChanges} />
               </Panel>
-              <Panel header="Add Labels" key="11">
+              <Panel header='Add Labels' key='11'>
                 <> Display Gene Labels Above (-log10 pvalue) </>
                 <Slider
                   value={config.textThresholdValue}
                   min={0}
                   max={spec.maxNegativeLogpValue + 5}
-                  onChange={value => {
+                  onChange={(value) => {
                     onUpdateThrottled.current({ textThresholdValue: value });
                   }}
                 />
               </Panel>
-              <Panel header="Legend" key="12">
+              <Panel header='Legend' key='12'>
                 <LegendEditor
                   onUpdate={updatePlotWithChanges}
                   legendEnabled={config.legendEnabled}
+                  legendPosition={config.legendPosition}
+                  legendOptions='corners'
                 />
               </Panel>
             </Collapse>
