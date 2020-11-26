@@ -17,7 +17,7 @@ const cellSetsCreate = (state, action) => {
   });
 
   newState.properties[key] = {
-    key, name, color, cellIds,
+    key, name, color, cellIds: new Set(cellIds),
   };
 
   return newState;

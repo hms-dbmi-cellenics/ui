@@ -16,11 +16,11 @@ Array [
 exports[`cellSetsReducer Adds cells to scratchpad on creation 2`] = `
 Object {
   "key2": Object {
-    "cellIds": Array [
+    "cellIds": Set {
       1,
       2,
       3,
-    ],
+    },
     "color": "#ff00ff",
     "key": "key2",
     "name": "My Key",
@@ -85,22 +85,25 @@ Array [
 exports[`cellSetsReducer Sets up store properly for loaded cell sets. 1`] = `
 Object {
   "1": Object {
-    "cellIds": undefined,
+    "cellIds": Set {},
     "color": undefined,
     "name": "parent 1",
     "rootNode": true,
+    "type": undefined,
   },
   "1a": Object {
-    "cellIds": undefined,
+    "cellIds": Set {},
     "color": "#00FF00",
     "name": "first child",
     "rootNode": undefined,
+    "type": undefined,
   },
   "2": Object {
-    "cellIds": undefined,
+    "cellIds": Set {},
     "color": undefined,
     "name": "parent 2",
     "rootNode": true,
+    "type": undefined,
   },
 }
 `;
