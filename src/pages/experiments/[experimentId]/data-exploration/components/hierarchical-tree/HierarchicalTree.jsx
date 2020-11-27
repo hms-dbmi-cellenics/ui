@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Tree, Space } from 'antd';
+import { Tree, Space, Button } from 'antd';
 import { transform, cloneDeep } from 'lodash';
+import {
+  DownOutlined,
+} from '@ant-design/icons';
 
 import EditableField from '../../../../../../components/EditableField';
 import ColorPicker from '../../../../../../components/ColorPicker';
+import LookupButton from '../../../../../../components/LookupButton';
 
 import './hierarchicalTree.css';
 
@@ -12,6 +16,7 @@ const HierarchicalTree = (props) => {
   const {
     onCheck: propOnCheck,
     onSelect: propOnSelect,
+    onHide: propOnHide,
     onNodeUpdate: propOnNodeUpdate,
     treeData,
     ...restOfProps
@@ -201,7 +206,7 @@ const HierarchicalTree = (props) => {
     return (<></>);
   };
 
-  const renderEditableField = (modified) => (
+  const renderEditableField = (modified, parentKey) => (
     <EditableField
       onAfterSubmit={(e) => {
         props.onNodeUpdate(modified.key, { name: e });
@@ -211,24 +216,47 @@ const HierarchicalTree = (props) => {
       }}
       value={modified.name}
       showEdit={modified.key !== 'scratchpad'}
-      deleteEnabled={modified.key !== 'scratchpad' && modified.key !== 'louvain'}
+      deleteEnabled={parentKey === 'scratchpad'}
       renderBold={!!modified.rootNode}
     />
   );
 
-  const renderTitlesRecursive = (source) => {
+  const renderHideButton = (modified) => {
+    if (!modified.rootNode) {
+      return (
+        <Button
+          size='small'
+          onClick={(e) => {
+            e.stopPropagation();
+            propOnHide(modified.key);
+          }}
+        >
+          Hide
+        </Button>
+      );
+    }
+
+    return <></>;
+  };
+
+  const renderTitlesRecursive = (source, parentKey = null) => {
     const toRender = source && source.map((d) => {
       const modified = d;
 
       modified.title = (
         <Space>
-          {renderEditableField(modified)}
+          {modified.children ? <LookupButton /> : <></>}
           {renderColorPicker(modified)}
+          {renderEditableField(modified, parentKey)}
+          {renderHideButton(modified)}
+
         </Space>
       );
 
+      modified.selectable = false;
+
       if (modified.children) {
-        modified.children = renderTitlesRecursive(modified.children);
+        modified.children = renderTitlesRecursive(modified.children, modified.key);
       }
 
       return modified;
@@ -243,7 +271,7 @@ const HierarchicalTree = (props) => {
     <Tree
       checkable
       draggable
-      selectable
+      showIcon
       onExpand={onExpand}
       autoExpandParent={autoExpandParent}
       onCheck={onCheck}
@@ -251,6 +279,7 @@ const HierarchicalTree = (props) => {
       treeData={treeDataToRender}
       checkedKeys={checkedKeys}
       onDrop={onDrop}
+      switcherIcon={<DownOutlined />}
 
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...restOfProps}
@@ -261,6 +290,7 @@ const HierarchicalTree = (props) => {
 HierarchicalTree.defaultProps = {
   onCheck: () => null,
   onSelect: () => null,
+  onHide: () => null,
   onNodeUpdate: () => null,
   onNodeDelete: () => null,
   onHierarchyUpdate: () => null,
@@ -270,6 +300,7 @@ HierarchicalTree.defaultProps = {
 HierarchicalTree.propTypes = {
   onCheck: PropTypes.func,
   onSelect: PropTypes.func,
+  onHide: PropTypes.func,
   onNodeUpdate: PropTypes.func,
   onNodeDelete: PropTypes.func,
   onHierarchyUpdate: PropTypes.func,

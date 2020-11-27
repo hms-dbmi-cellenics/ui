@@ -96,8 +96,6 @@ const DiffExprResults = (props) => {
     );
   };
 
-  console.log(dataShown);
-
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
 

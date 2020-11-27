@@ -2,10 +2,15 @@ import React, { useEffect } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
-import PropTypes from 'prop-types';
+import PropTypes, { number } from 'prop-types';
 import {
-  Skeleton, Space, Button, Tooltip,
+  Skeleton, Button, Tooltip, Space,
+  Tabs,
+  Typography,
 } from 'antd';
+
+import { MergeCellsOutlined, SplitCellsOutlined, BlockOutlined } from '@ant-design/icons';
+
 import { Element, animateScroll } from 'react-scroll';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
@@ -17,6 +22,10 @@ import isBrowser from '../../../../../../utils/environment';
 import messages from '../../../../../../components/notification/messages';
 import PlatformError from '../../../../../../components/PlatformError';
 
+const { Text } = Typography;
+
+const { TabPane } = Tabs;
+
 const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
 
@@ -26,7 +35,7 @@ const CellSetsTool = (props) => {
   const notifications = useSelector((state) => state.notifications);
 
   const {
-    loading, error, properties, hierarchy,
+    loading, error, properties, hierarchy, selected,
   } = cellSets;
 
   useEffect(() => {
@@ -59,6 +68,23 @@ const CellSetsTool = (props) => {
     dispatch(updateCellSetSelected(experimentId, keys));
   };
 
+  const getNumberOfCellsSelected = () => {
+    if (!selected) {
+      return 0;
+    }
+
+    const sets = selected.map((key) => properties[key]?.cellIds || []);
+    const unionSet = new Set(
+      [].concat(
+        ...sets.map(
+          (set) => [...set],
+        ),
+      ),
+    );
+
+    return unionSet.size;
+  };
+
   /**
    * Remders the content inside the tool. Can be a skeleton during loading
    * or a hierarchical tree listing all cell sets.
@@ -72,25 +98,67 @@ const CellSetsTool = (props) => {
       );
     }
 
-    return (
-      <>
-        <Space style={{ width: '100%' }}>
-          <Tooltip title='Reset clusters to the initial state'>
-            <Button type='primary' size='small' onClick={recluster}>Reset Clusters</Button>
+    let operations = null;
+    const selected = getNumberOfCellsSelected();
+
+    if (selected) {
+      operations = (
+        <Space>
+          <Text type='secondary'>
+            {selected}
+            {' '}
+            cell
+            {selected === 1 ? '' : 's'}
+            {' '}
+            selected
+          </Text>
+          <Tooltip title='Create complement of selected cells'>
+            <Button type='dashed' icon={<BlockOutlined />} size='small' />
+          </Tooltip>
+
+          <Tooltip title='Create intersection of selected cells'>
+            <Button type='dashed' icon={<SplitCellsOutlined />} size='small' />
+          </Tooltip>
+
+          <Tooltip title='Combine selected cells'>
+            <Button type='dashed' icon={<MergeCellsOutlined />} size='small' />
           </Tooltip>
         </Space>
-        <HierarchicalTree
-          treeData={composeTree(hierarchy, properties)}
-          onCheck={onCheck}
-          onNodeUpdate={onNodeUpdate}
-          onNodeDelete={onNodeDelete}
-          onHierarchyUpdate={onHierarchyUpdate}
-          defaultExpandAll
-        />
+      );
+    }
+
+    return (
+      <>
+        <Tabs defaultActiveKey='1' onChange={() => null} tabBarExtraContent={operations}>
+          <TabPane tab='Cell sets' key='cellSets'>
+            <HierarchicalTree
+              treeData={composeTree(hierarchy, properties, 'cellSet')}
+              onCheck={onCheck}
+              onNodeUpdate={onNodeUpdate}
+              onNodeDelete={onNodeDelete}
+              onHierarchyUpdate={onHierarchyUpdate}
+              defaultExpandAll
+            />
+          </TabPane>
+          <TabPane tab='Metadata' key='metadataCategorical'>
+            <HierarchicalTree
+              treeData={composeTree(hierarchy, properties, 'metadataCategorical')}
+              onCheck={onCheck}
+              onNodeUpdate={onNodeUpdate}
+              onNodeDelete={onNodeDelete}
+              onHierarchyUpdate={onHierarchyUpdate}
+              defaultExpandAll
+            />
+          </TabPane>
+
+        </Tabs>
       </>
     );
   };
 
+  /**
+   * TODO: needs removed
+   */
   const recluster = () => {
     dispatch(resetCellSets(experimentId));
   };
@@ -104,13 +172,15 @@ const CellSetsTool = (props) => {
         height: `${height - 40}px`,
         width: `${width - 8}px`,
         overflow: 'scroll',
+        paddingLeft: '5px',
+        paddingRight: '5px',
       }}
     >
-      <Space direction='vertical' style={{ width: '100%' }}>
-        {
-          renderContent()
-        }
-      </Space>
+
+      {
+        renderContent()
+      }
+
     </Element>
   );
 };

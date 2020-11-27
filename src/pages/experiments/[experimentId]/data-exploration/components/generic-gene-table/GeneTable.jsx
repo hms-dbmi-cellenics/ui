@@ -10,7 +10,7 @@ import { changeGeneSelection, setFocusedGene } from '../../../../../../redux/act
 import GeneSelectionStatus from '../../../../../../redux/actions/genes/geneSelectionStatus';
 import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTableUpdateReason';
 
-import GeneLookupButton from './GeneLookupButton';
+import LookupButton from '../../../../../../components/LookupButton';
 import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 import useLazyEffect from '../../../../../../utils/useLazyEffect';
@@ -118,7 +118,7 @@ const GeneTable = (props) => {
       ...row,
       key,
       lookup: (
-        <GeneLookupButton
+        <LookupButton
           focused={key === focusedGene}
           onClick={() => {
             if (key !== focusedGene) {
@@ -209,8 +209,8 @@ const GeneTable = (props) => {
         dataSource={renderRows(data)}
         loading={loading}
         size='small'
-        pagination={{ ...tableState ?.pagination, total }}
-        sorter={tableState ?.sorter}
+        pagination={{ ...tableState.pagination, total }}
+        sorter={tableState.sorter}
         scroll={{ x: width, y: height - 294 }}
         onChange={handleTableChange}
         rowSelection={{

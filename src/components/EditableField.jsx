@@ -19,13 +19,13 @@ const EditableField = (props) => {
     props.onDelete();
   };
 
-  const onKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      onSubmit();
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSubmit(e);
     }
 
-    if (event.key === 'Escape') {
-      onCancel();
+    if (e.key === 'Escape') {
+      onCancel(e);
     }
   };
 
@@ -35,18 +35,21 @@ const EditableField = (props) => {
     setEditedValue(newValue);
   };
 
-  const onSubmit = () => {
+  const onSubmit = (e) => {
+    e.stopPropagation();
     onAfterSubmit(editedValue);
-    toggleEditing();
+    toggleEditing(e);
   };
 
-  const onCancel = () => {
+  const onCancel = (e) => {
+    e.stopPropagation();
     setEditedValue(value);
-    toggleEditing();
+    toggleEditing(e);
     onAfterCancel();
   };
 
-  const toggleEditing = () => {
+  const toggleEditing = (e) => {
+    e.stopPropagation();
     setEditing(!editing);
   };
 
@@ -80,9 +83,7 @@ const EditableField = (props) => {
         {
           showEdit
             ? (
-              <Tooltip placement='bottom' title='Edit' mouseLeaveDelay={0}>
-                <Button size='small' shape='circle' icon={<EditOutlined />} onClick={toggleEditing} />
-              </Tooltip>
+              <Button size='small' icon={<EditOutlined />} onClick={toggleEditing} />
             ) : <></>
         }
       </>
@@ -96,7 +97,7 @@ const EditableField = (props) => {
         deleteEnabled
           ? (
             <Tooltip placement='bottom' title='Delete' mouseLeaveDelay={0}>
-              <Button size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
+              <Button size='small' icon={<DeleteOutlined />} onClick={deleteEditableField} />
             </Tooltip>
           ) : <></>
       }

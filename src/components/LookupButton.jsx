@@ -1,15 +1,14 @@
-
 import React from 'react';
 import { Tooltip, Button } from 'antd';
 import { EyeTwoTone, EyeOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 
-const GeneLookupButton = (props) => {
+const LookupButton = (props) => {
   const { focused, onClick } = props;
 
   return (
-    <Tooltip placement='right' title='Show gene expression'>
-      <Button type='text' size='small' onClick={onClick}>
+    <Tooltip placement='right' title='Visualize on embedding'>
+      <Button type='dashed' style={{ background: 'none' }} size='small' onClick={onClick}>
         {focused
           ? (<EyeTwoTone style={{ cursor: 'pointer' }} />)
           : (<EyeOutlined style={{ cursor: 'pointer' }} />)}
@@ -18,13 +17,13 @@ const GeneLookupButton = (props) => {
   );
 };
 
-GeneLookupButton.defaultProps = {
+LookupButton.defaultProps = {
   onClick: () => null,
 };
 
-GeneLookupButton.propTypes = {
+LookupButton.propTypes = {
   focused: PropTypes.bool.isRequired,
   onClick: PropTypes.func,
 };
 
-export default GeneLookupButton;
+export default LookupButton;
