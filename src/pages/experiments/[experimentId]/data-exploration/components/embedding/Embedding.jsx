@@ -49,11 +49,9 @@ const Embedding = (props) => {
   const cellSetProperties = useSelector((state) => state.cellSets.properties);
   const cellSetHierarchy = useSelector((state) => state.cellSets.hierarchy);
 
-  // TODO: THIS SHIT NEEDS REFACTORING
-
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
-
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
+
   const cellCoordintes = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);

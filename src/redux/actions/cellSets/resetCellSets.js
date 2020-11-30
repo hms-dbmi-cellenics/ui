@@ -6,6 +6,9 @@ import saveCellSets from './saveCellSets';
 
 const REQUEST_TIMEOUT = 30;
 
+// Not currently used, was previously used for resetting clusters. This is still
+// a useful task though, we will probably use it for other things down the line
+// (e.g. custom clustering).
 const resetCellSets = (experimentId) => async (dispatch, getState) => {
   const {
     loading, error,

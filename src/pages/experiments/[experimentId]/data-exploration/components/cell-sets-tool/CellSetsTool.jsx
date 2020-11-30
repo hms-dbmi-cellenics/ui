@@ -5,18 +5,19 @@ import {
 import PropTypes from 'prop-types';
 
 import {
-  Skeleton, Button, Tooltip, Space,
+  Skeleton, Space,
   Tabs,
-  Typography,
+  Typography, Empty,
+  // Button, Tooltip,
 } from 'antd';
 
-import { MergeCellsOutlined, SplitCellsOutlined, BlockOutlined } from '@ant-design/icons';
+// import { MergeCellsOutlined, SplitCellsOutlined, BlockOutlined } from '@ant-design/icons';
 
 import { Element, animateScroll } from 'react-scroll';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
   loadCellSets, deleteCellSet, updateCellSetHierarchy, updateCellSetSelected,
-  updateCellSetProperty, resetCellSets,
+  updateCellSetProperty,
 } from '../../../../../../redux/actions/cellSets';
 import composeTree from '../../../../../../utils/composeTree';
 import isBrowser from '../../../../../../utils/environment';
@@ -130,12 +131,15 @@ const CellSetsTool = (props) => {
       );
     }
 
+    const cellSetTreeData = composeTree(hierarchy, properties, 'cellSet');
+    const metadataTreeData = composeTree(hierarchy, properties, 'metadataCategorical');
+
     return (
       <>
-        <Tabs defaultActiveKey='1' onChange={() => null} tabBarExtraContent={operations}>
+        <Tabs defaultActiveKey='cellSets' onChange={() => null} tabBarExtraContent={operations}>
           <TabPane tab='Cell sets' key='cellSets'>
             <HierarchicalTree
-              treeData={composeTree(hierarchy, properties, 'cellSet')}
+              treeData={cellSetTreeData}
               onCheck={onCheck}
               focusStore={FOCUS_TYPE}
               experimentId={experimentId}
@@ -146,28 +150,32 @@ const CellSetsTool = (props) => {
             />
           </TabPane>
           <TabPane tab='Metadata' key='metadataCategorical'>
-            <HierarchicalTree
-              treeData={composeTree(hierarchy, properties, 'metadataCategorical')}
-              onCheck={onCheck}
-              focusStore={FOCUS_TYPE}
-              experimentId={experimentId}
-              onNodeUpdate={onNodeUpdate}
-              onNodeDelete={onNodeDelete}
-              onHierarchyUpdate={onHierarchyUpdate}
-              defaultExpandAll
-            />
+            {metadataTreeData?.length > 0 ? (
+              <HierarchicalTree
+                treeData={metadataTreeData}
+                onCheck={onCheck}
+                focusStore={FOCUS_TYPE}
+                experimentId={experimentId}
+                onNodeUpdate={onNodeUpdate}
+                onNodeDelete={onNodeDelete}
+                onHierarchyUpdate={onHierarchyUpdate}
+                defaultExpandAll
+              />
+            )
+              : (
+                <Empty description={(
+                  <>
+                    <div><Text type='primary'>You don&apos;t have any metadata added yet.</Text></div>
+                    <div><Text type='secondary'>Metadata is an experimental feature for certain pre-processed or multi-sample data sets.</Text></div>
+                  </>
+                )}
+                />
+              )}
           </TabPane>
 
         </Tabs>
       </>
     );
-  };
-
-  /**
-   * TODO: needs removed
-   */
-  const recluster = () => {
-    dispatch(resetCellSets(experimentId));
   };
 
   return (
