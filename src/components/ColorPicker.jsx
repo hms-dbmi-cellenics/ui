@@ -41,6 +41,7 @@ const ColorPicker = (props) => {
       >
         <Button
           size='small'
+          shape='circle'
           style={{ backgroundColor: colorPicked }}
           onClick={(() => setVisible(true))}
         >

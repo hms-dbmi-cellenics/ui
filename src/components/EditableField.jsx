@@ -84,7 +84,7 @@ const EditableField = (props) => {
           showEdit
             ? (
               <Tooltip placement='bottom' title='Edit' mouseLeaveDelay={0}>
-                <Button size='small' icon={<EditOutlined />} onClick={toggleEditing} />
+                <Button size='small' shape='circle' icon={<EditOutlined />} onClick={toggleEditing} />
               </Tooltip>
             ) : <></>
         }
@@ -99,7 +99,7 @@ const EditableField = (props) => {
         deleteEnabled
           ? (
             <Tooltip placement='bottom' title='Delete' mouseLeaveDelay={0}>
-              <Button size='small' icon={<DeleteOutlined />} onClick={deleteEditableField} />
+              <Button size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
             </Tooltip>
           ) : <></>
       }
