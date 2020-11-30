@@ -8,7 +8,7 @@ import {
   Skeleton, Space,
   Tabs,
   Typography, Empty,
-  // Button, Tooltip,
+  Button, Tooltip,
 } from 'antd';
 
 // import { MergeCellsOutlined, SplitCellsOutlined, BlockOutlined } from '@ant-design/icons';
@@ -17,7 +17,7 @@ import { Element, animateScroll } from 'react-scroll';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
   loadCellSets, deleteCellSet, updateCellSetHierarchy, updateCellSetSelected,
-  updateCellSetProperty,
+  updateCellSetProperty, resetCellSets,
 } from '../../../../../../redux/actions/cellSets';
 import composeTree from '../../../../../../utils/composeTree';
 import isBrowser from '../../../../../../utils/environment';
@@ -131,11 +131,21 @@ const CellSetsTool = (props) => {
       );
     }
 
+    const recluster = () => {
+      dispatch(resetCellSets(experimentId));
+    };
+
     const cellSetTreeData = composeTree(hierarchy, properties, 'cellSet');
     const metadataTreeData = composeTree(hierarchy, properties, 'metadataCategorical');
 
     return (
       <>
+        <Space style={{ width: '100%' }}>
+          <Tooltip title='Reset clusters to the initial state'>
+            <Button type='primary' size='small' onClick={recluster}>Reset Clusters</Button>
+          </Tooltip>
+        </Space>
+
         <Tabs defaultActiveKey='cellSets' onChange={() => null} tabBarExtraContent={operations}>
           <TabPane tab='Cell sets' key='cellSets'>
             <HierarchicalTree
