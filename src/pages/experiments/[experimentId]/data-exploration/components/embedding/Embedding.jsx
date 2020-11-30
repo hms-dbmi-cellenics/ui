@@ -187,8 +187,7 @@ const Embedding = (props) => {
     if (focusData.store === 'genes') {
       return (
         <div>
-          <label htmlFor='gene name'>
-            Showing expression for gene:&nbsp;
+          <label htmlFor='continuous data name'>
             <strong>{focusData.key}</strong>
           </label>
           <div>
@@ -203,7 +202,18 @@ const Embedding = (props) => {
         </div>
       );
     }
-    return <></>;
+
+    if (focusData.store === 'cellSet') {
+      return (
+        <div>
+          <label htmlFor='cell set name'>
+            <strong>{cellSetProperties[focusData.key].name}</strong>
+          </label>
+        </div>
+      );
+    }
+
+    return <div />;
   };
 
   return (

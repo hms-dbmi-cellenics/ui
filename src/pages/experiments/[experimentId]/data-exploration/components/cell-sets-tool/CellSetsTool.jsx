@@ -115,7 +115,7 @@ const CellSetsTool = (props) => {
             {' '}
             selected
           </Text>
-          <Tooltip title='Create complement of selected cells'>
+          {/* <Tooltip title='Create complement of selected cells'>
             <Button type='dashed' icon={<BlockOutlined />} size='small' />
           </Tooltip>
 
@@ -125,7 +125,7 @@ const CellSetsTool = (props) => {
 
           <Tooltip title='Combine selected cells'>
             <Button type='dashed' icon={<MergeCellsOutlined />} size='small' />
-          </Tooltip>
+          </Tooltip> */}
         </Space>
       );
     }
