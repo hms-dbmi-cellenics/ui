@@ -10,7 +10,7 @@ import {
 import { setCellInfoFocus } from '../redux/actions/cellInfo';
 
 const FocusButton = (props) => {
-  const { store, lookupKey, experimentId } = props;
+  const { store: focusStore, lookupKey, experimentId } = props;
   const dispatch = useDispatch();
 
   const focusData = useSelector((state) => state.cellInfo.focus);
@@ -23,10 +23,10 @@ const FocusButton = (props) => {
     // Lose focus so the button changes color from blue to black when you click on it.
     buttonRef.current.blur();
 
-    dispatch(setCellInfoFocus(experimentId, store, lookupKey));
+    dispatch(setCellInfoFocus(experimentId, focusStore, lookupKey));
   };
 
-  const focused = focusData.store === store && focusData.key === lookupKey;
+  const focused = focusData.store === focusStore && focusData.key === lookupKey;
 
   return (
     <Tooltip placement='right' title={`${(focused) ? 'Hide from' : 'Show on'} embedding`}>

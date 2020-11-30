@@ -83,7 +83,9 @@ const EditableField = (props) => {
         {
           showEdit
             ? (
-              <Button size='small' icon={<EditOutlined />} onClick={toggleEditing} />
+              <Tooltip placement='bottom' title='Edit' mouseLeaveDelay={0}>
+                <Button size='small' icon={<EditOutlined />} onClick={toggleEditing} />
+              </Tooltip>
             ) : <></>
         }
       </>
