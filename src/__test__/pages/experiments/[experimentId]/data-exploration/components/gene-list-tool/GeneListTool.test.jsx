@@ -59,7 +59,12 @@ const initialState = {
       data: {},
     },
     selected: [],
-    focused: undefined,
+  },
+  cellInfo: {
+    focus: {
+      key: null,
+      store: null,
+    },
   },
 };
 
@@ -188,7 +193,14 @@ describe('GeneListTool', () => {
     // Redefine store from `beforeEach`.
     store = mockStore({
       ...initialState,
-      genes: { ...initialState.genes, focused: FOCUSED_GENE },
+      cellInfo: {
+        ...initialState.cellInfo,
+        focus: {
+          ...initialState.cellInfo.focus,
+          store: 'genes',
+          key: FOCUSED_GENE,
+        },
+      },
     });
 
     component = mount(
