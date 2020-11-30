@@ -37,74 +37,87 @@ const Embedding = (props) => {
   const {
     experimentId, embeddingType, height, width,
   } = props;
+  const dispatch = useDispatch();
+
   const view = { target: [4, -4, 0], zoom: 4.00 };
   const selectedCellIds = new Set();
 
-  const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
-  const cellSetSelected = useSelector((state) => state.cellSets.selected);
-  const loadingColors = useSelector((state) => state.cellSets.loadingColors);
+
+  const focusData = useSelector((state) => state.cellInfo.focus);
+  const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
   const cellSetProperties = useSelector((state) => state.cellSets.properties);
+  const cellSetHierarchy = useSelector((state) => state.cellSets.hierarchy);
+
+  // TODO: THIS SHIT NEEDS REFACTORING
+
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
 
-  const focusedGene = useSelector((state) => state.genes.focused);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
-  const focusedExpression = useSelector((state) => state.genes.expression.data[focusedGene]);
   const cellCoordintes = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [cellColors, setCellColors] = useState({});
-  const currentView = useRef(focusedGene ? 'expression' : 'cellSet');
+
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
+  // Load the embedding if it isn't already.
   useEffect(() => {
     if (!data && isBrowser) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
   }, []);
 
-  const getCellColors = (coloringMode) => {
-    if (coloringMode === 'expression') {
+  // Handle focus change (e.g. a cell set or gene or metadata got selected).
+  // Also handle here when the cell set properties or hierarchy change.
+  useEffect(() => {
+    const { store, key } = focusData;
+
+    switch (store) {
+      // For genes/continous data, we cannot do this in one go,
+      // we need to wait for the thing to load in first.
+      case 'genes': {
+        dispatch(loadGeneExpression(experimentId, [key]));
+        return;
+      }
+
+      // Cell sets are easy, just return the appropriate color and set them up.
+      case 'cellSet': {
+        if (isBrowser) setCellColors(returnCellColoring(focusData));
+        break;
+      }
+
+      // If there is no focus, we can just delete all the colors.
+      default: {
+        setCellColors({});
+        break;
+      }
+    }
+  }, [focusData, cellSetHierarchy, cellSetProperties]);
+
+  // // Handle loading of expression for focused gene.
+  useEffect(() => {
+    if (!focusedExpression) {
+      return;
+    }
+
+    setCellColors(returnCellColoring(focusData));
+  }, [focusedExpression]);
+
+  const returnCellColoring = (focusInfo) => {
+    const { store, key } = focusInfo;
+
+    if (store === 'genes') {
       return colorByGeneExpression(focusedExpression);
     }
 
-    if (coloringMode === 'cellSet') {
-      const colors = renderCellSetColors(cellSetSelected, cellSetProperties);
+    if (store === 'cellSet') {
+      const colors = renderCellSetColors(key, cellSetHierarchy, cellSetProperties);
       return colors;
     }
 
     return {};
   };
-
-  // Handle a cell set being selected for coloring.
-  useEffect(() => {
-    currentView.current = 'cellSet';
-    if (!loadingColors && isBrowser) setCellColors(getCellColors('cellSet'));
-  }, [cellSetSelected]);
-
-  // Handle focusing/defocusing of genes. This will set a loading
-  // state and try to fetch the expression level from the store or the backend.
-  // This MUST be after the hook of cellSetSelected
-  // to be preferentially loaded over cell set selections.
-  useEffect(() => {
-    // If we defocused a gene, set it back to cell set coloring view.
-    if (!focusedGene) {
-      currentView.current = 'cellSet';
-      setCellColors(getCellColors('cellSet'));
-      return;
-    }
-
-    currentView.current = 'expression';
-    if (isBrowser) dispatch(loadGeneExpression(experimentId, [focusedGene]));
-  }, [focusedGene]);
-
-  // Handle loading of expression for focused gene.
-  useEffect(() => {
-    if (!focusedExpression) {
-      return;
-    }
-    setCellColors(getCellColors('expression'));
-  }, [focusedExpression]);
 
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
@@ -120,14 +133,15 @@ const Embedding = (props) => {
 
   const updateCellsHover = (cell) => {
     if (cell) {
-      if (currentView.current === 'expression') {
+      if (focusData.store === 'genes') {
         return dispatch(updateCellInfo({
           cellName: cell.cellId,
-          geneName: focusedGene,
+          geneName: focusData.key,
           expression: focusedExpression ? focusedExpression.expression[cell.cellId] : undefined,
           componentType: embeddingType,
         }));
       }
+
       return dispatch(updateCellInfo({
         cellName: cell.cellId,
         geneName: undefined,
@@ -159,8 +173,8 @@ const Embedding = (props) => {
   }
 
   // We are focused on a gene and its expression is loading.
-  if (currentView.current === 'expression'
-    && expressionLoading.includes(focusedGene)) {
+  if (focusData.store === 'genes'
+    && expressionLoading.includes(focusData.key)) {
     return (<center><Spin size='large' /></center>);
   }
 
@@ -170,12 +184,12 @@ const Embedding = (props) => {
   }
 
   const renderExpressionView = () => {
-    if (currentView.current === 'expression') {
+    if (focusData.store === 'genes') {
       return (
         <div>
           <label htmlFor='gene name'>
             Showing expression for gene:&nbsp;
-            <strong>{focusedGene}</strong>
+            <strong>{focusData.key}</strong>
           </label>
           <div>
             <img

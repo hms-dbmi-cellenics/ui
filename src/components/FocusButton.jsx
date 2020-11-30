@@ -17,15 +17,19 @@ const FocusButton = (props) => {
   const buttonRef = useRef(null);
 
   const onClick = (e) => {
+    // Prevent clicking button from clicking the component it is embedded in (i.e. table row).
     e.stopPropagation();
+
+    // Lose focus so the button changes color from blue to black when you click on it.
     buttonRef.current.blur();
+
     dispatch(setCellInfoFocus(experimentId, store, lookupKey));
   };
 
   const focused = focusData.store === store && focusData.key === lookupKey;
 
   return (
-    <Tooltip placement='right' title='Visualize on embedding'>
+    <Tooltip placement='right' title={`${(focused) ? 'Hide from' : 'Show on'} embedding`}>
       <Button
         type='dashed'
         style={{ background: 'none' }}

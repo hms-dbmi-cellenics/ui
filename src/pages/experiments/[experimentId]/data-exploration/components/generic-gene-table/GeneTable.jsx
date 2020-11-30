@@ -7,7 +7,6 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import FilterGenes from './FilterGenes';
 import { changeGeneSelection } from '../../../../../../redux/actions/genes';
-import { setCellInfoFocus } from '../../../../../../redux/actions/cellInfo';
 
 import GeneSelectionStatus from '../../../../../../redux/actions/genes/geneSelectionStatus';
 import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTableUpdateReason';
@@ -114,8 +113,6 @@ const GeneTable = (props) => {
    */
   const renderRows = (rows) => rows.map((row) => {
     const key = row.gene_names;
-
-    console.log(key);
 
     return {
       ...row,
