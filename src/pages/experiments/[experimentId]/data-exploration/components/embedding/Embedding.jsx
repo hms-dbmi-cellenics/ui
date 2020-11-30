@@ -12,11 +12,11 @@ import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import CrossHair from './CrossHair';
 import CellInfo from '../CellInfo';
-import loadEmbedding from '../../../../../../redux/actions/loadEmbedding';
+import { loadEmbedding } from '../../../../../../redux/actions/embedding';
 import { createCellSet } from '../../../../../../redux/actions/cellSets';
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
 
-import { updateCellInfo } from '../../../../../../redux/actions/updateCellInfo';
+import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
 import {
   convertCellsData,
   updateStatus,

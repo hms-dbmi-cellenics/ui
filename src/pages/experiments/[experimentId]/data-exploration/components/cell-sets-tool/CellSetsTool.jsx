@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
-import PropTypes, { number } from 'prop-types';
+import PropTypes from 'prop-types';
+
 import {
   Skeleton, Button, Tooltip, Space,
   Tabs,
@@ -37,6 +38,8 @@ const CellSetsTool = (props) => {
   const {
     loading, error, properties, hierarchy, selected,
   } = cellSets;
+
+  const FOCUS_TYPE = 'cellSet';
 
   useEffect(() => {
     if (isBrowser) {
@@ -99,16 +102,16 @@ const CellSetsTool = (props) => {
     }
 
     let operations = null;
-    const selected = getNumberOfCellsSelected();
+    const numSelected = getNumberOfCellsSelected();
 
-    if (selected) {
+    if (numSelected) {
       operations = (
         <Space>
           <Text type='secondary'>
-            {selected}
+            {numSelected}
             {' '}
             cell
-            {selected === 1 ? '' : 's'}
+            {numSelected === 1 ? '' : 's'}
             {' '}
             selected
           </Text>
@@ -134,6 +137,8 @@ const CellSetsTool = (props) => {
             <HierarchicalTree
               treeData={composeTree(hierarchy, properties, 'cellSet')}
               onCheck={onCheck}
+              focusStore={FOCUS_TYPE}
+              experimentId={experimentId}
               onNodeUpdate={onNodeUpdate}
               onNodeDelete={onNodeDelete}
               onHierarchyUpdate={onHierarchyUpdate}
@@ -144,6 +149,8 @@ const CellSetsTool = (props) => {
             <HierarchicalTree
               treeData={composeTree(hierarchy, properties, 'metadataCategorical')}
               onCheck={onCheck}
+              focusStore={FOCUS_TYPE}
+              experimentId={experimentId}
               onNodeUpdate={onNodeUpdate}
               onNodeDelete={onNodeDelete}
               onHierarchyUpdate={onHierarchyUpdate}

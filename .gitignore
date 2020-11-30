@@ -19,7 +19,6 @@ logs/
 
 # Editors and IDEs
 .idea
-.vscode/*
 .vscode
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -38,6 +37,3 @@ __MACOSX
 # custom
 .next
 out/
-
-# packages
-packages-lock.json

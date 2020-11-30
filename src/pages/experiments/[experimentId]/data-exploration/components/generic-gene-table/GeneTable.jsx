@@ -6,11 +6,13 @@ import {
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import FilterGenes from './FilterGenes';
-import { changeGeneSelection, setFocusedGene } from '../../../../../../redux/actions/genes';
+import { changeGeneSelection } from '../../../../../../redux/actions/genes';
+import { setCellInfoFocus } from '../../../../../../redux/actions/cellInfo';
+
 import GeneSelectionStatus from '../../../../../../redux/actions/genes/geneSelectionStatus';
 import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTableUpdateReason';
 
-import LookupButton from '../../../../../../components/LookupButton';
+import FocusButton from '../../../../../../components/FocusButton';
 import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 import useLazyEffect from '../../../../../../utils/useLazyEffect';
@@ -24,7 +26,6 @@ const GeneTable = (props) => {
   } = props;
 
   const dispatch = useDispatch();
-  const focusedGene = useSelector((state) => state.genes.focused);
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [geneNameFilterState, setGeneNameFilterState] = useState({});
 
@@ -114,19 +115,16 @@ const GeneTable = (props) => {
   const renderRows = (rows) => rows.map((row) => {
     const key = row.gene_names;
 
+    console.log(key);
+
     return {
       ...row,
       key,
       lookup: (
-        <LookupButton
-          focused={key === focusedGene}
-          onClick={() => {
-            if (key !== focusedGene) {
-              dispatch(setFocusedGene(experimentId, key));
-            } else {
-              dispatch(setFocusedGene(experimentId, undefined));
-            }
-          }}
+        <FocusButton
+          experimentId={experimentId}
+          store='genes'
+          lookupKey={key}
         />
       ),
     };

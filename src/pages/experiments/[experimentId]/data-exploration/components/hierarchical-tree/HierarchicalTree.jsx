@@ -8,17 +8,18 @@ import {
 
 import EditableField from '../../../../../../components/EditableField';
 import ColorPicker from '../../../../../../components/ColorPicker';
-import LookupButton from '../../../../../../components/LookupButton';
+import FocusButton from '../../../../../../components/FocusButton';
 
 import './hierarchicalTree.css';
 
 const HierarchicalTree = (props) => {
   const {
     onCheck: propOnCheck,
-    onSelect: propOnSelect,
     onHide: propOnHide,
     onNodeUpdate: propOnNodeUpdate,
     treeData,
+    focusStore,
+    experimentId,
     ...restOfProps
   } = props;
 
@@ -46,8 +47,6 @@ const HierarchicalTree = (props) => {
   };
 
   const onCheck = (keys) => { setCheckedKeys(keys); propOnCheck(keys); };
-
-  const onSelect = (keys) => { propOnSelect(keys); };
 
   const onDrop = (info) => {
     /**
@@ -239,13 +238,27 @@ const HierarchicalTree = (props) => {
     return <></>;
   };
 
+  const renderFocusButton = (modified) => {
+    if (modified.children && focusStore) {
+      return (
+        <FocusButton
+          experimentId={experimentId}
+          lookupKey={modified.key}
+          store={focusStore}
+        />
+      );
+    }
+
+    return <></>;
+  };
+
   const renderTitlesRecursive = (source, parentKey = null) => {
     const toRender = source && source.map((d) => {
       const modified = d;
 
       modified.title = (
         <Space>
-          {modified.children ? <LookupButton /> : <></>}
+          {renderFocusButton(modified)}
           {renderColorPicker(modified)}
           {renderEditableField(modified, parentKey)}
           {renderHideButton(modified)}
@@ -275,7 +288,6 @@ const HierarchicalTree = (props) => {
       onExpand={onExpand}
       autoExpandParent={autoExpandParent}
       onCheck={onCheck}
-      onSelect={onSelect}
       treeData={treeDataToRender}
       checkedKeys={checkedKeys}
       onDrop={onDrop}
@@ -289,23 +301,24 @@ const HierarchicalTree = (props) => {
 
 HierarchicalTree.defaultProps = {
   onCheck: () => null,
-  onSelect: () => null,
   onHide: () => null,
   onNodeUpdate: () => null,
   onNodeDelete: () => null,
   onHierarchyUpdate: () => null,
   defaultCheckedKeys: [],
+  focusStore: null,
 };
 
 HierarchicalTree.propTypes = {
   onCheck: PropTypes.func,
-  onSelect: PropTypes.func,
   onHide: PropTypes.func,
   onNodeUpdate: PropTypes.func,
   onNodeDelete: PropTypes.func,
   onHierarchyUpdate: PropTypes.func,
   defaultCheckedKeys: PropTypes.array,
   treeData: PropTypes.array.isRequired,
+  focusStore: PropTypes.string,
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default HierarchicalTree;

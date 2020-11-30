@@ -1,0 +1,50 @@
+import React, { useRef } from 'react';
+
+import { Tooltip, Button } from 'antd';
+import { EyeTwoTone, EyeOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
+import {
+  useSelector, useDispatch,
+} from 'react-redux';
+
+import { setCellInfoFocus } from '../redux/actions/cellInfo';
+
+const FocusButton = (props) => {
+  const { store, lookupKey, experimentId } = props;
+  const dispatch = useDispatch();
+
+  const focusData = useSelector((state) => state.cellInfo.focus);
+  const buttonRef = useRef(null);
+
+  const onClick = (e) => {
+    e.stopPropagation();
+    buttonRef.current.blur();
+    dispatch(setCellInfoFocus(experimentId, store, lookupKey));
+  };
+
+  const focused = focusData.store === store && focusData.key === lookupKey;
+
+  return (
+    <Tooltip placement='right' title='Visualize on embedding'>
+      <Button
+        type='dashed'
+        style={{ background: 'none' }}
+        size='small'
+        onClick={onClick}
+        ref={buttonRef}
+      >
+        {focused
+          ? (<EyeTwoTone style={{ cursor: 'pointer' }} />)
+          : (<EyeOutlined style={{ cursor: 'pointer' }} />)}
+      </Button>
+    </Tooltip>
+  );
+};
+
+FocusButton.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  lookupKey: PropTypes.string.isRequired,
+  store: PropTypes.string.isRequired,
+};
+
+export default FocusButton;
