@@ -75,6 +75,7 @@ const generateSpec = (configSrc, data) => {
     legend = [
       {
         fill: 'color',
+        orient: config.legendPosition,
         encode: {
           title: {
             update: {

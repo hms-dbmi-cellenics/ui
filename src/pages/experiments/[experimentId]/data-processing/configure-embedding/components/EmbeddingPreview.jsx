@@ -71,6 +71,7 @@ class EmbeddingPreview extends React.Component {
       legendTextColor: '#FFFFFF',
       legendEnabled: true,
       legend: null,
+      legendPosition: 'top-right',
       geneexpLegendloc: '',
       colGradient: 'spectral',
       labelSize: 28,
@@ -121,6 +122,7 @@ class EmbeddingPreview extends React.Component {
           title: '',
           titleColor: config.masterColour,
           fill: 'color',
+          orient: config.legendPosition,
           rowPadding: 5,
           symbolSize: 200,
 

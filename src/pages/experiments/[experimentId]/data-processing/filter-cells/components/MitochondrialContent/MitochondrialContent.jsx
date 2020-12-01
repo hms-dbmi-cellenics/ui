@@ -34,7 +34,7 @@ class MitochondrialContent extends React.Component {
       yAxisText2: 'Fraction of mitochondrial reads',
       xDefaultTitle: 'Fraction of mitochondrial reads',
       yDefaultTitle: 'Fraction of cells',
-      legendOrientation: 'top-right',
+      legendPosition: 'top-right',
       gridWeight: 0,
       titleSize: 12,
       titleText: '',
@@ -87,7 +87,7 @@ class MitochondrialContent extends React.Component {
       legend = [
         {
           fill: 'color',
-          orient: config.legendOrientation,
+          orient: config.legendPosition,
           labelFont: config.masterFont,
           titleFont: config.masterFont,
           encode: {

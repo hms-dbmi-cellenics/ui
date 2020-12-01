@@ -48,7 +48,7 @@ const VolcanoPlot = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
-  const config = useSelector((state) => state.plots[plotUuid].config);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
   const { loading, data, error } = useSelector(
     (state) => state.differentialExpression.properties,
   );
@@ -59,10 +59,9 @@ const VolcanoPlot = () => {
     xMax: null,
   });
   const onUpdateThrottled = useRef(
-    _.throttle((obj) => {
-      updatePlotWithChanges(obj);
-    }, 10),
+    _.throttle((obj) => updatePlotWithChanges(obj), 10),
   );
+
   useEffect(() => {
     if (!isBrowser) return;
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -74,7 +73,7 @@ const VolcanoPlot = () => {
 
     console.warn(config);
     dispatch(loadDifferentialExpression(experimentId, config.cellSets));
-  }, [config.cellSets]);
+  }, [config?.cellSets]);
 
   useEffect(() => {
     if (!config) return;
@@ -317,6 +316,8 @@ const VolcanoPlot = () => {
                 <LegendEditor
                   onUpdate={updatePlotWithChanges}
                   legendEnabled={config.legendEnabled}
+                  legendPosition={config.legendPosition}
+                  legendOptions='corners'
                 />
               </Panel>
             </Collapse>
