@@ -41,13 +41,11 @@ const store = mockStore({
         name: 'Louvain clusters',
         key: 'louvain',
         rootNode: true,
-        children: [],
       },
       scratchpad: {
         name: 'Custom selections',
         key: 'scratchpad',
         rootNode: true,
-        children: [],
       },
     },
     hierarchy: [
@@ -197,6 +195,8 @@ describe('DiffExprCompute', () => {
   });
 
   it('renders correctly with previously selected clusters', () => {
+    console.log('lol');
+
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute

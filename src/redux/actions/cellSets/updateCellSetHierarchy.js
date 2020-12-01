@@ -15,8 +15,6 @@ const updateCellSetHierarchy = (experimentId, hierarchy) => async (dispatch, get
     (obj) => hierarchy.find((o) => o.key === obj.key) || obj,
   );
 
-  console.log(newHierarchy);
-
   await dispatch({
     type: CELL_SETS_UPDATE_HIERARCHY,
     payload: {

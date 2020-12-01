@@ -16,6 +16,7 @@ import CrossHair from '../../../../../../../pages/experiments/[experimentId]/dat
 import CellInfo from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/CellInfo';
 import { CELL_SETS_CREATE } from '../../../../../../../redux/actionTypes/cellSets';
 import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
+import { CELL_INFO_UPDATE } from '../../../../../../../redux/actionTypes/cellInfo';
 
 jest.mock('localforage');
 
@@ -23,48 +24,55 @@ const mockStore = configureMockStore([thunk]);
 let component;
 let store;
 
-const initialState = {
-  embeddings: {
-    pca: {
-      ...initialEmbeddingState,
-      loading: false,
-      data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
-    },
-  },
-  cellSets: {
-    properties: {
-      cluster1: {
-        color: '#ff0000',
-        cellIds: [2, 3],
-      },
-    },
-    hierarchy: [
-      {
-        key: 'louvain',
-        children: ['cluster1'],
-      },
-    ],
-    selected: ['cluster1'],
-  },
-  genes: {
-    expression: {
-      loading: false,
-      data: {},
-    },
-    focused: undefined,
-  },
-  cellInfo: {
-    cellName: 2,
-  },
-};
-
 const width = 100;
 const height = 200;
 
 describe('Embedding', () => {
+  const initialState = {
+    embeddings: {
+      pca: {
+        ...initialEmbeddingState,
+        loading: false,
+        data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
+      },
+    },
+    cellSets: {
+      properties: {
+        louvain: {
+          name: 'Louvain clusters',
+          color: undefined,
+        },
+        cluster1: {
+          color: '#ff0000',
+          cellIds: [2, 3],
+        },
+      },
+      hierarchy: [
+        {
+          key: 'louvain',
+          children: [{ key: 'cluster1' }],
+        },
+      ],
+    },
+    genes: {
+      expression: {
+        loading: false,
+        data: {},
+      },
+    },
+    cellInfo: {
+      cellName: 2,
+      focus: {
+        store: 'cellSets',
+        key: 'louvain',
+      },
+    },
+  };
+
   beforeAll(async () => {
     await preloadAll();
   });
+
   beforeEach(() => {
     // Clears the database and adds some testing data.
     store = mockStore(initialState);
@@ -84,14 +92,22 @@ describe('Embedding', () => {
 
   it('renders correctly a PCA embedding', () => {
     const scatterplot = component.find(Scatterplot);
+
     expect(component.find('Embedding').length).toEqual(1);
     expect(scatterplot.length).toEqual(1);
     expect(scatterplot.getElement().props.mapping).toEqual('PCA');
-    expect(scatterplot.getElement().props.cellColors).toEqual(new Map(Object.entries({
-      // cell #2 is selected, so it has a different color
-      2: [0, 0, 0],
-      3: [255, 0, 0],
-    })));
+    expect(scatterplot.getElement().props.cellColors).toEqual(
+      new Map(
+        Object.entries({
+          // cell #2 is currently being hovered over, so it is black
+          2: [0, 0, 0],
+
+          // cell #3 is in louvain, which is currently in focus. it should be red.
+          3: [255, 0, 0],
+        }),
+      ),
+    );
+
     expect(scatterplot.getElement().props.cells).toEqual(
       {
         0: {
@@ -173,7 +189,7 @@ describe('Embedding', () => {
     expect(component.find('ClusterPopover').length).toEqual(0);
 
     // lasso select cells 1 and 2
-    const selectedCellIds = new Set(['1', '2']);
+    const selectedCellIds = new Set([1, 2]);
     act(() => {
       scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
     });
@@ -204,7 +220,7 @@ describe('Embedding', () => {
     });
 
     expect(store.getActions().length).toEqual(1);
-    expect(store.getActions()[0].type).toEqual('UPDATE_CELL_INFO');
+    expect(store.getActions()[0].type).toEqual(CELL_INFO_UPDATE);
     expect(store.getActions()[0].payload.cellName).toEqual(hoveredCell.cellId);
   });
 
@@ -293,7 +309,6 @@ describe('Embedding', () => {
       },
       genes: {
         ...initialState.genes,
-        focused: 'REALGENE',
         expression: {
           loading: [],
           data: {
@@ -303,6 +318,14 @@ describe('Embedding', () => {
               expression: [0, 0.4, 0.5, 1.6],
             },
           },
+        },
+      },
+      cellInfo: {
+        ...initialState.cellInfo,
+        focus: {
+          ...initialState.cellInfo.focus,
+          store: 'genes',
+          key: 'REALGENE',
         },
       },
     };
@@ -315,7 +338,7 @@ describe('Embedding', () => {
       </Provider>,
     );
 
-    const legend = embedding.find('Embedding div img');
+    const legend = embedding.find('Embedding div div img');
     expect(legend.length).toEqual(1);
 
     const focusedGeneInfo = embedding.find('Embedding div label strong');

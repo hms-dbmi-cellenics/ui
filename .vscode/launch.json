@@ -9,6 +9,14 @@
             "type": "node",
             "request": "attach",
             "processId": "${command:PickProcess}"
-        }          
+        },
+        {
+            "name": "Test and debug",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run-script", "test"]
+        },          
     ]
 }

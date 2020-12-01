@@ -40,7 +40,7 @@ const CellSetsTool = (props) => {
     loading, error, properties, hierarchy, selected,
   } = cellSets;
 
-  const FOCUS_TYPE = 'cellSet';
+  const FOCUS_TYPE = 'cellSets';
 
   useEffect(() => {
     if (isBrowser) {
@@ -135,7 +135,7 @@ const CellSetsTool = (props) => {
       dispatch(resetCellSets(experimentId));
     };
 
-    const cellSetTreeData = composeTree(hierarchy, properties, 'cellSet');
+    const cellSetTreeData = composeTree(hierarchy, properties, 'cellSets');
     const metadataTreeData = composeTree(hierarchy, properties, 'metadataCategorical');
 
     return (

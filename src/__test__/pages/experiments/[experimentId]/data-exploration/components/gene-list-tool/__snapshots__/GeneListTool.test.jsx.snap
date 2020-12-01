@@ -4,9 +4,10 @@ exports[`GeneListTool Clicking one of the \`eye\` buttons triggers appropriate o
 Object {
   "payload": Object {
     "experimentId": "1234",
-    "gene": "K",
+    "key": "K",
+    "store": "genes",
   },
-  "type": "genes/focus",
+  "type": "cellInfo/focus",
 }
 `;
 

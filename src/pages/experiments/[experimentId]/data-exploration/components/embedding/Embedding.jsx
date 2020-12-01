@@ -80,7 +80,7 @@ const Embedding = (props) => {
       }
 
       // Cell sets are easy, just return the appropriate color and set them up.
-      case 'cellSet': {
+      case 'cellSets': {
         if (isBrowser) setCellColors(returnCellColoring(focusData));
         break;
       }
@@ -109,7 +109,7 @@ const Embedding = (props) => {
       return colorByGeneExpression(focusedExpression);
     }
 
-    if (store === 'cellSet') {
+    if (store === 'cellSets') {
       const colors = renderCellSetColors(key, cellSetHierarchy, cellSetProperties);
       return colors;
     }
@@ -201,7 +201,7 @@ const Embedding = (props) => {
       );
     }
 
-    if (focusData.store === 'cellSet') {
+    if (focusData.store === 'cellSets') {
       return (
         <div>
           <label htmlFor='cell set name'>

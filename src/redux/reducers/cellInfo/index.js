@@ -21,16 +21,6 @@ const cellInfoReducer = (state = initialState, action) => {
     default: {
       return state;
     }
-
-    /*
-    case UPDATE_CELL_INFO:
-      return {
-        ...state,
-        ...action.payload,
-      };
-    default:
-      return state;
-    */
   }
 };
 

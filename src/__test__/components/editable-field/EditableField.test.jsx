@@ -5,6 +5,10 @@ import EditableField from '../../../components/EditableField';
 
 configure({ adapter: new Adapter() });
 
+const eventStub = {
+  stopPropagation: () => { },
+};
+
 describe('EditableField', () => {
   test('renders correctly', () => {
     const component = mount(<EditableField value='Cluster X' />);
@@ -22,7 +26,7 @@ describe('EditableField', () => {
     expect(input.length).toEqual(0);
 
     // click the edit button
-    component.find('Button').at(0).simulate('click');
+    component.find('Button').at(0).simulate('click', eventStub);
     component.update();
 
     // There should be an input now.
@@ -36,7 +40,7 @@ describe('EditableField', () => {
     expect(component.find('Button').length).toEqual(3);
 
     // The user can click the cancel button.
-    component.find('Button').at(1).simulate('click');
+    component.find('Button').at(1).simulate('click', eventStub);
     component.update();
 
     // The input should be gone.
@@ -52,14 +56,14 @@ describe('EditableField', () => {
     const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
-    component.find('Button').at(0).simulate('click');
+    component.find('Button').at(0).simulate('click', eventStub);
     component.update();
 
     // Edit the input
     component.find('Input').simulate('change', { target: { value: 'new name' } });
 
     // Click save
-    component.find('Button').at(0).simulate('click');
+    component.find('Button').at(0).simulate('click', eventStub);
     component.update();
 
     // No input should show
@@ -75,14 +79,14 @@ describe('EditableField', () => {
     const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
-    component.find('Button').at(0).simulate('click');
+    component.find('Button').at(0).simulate('click', eventStub);
     component.update();
 
     // Edit the input
     component.find('Input').simulate('change', { target: { value: 'new name' } });
 
     // Hit enter
-    component.find('Input').simulate('keydown', { key: 'Enter' });
+    component.find('Input').simulate('keydown', { key: 'Enter', ...eventStub });
 
     // No input should show
     expect(component.find('Input').length).toEqual(0);
@@ -97,14 +101,14 @@ describe('EditableField', () => {
     const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
-    component.find('Button').at(0).simulate('click');
+    component.find('Button').at(0).simulate('click', eventStub);
     component.update();
 
     // Edit the input
     component.find('Input').simulate('change', { target: { value: 'new name' } });
 
     // Click cancel
-    component.find('Button').at(1).simulate('click');
+    component.find('Button').at(1).simulate('click', eventStub);
     component.update();
 
     // No input should show
@@ -119,14 +123,14 @@ describe('EditableField', () => {
     const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
-    component.find('Button').at(0).simulate('click');
+    component.find('Button').at(0).simulate('click', eventStub);
     component.update();
 
     // Edit the input
     component.find('Input').simulate('change', { target: { value: 'new name' } });
 
     // Hit escape
-    component.find('Input').simulate('keydown', { key: 'Escape' });
+    component.find('Input').simulate('keydown', { key: 'Escape', ...eventStub });
 
     // No input should show
     expect(component.find('Input').length).toEqual(0);
@@ -141,7 +145,7 @@ describe('EditableField', () => {
     const component = shallow(<EditableField value='Cluster X' onDelete={mockOnDelete} />);
 
     // Click delete button.
-    component.find('Button').at(1).simulate('click');
+    component.find('Button').at(1).simulate('click', eventStub);
     component.update();
 
     // The callback should have been called
