@@ -204,8 +204,8 @@ const GeneTable = (props) => {
         dataSource={renderRows(data)}
         loading={loading}
         size='small'
-        pagination={{ ...tableState.pagination, total }}
-        sorter={tableState.sorter}
+        pagination={{ ...tableState?.pagination, total }}
+        sorter={tableState?.sorter}
         scroll={{ x: width, y: height - 294 }}
         onChange={handleTableChange}
         rowSelection={{

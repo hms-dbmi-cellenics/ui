@@ -284,7 +284,6 @@ const HierarchicalTree = (props) => {
     <Tree
       checkable
       draggable
-      showIcon
       onExpand={onExpand}
       autoExpandParent={autoExpandParent}
       onCheck={onCheck}
