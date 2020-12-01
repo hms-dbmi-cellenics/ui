@@ -1,7 +1,9 @@
 import _ from 'lodash';
 import React, { useEffect, useRef } from 'react';
 import useSWR from 'swr';
-import { PageHeader, Row, Col, Button, Skeleton, Space } from 'antd';
+import {
+  PageHeader, Row, Col, Button, Skeleton, Space,
+} from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
@@ -24,33 +26,29 @@ const KeyboardEventHandler = dynamic(
   { ssr: false },
 );
 
-const Header = props => {
+const Header = (props) => {
   const { experimentId, plotUuid, finalRoute } = props;
 
   const dispatch = useDispatch();
-  const saved = !useSelector(state => state.plots[plotUuid].outstandingChanges);
-  const lastUpdated = useSelector(state => state.plots[plotUuid].lastUpdated);
+  const saved = !useSelector((state) => state.plots[plotUuid].outstandingChanges);
+  const lastUpdated = useSelector((state) => state.plots[plotUuid].lastUpdated);
   const router = useRouter();
-  const type = useSelector(state => state.plots[plotUuid].type);
-  const config = useSelector(state => state.plots[plotUuid]?.config);
+  const type = useSelector((state) => state.plots[plotUuid].type);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
   const reset = useRef(true);
 
   if (!_.isEqual(config, initialPlotConfigStates[type])) {
     reset.current = false;
   }
   // Add prompt to save if modified since last save if changes happened.
-  console.log(
-    'same configs ',
-    _.isEqual(config, initialPlotConfigStates[type]),
-  );
-  useBeforeunload(e => {
+  useBeforeunload((e) => {
     if (!saved) {
       e.preventDefault();
     }
   });
 
   useEffect(() => {
-    const showPopupWhenUnsaved = url => {
+    const showPopupWhenUnsaved = (url) => {
       // Only handle if we are navigating away.
       if (router.asPath === url || saved) {
         return;
@@ -108,8 +106,8 @@ const Header = props => {
 
   const saveString = lastUpdated
     ? moment(lastUpdated)
-        .fromNow()
-        .toLowerCase()
+      .fromNow()
+      .toLowerCase()
     : 'never';
   const onClickSave = () => {
     if (saved) {
@@ -145,15 +143,15 @@ const Header = props => {
         />
         <PageHeader
           style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
-          title="Edit collection"
+          title='Edit collection'
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
           extra={[
             <Space>
               <FeedbackButton />
               <Button
-                key="save"
-                type="primary"
+                key='save'
+                type='primary'
                 disabled={saved}
                 onClick={onClickSave}
               >
@@ -162,8 +160,8 @@ const Header = props => {
             </Space>,
             <Space>
               <Button
-                key="reset"
-                type="primary"
+                key='reset'
+                type='primary'
                 onClick={onClickReset}
                 disabled={reset.current}
               >
