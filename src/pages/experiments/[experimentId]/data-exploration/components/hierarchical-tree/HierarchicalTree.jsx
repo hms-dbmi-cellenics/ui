@@ -8,7 +8,7 @@ import ColorPicker from '../../../../../../components/ColorPicker';
 
 import './hierarchicalTree.css';
 
-const HierarchicalTree = props => {
+const HierarchicalTree = (props) => {
   const {
     onCheck: propOnCheck,
     onSelect: propOnSelect,
@@ -24,7 +24,7 @@ const HierarchicalTree = props => {
     if (!treeData || treeData.length === 0) return [];
     const chKeys = [treeData[0].key];
     if (!treeData[0].children) return chKeys;
-    treeData[0].children.filter(child => chKeys.push(child.key));
+    treeData[0].children.filter((child) => chKeys.push(child.key));
     return chKeys;
   };
 
@@ -40,16 +40,16 @@ const HierarchicalTree = props => {
     setAutoExpandParent(false);
   };
 
-  const onCheck = keys => {
+  const onCheck = (keys) => {
     setCheckedKeys(keys);
     propOnCheck(keys);
   };
 
-  const onSelect = keys => {
+  const onSelect = (keys) => {
     propOnSelect(keys);
   };
 
-  const onDrop = info => {
+  const onDrop = (info) => {
     /**
      * The `key` values in the data array passed to the <Tree/> component
      * which was dragged, and which was dropped. dropKey can either be
@@ -113,7 +113,7 @@ const HierarchicalTree = props => {
      */
     if (!info.dropToGap) {
       const addToChildren = (searchData, key) => {
-        searchData.forEach(element => {
+        searchData.forEach((element) => {
           if (element.key === key) {
             if (dragObj.rootNode === true || !element.rootNode) {
               shouldUpdateState = false;
@@ -138,62 +138,61 @@ const HierarchicalTree = props => {
       // It can either be above or below an element.
       const dropPosition = info.node.dragOverGapTop ? 'top' : 'bottom';
 
-      const addIntoGap = (haystack, needle) =>
-        transform(
-          haystack,
-          (result, objValue) => {
-            // We found the place to insert the dragged element.
-            if (objValue.key === needle) {
-              /**
+      const addIntoGap = (haystack, needle) => transform(
+        haystack,
+        (result, objValue) => {
+          // We found the place to insert the dragged element.
+          if (objValue.key === needle) {
+            /**
                * If a dragged object is a root node, it should only be
                * droppable in between root nodes.
                */
-              if (!objValue.rootNode && dragObj.rootNode === true) {
-                shouldUpdateState = false;
-                return false;
-              }
+            if (!objValue.rootNode && dragObj.rootNode === true) {
+              shouldUpdateState = false;
+              return false;
+            }
 
-              /**
+            /**
                * If a dragged object is not a root node, it should only be
                * droppable in between non-root nodes.
                */
-              if (!dragObj.rootNode && objValue.rootNode === true) {
-                shouldUpdateState = false;
-                return false;
-              }
+            if (!dragObj.rootNode && objValue.rootNode === true) {
+              shouldUpdateState = false;
+              return false;
+            }
 
-              if (objValue.children) {
-                // eslint-disable-next-line no-param-reassign
-                objValue.children = addIntoGap(objValue.children, needle);
-              }
+            if (objValue.children) {
+              // eslint-disable-next-line no-param-reassign
+              objValue.children = addIntoGap(objValue.children, needle);
+            }
 
-              /**
+            /**
                * Add the drag object into the tree according to where it was
                * dropped.
                */
-              if (dropPosition === 'top') {
-                result.push(dragObj);
-                result.push(objValue);
-              } else {
-                result.push(objValue);
-                result.push(dragObj);
-              }
+            if (dropPosition === 'top') {
+              result.push(dragObj);
+              result.push(objValue);
             } else {
-              /**
+              result.push(objValue);
+              result.push(dragObj);
+            }
+          } else {
+            /**
                * We have not found the place to insert the element.
                * Carry on building the new object until we are there.
                */
-              if (objValue.children) {
-                // eslint-disable-next-line no-param-reassign
-                objValue.children = addIntoGap(objValue.children, needle);
-              }
-              result.push(objValue);
+            if (objValue.children) {
+              // eslint-disable-next-line no-param-reassign
+              objValue.children = addIntoGap(objValue.children, needle);
             }
+            result.push(objValue);
+          }
 
-            return true;
-          },
-          [],
-        );
+          return true;
+        },
+        [],
+      );
 
       newTreeData = addIntoGap(newTreeData, dropKey);
     }
@@ -203,12 +202,12 @@ const HierarchicalTree = props => {
     }
   };
 
-  const renderColorPicker = modified => {
+  const renderColorPicker = (modified) => {
     if (modified.color) {
       return (
         <ColorPicker
           color={modified.color || '#ffffff'}
-          onColorChange={e => {
+          onColorChange={(e) => {
             props.onNodeUpdate(modified.key, { color: e });
           }}
         />
@@ -217,29 +216,26 @@ const HierarchicalTree = props => {
     return <></>;
   };
 
-  const renderEditableField = modified => {
-    return (
-      <EditableField
-        onAfterSubmit={e => {
-          props.onNodeUpdate(modified.key, { name: e });
-        }}
-        onDelete={() => {
-          props.onNodeDelete(modified.key);
-        }}
-        value={modified.name}
-        showEdit={modified.key !== 'scratchpad'}
-        deleteEnabled={
-          modified.key !== 'scratchpad' && !modified.key.includes('louvain')
-        }
-        renderBold={!!modified.rootNode}
-      />
-    );
-  };
+  const renderEditableField = (modified) => (
+    <EditableField
+      onAfterSubmit={(e) => {
+        props.onNodeUpdate(modified.key, { name: e });
+      }}
+      onDelete={() => {
+        props.onNodeDelete(modified.key);
+      }}
+      value={modified.name}
+      showEdit={modified.key !== 'scratchpad'}
+      deleteEnabled={
+        modified.key !== 'scratchpad' && !modified.key.includes('louvain')
+      }
+      renderBold={!!modified.rootNode}
+    />
+  );
 
-  const renderTitlesRecursive = source => {
-    const toRender =
-      source &&
-      source.map(d => {
+  const renderTitlesRecursive = (source) => {
+    const toRender = source
+      && source.map((d) => {
         const modified = d;
 
         modified.title = (
