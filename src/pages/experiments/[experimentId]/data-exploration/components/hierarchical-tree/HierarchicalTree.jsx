@@ -18,7 +18,7 @@ const HierarchicalTree = (props) => {
     onHide: propOnHide,
     onNodeUpdate: propOnNodeUpdate,
     treeData,
-    focusStore,
+    store,
     experimentId,
     ...restOfProps
   } = props;
@@ -239,12 +239,12 @@ const HierarchicalTree = (props) => {
   };
 
   const renderFocusButton = (modified) => {
-    if (modified.children && focusStore) {
+    if (modified.children && store) {
       return (
         <FocusButton
           experimentId={experimentId}
           lookupKey={modified.key}
-          store={focusStore}
+          store={store}
         />
       );
     }
@@ -306,7 +306,7 @@ HierarchicalTree.defaultProps = {
   onNodeDelete: () => null,
   onHierarchyUpdate: () => null,
   defaultCheckedKeys: [],
-  focusStore: null,
+  store: null,
 };
 
 HierarchicalTree.propTypes = {
@@ -317,7 +317,7 @@ HierarchicalTree.propTypes = {
   onHierarchyUpdate: PropTypes.func,
   defaultCheckedKeys: PropTypes.array,
   treeData: PropTypes.array.isRequired,
-  focusStore: PropTypes.string,
+  store: PropTypes.string,
   experimentId: PropTypes.string.isRequired,
 };
 

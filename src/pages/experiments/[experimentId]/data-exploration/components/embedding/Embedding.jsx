@@ -81,8 +81,11 @@ const Embedding = (props) => {
 
       // Cell sets are easy, just return the appropriate color and set them up.
       case 'cellSets': {
-        if (isBrowser) setCellColors(returnCellColoring(focusData));
-        break;
+        if (isBrowser) {
+          setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
+        }
+
+        return;
       }
 
       // If there is no focus, we can just delete all the colors.
@@ -99,23 +102,8 @@ const Embedding = (props) => {
       return;
     }
 
-    setCellColors(returnCellColoring(focusData));
+    setCellColors(colorByGeneExpression(focusedExpression));
   }, [focusedExpression]);
-
-  const returnCellColoring = (focusInfo) => {
-    const { store, key } = focusInfo;
-
-    if (store === 'genes') {
-      return colorByGeneExpression(focusedExpression);
-    }
-
-    if (store === 'cellSets') {
-      const colors = renderCellSetColors(key, cellSetHierarchy, cellSetProperties);
-      return colors;
-    }
-
-    return {};
-  };
 
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {

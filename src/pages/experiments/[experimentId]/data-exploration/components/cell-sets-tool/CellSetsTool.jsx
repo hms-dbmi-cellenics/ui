@@ -151,7 +151,7 @@ const CellSetsTool = (props) => {
             <HierarchicalTree
               treeData={cellSetTreeData}
               onCheck={onCheck}
-              focusStore={FOCUS_TYPE}
+              store={FOCUS_TYPE}
               experimentId={experimentId}
               onNodeUpdate={onNodeUpdate}
               onNodeDelete={onNodeDelete}
@@ -164,7 +164,7 @@ const CellSetsTool = (props) => {
               <HierarchicalTree
                 treeData={metadataTreeData}
                 onCheck={onCheck}
-                focusStore={FOCUS_TYPE}
+                store={FOCUS_TYPE}
                 experimentId={experimentId}
                 onNodeUpdate={onNodeUpdate}
                 onNodeDelete={onNodeDelete}
