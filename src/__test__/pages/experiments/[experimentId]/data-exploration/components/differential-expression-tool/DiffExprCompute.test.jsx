@@ -195,8 +195,6 @@ describe('DiffExprCompute', () => {
   });
 
   it('renders correctly with previously selected clusters', () => {
-    console.log('lol');
-
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute

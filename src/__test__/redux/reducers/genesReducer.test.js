@@ -56,27 +56,6 @@ describe('genesReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  // it('Updates focused gene appropriately', () => {
-  //   const newState = genesReducer(initialState, {
-  //     type: GENES_FOCUS,
-  //     payload: {
-  //       gene: 'asd',
-  //     },
-  //   });
-
-  //   expect(newState.focused).toEqual('asd');
-  // });
-
-  // it('Updates on unfocus event appropriately', () => {
-  //   const newState = genesReducer(initialState, {
-  //     type: GENES_UNFOCUS,
-  //     payload: {
-  //     },
-  //   });
-
-  //   expect(newState.focused).toEqual(undefined);
-  // });
-
   it('Selected genes get added on empty list', () => {
     const newState = genesReducer(initialState, {
       type: GENES_SELECT,

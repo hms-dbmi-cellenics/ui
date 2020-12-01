@@ -115,7 +115,7 @@ const DiffExprCompute = (props) => {
               <Tooltip placement='left' title='Compare above selected set and its complements'>
                 <span style={{ display: 'flex', flexGrow: 1 }}>All</span>
               </Tooltip>
-            ) : properties[key].name}
+            ) : properties[key]?.name}
           </Option>
         );
       });
@@ -130,7 +130,7 @@ const DiffExprCompute = (props) => {
         >
           {
             selectableClusters && selectableClusters.map(({ key, children }) => (
-              <OptGroup label={properties[key].name} key={key}>
+              <OptGroup label={properties[key]?.name} key={key}>
                 {renderChildren(children)}
               </OptGroup>
             ))
