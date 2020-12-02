@@ -19,13 +19,13 @@ const EditableField = (props) => {
     props.onDelete();
   };
 
-  const onKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      onSubmit();
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSubmit(e);
     }
 
-    if (event.key === 'Escape') {
-      onCancel();
+    if (e.key === 'Escape') {
+      onCancel(e);
     }
   };
 
@@ -35,18 +35,21 @@ const EditableField = (props) => {
     setEditedValue(newValue);
   };
 
-  const onSubmit = () => {
+  const onSubmit = (e) => {
+    e.stopPropagation();
     onAfterSubmit(editedValue);
-    toggleEditing();
+    toggleEditing(e);
   };
 
-  const onCancel = () => {
+  const onCancel = (e) => {
+    e.stopPropagation();
     setEditedValue(value);
-    toggleEditing();
+    toggleEditing(e);
     onAfterCancel();
   };
 
-  const toggleEditing = () => {
+  const toggleEditing = (e) => {
+    e.stopPropagation();
     setEditing(!editing);
   };
 
