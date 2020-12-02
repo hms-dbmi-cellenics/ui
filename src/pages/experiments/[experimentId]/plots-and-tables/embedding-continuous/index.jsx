@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect, useRef } from 'react';
-import { Row, Col, Space, Collapse, Spin, Skeleton, Input } from 'antd';
+import {
+  Row, Col, Space, Collapse, Spin, Skeleton, Input,
+} from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
@@ -19,7 +21,7 @@ import {
   loadPlotConfig,
 } from '../../../../../redux/actions/plots/index';
 import { loadGeneExpression } from '../../../../../redux/actions/genes';
-import loadEmbedding from '../../../../../redux/actions/loadEmbedding';
+import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/plots/initialState';
 import Header from '../components/Header';
@@ -45,16 +47,15 @@ const EmbeddingContinuousPlot = () => {
   const selectedGene = useRef(defaultShownGene);
 
   const dispatch = useDispatch();
-  const config = useSelector(state => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
   const expressionLoading = useSelector(
-    state => state.genes.expression.loading,
+    (state) => state.genes.expression.loading,
   );
   const selectedExpression = useSelector(
-    state => state.genes.expression.data[selectedGene.current],
+    (state) => state.genes.expression.data[selectedGene.current],
   );
-  const expressionError = useSelector(state => state.genes.expression.error);
-  const { data, loading, error } =
-    useSelector(state => state.embeddings[embeddingType]) || {};
+  const expressionError = useSelector((state) => state.genes.expression.error);
+  const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
   const router = useRouter();
   const { experimentId } = router.query;
@@ -72,7 +73,7 @@ const EmbeddingContinuousPlot = () => {
   }, [experimentId]);
 
   // obj is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = obj => {
+  const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
@@ -85,7 +86,7 @@ const EmbeddingContinuousPlot = () => {
     return <Skeleton />;
   }
 
-  const changeDislayedGene = geneName => {
+  const changeDislayedGene = (geneName) => {
     updatePlotWithChanges({ shownGene: geneName });
     selectedGene.current = geneName;
     dispatch(loadGeneExpression(experimentId, [geneName]));
@@ -97,9 +98,7 @@ const EmbeddingContinuousPlot = () => {
       return (
         <PlatformError
           description={expressionError}
-          onClick={() =>
-            dispatch(loadGeneExpression(experimentId, [selectedGene.current]))
-          }
+          onClick={() => dispatch(loadGeneExpression(experimentId, [selectedGene.current]))}
         />
       );
     }
@@ -114,15 +113,15 @@ const EmbeddingContinuousPlot = () => {
     }
 
     if (
-      !config ||
-      !data ||
-      loading ||
-      !isBrowser ||
-      expressionLoading.includes(selectedGene.current)
+      !config
+      || !data
+      || loading
+      || !isBrowser
+      || expressionLoading.includes(selectedGene.current)
     ) {
       return (
         <center>
-          <Spin size="large" />
+          <Spin size='large' />
         </center>
       );
     }
@@ -132,7 +131,7 @@ const EmbeddingContinuousPlot = () => {
         <Vega
           spec={generateSpec(config, selectedGene)}
           data={generateVegaData()}
-          renderer="canvas"
+          renderer='canvas'
         />
       </center>
     );
@@ -147,45 +146,45 @@ const EmbeddingContinuousPlot = () => {
       />
       <Row gutter={16}>
         <Col span={16}>
-          <Space direction="vertical" style={{ width: '100%' }}>
+          <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
-              <Panel header="Preview" key="1">
+              <Panel header='Preview' key='1'>
                 {renderPlot()}
               </Panel>
             </Collapse>
           </Space>
         </Col>
         <Col span={8}>
-          <Space direction="vertical" style={{ width: '100%' }} />
+          <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse accordion>
-            <Panel header="Gene Selection" key="666">
+            <Panel header='Gene Selection' key='666'>
               <Search
                 style={{ width: '100%' }}
-                enterButton="Search"
+                enterButton='Search'
                 defaultValue={selectedGene.current}
-                onSearch={val => changeDislayedGene(val)}
+                onSearch={(val) => changeDislayedGene(val)}
               />
             </Panel>
           </Collapse>
           <Collapse accordion>
-            <Panel header="Log Transformation" key="5">
+            <Panel header='Log Transformation' key='5'>
               <LogExpression config={config} onUpdate={updatePlotWithChanges} />
             </Panel>
           </Collapse>
           <Collapse accordion>
-            <Panel header="Main Schema" key="2">
+            <Panel header='Main Schema' key='2'>
               <DimensionsRangeEditor
                 config={config}
                 onUpdate={updatePlotWithChanges}
               />
               <Collapse accordion>
-                <Panel header="Define and Edit Title" key="6">
+                <Panel header='Define and Edit Title' key='6'>
                   <TitleDesign
                     config={config}
                     onUpdate={updatePlotWithChanges}
                   />
                 </Panel>
-                <Panel header="Font" key="9">
+                <Panel header='Font' key='9'>
                   <FontDesign
                     config={config}
                     onUpdate={updatePlotWithChanges}
@@ -193,16 +192,16 @@ const EmbeddingContinuousPlot = () => {
                 </Panel>
               </Collapse>
             </Panel>
-            <Panel header="Axes and Margins" key="3">
+            <Panel header='Axes and Margins' key='3'>
               <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
             </Panel>
-            <Panel header="Colours" key="10">
+            <Panel header='Colours' key='10'>
               <ColourbarDesign
                 config={config}
                 onUpdate={updatePlotWithChanges}
               />
               <Collapse accordion>
-                <Panel header="Colour Inversion" key="4">
+                <Panel header='Colour Inversion' key='4'>
                   <ColourInversion
                     config={config}
                     onUpdate={updatePlotWithChanges}
@@ -210,15 +209,15 @@ const EmbeddingContinuousPlot = () => {
                 </Panel>
               </Collapse>
             </Panel>
-            <Panel header="Markers" key="11">
+            <Panel header='Markers' key='11'>
               <PointDesign config={config} onUpdate={updatePlotWithChanges} />
             </Panel>
-            <Panel header="Legend" key="12">
+            <Panel header='Legend' key='12'>
               <LegendEditor
                 onUpdate={updatePlotWithChanges}
                 legendEnabled={config.legendEnabled}
                 legendPosition={config.legendPosition}
-                legendOptions="corners"
+                legendOptions='corners'
               />
             </Panel>
           </Collapse>

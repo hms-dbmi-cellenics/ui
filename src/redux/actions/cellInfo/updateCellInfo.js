@@ -1,17 +1,15 @@
 /* eslint-disable import/prefer-default-export */
 import {
-  UPDATE_CELL_INFO,
-} from '../actionTypes';
+  CELL_INFO_UPDATE,
+} from '../../actionTypes/cellInfo';
 
 const updateCellInfo = (cellData) => (dispatch) => {
   dispatch({
-    type: UPDATE_CELL_INFO,
+    type: CELL_INFO_UPDATE,
     payload: {
       ...cellData,
     },
   });
 };
 
-export {
-  updateCellInfo,
-};
+export default updateCellInfo;

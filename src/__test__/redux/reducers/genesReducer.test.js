@@ -3,7 +3,6 @@ import initialState from '../../../redux/reducers/genes/initialState';
 
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
-  GENES_FOCUS, GENES_UNFOCUS,
   GENES_SELECT, GENES_DESELECT,
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_ERROR, GENES_PROPERTIES_LOADED_PAGINATED,
 } from '../../../redux/actionTypes/genes';
@@ -55,27 +54,6 @@ describe('genesReducer', () => {
 
     expect(newState.expression.error).toEqual('asd');
     expect(newState).toMatchSnapshot();
-  });
-
-  it('Updates focused gene appropriately', () => {
-    const newState = genesReducer(initialState, {
-      type: GENES_FOCUS,
-      payload: {
-        gene: 'asd',
-      },
-    });
-
-    expect(newState.focused).toEqual('asd');
-  });
-
-  it('Updates on unfocus event appropriately', () => {
-    const newState = genesReducer(initialState, {
-      type: GENES_UNFOCUS,
-      payload: {
-      },
-    });
-
-    expect(newState.focused).toEqual(undefined);
   });
 
   it('Selected genes get added on empty list', () => {

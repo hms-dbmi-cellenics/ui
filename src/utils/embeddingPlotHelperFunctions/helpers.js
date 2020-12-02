@@ -11,8 +11,18 @@ const hexToRgb = (hex) => {
   return null;
 };
 
-const renderCellSetColors = (cellSets, cellSetProperties) => {
+const renderCellSetColors = (rootKey, cellSetHierarchy, cellSetProperties) => {
   const colors = {};
+
+  // First, find the key you are focusing on.
+  const [node] = cellSetHierarchy.filter((rootNode) => rootNode.key === rootKey);
+
+  if (!node?.children) {
+    return {};
+  }
+
+  // Extract children of root key.
+  const cellSets = node.children.map((child) => child.key);
 
   cellSets.forEach((key) => {
     if (!(key in cellSetProperties)) {

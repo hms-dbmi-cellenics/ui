@@ -32,7 +32,7 @@ import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingCa
 import Header from '../components/Header';
 import PlatformError from '../../../../../components/PlatformError';
 
-import loadEmbedding from '../../../../../redux/actions/loadEmbedding';
+import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import isBrowser from '../../../../../utils/environment';
 
@@ -51,10 +51,9 @@ const route = {
 
 const EmbeddingCategoricalPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector(state => state.plots[plotUuid]?.config);
-  const cellSets = useSelector(state => state.cellSets);
-  const { data, loading, error } =
-    useSelector(state => state.embeddings[embeddingType]) || {};
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const cellSets = useSelector((state) => state.cellSets);
+  const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
   const router = useRouter();
   const { experimentId } = router.query;
@@ -70,24 +69,22 @@ const EmbeddingCategoricalPlot = () => {
   }, [experimentId]);
 
   const generateCellSetOptions = () => {
-    const hierarchy = cellSets.hierarchy.map(cellSet => ({
+    const hierarchy = cellSets.hierarchy.map((cellSet) => ({
       key: cellSet.key,
       children: cellSet.children?.length || 0,
     }));
     return hierarchy.map(({ key, children }) => ({
       value: key,
-      label: `${cellSets.properties[key].name} (${children} ${
-        children === 1 ? 'child' : 'children'
-      })`,
+      label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'
+        })`,
     }));
   };
 
-  const generateData = spec => {
+  const generateData = (spec) => {
     // First, find the child nodes in the hirerarchy.
-    let newCellSets =
-      cellSets.hierarchy.find(
-        rootNode => rootNode.key === config.selectedCellSet,
-      )?.children || [];
+    let newCellSets = cellSets.hierarchy.find(
+      (rootNode) => rootNode.key === config.selectedCellSet,
+    )?.children || [];
 
     // Build up the data source based on the properties. Note that the child nodes
     // in the hierarchy are /objects/ with a `key` property, hence the destructuring
@@ -97,7 +94,7 @@ const EmbeddingCategoricalPlot = () => {
       ...cellSets.properties[key],
     }));
 
-    spec.data.forEach(datum => {
+    spec.data.forEach((datum) => {
       if (datum.name === 'cellSets') {
         datum.values = newCellSets;
       } else if (datum.name === 'embedding') {
@@ -122,13 +119,13 @@ const EmbeddingCategoricalPlot = () => {
     if (!config || !data || loading || !isBrowser) {
       return (
         <center>
-          <Spin size="large" />
+          <Spin size='large' />
         </center>
       );
     }
     return (
       <center>
-        <Vega spec={vegaSpec} renderer="canvas" />
+        <Vega spec={vegaSpec} renderer='canvas' />
       </center>
     );
   };
@@ -138,7 +135,7 @@ const EmbeddingCategoricalPlot = () => {
   // we have to inject the data in the Vega spec.
   generateData(vegaSpec);
 
-  const onUpdate = obj => {
+  const onUpdate = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
@@ -155,16 +152,16 @@ const EmbeddingCategoricalPlot = () => {
       />
       <Row gutter={16}>
         <Col span={16}>
-          <Space direction="vertical" style={{ width: '100%' }}>
+          <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
               <Panel
-                header="Preview"
-                key="1"
-                extra={
-                  <Tooltip title="In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.">
+                header='Preview'
+                key='1'
+                extra={(
+                  <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
                     <Button icon={<InfoCircleOutlined />} />
                   </Tooltip>
-                }
+                )}
               >
                 {renderPlot()}
               </Panel>
@@ -172,53 +169,53 @@ const EmbeddingCategoricalPlot = () => {
           </Space>
         </Col>
         <Col span={8}>
-          <Space direction="vertical" style={{ width: '100%' }} />
+          <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse accordion defaultActiveKey={['1']}>
-            <Panel header="Group by" key="6">
+            <Panel header='Group by' key='6'>
               <p>
                 Select the cell set category you would like to group cells by.
               </p>
-              <Space direction="vertical" style={{ width: '100%' }}>
+              <Space direction='vertical' style={{ width: '100%' }}>
                 <Select
                   labelInValue
                   style={{ width: '100%' }}
-                  placeholder="Select cell set..."
+                  placeholder='Select cell set...'
                   value={{ key: config.selectedCellSet }}
                   options={generateCellSetOptions()}
                   onChange={onCellSetSelect}
                 />
               </Space>
             </Panel>
-            <Panel header="Main Schema" key="2">
+            <Panel header='Main Schema' key='2'>
               <DimensionsRangeEditor config={config} onUpdate={onUpdate} />
               <Collapse accordion defaultActiveKey={['1']}>
-                <Panel header="Define and Edit Title" key="6">
+                <Panel header='Define and Edit Title' key='6'>
                   <TitleDesign config={config} onUpdate={onUpdate} />
                 </Panel>
-                <Panel header="Font" key="9">
+                <Panel header='Font' key='9'>
                   <FontDesign config={config} onUpdate={onUpdate} />
                 </Panel>
               </Collapse>
             </Panel>
-            <Panel header="Axes and Margins" key="3">
+            <Panel header='Axes and Margins' key='3'>
               <AxesDesign config={config} onUpdate={onUpdate} />
             </Panel>
-            <Panel header="Colour Inversion" key="4">
+            <Panel header='Colour Inversion' key='4'>
               <ColourInversion config={config} onUpdate={onUpdate} />
             </Panel>
-            <Panel header="Markers" key="5">
+            <Panel header='Markers' key='5'>
               <PointDesign config={config} onUpdate={onUpdate} />
             </Panel>
-            <Panel header="Legend" key="10">
+            <Panel header='Legend' key='10'>
               <LegendEditor
                 onUpdate={onUpdate}
                 legendEnabled={config.legendEnabled}
                 legendPosition={config.legendPosition}
-                legendOptions="top-bot"
+                legendOptions='top-bot'
                 plotUuid={plotUuid}
               />
             </Panel>
-            <Panel header="Labels" key="11">
+            <Panel header='Labels' key='11'>
               <LabelsDesign config={config} onUpdate={onUpdate} />
             </Panel>
           </Collapse>

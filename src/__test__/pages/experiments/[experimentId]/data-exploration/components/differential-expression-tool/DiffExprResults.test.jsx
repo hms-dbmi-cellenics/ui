@@ -47,7 +47,12 @@ const mockStore = configureMockStore([thunk]);
 const store = mockStore({
   genes: {
     selected: [],
-    focused: undefined,
+  },
+  cellInfo: {
+    focus: {
+      store: 'genes',
+      key: 'C',
+    },
   },
   differentialExpression: {
     properties: {
@@ -175,8 +180,6 @@ describe('DiffExprResults', () => {
   });
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
-    const FOCUSED_GENE = 'CEMIP';
-
     // Redefine store from `beforeEach`.
     const component = mount(
       <Provider store={store}>
@@ -187,11 +190,21 @@ describe('DiffExprResults', () => {
     const table = component.find('Space Table Table');
 
     table.getElement().props.data.forEach((row) => {
-      if (row.gene_names === FOCUSED_GENE) {
-        expect(row.lookup.props.focused).toEqual(true);
+      const lookupComponent = mount(
+        <Provider store={store}>
+          {row.lookup}
+        </Provider>,
+      );
+
+      const focusButtonTooltip = lookupComponent.find('FocusButton Tooltip');
+
+      if (row.gene_names === 'C') {
+        expect(focusButtonTooltip.props().title).toContain('Hide');
       } else {
-        expect(row.lookup.props.focused).toEqual(false);
+        expect(focusButtonTooltip.props().title).toContain('Show');
       }
+
+      lookupComponent.unmount();
     });
   });
 });

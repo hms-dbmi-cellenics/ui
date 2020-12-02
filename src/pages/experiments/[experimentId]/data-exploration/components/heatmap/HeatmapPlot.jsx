@@ -9,7 +9,7 @@ import spec from '../../../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
 import HeatmapCrossHairs from './HeatmapCrossHairs';
 import CellInfo from '../CellInfo';
-import { updateCellInfo } from '../../../../../../redux/actions/updateCellInfo';
+import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
 
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
 import PlatformError from '../../../../../../components/PlatformError';

@@ -1,7 +1,7 @@
 import initialState from './initialState';
 import {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
-  GENES_SELECT, GENES_DESELECT, GENES_FOCUS, GENES_UNFOCUS,
+  GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
 } from '../../actionTypes/genes';
 
@@ -14,8 +14,6 @@ import genesExpressionError from './genesExpressionError';
 
 import genesSelect from './genesSelect';
 import genesDeselect from './genesDeselect';
-import genesFocus from './genesFocus';
-import genesUnfocus from './genesUnfocus';
 
 const genesReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -37,14 +35,6 @@ const genesReducer = (state = initialState, action) => {
 
     case GENES_DESELECT: {
       return genesDeselect(state, action);
-    }
-
-    case GENES_FOCUS: {
-      return genesFocus(state, action);
-    }
-
-    case GENES_UNFOCUS: {
-      return genesUnfocus(state, action);
     }
 
     case GENES_EXPRESSION_LOADING: {

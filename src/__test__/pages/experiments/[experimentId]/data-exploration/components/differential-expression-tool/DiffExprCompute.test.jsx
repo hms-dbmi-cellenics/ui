@@ -41,13 +41,11 @@ const store = mockStore({
         name: 'Louvain clusters',
         key: 'louvain',
         rootNode: true,
-        children: [],
       },
       scratchpad: {
         name: 'Custom selections',
         key: 'scratchpad',
         rootNode: true,
-        children: [],
       },
     },
     hierarchy: [
