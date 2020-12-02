@@ -17,7 +17,7 @@ const createCellSet = (experimentId, name, color, cellIds) => (dispatch, getStat
     key: uuidv4(),
     name,
     color,
-    cellIds,
+    cellIds: new Set([...cellIds].map((id) => parseInt(id, 10))),
   };
 
   dispatch({

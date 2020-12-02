@@ -1,5 +1,5 @@
-import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../actionTypes/embeddings';
-import { fetchCachedWork } from '../../utils/cacheRequest';
+import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../../actionTypes/embeddings';
+import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const TIMEOUT_SECONDS = 50;
 

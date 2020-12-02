@@ -25,7 +25,10 @@
     "lint": "eslint ./src",
     "detect-secrets": "pip3 install detect-secrets && git diff --staged --name-only | xargs detect-secrets-hook --baseline .secrets.baseline"
   },
-  "pre-commit": ["lint", "detect-secrets"],
+  "pre-commit": [
+    "lint",
+    "detect-secrets"
+  ],
   "keywords": [
     "nextjs",
     "antd",

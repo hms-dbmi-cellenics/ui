@@ -3,11 +3,11 @@
 exports[`createCellSet action Dispatches an action to create cell set to the reducer 1`] = `
 Object {
   "payload": Object {
-    "cellIds": Array [
-      "1",
-      "2",
-      "3",
-    ],
+    "cellIds": Set {
+      1,
+      2,
+      3,
+    },
     "color": "#ff0000",
     "experimentId": "1234",
     "key": "a key",
@@ -20,11 +20,11 @@ Object {
 exports[`createCellSet action Last action dispatches cellSetSave event 1`] = `
 Object {
   "payload": Object {
-    "cellIds": Array [
-      "1",
-      "2",
-      "3",
-    ],
+    "cellIds": Set {
+      1,
+      2,
+      3,
+    },
     "color": "#ff0000",
     "experimentId": "1234",
     "key": "a key",

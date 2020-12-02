@@ -197,6 +197,5 @@ describe('SelectionIndicator', () => {
     expect(text.childAt(0).text()).toEqual('2 genes selected');
   });
 
-
   configure({ adapter: new Adapter() });
 });

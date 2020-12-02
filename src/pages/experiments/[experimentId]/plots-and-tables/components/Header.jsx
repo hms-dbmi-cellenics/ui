@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import useSWR from 'swr';
 import {
   PageHeader, Row, Col, Button, Skeleton, Space,
@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import { useBeforeunload } from 'react-beforeunload';
-import { savePlotConfig, updatePlotConfig } from '../../../../../redux/actions/plots/index';
+import { savePlotConfig } from '../../../../../redux/actions/plots/index';
 import itemRender from '../../../../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../../utils/cacheRequest';
@@ -24,17 +24,21 @@ const KeyboardEventHandler = dynamic(
 );
 
 const Header = (props) => {
-  const {
-    experimentId, plotUuid, finalRoute,
-  } = props;
+  const { experimentId, plotUuid, finalRoute } = props;
 
   const dispatch = useDispatch();
   const saved = !useSelector((state) => state.plots[plotUuid].outstandingChanges);
   const lastUpdated = useSelector((state) => state.plots[plotUuid].lastUpdated);
   const router = useRouter();
   const type = useSelector((state) => state.plots[plotUuid].type);
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const reset = useRef(true);
 
+  if (!_.isEqual(config, initialPlotConfigStates[type])) {
+    reset.current = false;
+  }
   // Add prompt to save if modified since last save if changes happened.
+
   useBeforeunload((e) => {
     if (!saved) {
       e.preventDefault();
@@ -50,7 +54,11 @@ const Header = (props) => {
 
       // Show a confirmation dialog. Prevent moving away if the user decides not to.
       // eslint-disable-next-line no-alert
-      if (!window.confirm('Are you sure you want to leave? Changes that you made will not be saved.')) {
+      if (
+        !window.confirm(
+          'Are you sure you want to leave? Changes that you made will not be saved.',
+        )
+      ) {
         router.events.emit('routeChangeError');
 
         // Following is a hack-ish solution to abort a Next.js route change
@@ -68,7 +76,10 @@ const Header = (props) => {
     };
   }, [router.asPath, router.events, saved]);
 
-  const { data } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
+  const { data } = useSWR(
+    `${getApiEndpoint()}/v1/experiments/${experimentId}`,
+    getFromApiExpectOK,
+  );
 
   if (!data) {
     return <Skeleton.Input style={{ width: 200 }} active />;
@@ -91,9 +102,15 @@ const Header = (props) => {
     finalRoute,
   ];
 
-  const saveString = (lastUpdated) ? moment(lastUpdated).fromNow().toLowerCase() : 'never';
+  const saveString = lastUpdated
+    ? moment(lastUpdated)
+      .fromNow()
+      .toLowerCase()
+    : 'never';
   const onClickSave = () => {
-    if (saved) { return; }
+    if (saved) {
+      return;
+    }
 
     dispatch(savePlotConfig(experimentId, plotUuid));
   };
@@ -108,8 +125,9 @@ const Header = (props) => {
         config: _.cloneDeep(initialPlotConfigStates[type]),
       },
     });
+    dispatch(savePlotConfig(experimentId, plotUuid));
+    reset.current = true;
   };
-
   return (
     <Row>
       <Col span={16}>
@@ -143,11 +161,11 @@ const Header = (props) => {
                 key='reset'
                 type='primary'
                 onClick={onClickReset}
+                disabled={reset.current}
               >
                 Reset
               </Button>
             </Space>,
-
           ]}
         />
       </Col>
@@ -159,7 +177,6 @@ Header.propTypes = {
   finalRoute: PropTypes.object.isRequired,
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
-
 };
 
 export default Header;
