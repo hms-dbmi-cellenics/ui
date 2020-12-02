@@ -15,12 +15,14 @@ const { Text } = Typography;
 
 const SelectionIndicator = (props) => {
   const {
-    experimentId, showCSV, onExportCSV,
+    experimentId, showCSV, onExportCSV, onListSelected,
   } = props;
   const dispatch = useDispatch();
 
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [copied, setCopied] = useState(false);
+  const [listed, setListed] = useState(false);
+
   const clearAll = () => {
     dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
   };
@@ -69,7 +71,7 @@ const SelectionIndicator = (props) => {
     );
   };
   return (
-    <Space style={{ float: 'right' }}>
+    <Space style={{ float: 'left' }}>
       {selectedGenes.length !== 0 ? (
         <>
           <Text type='secondary'>
@@ -78,27 +80,41 @@ const SelectionIndicator = (props) => {
             {selectedGenes.length === 1 ? '' : 's'}
             {' selected'}
           </Text>
-          <Button type='link' size='small' onClick={clearAll}>Clear</Button>
+          <Button type='link' size='small' onClick={clearAll}>Clear selected</Button>
           {renderCopyClipboard()}
         </>
       ) : <></>}
 
-      {showCSV ? (
-        <Button type='link' size='small' onClick={onExportCSV}>Export as CSV...</Button>
-      ) : <></>}
+      <>
+        <Button
+          type='link'
+          size='small'
+          onClick={() => { setListed(!listed); onListSelected(!listed); }}
+        >
+          {listed ? 'Hide selected' : 'List selected'}
+        </Button>
+      </>
+
+      {
+        showCSV ? (
+          <Button type='link' size='small' onClick={onExportCSV}>Export as CSV ...</Button>
+        ) : <></>
+      }
+
     </Space>
   );
 };
 
 SelectionIndicator.defaultProps = {
   onExportCSV: () => null,
+  onListSelected: () => null,
 };
 
 SelectionIndicator.propTypes = {
   experimentId: PropTypes.string.isRequired,
   showCSV: PropTypes.bool.isRequired,
   onExportCSV: PropTypes.func,
+  onListSelected: PropTypes.func,
 };
-
 
 export default SelectionIndicator;
