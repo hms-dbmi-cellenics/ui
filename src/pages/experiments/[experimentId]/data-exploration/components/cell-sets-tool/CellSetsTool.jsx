@@ -24,6 +24,7 @@ import composeTree from '../../../../../../utils/composeTree';
 import isBrowser from '../../../../../../utils/environment';
 import messages from '../../../../../../components/notification/messages';
 import PlatformError from '../../../../../../components/PlatformError';
+import resetCellSets from '../../../../../../redux/actions/cellSets/resetCellSets';
 
 const { Text } = Typography;
 
