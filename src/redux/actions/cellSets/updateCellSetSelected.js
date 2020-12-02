@@ -11,20 +11,11 @@ const updateCellSetSelected = (experimentId, keys) => async (dispatch, getState)
 
   await dispatch({
     type: CELL_SETS_SET_SELECTED,
-    payload: { loadingColors: true },
+    payload: {
+      experimentId,
+      keys,
+    },
   });
-
-  setTimeout(() => {
-    // Running this action with a delay to allow recoloring of embedding
-    dispatch({
-      type: CELL_SETS_SET_SELECTED,
-      payload: {
-        experimentId,
-        keys,
-        loadingColors: false,
-      },
-    });
-  }, 50);
 };
 
 export default updateCellSetSelected;

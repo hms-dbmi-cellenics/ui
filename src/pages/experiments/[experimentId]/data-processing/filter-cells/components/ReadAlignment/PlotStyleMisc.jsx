@@ -10,7 +10,6 @@ const BandwidthOrBinstep = (props) => {
   } = props;
   let min = 0.001;
   let maxDefault = 0.2;
-  console.log(max);
   if (max) {
     min = max / 4;
     maxDefault = max;

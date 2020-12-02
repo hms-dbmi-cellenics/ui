@@ -30,16 +30,6 @@ const GENES_SELECT = `${GENES}/select`;
 const GENES_DESELECT = `${GENES}/deselect`;
 
 /**
- * Set a gene to be focused, e.g, for display on one or more embeddings.
- */
-const GENES_FOCUS = `${GENES}/focus`;
-
-/**
- * Deselects a focused gene.
- */
-const GENES_UNFOCUS = `${GENES}/unfocus`;
-
-/**
  * Turns on the loading state for expression data.
  */
 const GENES_EXPRESSION_LOADING = `${GENES}/expressionLoading`;
@@ -57,6 +47,6 @@ const GENES_EXPRESSION_ERROR = `${GENES}/expressionError`;
 
 export {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
-  GENES_SELECT, GENES_DESELECT, GENES_FOCUS, GENES_UNFOCUS,
+  GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
 };

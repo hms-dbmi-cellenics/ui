@@ -10,10 +10,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import { useBeforeunload } from 'react-beforeunload';
-import {
-  savePlotConfig,
-  updatePlotConfig,
-} from '../../../../../redux/actions/plots/index';
+import { savePlotConfig } from '../../../../../redux/actions/plots/index';
 import itemRender from '../../../../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../../utils/cacheRequest';
@@ -41,6 +38,7 @@ const Header = (props) => {
     reset.current = false;
   }
   // Add prompt to save if modified since last save if changes happened.
+
   useBeforeunload((e) => {
     if (!saved) {
       e.preventDefault();

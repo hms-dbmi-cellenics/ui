@@ -59,9 +59,16 @@ const initialState = {
       data: {},
     },
     selected: [],
-    focused: undefined,
+  },
+  cellInfo: {
+    focus: {
+      key: null,
+      store: null,
+    },
   },
 };
+
+const eventStub = { stopPropagation: () => null };
 
 describe('GeneListTool', () => {
   beforeAll(async () => {
@@ -165,21 +172,40 @@ describe('GeneListTool', () => {
     const table = component.find('Space Table Table');
 
     table.getElement().props.data.forEach((row) => {
-      expect(row.lookup.props.focused).toEqual(false);
+      const lookupComponent = mount(
+        <Provider store={store}>
+          {row.lookup}
+        </Provider>,
+      );
+
+      const focusButtonTooltip = lookupComponent.find('FocusButton Tooltip');
+      expect(focusButtonTooltip.props().title).toContain('Show');
+      expect(focusButtonTooltip.props().title).not.toContain('Hide');
+
+      lookupComponent.unmount();
     });
   });
 
   it('Clicking one of the `eye` buttons triggers appropriate onChange actions.', () => {
     const table = component.find('Space Table Table');
 
-    const { onClick } = table.getElement().props.data[2].lookup.props;
+    // Render the appropriate `lookup` component
+    const lookupComponent = mount(
+      <Provider store={store}>
+        {table.getElement().props.data[2].lookup}
+      </Provider>,
+    );
 
-    // trigger clicking
-    onClick();
+    // Get focus button
+    const button = lookupComponent.find('FocusButton Tooltip Button');
 
-    // The store should have been updated.
+    // Simulate clicking
+    button.simulate('click', eventStub);
+
     expect(store.getActions().length).toEqual(4);
     expect(store.getActions()[3]).toMatchSnapshot();
+
+    lookupComponent.unmount();
   });
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
@@ -188,7 +214,14 @@ describe('GeneListTool', () => {
     // Redefine store from `beforeEach`.
     store = mockStore({
       ...initialState,
-      genes: { ...initialState.genes, focused: FOCUSED_GENE },
+      cellInfo: {
+        ...initialState.cellInfo,
+        focus: {
+          ...initialState.cellInfo.focus,
+          store: 'genes',
+          key: FOCUSED_GENE,
+        },
+      },
     });
 
     component = mount(
@@ -200,11 +233,21 @@ describe('GeneListTool', () => {
     const table = component.find('Space Table Table');
 
     table.getElement().props.data.forEach((row) => {
+      const lookupComponent = mount(
+        <Provider store={store}>
+          {row.lookup}
+        </Provider>,
+      );
+
+      const focusButtonTooltip = lookupComponent.find('FocusButton Tooltip');
+
       if (row.gene_names === FOCUSED_GENE) {
-        expect(row.lookup.props.focused).toEqual(true);
+        expect(focusButtonTooltip.props().title).toContain('Hide');
       } else {
-        expect(row.lookup.props.focused).toEqual(false);
+        expect(focusButtonTooltip.props().title).toContain('Show');
       }
+
+      lookupComponent.unmount();
     });
   });
 

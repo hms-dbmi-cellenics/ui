@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cellInfoReducer Updates cell info state on focus action 1`] = `
+Object {
+  "focus": Object {
+    "key": "GENE1",
+    "store": "genes",
+  },
+}
+`;
+
+exports[`cellInfoReducer Updates cell info state on unfocus action 1`] = `
+Object {
+  "focus": Object {
+    "key": null,
+    "store": null,
+  },
+}
+`;
+
+exports[`cellInfoReducer Updates cell info state on update action 1`] = `
+Object {
+  "cellName": "C1",
+  "expression": 1,
+  "focus": Object {
+    "key": null,
+    "store": null,
+  },
+  "geneName": "G1",
+}
+`;
