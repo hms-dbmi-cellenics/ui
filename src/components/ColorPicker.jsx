@@ -43,7 +43,10 @@ const ColorPicker = (props) => {
           size='small'
           shape='circle'
           style={{ backgroundColor: colorPicked }}
-          onClick={(() => setVisible(true))}
+          onClick={(e) => {
+            e.stopPropagation();
+            setVisible(true);
+          }}
         >
           <Tooltip placement='bottom' title='Change color' mouseEnterDelay={0} mouseLeaveDelay={0}>
             <span>&nbsp;</span>

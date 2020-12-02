@@ -234,6 +234,7 @@ const Embedding = (props) => {
         createClusterPopover
           ? (
             <ClusterPopover
+              visible
               popoverPosition={cellCoordintes}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
