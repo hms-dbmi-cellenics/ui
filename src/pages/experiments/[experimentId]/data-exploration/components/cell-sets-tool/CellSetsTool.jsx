@@ -140,21 +140,11 @@ const CellSetsTool = (props) => {
       );
     }
 
-    const recluster = () => {
-      dispatch(resetCellSets(experimentId));
-    };
-
     const cellSetTreeData = composeTree(hierarchy, properties, 'cellSets');
     const metadataTreeData = composeTree(hierarchy, properties, 'metadataCategorical');
 
     return (
       <>
-        <Space style={{ width: '100%' }}>
-          <Tooltip title='Reset clusters to the initial state'>
-            <Button type='primary' size='small' onClick={recluster}>Reset Clusters</Button>
-          </Tooltip>
-        </Space>
-
         <Tabs defaultActiveKey='cellSets' onChange={() => null} tabBarExtraContent={operations}>
           <TabPane tab='Cell sets' key='cellSets'>
             <HierarchicalTree

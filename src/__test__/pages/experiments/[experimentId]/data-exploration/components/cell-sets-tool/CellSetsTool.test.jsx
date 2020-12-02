@@ -53,31 +53,78 @@ describe('cell sets tool', () => {
   });
   test('Delete option is available for not louvain clusters', () => {
     const store = mockStore({
+      cellInfo: {
+        cellName: 74,
+        componentType: 'heatmap',
+        expression: 1.0431824837287789,
+        focus: { store: null, key: null },
+        geneName: 'FTH1',
+      },
       cellSets: {
         error: false,
         hierarchy: [
-          { key: 'louvain-0' },
-          { key: 'louvain-1' },
-          { key: 'e8231d51-8e63-4fbc-b32f-e2a9902adfd3' },
+          {
+            key: 'louvain',
+            children: [{ key: 'louvain-0' }, { key: 'louvain-1' }],
+          },
+          {
+            key: 'condition',
+            children: [
+              { key: 'condition-control' },
+              { key: 'condition-treated' },
+            ],
+          },
+          {
+            key: 'scratchpad',
+            children: [{ key: '36cf4faf-2086-44b8-bf60-a74eadf67330' }],
+          },
         ],
         loading: false,
         properties: {
+          louvain: {
+            cellIds: [],
+            type: 'cellSets',
+            rootNode: true,
+          },
           'louvain-0': {
-            cellIds: (['764', '30', '1058', '683', '621', '722', '103', '206']),
+            cellIds: ['764', '30', '1058', '683', '621', '722', '103', '206'],
             color: '#c9080a',
             name: 'test',
             rootNode: undefined,
+            type: undefined,
           },
           'louvain-1': {
-            cellIds: ([0, 21, 29, 31, 34, 55, 58, 61, 67, 69, 70, 72, 73]),
+            cellIds: (['764', '30', '1058', '683', '621', '722', '103', '206']),
             color: '#e377c2',
             name: 'Cluster 0',
             rootNode: undefined,
+            type: undefined,
           },
-          'e8231d51-8e63-4fbc-b32f-e2a9902adfd3': {
-            cellIds: ([0, 21, 29, 31, 34, 55, 58, 61, 67, 69, 70, 72, 73]),
-            key: 'e8231d51-8e63-4fbc-b32f-e2a9902adfd3',
+          scratchpad: {
+            cellIds: [],
+            rootNode: true,
+            name: 'Scratchpad',
+            type: 'cellSets',
+          },
+          '36cf4faf-2086-44b8-bf60-a74eadf67330': {
+            cellIds: (['764', '30', '1058', '683', '621', '722', '103', '206']),
+            key: '36cf4faf-2086-44b8-bf60-a74eadf67330',
             name: 'New Cluster',
+          },
+
+          condition: {
+            cellIds: [],
+            name: 'Condition',
+            rootNode: true,
+            type: 'metadataCategorical',
+          },
+          'condition-control': {
+            cellIds: (['764', '30', '1058', '683', '621', '722', '103', '206']),
+            name: 'Control',
+          },
+          'condition-treated': {
+            cellIds: (['764', '30', '1058', '683', '621', '722', '103', '206']),
+            name: 'Treated',
           },
         },
       },
