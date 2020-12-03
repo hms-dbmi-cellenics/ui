@@ -11,7 +11,7 @@ import {
   Button, Tooltip,
 } from 'antd';
 
-import { MergeCellsOutlined, SplitCellsOutlined, BlockOutlined } from '@ant-design/icons';
+import { MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
 
 import { Element, animateScroll } from 'react-scroll';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';

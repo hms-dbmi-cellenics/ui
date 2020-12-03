@@ -7,7 +7,7 @@ import {
 
 import ClusterPopover from '../embedding/ClusterPopover';
 
-const CellSetOperations = (props) => {
+const CellSetOperation = (props) => {
   const {
     icon, helpTitle, onCreate, onCancel,
   } = props;
@@ -35,16 +35,16 @@ const CellSetOperations = (props) => {
   );
 };
 
-CellSetOperations.defaultProps = {
+CellSetOperation.defaultProps = {
   onCreate: () => null,
   onCancel: () => null,
 };
 
-CellSetOperations.propTypes = {
+CellSetOperation.propTypes = {
   icon: PropTypes.object.isRequired,
   helpTitle: PropTypes.string.isRequired,
   onCreate: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
-export default CellSetOperations;
+export default CellSetOperation;
