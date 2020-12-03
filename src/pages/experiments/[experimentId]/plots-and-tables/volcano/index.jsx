@@ -43,7 +43,6 @@ const route = {
 
 const plotUuid = 'volcanoPlotMain';
 const plotType = 'volcano';
-
 const VolcanoPlot = () => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -184,11 +183,12 @@ const VolcanoPlot = () => {
   };
 
   const generateExportDropdown = () => {
-    const { cellSet, compareWith } = config.cellSets;
+    const {
+      cellSet, compareWith,
+    } = config.cellSets;
 
     const date = moment.utc().format('YYYY-MM-DD-HH-mm-ss');
     const fileName = `de_${experimentId}_${cellSet}_vs_${compareWith}_${date}.csv`;
-
     const disabled = plotData.length === 0 || loading || _.isEmpty(spec.spec) || error;
 
     return (
