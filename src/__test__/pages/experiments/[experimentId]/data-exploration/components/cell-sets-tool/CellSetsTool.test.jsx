@@ -1,11 +1,14 @@
 import React from 'react';
-import { Tabs, Popover } from 'antd';
+import { Tabs } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
+import {
+  DeleteOutlined,
+} from '@ant-design/icons';
 import CellSetsTool from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/cell-sets-tool/CellSetsTool';
 import CellSetOperation from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/cell-sets-tool/CellSetOperation';
 
@@ -17,6 +20,9 @@ const mockStore = configureStore([thunk]);
 
 describe('CellSetsTool', () => {
   const storeState = {
+    cellInfo: {
+      focus: { store: null, key: null },
+    },
     cellSets: {
       loading: false,
       error: false,
@@ -40,14 +46,24 @@ describe('CellSetsTool', () => {
           cellIds: new Set(['2', '5']),
           color: '#0000FF',
         },
+        'scratchpad-a': {
+          cellIds: new Set(['3']),
+          key: 'scratchpad-a',
+          name: 'New Cluster',
+          color: '#ff00ff',
+        },
         louvain: {
+          cellIds: new Set(),
           name: 'Louvain clusters',
           key: 'louvain',
+          type: 'cellSets',
           rootNode: true,
         },
         scratchpad: {
+          cellIds: new Set(),
           name: 'Custom selections',
           key: 'scratchpad',
+          type: 'cellSets',
           rootNode: true,
         },
       },
@@ -58,6 +74,7 @@ describe('CellSetsTool', () => {
         },
         {
           key: 'scratchpad',
+          children: [{ key: 'scratchpad-a' }],
         },
       ],
     },
@@ -89,6 +106,9 @@ describe('CellSetsTool', () => {
 
     // It should have two panes.
     expect(tabs.find(TabPane).length).toEqual(2);
+
+    // There should be one delete button for the scratchpad cluster.
+    expect(component.find(DeleteOutlined).length).toEqual(1);
   });
 
   it('cell set operations should not render when no cell sets are selected', () => {
@@ -166,10 +186,10 @@ describe('CellSetsTool', () => {
       if (helpTitle.includes('Combine')) {
         // found the union operation, now execute the callback
         onCreate('union cluster', '#ff00ff');
-        expect(store.getActions().length).toEqual(2);
+        expect(store.getActions().length).toEqual(3);
 
         // Should create the appropriate union set.
-        const [createAction] = store.getActions();
+        const createAction = store.getActions()[1];
         expect(createAction.payload.cellIds).toEqual(new Set([1, 2, 3, 4, 5]));
       }
     });
@@ -207,10 +227,10 @@ describe('CellSetsTool', () => {
       if (helpTitle.includes('intersection')) {
         // found the union operation, now execute the callback
         onCreate('intersection cluster', '#ff00ff');
-        expect(store.getActions().length).toEqual(2);
+        expect(store.getActions().length).toEqual(3);
 
         // Should create the appropriate intersection set.
-        const [createAction] = store.getActions();
+        const createAction = store.getActions()[1];
         expect(createAction.payload.cellIds).toEqual(new Set([2]));
       }
     });

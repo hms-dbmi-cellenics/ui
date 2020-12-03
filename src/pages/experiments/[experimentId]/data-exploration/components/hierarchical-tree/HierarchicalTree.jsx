@@ -46,7 +46,10 @@ const HierarchicalTree = (props) => {
     setAutoExpandParent(false);
   };
 
-  const onCheck = (keys) => { setCheckedKeys(keys); propOnCheck(keys); };
+  const onCheck = (keys) => {
+    setCheckedKeys(keys);
+    propOnCheck(keys);
+  };
 
   const onDrop = (info) => {
     /**
@@ -74,29 +77,36 @@ const HierarchicalTree = (props) => {
     const removeAndReturn = (haystack, needle) => {
       let removed;
 
-      const rest = transform(haystack, (result, objValue) => {
-        if (objValue.key !== needle) {
-          if (objValue.children) {
-            const recReturn = removeAndReturn(objValue.children, needle);
+      const rest = transform(
+        haystack,
+        (result, objValue) => {
+          if (objValue.key !== needle) {
+            if (objValue.children) {
+              const recReturn = removeAndReturn(objValue.children, needle);
 
-            // eslint-disable-next-line no-param-reassign
-            objValue.children = recReturn.rest;
-            if (recReturn.removed) {
-              removed = recReturn.removed;
+              // eslint-disable-next-line no-param-reassign
+              objValue.children = recReturn.rest;
+              if (recReturn.removed) {
+                removed = recReturn.removed;
+              }
             }
+            result.push(objValue);
+          } else {
+            removed = objValue;
           }
-          result.push(objValue);
-        } else {
-          removed = objValue;
-        }
-      }, []);
+        },
+        [],
+      );
 
       return { removed, rest };
     };
 
     // Clone the state of the curernt tree
     // eslint-disable-next-line prefer-const
-    let { removed: dragObj, rest: newTreeData } = removeAndReturn(cloneDeep(treeData), dragKey);
+    let { removed: dragObj, rest: newTreeData } = removeAndReturn(
+      cloneDeep(treeData),
+      dragKey,
+    );
 
     /**
      * We dropped the item into another item. At this point we want to
@@ -128,25 +138,26 @@ const HierarchicalTree = (props) => {
     // We dropped the item into a gap between two items.
     if (info.dropToGap) {
       // It can either be above or below an element.
-      const dropPosition = (info.node.dragOverGapTop) ? 'top' : 'bottom';
+      const dropPosition = info.node.dragOverGapTop ? 'top' : 'bottom';
 
-      const addIntoGap = (haystack, needle) => transform(haystack,
+      const addIntoGap = (haystack, needle) => transform(
+        haystack,
         (result, objValue) => {
           // We found the place to insert the dragged element.
           if (objValue.key === needle) {
             /**
-             * If a dragged object is a root node, it should only be
-             * droppable in between root nodes.
-             */
+               * If a dragged object is a root node, it should only be
+               * droppable in between root nodes.
+               */
             if (!objValue.rootNode && dragObj.rootNode === true) {
               shouldUpdateState = false;
               return false;
             }
 
             /**
-             * If a dragged object is not a root node, it should only be
-             * droppable in between non-root nodes.
-             */
+               * If a dragged object is not a root node, it should only be
+               * droppable in between non-root nodes.
+               */
             if (!dragObj.rootNode && objValue.rootNode === true) {
               shouldUpdateState = false;
               return false;
@@ -158,9 +169,9 @@ const HierarchicalTree = (props) => {
             }
 
             /**
-             * Add the drag object into the tree according to where it was
-             * dropped.
-             */
+               * Add the drag object into the tree according to where it was
+               * dropped.
+               */
             if (dropPosition === 'top') {
               result.push(dragObj);
               result.push(objValue);
@@ -170,9 +181,9 @@ const HierarchicalTree = (props) => {
             }
           } else {
             /**
-             * We have not found the place to insert the element.
-             * Carry on building the new object until we are there.
-             */
+               * We have not found the place to insert the element.
+               * Carry on building the new object until we are there.
+               */
             if (objValue.children) {
               // eslint-disable-next-line no-param-reassign
               objValue.children = addIntoGap(objValue.children, needle);
@@ -181,7 +192,9 @@ const HierarchicalTree = (props) => {
           }
 
           return true;
-        }, []);
+        },
+        [],
+      );
 
       newTreeData = addIntoGap(newTreeData, dropKey);
     }
@@ -196,13 +209,13 @@ const HierarchicalTree = (props) => {
       return (
         <ColorPicker
           color={modified.color || '#ffffff'}
-          onColorChange={((e) => {
+          onColorChange={(e) => {
             props.onNodeUpdate(modified.key, { color: e });
-          })}
+          }}
         />
       );
     }
-    return (<></>);
+    return <></>;
   };
 
   const renderEditableField = (modified, parentKey) => (
@@ -220,6 +233,20 @@ const HierarchicalTree = (props) => {
     />
   );
 
+  const renderFocusButton = (modified) => {
+    if (modified.children && store) {
+      return (
+        <FocusButton
+          experimentId={experimentId}
+          lookupKey={modified.key}
+          store={store}
+        />
+      );
+    }
+
+    return <></>;
+  };
+  // eslint-disable-next-line no-unused-vars
   const renderHideButton = (modified) => {
     if (!modified.rootNode) {
       return (
@@ -234,24 +261,8 @@ const HierarchicalTree = (props) => {
         </Button>
       );
     }
-
     return <></>;
   };
-
-  const renderFocusButton = (modified) => {
-    if (modified.children && store) {
-      return (
-        <FocusButton
-          experimentId={experimentId}
-          lookupKey={modified.key}
-          store={store}
-        />
-      );
-    }
-
-    return <></>;
-  };
-
   const renderTitlesRecursive = (source, parentKey = null) => {
     const toRender = source && source.map((d) => {
       const modified = d;
