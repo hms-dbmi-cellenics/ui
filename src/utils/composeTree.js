@@ -11,7 +11,6 @@ const composeTree = (hierarchy, properties, filterType = null) => {
     if (!data) {
       return;
     }
-
     return data.filter(
       (root) => !type || properties[root.key].type === type,
     ).map(
@@ -21,9 +20,9 @@ const composeTree = (hierarchy, properties, filterType = null) => {
         cellIds: [...properties[node.key].cellIds],
         children: node.children ? composeTreeRecursive(node.children, null) : undefined,
       }),
+
     );
   };
-
   return composeTreeRecursive(hierarchy, filterType);
 };
 
