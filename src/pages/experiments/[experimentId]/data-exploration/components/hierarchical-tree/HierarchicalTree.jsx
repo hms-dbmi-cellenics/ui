@@ -246,7 +246,23 @@ const HierarchicalTree = (props) => {
 
     return <></>;
   };
-
+  // eslint-disable-next-line no-unused-vars
+  const renderHideButton = (modified) => {
+    if (!modified.rootNode) {
+      return (
+        <Button
+          size='small'
+          onClick={(e) => {
+            e.stopPropagation();
+            propOnHide(modified.key);
+          }}
+        >
+          Hide
+        </Button>
+      );
+    }
+    return <></>;
+  };
   const renderTitlesRecursive = (source, parentKey = null) => {
     const toRender = source && source.map((d) => {
       const modified = d;

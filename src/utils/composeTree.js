@@ -8,7 +8,6 @@
  */
 const composeTree = (hierarchy, properties, filterType = null) => {
   const composeTreeRecursive = (data, type) => {
-    // console.log('TYPE IS ', type);
     if (!data) {
       return;
     }
