@@ -135,12 +135,18 @@ const volcanoInitialConfig = {
   textThresholdValue: 240,
   legendPosition: 'top-right',
 };
-
+const frequencyInitialConfig = {
+  legendEnabled: true,
+  spec: '1.0.0',
+  width: 500,
+  height: 500,
+};
 const initialPlotConfigStates = {
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
+  frequency: frequencyInitialConfig,
 };
 
 const initialState = {};

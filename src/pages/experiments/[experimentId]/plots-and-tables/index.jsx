@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -12,6 +13,7 @@ import heatmap from '../../../../../static/media/heatmap.png';
 import embeddingContinuous from '../../../../../static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../static/media/embeddingCategorical.png';
 import volcano from '../../../../../static/media/volcano.png';
+import frequency from '../../../../../static/media/volcano.png';
 import FeedbackButton from '../../../../components/FeedbackButton';
 
 const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
@@ -44,10 +46,10 @@ CardItem.propTypes = {
 };
 
 const PlotsTablesHome = () => {
-  let lastUpdatedVolcano = useSelector((state) => state.plots['volcanoPlotMain'] ?.lastUpdated);
-  let lastUpdatedContinuous = useSelector((state) => state.plots['embeddingContinuousMain'] ?.lastUpdated);
-  let lastUpdatedCategorical = useSelector((state) => state.plots['embeddingCategoricalMain'] ?.lastUpdated);
-  let lastUpdatedHeatmap = useSelector((state) => state.plots['lastUpdatedHeatmap'] ?.lastUpdated);
+  let lastUpdatedVolcano = useSelector((state) => state.plots.volcanoPlotMain?.lastUpdated);
+  let lastUpdatedContinuous = useSelector((state) => state.plots.embeddingContinuousMain?.lastUpdated);
+  let lastUpdatedCategorical = useSelector((state) => state.plots.embeddingCategoricalMain?.lastUpdated);
+  let lastUpdatedHeatmap = useSelector((state) => state.plots.lastUpdatedHeatmap?.lastUpdated);
 
   if (!lastUpdatedVolcano) {
     lastUpdatedVolcano = 'never';
@@ -90,6 +92,13 @@ const PlotsTablesHome = () => {
       image: volcano,
       key: 'volcano-key',
       link: 'volcano',
+      description: `Last updated: ${lastUpdatedVolcano}`,
+    },
+    {
+      name: 'FrequencyPlot',
+      image: frequency,
+      key: 'frequency-key',
+      link: 'frequency',
       description: `Last updated: ${lastUpdatedVolcano}`,
     },
   ];
