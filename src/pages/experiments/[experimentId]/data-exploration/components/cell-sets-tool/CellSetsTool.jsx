@@ -137,10 +137,6 @@ const CellSetsTool = (props) => {
           </Text>
 
           <CellSetOperation
-            icon={<BlockOutlined />}
-            helpTitle='Create complement of selected'
-          />
-          <CellSetOperation
             icon={<SplitCellsOutlined />}
             onCreate={(name, color) => {
               dispatch(createCellSet(experimentId, name, color, getIntersectionSet()));
