@@ -127,15 +127,6 @@ const CellSetsTool = (props) => {
     if (numSelected) {
       operations = (
         <Space>
-          <Text type='secondary'>
-            {numSelected}
-            {' '}
-            cell
-            {numSelected === 1 ? '' : 's'}
-            {' '}
-            selected
-          </Text>
-
           <CellSetOperation
             icon={<SplitCellsOutlined />}
             onCreate={(name, color) => {
@@ -150,6 +141,14 @@ const CellSetsTool = (props) => {
             }}
             helpTitle='Combine selected'
           />
+          <Text type='secondary'>
+            {numSelected}
+            {' '}
+            cell
+            {numSelected === 1 ? '' : 's'}
+            {' '}
+            selected
+          </Text>
         </Space>
       );
     }

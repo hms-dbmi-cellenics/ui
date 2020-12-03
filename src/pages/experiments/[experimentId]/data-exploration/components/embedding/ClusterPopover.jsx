@@ -44,13 +44,14 @@ const ClusterPopover = (props) => {
 ClusterPopover.defaultProps = {
   popoverPosition: null,
   message: 'Add cell set',
+  children: <></>,
 };
 
 ClusterPopover.propTypes = {
   onCreate: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   popoverPosition: PropTypes.object,
-  children: PropTypes.object.isRequired,
+  children: PropTypes.object,
   message: PropTypes.string,
 };
 
