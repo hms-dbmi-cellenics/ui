@@ -6,14 +6,14 @@ import {
   Skeleton, Space,
   Tabs,
   Typography, Empty,
-  Button, Tooltip,
 } from 'antd';
 
-// import { MergeCellsOutlined, SplitCellsOutlined, BlockOutlined } from '@ant-design/icons';
+import { MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
 
 import { Element, animateScroll } from 'react-scroll';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
+  createCellSet,
   loadCellSets,
   deleteCellSet,
   updateCellSetHierarchy,
@@ -24,7 +24,7 @@ import composeTree from '../../../../../../utils/composeTree';
 import isBrowser from '../../../../../../utils/environment';
 import messages from '../../../../../../components/notification/messages';
 import PlatformError from '../../../../../../components/PlatformError';
-import resetCellSets from '../../../../../../redux/actions/cellSets/resetCellSets';
+import CellSetOperation from './CellSetOperation';
 
 const { Text } = Typography;
 
@@ -78,9 +78,9 @@ const CellSetsTool = (props) => {
     dispatch(updateCellSetSelected(experimentId, keys));
   };
 
-  const getNumberOfCellsSelected = () => {
+  const getUnionSet = () => {
     if (!selected) {
-      return 0;
+      return new Set();
     }
 
     const sets = selected.map((key) => properties[key]?.cellIds || []);
@@ -92,7 +92,25 @@ const CellSetsTool = (props) => {
       ),
     );
 
-    return unionSet.size;
+    return unionSet;
+  };
+
+  const getIntersectionSet = () => {
+    if (!selected) {
+      return new Set();
+    }
+
+    const sets = selected.map(
+      (key) => properties[key]?.cellIds || null,
+    ).filter(
+      (set) => set && set.size > 0,
+    );
+
+    const intersectionSet = sets.reduce(
+      (acc, curr) => new Set([...acc].filter((x) => curr.has(x))),
+    );
+
+    return intersectionSet;
   };
 
   /**
@@ -112,11 +130,25 @@ const CellSetsTool = (props) => {
     }
 
     let operations = null;
-    const numSelected = getNumberOfCellsSelected();
+    const numSelected = getUnionSet().size;
 
     if (numSelected) {
       operations = (
         <Space>
+          <CellSetOperation
+            icon={<SplitCellsOutlined />}
+            onCreate={(name, color) => {
+              dispatch(createCellSet(experimentId, name, color, getIntersectionSet()));
+            }}
+            helpTitle='Create intersection of selected'
+          />
+          <CellSetOperation
+            icon={<MergeCellsOutlined />}
+            onCreate={(name, color) => {
+              dispatch(createCellSet(experimentId, name, color, getUnionSet()));
+            }}
+            helpTitle='Combine selected'
+          />
           <Text type='secondary'>
             {numSelected}
             {' '}
@@ -125,17 +157,6 @@ const CellSetsTool = (props) => {
             {' '}
             selected
           </Text>
-          {/* <Tooltip title='Create complement of selected cells'>
-            <Button type='dashed' icon={<BlockOutlined />} size='small' />
-          </Tooltip>
-
-          <Tooltip title='Create intersection of selected cells'>
-            <Button type='dashed' icon={<SplitCellsOutlined />} size='small' />
-          </Tooltip>
-
-          <Tooltip title='Combine selected cells'>
-            <Button type='dashed' icon={<MergeCellsOutlined />} size='small' />
-          </Tooltip> */}
         </Space>
       );
     }

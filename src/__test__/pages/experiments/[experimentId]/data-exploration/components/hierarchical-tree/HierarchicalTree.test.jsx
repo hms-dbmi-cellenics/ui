@@ -17,7 +17,7 @@ describe('HierarchicalTree', () => {
     }];
 
     const component = mount(
-      <HierarchicalTree treeData={treeData} />,
+      <HierarchicalTree treeData={treeData} experimentId='asd' />,
     );
     const tree = component.find('HierarchicalTree Tree');
     expect(tree.length).toEqual(1);

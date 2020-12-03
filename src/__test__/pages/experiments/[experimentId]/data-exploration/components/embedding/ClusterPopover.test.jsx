@@ -22,6 +22,7 @@ describe('ClusterPopover', () => {
         popoverPosition={popoverPosition}
         onCreate={mockCreate}
         onCancel={mockCancel}
+        visible
       />,
     );
   });
