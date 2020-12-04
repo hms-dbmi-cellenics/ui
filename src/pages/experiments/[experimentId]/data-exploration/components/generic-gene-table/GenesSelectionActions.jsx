@@ -6,43 +6,41 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 
 import _ from 'lodash';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, RedoOutlined, MinusOutlined } from '@ant-design/icons';
 import { changeExpressionView } from '../../../../../../redux/actions/genes';
+import { geneOperations } from '../../../../../../utils/geneTable/geneOperations';
 
 const GenesSelectionActions = (props) => {
   const { experimentId, genesSelectionListener } = props;
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
 
-  const add = () => {
+  const performGeneOperation = (geneOperation) => {
     const newGenes = _.cloneDeep(selectedGenes);
-    console.log('***** ', genesSelectionListener);
-    dispatch(changeExpressionView(experimentId, newGenes, genesSelectionListener, false));
-  };
-
-  const overwrite = () => {
-    const newGenes = _.cloneDeep(selectedGenes);
-    dispatch(changeExpressionView(experimentId, newGenes, genesSelectionListener, true));
-  };
-
-  const remove = () => {
-    dispatch(changeExpressionView(experimentId, [], genesSelectionListener, true));
+    console.log('lalalalalalalala ', geneOperation, newGenes);
+    dispatch(changeExpressionView(experimentId, newGenes, genesSelectionListener, geneOperation));
   };
 
   const menu = (
     <Menu size='small'>
-      <Menu.Item key='0' onClick={add}>
+      <Menu.Item key='0' onClick={() => performGeneOperation(geneOperations.ADD)}>
         <PlusOutlined />
         Add
       </Menu.Item>
-      <Menu.Item key='1' onClick={overwrite}>
-        Overwrite
-      </Menu.Item>
-      <Menu.Item key='2' onClick={remove}>
+      <Menu.Item key='2' onClick={() => performGeneOperation(geneOperations.REMOVE)}>
+        <MinusOutlined />
         Remove
+      </Menu.Item>
+      <Menu.Item key='1' onClick={() => performGeneOperation(geneOperations.OVERWRITE)}>
+        <RedoOutlined />
+        Overwrite
       </Menu.Item>
     </Menu>
   );
+
+  if (selectedGenes.length === 0) {
+    return (<></>);
+  }
 
   return (
     <Dropdown type='link' size='small' overlay={menu} trigger='click'>
