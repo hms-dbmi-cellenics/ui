@@ -1,18 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Empty, Spin,
 } from 'antd';
-import _ from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
 import spec from '../../../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
 import HeatmapCrossHairs from './HeatmapCrossHairs';
 import CellInfo from '../CellInfo';
 import PlatformError from '../../../../../../components/PlatformError';
 import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
-import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+import { changeExpressionView } from '../../../../../../redux/actions/genes';
 
 const HeatmapPlot = (props) => {
   const {
@@ -61,7 +59,7 @@ const HeatmapPlot = (props) => {
         description={error}
         onClick={() => {
           if (!selectedGenesLoading) {
-            dispatch(loadGeneExpression(experimentId, selectedGenes, '1234'));
+            dispatch(changeExpressionView(experimentId, selectedGenes, componentUuid));
           }
         }}
       />

@@ -16,7 +16,7 @@ import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 import useLazyEffect from '../../../../../../utils/useLazyEffect';
 import GeneTableMenu from './GeneTableMenu';
-import HeatmapActions from './HeatmapActions';
+import GenesSelectionActions from './GenesSelectionActions';
 
 const GeneTable = (props) => {
   const {
@@ -188,7 +188,7 @@ const GeneTable = (props) => {
       {loading ? <></> : (
         <>
           <GeneTableMenu onExportCSV={onExportCSV} experimentId={experimentId} />
-          <HeatmapActions experimentId={experimentId} listenerUuid={listenerUuid} />
+          <GenesSelectionActions experimentId={experimentId} genesSelectionListener={listenerUuid} />
           <FilterGenes
             onFilter={filterGenes}
             defaultFilterOption={geneNameFilterState.filterOption}

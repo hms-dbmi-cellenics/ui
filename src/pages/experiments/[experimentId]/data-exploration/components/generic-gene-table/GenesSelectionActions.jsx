@@ -7,27 +7,26 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import _ from 'lodash';
 import { PlusOutlined } from '@ant-design/icons';
-import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+import { changeExpressionView } from '../../../../../../redux/actions/genes';
 
-const HeatmapActions = (props) => {
-  console.log('lalalalalalalla');
-
-  const { experimentId, listenerUuid } = props;
+const GenesSelectionActions = (props) => {
+  const { experimentId, genesSelectionListener } = props;
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
 
   const add = () => {
     const newGenes = _.cloneDeep(selectedGenes);
-    dispatch(loadGeneExpression(experimentId, newGenes, listenerUuid));
+    console.log('***** ', genesSelectionListener);
+    dispatch(changeExpressionView(experimentId, newGenes, genesSelectionListener, false));
   };
 
   const overwrite = () => {
     const newGenes = _.cloneDeep(selectedGenes);
-    dispatch(loadGeneExpression(experimentId, newGenes, listenerUuid));
+    dispatch(changeExpressionView(experimentId, newGenes, genesSelectionListener, true));
   };
 
   const remove = () => {
-    dispatch(loadGeneExpression(experimentId, [], listenerUuid));
+    dispatch(changeExpressionView(experimentId, [], genesSelectionListener, true));
   };
 
   const menu = (
@@ -52,12 +51,12 @@ const HeatmapActions = (props) => {
   );
 };
 
-HeatmapActions.defaultProps = {
+GenesSelectionActions.defaultProps = {
 };
 
-HeatmapActions.propTypes = {
+GenesSelectionActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  listenerUuid: PropTypes.string.isRequired,
+  genesSelectionListener: PropTypes.string.isRequired,
 };
 
-export default HeatmapActions;
+export default GenesSelectionActions;
