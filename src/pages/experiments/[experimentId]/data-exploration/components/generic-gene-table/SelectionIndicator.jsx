@@ -82,18 +82,15 @@ const SelectionIndicator = (props) => {
           </Text>
           <Button type='link' size='small' onClick={clearAll}>Clear selected</Button>
           {renderCopyClipboard()}
+          <Button
+            type='link'
+            size='small'
+            onClick={() => { setListed(!listed); onListSelected(!listed); }}
+          >
+            {listed ? 'Hide selected' : 'List selected'}
+          </Button>
         </>
       ) : <></>}
-
-      <>
-        <Button
-          type='link'
-          size='small'
-          onClick={() => { setListed(!listed); onListSelected(!listed); }}
-        >
-          {listed ? 'Hide selected' : 'List selected'}
-        </Button>
-      </>
 
       {
         showCSV ? (

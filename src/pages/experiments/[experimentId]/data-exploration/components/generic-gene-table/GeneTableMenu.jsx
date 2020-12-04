@@ -32,13 +32,6 @@ const GeneTableMenu = (props) => {
           />
         ) : (<></>)}
       </>
-      <Button
-        type='link'
-        size='small'
-        onClick={() => { }}
-      >
-        Heatmap
-      </Button>
     </Space>
   );
 };

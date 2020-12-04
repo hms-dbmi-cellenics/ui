@@ -16,11 +16,13 @@ import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 import useLazyEffect from '../../../../../../utils/useLazyEffect';
 import GeneTableMenu from './GeneTableMenu';
+import HeatmapActions from './HeatmapActions';
 
 const GeneTable = (props) => {
   const {
     experimentId, onUpdate, error, loading, columns, data,
     total, initialTableState, width, height, onExportCSV,
+    listenerUuid,
   } = props;
 
   const dispatch = useDispatch();
@@ -186,6 +188,7 @@ const GeneTable = (props) => {
       {loading ? <></> : (
         <>
           <GeneTableMenu onExportCSV={onExportCSV} experimentId={experimentId} />
+          <HeatmapActions experimentId={experimentId} listenerUuid={listenerUuid} />
           <FilterGenes
             onFilter={filterGenes}
             defaultFilterOption={geneNameFilterState.filterOption}
@@ -215,6 +218,7 @@ const GeneTable = (props) => {
 GeneTable.defaultProps = {
   initialTableState: {},
   onExportCSV: null,
+  listenerUuid: null,
 };
 
 GeneTable.propTypes = {
@@ -234,6 +238,7 @@ GeneTable.propTypes = {
   onExportCSV: PropTypes.func,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
+  listenerUuid: PropTypes.string,
 };
 
 export default GeneTable;

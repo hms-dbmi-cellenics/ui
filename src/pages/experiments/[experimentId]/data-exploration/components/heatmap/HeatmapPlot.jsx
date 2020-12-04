@@ -5,66 +5,33 @@ import {
   Empty, Spin,
 } from 'antd';
 import _ from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import spec from '../../../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
 import HeatmapCrossHairs from './HeatmapCrossHairs';
 import CellInfo from '../CellInfo';
-import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
-
-import { loadGeneExpression } from '../../../../../../redux/actions/genes';
 import PlatformError from '../../../../../../components/PlatformError';
+import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
+import { loadGeneExpression } from '../../../../../../redux/actions/genes';
 
 const HeatmapPlot = (props) => {
-  const { experimentId, width, height } = props;
+  const {
+    experimentId, width, height, componentUuid,
+  } = props;
+
   const componentType = 'heatmap';
 
   const dispatch = useDispatch();
-  const selectedGenes = useSelector((state) => state.genes.selected);
+  const selectedGenes = useSelector((state) => state.genes.expression.views[componentUuid]?.data);
+  const selectedGenesLoading = useSelector((state) => state.genes.expression.views[componentUuid]?.fetching);
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
 
   const cellSetData = useSelector((state) => state.cellSets);
 
   const { error } = expressionData;
-  const loadExpression = useRef(_.debounce((genes) => {
-    dispatch(loadGeneExpression(experimentId, genes));
-  }, 2000));
-  const [heatmapLoading, setHeatmapLoading] = useState(true);
 
-  // On initial render, check if our selected genes are already loading.
-  // If so, set the loading state.
-  useEffect(() => {
-    if (_.intersection(expressionData.loading, selectedGenes).length > 0) {
-      setHeatmapLoading(true);
-    }
-  }, []);
-
-  // Make sure loading state is set when a user changes their selection
-  // even before the debounce kicks in.
-  useEffect(() => {
-    loadExpression.current(selectedGenes);
-
-    if (!heatmapLoading) {
-      setHeatmapLoading(true);
-    }
-  }, [selectedGenes]);
-
-  // When the expression data is loaded, we can show the loaded state.
-  // Only show this state if the heatmap was previously set to be loading,
-  // and all of the data has been loaded properly (no remaining genes need to be processed).
-  useEffect(() => {
-    if (error) {
-      setHeatmapLoading(false);
-    }
-
-    if (heatmapLoading
-      && !error
-      && _.intersection(expressionData.loading, selectedGenes).length === 0) {
-      setHeatmapLoading(false);
-    }
-  }, [expressionData]);
-
-  if (selectedGenes.length === 0) {
+  if (!selectedGenes || selectedGenes.length === 0) {
     return (
       <center>
         <Empty
@@ -79,7 +46,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (heatmapLoading) {
+  if (selectedGenesLoading) {
     return (
       <center style={{ marginTop: height / 2 }}>
         <Spin size='large' />
@@ -93,9 +60,8 @@ const HeatmapPlot = (props) => {
       <PlatformError
         description={error}
         onClick={() => {
-          loadExpression.current(selectedGenes);
-          if (!heatmapLoading) {
-            setHeatmapLoading(true);
+          if (!selectedGenesLoading) {
+            dispatch(loadGeneExpression(experimentId, selectedGenes, '1234'));
           }
         }}
       />
@@ -177,12 +143,14 @@ const HeatmapPlot = (props) => {
   );
 };
 
-HeatmapPlot.defaultProps = {};
+HeatmapPlot.defaultProps = {
+};
 
 HeatmapPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
+  componentUuid: PropTypes.string.isRequired,
 };
 
 export default HeatmapPlot;
