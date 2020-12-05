@@ -46,11 +46,11 @@ const ExplorationViewPage = () => {
   }, [panel]);
 
   const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
-  const heatmapUuid = 'heatmapPlot';
+
   const TILE_MAP = {
     'UMAP Embedding': (width, height) => <Embedding experimentId={experimentId} embeddingType='umap' width={width} height={height} />,
     Heatmap: (width, height) => (
-      <HeatmapPlot experimentId={experimentId} width={width} height={height} componentUuid={heatmapUuid} />
+      <HeatmapPlot experimentId={experimentId} width={width} height={height} />
     ),
     Tools: (width, height) => (
       <Tabs
@@ -59,7 +59,7 @@ const ExplorationViewPage = () => {
         onChange={(key) => { setSelectedTab(key); }}
       >
         <TabPane tab='Gene list' key='Gene list'>
-          <GeneListTool experimentId={experimentId} width={width} height={height} listenerUuid={heatmapUuid} />
+          <GeneListTool experimentId={experimentId} width={width} height={height} />
         </TabPane>
         <TabPane tab='Differential expression' key='Differential expression'>
           <DiffExprManager experimentId={experimentId} view='compute' width={width} height={height} />

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button, Space, Select,
+  Space, Select,
 } from 'antd';
 import { useSelector } from 'react-redux';
 import SelectionIndicator from './SelectionIndicator';
-import ComponentActions from './PlotActions';
+import ComponentActions from './ComponentActions';
 
 const GeneSelectionMenu = (props) => {
-  const { onExportCSV, experimentId, componentUuid } = props;
+  const { onExportCSV, experimentId } = props;
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [listed, setListed] = useState(false);
 
@@ -35,7 +35,7 @@ const GeneSelectionMenu = (props) => {
           ) : (<></>)}
         </>
       </Space>
-      <ComponentActions experimentId={experimentId} componentName='Heatmap' componentUuid={componentUuid} />
+      <ComponentActions experimentId={experimentId} componentType='Heatmap' />
     </>
   );
 };
@@ -47,7 +47,6 @@ GeneSelectionMenu.defaultProps = {
 GeneSelectionMenu.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onExportCSV: PropTypes.func,
-  componentUuid: PropTypes.string.isRequired,
 };
 
 export default GeneSelectionMenu;

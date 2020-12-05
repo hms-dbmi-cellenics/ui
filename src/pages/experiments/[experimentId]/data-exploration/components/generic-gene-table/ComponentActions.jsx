@@ -11,13 +11,13 @@ import { changeExpressionView } from '../../../../../../redux/actions/genes';
 import { geneOperations } from '../../../../../../utils/geneTable/geneOperations';
 
 const ComponentActions = (props) => {
-  const { experimentId, componentName, componentUuid } = props;
+  const { experimentId, componentType } = props;
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
 
   const performGeneOperation = (geneOperation) => {
     const newGenes = _.cloneDeep(selectedGenes);
-    dispatch(changeExpressionView(experimentId, newGenes, componentUuid, geneOperation));
+    dispatch(changeExpressionView(experimentId, newGenes, componentType, geneOperation));
   };
 
   const menu = (
@@ -41,7 +41,7 @@ const ComponentActions = (props) => {
   return (
     <Dropdown arrow type='link' size='small' overlay={menu} trigger={['click']}>
       <Button type='link' size='small'>
-        {componentName}
+        {componentType}
         {' '}
         ...
       </Button>
@@ -54,8 +54,7 @@ ComponentActions.defaultProps = {
 
 ComponentActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  componentName: PropTypes.string.isRequired,
-  componentUuid: PropTypes.string.isRequired,
+  componentType: PropTypes.string.isRequired,
 };
 
 export default ComponentActions;

@@ -14,14 +14,14 @@ import { changeExpressionView } from '../../../../../../redux/actions/genes';
 
 const HeatmapPlot = (props) => {
   const {
-    experimentId, width, height, componentUuid,
+    experimentId, width, height,
   } = props;
 
-  const componentType = 'heatmap';
+  const componentType = 'Heatmap';
 
   const dispatch = useDispatch();
-  const selectedGenes = useSelector((state) => state.genes.expression.views[componentUuid]?.data);
-  const selectedGenesLoading = useSelector((state) => state.genes.expression.views[componentUuid]?.fetching);
+  const selectedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
+  const selectedGenesLoading = useSelector((state) => state.genes.expression.views[componentType]?.fetching);
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
 
@@ -59,7 +59,7 @@ const HeatmapPlot = (props) => {
         description={error}
         onClick={() => {
           if (!selectedGenesLoading) {
-            dispatch(changeExpressionView(experimentId, selectedGenes, componentUuid));
+            dispatch(changeExpressionView(experimentId, selectedGenes, componentType));
           }
         }}
       />
@@ -148,7 +148,6 @@ HeatmapPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  componentUuid: PropTypes.string.isRequired,
 };
 
 export default HeatmapPlot;

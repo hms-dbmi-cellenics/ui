@@ -13,7 +13,7 @@ import GeneSelectionStatus from '../../../../../../redux/actions/genes/geneSelec
 
 const GeneListTool = (props) => {
   const {
-    experimentId, width, height, uuid, listenerUuid,
+    experimentId, width, height, uuid,
   } = props;
 
   const [tableUuid] = useState(uuid);
@@ -112,14 +112,12 @@ const GeneListTool = (props) => {
       total={total || 0}
       width={width}
       height={height}
-      listenerUuid={listenerUuid}
     />
   );
 };
 
 GeneListTool.defaultProps = {
   uuid: uuidv4(),
-  listenerUuid: null,
 };
 
 GeneListTool.propTypes = {
@@ -127,7 +125,6 @@ GeneListTool.propTypes = {
   uuid: PropTypes.string,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  listenerUuid: PropTypes.string,
 };
 
 export default GeneListTool;
