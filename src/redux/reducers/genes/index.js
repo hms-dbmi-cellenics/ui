@@ -3,7 +3,7 @@ import {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
-  GENES_EXPRESSION_VIEW_LOADING, GENES_EXPRESSION_VIEW_LOADED,
+  GENES_EXPRESSION_VIEW_LOADING, GENES_EXPRESSION_VIEW_LOADED, GENES_EXPRESSION_VIEW_ERROR,
 } from '../../actionTypes/genes';
 
 import genesPropertiesLoading from './genesPropertiesLoading';
@@ -14,6 +14,7 @@ import genesExpressionLoaded from './genesExpressionLoaded';
 import genesExpressionError from './genesExpressionError';
 import genesExpressionViewLoading from './genesExpressionViewLoading';
 import genesExpressionViewLoaded from './genesExpressionViewLoaded';
+import genesExpressionViewError from './genesExpressionViewError';
 
 import genesSelect from './genesSelect';
 import genesDeselect from './genesDeselect';
@@ -58,6 +59,10 @@ const genesReducer = (state = initialState, action) => {
 
     case GENES_EXPRESSION_VIEW_LOADED: {
       return genesExpressionViewLoaded(state, action);
+    }
+
+    case GENES_EXPRESSION_VIEW_ERROR: {
+      return genesExpressionViewError(state, action);
     }
 
     default: {

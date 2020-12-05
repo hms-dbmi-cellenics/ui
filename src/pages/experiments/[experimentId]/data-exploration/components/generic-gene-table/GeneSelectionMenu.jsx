@@ -4,7 +4,7 @@ import {
   Space, Select,
 } from 'antd';
 import { useSelector } from 'react-redux';
-import SelectionIndicator from './SelectionIndicator';
+import SelectionActions from './SelectionActions';
 import ComponentActions from './ComponentActions';
 
 const GeneSelectionMenu = (props) => {
@@ -17,23 +17,21 @@ const GeneSelectionMenu = (props) => {
   return (
     <>
       <Space direction='vertical' style={{ width: '100%' }}>
-        <>
-          <SelectionIndicator
-            experimentId={experimentId}
-            showCSV={onExportCSV !== null}
-            onExportCSV={onExportCSV}
-            onListSelected={onListSelected}
+        <SelectionActions
+          experimentId={experimentId}
+          showCSV={onExportCSV !== null}
+          onExportCSV={onExportCSV}
+          onListSelected={onListSelected}
+        />
+        {listed ? (
+          <Select
+            value={selectedGenes}
+            mode='multiple'
+            showArrow={false}
+            removeIcon={(<div />)}
+            style={{ width: '100%' }}
           />
-          {listed ? (
-            <Select
-              value={selectedGenes}
-              mode='multiple'
-              showArrow={false}
-              removeIcon={(<div />)}
-              style={{ width: '100%' }}
-            />
-          ) : (<></>)}
-        </>
+        ) : (<></>)}
       </Space>
       <ComponentActions experimentId={experimentId} componentType='Heatmap' />
     </>

@@ -13,7 +13,7 @@ import GeneSelectionStatus from '../../../../../../redux/actions/genes/geneSelec
 
 const { Text } = Typography;
 
-const SelectionIndicator = (props) => {
+const SelectionActions = (props) => {
   const {
     experimentId, showCSV, onExportCSV, onListSelected,
   } = props;
@@ -102,16 +102,16 @@ const SelectionIndicator = (props) => {
   );
 };
 
-SelectionIndicator.defaultProps = {
+SelectionActions.defaultProps = {
   onExportCSV: () => null,
   onListSelected: () => null,
 };
 
-SelectionIndicator.propTypes = {
+SelectionActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
   showCSV: PropTypes.bool.isRequired,
   onExportCSV: PropTypes.func,
   onListSelected: PropTypes.func,
 };
 
-export default SelectionIndicator;
+export default SelectionActions;

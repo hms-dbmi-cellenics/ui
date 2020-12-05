@@ -8,8 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import GeneTable from '../generic-gene-table/GeneTable';
 import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTableUpdateReason';
 
-import { changeGeneSelection, loadPaginatedGeneProperties } from '../../../../../../redux/actions/genes';
-import GeneSelectionStatus from '../../../../../../redux/actions/genes/geneSelectionStatus';
+import { loadPaginatedGeneProperties } from '../../../../../../redux/actions/genes';
 
 const GeneListTool = (props) => {
   const {

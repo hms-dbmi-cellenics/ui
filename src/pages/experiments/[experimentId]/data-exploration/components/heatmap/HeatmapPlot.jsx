@@ -27,7 +27,8 @@ const HeatmapPlot = (props) => {
 
   const cellSetData = useSelector((state) => state.cellSets);
 
-  const { error } = expressionData;
+  const { expressionError: error } = expressionData;
+  const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
 
   if (!selectedGenes || selectedGenes.length === 0) {
     return (
@@ -53,7 +54,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (error) {
+  if (error || viewError) {
     return (
       <PlatformError
         description={error}
