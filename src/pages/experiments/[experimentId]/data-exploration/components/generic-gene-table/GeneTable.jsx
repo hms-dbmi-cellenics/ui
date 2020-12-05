@@ -15,8 +15,7 @@ import FocusButton from '../../../../../../components/FocusButton';
 import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 import useLazyEffect from '../../../../../../utils/useLazyEffect';
-import GeneTableMenu from './GeneTableMenu';
-import GenesSelectionActions from './GenesSelectionActions';
+import GeneSelectionMenu from './GeneSelectionMenu';
 
 const GeneTable = (props) => {
   const {
@@ -187,8 +186,7 @@ const GeneTable = (props) => {
     >
       {loading ? <></> : (
         <>
-          <GeneTableMenu onExportCSV={onExportCSV} experimentId={experimentId} />
-          <GenesSelectionActions experimentId={experimentId} genesSelectionListener={listenerUuid} />
+          <GeneSelectionMenu onExportCSV={onExportCSV} experimentId={experimentId} componentUuid={listenerUuid} />
           <FilterGenes
             onFilter={filterGenes}
             defaultFilterOption={geneNameFilterState.filterOption}

@@ -10,29 +10,25 @@ import { PlusOutlined, RedoOutlined, MinusOutlined } from '@ant-design/icons';
 import { changeExpressionView } from '../../../../../../redux/actions/genes';
 import { geneOperations } from '../../../../../../utils/geneTable/geneOperations';
 
-const GenesSelectionActions = (props) => {
-  const { experimentId, genesSelectionListener } = props;
+const ComponentActions = (props) => {
+  const { experimentId, componentName, componentUuid } = props;
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
 
   const performGeneOperation = (geneOperation) => {
     const newGenes = _.cloneDeep(selectedGenes);
-    console.log('lalalalalalalala ', geneOperation, newGenes);
-    dispatch(changeExpressionView(experimentId, newGenes, genesSelectionListener, geneOperation));
+    dispatch(changeExpressionView(experimentId, newGenes, componentUuid, geneOperation));
   };
 
   const menu = (
     <Menu size='small'>
-      <Menu.Item key='0' onClick={() => performGeneOperation(geneOperations.ADD)}>
-        <PlusOutlined />
+      <Menu.Item key='0' icon={<PlusOutlined />} onClick={() => performGeneOperation(geneOperations.ADD)}>
         Add
       </Menu.Item>
-      <Menu.Item key='2' onClick={() => performGeneOperation(geneOperations.REMOVE)}>
-        <MinusOutlined />
+      <Menu.Item key='1' icon={<MinusOutlined />} onClick={() => performGeneOperation(geneOperations.REMOVE)}>
         Remove
       </Menu.Item>
-      <Menu.Item key='1' onClick={() => performGeneOperation(geneOperations.OVERWRITE)}>
-        <RedoOutlined />
+      <Menu.Item key='2' icon={<RedoOutlined />} onClick={() => performGeneOperation(geneOperations.OVERWRITE)}>
         Overwrite
       </Menu.Item>
     </Menu>
@@ -43,18 +39,23 @@ const GenesSelectionActions = (props) => {
   }
 
   return (
-    <Dropdown type='link' size='small' overlay={menu} trigger='click'>
-      <Button type='link' size='small'>Heatmap ...</Button>
+    <Dropdown arrow type='link' size='small' overlay={menu} trigger={['click']}>
+      <Button type='link' size='small'>
+        {componentName}
+        {' '}
+        ...
+      </Button>
     </Dropdown>
   );
 };
 
-GenesSelectionActions.defaultProps = {
+ComponentActions.defaultProps = {
 };
 
-GenesSelectionActions.propTypes = {
+ComponentActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  genesSelectionListener: PropTypes.string.isRequired,
+  componentName: PropTypes.string.isRequired,
+  componentUuid: PropTypes.string.isRequired,
 };
 
-export default GenesSelectionActions;
+export default ComponentActions;

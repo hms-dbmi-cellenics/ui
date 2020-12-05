@@ -22,7 +22,7 @@ const changeExpressionView = (
     newData = genes;
   }
 
-  // Dispatch loading state.
+  // Dispatch loading state
   dispatch({
     type: GENES_EXPRESSION_VIEW_LOADING,
     payload: {
