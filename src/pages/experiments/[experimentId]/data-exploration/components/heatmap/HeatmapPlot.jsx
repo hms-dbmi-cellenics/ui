@@ -113,19 +113,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  const isHeatmapLoading = () => {
-    if (_.intersection(selectedGenes, loadingGenes).length > 0) {
-      return true;
-    }
-
-    if (!vegaData) {
-      return true;
-    }
-
-    return false;
-  };
-
-  if (isHeatmapLoading()) {
+  if (!vegaData) {
     return (
       <center style={{ marginTop: height / 2 }}>
         <Spin size='large' />
@@ -139,9 +127,7 @@ const HeatmapPlot = (props) => {
       <PlatformError
         description={error}
         onClick={() => {
-          if (!isHeatmapLoading()) {
-            dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
-          }
+          dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
         }}
       />
     );
