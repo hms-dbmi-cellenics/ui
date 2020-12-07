@@ -45,25 +45,8 @@ const GENES_EXPRESSION_LOADED = `${GENES}/expressionLoaded`;
  */
 const GENES_EXPRESSION_ERROR = `${GENES}/expressionError`;
 
-/**
- * Turns on the loading state for a view of an expression data.
- */
-const GENES_EXPRESSION_VIEW_LOADING = `${GENES}/expressionViewLoading`;
-
-/**
- * Sets the state of the expression store for a view to be successfully loaded,
- * with the appropriate expression data.
- */
-const GENES_EXPRESSION_VIEW_LOADED = `${GENES}/expressionViewLoaded`;
-
-/**
- * Sets an error condition for a view of gene expression data.
- */
-const GENES_EXPRESSION_VIEW_ERROR = `${GENES}/expressionViewError`;
-
 export {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
-  GENES_EXPRESSION_VIEW_LOADING, GENES_EXPRESSION_VIEW_LOADED, GENES_EXPRESSION_VIEW_ERROR,
 };

@@ -33,28 +33,20 @@ const HeatmapPlot = (props) => {
   const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
 
   useEffect(() => {
-    console.log(loadingGenes, 'loadingGenes');
-    console.log(selectedGenes, 'selectedGenes');
-
     if (!selectedGenes || selectedGenes.length === 0) {
-      console.log('skipping generating data because the selected genes dont exist or are none');
       return;
     }
 
     if (_.intersection(selectedGenes, loadingGenes).length > 0) {
-      console.log('skipping generating data because data is currently being loaded');
       setVegaData(null);
       return;
     }
 
-    console.log('modifying vega data because a change happened');
     const data = createVegaData(selectedGenes, expressionData);
     setVegaData(data);
   }, [loadingGenes]);
 
   const createVegaData = (selected, expression) => {
-    console.log('creating data', selected, expression);
-
     const data = { cellOrder: [], geneOrder: [], heatmapData: [] };
 
     data.geneOrder = selected;
@@ -122,19 +114,13 @@ const HeatmapPlot = (props) => {
   }
 
   const isHeatmapLoading = () => {
-    console.log('checking if heatmap is loading...');
-
     if (_.intersection(selectedGenes, loadingGenes).length > 0) {
-      console.log('yes, intersection');
       return true;
     }
 
     if (!vegaData) {
-      console.log('yes, no vega data');
       return true;
     }
-
-    console.log('no');
 
     return false;
   };
@@ -160,8 +146,6 @@ const HeatmapPlot = (props) => {
       />
     );
   }
-
-  console.log('rendering with', spec, vegaData);
 
   return (
     <div>

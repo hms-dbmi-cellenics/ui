@@ -66,7 +66,7 @@ const SelectionActions = (props) => {
           }
         }
       >
-        <Button type='link' size='small'>Copy selected</Button>
+        <Button type='link' size='small'>Copy</Button>
       </CopyToClipboard>
     );
   };
@@ -80,14 +80,14 @@ const SelectionActions = (props) => {
             {selectedGenes.length === 1 ? '' : 's'}
             {' selected'}
           </Text>
-          <Button type='link' size='small' onClick={clearAll}>Clear selected</Button>
+          <Button type='link' size='small' onClick={clearAll}>Clear</Button>
           {renderCopyClipboard()}
           <Button
             type='link'
             size='small'
             onClick={() => { setListed(!listed); onListSelected(!listed); }}
           >
-            {listed ? 'Hide selected' : 'List selected'}
+            {listed ? 'Hide' : 'List'}
           </Button>
         </>
       ) : <></>}
