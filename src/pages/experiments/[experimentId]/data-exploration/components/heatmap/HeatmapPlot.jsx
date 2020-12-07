@@ -1,9 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Empty, Spin,
 } from 'antd';
+import _ from 'lodash';
 import spec from '../../../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
 import HeatmapCrossHairs from './HeatmapCrossHairs';
@@ -20,59 +21,43 @@ const HeatmapPlot = (props) => {
   const componentType = 'Heatmap';
 
   const dispatch = useDispatch();
-  const { data: selectedGenes, fetching } = useSelector((state) => state.genes.expression.views[componentType]);
 
-  // const selectedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
-  // const selectedGenesLoading = useSelector((state) => state.genes.expression.views[componentType]?.fetching);
+  const loadingGenes = useSelector((state) => state.genes.expression.loading);
+  const selectedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
+  const [vegaData, setVegaData] = useState(null);
+
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
-
   const cellSetData = useSelector((state) => state.cellSets);
-
   const { expressionError: error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
 
-  if (!selectedGenes || selectedGenes.length === 0) {
-    return (
-      <center>
-        <Empty
-          description={(
-            <span>
-              Please add gene(s) to the heatmap from the Gene list tool
-            </span>
-          )}
-        />
-        <HeatmapCrossHairs />
-      </center>
-    );
-  }
+  useEffect(() => {
+    console.log(loadingGenes, 'loadingGenes');
+    console.log(selectedGenes, 'selectedGenes');
 
-  if (fetching) {
-    return (
-      <center style={{ marginTop: height / 2 }}>
-        <Spin size='large' />
-        <HeatmapCrossHairs />
-      </center>
-    );
-  }
+    if (!selectedGenes || selectedGenes.length === 0) {
+      console.log('skipping because the selected genes dont exist or are none');
+      return;
+    }
 
-  if (error || viewError) {
-    return (
-      <PlatformError
-        description={error}
-        onClick={() => {
-          if (!fetching) {
-            dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
-          }
-        }}
-      />
-    );
-  }
+    if (_.intersection(selectedGenes, loadingGenes).length > 0) {
+      setVegaData(null);
+      return;
+    }
 
-  const createVegaData = () => {
+    console.log('modifying vega data because a change happened');
+
+    const data = createVegaData(selectedGenes, expressionData);
+    setVegaData(data);
+  }, [loadingGenes]);
+
+  const createVegaData = (selected, expression) => {
+    console.log('creating data', selected, expression);
+
     const data = { cellOrder: [], geneOrder: [], heatmapData: [] };
 
-    data.geneOrder = selectedGenes;
+    data.geneOrder = selected;
 
     data.cellOrder = [];
 
@@ -85,14 +70,14 @@ const HeatmapPlot = (props) => {
       });
     }
 
-    selectedGenes.forEach((gene) => {
-      if (!expressionData.data[gene]) {
+    selected.forEach((gene) => {
+      if (!expression.data[gene]) {
         return;
       }
 
       data.heatmapData.push({
         gene,
-        expression: expressionData.data[gene].expression,
+        expression: expression.data[gene].expression,
       });
     });
 
@@ -121,11 +106,68 @@ const HeatmapPlot = (props) => {
     mouseOver: handleMouseOver,
   };
 
+  if (!selectedGenes || selectedGenes.length === 0) {
+    return (
+      <center>
+        <Empty
+          description={(
+            <span>
+              Please add gene(s) to the heatmap from the Gene list tool
+            </span>
+          )}
+        />
+        <HeatmapCrossHairs />
+      </center>
+    );
+  }
+
+  const isHeatmapLoading = () => {
+    console.log('checking if heatmap is loading...');
+
+    if (_.intersection(selectedGenes, loadingGenes).length > 0) {
+      console.log('yes, intersection');
+      return true;
+    }
+
+    if (!vegaData) {
+      console.log('yes, no vega data');
+      return true;
+    }
+
+    console.log('no');
+
+    return false;
+  };
+
+  if (isHeatmapLoading()) {
+    return (
+      <center style={{ marginTop: height / 2 }}>
+        <Spin size='large' />
+        <HeatmapCrossHairs />
+      </center>
+    );
+  }
+
+  if (error || viewError) {
+    return (
+      <PlatformError
+        description={error}
+        onClick={() => {
+          if (!isHeatmapLoading()) {
+            dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
+          }
+        }}
+      />
+    );
+  }
+
+  console.log('rendering with', spec, vegaData);
+
   return (
     <div>
       <VegaHeatmap
         spec={spec}
-        data={createVegaData()}
+        data={vegaData}
         showAxes={selectedGenes?.length <= 30}
         rowsNumber={selectedGenes.length}
         defaultWidth={width + 35}

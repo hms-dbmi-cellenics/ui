@@ -31,7 +31,6 @@ const ComponentActions = (props) => {
       newGenes = displayedGenes.filter((gene) => !selectedGenes.includes(gene));
     }
 
-    console.log(componentType);
     dispatch(loadGeneExpression(experimentId, newGenes, componentType));
   };
 

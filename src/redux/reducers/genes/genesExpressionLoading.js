@@ -1,9 +1,11 @@
+import _ from 'lodash';
 import { initialViewState } from './initialState';
 
 const genesExpressionLoading = (state, action) => {
   const { genes, componentUuid } = action.payload;
 
-  console.log('fetching is being set to true');
+  console.log('in reducer for expressionLoading', action, state);
+
   return {
     ...state,
     expression: {
@@ -15,10 +17,10 @@ const genesExpressionLoading = (state, action) => {
           ...state.expression.views[componentUuid],
           fetching: true,
           error: false,
-          data: [...genes],
+          data: genes,
         },
       },
-      loading: [...genes],
+      loading: _.union(state.expression.loading, genes),
       error: false,
     },
   };

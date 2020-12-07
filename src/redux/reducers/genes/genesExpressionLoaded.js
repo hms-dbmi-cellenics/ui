@@ -1,7 +1,8 @@
+import _ from 'lodash';
 import { initialViewState } from './initialState';
 
 const genesExpressionLoaded = (state, action) => {
-  const { data, componentUuid } = action.payload;
+  const { data, componentUuid, genes } = action.payload;
 
   return {
     ...state,
@@ -16,11 +17,11 @@ const genesExpressionLoaded = (state, action) => {
           error: false,
         },
       },
-      loading: [],
       data: {
         ...state.expression.data,
         ...data,
       },
+      loading: _.difference(state.expression.loading, genes),
     },
   };
 };

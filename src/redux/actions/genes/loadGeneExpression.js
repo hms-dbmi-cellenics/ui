@@ -16,15 +16,13 @@ const loadGeneExpression = (
     return null;
   }
 
-  console.log('genes updating with ', genes);
-
   // Dispatch loading state.
   dispatch({
     type: GENES_EXPRESSION_LOADING,
     payload: {
       experimentId,
-      genes,
       componentUuid,
+      genes,
     },
   });
 
@@ -62,9 +60,9 @@ const loadGeneExpression = (
       type: GENES_EXPRESSION_LOADED,
       payload: {
         experimentId,
-        data,
         componentUuid,
         genes,
+        data,
       },
     });
   } catch (e) {
@@ -72,8 +70,9 @@ const loadGeneExpression = (
       type: GENES_EXPRESSION_ERROR,
       payload: {
         experimentId,
-        error: "Couldn't fetch expression data.",
         componentUuid,
+        genes,
+        error: "Couldn't fetch expression data.",
       },
     });
   }
