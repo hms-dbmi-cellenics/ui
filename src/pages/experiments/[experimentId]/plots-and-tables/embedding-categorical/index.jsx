@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -57,26 +57,55 @@ const EmbeddingCategoricalPlot = () => {
 
   const router = useRouter();
   const { experimentId } = router.query;
+  const [plotSpec, setPlotSpec] = useState({});
 
+  // First, load experiment ID data from the router.
   useEffect(() => {
-    if (isBrowser) {
-      if (!data) {
-        dispatch(loadEmbedding(experimentId, embeddingType));
-      }
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-      dispatch(loadCellSets(experimentId));
+    if (!experimentId || !isBrowser) {
+      return;
     }
+
+    // If we haven't already gotten our embedding loaded,
+    // start loading the plots again.
+    if (!data) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+    }
+
+    // Simultaneously, try to load the plot configuration.
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+
+    // Also, try loading the cell sets in the experiment.
+    dispatch(loadCellSets(experimentId));
   }, [experimentId]);
 
+  useEffect(() => {
+    // Do not update anything if the cell sets are stil loading or if
+    // the config does not exist yet.
+    if (!config || cellSets.loading) {
+      return;
+    }
+
+    // due to a bug in vega with React with using data with source coming from other data,
+    // we have to inject the data in the Vega spec.
+    const spec = generateSpec(config);
+    generateData(spec);
+
+    // Set the spec.
+    setPlotSpec(spec);
+  }, [config, cellSets]);
+
   const generateCellSetOptions = () => {
+    if (loading) {
+      return [];
+    }
+
     const hierarchy = cellSets.hierarchy.map((cellSet) => ({
       key: cellSet.key,
       children: cellSet.children?.length || 0,
     }));
     return hierarchy.map(({ key, children }) => ({
       value: key,
-      label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'
-        })`,
+      label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
     }));
   };
 
@@ -92,6 +121,7 @@ const EmbeddingCategoricalPlot = () => {
     newCellSets = newCellSets.map(({ key }) => ({
       cellSetId: key,
       ...cellSets.properties[key],
+      cellIds: Array.from(cellSets.properties[key].cellIds),
     }));
 
     spec.data.forEach((datum) => {
@@ -103,7 +133,15 @@ const EmbeddingCategoricalPlot = () => {
     });
   };
 
-  if (!config) {
+  const onUpdate = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
+
+  const onCellSetSelect = ({ value }) => {
+    onUpdate({ selectedCellSet: value });
+  };
+
+  if (!config || !isBrowser) {
     return <Skeleton />;
   }
 
@@ -116,31 +154,20 @@ const EmbeddingCategoricalPlot = () => {
         />
       );
     }
-    if (!config || !data || loading || !isBrowser) {
+
+    if (!config || !data || loading) {
       return (
         <center>
           <Spin size='large' />
         </center>
       );
     }
+
     return (
       <center>
-        <Vega spec={vegaSpec} renderer='canvas' />
+        <Vega spec={plotSpec} renderer='canvas' />
       </center>
     );
-  };
-
-  const vegaSpec = generateSpec(config);
-  // due to a bug in vega with React with using data with source coming from other data,
-  // we have to inject the data in the Vega spec.
-  generateData(vegaSpec);
-
-  const onUpdate = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
-
-  const onCellSetSelect = ({ value }) => {
-    onUpdate({ selectedCellSet: value });
   };
 
   return (
