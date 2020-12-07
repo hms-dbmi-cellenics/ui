@@ -121,20 +121,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  const isHeatmapLoading = () => {
-    console.log('checking if heatmap is loading...');
-
-    if (!vegaData) {
-      console.log('yes, no vega data');
-      return true;
-    }
-
-    console.log('no');
-
-    return false;
-  };
-
-  if (isHeatmapLoading()) {
+  if (!vegaData) {
     return (
       <center style={{ marginTop: height / 2 }}>
         <Spin size='large' />
@@ -148,9 +135,7 @@ const HeatmapPlot = (props) => {
       <PlatformError
         description={error}
         onClick={() => {
-          if (!isHeatmapLoading()) {
-            dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
-          }
+          dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
         }}
       />
     );
