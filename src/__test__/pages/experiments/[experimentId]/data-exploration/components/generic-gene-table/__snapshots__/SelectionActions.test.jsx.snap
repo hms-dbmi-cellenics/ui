@@ -1,18 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SelectionActions selected genes are cleared when clear button is pressed 1`] = `
-Object {
-  "payload": Object {
-    "experimentId": "test",
-    "genes": Array [
-      "CEMIP",
-      "TIMP3",
-    ],
-  },
-  "type": "genes/deselect",
-}
-`;
-
 exports[`SelectionIndicator selected genes are cleared when clear button is pressed 1`] = `
 Object {
   "payload": Object {

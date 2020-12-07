@@ -20,10 +20,13 @@ describe('genesReducer', () => {
       type: GENES_EXPRESSION_LOADING,
       payload: {
         genes: ['A', 'B', 'C'],
+        componentUuid: 'abc',
       },
     });
 
     expect(newState.expression.loading).toEqual(['A', 'B', 'C']);
+    expect(newState.expression.views.abc.fetching).toEqual(true);
+    expect(newState.expression.views.abc.error).toEqual(false);
     expect(newState).toMatchSnapshot();
   });
 
@@ -38,9 +41,61 @@ describe('genesReducer', () => {
             expression: [0, 0, 0, 0],
           },
         },
+        componentUuid: 'abc',
+      },
+    });
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Multiple components loading some of same expression triggers appropriate action', () => {
+    let newState = genesReducer(initialState, {
+      type: GENES_EXPRESSION_LOADING,
+      payload: {
+        componentUuid: 'abc',
+        genes: ['a', 'b'],
       },
     });
 
+    newState = genesReducer(newState, {
+      type: GENES_EXPRESSION_LOADING,
+      payload: {
+        componentUuid: 'def',
+        genes: ['a', 'b', 'c'],
+      },
+    });
+
+    expect(newState.expression.loading).toEqual(['a', 'b', 'c']);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Expression loaded state handled appropriately when other things are still loading', () => {
+    const newState = genesReducer({
+      ...initialState,
+      expression: {
+        ...initialState.expression,
+        loading: ['a', 'b', 'c', 'd', 'e'],
+      },
+    }, {
+      type: GENES_EXPRESSION_LOADED,
+      payload: {
+        componentUuid: 'asd',
+        genes: ['a', 'b', 'c'],
+        data: {
+          gene1: {
+            a: 5,
+            b: 6,
+            c: 7,
+          },
+          gene2: {
+            a: 7,
+            b: 8,
+            c: 9,
+          },
+        },
+      },
+    });
+
+    expect(newState.expression.loading).toEqual(['d', 'e']);
     expect(newState).toMatchSnapshot();
   });
 
@@ -49,12 +104,17 @@ describe('genesReducer', () => {
       type: GENES_EXPRESSION_ERROR,
       payload: {
         error: 'asd',
+        componentUuid: 'abc',
       },
     });
 
     expect(newState.expression.error).toEqual('asd');
     expect(newState).toMatchSnapshot();
   });
+
+  //
+  // GENES SELECT ACTION TESTS
+  //
 
   it('Selected genes get added on empty list', () => {
     const newState = genesReducer(initialState, {
@@ -115,6 +175,10 @@ describe('genesReducer', () => {
     expect(newState.selected).toEqual(['a', 'b', 'd']);
     expect(newState).toMatchSnapshot();
   });
+
+  //
+  // GENES PROPERTIES ACTION TESTS
+  //
 
   it('Properties loading triggers appropriate changes', () => {
     const newState = genesReducer(initialState, {

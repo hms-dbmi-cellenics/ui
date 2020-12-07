@@ -19,7 +19,7 @@ const ComponentActions = (props) => {
   const { experimentId, componentType } = props;
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
-  const displayedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
+  const displayedGenes = useSelector((state) => state.genes.expression?.views[componentType]?.data);
 
   const performGeneOperation = (genesOperation) => {
     let newGenes = _.cloneDeep(selectedGenes);
