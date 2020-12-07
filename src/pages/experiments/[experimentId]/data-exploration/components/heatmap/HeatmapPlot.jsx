@@ -37,17 +37,17 @@ const HeatmapPlot = (props) => {
     console.log(selectedGenes, 'selectedGenes');
 
     if (!selectedGenes || selectedGenes.length === 0) {
-      console.log('skipping because the selected genes dont exist or are none');
+      console.log('skipping generating data because the selected genes dont exist or are none');
       return;
     }
 
     if (_.intersection(selectedGenes, loadingGenes).length > 0) {
+      console.log('skipping generating data because data is currently being loaded');
       setVegaData(null);
       return;
     }
 
     console.log('modifying vega data because a change happened');
-
     const data = createVegaData(selectedGenes, expressionData);
     setVegaData(data);
   }, [loadingGenes]);
