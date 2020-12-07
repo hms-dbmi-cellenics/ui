@@ -37,6 +37,8 @@ const Embedding = (props) => {
   const {
     experimentId, embeddingType, height, width,
   } = props;
+
+  const componentType = 'Embedding';
   const dispatch = useDispatch();
 
   const view = { target: [4, -4, 0], zoom: 4.00 };
@@ -75,7 +77,7 @@ const Embedding = (props) => {
       // For genes/continous data, we cannot do this in one go,
       // we need to wait for the thing to load in first.
       case 'genes': {
-        dispatch(loadGeneExpression(experimentId, [key]));
+        dispatch(loadGeneExpression(experimentId, [key], embeddingType));
         return;
       }
 

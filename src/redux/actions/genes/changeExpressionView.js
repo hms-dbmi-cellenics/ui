@@ -3,24 +3,12 @@ import {
 } from '../../actionTypes/genes';
 import loadGeneExpression from './loadGeneExpression';
 
-import { geneOperations } from '../../../utils/geneTable/geneOperations';
-
 const changeExpressionView = (
   experimentId, genes, componentUuid, genesOperation,
 ) => async (dispatch, getState) => {
   const oldData = getState().genes.expression.views[componentUuid]?.data;
 
-  let newData = genes;
-
-  if (genesOperation === geneOperations.ADD && oldData) {
-    newData = Array.from(new Set(genes.concat(oldData)));
-  }
-  if (genesOperation === geneOperations.REMOVE && oldData) {
-    newData = oldData.filter((gene) => !genes.includes(gene));
-  }
-  if (genesOperation === geneOperations.OVERWRITE && oldData) {
-    newData = genes;
-  }
+  const newData = genes;
 
   // Dispatch loading state
   dispatch({

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -10,7 +10,7 @@ import HeatmapCrossHairs from './HeatmapCrossHairs';
 import CellInfo from '../CellInfo';
 import PlatformError from '../../../../../../components/PlatformError';
 import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
-import { changeExpressionView } from '../../../../../../redux/actions/genes';
+import { loadGeneExpression } from '../../../../../../redux/actions/genes';
 
 const HeatmapPlot = (props) => {
   const {
@@ -20,8 +20,10 @@ const HeatmapPlot = (props) => {
   const componentType = 'Heatmap';
 
   const dispatch = useDispatch();
-  const selectedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
-  const selectedGenesLoading = useSelector((state) => state.genes.expression.views[componentType]?.fetching);
+  const { data: selectedGenes, fetching } = useSelector((state) => state.genes.expression.views[componentType]);
+
+  // const selectedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
+  // const selectedGenesLoading = useSelector((state) => state.genes.expression.views[componentType]?.fetching);
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
 
@@ -45,7 +47,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (selectedGenesLoading) {
+  if (fetching) {
     return (
       <center style={{ marginTop: height / 2 }}>
         <Spin size='large' />
@@ -59,8 +61,8 @@ const HeatmapPlot = (props) => {
       <PlatformError
         description={error}
         onClick={() => {
-          if (!selectedGenesLoading) {
-            dispatch(changeExpressionView(experimentId, selectedGenes, componentType));
+          if (!fetching) {
+            dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
           }
         }}
       />

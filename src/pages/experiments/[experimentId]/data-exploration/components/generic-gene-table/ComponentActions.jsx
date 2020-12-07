@@ -7,17 +7,32 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import _ from 'lodash';
 import { PlusOutlined, RedoOutlined, MinusOutlined } from '@ant-design/icons';
-import { changeExpressionView } from '../../../../../../redux/actions/genes';
-import { geneOperations } from '../../../../../../utils/geneTable/geneOperations';
+import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+
+const geneOperations = {
+  ADD: 'add',
+  REMOVE: 'remove',
+  OVERWRITE: 'overwrite',
+};
 
 const ComponentActions = (props) => {
   const { experimentId, componentType } = props;
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
+  const displayedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
 
-  const performGeneOperation = (geneOperation) => {
-    const newGenes = _.cloneDeep(selectedGenes);
-    dispatch(changeExpressionView(experimentId, newGenes, componentType, geneOperation));
+  const performGeneOperation = (genesOperation) => {
+    let newGenes = _.cloneDeep(selectedGenes);
+
+    if (genesOperation === geneOperations.ADD && displayedGenes) {
+      newGenes = Array.from(new Set(selectedGenes.concat(displayedGenes)));
+    }
+    if (genesOperation === geneOperations.REMOVE && displayedGenes) {
+      newGenes = displayedGenes.filter((gene) => !selectedGenes.includes(gene));
+    }
+
+    console.log(componentType);
+    dispatch(loadGeneExpression(experimentId, newGenes, componentType));
   };
 
   const menu = (
