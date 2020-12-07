@@ -124,11 +124,6 @@ const HeatmapPlot = (props) => {
   const isHeatmapLoading = () => {
     console.log('checking if heatmap is loading...');
 
-    if (_.intersection(selectedGenes, loadingGenes).length > 0) {
-      console.log('yes, intersection');
-      return true;
-    }
-
     if (!vegaData) {
       console.log('yes, no vega data');
       return true;
