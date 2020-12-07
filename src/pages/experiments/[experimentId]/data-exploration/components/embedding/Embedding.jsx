@@ -78,6 +78,7 @@ const Embedding = (props) => {
       // we need to wait for the thing to load in first.
       case 'genes': {
         dispatch(loadGeneExpression(experimentId, [key], embeddingType));
+        setCellInfoVisible(false);
         return;
       }
 
@@ -85,6 +86,7 @@ const Embedding = (props) => {
       case 'cellSets': {
         if (isBrowser) {
           setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
+          setCellInfoVisible(false);
         }
 
         return;
@@ -93,6 +95,7 @@ const Embedding = (props) => {
       // If there is no focus, we can just delete all the colors.
       default: {
         setCellColors({});
+        setCellInfoVisible(false);
         break;
       }
     }
@@ -236,6 +239,7 @@ const Embedding = (props) => {
         createClusterPopover
           ? (
             <ClusterPopover
+              visible
               popoverPosition={cellCoordintes}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
