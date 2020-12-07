@@ -19,11 +19,6 @@ Object {
   "payload": Object {
     "error": "Couldn't fetch expression data.",
     "experimentId": "1234",
-    "genes": Array [
-      "a",
-      "b",
-      "c",
-    ],
   },
   "type": "genes/expressionError",
 }

@@ -78,6 +78,6 @@ describe('ListSelected', () => {
     const button = component.find(Button);
     button.simulate('click');
     const select = component.find(Select);
-    expect(select.getElement().props.value).toEqual(initialState['genes']['selected']);
+    expect(select.getElement().props.value).toEqual(initialState.genes.selected);
   });
 });

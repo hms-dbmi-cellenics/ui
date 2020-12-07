@@ -37,6 +37,7 @@ const initialState = {
           expression: [0, 0.4, 0.5, 1.6],
         },
       },
+      views: {},
     },
     selected: ['REALGENE2', 'REALGENE3'],
   },

@@ -36,7 +36,7 @@ const HeatmapPlot = (props) => {
         <Empty
           description={(
             <span>
-              Please select gene(s) from the Gene list tool
+              Please add gene(s) to the heatmap from the Gene list tool
             </span>
           )}
         />

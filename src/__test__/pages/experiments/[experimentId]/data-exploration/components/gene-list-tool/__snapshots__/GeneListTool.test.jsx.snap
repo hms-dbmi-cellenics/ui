@@ -14,15 +14,19 @@ Object {
 exports[`GeneListTool all genes from the first page are selected by default on load 1`] = `
 Object {
   "payload": Object {
+    "componentUuid": "testList",
+    "data": Object {
+      "R3ALG3N3": Object {
+        "dispersions": 12.3131,
+      },
+    },
     "experimentId": "1234",
-    "genes": Array [
-      "J",
-      "I",
-      "K",
-      "CEMIP",
+    "properties": Array [
+      "dispersions",
     ],
+    "total": 1,
   },
-  "type": "genes/select",
+  "type": "genes/propertiesLoadedPaginated",
 }
 `;
 

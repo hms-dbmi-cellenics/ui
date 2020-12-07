@@ -7,7 +7,7 @@ import { Button, Typography } from 'antd';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import SelectionIndicator from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/generic-gene-table/SelectionIndicator';
+import SelectionActions from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/generic-gene-table/SelectionActions';
 import { GENES_DESELECT } from '../../../../../../../redux/actionTypes/genes';
 
 const { Text } = Typography;
@@ -31,6 +31,7 @@ const initialState = {
       loading: [],
       error: false,
       data: {},
+      views: {},
     },
     selected: [],
     focused: undefined,
@@ -48,7 +49,7 @@ describe('SelectionIndicator', () => {
     const store = mockStore(initialState);
     const component = mount(
       <Provider store={store}>
-        <SelectionIndicator
+        <SelectionActions
           experimentId='test'
           showCSV={false}
         />
@@ -71,7 +72,7 @@ describe('SelectionIndicator', () => {
     const store = mockStore(state);
     const component = mount(
       <Provider store={store}>
-        <SelectionIndicator
+        <SelectionActions
           experimentId='test'
           showCSV={false}
         />
@@ -81,13 +82,16 @@ describe('SelectionIndicator', () => {
     const text = component.find(Text);
 
     // There should be two buttons.
-    expect(button.length).toEqual(2);
+    expect(button.length).toEqual(3);
 
     // A clear button
-    expect(button.at(0).childAt(0).text()).toEqual('Clear');
+    expect(button.at(0).childAt(0).text()).toEqual('Clear selected');
 
     // And a copy to clipboard button
     expect(button.at(1).childAt(0).text()).toEqual('Copy selected');
+
+    // And a list selected button
+    expect(button.at(2).childAt(0).text()).toEqual('List selected');
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
@@ -101,15 +105,14 @@ describe('SelectionIndicator', () => {
     const store = mockStore(state);
     const component = mount(
       <Provider store={store}>
-        <SelectionIndicator
+        <SelectionActions
           experimentId='test'
           showCSV={false}
         />
       </Provider>,
     );
-    const button = component.find(Button);
-
-    button.at(0).simulate('click');
+    const clearSelectedButton = component.find(Button).at(0);
+    clearSelectedButton.simulate('click');
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(GENES_DESELECT);
     expect(firstAction).toMatchSnapshot();
@@ -120,7 +123,7 @@ describe('SelectionIndicator', () => {
 
     const component = mount(
       <Provider store={store}>
-        <SelectionIndicator
+        <SelectionActions
           experimentId='test'
           showCSV
           onExportCSV={() => null}
@@ -147,7 +150,7 @@ describe('SelectionIndicator', () => {
 
     const component = mount(
       <Provider store={store}>
-        <SelectionIndicator
+        <SelectionActions
           experimentId='test'
           showCSV
           onExportCSV={mockCallback}
@@ -171,7 +174,7 @@ describe('SelectionIndicator', () => {
     const store = mockStore(state);
     const component = mount(
       <Provider store={store}>
-        <SelectionIndicator
+        <SelectionActions
           experimentId='test'
           showCSV
         />

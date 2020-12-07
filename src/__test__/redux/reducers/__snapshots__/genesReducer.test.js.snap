@@ -6,6 +6,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -23,6 +24,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -44,6 +46,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -64,6 +67,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -87,6 +91,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -125,6 +130,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -166,6 +172,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -192,6 +199,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -224,6 +232,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -250,6 +259,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -271,6 +281,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -292,6 +303,13 @@ Object {
     "data": Object {},
     "error": "asd",
     "loading": Array [],
+    "views": Object {
+      "undefined": Object {
+        "data": Array [],
+        "error": "asd",
+        "fetching": false,
+      },
+    },
   },
   "focused": undefined,
   "properties": Object {
@@ -320,6 +338,7 @@ Object {
     },
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -341,6 +360,7 @@ Object {
       "B",
       "C",
     ],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
