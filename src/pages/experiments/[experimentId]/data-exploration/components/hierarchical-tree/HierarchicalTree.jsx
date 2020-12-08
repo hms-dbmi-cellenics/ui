@@ -22,6 +22,7 @@ const HierarchicalTree = (props) => {
     treeData,
     store,
     experimentId,
+    showHideButton,
     ...restOfProps
   } = props;
 
@@ -250,7 +251,7 @@ const HierarchicalTree = (props) => {
   };
   // eslint-disable-next-line no-unused-vars
   const renderHideButton = (modified) => {
-    if (!modified.rootNode) {
+    if (!modified.rootNode && showHideButton) {
       return (
         <HideButton
           experimentId={experimentId}
@@ -258,8 +259,10 @@ const HierarchicalTree = (props) => {
         />
       );
     }
+
     return <></>;
   };
+
   const renderTitlesRecursive = (source, parentKey = null) => {
     const toRender = source && source.map((d) => {
       const modified = d;
@@ -313,6 +316,7 @@ HierarchicalTree.defaultProps = {
   onHierarchyUpdate: () => null,
   defaultCheckedKeys: [],
   store: null,
+  showHideButton: false,
 };
 
 HierarchicalTree.propTypes = {
@@ -324,6 +328,7 @@ HierarchicalTree.propTypes = {
   treeData: PropTypes.array.isRequired,
   store: PropTypes.string,
   experimentId: PropTypes.string.isRequired,
+  showHideButton: PropTypes.bool,
 };
 
 export default HierarchicalTree;

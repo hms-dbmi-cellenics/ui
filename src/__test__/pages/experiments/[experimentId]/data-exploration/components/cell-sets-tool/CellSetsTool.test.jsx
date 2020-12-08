@@ -77,6 +77,7 @@ describe('CellSetsTool', () => {
           children: [{ key: 'scratchpad-a' }],
         },
       ],
+      hidden: new Set(),
     },
   };
 

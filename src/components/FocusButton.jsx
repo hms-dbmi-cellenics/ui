@@ -30,7 +30,7 @@ const FocusButton = (props) => {
   const focused = focusData.store === store && focusData.key === lookupKey;
 
   return (
-    <Tooltip placement='right' title={`${(focused) ? 'Show color on' : 'Hide color on'} embedding`}>
+    <Tooltip placement='right' title={`${(focused) ? 'Hide color on' : 'Show color on'} embedding`}>
       <Button
         type='dashed'
         style={{ background: 'none' }}

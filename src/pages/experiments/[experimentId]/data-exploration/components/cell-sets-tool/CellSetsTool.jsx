@@ -159,6 +159,7 @@ const CellSetsTool = (props) => {
               onNodeDelete={onNodeDelete}
               onHierarchyUpdate={onHierarchyUpdate}
               defaultExpandAll
+              showHideButton
             />
           </TabPane>
           <TabPane tab='Metadata' key='metadataCategorical'>
@@ -172,6 +173,7 @@ const CellSetsTool = (props) => {
                 onNodeDelete={onNodeDelete}
                 onHierarchyUpdate={onHierarchyUpdate}
                 defaultExpandAll
+                showHideButton
               />
             )
               : (
