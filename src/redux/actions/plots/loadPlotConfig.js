@@ -6,6 +6,7 @@ import messages from '../../../components/notification/messages';
 import { initialPlotConfigStates } from '../../reducers/plots/initialState';
 
 const loadPlotConfig = (experimentId, plotUuid, type) => async (dispatch) => {
+  console.log('loadplotconfig ', experimentId, plotUuid, type);
   try {
     const response = await fetch(
       `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,

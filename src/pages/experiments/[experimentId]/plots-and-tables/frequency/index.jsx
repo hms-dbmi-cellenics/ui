@@ -8,7 +8,7 @@ import {
   Search,
   Skeleton,
   Spin,
-  Button,
+  Radio,
 } from 'antd';
 import _ from 'lodash';
 import { CSVLink } from 'react-csv';
@@ -32,6 +32,7 @@ import {
   loadPlotConfig,
 } from '../../../../../redux/actions/plots/index';
 import PlatformError from '../../../../../components/PlatformError';
+import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
 
 const { Panel } = Collapse;
 const plotUuid = 'frequencyPlotMain';
@@ -43,16 +44,22 @@ const route = {
 
 const frequencyPlot = () => {
   const dispatch = useDispatch();
+  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const { loading, error } = useSelector((state) => state.cellSets);
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, [experimentId]);
+
+  const properties = useSelector((state) => state.cellSets.properties);
   const router = useRouter();
   const { experimentId } = router.query;
 
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
   const [plotData, setPlotData] = useState([]);
   const [spec, setSpec] = useState({
     spec: null,
   });
+
   useEffect(() => {
-    if (!isBrowser) return;
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, [experimentId]);
 
@@ -61,20 +68,64 @@ const frequencyPlot = () => {
     const generatedSpec = generateSpec(config, plotData);
     setSpec(generatedSpec);
   }, [config]);
+  const generateData = () => {
+    const data = [];
+    if (!loading) {
+      let i = 0;
+      const sum = properties['louvain-0'].cellIds.size + properties['louvain-1'].cellIds.size + properties['louvain-2'].cellIds.size;
+      let value;
+      for (i = 0; i < 3; i += 1) {
+        if (config.plotType === 'count') {
+          value = properties[`louvain-${i}`].cellIds.size;
+        } else {
+          value = (properties[`louvain-${i}`].cellIds.size / sum) * 100;
+        }
+        data.push({
+          x: 0,
+          y: value,
+          c: i,
+        });
+      }
 
+      console.log('DATA PASSED IS ', [data]);
+      return data;
+    }
+  };
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
+  if (!config) {
+    return <Skeleton />;
+  }
 
   const renderPlot = () => (
     <center>
       <Vega
-        spec={generateSpec(config, 'Variable')}
+        spec={generateSpec(config)}
+        data={{ data: generateData() }}
         renderer='canvas'
       />
     </center>
   );
-
+  if (error) {
+    return (
+      <PlatformError
+        description={error}
+      />
+    );
+  }
+  console.log('config', config, 'loading', loading, ' is browser', isBrowser);
+  if (
+    !config
+    || loading
+    || !isBrowser
+  ) {
+    return (
+      <center>
+        <Spin size='large' />
+      </center>
+    );
+  }
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header
@@ -95,6 +146,15 @@ const frequencyPlot = () => {
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse accordion>
+            <Panel header='Plot Type' key='1'>
+              <Radio.Group
+                onChange={(value) => updatePlotWithChanges({ plotType: value })}
+                value={config.plotType}
+              >
+                <Radio value='proportional'>Proportional</Radio>
+                <Radio value='count'>Count</Radio>
+              </Radio.Group>
+            </Panel>
             <Panel header='Main Schema' key='2'>
               <DimensionsRangeEditor
                 config={config}

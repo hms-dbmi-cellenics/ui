@@ -2,13 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Radio, Form } from 'antd';
 
-const LegendEditor = props => {
-  const { onUpdate, legendEnabled, legendPosition, legendOptions } = props;
+const LegendEditor = (props) => {
+  const {
+    onUpdate, legendEnabled, legendPosition, legendOptions,
+  } = props;
 
-  const onChange = e => {
+  const onChange = (e) => {
     onUpdate({ legendEnabled: e.target.value });
   };
-  const changePosition = value => {
+  const changePosition = (value) => {
     onUpdate({ legendPosition: value.target.value });
   };
   let position = null;
@@ -18,11 +20,11 @@ const LegendEditor = props => {
         <div> Position</div>
         <Form.Item>
           <Radio.Group
-            onChange={value => changePosition(value)}
+            onChange={(value) => changePosition(value)}
             value={legendPosition}
           >
-            <Radio value="top">Top</Radio>
-            <Radio value="bottom">Bottom</Radio>
+            <Radio value='top'>Top</Radio>
+            <Radio value='bottom'>Bottom</Radio>
           </Radio.Group>
         </Form.Item>
       </>
@@ -34,20 +36,20 @@ const LegendEditor = props => {
         <div>Position</div>
         <Form.Item>
           <Radio.Group
-            onChange={value => changePosition(value)}
+            onChange={(value) => changePosition(value)}
             value={legendPosition}
           >
-            <Radio value="top-left">Top-Left</Radio>
-            <Radio value="top-right">Top-Right</Radio>
-            <Radio value="bottom-left">Bot-Left</Radio>
-            <Radio value="bottom-right">Bot-Right</Radio>
+            <Radio value='top-left'>Top-Left</Radio>
+            <Radio value='top-right'>Top-Right</Radio>
+            <Radio value='bottom-left'>Bot-Left</Radio>
+            <Radio value='bottom-right'>Bot-Right</Radio>
           </Radio.Group>
         </Form.Item>
       </>
     );
   }
   return (
-    <Form size="small" labelCol={{ span: 12 }} wrapperCol={{ span: 12 }}>
+    <Form size='small' labelCol={{ span: 12 }} wrapperCol={{ span: 12 }}>
       <Form.Item>
         <Radio.Group onChange={onChange} value={legendEnabled}>
           <Radio value>Show</Radio>
