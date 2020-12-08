@@ -3,7 +3,7 @@ import { mount, configure } from 'enzyme';
 import _ from 'lodash';
 import Adapter from 'enzyme-adapter-react-16';
 import preloadAll from 'jest-next-dynamic';
-import { Button, Typography } from 'antd';
+import { Button, Typography, Select } from 'antd';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
@@ -85,13 +85,13 @@ describe('SelectionIndicator', () => {
     expect(button.length).toEqual(3);
 
     // A clear button
-    expect(button.at(0).childAt(0).text()).toEqual('Clear selected');
+    expect(button.at(0).childAt(0).text()).toEqual('Clear');
 
     // And a copy to clipboard button
-    expect(button.at(1).childAt(0).text()).toEqual('Copy selected');
+    expect(button.at(1).childAt(0).text()).toEqual('Copy');
 
     // And a list selected button
-    expect(button.at(2).childAt(0).text()).toEqual('List selected');
+    expect(button.at(2).childAt(0).text()).toEqual('List');
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
@@ -138,7 +138,7 @@ describe('SelectionIndicator', () => {
     expect(button.length).toEqual(1);
 
     // An 'export as csv...' button
-    expect(button.at(0).childAt(0).text()).toEqual('Export as CSV...');
+    expect(button.at(0).childAt(0).text()).toEqual('Export as CSV ...');
 
     // No selection text should show.
     expect(text.length).toEqual(0);
@@ -183,21 +183,59 @@ describe('SelectionIndicator', () => {
     const button = component.find(Button);
     const text = component.find(Text);
 
-    // There should be three buttons.
-    expect(button.length).toEqual(3);
+    // There should be four buttons.
+    expect(button.length).toEqual(4);
 
     // A clear button
     expect(button.at(0).childAt(0).text()).toEqual('Clear');
 
     // And a copy to clipboard button
-    expect(button.at(1).childAt(0).text()).toEqual('Copy selected');
+    expect(button.at(1).childAt(0).text()).toEqual('Copy');
+
+    // And a list button
+    expect(button.at(2).childAt(0).text()).toEqual('List');
 
     // And an export button
-    expect(button.at(2).childAt(0).text()).toEqual('Export as CSV...');
+    expect(button.at(3).childAt(0).text()).toEqual('Export as CSV ...');
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
     expect(text.childAt(0).text()).toEqual('2 genes selected');
+  });
+
+  test('List selected button changes from list to hide and back correctly', () => {
+    const state = _.cloneDeep(initialState);
+    state.genes.selected = ['CEMIP', 'TIMP3'];
+
+    const store = mockStore(state);
+    const mockOnListSelected = jest.fn();
+    const component = mount(
+      <Provider store={store}>
+        <SelectionActions
+          experimentId='test'
+          showCSV
+          onListSelected={mockOnListSelected}
+        />
+      </Provider>,
+    );
+    const listSelectedButton = component.find(Button).at(2);
+    expect(listSelectedButton.childAt(0).text()).toEqual('List');
+
+    // click "List"
+    listSelectedButton.simulate('click');
+    component.update();
+
+    expect(mockOnListSelected.mock.calls.length).toEqual(1);
+    expect(mockOnListSelected.mock.calls[0]).toEqual([true]);
+    expect(listSelectedButton.childAt(0).text()).toEqual('Hide');
+
+    // click "Hide"
+    listSelectedButton.simulate('click');
+    component.update();
+
+    expect(mockOnListSelected.mock.calls.length).toEqual(2);
+    expect(mockOnListSelected.mock.calls[1]).toEqual([false]);
+    expect(listSelectedButton.childAt(0).text()).toEqual('List');
   });
 
   configure({ adapter: new Adapter() });

@@ -29,7 +29,7 @@ const HeatmapPlot = (props) => {
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
   const cellSetData = useSelector((state) => state.cellSets);
-  const { expressionError: error } = expressionData;
+  const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
 
   useEffect(() => {

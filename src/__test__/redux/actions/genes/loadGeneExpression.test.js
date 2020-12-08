@@ -19,6 +19,7 @@ const mockStore = configureStore([thunk]);
 
 describe('loadGeneExpression action', () => {
   const experimentId = '1234';
+  const componentUuid = 'asd';
   const loadingGenes = ['a', 'b', 'c'];
 
   it('Does not dispatch when expression is already loading', async () => {
@@ -27,7 +28,7 @@ describe('loadGeneExpression action', () => {
         { ...initialState, expression: { ...initialState.expression, loading: ['d'] } },
     });
 
-    store.dispatch(loadGeneExpression(experimentId, loadingGenes));
+    store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid));
     expect(store.getActions().length).toEqual(0);
   });
 
@@ -62,7 +63,7 @@ describe('loadGeneExpression action', () => {
       return new Promise((resolve) => resolve(resolveWith));
     });
 
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes));
+    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid));
 
     const firstCall = sendWork.mock.calls[0];
     expect(firstCall[2].genes).toEqual(['b', 'c']);
@@ -100,7 +101,7 @@ describe('loadGeneExpression action', () => {
       return new Promise((resolve) => resolve(resolveWith));
     });
 
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, true));
+    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
 
     const firstCall = sendWork.mock.calls[1];
     expect(firstCall[2].genes).toEqual(['a', 'b', 'c']);

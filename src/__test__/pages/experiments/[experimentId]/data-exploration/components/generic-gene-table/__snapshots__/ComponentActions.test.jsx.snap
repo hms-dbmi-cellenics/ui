@@ -1,0 +1,119 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComponentActions Dispatches loadGeneExpression action with the right list of genes when Add is clicked 1`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "experimentId": "1234",
+    "genes": Array [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+    ],
+  },
+  "type": "genes/expressionLoading",
+}
+`;
+
+exports[`ComponentActions Dispatches loadGeneExpression action with the right list of genes when Add is clicked 2`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "data": Object {
+      "A": Object {
+        "expression": Array [
+          0,
+          0.4,
+          0.5,
+          1.6,
+        ],
+        "max": 1.6,
+        "min": 0,
+      },
+      "B": Object {
+        "expression": Array [
+          0,
+          0.4,
+          0.5,
+          1.6,
+        ],
+        "max": 1.6,
+        "min": 0,
+      },
+      "C": Object {
+        "expression": Array [
+          0,
+          0.4,
+          0.5,
+          1.6,
+        ],
+        "max": 1.6,
+        "min": 0,
+      },
+    },
+    "experimentId": "1234",
+    "genes": Array [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+    ],
+  },
+  "type": "genes/expressionLoaded",
+}
+`;
+
+exports[`ComponentActions Dispatches loadGeneExpression action with the right list of genes when Overwrite is clicked 1`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "experimentId": "1234",
+    "genes": Array [
+      "D",
+    ],
+  },
+  "type": "genes/expressionLoading",
+}
+`;
+
+exports[`ComponentActions Dispatches loadGeneExpression action with the right list of genes when Overwrite is clicked 2`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "experimentId": "1234",
+    "genes": Array [
+      "D",
+    ],
+  },
+  "type": "genes/expressionLoaded",
+}
+`;
+
+exports[`ComponentActions Dispatches loadGeneExpression action with the right list of genes when Remove is clicked 1`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "experimentId": "1234",
+    "genes": Array [
+      "E",
+    ],
+  },
+  "type": "genes/expressionLoading",
+}
+`;
+
+exports[`ComponentActions Dispatches loadGeneExpression action with the right list of genes when Remove is clicked 2`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "experimentId": "1234",
+    "genes": Array [
+      "E",
+    ],
+  },
+  "type": "genes/expressionLoaded",
+}
+`;

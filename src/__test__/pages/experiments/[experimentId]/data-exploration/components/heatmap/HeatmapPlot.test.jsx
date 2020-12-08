@@ -15,11 +15,12 @@ VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
 const mockStore = configureMockStore([thunk]);
 configure({ adapter: new Adapter() });
 let component;
+const componentType = 'Heatmap';
 
 const initialState = {
   genes: {
     expression: {
-      loading: [],
+      loading: ['A'],
       data: {
         REALGENE: {
           min: 0,
@@ -37,9 +38,14 @@ const initialState = {
           expression: [0, 0.4, 0.5, 1.6],
         },
       },
-      views: {},
+      views: {
+        [componentType]: {
+          data: ['REALGENE'],
+          fetching: false,
+          error: false,
+        },
+      },
     },
-    selected: ['REALGENE2', 'REALGENE3'],
   },
   cellSets: {
     hierarchy: [
@@ -78,7 +84,25 @@ describe('HeatmapPlot', () => {
   });
 
   it('renders Empty component when no selected gene', () => {
-    const store = mockStore({ ...initialState, genes: { ...initialState.genes, selected: [] } });
+    const store = mockStore({
+      ...initialState,
+      genes: {
+        ...initialState.genes,
+        expression: {
+          ...initialState.genes.expression,
+          views: {
+            ...initialState.genes.expression.views,
+            [componentType]: {
+              ...initialState.genes.expression.views[componentType],
+              fetching: false,
+              error: false,
+              data: [],
+            },
+          },
+          loading: [],
+        },
+      },
+    });
 
     component = mount(
       <Provider store={store}>
@@ -89,16 +113,24 @@ describe('HeatmapPlot', () => {
     expect(component.find('Empty').length).toEqual(2);
   });
 
-  it('renders Spinner when loading genes', () => {
+  it('renders Spinner when no expression data', () => {
     const store = mockStore({
       ...initialState,
       genes: {
         ...initialState.genes,
         expression: {
           ...initialState.genes.expression,
+          views: {
+            ...initialState.genes.expression.views,
+            [componentType]: {
+              ...initialState.genes.expression.views[componentType],
+              fetching: true,
+              error: false,
+              data: ['REALGENE'],
+            },
+          },
           loading: ['REALGENE'],
         },
-        selected: ['REALGENE'],
       },
     });
 
@@ -107,6 +139,7 @@ describe('HeatmapPlot', () => {
         <HeatmapPlot experimentId='123' width={200} height={200} />
       </Provider>,
     );
+
     expect(component.find('HeatmapPlot').length).toEqual(1);
     expect(component.find('Spin').length).toEqual(1);
   });
@@ -132,7 +165,34 @@ describe('HeatmapPlot', () => {
           ...initialState.genes.expression,
           error: 'wow, error!',
         },
-        selected: ['REALGENE'],
+      },
+    });
+
+    component = mount(
+      <Provider store={store}>
+        <HeatmapPlot experimentId='123' width={200} height={200} />
+      </Provider>,
+    );
+
+    expect(component.find('HeatmapPlot').length).toEqual(1);
+    expect(component.find(ExclamationCircleFilled).length).toEqual(1);
+  });
+
+  it('renders error state when the view errors out', () => {
+    const store = mockStore({
+      ...initialState,
+      genes: {
+        ...initialState.genes,
+        expression: {
+          ...initialState.genes.expression,
+          views: {
+            ...initialState.genes.expression.views,
+            [componentType]: {
+              ...initialState.genes.expression.views[componentType],
+              error: true,
+            },
+          },
+        },
       },
     });
 
