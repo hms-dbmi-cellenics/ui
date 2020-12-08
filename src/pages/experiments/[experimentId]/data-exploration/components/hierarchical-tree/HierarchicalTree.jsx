@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Tree, Space, Button } from 'antd';
+import {
+  Tree, Space,
+} from 'antd';
 import { transform, cloneDeep } from 'lodash';
 import {
   DownOutlined,
@@ -9,13 +11,13 @@ import {
 import EditableField from '../../../../../../components/EditableField';
 import ColorPicker from '../../../../../../components/ColorPicker';
 import FocusButton from '../../../../../../components/FocusButton';
+import HideButton from '../cell-sets-tool/HideButton';
 
 import './hierarchicalTree.css';
 
 const HierarchicalTree = (props) => {
   const {
     onCheck: propOnCheck,
-    onHide: propOnHide,
     onNodeUpdate: propOnNodeUpdate,
     treeData,
     store,
@@ -250,15 +252,10 @@ const HierarchicalTree = (props) => {
   const renderHideButton = (modified) => {
     if (!modified.rootNode) {
       return (
-        <Button
-          size='small'
-          onClick={(e) => {
-            e.stopPropagation();
-            propOnHide(modified.key);
-          }}
-        >
-          Hide
-        </Button>
+        <HideButton
+          experimentId={experimentId}
+          cellSetKey={modified.key}
+        />
       );
     }
     return <></>;
@@ -272,7 +269,7 @@ const HierarchicalTree = (props) => {
           {renderFocusButton(modified)}
           {renderColorPicker(modified)}
           {renderEditableField(modified, parentKey)}
-          {/* {renderHideButton(modified)} */}
+          {renderHideButton(modified)}
 
         </Space>
       );
@@ -311,7 +308,6 @@ const HierarchicalTree = (props) => {
 
 HierarchicalTree.defaultProps = {
   onCheck: () => null,
-  onHide: () => null,
   onNodeUpdate: () => null,
   onNodeDelete: () => null,
   onHierarchyUpdate: () => null,
@@ -321,7 +317,6 @@ HierarchicalTree.defaultProps = {
 
 HierarchicalTree.propTypes = {
   onCheck: PropTypes.func,
-  onHide: PropTypes.func,
   onNodeUpdate: PropTypes.func,
   onNodeDelete: PropTypes.func,
   onHierarchyUpdate: PropTypes.func,
