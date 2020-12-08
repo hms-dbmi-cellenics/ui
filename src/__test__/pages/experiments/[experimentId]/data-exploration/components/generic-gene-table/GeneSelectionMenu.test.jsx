@@ -51,7 +51,6 @@ describe('ComponentActions', () => {
       </Provider>,
     );
 
-    console.log('LALALALALAL');
     expect(component.find(Select).length).toEqual(0);
 
     // click "List"
