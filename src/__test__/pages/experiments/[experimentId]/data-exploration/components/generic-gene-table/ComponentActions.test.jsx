@@ -199,7 +199,6 @@ describe('ComponentActions', () => {
 
     expect(store.getActions().length).toEqual(2);
     expect(store.getActions()[0]).toMatchSnapshot();
-
     expect(store.getActions()[1]).toMatchSnapshot();
   });
 });
