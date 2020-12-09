@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -9,17 +8,13 @@ import {
   Spin,
   Radio,
 } from 'antd';
-import _ from 'lodash';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import PointDesign from '../components/PointDesign';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import TitleDesign from '../components/TitleDesign';
 import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
-import ColourInversion from '../components/ColourInversion';
-import ColourbarDesign from '../components/ColourbarDesign';
 import LegendEditor from '../components/LegendEditor';
 import generateSpec from '../../../../../utils/plotSpecs/generateFrequencySpec';
 import Header from '../components/Header';
@@ -43,22 +38,32 @@ const frequencyPlot = () => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.plots[plotUuid]?.config);
   const { loading, error } = useSelector((state) => state.cellSets);
-  useEffect(() => {
-    dispatch(loadCellSets(experimentId));
-  });
-
-  const { properties } = useSelector((state) => state.cellSets);
+  const properties = useSelector((state) => state.cellSets.properties);
   const router = useRouter();
   const { experimentId } = router.query;
+  const [plotSpec, setPlotSpec] = useState({});
+  const [plotData, setPlotData] = useState();
 
   useEffect(() => {
+    if (!experimentId || !isBrowser) {
+      return;
+    }
+    dispatch(loadCellSets(experimentId));
+
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, [experimentId]);
 
+  useEffect(() => {
+    if (!config || Object.keys(properties).size === 0) {
+      return;
+    }
+    setPlotSpec(generateSpec(config));
+    setPlotData(generateData());
+  }, [config, properties]);
+
   const generateData = () => {
     const data = [];
-    if (!loading && !Object.keys(properties).length) {
-      console.log('PROPERTIES IN IF ARE ', !Object.keys(properties).length, properties);
+    if (!loading) {
       let i = 0;
       const sum = properties['louvain-0'].cellIds.size
         + properties['louvain-1'].cellIds.size
@@ -71,9 +76,9 @@ const frequencyPlot = () => {
           value = (properties[`louvain-${i}`].cellIds.size / sum) * 100;
         }
         data.push({
-          x: 0,
+          x: 1,
           y: value,
-          c: i,
+          c: `Cluster ${i}`,
         });
       }
       return data;
@@ -86,34 +91,41 @@ const frequencyPlot = () => {
     return <Skeleton />;
   }
 
-  const renderPlot = () => (
-    <center>
-      <Vega
-        spec={generateSpec(config)}
-        data={{ data: generateData() }}
-        renderer='canvas'
-      />
-    </center>
-  );
-  if (error) {
-    return (
-      <PlatformError
-        description={error}
-      />
-    );
-  }
-  console.log('config', config, 'loading', loading, ' is browser', isBrowser);
-  if (
-    !config
-    || loading
-    || !isBrowser
-  ) {
+  const renderPlot = () => {
+    if (error) {
+      return (
+        <PlatformError
+          description={error}
+        />
+      );
+    }
+    if (!config || loading || !isBrowser) {
+      return (
+        <center>
+          <Spin size='large' />
+        </center>
+      );
+    }
     return (
       <center>
-        <Spin size='large' />
+        <Vega
+          spec={plotSpec}
+          data={{ data: plotData }}
+          renderer='canvas'
+        />
       </center>
     );
-  }
+  };
+  const changePlotType = (value) => {
+    updatePlotWithChanges({
+      plotType: value.target.value,
+    });
+    if (value.target.value === 'proportional') {
+      updatePlotWithChanges({ yaxisText: 'Proportion' });
+    } else {
+      updatePlotWithChanges({ yaxisText: 'Count' });
+    }
+  };
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header
@@ -136,7 +148,7 @@ const frequencyPlot = () => {
           <Collapse accordion>
             <Panel header='Plot Type' key='1'>
               <Radio.Group
-                onChange={(value) => updatePlotWithChanges({ plotType: value.target.value })}
+                onChange={(value) => changePlotType(value)}
                 value={config.plotType}
               >
                 <Radio value='proportional'>Proportional</Radio>
@@ -166,29 +178,12 @@ const frequencyPlot = () => {
             <Panel header='Axes and Margins' key='3'>
               <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
             </Panel>
-            <Panel header='Colours' key='10'>
-              <ColourbarDesign
-                config={config}
-                onUpdate={updatePlotWithChanges}
-              />
-              <Collapse accordion>
-                <Panel header='Colour Inversion' key='4'>
-                  <ColourInversion
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
-            </Panel>
-            <Panel header='Markers' key='11'>
-              <PointDesign config={config} onUpdate={updatePlotWithChanges} />
-            </Panel>
             <Panel header='Legend' key='12'>
               <LegendEditor
                 onUpdate={updatePlotWithChanges}
                 legendEnabled={config.legendEnabled}
                 legendPosition={config.legendPosition}
-                legendOptions='corners'
+                legendOptions='top-bot'
               />
             </Panel>
           </Collapse>

@@ -138,6 +138,7 @@ const volcanoInitialConfig = {
 const frequencyInitialConfig = {
   plotType: 'proportional',
   legendEnabled: true,
+  legendPosition: 'top',
   spec: '1.0.0',
   width: 500,
   height: 500,
@@ -167,7 +168,6 @@ const frequencyInitialConfig = {
   labelsEnabled: true,
   selectedCellSet: 'louvain',
   testVar: null,
-  legendPosition: 'top',
 };
 const initialPlotConfigStates = {
   embeddingCategorical: embeddingCategoricalInitialConfig,
