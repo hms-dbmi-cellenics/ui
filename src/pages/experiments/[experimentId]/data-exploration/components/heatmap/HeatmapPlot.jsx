@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Empty, Spin,
+  Empty, Spin, Typography,
 } from 'antd';
 import _ from 'lodash';
 import spec from '../../../../../../utils/heatmapSpec';
@@ -12,6 +12,8 @@ import CellInfo from '../CellInfo';
 import PlatformError from '../../../../../../components/PlatformError';
 import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+
+const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
   const {
@@ -103,9 +105,10 @@ const HeatmapPlot = (props) => {
       <center>
         <Empty
           description={(
-            <span>
-              Please add gene(s) to the heatmap from the Gene list tool
-            </span>
+            <>
+              <div><Text type='primary'>No expression data to show</Text></div>
+              <div><Text type='secondary'>You can add genes to display here from the gene list tool.</Text></div>
+            </>
           )}
         />
         <HeatmapCrossHairs />
