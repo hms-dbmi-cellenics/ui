@@ -1,17 +1,15 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Row,
   Col,
   Space,
   Collapse,
-  Search,
   Skeleton,
   Spin,
   Radio,
 } from 'antd';
 import _ from 'lodash';
-import { CSVLink } from 'react-csv';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -25,7 +23,6 @@ import ColourbarDesign from '../components/ColourbarDesign';
 import LegendEditor from '../components/LegendEditor';
 import generateSpec from '../../../../../utils/plotSpecs/generateFrequencySpec';
 import Header from '../components/Header';
-import DiffExprCompute from '../../data-exploration/components/differential-expression-tool/DiffExprCompute';
 import isBrowser from '../../../../../utils/environment';
 import {
   updatePlotConfig,
@@ -48,31 +45,24 @@ const frequencyPlot = () => {
   const { loading, error } = useSelector((state) => state.cellSets);
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
-  }, [experimentId]);
+  });
 
-  const properties = useSelector((state) => state.cellSets.properties);
+  const { properties } = useSelector((state) => state.cellSets);
   const router = useRouter();
   const { experimentId } = router.query;
-
-  const [plotData, setPlotData] = useState([]);
-  const [spec, setSpec] = useState({
-    spec: null,
-  });
 
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, [experimentId]);
 
-  useEffect(() => {
-    if (!config) return;
-    const generatedSpec = generateSpec(config, plotData);
-    setSpec(generatedSpec);
-  }, [config]);
   const generateData = () => {
     const data = [];
-    if (!loading) {
+    if (!loading && !Object.keys(properties).length) {
+      console.log('PROPERTIES IN IF ARE ', !Object.keys(properties).length, properties);
       let i = 0;
-      const sum = properties['louvain-0'].cellIds.size + properties['louvain-1'].cellIds.size + properties['louvain-2'].cellIds.size;
+      const sum = properties['louvain-0'].cellIds.size
+        + properties['louvain-1'].cellIds.size
+        + properties['louvain-2'].cellIds.size;
       let value;
       for (i = 0; i < 3; i += 1) {
         if (config.plotType === 'count') {
@@ -86,8 +76,6 @@ const frequencyPlot = () => {
           c: i,
         });
       }
-
-      console.log('DATA PASSED IS ', [data]);
       return data;
     }
   };
@@ -148,7 +136,7 @@ const frequencyPlot = () => {
           <Collapse accordion>
             <Panel header='Plot Type' key='1'>
               <Radio.Group
-                onChange={(value) => updatePlotWithChanges({ plotType: value })}
+                onChange={(value) => updatePlotWithChanges({ plotType: value.target.value })}
                 value={config.plotType}
               >
                 <Radio value='proportional'>Proportional</Radio>
