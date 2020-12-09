@@ -31,6 +31,9 @@ const cellSetsDelete = (state, action) => {
   // If the key was in the list of selected keys, make sure we remove it from there.
   newState.selected = newState.selected.filter((selectedKey) => selectedKey !== key);
 
+  // Delete from hidden if it was selected to be hidden.
+  newState.hidden.delete(key);
+
   return newState;
 };
 

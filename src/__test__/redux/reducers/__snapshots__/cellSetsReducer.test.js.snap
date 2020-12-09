@@ -28,6 +28,26 @@ Object {
 }
 `;
 
+exports[`cellSetsReducer Adds hidden cell sets to set 1`] = `
+Set {
+  "new",
+}
+`;
+
+exports[`cellSetsReducer Handles rehiding of previously hidden cell sets 1`] = `
+Set {
+  "a",
+}
+`;
+
+exports[`cellSetsReducer Handles unhiding of a not hidden cell set 1`] = `
+Set {
+  "a",
+}
+`;
+
+exports[`cellSetsReducer Handles unhiding of previously hidden cell sets 1`] = `Set {}`;
+
 exports[`cellSetsReducer Hierarchy is updated appropriately 1`] = `
 Array [
   Object {

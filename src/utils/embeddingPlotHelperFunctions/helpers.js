@@ -1,6 +1,8 @@
 import * as d3Chromatic from 'd3-scale-chromatic';
 import * as d3 from 'd3-scale';
 
+import { union } from '../cellSetOperations';
+
 const hexToRgb = (hex) => {
   if (hex) {
     return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i,
@@ -56,10 +58,15 @@ const colorByGeneExpression = (focusedGene) => {
   return cellColoring;
 };
 
-const convertCellsData = (results) => {
+const convertCellsData = (results, hidden, properties) => {
   const data = {};
 
+  const hiddenCells = union([...hidden], properties);
   results.forEach((value, key) => {
+    if (hiddenCells.has(key)) {
+      return;
+    }
+
     data[key] = {
       mappings: {
         PCA: value,

@@ -53,6 +53,7 @@ describe('Embedding', () => {
           children: [{ key: 'cluster1' }],
         },
       ],
+      hidden: new Set(),
     },
     genes: {
       expression: {

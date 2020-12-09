@@ -42,6 +42,21 @@ const CELL_SETS_DELETE = `${CELL_SETS}/delete`;
 const CELL_SETS_SAVE = `${CELL_SETS}/save`;
 
 /**
+ * Hide a cell set from visualizations.
+ */
+const CELL_SETS_HIDE = `${CELL_SETS}/hide`;
+
+/**
+ * Unhide [remove a previous hidden state] from a cell set from visualizations.
+ */
+const CELL_SETS_UNHIDE = `${CELL_SETS}/unhide`;
+
+/**
+ * Unhide all hidden cell sets.
+ */
+const CELL_SETS_UNHIDE_ALL = `${CELL_SETS}/unhideAll`;
+
+/**
  * Creates an error condition in the cell set tool.
  */
 const CELL_SETS_ERROR = `${CELL_SETS}/error`;
@@ -52,5 +67,6 @@ export {
   CELL_SETS_UPDATE_PROPERTY, CELL_SETS_UPDATE_HIERARCHY, CELL_SETS_SET_SELECTED,
   CELL_SETS_DELETE,
   CELL_SETS_SAVE,
+  CELL_SETS_HIDE, CELL_SETS_UNHIDE, CELL_SETS_UNHIDE_ALL,
   CELL_SETS_ERROR,
 };
