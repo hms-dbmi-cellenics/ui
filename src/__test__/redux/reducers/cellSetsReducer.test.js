@@ -7,6 +7,7 @@ import {
   CELL_SETS_UPDATE_PROPERTY, CELL_SETS_UPDATE_HIERARCHY, CELL_SETS_SET_SELECTED,
   CELL_SETS_DELETE,
   CELL_SETS_ERROR,
+  CELL_SETS_HIDE, CELL_SETS_UNHIDE_ALL, CELL_SETS_UNHIDE,
 } from '../../../redux/actionTypes/cellSets';
 
 describe('cellSetsReducer', () => {
@@ -274,5 +275,87 @@ describe('cellSetsReducer', () => {
     });
 
     expect(newState.error).toEqual('asdsadsa');
+  });
+
+  it('Adds hidden cell sets to set', () => {
+    const newState = cellSetsReducer(initialState, {
+      type: CELL_SETS_HIDE,
+      payload: {
+        key: 'new',
+      },
+    });
+
+    expect(newState.hidden).toMatchSnapshot();
+  });
+
+  it('Handles rehiding of previously hidden cell sets', () => {
+    const previousState = {
+      ...initialState,
+      hidden: new Set('a', 'b', 'c'),
+    };
+
+    const newState = cellSetsReducer(previousState, {
+      type: CELL_SETS_HIDE,
+      payload: {
+        key: 'a',
+      },
+    });
+
+    expect(newState.hidden).toMatchSnapshot();
+  });
+
+  it('Handles unhiding of previously hidden cell sets', () => {
+    const previousState = {
+      ...initialState,
+      hidden: new Set('a', 'b', 'c'),
+    };
+
+    const newState = cellSetsReducer(previousState, {
+      type: CELL_SETS_UNHIDE,
+      payload: {
+        key: 'a',
+      },
+    });
+
+    expect(newState.hidden).toMatchSnapshot();
+  });
+
+  it('Handles unhiding of a not hidden cell set', () => {
+    const previousState = {
+      ...initialState,
+      hidden: new Set('a', 'b', 'c'),
+    };
+
+    const newState = cellSetsReducer(previousState, {
+      type: CELL_SETS_UNHIDE,
+      payload: {
+        key: 'e',
+      },
+    });
+
+    expect(newState.hidden).toMatchSnapshot();
+  });
+
+  it('Handles unhiding all', () => {
+    const previousState = {
+      ...initialState,
+      hidden: new Set('a', 'b', 'c'),
+    };
+
+    const newState = cellSetsReducer(previousState, {
+      type: CELL_SETS_UNHIDE_ALL,
+      payload: {},
+    });
+
+    expect(newState.hidden).toEqual(initialState.hidden);
+  });
+
+  it('Handles unhiding all when no cell set is hidden', () => {
+    const newState = cellSetsReducer(initialState, {
+      type: CELL_SETS_UNHIDE_ALL,
+      payload: {},
+    });
+
+    expect(newState.hidden).toEqual(initialState.hidden);
   });
 });
