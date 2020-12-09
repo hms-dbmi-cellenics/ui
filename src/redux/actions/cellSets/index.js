@@ -7,6 +7,8 @@ import saveCellSets from './saveCellSets';
 import updateCellSetHierarchy from './updateCellSetHierarchy';
 import updateCellSetProperty from './updateCellSetProperty';
 import updateCellSetSelected from './updateCellSetSelected';
+import setCellSetHiddenStatus from './setCellSetHiddenStatus';
+import unhideAllCellSets from './unhideAllCellSets';
 
 export {
   createCellSet,
@@ -17,4 +19,6 @@ export {
   updateCellSetHierarchy,
   updateCellSetSelected,
   updateCellSetProperty,
+  setCellSetHiddenStatus,
+  unhideAllCellSets,
 };

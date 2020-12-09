@@ -4,6 +4,7 @@ const initialState = {
   selected: [],
   loading: true,
   error: false,
+  hidden: new Set(),
 };
 
 export default initialState;
