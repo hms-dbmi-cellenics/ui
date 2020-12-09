@@ -13,7 +13,7 @@ import heatmap from '../../../../../static/media/heatmap.png';
 import embeddingContinuous from '../../../../../static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../static/media/embeddingCategorical.png';
 import volcano from '../../../../../static/media/volcano.png';
-import frequency from '../../../../../static/media/volcano.png';
+import frequency from '../../../../../static/media/frequency.png';
 import FeedbackButton from '../../../../components/FeedbackButton';
 
 const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
