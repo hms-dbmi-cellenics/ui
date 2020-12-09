@@ -6,6 +6,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -23,6 +24,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -44,6 +46,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -64,6 +67,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -81,12 +85,51 @@ Object {
 }
 `;
 
+exports[`genesReducer Expression loaded state handled appropriately when other things are still loading 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {
+      "gene1": Object {
+        "a": 5,
+        "b": 6,
+        "c": 7,
+      },
+      "gene2": Object {
+        "a": 7,
+        "b": 8,
+        "c": 9,
+      },
+    },
+    "error": false,
+    "loading": Array [
+      "d",
+      "e",
+    ],
+    "views": Object {
+      "asd": Object {
+        "data": Array [],
+        "error": false,
+        "fetching": false,
+      },
+    },
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [],
+}
+`;
+
 exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
 Object {
   "expression": Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -125,6 +168,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -166,6 +210,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -186,12 +231,53 @@ Object {
 }
 `;
 
+exports[`genesReducer Multiple components loading some of same expression triggers appropriate action 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {},
+    "error": false,
+    "loading": Array [
+      "a",
+      "b",
+      "c",
+    ],
+    "views": Object {
+      "abc": Object {
+        "data": Array [
+          "a",
+          "b",
+        ],
+        "error": false,
+        "fetching": true,
+      },
+      "def": Object {
+        "data": Array [
+          "a",
+          "b",
+          "c",
+        ],
+        "error": false,
+        "fetching": true,
+      },
+    },
+  },
+  "focused": undefined,
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [],
+}
+`;
+
 exports[`genesReducer Multiple components loading some of same property triggers appropriate action 1`] = `
 Object {
   "expression": Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -224,6 +310,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -250,6 +337,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -271,6 +359,7 @@ Object {
     "data": Object {},
     "error": false,
     "loading": Array [],
+    "views": Object {},
   },
   "focused": undefined,
   "properties": Object {
@@ -292,6 +381,13 @@ Object {
     "data": Object {},
     "error": "asd",
     "loading": Array [],
+    "views": Object {
+      "abc": Object {
+        "data": Array [],
+        "error": "asd",
+        "fetching": false,
+      },
+    },
   },
   "focused": undefined,
   "properties": Object {
@@ -320,6 +416,13 @@ Object {
     },
     "error": false,
     "loading": Array [],
+    "views": Object {
+      "abc": Object {
+        "data": Array [],
+        "error": false,
+        "fetching": false,
+      },
+    },
   },
   "focused": undefined,
   "properties": Object {
@@ -341,6 +444,17 @@ Object {
       "B",
       "C",
     ],
+    "views": Object {
+      "abc": Object {
+        "data": Array [
+          "A",
+          "B",
+          "C",
+        ],
+        "error": false,
+        "fetching": true,
+      },
+    },
   },
   "focused": undefined,
   "properties": Object {

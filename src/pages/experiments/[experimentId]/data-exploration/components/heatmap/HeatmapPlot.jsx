@@ -1,111 +1,57 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Empty, Spin,
+  Empty, Spin, Typography,
 } from 'antd';
 import _ from 'lodash';
 import spec from '../../../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
 import HeatmapCrossHairs from './HeatmapCrossHairs';
 import CellInfo from '../CellInfo';
-import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
-
-import { loadGeneExpression } from '../../../../../../redux/actions/genes';
 import PlatformError from '../../../../../../components/PlatformError';
+import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
+import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+
+const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
-  const { experimentId, width, height } = props;
-  const componentType = 'heatmap';
+  const {
+    experimentId, width, height,
+  } = props;
+
+  const componentType = 'Heatmap';
 
   const dispatch = useDispatch();
-  const selectedGenes = useSelector((state) => state.genes.selected);
+
+  const loadingGenes = useSelector((state) => state.genes.expression.loading);
+  const selectedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
+  const [vegaData, setVegaData] = useState(null);
+
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
-
   const cellSetData = useSelector((state) => state.cellSets);
-
   const { error } = expressionData;
-  const loadExpression = useRef(_.debounce((genes) => {
-    dispatch(loadGeneExpression(experimentId, genes));
-  }, 2000));
-  const [heatmapLoading, setHeatmapLoading] = useState(true);
+  const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
 
-  // On initial render, check if our selected genes are already loading.
-  // If so, set the loading state.
   useEffect(() => {
-    if (_.intersection(expressionData.loading, selectedGenes).length > 0) {
-      setHeatmapLoading(true);
-    }
-  }, []);
-
-  // Make sure loading state is set when a user changes their selection
-  // even before the debounce kicks in.
-  useEffect(() => {
-    loadExpression.current(selectedGenes);
-
-    if (!heatmapLoading) {
-      setHeatmapLoading(true);
-    }
-  }, [selectedGenes]);
-
-  // When the expression data is loaded, we can show the loaded state.
-  // Only show this state if the heatmap was previously set to be loading,
-  // and all of the data has been loaded properly (no remaining genes need to be processed).
-  useEffect(() => {
-    if (error) {
-      setHeatmapLoading(false);
+    if (!selectedGenes || selectedGenes.length === 0) {
+      return;
     }
 
-    if (heatmapLoading
-      && !error
-      && _.intersection(expressionData.loading, selectedGenes).length === 0) {
-      setHeatmapLoading(false);
+    if (_.intersection(selectedGenes, loadingGenes).length > 0) {
+      setVegaData(null);
+      return;
     }
-  }, [expressionData]);
 
-  if (selectedGenes.length === 0) {
-    return (
-      <center>
-        <Empty
-          description={(
-            <span>
-              Please select gene(s) from the Gene list tool
-            </span>
-          )}
-        />
-        <HeatmapCrossHairs />
-      </center>
-    );
-  }
+    const data = createVegaData(selectedGenes, expressionData);
+    setVegaData(data);
+  }, [loadingGenes]);
 
-  if (heatmapLoading) {
-    return (
-      <center style={{ marginTop: height / 2 }}>
-        <Spin size='large' />
-        <HeatmapCrossHairs />
-      </center>
-    );
-  }
-
-  if (error) {
-    return (
-      <PlatformError
-        description={error}
-        onClick={() => {
-          loadExpression.current(selectedGenes);
-          if (!heatmapLoading) {
-            setHeatmapLoading(true);
-          }
-        }}
-      />
-    );
-  }
-
-  const createVegaData = () => {
+  const createVegaData = (selected, expression) => {
     const data = { cellOrder: [], geneOrder: [], heatmapData: [] };
 
-    data.geneOrder = selectedGenes;
+    data.geneOrder = selected;
 
     data.cellOrder = [];
 
@@ -118,14 +64,14 @@ const HeatmapPlot = (props) => {
       });
     }
 
-    selectedGenes.forEach((gene) => {
-      if (!expressionData.data[gene]) {
+    selected.forEach((gene) => {
+      if (!expression.data[gene]) {
         return;
       }
 
       data.heatmapData.push({
         gene,
-        expression: expressionData.data[gene].expression,
+        expression: expression.data[gene].expression,
       });
     });
 
@@ -154,11 +100,47 @@ const HeatmapPlot = (props) => {
     mouseOver: handleMouseOver,
   };
 
+  if (!selectedGenes || selectedGenes.length === 0) {
+    return (
+      <center>
+        <Empty
+          description={(
+            <>
+              <div><Text type='primary'>No expression data to show</Text></div>
+              <div><Text type='secondary'>You can add genes to display here from the gene list tool.</Text></div>
+            </>
+          )}
+        />
+        <HeatmapCrossHairs />
+      </center>
+    );
+  }
+
+  if (!vegaData) {
+    return (
+      <center style={{ marginTop: height / 2 }}>
+        <Spin size='large' />
+        <HeatmapCrossHairs />
+      </center>
+    );
+  }
+
+  if (error || viewError) {
+    return (
+      <PlatformError
+        description={error}
+        onClick={() => {
+          dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
+        }}
+      />
+    );
+  }
+
   return (
     <div>
       <VegaHeatmap
         spec={spec}
-        data={createVegaData()}
+        data={vegaData}
         showAxes={selectedGenes?.length <= 30}
         rowsNumber={selectedGenes.length}
         defaultWidth={width + 35}
@@ -177,7 +159,8 @@ const HeatmapPlot = (props) => {
   );
 };
 
-HeatmapPlot.defaultProps = {};
+HeatmapPlot.defaultProps = {
+};
 
 HeatmapPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,

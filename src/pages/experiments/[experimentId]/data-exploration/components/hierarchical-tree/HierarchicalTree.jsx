@@ -270,10 +270,9 @@ const HierarchicalTree = (props) => {
       modified.title = (
         <Space>
           {renderFocusButton(modified)}
-          {renderColorPicker(modified)}
           {renderEditableField(modified, parentKey)}
+          {renderColorPicker(modified)}
           {renderHideButton(modified)}
-
         </Space>
       );
 

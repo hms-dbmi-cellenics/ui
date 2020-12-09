@@ -5,7 +5,7 @@ import {
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const loadGeneExpression = (
-  experimentId, genes, forceReloadAll = false,
+  experimentId, genes, componentUuid, forceReloadAll = false,
 ) => async (dispatch, getState) => {
   const {
     loading, data: geneData,
@@ -21,6 +21,7 @@ const loadGeneExpression = (
     type: GENES_EXPRESSION_LOADING,
     payload: {
       experimentId,
+      componentUuid,
       genes,
     },
   });
@@ -39,6 +40,8 @@ const loadGeneExpression = (
       type: GENES_EXPRESSION_LOADED,
       payload: {
         experimentId,
+        componentUuid,
+        genes,
       },
     });
   }
@@ -57,6 +60,8 @@ const loadGeneExpression = (
       type: GENES_EXPRESSION_LOADED,
       payload: {
         experimentId,
+        componentUuid,
+        genes,
         data,
       },
     });
@@ -65,6 +70,7 @@ const loadGeneExpression = (
       type: GENES_EXPRESSION_ERROR,
       payload: {
         experimentId,
+        componentUuid,
         genes,
         error: "Couldn't fetch expression data.",
       },
