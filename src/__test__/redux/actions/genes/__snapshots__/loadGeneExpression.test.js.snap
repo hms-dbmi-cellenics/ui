@@ -3,7 +3,7 @@
 exports[`loadGeneExpression action Dispatches appropriately on failure 1`] = `
 Object {
   "payload": Object {
-    "componentUuid": true,
+    "componentUuid": "asd",
     "experimentId": "1234",
     "genes": Array [
       "a",
@@ -18,7 +18,7 @@ Object {
 exports[`loadGeneExpression action Dispatches appropriately on failure 2`] = `
 Object {
   "payload": Object {
-    "componentUuid": true,
+    "componentUuid": "asd",
     "error": "Couldn't fetch expression data.",
     "experimentId": "1234",
     "genes": Array [
@@ -34,7 +34,7 @@ Object {
 exports[`loadGeneExpression action Dispatches appropriately on success 1`] = `
 Object {
   "payload": Object {
-    "componentUuid": true,
+    "componentUuid": "asd",
     "experimentId": "1234",
     "genes": Array [
       "a",
@@ -49,7 +49,7 @@ Object {
 exports[`loadGeneExpression action Dispatches appropriately on success 2`] = `
 Object {
   "payload": Object {
-    "componentUuid": true,
+    "componentUuid": "asd",
     "data": Object {
       "a": "b",
     },

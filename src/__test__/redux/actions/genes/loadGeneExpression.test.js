@@ -130,7 +130,7 @@ describe('loadGeneExpression action', () => {
       return new Promise((resolve) => resolve(resolveWith));
     });
 
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, true));
+    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);
@@ -150,7 +150,7 @@ describe('loadGeneExpression action', () => {
     });
 
     sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, true));
+    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);

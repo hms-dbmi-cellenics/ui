@@ -113,7 +113,7 @@ describe('genesReducer', () => {
   });
 
   //
-  // GENES SELECT ACTION TESTS
+  // GENES SELECT TESTS
   //
 
   it('Selected genes get added on empty list', () => {
@@ -177,7 +177,7 @@ describe('genesReducer', () => {
   });
 
   //
-  // GENES PROPERTIES ACTION TESTS
+  // GENES PROPERTIES TESTS
   //
 
   it('Properties loading triggers appropriate changes', () => {
