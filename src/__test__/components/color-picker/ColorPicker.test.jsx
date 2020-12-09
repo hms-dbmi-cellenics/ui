@@ -9,6 +9,8 @@ describe('ColorPicker', () => {
   const initialColor = '#ffff00';
   const newColor = '#ff00ff';
 
+  const eventStub = { stopPropagation: () => null };
+
   test('renders correctly', () => {
     const component = shallow(<ColorPicker color={initialColor} />);
     const button = component.find('Button');
@@ -22,7 +24,7 @@ describe('ColorPicker', () => {
     const mockOnColorChange = jest.fn();
 
     const wrapper = shallow(<ColorPicker color={initialColor} onColorChange={mockOnColorChange} />);
-    wrapper.find('Button').simulate('click');
+    wrapper.find('Button').simulate('click', eventStub);
     const pickerComponent = shallow(wrapper.find('Popover').props().content);
 
     // Simulate a temporary edit (e.g. dragging the cursor across the color space in the editor).
@@ -40,7 +42,7 @@ describe('ColorPicker', () => {
     const mockOnColorChange = jest.fn();
 
     const wrapper = shallow(<ColorPicker color={initialColor} onColorChange={mockOnColorChange} />);
-    wrapper.find('Button').simulate('click');
+    wrapper.find('Button').simulate('click', eventStub);
 
     const pickerComponent = shallow(wrapper.find('Popover').props().content);
 

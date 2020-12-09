@@ -48,6 +48,7 @@ const Embedding = (props) => {
   const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
   const cellSetProperties = useSelector((state) => state.cellSets.properties);
   const cellSetHierarchy = useSelector((state) => state.cellSets.hierarchy);
+  const cellSetHidden = useSelector((state) => state.cellSets.hidden);
 
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
@@ -76,6 +77,7 @@ const Embedding = (props) => {
       // we need to wait for the thing to load in first.
       case 'genes': {
         dispatch(loadGeneExpression(experimentId, [key]));
+        setCellInfoVisible(false);
         return;
       }
 
@@ -83,6 +85,7 @@ const Embedding = (props) => {
       case 'cellSets': {
         if (isBrowser) {
           setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
+          setCellInfoVisible(false);
         }
 
         return;
@@ -91,12 +94,13 @@ const Embedding = (props) => {
       // If there is no focus, we can just delete all the colors.
       default: {
         setCellColors({});
+        setCellInfoVisible(false);
         break;
       }
     }
   }, [focusData, cellSetHierarchy, cellSetProperties]);
 
-  // // Handle loading of expression for focused gene.
+  // Handle loading of expression for focused gene.
   useEffect(() => {
     if (!focusedExpression) {
       return;
@@ -220,7 +224,7 @@ const Embedding = (props) => {
         cellRadiusScale={0.1}
         uuid={embeddingType}
         view={view}
-        cells={convertCellsData(data)}
+        cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
         mapping='PCA'
         selectedCellIds={selectedCellIds}
         cellColors={(selectedCell) ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] })) : new Map(Object.entries(cellColors))}
@@ -234,6 +238,7 @@ const Embedding = (props) => {
         createClusterPopover
           ? (
             <ClusterPopover
+              visible
               popoverPosition={cellCoordintes}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
