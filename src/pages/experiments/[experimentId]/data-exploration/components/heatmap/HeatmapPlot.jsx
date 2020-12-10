@@ -1,4 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, {
+  useRef, useEffect, useState, useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -40,6 +42,11 @@ const HeatmapPlot = (props) => {
   const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
 
+  const setDataDebounce = useCallback(_.debounce((data) => {
+    console.log('debounce!');
+    setVegaData(data);
+  }, 1500, { leading: true }), []);
+
   useEffect(() => {
     if (!selectedGenes || selectedGenes.length === 0) {
       return;
@@ -51,7 +58,7 @@ const HeatmapPlot = (props) => {
     }
 
     const data = createVegaData(selectedGenes, expressionData);
-    setVegaData(data);
+    setDataDebounce(data);
   }, [loadingGenes, hidden]);
 
   const createVegaData = (selected, expression) => {
