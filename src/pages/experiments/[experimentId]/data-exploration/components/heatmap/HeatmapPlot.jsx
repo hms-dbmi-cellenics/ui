@@ -43,7 +43,6 @@ const HeatmapPlot = (props) => {
   const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
 
   const setDataDebounce = useCallback(_.debounce((data) => {
-    console.log('debounce!');
     setVegaData(data);
   }, 1500, { leading: true }), []);
 
