@@ -138,6 +138,8 @@ const volcanoInitialConfig = {
 const frequencyInitialConfig = {
   plotType: 'proportional',
   legendEnabled: true,
+  chosenClusters: 'louvain',
+  currentData: 'sample',
   legendPosition: 'top',
   spec: '1.0.0',
   width: 500,

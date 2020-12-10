@@ -16,6 +16,7 @@ import TitleDesign from '../components/TitleDesign';
 import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
+import SelectData from './components/SelectData';
 import generateSpec from '../../../../../utils/plotSpecs/generateFrequencySpec';
 import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
@@ -37,8 +38,9 @@ const route = {
 const frequencyPlot = () => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.plots[plotUuid]?.config);
-  const { loading, error } = useSelector((state) => state.cellSets);
-  const properties = useSelector((state) => state.cellSets.properties);
+  const cellSets = useSelector((state) => state.cellSets);
+  const { loading, error } = cellSets;
+  const { hierarchy, properties } = cellSets;
   const router = useRouter();
   const { experimentId } = router.query;
   const [plotSpec, setPlotSpec] = useState({});
@@ -54,7 +56,7 @@ const frequencyPlot = () => {
   }, [experimentId]);
 
   useEffect(() => {
-    if (!config || Object.keys(properties).size === 0) {
+    if (!config || cellSets.loading) {
       return;
     }
     setPlotSpec(generateSpec(config));
@@ -65,22 +67,26 @@ const frequencyPlot = () => {
     const data = [];
     if (!loading) {
       let i = 0;
-      const sum = properties['louvain-0'].cellIds.size
-        + properties['louvain-1'].cellIds.size
-        + properties['louvain-2'].cellIds.size;
-      let value;
-      for (i = 0; i < 3; i += 1) {
+      let sum = 0;
+      const chosenClusters = hierarchy.filter((cluster) => (
+        cluster.key === config.chosenClusters))[0].children;
+      for (; i < chosenClusters.length; i += 1) {
+        sum += properties[chosenClusters[i].key].cellIds.size;
+      }
+      chosenClusters.map((clusterName) => {
+        let value;
         if (config.plotType === 'count') {
-          value = properties[`louvain-${i}`].cellIds.size;
+          value = properties[clusterName.key].cellIds.size;
         } else {
-          value = (properties[`louvain-${i}`].cellIds.size / sum) * 100;
+          value = (properties[clusterName.key].cellIds.size / sum) * 100;
         }
         data.push({
           x: 1,
           y: value,
-          c: `Cluster ${i}`,
+          c: properties[clusterName.key].name,
         });
-      }
+        return data;
+      });
       return data;
     }
   };
@@ -154,6 +160,12 @@ const frequencyPlot = () => {
                 <Radio value='proportional'>Proportional</Radio>
                 <Radio value='count'>Count</Radio>
               </Radio.Group>
+            </Panel>
+            <Panel header='Select Data' key='20'>
+              <SelectData
+                onUpdate={updatePlotWithChanges}
+                config={config}
+              />
             </Panel>
             <Panel header='Main Schema' key='2'>
               <DimensionsRangeEditor
