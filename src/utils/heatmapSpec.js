@@ -103,7 +103,6 @@ const spec = {
     {
       fill: 'color',
       type: 'gradient',
-      // orient: 'left',
       gradientLength: {
         signal: 'height',
       },
