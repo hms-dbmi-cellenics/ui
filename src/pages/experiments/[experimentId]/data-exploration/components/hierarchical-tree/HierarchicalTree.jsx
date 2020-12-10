@@ -249,7 +249,7 @@ const HierarchicalTree = (props) => {
 
     return <></>;
   };
-  // eslint-disable-next-line no-unused-vars
+
   const renderHideButton = (modified) => {
     if (!modified.rootNode && showHideButton) {
       return (

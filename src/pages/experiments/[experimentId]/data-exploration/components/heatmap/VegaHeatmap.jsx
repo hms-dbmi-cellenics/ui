@@ -31,7 +31,8 @@ const VegaHeatmap = (props) => {
     if (showAxes) {
       return defaultWidth - 150;
     }
-    return defaultWidth - 90;
+
+    return defaultWidth - 100;
   };
 
   const getAxes = () => {
