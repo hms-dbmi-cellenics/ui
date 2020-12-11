@@ -1,4 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, {
+  useRef, useEffect, useState, useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -12,6 +14,8 @@ import CellInfo from '../CellInfo';
 import PlatformError from '../../../../../../components/PlatformError';
 import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+
+import { union } from '../../../../../../utils/cellSetOperations';
 
 const { Text } = Typography;
 
@@ -30,9 +34,17 @@ const HeatmapPlot = (props) => {
 
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
-  const cellSetData = useSelector((state) => state.cellSets);
+
+  const hierarchy = useSelector((state) => state.cellSets.hierarchy);
+  const properties = useSelector((state) => state.cellSets.properties);
+  const hidden = useSelector((state) => state.cellSets.hidden);
+
   const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
+
+  const setDataDebounce = useCallback(_.debounce((data) => {
+    setVegaData(data);
+  }, 1500, { leading: true }), []);
 
   useEffect(() => {
     if (!selectedGenes || selectedGenes.length === 0) {
@@ -45,8 +57,8 @@ const HeatmapPlot = (props) => {
     }
 
     const data = createVegaData(selectedGenes, expressionData);
-    setVegaData(data);
-  }, [loadingGenes]);
+    setDataDebounce(data);
+  }, [loadingGenes, hidden]);
 
   const createVegaData = (selected, expression) => {
     const data = { cellOrder: [], geneOrder: [], heatmapData: [] };
@@ -55,12 +67,19 @@ const HeatmapPlot = (props) => {
 
     data.cellOrder = [];
 
-    const louvainClusters = cellSetData.hierarchy.filter((clusters) => clusters.key === 'louvain');
+    // Get all hidden cells
+    const hiddenCellIds = union(Array.from(hidden), properties);
+
+    const louvainClusters = hierarchy.filter((clusters) => clusters.key === 'louvain');
     if (louvainClusters.length > 0) {
       const clusterKeys = louvainClusters[0].children;
 
       clusterKeys.forEach(({ key }) => {
-        data.cellOrder.push(...cellSetData.properties[key].cellIds);
+        const cellsToShow = Array.from(
+          properties[key].cellIds,
+        ).filter((id) => !hiddenCellIds.has(id));
+
+        data.cellOrder.push(...cellsToShow);
       });
     }
 

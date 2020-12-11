@@ -74,6 +74,7 @@ const initialState = {
         cellIds: [1, 2, 3],
       },
     },
+    hidden: new Set([5]),
   },
   cellInfo: {},
 };

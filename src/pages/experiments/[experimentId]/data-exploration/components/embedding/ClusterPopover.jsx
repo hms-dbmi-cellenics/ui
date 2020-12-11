@@ -31,6 +31,14 @@ const ClusterPopover = (props) => {
   }
 
   /* eslint-disable react/jsx-props-no-spreading */
+  if (!children) {
+    return (
+      <div style={style}>
+        <Popover title={message} content={content} {...restOfProps} />
+      </div>
+    );
+  }
+
   return (
     <div style={style}>
       <Popover title={message} content={content} {...restOfProps}>
@@ -44,7 +52,7 @@ const ClusterPopover = (props) => {
 ClusterPopover.defaultProps = {
   popoverPosition: null,
   message: 'Add cell set',
-  children: <></>,
+  children: null,
 };
 
 ClusterPopover.propTypes = {

@@ -132,6 +132,9 @@ const spec = {
             scale: 'y',
             band: 1,
           },
+          opacity: {
+            value: 1,
+          },
         },
         update: {
           fill: {
@@ -143,11 +146,12 @@ const spec = {
     },
     {
       type: 'rule',
+      interactive: false,
       encode: {
         enter: {
           strokeWidth: {
             scale: 'x',
-            band: 2,
+            band: 1,
           },
           stroke: {
             value: '#000000',
@@ -184,11 +188,12 @@ const spec = {
     },
     {
       type: 'rule',
+      interactive: false,
       encode: {
         enter: {
           strokeWidth: {
             scale: 'x',
-            band: 2,
+            band: 1,
           },
           stroke: {
             value: '#000000',
