@@ -62,17 +62,21 @@ const frequencyPlot = () => {
     setPlotSpec(generateSpec(config));
     setPlotData(generateData());
   }, [config, properties]);
+  const calculateSum = (chosenClusters) => {
+    let sum = 0;
+    chosenClusters.forEach((cluster) => {
+      sum += properties[cluster.key].cellIds.size;
+    });
+    return sum;
+  };
 
   const generateData = () => {
     const data = [];
     if (!loading) {
-      let i = 0;
-      let sum = 0;
       const chosenClusters = hierarchy.filter((cluster) => (
         cluster.key === config.chosenClusters))[0].children;
-      for (; i < chosenClusters.length; i += 1) {
-        sum += properties[chosenClusters[i].key].cellIds.size;
-      }
+      const sum = calculateSum(chosenClusters);
+
       chosenClusters.map((clusterName) => {
         let value;
         if (config.plotType === 'count') {

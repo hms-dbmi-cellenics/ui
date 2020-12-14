@@ -1,5 +1,3 @@
-// import _ from 'lodash';
-
 const generateSpec = (config) => {
   let legend = [];
   if (config.legendEnabled) {

@@ -49,8 +49,8 @@ const PlotsTablesHome = () => {
   let lastUpdatedVolcano = useSelector((state) => state.plots.volcanoPlotMain?.lastUpdated);
   let lastUpdatedContinuous = useSelector((state) => state.plots.embeddingContinuousMain?.lastUpdated);
   let lastUpdatedCategorical = useSelector((state) => state.plots.embeddingCategoricalMain?.lastUpdated);
-  let lastUpdatedHeatmap = useSelector((state) => state.plots.lastUpdatedHeatmap?.lastUpdated);
-
+  let lastUpdatedHeatmap = useSelector((state) => state.plots.heatmapPlotMain?.lastUpdated);
+  let lastUpdatedFrequency = useSelector((state) => state.plots.frequencyPlotMain?.lastUpdated);
   if (!lastUpdatedVolcano) {
     lastUpdatedVolcano = 'never';
   }
@@ -62,6 +62,9 @@ const PlotsTablesHome = () => {
   }
   if (!lastUpdatedHeatmap) {
     lastUpdatedHeatmap = 'never';
+  }
+  if (!lastUpdatedFrequency) {
+    lastUpdatedFrequency = 'never';
   }
   const router = useRouter();
   const { experimentId } = router.query;
@@ -95,11 +98,11 @@ const PlotsTablesHome = () => {
       description: `Last updated: ${lastUpdatedVolcano}`,
     },
     {
-      name: 'FrequencyPlot',
+      name: 'Frequency Plot',
       image: frequency,
       key: 'frequency-key',
       link: 'frequency',
-      description: `Last updated: ${lastUpdatedVolcano}`,
+      description: `Last updated: ${lastUpdatedFrequency}`,
     },
   ];
 
