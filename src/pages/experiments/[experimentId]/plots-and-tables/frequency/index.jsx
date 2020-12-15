@@ -78,7 +78,6 @@ const frequencyPlot = () => {
       const chosenClusters = hierarchy.filter((cluster) => (
         cluster.key === config.chosenClusters))[0].children;
       const sum = calculateSum(chosenClusters);
-
       chosenClusters.map((clusterName) => {
         let value;
         if (config.plotType === 'count') {
