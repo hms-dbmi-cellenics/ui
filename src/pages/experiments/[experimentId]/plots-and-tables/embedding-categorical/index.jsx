@@ -12,7 +12,6 @@ import {
   Button,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import _ from 'lodash';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';

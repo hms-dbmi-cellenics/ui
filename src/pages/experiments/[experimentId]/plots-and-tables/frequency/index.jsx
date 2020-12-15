@@ -16,7 +16,7 @@ import TitleDesign from '../components/TitleDesign';
 import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
-import SelectData from './components/SelectData';
+import SelectCellSets from './components/SelectCellSets';
 import generateSpec from '../../../../../utils/plotSpecs/generateFrequencySpec';
 import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
@@ -62,6 +62,7 @@ const frequencyPlot = () => {
     setPlotSpec(generateSpec(config));
     setPlotData(generateData());
   }, [config, properties]);
+
   const calculateSum = (chosenClusters) => {
     let sum = 0;
     chosenClusters.forEach((cluster) => {
@@ -72,6 +73,7 @@ const frequencyPlot = () => {
 
   const generateData = () => {
     const data = [];
+    console.log('chosen clusters is ', config.chosenclusters);
     if (!loading) {
       const chosenClusters = hierarchy.filter((cluster) => (
         cluster.key === config.chosenClusters))[0].children;
@@ -166,9 +168,10 @@ const frequencyPlot = () => {
               </Radio.Group>
             </Panel>
             <Panel header='Select Data' key='20'>
-              <SelectData
+              <SelectCellSets
                 onUpdate={updatePlotWithChanges}
                 config={config}
+                cellSets={cellSets}
               />
             </Panel>
             <Panel header='Main Schema' key='2'>
