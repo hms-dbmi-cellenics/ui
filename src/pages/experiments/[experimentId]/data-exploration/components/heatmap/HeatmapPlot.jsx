@@ -85,6 +85,10 @@ const HeatmapPlot = (props) => {
         totalCellsFetched += cellsToShow.length;
       });
 
+      if (totalCellsFetched === 0) {
+        return data;
+      }
+
       // We show the number of total cells fetched or the default value,
       // whichever is smaller.
       totalCellsToShow = Math.min(totalCellsToShow, totalCellsFetched);
@@ -113,7 +117,6 @@ const HeatmapPlot = (props) => {
     const pairs = cartesian(data.geneOrder, data.cellOrder);
 
     pairs.forEach(([gene, cellId]) => {
-      console.log(gene);
       data.heatmapData.push({
         cellId,
         gene,
