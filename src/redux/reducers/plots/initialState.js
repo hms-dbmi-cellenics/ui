@@ -137,6 +137,7 @@ const volcanoInitialConfig = {
 };
 const frequencyInitialConfig = {
   plotType: 'proportional',
+  metadata: 'condition',
   legendEnabled: true,
   chosenClusters: 'louvain',
   currentData: 'sample',
