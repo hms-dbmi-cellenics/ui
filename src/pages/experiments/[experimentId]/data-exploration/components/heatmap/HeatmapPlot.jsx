@@ -61,17 +61,19 @@ const HeatmapPlot = (props) => {
   }, [loadingGenes, hidden]);
 
   const createVegaData = (selected, expression) => {
-    const data = { cellOrder: [], geneOrder: [], heatmapData: [] };
-
-    data.geneOrder = selected;
-
-    data.cellOrder = [];
+    const data = { cellOrder: [], geneOrder: selected, heatmapData: [] };
 
     // Get all hidden cells
     const hiddenCellIds = union(Array.from(hidden), properties);
 
+    // Downsample cells.
+    let totalCellsToShow = 1000;
+    const groupByCluster = {};
+
     const louvainClusters = hierarchy.filter((clusters) => clusters.key === 'louvain');
     if (louvainClusters.length > 0) {
+      let totalCellsFetched = 0;
+
       const clusterKeys = louvainClusters[0].children;
 
       clusterKeys.forEach(({ key }) => {
@@ -79,18 +81,43 @@ const HeatmapPlot = (props) => {
           properties[key].cellIds,
         ).filter((id) => !hiddenCellIds.has(id));
 
-        data.cellOrder.push(...cellsToShow);
+        groupByCluster[key] = cellsToShow;
+        totalCellsFetched += cellsToShow.length;
+      });
+
+      // We show the number of total cells fetched or the default value,
+      // whichever is smaller.
+      totalCellsToShow = Math.min(totalCellsToShow, totalCellsFetched);
+
+      // Create a sample of cells to display.
+      clusterKeys.forEach(({ key }) => {
+        const cells = groupByCluster[key];
+
+        if (!cells) {
+          return;
+        }
+
+        // Create a sample size proportional to the number of cells to show
+        // as well as the number of cells in the cluster.
+        const sampleSize = Math.floor(
+          (cells.length / totalCellsFetched) * totalCellsToShow,
+        );
+
+        data.cellOrder.push(..._.sampleSize(groupByCluster[key], sampleSize));
       });
     }
 
-    selected.forEach((gene) => {
-      if (!expression.data[gene]) {
-        return;
-      }
+    // Directly generate heatmap data.
+    // eslint-disable-next-line no-shadow
+    const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+    const pairs = cartesian(data.geneOrder, data.cellOrder);
 
+    pairs.forEach(([gene, cellId]) => {
+      console.log(gene);
       data.heatmapData.push({
+        cellId,
         gene,
-        expression: expression.data[gene].expression,
+        expression: expression.data[gene].expression[cellId],
       });
     });
 
@@ -124,10 +151,10 @@ const HeatmapPlot = (props) => {
       <center>
         <Empty
           description={(
-            <>
+            <div>
               <div><Text type='primary'>No expression data to show</Text></div>
               <div><Text type='secondary'>You can add genes to display here from the gene list tool.</Text></div>
-            </>
+            </div>
           )}
         />
         <HeatmapCrossHairs />
