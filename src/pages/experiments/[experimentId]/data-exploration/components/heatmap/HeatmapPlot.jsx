@@ -1,131 +1,126 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useRef, useEffect, useState, useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Empty, Spin,
+  Empty, Spin, Typography,
 } from 'antd';
 import _ from 'lodash';
 import spec from '../../../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
 import HeatmapCrossHairs from './HeatmapCrossHairs';
 import CellInfo from '../CellInfo';
-import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
-
-import { loadGeneExpression } from '../../../../../../redux/actions/genes';
 import PlatformError from '../../../../../../components/PlatformError';
+import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
+import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+
+import { union } from '../../../../../../utils/cellSetOperations';
+
+const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
-  const { experimentId, width, height } = props;
-  const componentType = 'heatmap';
+  const {
+    experimentId, width, height,
+  } = props;
+
+  const componentType = 'Heatmap';
 
   const dispatch = useDispatch();
-  const selectedGenes = useSelector((state) => state.genes.selected);
+
+  const loadingGenes = useSelector((state) => state.genes.expression.loading);
+  const selectedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
+  const [vegaData, setVegaData] = useState(null);
+
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
 
-  const cellSetData = useSelector((state) => state.cellSets);
+  const hierarchy = useSelector((state) => state.cellSets.hierarchy);
+  const properties = useSelector((state) => state.cellSets.properties);
+  const hidden = useSelector((state) => state.cellSets.hidden);
 
   const { error } = expressionData;
-  const loadExpression = useRef(_.debounce((genes) => {
-    dispatch(loadGeneExpression(experimentId, genes));
-  }, 2000));
-  const [heatmapLoading, setHeatmapLoading] = useState(true);
+  const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
 
-  // On initial render, check if our selected genes are already loading.
-  // If so, set the loading state.
+  const setDataDebounce = useCallback(_.debounce((data) => {
+    setVegaData(data);
+  }, 1500, { leading: true }), []);
+
   useEffect(() => {
-    if (_.intersection(expressionData.loading, selectedGenes).length > 0) {
-      setHeatmapLoading(true);
-    }
-  }, []);
-
-  // Make sure loading state is set when a user changes their selection
-  // even before the debounce kicks in.
-  useEffect(() => {
-    loadExpression.current(selectedGenes);
-
-    if (!heatmapLoading) {
-      setHeatmapLoading(true);
-    }
-  }, [selectedGenes]);
-
-  // When the expression data is loaded, we can show the loaded state.
-  // Only show this state if the heatmap was previously set to be loading,
-  // and all of the data has been loaded properly (no remaining genes need to be processed).
-  useEffect(() => {
-    if (error) {
-      setHeatmapLoading(false);
+    if (!selectedGenes || selectedGenes.length === 0) {
+      return;
     }
 
-    if (heatmapLoading
-      && !error
-      && _.intersection(expressionData.loading, selectedGenes).length === 0) {
-      setHeatmapLoading(false);
+    if (_.intersection(selectedGenes, loadingGenes).length > 0) {
+      setVegaData(null);
+      return;
     }
-  }, [expressionData]);
 
-  if (selectedGenes.length === 0) {
-    return (
-      <center>
-        <Empty
-          description={(
-            <span>
-              Please select gene(s) from the Gene list tool
-            </span>
-          )}
-        />
-        <HeatmapCrossHairs />
-      </center>
-    );
-  }
+    const data = createVegaData(selectedGenes, expressionData);
+    setDataDebounce(data);
+  }, [loadingGenes, hidden]);
 
-  if (heatmapLoading) {
-    return (
-      <center style={{ marginTop: height / 2 }}>
-        <Spin size='large' />
-        <HeatmapCrossHairs />
-      </center>
-    );
-  }
+  const createVegaData = (selected, expression) => {
+    const data = { cellOrder: [], geneOrder: selected, heatmapData: [] };
 
-  if (error) {
-    return (
-      <PlatformError
-        description={error}
-        onClick={() => {
-          loadExpression.current(selectedGenes);
-          if (!heatmapLoading) {
-            setHeatmapLoading(true);
-          }
-        }}
-      />
-    );
-  }
+    // Get all hidden cells
+    const hiddenCellIds = union(Array.from(hidden), properties);
 
-  const createVegaData = () => {
-    const data = { cellOrder: [], geneOrder: [], heatmapData: [] };
+    // Downsample cells.
+    let totalCellsToShow = 1000;
+    const groupByCluster = {};
 
-    data.geneOrder = selectedGenes;
-
-    data.cellOrder = [];
-
-    const louvainClusters = cellSetData.hierarchy.filter((clusters) => clusters.key === 'louvain');
+    const louvainClusters = hierarchy.filter((clusters) => clusters.key === 'louvain');
     if (louvainClusters.length > 0) {
+      let totalCellsFetched = 0;
+
       const clusterKeys = louvainClusters[0].children;
 
       clusterKeys.forEach(({ key }) => {
-        data.cellOrder.push(...cellSetData.properties[key].cellIds);
+        const cellsToShow = Array.from(
+          properties[key].cellIds,
+        ).filter((id) => !hiddenCellIds.has(id));
+
+        groupByCluster[key] = cellsToShow;
+        totalCellsFetched += cellsToShow.length;
+      });
+
+      if (totalCellsFetched === 0) {
+        return data;
+      }
+
+      // We show the number of total cells fetched or the default value,
+      // whichever is smaller.
+      totalCellsToShow = Math.min(totalCellsToShow, totalCellsFetched);
+
+      // Create a sample of cells to display.
+      clusterKeys.forEach(({ key }) => {
+        const cells = groupByCluster[key];
+
+        if (!cells) {
+          return;
+        }
+
+        // Create a sample size proportional to the number of cells to show
+        // as well as the number of cells in the cluster.
+        const sampleSize = Math.floor(
+          (cells.length / totalCellsFetched) * totalCellsToShow,
+        );
+
+        data.cellOrder.push(..._.sampleSize(groupByCluster[key], sampleSize));
       });
     }
 
-    selectedGenes.forEach((gene) => {
-      if (!expressionData.data[gene]) {
-        return;
-      }
+    // Directly generate heatmap data.
+    // eslint-disable-next-line no-shadow
+    const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+    const pairs = cartesian(data.geneOrder, data.cellOrder);
 
+    pairs.forEach(([gene, cellId]) => {
       data.heatmapData.push({
+        cellId,
         gene,
-        expression: expressionData.data[gene].expression,
+        expression: expression.data[gene].expression[cellId],
       });
     });
 
@@ -154,11 +149,47 @@ const HeatmapPlot = (props) => {
     mouseOver: handleMouseOver,
   };
 
+  if (!selectedGenes || selectedGenes.length === 0) {
+    return (
+      <center>
+        <Empty
+          description={(
+            <div>
+              <div><Text type='primary'>No expression data to show</Text></div>
+              <div><Text type='secondary'>You can add genes to display here from the gene list tool.</Text></div>
+            </div>
+          )}
+        />
+        <HeatmapCrossHairs />
+      </center>
+    );
+  }
+
+  if (!vegaData) {
+    return (
+      <center style={{ marginTop: height / 2 }}>
+        <Spin size='large' />
+        <HeatmapCrossHairs />
+      </center>
+    );
+  }
+
+  if (error || viewError) {
+    return (
+      <PlatformError
+        description={error}
+        onClick={() => {
+          dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
+        }}
+      />
+    );
+  }
+
   return (
     <div>
       <VegaHeatmap
         spec={spec}
-        data={createVegaData()}
+        data={vegaData}
         showAxes={selectedGenes?.length <= 30}
         rowsNumber={selectedGenes.length}
         defaultWidth={width + 35}
@@ -177,7 +208,8 @@ const HeatmapPlot = (props) => {
   );
 };
 
-HeatmapPlot.defaultProps = {};
+HeatmapPlot.defaultProps = {
+};
 
 HeatmapPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,

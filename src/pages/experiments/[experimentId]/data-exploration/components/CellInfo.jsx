@@ -29,8 +29,9 @@ const CellInfo = (props) => {
         zIndex: 6,
         border: 0,
         position: 'absolute',
-        left: `${coordinates.current.x + 80}px`,
+        left: `${coordinates.current.x + 20}px`,
         top: `${coordinates.current.y + 20}px`,
+        pointerEvents: 'none',
       }}
     >
       {cellInfo.cellName ? (

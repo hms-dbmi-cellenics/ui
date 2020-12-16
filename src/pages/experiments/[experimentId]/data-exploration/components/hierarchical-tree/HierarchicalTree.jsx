@@ -249,7 +249,7 @@ const HierarchicalTree = (props) => {
 
     return <></>;
   };
-  // eslint-disable-next-line no-unused-vars
+
   const renderHideButton = (modified) => {
     if (!modified.rootNode && showHideButton) {
       return (
@@ -270,10 +270,9 @@ const HierarchicalTree = (props) => {
       modified.title = (
         <Space>
           {renderFocusButton(modified)}
-          {renderColorPicker(modified)}
           {renderEditableField(modified, parentKey)}
+          {renderColorPicker(modified)}
           {renderHideButton(modified)}
-
         </Space>
       );
 

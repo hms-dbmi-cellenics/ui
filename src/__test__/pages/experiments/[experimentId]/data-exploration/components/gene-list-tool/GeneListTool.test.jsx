@@ -12,7 +12,7 @@ import waitForActions from 'redux-mock-store-await-actions';
 import GeneListTool from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/gene-list-tool/GeneListTool';
 import { fetchCachedWork } from '../../../../../../../utils/cacheRequest';
 
-import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_SELECT } from '../../../../../../../redux/actionTypes/genes';
+import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../../../../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
 
@@ -57,6 +57,7 @@ const initialState = {
       loading: [],
       error: false,
       data: {},
+      views: {},
     },
     selected: [],
   },
@@ -123,10 +124,6 @@ describe('GeneListTool', () => {
     );
   });
 
-  it('all genes from the first page are selected by default on load', async () => {
-    expect(store.getActions()[1]).toMatchSnapshot();
-  });
-
   it('can sort the gene names in alphabetical order', async () => {
     const newPagination = {
       current: 1,
@@ -153,7 +150,7 @@ describe('GeneListTool', () => {
     });
 
     // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(store, [GENES_PROPERTIES_LOADING, GENES_SELECT, GENES_PROPERTIES_LOADED_PAGINATED]);
+    await waitForActions(store, [GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED]);
 
     expect(fetchCachedWork).toHaveBeenCalledWith('1234', 30, {
       limit: 4,
@@ -165,7 +162,7 @@ describe('GeneListTool', () => {
     });
 
     expect(store.getActions()[0]).toMatchSnapshot();
-    expect(store.getActions()[2]).toMatchSnapshot();
+    expect(store.getActions()[1]).toMatchSnapshot();
   });
 
   it('All `eye` buttons are initially unfocused.', () => {
@@ -202,8 +199,8 @@ describe('GeneListTool', () => {
     // Simulate clicking
     button.simulate('click', eventStub);
 
-    expect(store.getActions().length).toEqual(4);
-    expect(store.getActions()[3]).toMatchSnapshot();
+    expect(store.getActions().length).toEqual(3);
+    expect(store.getActions()[2]).toMatchSnapshot();
 
     lookupComponent.unmount();
   });

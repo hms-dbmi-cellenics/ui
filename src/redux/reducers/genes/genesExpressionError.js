@@ -1,11 +1,23 @@
+import _ from 'lodash';
+import { initialViewState } from './initialState';
+
 const genesExpressionError = (state, action) => {
-  const { error } = action.payload;
+  const { error, componentUuid, genes } = action.payload;
 
   return {
     ...state,
     expression: {
       ...state.expression,
-      loading: [],
+      views: {
+        ...state.properties.views,
+        [componentUuid]: {
+          ...initialViewState,
+          ...state.expression.views[componentUuid],
+          fetching: false,
+          error,
+        },
+      },
+      loading: _.difference(state.properties.loading, genes),
       error,
     },
   };

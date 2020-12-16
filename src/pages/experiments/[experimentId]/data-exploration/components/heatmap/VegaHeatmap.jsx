@@ -31,7 +31,8 @@ const VegaHeatmap = (props) => {
     if (showAxes) {
       return defaultWidth - 150;
     }
-    return defaultWidth - 90;
+
+    return defaultWidth - 100;
   };
 
   const getAxes = () => {
@@ -41,14 +42,16 @@ const VegaHeatmap = (props) => {
     return [];
   };
 
-  spec.height = getAdjustedHeight();
-  spec.width = getAdjustedWidth();
-  spec.axes = getAxes();
-
-  spec.data.forEach((datum) => {
-    // eslint-disable-next-line no-param-reassign
-    datum.values = data[datum.name];
-  });
+  const vegaSpec = {
+    ...spec,
+    height: getAdjustedHeight(),
+    width: getAdjustedWidth(),
+    axes: [...spec.axes, ...getAxes()],
+    data: spec.data.map((datum) => ({
+      ...datum,
+      values: data[datum.name],
+    })),
+  };
 
   return (
     <Element
@@ -62,7 +65,7 @@ const VegaHeatmap = (props) => {
       }}
     >
       <Vega
-        spec={spec}
+        spec={vegaSpec}
         signalListeners={signalListeners}
         actions={false}
       />
