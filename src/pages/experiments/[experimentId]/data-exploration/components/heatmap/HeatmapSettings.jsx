@@ -19,12 +19,10 @@ const HeatmapSettings = () => {
   const [selectedLabelOptions, setSelectedLabelOptions] = useState(null);
 
   const changeExpression = (e) => {
-    console.log('changing expression !!!!');
     setExpressionValue(e.target.value);
   };
 
   const changelegend = (e) => {
-    console.log('changing legend !!!!');
     setShowLegend(e.target.value);
   };
 
@@ -33,12 +31,11 @@ const HeatmapSettings = () => {
   };
 
   const changeSelectedlabelOptions = (e) => {
-    console.log('**** +++ -------', e);
     setSelectedLabelOptions(e);
   };
 
   const getCellSets = (cellSetTypes) => {
-    if (cellSets.loading) {
+    if (!cellSets || cellSets.loading) {
       return [];
     }
     const options = cellSets.hierarchy.map(({ key }) => ({ value: key }));
@@ -93,6 +90,7 @@ const HeatmapSettings = () => {
           size='small'
           type='text'
           icon={<SettingOutlined />}
+          // these classes are added so that the settings button is the same style as the remove button
           className='bp3-button bp3-minimal'
         />
       </Tooltip>
