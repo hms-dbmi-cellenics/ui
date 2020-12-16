@@ -46,7 +46,7 @@ const VegaHeatmap = (props) => {
     ...spec,
     height: getAdjustedHeight(),
     width: getAdjustedWidth(),
-    axes: getAxes(),
+    axes: [...spec.axes, ...getAxes()],
     data: spec.data.map((datum) => ({
       ...datum,
       values: data[datum.name],

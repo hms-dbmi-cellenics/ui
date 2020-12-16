@@ -14,24 +14,15 @@ const spec = {
     {
       name: 'heatmapData',
       values: [],
-      copy: true,
-      transform: [
-        {
-          type: 'flatten',
-          fields: [
-            'expression',
-          ],
-          index: 'cellId',
-        },
-      ],
     },
   ],
   signals: [
     {
       name: 'mouseOver',
       on: [
-        { events: 'rect:mouseover{50}', encode: 'mouseOver' },
+        { events: 'rect:mouseover', encode: 'mouseOver' },
       ],
+      react: false,
     },
     {
       name: 'hoveroverembedding',
@@ -116,6 +107,7 @@ const spec = {
       },
       encode: {
         enter: {
+          cursor: { value: 'cell' },
           x: {
             scale: 'x',
             field: 'cellId',
@@ -140,90 +132,6 @@ const spec = {
           fill: {
             scale: 'color',
             field: 'expression',
-          },
-        },
-      },
-    },
-    {
-      type: 'rule',
-      interactive: false,
-      encode: {
-        enter: {
-          strokeWidth: {
-            scale: 'x',
-            band: 1,
-          },
-          stroke: {
-            value: '#000000',
-          },
-          opacity: {
-            value: 1,
-          },
-          y: {
-            value: 0,
-          },
-          y2: {
-            signal: 'height',
-          },
-        },
-        update: {
-          x: {
-            scale: 'x',
-            signal: 'hoveroverembedding',
-            offset: {
-              scale: 'x',
-              band: 0.5,
-            },
-          },
-          x2: {
-            scale: 'x',
-            signal: 'hoveroverembedding',
-            offset: {
-              scale: 'x',
-              band: 0.5,
-            },
-          },
-        },
-      },
-    },
-    {
-      type: 'rule',
-      interactive: false,
-      encode: {
-        enter: {
-          strokeWidth: {
-            scale: 'x',
-            band: 1,
-          },
-          stroke: {
-            value: '#000000',
-          },
-          opacity: {
-            value: 1,
-          },
-          x: {
-            value: 0,
-          },
-          x2: {
-            signal: 'width',
-          },
-        },
-        update: {
-          y: {
-            scale: 'y',
-            signal: 'hoveroverembeddingGene',
-            offset: {
-              scale: 'y',
-              band: 0.5,
-            },
-          },
-          y2: {
-            scale: 'y',
-            signal: 'hoveroverembeddingGene',
-            offset: {
-              scale: 'y',
-              band: 0.5,
-            },
           },
         },
       },
