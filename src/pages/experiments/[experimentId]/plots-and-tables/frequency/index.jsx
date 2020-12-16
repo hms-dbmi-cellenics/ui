@@ -94,7 +94,7 @@ const frequencyPlot = () => {
         const cellSetIds = Array.from(properties[clusterName.key].cellIds);
         value = metadataIds.filter((id) => cellSetIds.includes(id)).length;
 
-        if (config.plotType === 'proportional') {
+        if (config.frequencyType === 'proportional') {
           value = (value / sum) * 100;
         }
         if (value !== 0) {
@@ -145,7 +145,7 @@ const frequencyPlot = () => {
   };
   const changePlotType = (value) => {
     updatePlotWithChanges({
-      plotType: value.target.value,
+      frequencyType: value.target.value,
     });
     if (value.target.value === 'proportional') {
       updatePlotWithChanges({ yaxisText: 'Proportion' });
@@ -183,7 +183,7 @@ const frequencyPlot = () => {
             <Panel header='Plot Type' key='1'>
               <Radio.Group
                 onChange={(value) => changePlotType(value)}
-                value={config.plotType}
+                value={config.frequencyType}
               >
                 <Radio value='proportional'>Proportional</Radio>
                 <Radio value='count'>Count</Radio>
