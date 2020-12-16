@@ -15,6 +15,10 @@ const spec = {
       name: 'heatmapData',
       values: [],
     },
+    {
+      name: 'cellToClusterMap',
+      values: [],
+    },
   ],
   signals: [
     {
@@ -100,6 +104,37 @@ const spec = {
     },
   ],
   marks: [
+    {
+      type: 'rect',
+      from: {
+        data: 'cellOrder',
+      },
+      encode: {
+        enter: {
+          x: {
+            scale: 'x',
+            field: 'data',
+          },
+          y: {
+            signal: 'bandwidth("y") * -1.5',
+          },
+          width: {
+            scale: 'x',
+            band: 1,
+          },
+          height: {
+            scale: 'y',
+            band: 1,
+          },
+          opacity: {
+            value: 1,
+          },
+        },
+        update: {
+          fill: { signal: 'data("cellToClusterMap")[0][datum.data]' },
+        },
+      },
+    },
     {
       type: 'rect',
       from: {

@@ -61,7 +61,12 @@ const HeatmapPlot = (props) => {
   }, [loadingGenes, hidden]);
 
   const createVegaData = (selected, expression) => {
-    const data = { cellOrder: [], geneOrder: selected, heatmapData: [] };
+    const data = {
+      cellOrder: [],
+      geneOrder: selected,
+      heatmapData: [],
+      cellToClusterMap: {},
+    };
 
     // Get all hidden cells
     const hiddenCellIds = union(Array.from(hidden), properties);
@@ -79,10 +84,20 @@ const HeatmapPlot = (props) => {
       clusterKeys.forEach(({ key }) => {
         const cellsToShow = Array.from(
           properties[key].cellIds,
-        ).filter((id) => !hiddenCellIds.has(id));
+        ).filter(
+          (id) => !hiddenCellIds.has(id),
+        );
 
         groupByCluster[key] = cellsToShow;
         totalCellsFetched += cellsToShow.length;
+
+        cellsToShow.forEach((cellId) => {
+          if (!data.cellToClusterMap[cellId]) {
+            data.cellToClusterMap[cellId] = [];
+          }
+
+          data.cellToClusterMap[cellId].push(properties[key].color);
+        });
       });
 
       if (totalCellsFetched === 0) {
@@ -117,6 +132,10 @@ const HeatmapPlot = (props) => {
     const pairs = cartesian(data.geneOrder, data.cellOrder);
 
     pairs.forEach(([gene, cellId]) => {
+      if (!expression.data[gene]) {
+        return;
+      }
+
       data.heatmapData.push({
         cellId,
         gene,
@@ -147,6 +166,8 @@ const HeatmapPlot = (props) => {
 
   const signalListeners = {
     mouseOver: handleMouseOver,
+    width: (e) => console.warn(e),
+    height: (e) => console.warn(e),
   };
 
   if (!selectedGenes || selectedGenes.length === 0) {
@@ -192,7 +213,6 @@ const HeatmapPlot = (props) => {
         data={vegaData}
         showAxes={selectedGenes?.length <= 30}
         rowsNumber={selectedGenes.length}
-        defaultWidth={width + 35}
         signalListeners={signalListeners}
         width={width}
         height={height}
