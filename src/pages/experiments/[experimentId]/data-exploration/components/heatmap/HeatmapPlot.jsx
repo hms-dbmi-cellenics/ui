@@ -7,6 +7,7 @@ import {
   Empty, Spin, Typography,
 } from 'antd';
 import _ from 'lodash';
+import { RightOutlined } from '@ant-design/icons';
 import spec from '../../../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
 import HeatmapCrossHairs from './HeatmapCrossHairs';
@@ -58,90 +59,145 @@ const HeatmapPlot = (props) => {
 
     const data = createVegaData(selectedGenes, expressionData);
     setDataDebounce(data);
-  }, [loadingGenes, hidden]);
+  }, [loadingGenes, hidden, properties, hierarchy]);
 
-  const createVegaData = (selected, expression) => {
-    const data = {
-      cellOrder: [],
-      geneOrder: selected,
-      heatmapData: [],
-      cellToClusterMap: {},
-    };
-
-    // Get all hidden cells
+  const downsample = (groupBy, max = 1000) => {
+    // Find all hidden cells.
     const hiddenCellIds = union(Array.from(hidden), properties);
 
-    // Downsample cells.
-    let totalCellsToShow = 1000;
-    const groupByCluster = {};
+    // Get how many cells we are sampling.
+    let total = 0;
 
-    const louvainClusters = hierarchy.filter((clusters) => clusters.key === 'louvain');
-    if (louvainClusters.length > 0) {
-      let totalCellsFetched = 0;
+    // Create an object for storing the cells grouped by `groupBy`.
+    const groupedCells = {};
 
-      const clusterKeys = louvainClusters[0].children;
+    // Find the `groupBy` root node.
+    const rootNode = hierarchy.filter((clusters) => clusters.key === groupBy);
 
-      clusterKeys.forEach(({ key }) => {
-        const cellsToShow = Array.from(
-          properties[key].cellIds,
-        ).filter(
-          (id) => !hiddenCellIds.has(id),
-        );
-
-        groupByCluster[key] = cellsToShow;
-        totalCellsFetched += cellsToShow.length;
-
-        cellsToShow.forEach((cellId) => {
-          if (!data.cellToClusterMap[cellId]) {
-            data.cellToClusterMap[cellId] = [];
-          }
-
-          data.cellToClusterMap[cellId].push(properties[key].color);
-        });
-      });
-
-      if (totalCellsFetched === 0) {
-        return data;
-      }
-
-      // We show the number of total cells fetched or the default value,
-      // whichever is smaller.
-      totalCellsToShow = Math.min(totalCellsToShow, totalCellsFetched);
-
-      // Create a sample of cells to display.
-      clusterKeys.forEach(({ key }) => {
-        const cells = groupByCluster[key];
-
-        if (!cells) {
-          return;
-        }
-
-        // Create a sample size proportional to the number of cells to show
-        // as well as the number of cells in the cluster.
-        const sampleSize = Math.floor(
-          (cells.length / totalCellsFetched) * totalCellsToShow,
-        );
-
-        data.cellOrder.push(..._.sampleSize(groupByCluster[key], sampleSize));
-      });
+    if (!rootNode.length) {
+      return [];
     }
 
-    // Directly generate heatmap data.
-    // eslint-disable-next-line no-shadow
-    const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
-    const pairs = cartesian(data.geneOrder, data.cellOrder);
+    const { children } = rootNode[0];
 
-    pairs.forEach(([gene, cellId]) => {
-      if (!expression.data[gene]) {
+    // Iterate over each child node.
+    children.forEach(({ key }) => {
+      // Only work with non-hidden cells.
+      const shownCells = Array.from(
+        properties[key].cellIds,
+      ).filter(
+        (id) => !hiddenCellIds.has(id),
+      );
+
+      total += shownCells.length;
+
+      groupedCells[key] = shownCells;
+    });
+
+    // If we collected less than `max` number of cells, let's go with that.
+    const finalSampleSize = Math.min(total, max);
+
+    if (total === 0) {
+      return [];
+    }
+
+    // Create a sample of cells to display.
+    const sample = [];
+
+    children.forEach(({ key }) => {
+      const cells = groupedCells[key];
+
+      if (!cells) {
         return;
       }
 
-      data.heatmapData.push({
-        cellId,
-        gene,
-        expression: expression.data[gene].expression[cellId],
-      });
+      // Create a sample size proportional to the number of cells to show
+      // as well as the number of cells in the cluster.
+      const sampleSize = Math.floor(
+        (cells.length / total) * finalSampleSize,
+      );
+
+      sample.push(..._.sampleSize(cells, sampleSize));
     });
+
+    return sample;
+  };
+
+  const generateTrackData = (cells, track) => {
+    // Find the `groupBy` root node.
+    const rootNode = hierarchy.filter((clusters) => clusters.key === track);
+
+    if (!rootNode.length) {
+      return [];
+    }
+
+    const { children } = rootNode[0];
+
+    const result = [];
+
+    // Iterate over each child node.
+    children.forEach(({ key }) => {
+      const { cellIds, color, name } = properties[key];
+
+      const intersectionSet = [cellIds, cells].reduce(
+        (acc, curr) => new Set([...acc].filter((x) => curr.has(x))),
+      );
+
+      intersectionSet.forEach((cellId) => result.push({
+        cellId,
+        name: `${properties[track].name} > ${name}`,
+        color,
+        track,
+      }));
+    });
+
+    return result;
+  };
+
+  const createVegaData = (selected, expression) => {
+    // For now, this is statically defined. In the future, these values are
+    // controlled from the settings panel in the heatmap.
+    const trackOrder = ['louvain', 'sample'];
+    const groupBy = 'louvain';
+
+    const data = {
+      cellOrder: [],
+      geneOrder: selected,
+      trackOrder,
+      heatmapData: [],
+      trackColors: [],
+    };
+
+    // Do downsampling.
+    data.cellOrder = downsample(groupBy);
+
+    // eslint-disable-next-line no-shadow
+    const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+
+    // Directly generate heatmap data.
+    cartesian(
+      data.geneOrder, data.cellOrder,
+    ).forEach(
+      ([gene, cellId]) => {
+        if (!expression.data[gene]) {
+          return;
+        }
+
+        data.heatmapData.push({
+          cellId,
+          gene,
+          expression: expression.data[gene].expression[cellId],
+        });
+      },
+    );
+
+    // Directly generate track data.
+    data.trackColors = trackOrder.map((rootNode) => generateTrackData(
+      new Set(data.cellOrder),
+      rootNode,
+    )).flat();
+
+    console.log(data);
 
     return data;
   };
@@ -150,18 +206,32 @@ const HeatmapPlot = (props) => {
     if (args.length < 2) {
       return;
     }
-    if (args[1].datum) {
-      const { cellId: cellName, expression, gene: geneName } = args[1].datum;
-      dispatch(updateCellInfo({
-        cellName, expression, geneName, componentType,
-      }));
-    }
+
     if ('x' in args[1] && 'y' in args[1]) {
       hoverCoordinates.current = {
         x: args[1].x,
         y: args[1].y,
       };
     }
+
+    if (!args[1].datum) {
+      return;
+    }
+
+    const {
+      cellId: cellName, expression, gene: geneName,
+    } = args[1].datum;
+
+    dispatch(
+      updateCellInfo(
+        {
+          cellName,
+          expression,
+          geneName,
+          componentType,
+        },
+      ),
+    );
   };
 
   const signalListeners = {
@@ -217,12 +287,7 @@ const HeatmapPlot = (props) => {
         width={width}
         height={height}
       />
-      <div className='cell-info-container'>
-        <CellInfo
-          coordinates={hoverCoordinates}
-          componentType={componentType}
-        />
-      </div>
+
       <HeatmapCrossHairs />
     </div>
   );

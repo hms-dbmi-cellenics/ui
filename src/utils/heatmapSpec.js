@@ -12,11 +12,15 @@ const spec = {
       copy: true,
     },
     {
+      name: 'trackOrder',
+      values: [],
+    },
+    {
       name: 'heatmapData',
       values: [],
     },
     {
-      name: 'cellToClusterMap',
+      name: 'trackColors',
       values: [],
     },
   ],
@@ -24,7 +28,7 @@ const spec = {
     {
       name: 'mouseOver',
       on: [
-        { events: 'rect:mouseover', encode: 'mouseOver' },
+        { events: 'rect:mouseover{250}', encode: 'mouseOver' },
       ],
       react: false,
     },
@@ -60,8 +64,16 @@ const spec = {
       name: 'y',
       type: 'band',
       domain: {
-        data: 'geneOrder',
-        field: 'data',
+        fields: [
+          {
+            data: 'trackOrder',
+            field: 'data',
+          },
+          {
+            data: 'geneOrder',
+            field: 'data',
+          },
+        ],
       },
       range: 'height',
     },
@@ -107,16 +119,18 @@ const spec = {
     {
       type: 'rect',
       from: {
-        data: 'cellOrder',
+        data: 'trackColors',
       },
       encode: {
         enter: {
+          cursor: { value: 'cell' },
+          tooltip: { signal: '{"Cell ID": datum.cellId, "Group name": datum.name}' },
           x: {
             scale: 'x',
-            field: 'data',
+            field: 'cellId',
           },
           y: {
-            signal: 'bandwidth("y") * -1.5',
+            signal: 'scale("y", datum.track) - bandwidth("y") * 1.5',
           },
           width: {
             scale: 'x',
@@ -131,7 +145,7 @@ const spec = {
           },
         },
         update: {
-          fill: { signal: 'data("cellToClusterMap")[0][datum.data]' },
+          fill: { field: 'color' },
         },
       },
     },
@@ -143,6 +157,7 @@ const spec = {
       encode: {
         enter: {
           cursor: { value: 'cell' },
+          tooltip: { signal: '{"Cell ID": datum.cellId, "Gene name": datum.gene, "Expression": datum.expression}' },
           x: {
             scale: 'x',
             field: 'cellId',

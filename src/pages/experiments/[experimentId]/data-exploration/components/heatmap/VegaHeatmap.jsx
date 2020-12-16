@@ -6,7 +6,7 @@ import './Heatmap.module.css';
 
 const VegaHeatmap = (props) => {
   const {
-    spec, showAxes, rowsNumber, defaultWidth, signalListeners, data, width, height,
+    spec, showAxes, rowsNumber, signalListeners, data, width, height,
   } = props;
 
   const axes = [
@@ -54,6 +54,7 @@ const VegaHeatmap = (props) => {
         spec={vegaSpec}
         signalListeners={signalListeners}
         actions={false}
+        onNewView={(e) => console.log(e)}
       />
     </Element>
   );
