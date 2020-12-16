@@ -7,6 +7,7 @@ import {
   Skeleton,
   Spin,
   Radio,
+  Alert,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -56,45 +57,60 @@ const frequencyPlot = () => {
   }, [experimentId]);
 
   useEffect(() => {
-    if (!config || cellSets.loading) {
+    if (!config || loading) {
       return;
     }
     setPlotSpec(generateSpec(config));
     setPlotData(generateData());
   }, [config, properties]);
 
-  const calculateSum = (chosenClusters) => {
+  const calculateSum = (chosenClusters, metadataIds) => {
     let sum = 0;
-    chosenClusters.forEach((cluster) => {
-      sum += properties[cluster.key].cellIds.size;
+    chosenClusters.map((cellSetCluster) => {
+      const cellSetIds = Array.from(properties[cellSetCluster.key].cellIds);
+      sum += metadataIds.filter((id) => cellSetIds.includes(id)).length;
+      return cellSetIds;
     });
     return sum;
   };
 
+  const getMetadataClusters = (name) => (
+    hierarchy.filter((cluster) => (
+      cluster.key === name))[0].children
+  );
+
   const generateData = () => {
     const data = [];
-    console.log('chosen clusters is ', config.chosenclusters);
-    if (!loading) {
-      const chosenClusters = hierarchy.filter((cluster) => (
-        cluster.key === config.chosenClusters))[0].children;
-      const sum = calculateSum(chosenClusters);
+    const chosenClusters = hierarchy.filter((cluster) => (
+      cluster.key === config.chosenClusters))[0].children;
+
+    const metadataClusters = getMetadataClusters(config.metadata);
+    metadataClusters.map((metadataCluster) => {
+      const metadataIds = Array.from(properties[metadataCluster.key].cellIds);
+      const sum = calculateSum(chosenClusters, metadataIds);
+
       chosenClusters.map((clusterName) => {
         let value;
-        if (config.plotType === 'count') {
-          value = properties[clusterName.key].cellIds.size;
-        } else {
-          value = (properties[clusterName.key].cellIds.size / sum) * 100;
+        const cellSetIds = Array.from(properties[clusterName.key].cellIds);
+        value = metadataIds.filter((id) => cellSetIds.includes(id)).length;
+
+        if (config.frequencyType === 'proportional') {
+          value = (value / sum) * 100;
         }
-        data.push({
-          x: 1,
-          y: value,
-          c: properties[clusterName.key].name,
-        });
+        if (value !== 0) {
+          data.push({
+            x: properties[metadataCluster.key].name,
+            y: value,
+            c: properties[clusterName.key].name,
+          });
+        }
         return data;
       });
-      return data;
-    }
+      return 0;
+    });
+    return data;
   };
+
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
@@ -129,7 +145,7 @@ const frequencyPlot = () => {
   };
   const changePlotType = (value) => {
     updatePlotWithChanges({
-      plotType: value.target.value,
+      frequencyType: value.target.value,
     });
     if (value.target.value === 'proportional') {
       updatePlotWithChanges({ yaxisText: 'Proportion' });
@@ -157,21 +173,21 @@ const frequencyPlot = () => {
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse accordion>
-            <Panel header='Plot Type' key='1'>
-              <Radio.Group
-                onChange={(value) => changePlotType(value)}
-                value={config.plotType}
-              >
-                <Radio value='proportional'>Proportional</Radio>
-                <Radio value='count'>Count</Radio>
-              </Radio.Group>
-            </Panel>
             <Panel header='Select Data' key='20'>
               <SelectCellSets
                 onUpdate={updatePlotWithChanges}
                 config={config}
                 cellSets={cellSets}
               />
+            </Panel>
+            <Panel header='Plot Type' key='1'>
+              <Radio.Group
+                onChange={(value) => changePlotType(value)}
+                value={config.frequencyType}
+              >
+                <Radio value='proportional'>Proportional</Radio>
+                <Radio value='count'>Count</Radio>
+              </Radio.Group>
             </Panel>
             <Panel header='Main Schema' key='2'>
               <DimensionsRangeEditor
@@ -202,6 +218,11 @@ const frequencyPlot = () => {
                 legendEnabled={config.legendEnabled}
                 legendPosition={config.legendPosition}
                 legendOptions='top-bot'
+              />
+              <Alert
+                message='Changing cell set colours is not currently available here.
+              Use the Data Management tool in Data Exploration to customise cell set colours.'
+                type='info'
               />
             </Panel>
           </Collapse>
