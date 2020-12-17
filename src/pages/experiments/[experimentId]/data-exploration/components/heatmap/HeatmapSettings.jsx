@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import _ from 'lodash';
 
 import {
   SettingOutlined,
@@ -16,7 +17,7 @@ const HeatmapSettings = () => {
   const [expressionValue, setExpressionValue] = useState('raw');
   const [showLegend, setShowLegend] = useState(true);
   const [groupBy, setGroupBy] = useState('louvain');
-  const [selectedLabelOptions, setSelectedLabelOptions] = useState(null);
+  const [selectedLabelOptions, setSelectedLabelOptions] = useState([]);
 
   const changeExpression = (e) => {
     setExpressionValue(e.target.value);
@@ -30,17 +31,25 @@ const HeatmapSettings = () => {
     setGroupBy(e.target.value);
   };
 
-  const changeSelectedlabelOptions = (e) => {
-    setSelectedLabelOptions(e);
+  const checkBoxChecked = (e, labelName) => {
+    e.stopPropagation();
+    const index = selectedLabelOptions.indexOf(labelName);
+    if (index === -1) {
+      setSelectedLabelOptions([...selectedLabelOptions, labelName]);
+    } else {
+      const newSelectedLabelOptions = _.cloneDeep(selectedLabelOptions);
+      newSelectedLabelOptions.splice(index, 1);
+      setSelectedLabelOptions(newSelectedLabelOptions);
+    }
   };
 
-  const getCellSets = (cellSetTypes) => {
+  const getCellSets = (category) => {
     if (!cellSets || cellSets.loading) {
       return [];
     }
     const options = cellSets.hierarchy.map(({ key }) => ({ value: key }));
     return options.filter((element) => (
-      cellSetTypes.includes(cellSets.properties[element.value].type)
+      category.includes(cellSets.properties[element.value].type)
     ));
   };
 
@@ -59,9 +68,9 @@ const HeatmapSettings = () => {
         </Radio.Group>
       </SubMenu>
       <SubMenu key='metadata-label' title='Metadata label'>
-        <Checkbox.Group value={selectedLabelOptions} onChange={changeSelectedlabelOptions}>
-          {getCellSets(['metadataCategorical']).map((cell) => (
-            <Checkbox style={radioStyle} key={cell.value} value={cell.value}>{cell.value}</Checkbox>
+        <Checkbox.Group>
+          {getCellSets(['metadataCategorical']).map((element) => (
+            <Checkbox style={radioStyle} onClick={(e) => checkBoxChecked(e, element.value)}>{element.value}</Checkbox>
           ))}
         </Checkbox.Group>
       </SubMenu>
@@ -74,8 +83,8 @@ const HeatmapSettings = () => {
       <SubMenu key='group-by' title='Group by'>
         <Menu.ItemGroup>
           <Radio.Group value={groupBy} onChange={changeGroupBy}>
-            {getCellSets(['metadataCategorical', 'cellSets']).map((cell) => (
-              <Radio style={radioStyle} key={cell.value} value={cell.value}>{cell.value}</Radio>
+            {getCellSets(['metadataCategorical', 'cellSets']).map((element) => (
+              <Radio style={radioStyle} key={element.value} value={element.value}>{element.value}</Radio>
             ))}
           </Radio.Group>
         </Menu.ItemGroup>
