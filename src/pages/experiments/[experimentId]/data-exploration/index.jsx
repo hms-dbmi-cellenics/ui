@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import Error from 'next/error';
 import useSWR from 'swr';
 import { Tabs } from 'antd';
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
+import { Mosaic, MosaicWindow, RemoveButton } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
 import Header from './components/header';
 import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
@@ -12,6 +12,7 @@ import GeneListTool from './components/gene-list-tool/GeneListTool';
 import DiffExprManager from './components/differential-expression-tool/DiffExprManager';
 import Embedding from './components/embedding/Embedding';
 import HeatmapPlot from './components/heatmap/HeatmapPlot';
+import HeatmapSettings from './components/heatmap/HeatmapSettings';
 import { updateLayout } from '../../../../redux/actions/layout';
 import getApiEndpoint from '../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../utils/cacheRequest';
@@ -48,25 +49,40 @@ const ExplorationViewPage = () => {
   const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
 
   const TILE_MAP = {
-    'UMAP Embedding': (width, height) => <Embedding experimentId={experimentId} embeddingType='umap' width={width} height={height} />,
-    Heatmap: (width, height) => (
-      <HeatmapPlot experimentId={experimentId} width={width} height={height} />
-    ),
-    Tools: (width, height) => (
-      <Tabs
-        size='small'
-        activeKey={selectedTab}
-        onChange={(key) => { setSelectedTab(key); }}
-      >
-        <TabPane tab='Gene list' key='Gene list'>
-          <GeneListTool experimentId={experimentId} width={width} height={height} />
-        </TabPane>
-        <TabPane tab='Differential expression' key='Differential expression'>
-          <DiffExprManager experimentId={experimentId} view='compute' width={width} height={height} />
-        </TabPane>
-      </Tabs>
-    ),
-    'Cell sets': (width, height) => <CellSetsTool experimentId={experimentId} width={width} height={height} />,
+    'UMAP Embedding': {
+      toolbarControls: [<RemoveButton />],
+      component: (width, height) => <Embedding experimentId={experimentId} embeddingType='umap' width={width} height={height} />,
+    },
+    Heatmap: {
+      toolbarControls: [
+        <HeatmapSettings />,
+        <RemoveButton />,
+      ],
+      component: (width, height) => (
+        <HeatmapPlot experimentId={experimentId} width={width} height={height} />
+      ),
+    },
+    Tools: {
+      toolbarControls: [<RemoveButton />],
+      component: (width, height) => (
+        <Tabs
+          size='small'
+          activeKey={selectedTab}
+          onChange={(key) => { setSelectedTab(key); }}
+        >
+          <TabPane tab='Gene list' key='Gene list'>
+            <GeneListTool experimentId={experimentId} width={width} height={height} />
+          </TabPane>
+          <TabPane tab='Differential expression' key='Differential expression'>
+            <DiffExprManager experimentId={experimentId} view='compute' width={width} height={height} />
+          </TabPane>
+        </Tabs>
+      ),
+    },
+    'Cell sets': {
+      toolbarControls: [<RemoveButton />],
+      component: (width, height) => <CellSetsTool experimentId={experimentId} width={width} height={height} />,
+    },
   };
 
   if (error) {
@@ -94,8 +110,12 @@ const ExplorationViewPage = () => {
               refreshRate={500}
             >
               {({ width, height }) => (
-                <MosaicWindow path={path} title={id}>
-                  {renderWindow(TILE_MAP[id], width, height)}
+                <MosaicWindow
+                  path={path}
+                  title={id}
+                  toolbarControls={TILE_MAP[id].toolbarControls}
+                >
+                  {renderWindow(TILE_MAP[id].component, width, height)}
                 </MosaicWindow>
               )}
             </ReactResizeDetector>
