@@ -133,31 +133,39 @@ const HeatmapPlot = (props) => {
 
     const { children } = rootNode[0];
 
-    const result = [];
+    const trackColorData = [];
+    const groupData = [];
 
     // Iterate over each child node.
     children.forEach(({ key }) => {
-      const { cellIds, color, name } = properties[key];
+      const { cellIds, name, color } = properties[key];
+
+      groupData.push({
+        key,
+        track,
+        name,
+        trackName: properties[track].name,
+      });
 
       const intersectionSet = [cellIds, cells].reduce(
         (acc, curr) => new Set([...acc].filter((x) => curr.has(x))),
       );
 
-      intersectionSet.forEach((cellId) => result.push({
+      intersectionSet.forEach((cellId) => trackColorData.push({
         cellId,
-        name: `${properties[track].name} > ${name}`,
-        color,
+        key,
         track,
+        color,
       }));
     });
 
-    return result;
+    return { trackColorData, groupData };
   };
 
   const createVegaData = (selected, expression) => {
     // For now, this is statically defined. In the future, these values are
     // controlled from the settings panel in the heatmap.
-    const trackOrder = ['louvain', 'sample'];
+    const trackOrder = ['louvain'];
     const groupBy = 'louvain';
 
     const data = {
@@ -165,7 +173,8 @@ const HeatmapPlot = (props) => {
       geneOrder: selected,
       trackOrder,
       heatmapData: [],
-      trackColors: [],
+      trackPositionData: [],
+      trackGroupData: [],
     };
 
     // Do downsampling.
@@ -192,10 +201,13 @@ const HeatmapPlot = (props) => {
     );
 
     // Directly generate track data.
-    data.trackColors = trackOrder.map((rootNode) => generateTrackData(
+    const trackData = trackOrder.map((rootNode) => generateTrackData(
       new Set(data.cellOrder),
       rootNode,
-    )).flat();
+    ));
+
+    data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
+    data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
 
     console.log(data);
 
@@ -218,17 +230,12 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    const {
-      cellId: cellName, expression, gene: geneName,
-    } = args[1].datum;
+    const { cellId: cellName } = args[1].datum;
 
     dispatch(
       updateCellInfo(
         {
           cellName,
-          expression,
-          geneName,
-          componentType,
         },
       ),
     );

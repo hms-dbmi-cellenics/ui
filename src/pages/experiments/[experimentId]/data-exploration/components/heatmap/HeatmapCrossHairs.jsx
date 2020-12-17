@@ -15,7 +15,6 @@ const HeatmapCrossHairs = () => {
     }
   }, [cellInfo]);
 
-
   const cellNameInput = document.getElementById('cellNameInput');
   const geneNameInput = document.getElementById('geneNameInput');
 
@@ -62,6 +61,5 @@ HeatmapCrossHairs.defaultProps = {};
 
 HeatmapCrossHairs.propTypes = {
 };
-
 
 export default HeatmapCrossHairs;

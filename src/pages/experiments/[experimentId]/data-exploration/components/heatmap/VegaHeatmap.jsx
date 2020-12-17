@@ -69,7 +69,6 @@ VegaHeatmap.propTypes = {
   showAxes: PropTypes.bool,
   rowsNumber: PropTypes.number.isRequired,
   data: PropTypes.object.isRequired,
-  defaultWidth: PropTypes.number.isRequired,
   signalListeners: PropTypes.object.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,

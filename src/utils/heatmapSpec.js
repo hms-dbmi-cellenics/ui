@@ -20,9 +20,14 @@ const spec = {
       values: [],
     },
     {
-      name: 'trackColors',
+      name: 'trackColorData',
       values: [],
     },
+    {
+      name: 'trackGroupData',
+      values: [],
+    },
+
   ],
   signals: [
     {
@@ -64,19 +69,67 @@ const spec = {
       name: 'y',
       type: 'band',
       domain: {
-        fields: [
-          {
-            data: 'trackOrder',
-            field: 'data',
-          },
-          {
-            data: 'geneOrder',
-            field: 'data',
-          },
-        ],
+        data: 'geneOrder',
+        field: 'data',
       },
       range: 'height',
     },
+    {
+      name: 'yTrack',
+      type: 'band',
+      domain: {
+        data: 'trackOrder',
+        field: 'data',
+      },
+      paddingInner: 0.25,
+      paddingOuter: 0.5,
+      range: {
+        step: -20,
+      },
+    },
+
+    // Converts a cluster key (e.g. louvain-1) to the appropriate color.
+    {
+      name: 'clusterKeyToColor',
+      type: 'ordinal',
+      domain: {
+        data: 'trackGroupData',
+        field: 'key',
+      },
+      range: {
+        data: 'trackGroupData',
+        field: 'color',
+      },
+    },
+
+    // Converts a cluster key (e.g. louvain-1) to its name (Cluster 1).
+    {
+      name: 'clusterKeyToName',
+      type: 'ordinal',
+      domain: {
+        data: 'trackGroupData',
+        field: 'key',
+      },
+      range: {
+        data: 'trackGroupData',
+        field: 'name',
+      },
+    },
+
+    // Converts a track key (e.g. louvain) to its name (Louvain clusters).
+    {
+      name: 'trackKeyToTrackName',
+      type: 'ordinal',
+      domain: {
+        data: 'trackGroupData',
+        field: 'track',
+      },
+      range: {
+        data: 'trackGroupData',
+        field: 'trackName',
+      },
+    },
+
     {
       name: 'color',
       type: 'linear',
@@ -92,6 +145,20 @@ const spec = {
     },
   ],
   axes: [
+    {
+      orient: 'left',
+      scale: 'yTrack',
+      domain: false,
+      encode: {
+        labels: {
+          update: {
+            text: {
+              signal: 'scale("trackKeyToTrackName", datum.value)',
+            },
+          },
+        },
+      },
+    },
     // Enable for debugging.
     // {
     //   orient: 'bottom',
@@ -119,25 +186,26 @@ const spec = {
     {
       type: 'rect',
       from: {
-        data: 'trackColors',
+        data: 'trackColorData',
       },
       encode: {
         enter: {
           cursor: { value: 'cell' },
-          tooltip: { signal: '{"Cell ID": datum.cellId, "Group name": datum.name}' },
+          tooltip: { signal: '{"Cell ID": datum.cellId, "Group name": scale("clusterKeyToName", datum.key)}' },
           x: {
             scale: 'x',
             field: 'cellId',
           },
           y: {
-            signal: 'scale("y", datum.track) - bandwidth("y") * 1.5',
+            scale: 'yTrack',
+            field: 'track',
           },
           width: {
             scale: 'x',
             band: 1,
           },
           height: {
-            scale: 'y',
+            scale: 'yTrack',
             band: 1,
           },
           opacity: {
