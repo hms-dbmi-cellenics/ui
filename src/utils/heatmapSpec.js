@@ -71,20 +71,6 @@ const spec = {
       },
     },
 
-    // Converts a cluster key (e.g. louvain-1) to the appropriate color.
-    {
-      name: 'clusterKeyToColor',
-      type: 'ordinal',
-      domain: {
-        data: 'trackGroupData',
-        field: 'key',
-      },
-      range: {
-        data: 'trackGroupData',
-        field: 'color',
-      },
-    },
-
     // Converts a cluster key (e.g. louvain-1) to its name (Cluster 1).
     {
       name: 'clusterKeyToName',
