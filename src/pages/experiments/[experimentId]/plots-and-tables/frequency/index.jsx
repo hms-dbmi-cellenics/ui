@@ -73,7 +73,7 @@ const frequencyPlot = () => {
 
   const generateData = () => {
     const data = [];
-    console.log('chosen clusters is ', config.chosenclusters);
+
     if (!loading) {
       const chosenClusters = hierarchy.filter((cluster) => (
         cluster.key === config.chosenClusters))[0].children;

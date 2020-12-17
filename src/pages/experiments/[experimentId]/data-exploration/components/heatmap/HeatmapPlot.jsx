@@ -209,8 +209,6 @@ const HeatmapPlot = (props) => {
     data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
     data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
 
-    console.log(data);
-
     return data;
   };
 
@@ -243,8 +241,6 @@ const HeatmapPlot = (props) => {
 
   const signalListeners = {
     mouseOver: handleMouseOver,
-    width: (e) => console.warn(e),
-    height: (e) => console.warn(e),
   };
 
   if (!selectedGenes || selectedGenes.length === 0) {
