@@ -54,7 +54,6 @@ const VegaHeatmap = (props) => {
         spec={vegaSpec}
         signalListeners={signalListeners}
         actions={false}
-        onNewView={(e) => console.log(e)}
       />
     </Element>
   );

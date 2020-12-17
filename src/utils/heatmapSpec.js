@@ -37,23 +37,6 @@ const spec = {
       ],
       react: false,
     },
-    {
-      name: 'hoveroverembedding',
-      bind: {
-        input: 'text',
-        id: 'cellNameInput',
-        element: '#heatmapHoverBox',
-      },
-
-    },
-    {
-      name: 'hoveroverembeddingGene',
-      bind: {
-        input: 'text',
-        id: 'geneNameInput',
-        element: '#heatmapHoverBox',
-      },
-    },
   ],
   scales: [
     {

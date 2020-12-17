@@ -7,11 +7,8 @@ import {
   Empty, Spin, Typography,
 } from 'antd';
 import _ from 'lodash';
-import { RightOutlined } from '@ant-design/icons';
 import spec from '../../../../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
-import HeatmapCrossHairs from './HeatmapCrossHairs';
-import CellInfo from '../CellInfo';
 import PlatformError from '../../../../../../components/PlatformError';
 import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
@@ -254,7 +251,6 @@ const HeatmapPlot = (props) => {
             </div>
           )}
         />
-        <HeatmapCrossHairs />
       </center>
     );
   }
@@ -263,7 +259,6 @@ const HeatmapPlot = (props) => {
     return (
       <center style={{ marginTop: height / 2 }}>
         <Spin size='large' />
-        <HeatmapCrossHairs />
       </center>
     );
   }
@@ -290,8 +285,6 @@ const HeatmapPlot = (props) => {
         width={width}
         height={height}
       />
-
-      <HeatmapCrossHairs />
     </div>
   );
 };
