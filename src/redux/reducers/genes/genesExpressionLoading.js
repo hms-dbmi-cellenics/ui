@@ -4,8 +4,6 @@ import { initialViewState } from './initialState';
 const genesExpressionLoading = (state, action) => {
   const { genes, componentUuid } = action.payload;
 
-  console.log('in reducer for expressionLoading', action, state);
-
   return {
     ...state,
     expression: {
