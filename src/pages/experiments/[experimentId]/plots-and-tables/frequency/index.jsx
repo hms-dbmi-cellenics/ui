@@ -81,7 +81,6 @@ const frequencyPlot = () => {
 
   const generateData = () => {
     const data = [];
-
     const chosenClusters = hierarchy.filter((cluster) => (
       cluster.key === config.chosenClusters))[0].children;
 
