@@ -201,10 +201,10 @@ const HeatmapSettings = () => {
 
     return (
       <Menu size='small'>
-        <Item key='toggle-legend'>
+        <Item key='toggle-legend' disabled>
           Expression values...
         </Item>
-        <Item key='toggle-legend'>
+        <Item key='toggle-legend' disabled>
           Hide legend
         </Item>
         <SubMenu key='metadata-tracks' title='Metadata tracks...' icon={<></>}>
