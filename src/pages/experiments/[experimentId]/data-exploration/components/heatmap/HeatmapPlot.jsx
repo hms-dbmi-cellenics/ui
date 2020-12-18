@@ -37,8 +37,13 @@ const HeatmapPlot = (props) => {
   const properties = useSelector((state) => state.cellSets.properties);
   const hidden = useSelector((state) => state.cellSets.hidden);
 
+  const selectedTracks = useSelector((state) => state.cellInfo.selectedTracks);
+  const groupedTrack = useSelector((state) => state.cellInfo.groupedTrack);
+
   const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
+
+  const [maxCells, setMaxCells] = useState(1000);
 
   const setDataDebounce = useCallback(_.debounce((data) => {
     setVegaData(data);
@@ -54,11 +59,31 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    const data = createVegaData(selectedGenes, expressionData);
-    setDataDebounce(data);
-  }, [loadingGenes, hidden, properties, hierarchy]);
+    let trackOrder = [];
 
-  const downsample = (groupBy, max = 1000) => {
+    if (selectedTracks) {
+      trackOrder = Array.from(selectedTracks).reverse();
+    }
+
+    const data = createVegaData(selectedGenes, trackOrder, expressionData);
+    setDataDebounce(data);
+  }, [loadingGenes, hidden, selectedTracks, groupedTrack, maxCells, properties, hierarchy]);
+
+  useEffect(() => {
+    // Set sampler rate back to 1000 if the width is large anough.
+    if (maxCells < 1000 && width >= 1.2 * maxCells) {
+      setMaxCells(1000);
+      return;
+    }
+
+    // Set rate to an appropriate amount when the container width is below the sample rate.
+    if (width <= 1.2 * maxCells) {
+      const sampleRate = Math.floor(Math.min(maxCells * (maxCells / width), 1000));
+      setMaxCells(sampleRate);
+    }
+  }, [width]);
+
+  const downsample = (groupBy) => {
     // Find all hidden cells.
     const hiddenCellIds = union(Array.from(hidden), properties);
 
@@ -92,7 +117,7 @@ const HeatmapPlot = (props) => {
     });
 
     // If we collected less than `max` number of cells, let's go with that.
-    const finalSampleSize = Math.min(total, max);
+    const finalSampleSize = Math.min(total, maxCells);
 
     if (total === 0) {
       return [];
@@ -159,11 +184,9 @@ const HeatmapPlot = (props) => {
     return { trackColorData, groupData };
   };
 
-  const createVegaData = (selected, expression) => {
+  const createVegaData = (selected, trackOrder, expression) => {
     // For now, this is statically defined. In the future, these values are
     // controlled from the settings panel in the heatmap.
-    const trackOrder = ['louvain'];
-    const groupBy = 'louvain';
 
     const data = {
       cellOrder: [],
@@ -175,7 +198,7 @@ const HeatmapPlot = (props) => {
     };
 
     // Do downsampling.
-    data.cellOrder = downsample(groupBy);
+    data.cellOrder = downsample(groupedTrack);
 
     // eslint-disable-next-line no-shadow
     const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
