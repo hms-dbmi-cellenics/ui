@@ -30,6 +30,7 @@ const embeddingCategoricalInitialConfig = {
   testVar: null,
   legendEnabled: true,
   legendPosition: 'top',
+  legendOptions: ['top-bot'],
 };
 
 const embeddingContinuousInitialConfig = {
@@ -142,6 +143,7 @@ const frequencyInitialConfig = {
   chosenClusters: 'louvain',
   currentData: 'sample',
   legendPosition: 'top',
+  legendOptions: ['top-bot'],
   spec: '1.0.0',
   width: 500,
   height: 500,

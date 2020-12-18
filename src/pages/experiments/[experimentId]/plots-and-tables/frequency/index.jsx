@@ -217,7 +217,7 @@ const frequencyPlot = () => {
                 onUpdate={updatePlotWithChanges}
                 legendEnabled={config.legendEnabled}
                 legendPosition={config.legendPosition}
-                legendOptions='top-bot'
+                legendOptions={config.legendOptions}
               />
               <Alert
                 message='Changing cell set colours is not currently available here.

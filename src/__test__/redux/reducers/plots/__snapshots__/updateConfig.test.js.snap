@@ -16,6 +16,9 @@ Object {
       "labelSize": 28,
       "labelsEnabled": true,
       "legendEnabled": true,
+      "legendOptions": Array [
+        "top-bot",
+      ],
       "legendPosition": "top",
       "legendTextColor": "#FFFFFF",
       "masterColour": "#000000",

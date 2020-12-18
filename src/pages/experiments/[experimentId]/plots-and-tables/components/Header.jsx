@@ -24,7 +24,9 @@ const KeyboardEventHandler = dynamic(
 );
 
 const Header = (props) => {
-  const { experimentId, plotUuid, finalRoute } = props;
+  const {
+    experimentId, plotUuid, finalRoute,
+  } = props;
 
   const dispatch = useDispatch();
   const saved = !useSelector((state) => state.plots[plotUuid].outstandingChanges);
@@ -91,8 +93,8 @@ const Header = (props) => {
       breadcrumbName: 'Experiments',
     },
     {
-      path: '[experimentId]/plots-and-tables',
-      params: [data.experimentId, 'plots-and-tables'].join('/'),
+      path: '[experimentId]',
+      params: data.experimentId,
       breadcrumbName: data.experimentName,
     },
     {
@@ -144,7 +146,7 @@ const Header = (props) => {
           title='Edit collection'
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
-          extra={[
+          extra={(
             <Space>
               <FeedbackButton />
               <Button
@@ -155,8 +157,6 @@ const Header = (props) => {
               >
                 Save
               </Button>
-            </Space>,
-            <Space>
               <Button
                 key='reset'
                 type='primary'
@@ -165,8 +165,8 @@ const Header = (props) => {
               >
                 Reset
               </Button>
-            </Space>,
-          ]}
+            </Space>
+          )}
         />
       </Col>
     </Row>

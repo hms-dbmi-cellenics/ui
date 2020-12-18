@@ -63,8 +63,8 @@ const LegendEditor = (props) => {
 
 LegendEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
-  legendEnabled: PropTypes.array.isRequired,
-  legendPosition: PropTypes.array.isRequired,
+  legendEnabled: PropTypes.bool.isRequired,
+  legendPosition: PropTypes.string.isRequired,
   legendOptions: PropTypes.array.isRequired,
 };
 

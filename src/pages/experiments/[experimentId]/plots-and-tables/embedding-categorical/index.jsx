@@ -237,7 +237,7 @@ const EmbeddingCategoricalPlot = () => {
                 onUpdate={onUpdate}
                 legendEnabled={config.legendEnabled}
                 legendPosition={config.legendPosition}
-                legendOptions='top-bot'
+                legendOptions={config.legendOptions}
                 plotUuid={plotUuid}
               />
             </Panel>

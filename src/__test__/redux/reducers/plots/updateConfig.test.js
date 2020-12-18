@@ -39,6 +39,7 @@ describe('updateConfig', () => {
         plotUuid: 'embeddingCategoricalMain',
       },
     });
+
     expect(updateReturn).toMatchSnapshot();
   });
 });

@@ -1,8 +1,8 @@
 /* eslint-disable import/no-duplicates */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  PageHeader, Row, Col, Space, Button, List, Card, Tooltip, Dropdown,
+  PageHeader, Row, Col, Space, Button, List, Card, Tooltip, Dropdown, Skeleton,
 } from 'antd';
 import { useSelector } from 'react-redux';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
@@ -15,6 +15,7 @@ import embeddingCategorical from '../../../../../static/media/embeddingCategoric
 import volcano from '../../../../../static/media/volcano.png';
 import frequency from '../../../../../static/media/frequency.png';
 import FeedbackButton from '../../../../components/FeedbackButton';
+import isBrowser from '../../../../utils/environment';
 
 const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
   <Card.Grid
@@ -68,6 +69,10 @@ const PlotsTablesHome = () => {
   }
   const router = useRouter();
   const { experimentId } = router.query;
+  // First, load experiment ID data from the router.
+  useEffect(() => {
+  }, [experimentId]);
+
   const plots = [
     {
       name: 'Continuous Embedding',
@@ -142,6 +147,10 @@ const PlotsTablesHome = () => {
       }}
     />
   );
+
+  if (!isBrowser) {
+    return <Skeleton />;
+  }
 
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
