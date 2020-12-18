@@ -11,17 +11,43 @@ const SelectCellSets = (props) => {
   const changeClusters = (val) => {
     onUpdate({ chosenClusters: val.key });
   };
-  const generateCellOptions = () => {
+
+  const changeMetadata = (val) => {
+    onUpdate({ metadata: val.key });
+  };
+
+  const generateCellOptions = (type) => {
     if (cellSets.loading) {
       return [];
     }
     const options = cellSets.hierarchy.map(({ key }) => ({ value: key }));
-    return options.filter((element) => (
-      cellSets.properties[element.value].type === 'cellSets'
+
+    const filteredOptions = options.filter((element) => (
+      cellSets.properties[element.value].type === type
     ));
+    return filteredOptions;
   };
+
   return (
     <>
+      <div>
+        Select the metadata that cells are grouped by
+        (Determines the x-axis):
+        {' '}
+      </div>
+      <Form.Item>
+        <Select
+          value={{ key: config.metadata }}
+          onChange={(value) => changeMetadata(value)}
+          labelInValue
+          style={{ width: '100%' }}
+          placeholder='Select cell set...'
+          options={generateCellOptions('metadataCategorical')}
+        />
+      </Form.Item>
+      <div>
+        Select the cell sets to be shown:
+      </div>
       <Form.Item>
         <Select
           value={{ key: config.chosenClusters }}
@@ -29,9 +55,8 @@ const SelectCellSets = (props) => {
           labelInValue
           style={{ width: '100%' }}
           placeholder='Select cell set...'
-          options={generateCellOptions()}
+          options={generateCellOptions('cellSets')}
         />
-
       </Form.Item>
     </>
   );

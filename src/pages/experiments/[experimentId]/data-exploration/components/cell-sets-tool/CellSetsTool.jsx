@@ -144,10 +144,10 @@ const CellSetsTool = (props) => {
         ) : (<></>)}
 
         <Tabs
+          size='small'
           activeKey={activeTab}
           onChange={(key) => setActiveTab(key)}
           tabBarExtraContent={operations}
-          type='card'
         >
           <TabPane tab='Cell sets' key='cellSets'>
             <HierarchicalTree

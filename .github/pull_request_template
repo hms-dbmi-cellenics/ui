@@ -29,7 +29,7 @@ Is all relevant documentation updated to reflect the proposed changes in this PR
 
 ### Approvers
 - [ ] Approved by a member of the core engineering team
-- [ ] (UX changes) Approved by @vickymorrison
+- [ ] (UX changes) Approved by vickymorrison (this is her username, tag her if you need approval)
 
 ### Just before merging:
 - [ ] After the PR is approved, the `unstage` script in here: https://github.com/biomage-ltd/biomage-utils is executed. This script cleans up your deployment to staging
