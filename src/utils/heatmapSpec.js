@@ -12,34 +12,30 @@ const spec = {
       copy: true,
     },
     {
+      name: 'trackOrder',
+      values: [],
+    },
+    {
       name: 'heatmapData',
       values: [],
     },
+    {
+      name: 'trackColorData',
+      values: [],
+    },
+    {
+      name: 'trackGroupData',
+      values: [],
+    },
+
   ],
   signals: [
     {
       name: 'mouseOver',
       on: [
-        { events: 'rect:mouseover', encode: 'mouseOver' },
+        { events: 'rect:mouseover{250}', encode: 'mouseOver' },
       ],
       react: false,
-    },
-    {
-      name: 'hoveroverembedding',
-      bind: {
-        input: 'text',
-        id: 'cellNameInput',
-        element: '#heatmapHoverBox',
-      },
-
-    },
-    {
-      name: 'hoveroverembeddingGene',
-      bind: {
-        input: 'text',
-        id: 'geneNameInput',
-        element: '#heatmapHoverBox',
-      },
     },
   ],
   scales: [
@@ -62,6 +58,48 @@ const spec = {
       range: 'height',
     },
     {
+      name: 'yTrack',
+      type: 'band',
+      domain: {
+        data: 'trackOrder',
+        field: 'data',
+      },
+      paddingInner: 0.25,
+      paddingOuter: 0.5,
+      range: {
+        step: -20,
+      },
+    },
+
+    // Converts a cluster key (e.g. louvain-1) to its name (Cluster 1).
+    {
+      name: 'clusterKeyToName',
+      type: 'ordinal',
+      domain: {
+        data: 'trackGroupData',
+        field: 'key',
+      },
+      range: {
+        data: 'trackGroupData',
+        field: 'name',
+      },
+    },
+
+    // Converts a track key (e.g. louvain) to its name (Louvain clusters).
+    {
+      name: 'trackKeyToTrackName',
+      type: 'ordinal',
+      domain: {
+        data: 'trackGroupData',
+        field: 'track',
+      },
+      range: {
+        data: 'trackGroupData',
+        field: 'trackName',
+      },
+    },
+
+    {
       name: 'color',
       type: 'linear',
       range: {
@@ -76,6 +114,20 @@ const spec = {
     },
   ],
   axes: [
+    {
+      orient: 'left',
+      scale: 'yTrack',
+      domain: false,
+      encode: {
+        labels: {
+          update: {
+            text: {
+              signal: 'scale("trackKeyToTrackName", datum.value)',
+            },
+          },
+        },
+      },
+    },
     // Enable for debugging.
     // {
     //   orient: 'bottom',
@@ -103,11 +155,46 @@ const spec = {
     {
       type: 'rect',
       from: {
+        data: 'trackColorData',
+      },
+      encode: {
+        enter: {
+          cursor: { value: 'cell' },
+          tooltip: { signal: '{"Cell ID": datum.cellId, "Group name": scale("clusterKeyToName", datum.key)}' },
+          x: {
+            scale: 'x',
+            field: 'cellId',
+          },
+          y: {
+            scale: 'yTrack',
+            field: 'track',
+          },
+          width: {
+            scale: 'x',
+            band: 1,
+          },
+          height: {
+            scale: 'yTrack',
+            band: 1,
+          },
+          opacity: {
+            value: 1,
+          },
+        },
+        update: {
+          fill: { field: 'color' },
+        },
+      },
+    },
+    {
+      type: 'rect',
+      from: {
         data: 'heatmapData',
       },
       encode: {
         enter: {
           cursor: { value: 'cell' },
+          tooltip: { signal: '{"Cell ID": datum.cellId, "Gene name": datum.gene, "Expression": format(datum.expression, ",.3f") }' },
           x: {
             scale: 'x',
             field: 'cellId',

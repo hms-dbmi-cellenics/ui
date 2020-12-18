@@ -6,7 +6,7 @@ import './Heatmap.module.css';
 
 const VegaHeatmap = (props) => {
   const {
-    spec, showAxes, rowsNumber, defaultWidth, signalListeners, data, width, height,
+    spec, showAxes, rowsNumber, signalListeners, data, width, height,
   } = props;
 
   const axes = [
@@ -18,21 +18,12 @@ const VegaHeatmap = (props) => {
   ];
 
   const getAdjustedHeight = () => {
-    const maxHeight = 400;
     const minHeightPerGene = 6;
     const heightPerGene = 30 - rowsNumber / 2;
-    if (heightPerGene < minHeightPerGene || heightPerGene * rowsNumber > maxHeight) {
-      return maxHeight;
+    if (heightPerGene < minHeightPerGene || heightPerGene * rowsNumber > height) {
+      return height;
     }
     return heightPerGene * rowsNumber;
-  };
-
-  const getAdjustedWidth = () => {
-    if (showAxes) {
-      return defaultWidth - 150;
-    }
-
-    return defaultWidth - 100;
   };
 
   const getAxes = () => {
@@ -44,8 +35,9 @@ const VegaHeatmap = (props) => {
 
   const vegaSpec = {
     ...spec,
-    height: getAdjustedHeight(),
-    width: getAdjustedWidth(),
+    width: width * 0.98,
+    height: getAdjustedHeight() * 0.9,
+    autosize: { type: 'fit' },
     axes: [...spec.axes, ...getAxes()],
     data: spec.data.map((datum) => ({
       ...datum,
@@ -57,12 +49,6 @@ const VegaHeatmap = (props) => {
     <Element
       className='element'
       id='heatmap-container'
-      style={{
-        position: 'relative',
-        height: `${height - 40}px`,
-        width: `${width - 8}px`,
-        overflow: 'scroll',
-      }}
     >
       <Vega
         spec={vegaSpec}
@@ -82,7 +68,6 @@ VegaHeatmap.propTypes = {
   showAxes: PropTypes.bool,
   rowsNumber: PropTypes.number.isRequired,
   data: PropTypes.object.isRequired,
-  defaultWidth: PropTypes.number.isRequired,
   signalListeners: PropTypes.object.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
