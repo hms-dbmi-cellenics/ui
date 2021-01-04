@@ -182,7 +182,7 @@ const HeatmapSettings = () => {
           <br />
           and click
           {' '}
-          {targetKeys.length === 0 ? 'Show' : 'Hide'}
+          {targetKeys.length === 0 ? '>' : '<'}
           {' '}
           to
           <br />
@@ -212,7 +212,6 @@ const HeatmapSettings = () => {
             <Transfer
               dataSource={dataSource}
               locale={renderEmptyState(targetKeys)}
-              operations={['Show', 'Hide']}
               render={renderTransferLabel}
               listStyle={{
                 width: 'auto',
