@@ -25,7 +25,7 @@ const ComponentActions = (props) => {
     let newGenes = _.cloneDeep(selectedGenes);
 
     if (genesOperation === geneOperations.ADD && displayedGenes) {
-      newGenes = Array.from(new Set(selectedGenes.concat(displayedGenes)));
+      newGenes = Array.from(new Set(displayedGenes.concat(selectedGenes)));
     }
     if (genesOperation === geneOperations.REMOVE && displayedGenes) {
       newGenes = displayedGenes.filter((gene) => !selectedGenes.includes(gene));
