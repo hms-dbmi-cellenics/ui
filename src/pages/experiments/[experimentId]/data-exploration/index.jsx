@@ -14,7 +14,6 @@ import Embedding from './components/embedding/Embedding';
 import HeatmapPlot from './components/heatmap/HeatmapPlot';
 import HeatmapSettings from './components/heatmap/HeatmapSettings';
 import { updateLayout } from '../../../../redux/actions/layout';
-import { setCellInfoFocus } from '../../../../redux/actions/cellInfo';
 import getApiEndpoint from '../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../utils/cacheRequest';
 import PreloadContent from '../../../../components/PreloadContent';
@@ -40,22 +39,12 @@ const ExplorationViewPage = () => {
   const router = useRouter();
   const { experimentId } = router.query;
   const layout = useSelector((state) => state.layout);
-  const embeddingState = useSelector((state) => state.embeddings)
-  const cellSetsState = useSelector((state) => state.cellSets)
   const { windows, panel } = layout;
   const [selectedTab, setSelectedTab] = useState(panel);
 
   useEffect(() => {
     setSelectedTab(panel);
-
-    // Toggle Louvain color when embedding and cellSets finish loading
-    if(embeddingState.umap !== undefined) {
-      if(!embeddingState.umap.loading && !cellSetsState.loading) {
-        dispatch(setCellInfoFocus(experimentId,'cellSets', 'louvain'))
-      }
-    }
-
-  }, [panel, embeddingState, cellSetsState]);
+  }, [panel]);
 
   const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
 

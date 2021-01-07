@@ -23,8 +23,8 @@ Object {
   "cellName": "C1",
   "expression": 1,
   "focus": Object {
-    "key": null,
-    "store": null,
+    "key": "louvain",
+    "store": "cellSets",
   },
   "geneName": "G1",
 }
