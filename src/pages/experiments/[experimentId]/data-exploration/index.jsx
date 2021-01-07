@@ -79,7 +79,7 @@ const ExplorationViewPage = () => {
         </Tabs>
       ),
     },
-    'Cell sets': {
+    'Data Management': {
       toolbarControls: [<RemoveButton />],
       component: (width, height) => <CellSetsTool experimentId={experimentId} width={width} height={height} />,
     },

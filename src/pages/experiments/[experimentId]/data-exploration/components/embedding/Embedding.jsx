@@ -199,7 +199,7 @@ const Embedding = (props) => {
       return (
         <div>
           <label htmlFor='cell set name'>
-            <strong>{cellSetProperties[focusData.key].name}</strong>
+            <strong>{cellSetProperties[focusData.key] ? cellSetProperties[focusData.key].name : ''}</strong>
           </label>
         </div>
       );

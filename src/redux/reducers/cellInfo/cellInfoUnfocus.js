@@ -1,9 +1,8 @@
-import initialState from './initialState';
-
 const cellInfoUnfocus = (state) => ({
   ...state,
   focus: {
-    ...initialState.focus,
+    store: null,
+    key: null,
   },
 });
 

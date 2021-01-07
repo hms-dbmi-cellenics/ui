@@ -1,7 +1,7 @@
 const initialState = {
   focus: {
-    store: null,
-    key: null,
+    store: 'cellSets',
+    key: 'louvain',
   },
 };
 
