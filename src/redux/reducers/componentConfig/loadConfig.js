@@ -1,4 +1,4 @@
-const loadConfig = (state, action) => {
+const loadPlotConfig = (state, action) => {
   const { plotUuid, ...rest } = action.payload;
   return {
     ...state,
@@ -10,4 +10,4 @@ const loadConfig = (state, action) => {
   };
 };
 
-export default loadConfig;
+export default loadPlotConfig;

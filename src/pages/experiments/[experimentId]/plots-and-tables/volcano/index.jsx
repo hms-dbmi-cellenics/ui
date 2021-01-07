@@ -31,7 +31,7 @@ import isBrowser from '../../../../../utils/environment';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/plots/index';
+} from '../../../../../redux/actions/componentConfig/index';
 import loadDifferentialExpression from '../../../../../redux/actions/loadDifferentialExpression';
 import PlatformError from '../../../../../components/PlatformError';
 

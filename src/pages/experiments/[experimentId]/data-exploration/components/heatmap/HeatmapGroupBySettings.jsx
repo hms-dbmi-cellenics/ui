@@ -1,11 +1,11 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Radio } from 'antd';
-import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
+import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 
 const HeatmapGroupBySettings = () => {
   const dispatch = useDispatch();
-  const groupedTrack = useSelector((state) => state.cellInfo.groupedTrack);
+  const groupedTrack = useSelector((state) => state.plots.interactiveHeatmap.config.groupedTrack);
 
   const cellSets = useSelector((state) => state.cellSets);
 
@@ -34,7 +34,7 @@ const HeatmapGroupBySettings = () => {
       <Radio.Group
         value={groupedTrack}
         onChange={({ target }) => dispatch(
-          updateCellInfo({
+          updatePlotConfig('interactiveHeatmap', {
             groupedTrack: target.value,
           }),
         )}

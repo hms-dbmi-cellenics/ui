@@ -1,4 +1,4 @@
-import { SAVE_PLOT_CONFIG } from '../../actionTypes/plots';
+import { SAVE_CONFIG } from '../../actionTypes/componentConfig';
 import getApiEndpoint from '../../../utils/apiEndpoint';
 
 const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) => {
@@ -15,7 +15,7 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
   );
   const { lastUpdated } = await response.json();
   dispatch({
-    type: SAVE_PLOT_CONFIG,
+    type: SAVE_CONFIG,
     payload:
       { plotUuid, lastUpdated },
   });

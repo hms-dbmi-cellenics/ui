@@ -12,6 +12,7 @@ import VegaHeatmap from './VegaHeatmap';
 import PlatformError from '../../../../../../components/PlatformError';
 import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+import { loadComponentConfig } from '../../../../../../redux/actions/componentConfig';
 
 import { union } from '../../../../../../utils/cellSetOperations';
 
@@ -37,8 +38,8 @@ const HeatmapPlot = (props) => {
   const properties = useSelector((state) => state.cellSets.properties);
   const hidden = useSelector((state) => state.cellSets.hidden);
 
-  const selectedTracks = useSelector((state) => state.cellInfo.selectedTracks);
-  const groupedTrack = useSelector((state) => state.cellInfo.groupedTrack);
+  const heatmapSettings = useSelector((state) => state.plots.interactiveHeatmap?.config) || {};
+  const { selectedTracks, groupedTrack } = heatmapSettings;
 
   const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
@@ -48,6 +49,14 @@ const HeatmapPlot = (props) => {
   const setDataDebounce = useCallback(_.debounce((data) => {
     setVegaData(data);
   }, 1500, { leading: true }), []);
+
+  useEffect(() => {
+    if (!_.isEmpty(heatmapSettings)) {
+      return;
+    }
+
+    dispatch(loadComponentConfig(experimentId, 'interactiveHeatmap', 'interactiveHeatmap'));
+  }, [heatmapSettings]);
 
   useEffect(() => {
     if (!selectedGenes || selectedGenes.length === 0) {

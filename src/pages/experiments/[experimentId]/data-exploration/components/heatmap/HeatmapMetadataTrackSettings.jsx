@@ -10,13 +10,13 @@ import {
 import {
   Button, Space, Switch,
 } from 'antd';
-import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
+import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 
 const HeatmapMetadataTrackSettings = () => {
   const dispatch = useDispatch();
 
   const cellSets = useSelector((state) => state.cellSets);
-  const selectedTracks = useSelector((state) => state.cellInfo.selectedTracks);
+  const selectedTracks = useSelector((state) => state.plots.interactiveHeatmap.config.selectedTracks);
 
   const [trackData, setTrackData] = useState([]);
 
@@ -40,7 +40,7 @@ const HeatmapMetadataTrackSettings = () => {
     }
 
     dispatch(
-      updateCellInfo({
+      updatePlotConfig('interactiveHeatmap', {
         selectedTracks: trackData.filter((o) => o.selected).map((o) => o.key),
       }),
     );

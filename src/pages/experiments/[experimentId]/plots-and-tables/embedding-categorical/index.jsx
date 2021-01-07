@@ -26,7 +26,7 @@ import LabelsDesign from '../components/LabelsDesign';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/plots/index';
+} from '../../../../../redux/actions/componentConfig/index';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import Header from '../components/Header';
 import PlatformError from '../../../../../components/PlatformError';

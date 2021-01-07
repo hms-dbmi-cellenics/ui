@@ -172,6 +172,12 @@ const frequencyInitialConfig = {
   selectedCellSet: 'louvain',
   testVar: null,
 };
+
+const interactiveHeatmapInitialConfig = {
+  selectedTracks: ['louvain'],
+  groupedTrack: 'louvain',
+};
+
 const initialPlotConfigStates = {
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
@@ -180,7 +186,11 @@ const initialPlotConfigStates = {
   frequency: frequencyInitialConfig,
 };
 
+const initialComponentConfigStates = {
+  interactiveHeatmap: interactiveHeatmapInitialConfig,
+};
+
 const initialState = {};
 
 export default initialState;
-export { initialPlotConfigStates };
+export { initialPlotConfigStates, initialComponentConfigStates };

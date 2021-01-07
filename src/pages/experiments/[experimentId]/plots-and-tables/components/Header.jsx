@@ -10,13 +10,13 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import { useBeforeunload } from 'react-beforeunload';
-import { savePlotConfig } from '../../../../../redux/actions/plots/index';
+import { savePlotConfig } from '../../../../../redux/actions/componentConfig/index';
 import itemRender from '../../../../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../../utils/cacheRequest';
 import FeedbackButton from '../../../../../components/FeedbackButton';
-import { LOAD_PLOT_CONFIG } from '../../../../../redux/actionTypes/plots';
-import { initialPlotConfigStates } from '../../../../../redux/reducers/plots/initialState';
+import { LOAD_CONFIG } from '../../../../../redux/actionTypes/componentConfig';
+import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
 const KeyboardEventHandler = dynamic(
   () => import('react-keyboard-event-handler'),
@@ -117,7 +117,7 @@ const Header = (props) => {
 
   const onClickReset = () => {
     dispatch({
-      type: LOAD_PLOT_CONFIG,
+      type: LOAD_CONFIG,
       payload: {
         experimentId,
         plotUuid,
