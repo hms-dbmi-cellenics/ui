@@ -160,6 +160,7 @@ const CellSetsTool = (props) => {
               onHierarchyUpdate={onHierarchyUpdate}
               defaultExpandAll
               showHideButton
+              defaultCheckedKeys={selected}
             />
           </TabPane>
           <TabPane tab='Metadata' key='metadataCategorical'>
@@ -174,6 +175,7 @@ const CellSetsTool = (props) => {
                 onHierarchyUpdate={onHierarchyUpdate}
                 defaultExpandAll
                 showHideButton
+                defaultCheckedKeys={selected}
               />
             )
               : (

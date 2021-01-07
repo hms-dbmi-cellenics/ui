@@ -192,33 +192,23 @@ describe('HierarchicalTree', () => {
     expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(0);
   });
 
-  it('when no tree data, no keys are checked by default', () => {
-    const treeData = [];
+  it('tree data is not checked by default', () => {
+    const treeData = [{ key: 'louvain' }];
     const mockOnCheck = jest.fn();
     mount(
-      <HierarchicalTree treeData={treeData} onCheck={mockOnCheck} />,
+      <HierarchicalTree treeData={treeData} onCheck={mockOnCheck}/>,
     );
     expect(mockOnCheck).toHaveBeenCalledTimes(0);
   });
 
-  it('correct keys in tree data with no children are checked by default', () => {
-    const treeData = [{ key: 'louvain' }];
-    const mockOnCheck = jest.fn();
-    mount(
-      <HierarchicalTree treeData={treeData} onCheck={mockOnCheck} />,
-    );
-    expect(mockOnCheck).toHaveBeenCalledTimes(1);
-    expect(mockOnCheck).toHaveBeenCalledWith(['louvain']);
-  });
-
-  it('correct keys in tree data with children are checked by default', () => {
+  it('tree data can be checked by default by passing defaultCheckedKeys prop', () => {
     const treeData = [
       { key: 'louvain', children: [{ key: 'one' }, { key: 'two' }, { key: 'three' }] },
       { key: 'another-set', children: [{ key: 'four' }, { key: 'five' }, { key: 'six' }] },
     ];
     const mockOnCheck = jest.fn();
     mount(
-      <HierarchicalTree treeData={treeData} onCheck={mockOnCheck} />,
+      <HierarchicalTree treeData={treeData} defaultCheckedKeys={['louvain', 'one', 'two', 'three']} onCheck={mockOnCheck} />,
     );
     expect(mockOnCheck).toHaveBeenCalledTimes(1);
     expect(mockOnCheck).toHaveBeenCalledWith(['louvain', 'one', 'two', 'three']);

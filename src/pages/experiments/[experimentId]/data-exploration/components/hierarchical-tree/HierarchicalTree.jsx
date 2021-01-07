@@ -19,6 +19,7 @@ const HierarchicalTree = (props) => {
   const {
     onCheck: propOnCheck,
     onNodeUpdate: propOnNodeUpdate,
+    defaultCheckedKeys: propDefaultCheckedKeys,
     treeData,
     store,
     experimentId,
@@ -27,17 +28,7 @@ const HierarchicalTree = (props) => {
   } = props;
 
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-
-  // by default, the first entry of treeData and all its children is checked
-  const getDefaultCheckedKeys = () => {
-    if (!treeData || treeData.length === 0) return [];
-    const chKeys = [treeData[0].key];
-    if (!treeData[0].children) return chKeys;
-    treeData[0].children.filter((child) => chKeys.push(child.key));
-    return chKeys;
-  };
-
-  const [checkedKeys, setCheckedKeys] = useState(getDefaultCheckedKeys());
+  const [checkedKeys, setCheckedKeys] = useState(propDefaultCheckedKeys);
 
   useEffect(() => {
     if (checkedKeys.length > 0) {
