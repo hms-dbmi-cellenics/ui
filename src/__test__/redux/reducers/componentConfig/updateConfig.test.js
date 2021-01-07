@@ -2,7 +2,7 @@ import _ from 'lodash';
 import updateReducer from '../../../../redux/reducers/componentConfig/updateConfig';
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import { UPDATE_CONFIG, LOAD_CONFIG } from '../../../../redux/actionTypes/componentConfig';
-import loadReducer from '../../../../redux/reducers/componentConfig/loadPlotConfig';
+import loadReducer from '../../../../redux/reducers/componentConfig/loadConfig';
 
 describe('updateConfig', () => {
   it('Checking if fields changed', () => {

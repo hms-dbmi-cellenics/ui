@@ -48,7 +48,7 @@ const VolcanoPlot = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const { loading, data, error } = useSelector(
     (state) => state.differentialExpression.properties,
   );

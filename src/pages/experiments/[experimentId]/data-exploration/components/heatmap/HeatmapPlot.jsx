@@ -38,7 +38,7 @@ const HeatmapPlot = (props) => {
   const properties = useSelector((state) => state.cellSets.properties);
   const hidden = useSelector((state) => state.cellSets.hidden);
 
-  const heatmapSettings = useSelector((state) => state.plots.interactiveHeatmap?.config) || {};
+  const heatmapSettings = useSelector((state) => state.componentConfig.interactiveHeatmap?.config) || {};
   const { selectedTracks, groupedTrack } = heatmapSettings;
 
   const { error } = expressionData;

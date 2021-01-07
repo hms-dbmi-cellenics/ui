@@ -5,7 +5,7 @@ import { updatePlotConfig } from '../../../../../../redux/actions/componentConfi
 
 const HeatmapGroupBySettings = () => {
   const dispatch = useDispatch();
-  const groupedTrack = useSelector((state) => state.plots.interactiveHeatmap.config.groupedTrack);
+  const groupedTrack = useSelector((state) => state.componentConfig.interactiveHeatmap.config.groupedTrack);
 
   const cellSets = useSelector((state) => state.cellSets);
 

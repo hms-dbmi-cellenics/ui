@@ -47,7 +47,7 @@ const EmbeddingContinuousPlot = () => {
   const selectedGene = useRef(defaultShownGene);
 
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expressionLoading = useSelector(
     (state) => state.genes.expression.loading,
   );

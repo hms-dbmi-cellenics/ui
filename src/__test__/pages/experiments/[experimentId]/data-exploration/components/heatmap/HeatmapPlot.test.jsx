@@ -77,6 +77,7 @@ const initialState = {
     hidden: new Set([5]),
   },
   cellInfo: {},
+  componentConfig: {},
 };
 
 describe('HeatmapPlot', () => {

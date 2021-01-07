@@ -50,7 +50,7 @@ const route = {
 
 const EmbeddingCategoricalPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 

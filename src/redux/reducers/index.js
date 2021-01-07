@@ -6,7 +6,7 @@ import embeddingsReducer from './embeddings';
 import genesReducer from './genes';
 import differentialExpressionReducer from './differentialExpression';
 import layoutReducer from './layout/layout';
-import plotsReducer from './componentConfig/index';
+import componentConfigReducer from './componentConfig/index';
 import cellInfoReducer from './cellInfo';
 
 export default combineReducers({
@@ -17,5 +17,5 @@ export default combineReducers({
   differentialExpression: differentialExpressionReducer,
   cellInfo: cellInfoReducer,
   layout: layoutReducer,
-  plots: plotsReducer,
+  componentConfig: componentConfigReducer,
 });

@@ -34,7 +34,7 @@ const plotType = 'heatmap';
 
 const HeatmapPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const { loading, error, data: expressionData } = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
 

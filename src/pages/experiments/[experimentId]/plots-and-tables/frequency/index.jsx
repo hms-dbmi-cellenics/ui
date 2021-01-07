@@ -38,7 +38,7 @@ const route = {
 
 const frequencyPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { loading, error } = cellSets;
   const { hierarchy, properties } = cellSets;

@@ -16,7 +16,7 @@ const HeatmapMetadataTrackSettings = () => {
   const dispatch = useDispatch();
 
   const cellSets = useSelector((state) => state.cellSets);
-  const selectedTracks = useSelector((state) => state.plots.interactiveHeatmap.config.selectedTracks);
+  const selectedTracks = useSelector((state) => state.componentConfig.interactiveHeatmap.config.selectedTracks);
 
   const [trackData, setTrackData] = useState([]);
 
