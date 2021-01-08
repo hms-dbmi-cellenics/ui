@@ -16,6 +16,8 @@ import { loadComponentConfig } from '../../../../../../redux/actions/componentCo
 
 import { union } from '../../../../../../utils/cellSetOperations';
 
+import { COMPONENT_TYPE } from './index';
+
 const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
@@ -23,12 +25,10 @@ const HeatmapPlot = (props) => {
     experimentId, width, height,
   } = props;
 
-  const componentType = 'Heatmap';
-
   const dispatch = useDispatch();
 
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
-  const selectedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
+  const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
   const [vegaData, setVegaData] = useState(null);
 
   const expressionData = useSelector((state) => state.genes.expression);
@@ -42,7 +42,7 @@ const HeatmapPlot = (props) => {
   const { selectedTracks, groupedTrack } = heatmapSettings;
 
   const { error } = expressionData;
-  const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
+  const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
   const [maxCells, setMaxCells] = useState(1000);
 
@@ -300,7 +300,7 @@ const HeatmapPlot = (props) => {
       <PlatformError
         description={error}
         onClick={() => {
-          dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
+          dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
         }}
       />
     );

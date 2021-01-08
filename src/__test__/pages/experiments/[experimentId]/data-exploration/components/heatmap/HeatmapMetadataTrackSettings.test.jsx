@@ -4,8 +4,8 @@ import { Provider } from 'react-redux';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import { Radio } from 'antd';
-import HeatmapGroupBySettings from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/HeatmapGroupBySettings';
+import { Switch } from 'antd';
+import HeatmapMetadataTrackSettings from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/HeatmapMetadataTrackSettings';
 
 import { UPDATE_CONFIG } from '../../../../../../../redux/actionTypes/componentConfig';
 
@@ -28,6 +28,9 @@ const initialState = {
           },
           {
             key: 'louvain-1',
+          },
+          {
+            key: 'louvain-2',
           },
         ],
       },
@@ -55,6 +58,10 @@ const initialState = {
       'louvain-1': {
         name: 'louvain 1',
         cellIds: [1, 2, 3],
+      },
+      'louvain-2': {
+        name: 'louvain 2',
+        cellIds: [9, 11, 13],
       },
       sample: {
         type: 'metadataCategorical',
@@ -93,47 +100,61 @@ describe('HeatmapGroupBySettings', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapGroupBySettings experimentId='123' />
+        <HeatmapMetadataTrackSettings experimentId='123' />
       </Provider>,
     );
 
     // Should be rendered.
-    expect(component.find('HeatmapGroupBySettings').length).toEqual(1);
+    expect(component.find('HeatmapMetadataTrackSettings').length).toEqual(1);
 
-    // With two buttons.
-    const buttons = component.find('Radio');
-    expect(buttons.length).toEqual(2);
+    // With four buttons.
+    const buttons = component.find('Button');
+    expect(buttons.length).toEqual(4);
 
-    // With the right keys.
-    expect(buttons.at(0).props().value).toEqual('louvain');
-    expect(buttons.at(1).props().value).toEqual('sample');
+    // With two switches.
+    const switches = component.find(Switch);
+    expect(switches.length).toEqual(2);
 
-    // The selected one should be `sample`.
-    expect(component.find(Radio.Group).props().value).toEqual('sample');
+    // The first rendered button should be disabled.
+    expect(buttons.at(0).props().disabled).toEqual(true);
+
+    // The last rendered button should be disabled.
+    expect(buttons.at(buttons.length - 1).props().disabled).toEqual(true);
   });
 
-  it('clicking on the other button will trigger the appropriate action', async () => {
+  it('order and shown tracks are changed when the switches and the buttons are pressed', () => {
     const store = mockStore({
       ...initialState,
     });
 
     component = mount(
       <Provider store={store}>
-        <HeatmapGroupBySettings experimentId='123' width={200} height={200} />
+        <HeatmapMetadataTrackSettings experimentId='123' />
       </Provider>,
     );
 
-    // Should be rendered.
-    expect(component.find('HeatmapGroupBySettings').length).toEqual(1);
+    expect(store.getActions().length).toEqual(1);
 
-    // When a separate group by is selected...
-    const { onChange } = component.find(Radio.Group).props();
-    onChange({ target: { value: 'louvain' } });
+    // Get switches and click on second one.
+    const switches = component.find(Switch);
+    switches.at(1).simulate('click');
 
     // The store should update.
-    expect(store.getActions().length).toEqual(1);
-    const action = store.getActions()[0];
+    expect(store.getActions().length).toEqual(2);
+    const action = store.getActions()[1];
     expect(action.type).toBe(UPDATE_CONFIG);
     expect(action).toMatchSnapshot();
+
+    // Get buttons.
+    const buttons = component.find('Button');
+
+    // Press the down button in the first row.
+    buttons.at(1).simulate('click');
+
+    // The store should update.
+    expect(store.getActions().length).toEqual(3);
+    const reorderAction = store.getActions()[2];
+    expect(reorderAction.type).toBe(UPDATE_CONFIG);
+    expect(reorderAction).toMatchSnapshot();
   });
 });
