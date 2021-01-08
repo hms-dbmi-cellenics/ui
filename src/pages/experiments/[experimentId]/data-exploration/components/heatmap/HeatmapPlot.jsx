@@ -16,8 +16,7 @@ import { loadComponentConfig } from '../../../../../../redux/actions/componentCo
 
 import { union } from '../../../../../../utils/cellSetOperations';
 
-import { COMPONENT_TYPE } from './componentType';
-
+const COMPONENT_TYPE = 'InteractiveHeatmap';
 const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
@@ -331,3 +330,5 @@ HeatmapPlot.propTypes = {
 };
 
 export default HeatmapPlot;
+
+export { COMPONENT_TYPE };
