@@ -1,8 +1,8 @@
-import { UPDATE_PLOT_CONFIG } from '../../actionTypes/plots';
+import { UPDATE_CONFIG } from '../../actionTypes/componentConfig';
 
 const updatePlotConfig = (plotUuid, configChange) => (dispatch) => {
   dispatch({
-    type: UPDATE_PLOT_CONFIG,
+    type: UPDATE_CONFIG,
     payload:
       { plotUuid, configChange },
   });

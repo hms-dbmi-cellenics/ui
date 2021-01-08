@@ -11,7 +11,7 @@ import ColourbarDesign from '../components/ColourbarDesign';
 import LegendEditorSpecial from './components/LegendEditorSpecial';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
-import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/plots/index';
+import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
 import Header from '../components/Header';
 import generateSpec from '../../../../../utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression } from '../../../../../redux/actions/genes';
@@ -34,7 +34,7 @@ const plotType = 'heatmap';
 
 const HeatmapPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const { loading, error, data: expressionData } = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
 

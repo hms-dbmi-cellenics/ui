@@ -86,7 +86,7 @@ const ExplorationViewPage = () => {
   };
 
   if (error) {
-    if (error.payload == undefined) {
+    if (error.payload === undefined) {
       return <Error statusCode='You are not connected to the backend.' />;
     }
     const { status } = error.payload;
@@ -120,7 +120,7 @@ const ExplorationViewPage = () => {
               )}
             </ReactResizeDetector>
           )}
-          onChange={(changedLayout) => {
+          onRelease={(changedLayout) => {
             dispatch(updateLayout(changedLayout));
           }}
           initialValue={windows}

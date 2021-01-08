@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HeatmapGroupBySettings clicking on the other button will trigger the appropriate action 1`] = `
+Object {
+  "payload": Object {
+    "configChange": Object {
+      "groupedTrack": "louvain",
+    },
+    "plotUuid": "interactiveHeatmap",
+  },
+  "type": "componentConfig/update",
+}
+`;

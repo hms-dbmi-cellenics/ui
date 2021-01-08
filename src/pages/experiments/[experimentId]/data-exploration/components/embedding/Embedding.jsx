@@ -38,7 +38,6 @@ const Embedding = (props) => {
     experimentId, embeddingType, height, width,
   } = props;
 
-  const componentType = 'Embedding';
   const dispatch = useDispatch();
 
   const view = { target: [4, -4, 0], zoom: 4.00 };

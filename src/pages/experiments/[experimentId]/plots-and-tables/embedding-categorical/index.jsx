@@ -26,7 +26,7 @@ import LabelsDesign from '../components/LabelsDesign';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/plots/index';
+} from '../../../../../redux/actions/componentConfig/index';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import Header from '../components/Header';
 import PlatformError from '../../../../../components/PlatformError';
@@ -50,7 +50,7 @@ const route = {
 
 const EmbeddingCategoricalPlot = () => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 

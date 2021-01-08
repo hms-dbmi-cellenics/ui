@@ -1,6 +1,6 @@
-import loadReducer from '../../../../redux/reducers/plots/loadConfig';
+import loadReducer from '../../../../redux/reducers/componentConfig/loadConfig';
 
-describe('loadConfig', () => {
+describe('loadPlotConfig', () => {
   it('Config loaded', () => {
     const newState = loadReducer({}, {
       payload: {
