@@ -46,6 +46,7 @@ const complement = (listOfSets, properties) => {
     (acc, curr) => new Set([...acc, ...curr]),
   );
 
+  // All cells are assumed to be included in at least 1 cluster
   const complementSet = Object.values(properties).map(
     (cluster) => cluster.cellIds,
   ).filter(
