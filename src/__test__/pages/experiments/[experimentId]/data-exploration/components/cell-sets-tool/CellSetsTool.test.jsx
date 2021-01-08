@@ -154,8 +154,8 @@ describe('CellSetsTool', () => {
 
     const operations = component.find(CellSetOperation);
 
-    // There should be two operations rendered
-    expect(operations.length).toEqual(2);
+    // There should be three operations rendered (union, intersection, complement)
+    expect(operations.length).toEqual(3);
   });
 
   it('cell set operations should work appropriately for unions', () => {
@@ -184,7 +184,7 @@ describe('CellSetsTool', () => {
     component.find('CellSetOperation').forEach((node) => {
       const { helpTitle, onCreate } = node.props();
 
-      if (helpTitle.includes('Combine')) {
+      if (helpTitle.includes('combining')) {
         // found the union operation, now execute the callback
         onCreate('union cluster', '#ff00ff');
         expect(store.getActions().length).toEqual(3);
@@ -233,6 +233,47 @@ describe('CellSetsTool', () => {
         // Should create the appropriate intersection set.
         const createAction = store.getActions()[1];
         expect(createAction.payload.cellIds).toEqual(new Set([2]));
+      }
+    });
+
+    // We should have found the union operation.
+    expect.hasAssertions();
+  });
+
+  it('cell set operations should work appropriately for complement', () => {
+    const store = mockStore(
+      {
+        ...storeState,
+        cellSets: {
+          ...storeState.cellSets,
+          selected: [
+            ...storeState.cellSets.selected, 'scratchpad-a', 'cluster-c',
+          ],
+        },
+      },
+    );
+
+    const component = mount(
+      <Provider store={store}>
+        <CellSetsTool
+          experimentId='1234'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
+
+    component.find('CellSetOperation').forEach((node) => {
+      const { helpTitle, onCreate } = node.props();
+
+      if (helpTitle.includes('complement')) {
+        // found the union operation, now execute the callback
+        onCreate('complement cluster', '#ff00ff');
+        expect(store.getActions().length).toEqual(3);
+
+        // Should create the appropriate intersection set.
+        const createAction = store.getActions()[1];
+        expect(createAction.payload.cellIds).toEqual(new Set([1, 4]));
       }
     });
 
