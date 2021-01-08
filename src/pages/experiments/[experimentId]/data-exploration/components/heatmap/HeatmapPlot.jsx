@@ -16,7 +16,7 @@ import { loadComponentConfig } from '../../../../../../redux/actions/componentCo
 
 import { union } from '../../../../../../utils/cellSetOperations';
 
-import { COMPONENT_TYPE } from './index';
+import { COMPONENT_TYPE } from './componentType';
 
 const { Text } = Typography;
 

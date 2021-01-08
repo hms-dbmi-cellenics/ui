@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import SelectionActions from './SelectionActions';
 import ComponentActions from './ComponentActions';
 
-import { COMPONENT_TYPE } from '../heatmap';
+import { COMPONENT_TYPE } from '../heatmap/componentType';
 
 const GeneSelectionMenu = (props) => {
   const { onExportCSV, experimentId } = props;
