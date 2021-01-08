@@ -184,7 +184,7 @@ describe('CellSetsTool', () => {
     component.find('CellSetOperation').forEach((node) => {
       const { helpTitle, onCreate } = node.props();
 
-      if (helpTitle.includes('Combine')) {
+      if (helpTitle.includes('combining')) {
         // found the union operation, now execute the callback
         onCreate('union cluster', '#ff00ff');
         expect(store.getActions().length).toEqual(3);

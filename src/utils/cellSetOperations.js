@@ -33,4 +33,32 @@ const intersection = (listOfSets, properties) => {
   return intersectionSet;
 };
 
-export { union, intersection };
+const complement = (listOfSets, properties) => {
+  if (!listOfSets) {
+    return new Set();
+  }
+
+  const selectedCells = listOfSets.map(
+    (key) => properties[key]?.cellIds || null,
+  ).filter(
+    (set) => set && set.size > 0,
+  ).reduce(
+    (acc, curr) => new Set([...acc, ...curr]),
+  );
+
+  const complementSet = Object.values(properties).map(
+    (cluster) => cluster.cellIds,
+  ).filter(
+    (set) => set && set.size > 0,
+  ).reduce(
+    (acc, curr) => new Set([...acc, ...curr]),
+  );
+
+  if (selectedCells.size > 0) {
+    selectedCells.forEach((x) => { complementSet.delete(x); });
+  }
+
+  return complementSet;
+};
+
+export { union, intersection, complement };
