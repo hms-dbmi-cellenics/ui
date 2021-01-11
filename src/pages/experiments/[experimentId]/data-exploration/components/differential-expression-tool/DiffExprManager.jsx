@@ -14,10 +14,10 @@ const DiffExprManager = (props) => {
     experimentId, view, width, height,
   } = props;
 
-  const defaultSelected = 'Select a cell set';
   const [selectedCellSets, setSelectedCellSets] = useState({
-    cellSet: defaultSelected,
-    compareWith: defaultSelected,
+    cellSet: null,
+    compareWith: null,
+    basis: null,
   });
 
   const [currentView, setCurrentView] = useState(view);
@@ -47,7 +47,11 @@ const DiffExprManager = (props) => {
     return (
       <DiffExprResults
         onGoBack={onGoBack}
-        cellSets={selectedCellSets}
+        cellSets={{
+          cellSet: selectedCellSets.cellSet.split('/')[1],
+          compareWith: selectedCellSets.compareWith.split('/')[1] || selectedCellSets.compareWith,
+          basis: selectedCellSets.basis.split('/')[1] || selectedCellSets.basis,
+        }}
         experimentId={experimentId}
         width={width}
         height={height}
@@ -66,6 +70,5 @@ DiffExprManager.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };
-
 
 export default DiffExprManager;
