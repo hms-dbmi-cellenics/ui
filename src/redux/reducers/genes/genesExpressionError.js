@@ -10,6 +10,7 @@ const genesExpressionError = (state, action) => {
     ...state,
     expression: {
       ...state.expression,
+      expressionType,
       views: {
         ...state.properties.views,
         [componentUuid]: {
@@ -17,7 +18,6 @@ const genesExpressionError = (state, action) => {
           ...state.expression.views[componentUuid],
           fetching: false,
           error,
-          expressionType,
         },
       },
       loading: _.difference(state.properties.loading, genes),

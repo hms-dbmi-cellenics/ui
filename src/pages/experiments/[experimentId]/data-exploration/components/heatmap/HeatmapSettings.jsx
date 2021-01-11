@@ -7,22 +7,23 @@ import {
 } from 'antd';
 import HeatmapMetadataTrackSettings from './HeatmapMetadataTrackSettings';
 import HeatmapGroupBySettings from './HeatmapGroupBySettings';
+import HeatmapExpressionValuesSettings from './HeatmapExpressionValuesSettings';
 
 const { SubMenu, Item } = Menu;
 
 const HeatmapSettings = () => {
   const renderMenu = () => (
     <Menu size='small'>
-      <Item key='expression-values'>
-        Expression values...
-      </Item>
+      <SubMenu key='expression-values' title='Expression values' icon={<></>}>
+        <HeatmapExpressionValuesSettings />
+      </SubMenu>
       <Item key='toggle-legend' disabled>
         Hide legend
       </Item>
-      <SubMenu key='metadata-tracks' title='Metadata tracks...' icon={<></>}>
+      <SubMenu key='metadata-tracks' title='Metadata tracks' icon={<></>}>
         <HeatmapMetadataTrackSettings />
       </SubMenu>
-      <SubMenu key='group-by' title='Group by...' icon={<></>}>
+      <SubMenu key='group-by' title='Group by' icon={<></>}>
         <HeatmapGroupBySettings />
       </SubMenu>
 

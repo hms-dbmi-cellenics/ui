@@ -10,6 +10,7 @@ const genesExpressionLoaded = (state, action) => {
     ...state,
     expression: {
       ...state.expression,
+      expressionType,
       views: {
         ...state.expression.views,
         [componentUuid]: {
@@ -17,7 +18,6 @@ const genesExpressionLoaded = (state, action) => {
           ...state.expression.views[componentUuid],
           fetching: false,
           error: false,
-          expressionType,
         },
       },
       data: {
