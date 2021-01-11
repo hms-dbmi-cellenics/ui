@@ -4,7 +4,7 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Typography, Tooltip, Radio, Space,
+  Button, Form, Select, Typography, Radio,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -17,12 +17,12 @@ const { Text } = Typography;
 
 const { Option, OptGroup } = Select;
 
+const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
+
 const DiffExprCompute = (props) => {
   const {
-    experimentId, onCompute, cellSets,
+    experimentId, onCompute, cellSets, diffExprType,
   } = props;
-
-  const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
 
   const dispatch = useDispatch();
 
@@ -30,8 +30,7 @@ const DiffExprCompute = (props) => {
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const [isFormValid, setIsFormValid] = useState(false);
   const [selectedGroups, setSelectedGroups] = useState(cellSets);
-
-  const [diffExprType, setDiffExprType] = useState(ComparisonType.between);
+  const [type, setType] = useState(diffExprType || ComparisonType.between);
 
   /**
    * Loads cell set on initial render if it does not already exist in the store.
@@ -39,7 +38,6 @@ const DiffExprCompute = (props) => {
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
-
 
   /**
    * Re-renders the list of selections when the hierarchy or the properties change.
@@ -50,7 +48,17 @@ const DiffExprCompute = (props) => {
     if (hierarchy.length === 0) return;
 
     setSelectedGroups(_.mapValues(selectedGroups, (cellSetKey) => {
-      if (cellSetKey && !properties[cellSetKey]) {
+      if (!cellSetKey) {
+        return null;
+      }
+
+      const splitKey = cellSetKey.split('/')[1];
+
+      if (cellSetKey === 'all' || cellSetKey === 'background' || splitKey === 'rest') {
+        return cellSetKey;
+      }
+
+      if (!properties[splitKey]) {
         return null;
       }
 
@@ -150,6 +158,8 @@ const DiffExprCompute = (props) => {
       }
     };
 
+    console.log(selectedGroups);
+
     return (
       <Form.Item label={title}>
         <Select
@@ -193,13 +203,14 @@ const DiffExprCompute = (props) => {
     <Form size='small' layout='vertical'>
 
       <Radio.Group onChange={(e) => {
-        setDiffExprType(e.target.value);
+        setType(e.target.value);
+
         setSelectedGroups({
           cellSet: null,
           compareWith: null,
           basis: null,
         });
-      }} value={diffExprType}>
+      }} value={type}>
         <Radio style={radioStyle} value={ComparisonType.between}>
           Compare a selected cell set between samples/groups
         </Radio>
@@ -208,7 +219,7 @@ const DiffExprCompute = (props) => {
         </Radio>
       </Radio.Group>
 
-      {diffExprType === ComparisonType.between
+      {type === ComparisonType.between
         ? (
           <>
             {renderClusterSelectorItem({
@@ -268,7 +279,7 @@ const DiffExprCompute = (props) => {
         <Button
           size='small'
           disabled={!isFormValid}
-          onClick={() => onCompute(selectedGroups)}
+          onClick={() => onCompute(diffExprType, selectedGroups)}
         >
           Compute
         </Button>
@@ -278,10 +289,12 @@ const DiffExprCompute = (props) => {
 };
 
 DiffExprCompute.defaultProps = {
+  diffExprType: null,
 };
 
 DiffExprCompute.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  diffExprType: PropTypes.string,
   onCompute: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
 };
