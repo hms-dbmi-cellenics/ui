@@ -13,7 +13,7 @@ const { SubMenu, Item } = Menu;
 const HeatmapSettings = () => {
   const renderMenu = () => (
     <Menu size='small'>
-      <Item key='expression-values' disabled>
+      <Item key='expression-values'>
         Expression values...
       </Item>
       <Item key='toggle-legend' disabled>

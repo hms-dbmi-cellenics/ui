@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { initialViewState } from './initialState';
 
 const genesExpressionLoading = (state, action) => {
-  const { genes, componentUuid } = action.payload;
+  const { genes, componentUuid, expressionType } = action.payload;
 
   return {
     ...state,
@@ -16,6 +16,7 @@ const genesExpressionLoading = (state, action) => {
           fetching: true,
           error: false,
           data: genes,
+          expressionType,
         },
       },
       loading: _.union(state.expression.loading, genes),
