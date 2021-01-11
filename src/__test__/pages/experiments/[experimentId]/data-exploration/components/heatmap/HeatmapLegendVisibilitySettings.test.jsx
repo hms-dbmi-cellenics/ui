@@ -12,7 +12,6 @@ import HeatmapLegendVisibilitySettings from '../../../../../../../pages/experime
 
 const initialState = {
   cellSets: {
-    // cellSets', 'metadataCategorical
     hierarchy: [
       {
         key: 'louvain',
@@ -79,10 +78,6 @@ const initialState = {
 const mockStore = configureMockStore([thunk]);
 configure({ adapter: new Adapter() });
 
-const eventStub = {
-  stopPropagation: () => { },
-};
-
 describe('HeatmapLegendVisibilitySettings', () => {
   let component, store, buttons;
 
@@ -97,8 +92,7 @@ describe('HeatmapLegendVisibilitySettings', () => {
 
     component = mount(
       <Provider store={store}>
-        {/* ask if experimentId='123' width={200} height={200} are necessary in HeatmapGroupBySettings */}
-        <HeatmapLegendVisibilitySettings experimentId='123' width={200} height={200} />
+        <HeatmapLegendVisibilitySettings />
       </Provider>,
     );
   });

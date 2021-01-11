@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Radio } from 'antd';
 import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 
 const HeatmapLegendVisibilitySettings = () => {
   const dispatch = useDispatch();
 
-  const [showLegend, setShowLegend] = useState(true);
+  const heatmapSettings = useSelector((state) => state.componentConfig.interactiveHeatmap?.config) || {};
+
+  const [showLegend, setShowLegend] = useState(heatmapSettings.legendIsVisible);
 
   const radioStyle = {
     display: 'block',
