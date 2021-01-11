@@ -7,6 +7,7 @@ import {
 } from 'antd';
 import HeatmapMetadataTrackSettings from './HeatmapMetadataTrackSettings';
 import HeatmapGroupBySettings from './HeatmapGroupBySettings';
+import HeatmapLegendVisibilitySettings from './HeatmapLegendVisibilitySettings';
 
 const { SubMenu, Item } = Menu;
 
@@ -16,9 +17,9 @@ const HeatmapSettings = () => {
       <Item key='expression-values' disabled>
         Expression values...
       </Item>
-      <Item key='toggle-legend' disabled>
-        Hide legend
-      </Item>
+      <SubMenu key='legend' title='Legend' icon={<></>}>
+        <HeatmapLegendVisibilitySettings />
+      </SubMenu>
       <SubMenu key='metadata-tracks' title='Metadata tracks...' icon={<></>}>
         <HeatmapMetadataTrackSettings />
       </SubMenu>

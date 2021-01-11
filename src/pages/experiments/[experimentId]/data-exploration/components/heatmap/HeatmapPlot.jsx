@@ -38,7 +38,7 @@ const HeatmapPlot = (props) => {
   const hidden = useSelector((state) => state.cellSets.hidden);
 
   const heatmapSettings = useSelector((state) => state.componentConfig.interactiveHeatmap?.config) || {};
-  const { selectedTracks, groupedTrack } = heatmapSettings;
+  const { selectedTracks, groupedTrack, legendIsVisible } = heatmapSettings;
 
   const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
@@ -305,10 +305,13 @@ const HeatmapPlot = (props) => {
     );
   }
 
+  let specCopy = { ...spec };
+  specCopy.legends = legendIsVisible ? spec.legends : [];
+
   return (
     <div>
       <VegaHeatmap
-        spec={spec}
+        spec={specCopy}
         data={vegaData}
         showAxes={selectedGenes?.length <= 30}
         rowsNumber={selectedGenes.length}
