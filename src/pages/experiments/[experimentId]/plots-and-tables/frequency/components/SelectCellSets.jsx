@@ -7,7 +7,6 @@ import {
 
 const SelectCellSets = (props) => {
   const { onUpdate, config, cellSets } = props;
-
   const changeClusters = (val) => {
     onUpdate({ chosenClusters: val.key });
   };
@@ -21,7 +20,6 @@ const SelectCellSets = (props) => {
       return [];
     }
     const options = cellSets.hierarchy.map(({ key }) => ({ value: key }));
-
     const filteredOptions = options.filter((element) => (
       cellSets.properties[element.value].type === type
     ));
@@ -40,6 +38,7 @@ const SelectCellSets = (props) => {
           value={{ key: config.metadata }}
           onChange={(value) => changeMetadata(value)}
           labelInValue
+          disabled={!generateCellOptions('metadataCategorical').length}
           style={{ width: '100%' }}
           placeholder='Select cell set...'
           options={generateCellOptions('metadataCategorical')}
