@@ -90,11 +90,6 @@ const DiffExprCompute = (props) => {
     validateForm();
   }, [selectedGroups]);
 
-  // Erase selection when a different type of comparison is selected.
-  useEffect(() => {
-
-  }, [diffExprType])
-
   /**
    * Updates the selected clusters.
    * @param {string} cellSet The key of the cell set.
