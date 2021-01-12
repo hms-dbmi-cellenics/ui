@@ -101,11 +101,7 @@ const DiffExprCompute = (props) => {
    * @param {string} option The option string (`cellSet` or `compareWith`).
    */
   const onSelectCluster = (cellSet, option) => {
-    console.log({
-      ...selectedGroups,
-      [option]:
-        cellSet,
-    });
+
     setSelectedGroups({
       ...selectedGroups,
       [option]:
@@ -157,8 +153,6 @@ const DiffExprCompute = (props) => {
         });
       }
     };
-
-    console.log(selectedGroups);
 
     return (
       <Form.Item label={title}>
