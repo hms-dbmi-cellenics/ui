@@ -1,13 +1,13 @@
 import _ from 'lodash';
-import updateReducer from '../../../../redux/reducers/plots/updateConfig';
-import { initialPlotConfigStates } from '../../../../redux/reducers/plots/initialState';
-import { UPDATE_PLOT_CONFIG, LOAD_PLOT_CONFIG } from '../../../../redux/actionTypes/plots';
-import loadReducer from '../../../../redux/reducers/plots/loadConfig';
+import updateReducer from '../../../../redux/reducers/componentConfig/updateConfig';
+import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+import { UPDATE_CONFIG, LOAD_CONFIG } from '../../../../redux/actionTypes/componentConfig';
+import loadReducer from '../../../../redux/reducers/componentConfig/loadConfig';
 
 describe('updateConfig', () => {
   it('Checking if fields changed', () => {
     const newState = loadReducer({}, {
-      type: LOAD_PLOT_CONFIG,
+      type: LOAD_CONFIG,
       payload: {
         experimentId: '1234',
         plotUuid: 'volcanoPlotMain',
@@ -15,7 +15,7 @@ describe('updateConfig', () => {
       },
     });
     const updateReturn = updateReducer(newState, {
-      type: UPDATE_PLOT_CONFIG,
+      type: UPDATE_CONFIG,
       payload: {
         configChange: { height: 2000 },
         plotUuid: 'volcanoPlotMain',
@@ -25,7 +25,7 @@ describe('updateConfig', () => {
   });
   it('Checking if empty update doesnt change anything', () => {
     const newState = loadReducer({}, {
-      type: LOAD_PLOT_CONFIG,
+      type: LOAD_CONFIG,
       payload: {
         experimentId: '1234',
         plotUuid: 'embeddingCategoricalMain',
@@ -33,7 +33,7 @@ describe('updateConfig', () => {
       },
     });
     const updateReturn = updateReducer(newState, {
-      type: UPDATE_PLOT_CONFIG,
+      type: UPDATE_CONFIG,
       payload: {
         configChange: {},
         plotUuid: 'embeddingCategoricalMain',

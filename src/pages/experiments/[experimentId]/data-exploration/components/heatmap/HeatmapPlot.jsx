@@ -12,9 +12,11 @@ import VegaHeatmap from './VegaHeatmap';
 import PlatformError from '../../../../../../components/PlatformError';
 import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+import { loadComponentConfig } from '../../../../../../redux/actions/componentConfig';
 
 import { union } from '../../../../../../utils/cellSetOperations';
 
+const COMPONENT_TYPE = 'InteractiveHeatmap';
 const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
@@ -22,12 +24,10 @@ const HeatmapPlot = (props) => {
     experimentId, width, height,
   } = props;
 
-  const componentType = 'Heatmap';
-
   const dispatch = useDispatch();
 
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
-  const selectedGenes = useSelector((state) => state.genes.expression.views[componentType]?.data);
+  const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
   const [vegaData, setVegaData] = useState(null);
 
   const expressionData = useSelector((state) => state.genes.expression);
@@ -37,12 +37,25 @@ const HeatmapPlot = (props) => {
   const properties = useSelector((state) => state.cellSets.properties);
   const hidden = useSelector((state) => state.cellSets.hidden);
 
+  const heatmapSettings = useSelector((state) => state.componentConfig.interactiveHeatmap?.config) || {};
+  const { selectedTracks, groupedTrack } = heatmapSettings;
+
   const { error } = expressionData;
-  const viewError = useSelector((state) => state.genes.expression.views[componentType]?.error);
+  const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
+
+  const [maxCells, setMaxCells] = useState(1000);
 
   const setDataDebounce = useCallback(_.debounce((data) => {
     setVegaData(data);
   }, 1500, { leading: true }), []);
+
+  useEffect(() => {
+    if (!_.isEmpty(heatmapSettings)) {
+      return;
+    }
+
+    dispatch(loadComponentConfig(experimentId, 'interactiveHeatmap', 'interactiveHeatmap'));
+  }, [heatmapSettings]);
 
   useEffect(() => {
     if (!selectedGenes || selectedGenes.length === 0) {
@@ -54,11 +67,31 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    const data = createVegaData(selectedGenes, expressionData);
-    setDataDebounce(data);
-  }, [loadingGenes, hidden, properties, hierarchy]);
+    let trackOrder = [];
 
-  const downsample = (groupBy, max = 1000) => {
+    if (selectedTracks) {
+      trackOrder = Array.from(selectedTracks).reverse();
+    }
+
+    const data = createVegaData(selectedGenes, trackOrder, expressionData);
+    setDataDebounce(data);
+  }, [loadingGenes, hidden, selectedTracks, groupedTrack, maxCells, properties, hierarchy]);
+
+  useEffect(() => {
+    // Set sampler rate back to 1000 if the width is large anough.
+    if (maxCells < 1000 && width >= 1.2 * maxCells) {
+      setMaxCells(1000);
+      return;
+    }
+
+    // Set rate to an appropriate amount when the container width is below the sample rate.
+    if (width <= 1.2 * maxCells) {
+      const sampleRate = Math.floor(Math.min(maxCells * (maxCells / width), 1000));
+      setMaxCells(sampleRate);
+    }
+  }, [width]);
+
+  const downsample = (groupBy) => {
     // Find all hidden cells.
     const hiddenCellIds = union(Array.from(hidden), properties);
 
@@ -92,7 +125,7 @@ const HeatmapPlot = (props) => {
     });
 
     // If we collected less than `max` number of cells, let's go with that.
-    const finalSampleSize = Math.min(total, max);
+    const finalSampleSize = Math.min(total, maxCells);
 
     if (total === 0) {
       return [];
@@ -159,11 +192,9 @@ const HeatmapPlot = (props) => {
     return { trackColorData, groupData };
   };
 
-  const createVegaData = (selected, expression) => {
+  const createVegaData = (selected, trackOrder, expression) => {
     // For now, this is statically defined. In the future, these values are
     // controlled from the settings panel in the heatmap.
-    const trackOrder = ['louvain'];
-    const groupBy = 'louvain';
 
     const data = {
       cellOrder: [],
@@ -175,7 +206,7 @@ const HeatmapPlot = (props) => {
     };
 
     // Do downsampling.
-    data.cellOrder = downsample(groupBy);
+    data.cellOrder = downsample(groupedTrack);
 
     // eslint-disable-next-line no-shadow
     const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
@@ -268,7 +299,7 @@ const HeatmapPlot = (props) => {
       <PlatformError
         description={error}
         onClick={() => {
-          dispatch(loadGeneExpression(experimentId, selectedGenes, componentType));
+          dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
         }}
       />
     );
@@ -299,3 +330,5 @@ HeatmapPlot.propTypes = {
 };
 
 export default HeatmapPlot;
+
+export { COMPONENT_TYPE };

@@ -46,11 +46,11 @@ CardItem.propTypes = {
 };
 
 const PlotsTablesHome = () => {
-  let lastUpdatedVolcano = useSelector((state) => state.plots.volcanoPlotMain?.lastUpdated);
-  let lastUpdatedContinuous = useSelector((state) => state.plots.embeddingContinuousMain?.lastUpdated);
-  let lastUpdatedCategorical = useSelector((state) => state.plots.embeddingCategoricalMain?.lastUpdated);
-  let lastUpdatedHeatmap = useSelector((state) => state.plots.heatmapPlotMain?.lastUpdated);
-  let lastUpdatedFrequency = useSelector((state) => state.plots.frequencyPlotMain?.lastUpdated);
+  let lastUpdatedVolcano = useSelector((state) => state.componentConfig.volcanoPlotMain?.lastUpdated);
+  let lastUpdatedContinuous = useSelector((state) => state.componentConfig.embeddingContinuousMain?.lastUpdated);
+  let lastUpdatedCategorical = useSelector((state) => state.componentConfig.embeddingCategoricalMain?.lastUpdated);
+  let lastUpdatedHeatmap = useSelector((state) => state.componentConfig.heatmapPlotMain?.lastUpdated);
+  let lastUpdatedFrequency = useSelector((state) => state.componentConfig.frequencyPlotMain?.lastUpdated);
   if (!lastUpdatedVolcano) {
     lastUpdatedVolcano = 'never';
   }

@@ -6,6 +6,10 @@ Object {
     "key": "GENE1",
     "store": "genes",
   },
+  "groupedTrack": "louvain",
+  "selectedTracks": Array [
+    "louvain",
+  ],
 }
 `;
 
@@ -15,6 +19,10 @@ Object {
     "key": null,
     "store": null,
   },
+  "groupedTrack": "louvain",
+  "selectedTracks": Array [
+    "louvain",
+  ],
 }
 `;
 
@@ -23,9 +31,13 @@ Object {
   "cellName": "C1",
   "expression": 1,
   "focus": Object {
-    "key": null,
-    "store": null,
+    "key": "louvain",
+    "store": "cellSets",
   },
   "geneName": "G1",
+  "groupedTrack": "louvain",
+  "selectedTracks": Array [
+    "louvain",
+  ],
 }
 `;

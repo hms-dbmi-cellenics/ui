@@ -10,13 +10,13 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import { useBeforeunload } from 'react-beforeunload';
-import { savePlotConfig } from '../../../../../redux/actions/plots/index';
+import { savePlotConfig } from '../../../../../redux/actions/componentConfig/index';
 import itemRender from '../../../../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../../utils/cacheRequest';
 import FeedbackButton from '../../../../../components/FeedbackButton';
-import { LOAD_PLOT_CONFIG } from '../../../../../redux/actionTypes/plots';
-import { initialPlotConfigStates } from '../../../../../redux/reducers/plots/initialState';
+import { LOAD_CONFIG } from '../../../../../redux/actionTypes/componentConfig';
+import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
 const KeyboardEventHandler = dynamic(
   () => import('react-keyboard-event-handler'),
@@ -27,11 +27,11 @@ const Header = (props) => {
   const { experimentId, plotUuid, finalRoute } = props;
 
   const dispatch = useDispatch();
-  const saved = !useSelector((state) => state.plots[plotUuid].outstandingChanges);
-  const lastUpdated = useSelector((state) => state.plots[plotUuid].lastUpdated);
+  const saved = !useSelector((state) => state.componentConfig[plotUuid].outstandingChanges);
+  const lastUpdated = useSelector((state) => state.componentConfig[plotUuid].lastUpdated);
   const router = useRouter();
-  const type = useSelector((state) => state.plots[plotUuid].type);
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const type = useSelector((state) => state.componentConfig[plotUuid].type);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const reset = useRef(true);
 
   if (!_.isEqual(config, initialPlotConfigStates[type])) {
@@ -117,7 +117,7 @@ const Header = (props) => {
 
   const onClickReset = () => {
     dispatch({
-      type: LOAD_PLOT_CONFIG,
+      type: LOAD_CONFIG,
       payload: {
         experimentId,
         plotUuid,

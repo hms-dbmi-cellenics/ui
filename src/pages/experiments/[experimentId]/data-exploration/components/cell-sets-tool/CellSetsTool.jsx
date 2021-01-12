@@ -8,7 +8,7 @@ import {
   Typography, Empty, Button, Alert,
 } from 'antd';
 
-import { MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
+import { BlockOutlined, MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
 
 import { Element, animateScroll } from 'react-scroll';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
@@ -26,7 +26,7 @@ import isBrowser from '../../../../../../utils/environment';
 import messages from '../../../../../../components/notification/messages';
 import PlatformError from '../../../../../../components/PlatformError';
 import CellSetOperation from './CellSetOperation';
-import { union, intersection } from '../../../../../../utils/cellSetOperations';
+import { union, intersection, complement } from '../../../../../../utils/cellSetOperations';
 
 const { Text } = Typography;
 
@@ -105,18 +105,25 @@ const CellSetsTool = (props) => {
       operations = (
         <Space>
           <CellSetOperation
-            icon={<SplitCellsOutlined />}
-            onCreate={(name, color) => {
-              dispatch(createCellSet(experimentId, name, color, intersection(selected, properties)));
-            }}
-            helpTitle='Create intersection of selected'
-          />
-          <CellSetOperation
             icon={<MergeCellsOutlined />}
             onCreate={(name, color) => {
               dispatch(createCellSet(experimentId, name, color, union(selected, properties)));
             }}
-            helpTitle='Combine selected'
+            helpTitle='Create new cell set by combining selected sets'
+          />
+          <CellSetOperation
+            icon={<BlockOutlined />}
+            onCreate={(name, color) => {
+              dispatch(createCellSet(experimentId, name, color, intersection(selected, properties)));
+            }}
+            helpTitle='Create new cell set from intersection of selected sets'
+          />
+          <CellSetOperation
+            icon={<SplitCellsOutlined />}
+            onCreate={(name, color) => {
+              dispatch(createCellSet(experimentId, name, color, complement(selected, properties)));
+            }}
+            helpTitle='Create new cell set from the complement of the selected sets'
           />
           <Text type='primary'>
             {numSelected}
@@ -160,6 +167,7 @@ const CellSetsTool = (props) => {
               onHierarchyUpdate={onHierarchyUpdate}
               defaultExpandAll
               showHideButton
+              defaultCheckedKeys={selected}
             />
           </TabPane>
           <TabPane tab='Metadata' key='metadataCategorical'>
@@ -174,6 +182,7 @@ const CellSetsTool = (props) => {
                 onHierarchyUpdate={onHierarchyUpdate}
                 defaultExpandAll
                 showHideButton
+                defaultCheckedKeys={selected}
               />
             )
               : (

@@ -31,7 +31,7 @@ import isBrowser from '../../../../../utils/environment';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/plots/index';
+} from '../../../../../redux/actions/componentConfig/index';
 import loadDifferentialExpression from '../../../../../redux/actions/loadDifferentialExpression';
 import PlatformError from '../../../../../components/PlatformError';
 
@@ -48,7 +48,7 @@ const VolcanoPlot = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const { loading, data, error } = useSelector(
     (state) => state.differentialExpression.properties,
   );

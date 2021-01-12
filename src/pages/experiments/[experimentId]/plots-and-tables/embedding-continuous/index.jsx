@@ -19,11 +19,11 @@ import LegendEditor from '../components/LegendEditor';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/plots/index';
+} from '../../../../../redux/actions/componentConfig/index';
 import { loadGeneExpression } from '../../../../../redux/actions/genes';
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import { initialPlotConfigStates } from '../../../../../redux/reducers/plots/initialState';
+import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
 import PlatformError from '../../../../../components/PlatformError';
@@ -47,7 +47,7 @@ const EmbeddingContinuousPlot = () => {
   const selectedGene = useRef(defaultShownGene);
 
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.plots[plotUuid]?.config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expressionLoading = useSelector(
     (state) => state.genes.expression.loading,
   );

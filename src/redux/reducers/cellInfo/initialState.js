@@ -1,8 +1,10 @@
 const initialState = {
   focus: {
-    store: null,
-    key: null,
+    store: 'cellSets',
+    key: 'louvain',
   },
+  groupedTrack: 'louvain',
+  selectedTracks: ['louvain'],
 };
 
 export default initialState;

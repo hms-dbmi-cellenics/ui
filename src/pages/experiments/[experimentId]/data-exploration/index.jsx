@@ -79,14 +79,14 @@ const ExplorationViewPage = () => {
         </Tabs>
       ),
     },
-    'Cell sets': {
+    'Data Management': {
       toolbarControls: [<RemoveButton />],
       component: (width, height) => <CellSetsTool experimentId={experimentId} width={width} height={height} />,
     },
   };
 
   if (error) {
-    if (error.payload == undefined) {
+    if (error.payload === undefined) {
       return <Error statusCode='You are not connected to the backend.' />;
     }
     const { status } = error.payload;
@@ -120,7 +120,7 @@ const ExplorationViewPage = () => {
               )}
             </ReactResizeDetector>
           )}
-          onChange={(changedLayout) => {
+          onRelease={(changedLayout) => {
             dispatch(updateLayout(changedLayout));
           }}
           initialValue={windows}

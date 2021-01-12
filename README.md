@@ -1,33 +1,32 @@
-# How to run the code locally
+UI
+======
+The user interface of Cellscope (the Biomage single cell analysis platform).
 
-### Running without getting data from the backend
+Development
+-----------------------
 
-install homebrew
-install docker
-install yarn
-install vscode
-install iterm2
+### Prerequisites
 
- Simply do:
-    yarn install
-    yarn run start
+We highly recommend using VSCode for development, if you don't have it, make sure you get it installed. You will also need to install:
+`homebrew`, `docker`, `npm`.
 
-### Running with data coming from the backend
+### Running locally
+Make sure that you clone this repo and are in the `ui` folder. then simply do:
 
-First, you will need to port-forward data from the api to the UI by executing the following command:
+    npm install
+    npm start
 
-    kubectl port-forward services/staging-auto-deploy 3000:3000 -n api-18445709-staging
+Note that since the UI is not connected to the backend, you should see an empty screen saying `You are not connected to the backend.`
+To get it running end-to-end locally with mocked dataset, you will need to set up and run each of these:
 
-Make sure that you have kubectl installed and you have access to the cluster by following the instructions in here: https://gitlab.com/biomage/iac.
+- API: https://github.com/biomage-ltd/api
+- Inframock: https://github.com/biomage-ltd/inframock
+- worker: https://github.com/biomage-ltd/worker
 
-Next, run the UI by doing:
-
-    yarn run start
-
-Make sure that when prompted, you choose port different from 3000, since the backend is already on 3000.
+Just follow the README of each of them for instructions on how to get it to run.
 
 
-# How to run tests in debug mode
+### How to run tests in debug mode
 
 As per instructions in: https://jestjs.io/docs/en/troubleshooting
 
@@ -47,7 +46,3 @@ As per instructions in: https://jestjs.io/docs/en/troubleshooting
         node --inspect-brk node_modules/.bin/jest --runInBand
 
 3. Open your browser and go to chrome://inspect and click on "Open Dedicated DevTools for Node".
-
-# Test coverage
-
-Test coverage is not enabled yet, because it breaks tests, see this bug report: https://github.com/facebook/jest/issues/9723

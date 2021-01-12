@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import { LOAD_PLOT_CONFIG } from '../../actionTypes/plots';
+import { LOAD_CONFIG } from '../../actionTypes/componentConfig';
 import getApiEndpoint from '../../../utils/apiEndpoint';
 import pushNotificationMessage from '../notifications';
 import messages from '../../../components/notification/messages';
-import { initialPlotConfigStates } from '../../reducers/plots/initialState';
+import { initialPlotConfigStates } from '../../reducers/componentConfig/initialState';
 
 const loadPlotConfig = (experimentId, plotUuid, type) => async (dispatch) => {
   try {
@@ -13,12 +13,12 @@ const loadPlotConfig = (experimentId, plotUuid, type) => async (dispatch) => {
     if (response.ok) {
       const data = await response.json();
       dispatch({
-        type: LOAD_PLOT_CONFIG,
+        type: LOAD_CONFIG,
         payload: data,
       });
     } else if (response.status === 404) {
       dispatch({
-        type: LOAD_PLOT_CONFIG,
+        type: LOAD_CONFIG,
         payload: {
           experimentId,
           plotUuid,

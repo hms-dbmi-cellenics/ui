@@ -28,6 +28,15 @@ describe('cellInfoReducer', () => {
 
 */
 
+// Unfocused state
+const unfocusedState = {
+  focus:
+    {
+      store: null,
+      key: null,
+    },
+};
+
 describe('cellInfoReducer', () => {
   it('Reduces identical state on unknown action', () => expect(
     cellInfoReducer(undefined, {
@@ -71,7 +80,7 @@ describe('cellInfoReducer', () => {
       type: CELL_INFO_UNFOCUS,
     });
 
-    expect(newState.focus).toEqual(initialState.focus);
+    expect(newState.focus).toEqual(unfocusedState.focus);
     expect(newState).toMatchSnapshot();
   });
 });
