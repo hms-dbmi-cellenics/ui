@@ -28,6 +28,7 @@ const HeatmapPlot = (props) => {
 
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
+  const expressionType = useSelector((state) => state.genes.expression.expressionType);
   const [vegaData, setVegaData] = useState(null);
 
   const expressionData = useSelector((state) => state.genes.expression);
@@ -299,7 +300,7 @@ const HeatmapPlot = (props) => {
       <PlatformError
         description={error}
         onClick={() => {
-          dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
+          dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE, expressionType));
         }}
       />
     );

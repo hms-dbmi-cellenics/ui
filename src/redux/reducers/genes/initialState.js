@@ -21,6 +21,7 @@ const initialState = {
     error: false,
     data: {},
     views: {},
+    expressionType: 'raw',
   },
   selected: [],
   focused: undefined,

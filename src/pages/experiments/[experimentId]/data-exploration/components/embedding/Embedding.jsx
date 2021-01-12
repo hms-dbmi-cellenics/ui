@@ -47,6 +47,7 @@ const Embedding = (props) => {
 
   const focusData = useSelector((state) => state.cellInfo.focus);
   const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
+  const expressionType = useSelector((state) => state.genes.expressionType);
   const cellSetProperties = useSelector((state) => state.cellSets.properties);
   const cellSetHierarchy = useSelector((state) => state.cellSets.hierarchy);
   const cellSetHidden = useSelector((state) => state.cellSets.hidden);
@@ -77,7 +78,7 @@ const Embedding = (props) => {
       // For genes/continous data, we cannot do this in one go,
       // we need to wait for the thing to load in first.
       case 'genes': {
-        dispatch(loadGeneExpression(experimentId, [key], embeddingType));
+        dispatch(loadGeneExpression(experimentId, [key], embeddingType, expressionType));
         setCellInfoVisible(false);
         return;
       }
@@ -159,7 +160,7 @@ const Embedding = (props) => {
   };
 
   // Embedding data is loading.
-  if (!data || loading || !isBrowser) {
+  if (!data || loading || (focusedExpression && expressionLoading.length > 0) || !isBrowser) {
     return (<center><Spin size='large' /></center>);
   }
 

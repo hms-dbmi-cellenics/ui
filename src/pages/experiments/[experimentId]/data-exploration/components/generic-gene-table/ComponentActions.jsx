@@ -20,6 +20,7 @@ const ComponentActions = (props) => {
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
   const displayedGenes = useSelector((state) => state.genes.expression?.views[componentType]?.data);
+  const expressionType = useSelector((state) => state.genes.expression.expressionType);
 
   const performGeneOperation = (genesOperation) => {
     let newGenes = _.cloneDeep(selectedGenes);
@@ -31,7 +32,7 @@ const ComponentActions = (props) => {
       newGenes = displayedGenes.filter((gene) => !selectedGenes.includes(gene));
     }
 
-    dispatch(loadGeneExpression(experimentId, newGenes, componentType));
+    dispatch(loadGeneExpression(experimentId, newGenes, componentType, expressionType));
   };
 
   const menu = (

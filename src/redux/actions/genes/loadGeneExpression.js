@@ -28,7 +28,7 @@ const loadGeneExpression = (
   });
 
   // Check which of the genes we actually need to load. Only do this if
-  // we are not forced to reload all of the data.
+  // we are not forced to reload all of the data
   let genesToFetch = [...genes];
 
   if (!forceReloadAll) {

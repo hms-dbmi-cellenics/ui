@@ -3,6 +3,7 @@ import {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
+  GENES_EXPRESSION_TYPE_UPDATE,
 } from '../../actionTypes/genes';
 
 import genesPropertiesLoading from './genesPropertiesLoading';
@@ -11,6 +12,7 @@ import genesPropertiesError from './genesPropertiesError';
 import genesExpressionLoading from './genesExpressionLoading';
 import genesExpressionLoaded from './genesExpressionLoaded';
 import genesExpressionError from './genesExpressionError';
+import genesExpressionTypeUpdate from './genesExpressionTypeUpdate';
 
 import genesSelect from './genesSelect';
 import genesDeselect from './genesDeselect';
@@ -47,6 +49,10 @@ const genesReducer = (state = initialState, action) => {
 
     case GENES_EXPRESSION_ERROR: {
       return genesExpressionError(state, action);
+    }
+
+    case GENES_EXPRESSION_TYPE_UPDATE: {
+      return genesExpressionTypeUpdate(state, action);
     }
 
     default: {
