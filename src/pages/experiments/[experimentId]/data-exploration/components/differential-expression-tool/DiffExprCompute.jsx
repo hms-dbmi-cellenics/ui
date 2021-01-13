@@ -95,8 +95,6 @@ const DiffExprCompute = (props) => {
 
   // Validate form when the groups selected changes.
   useEffect(() => {
-    console.log(selectedGroups);
-
     validateForm();
   }, [selectedGroups]);
 
