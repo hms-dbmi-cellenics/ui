@@ -30,6 +30,7 @@ const HeatmapPlot = (props) => {
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
   const [vegaData, setVegaData] = useState(null);
+  const [vegaSpec, setVegaSpec] = useState(spec);
 
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
@@ -40,7 +41,7 @@ const HeatmapPlot = (props) => {
   const hidden = useSelector((state) => state.cellSets.hidden);
 
   const heatmapSettings = useSelector((state) => state.componentConfig.interactiveHeatmap?.config) || {};
-  const { selectedTracks, groupedTrack } = heatmapSettings;
+  const { selectedTracks, groupedTrack, legendIsVisible } = heatmapSettings;
 
   const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
@@ -70,7 +71,11 @@ const HeatmapPlot = (props) => {
     if (hierarchy.length === 0 || cellSetsLoading) {
       return;
     }
+    const legends = legendIsVisible ? spec.legends : [];
+    setVegaSpec({ ...spec, legends });
+  }, [legendIsVisible]);
 
+  useEffect(() => {
     if (!selectedGenes || selectedGenes.length === 0) {
       return;
     }
@@ -321,7 +326,7 @@ const HeatmapPlot = (props) => {
   return (
     <div>
       <VegaHeatmap
-        spec={spec}
+        spec={vegaSpec}
         data={vegaData}
         showAxes={selectedGenes?.length <= 30}
         rowsNumber={selectedGenes.length}
