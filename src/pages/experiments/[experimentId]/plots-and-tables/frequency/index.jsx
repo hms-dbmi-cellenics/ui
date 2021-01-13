@@ -73,10 +73,9 @@ const frequencyPlot = () => {
       });
       return sum;
     }
-    chosenClusters.map((cellSetCluster) => {
+    chosenClusters.forEach((cellSetCluster) => {
       const cellSetIds = Array.from(properties[cellSetCluster.key].cellIds);
       sum += metadataIds.filter((id) => cellSetIds.includes(id)).length;
-      return cellSetIds;
     });
     return sum;
   };
@@ -85,57 +84,53 @@ const frequencyPlot = () => {
     hierarchy.filter((cluster) => (
       cluster.key === name))[0].children
   );
-  const generateDataWithoutMetadata = (chosenClusters) => {
-    const data = [];
-    let value;
-    chosenClusters.forEach((cluster) => {
-      if (config.frequencyType === 'proportional') {
-        const sum = calculateSum(chosenClusters, []);
-        value = (properties[cluster.key].cellIds.size / sum) * 100;
-      } else {
-        value = properties[cluster.key].cellIds.size;
-      }
-      if (value !== 0) {
-        data.push({
-          x: 1,
-          y: value,
-          c: properties[cluster.key].name,
-        });
-      }
-    });
-    return data;
-  };
+
   const generateData = () => {
-    const data = [];
+    let data = [];
     const chosenClusters = hierarchy.filter((cluster) => (
       cluster.key === config.chosenClusters))[0].children;
 
     const metadataClusters = getMetadataClusters(config.metadata);
+    // if no metadata clusters are available
+    // a plot is made with the louvain clusters
     if (!metadataClusters.length) {
-      return generateDataWithoutMetadata(chosenClusters);
+      const sum = calculateSum(chosenClusters, []);
+      chosenClusters.forEach((clusterName) => {
+        const x = 1;
+        const y = properties[clusterName.key].cellIds.size;
+        const cluster = properties[clusterName.key];
+        data = populateData(x, y, cluster, sum, data);
+      });
+      return data;
     }
-    metadataClusters.map((metadataCluster) => {
+    metadataClusters.forEach((metadataCluster) => {
       const metadataIds = Array.from(properties[metadataCluster.key].cellIds);
       const sum = calculateSum(chosenClusters, metadataIds);
 
-      chosenClusters.map((clusterName) => {
-        let value;
+      chosenClusters.forEach((clusterName) => {
+        const x = properties[metadataCluster.key].name;
         const cellSetIds = Array.from(properties[clusterName.key].cellIds);
-        value = metadataIds.filter((id) => cellSetIds.includes(id)).length;
+        const y = metadataIds.filter((id) => cellSetIds.includes(id)).length;
+        const cluster = properties[clusterName.key];
 
-        if (config.frequencyType === 'proportional') {
-          value = (value / sum) * 100;
+        if (y !== 0) {
+          data = populateData(x, y, cluster, sum, data);
         }
-        if (value !== 0) {
-          data.push({
-            x: properties[metadataCluster.key].name,
-            y: value,
-            c: properties[clusterName.key].name,
-          });
-        }
-        return data;
       });
-      return 0;
+    });
+    return data;
+  };
+
+  const populateData = (x, y, cluster, sum, data) => {
+    let value = y;
+    if (config.frequencyType === 'proportional') {
+      value = (y / sum) * 100;
+    }
+    data.push({
+      x,
+      y: value,
+      c: cluster.name,
+      color: cluster.color,
     });
     return data;
   };

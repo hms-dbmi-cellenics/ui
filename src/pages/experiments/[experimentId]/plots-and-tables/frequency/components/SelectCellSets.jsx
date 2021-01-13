@@ -3,16 +3,21 @@ import PropTypes from 'prop-types';
 import {
   Form,
   Select,
+  Tooltip,
 } from 'antd';
 
 const SelectCellSets = (props) => {
   const { onUpdate, config, cellSets } = props;
   const changeClusters = (val) => {
-    onUpdate({ chosenClusters: val.key });
+    const newValue = val.key.charAt(0).toLowerCase() + val.key.slice(1);
+    onUpdate({ chosenClusters: newValue });
   };
-
+  let menuValue = config.metadata;
+  let disabled = false;
+  let toolTipText;
   const changeMetadata = (val) => {
-    onUpdate({ metadata: val.key });
+    const newValue = val.key.charAt(0).toLowerCase() + val.key.slice(1);
+    onUpdate({ metadata: newValue });
   };
 
   const generateCellOptions = (type) => {
@@ -23,9 +28,23 @@ const SelectCellSets = (props) => {
     const filteredOptions = options.filter((element) => (
       cellSets.properties[element.value].type === type
     ));
-    return filteredOptions;
+    if (!filteredOptions.length) {
+      return [];
+    }
+    // making the options with capital letters as per requirement
+    const upperCaseOptions = [];
+    filteredOptions.forEach((option) => {
+      upperCaseOptions.push({
+        value: option.value.charAt(0).toUpperCase() + option.value.slice(1),
+      });
+    });
+    return upperCaseOptions;
   };
-
+  if (!generateCellOptions('metadataCategorical').length) {
+    menuValue = 'Sample';
+    disabled = true;
+    toolTipText = 'The x-axis cannot be changed as this dataset has only a single sample.';
+  }
   return (
     <>
       <div>
@@ -34,22 +53,30 @@ const SelectCellSets = (props) => {
         {' '}
       </div>
       <Form.Item>
-        <Select
-          value={{ key: config.metadata }}
-          onChange={(value) => changeMetadata(value)}
-          labelInValue
-          disabled={!generateCellOptions('metadataCategorical').length}
-          style={{ width: '100%' }}
-          placeholder='Select cell set...'
-          options={generateCellOptions('metadataCategorical')}
-        />
+        <Tooltip title={toolTipText}>
+          <Select
+            value={{
+              key: menuValue.charAt(0).toUpperCase()
+                + menuValue.slice(1),
+            }}
+            onChange={(value) => changeMetadata(value)}
+            labelInValue
+            disabled={disabled}
+            style={{ width: '100%' }}
+            placeholder='Select cell set...'
+            options={generateCellOptions('metadataCategorical')}
+          />
+        </Tooltip>
       </Form.Item>
       <div>
         Select the cell sets to be shown:
       </div>
       <Form.Item>
         <Select
-          value={{ key: config.chosenClusters }}
+          value={{
+            key: config.chosenClusters.charAt(0).toUpperCase()
+              + config.chosenClusters.slice(1),
+          }}
           onChange={(value) => changeClusters(value)}
           labelInValue
           style={{ width: '100%' }}
@@ -66,3 +93,7 @@ SelectCellSets.propTypes = {
   cellSets: PropTypes.object.isRequired,
 };
 export default SelectCellSets;
+/*
+    <Tooltip placement="topLeft" title="Prompt Text" arrowPointAtCenter>
+     <Button>Arrow points to center / 箭头指向中心</Button>
+   </Tooltip> */
