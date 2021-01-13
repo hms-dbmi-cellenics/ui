@@ -115,14 +115,30 @@ describe('loadGeneExpression action', () => {
       },
     });
 
-    sendWork.mockImplementation(() => {
-      // No need to mock the result accurately.
+    // Need to mock result accurately because of post-request processing
+    const mockResolve = {
+      geneA: {
+        expression: [1],
+        mean: 1,
+        stdev: 1,
+      },
+    };
 
+    const mockResult = {
+      geneA: {
+        expression: [1],
+        mean: 1,
+        stdev: 1,
+        zScore: [0],
+      },
+    };
+
+    sendWork.mockImplementation(() => {
       const resolveWith = {
         results:
           [
             {
-              body: JSON.stringify({ a: 'b' }),
+              body: JSON.stringify(mockResolve),
             },
           ],
       };
@@ -138,7 +154,7 @@ describe('loadGeneExpression action', () => {
 
     const loadedAction = store.getActions()[1];
     expect(loadedAction.type).toEqual(GENES_EXPRESSION_LOADED);
-    expect(loadedAction.payload.data).toEqual({ a: 'b' });
+    expect(loadedAction.payload.data).toEqual(mockResult);
     expect(loadedAction).toMatchSnapshot();
   });
 

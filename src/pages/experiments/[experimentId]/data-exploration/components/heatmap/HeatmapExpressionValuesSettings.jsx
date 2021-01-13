@@ -18,8 +18,6 @@ const HeatmapExpressionValuesSettings = () => {
     lineHeight: '30px',
   };
 
-  console.log(expressionValue);
-
   return (
     <div style={{ padding: '5px' }}>
       <Radio.Group

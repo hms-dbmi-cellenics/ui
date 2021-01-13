@@ -61,10 +61,9 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body) => {
 
   const responseData = JSON.parse(response.results[0].body);
 
+  // Preprocessing data before entering cache
   // Calculate z-score from response data
   Object.keys(responseData).forEach((gene) => {
-    console.log(`calculating z-score for ${gene}`);
-
     const { mean, stdev } = responseData[gene];
     responseData[gene].zScore = [];
     responseData[gene].expression.forEach((value) => {
