@@ -7,7 +7,10 @@ const initialViewState = {
 const initialExpressionState = {
   min: 0,
   max: 0,
-  data: [],
+  mean: 0,
+  stdev: 0,
+  expression: [],
+  zScore: [],
 };
 
 const initialState = {

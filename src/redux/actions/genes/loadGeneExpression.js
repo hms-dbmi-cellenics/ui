@@ -57,14 +57,6 @@ const loadGeneExpression = (
       throw Error('There is no information available for selected genes.');
     }
 
-    // Calculate z-score
-    Object.keys(data).forEach((gene) => {
-      const { mean, stdev } = data[gene];
-      data[gene].zScore = [];
-
-      data[gene].expression.forEach((value) => { data[gene].zScore.push((value - mean) / stdev); });
-    });
-
     dispatch({
       type: GENES_EXPRESSION_LOADED,
       payload: {

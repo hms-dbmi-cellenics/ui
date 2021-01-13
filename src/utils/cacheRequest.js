@@ -5,6 +5,8 @@ import sendWork from './sendWork';
 import isBrowser from './environment';
 import CustomError from './customError';
 
+import { zScore } from './calculations';
+
 const createObjectHash = (object) => hash.MD5(object);
 
 // eslint-disable-next-line no-unused-vars
@@ -58,6 +60,18 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body) => {
   const response = await sendWork(experimentId, timeout, { ...body, genes: missingGenes });
 
   const responseData = JSON.parse(response.results[0].body);
+
+  // Calculate z-score from response data
+  Object.keys(responseData).forEach((gene) => {
+    console.log(`calculating z-score for ${gene}`);
+
+    const { mean, stdev } = responseData[gene];
+    responseData[gene].zScore = [];
+    responseData[gene].expression.forEach((value) => {
+      responseData[gene].zScore.push(zScore(value, mean, stdev));
+    });
+  });
+
   Object.keys(missingDataKeys).forEach(async (gene) => {
     await cache.set(missingDataKeys[gene], responseData[gene]);
   });
