@@ -14,7 +14,6 @@ import initialState from '../../../../../../../redux/reducers/differentialExpres
 jest.mock('localforage');
 jest.mock('../../../../../../../utils/environment', () => false);
 
-
 const mockStore = configureMockStore([thunk]);
 
 const emptyStore = mockStore({
@@ -59,15 +58,6 @@ describe('DiffExprManager', () => {
     expect(component.find(DiffExprCompute).length).toEqual(1);
   });
 
-  it('renders correctly a results view', () => {
-    const component = mount(
-      <Provider store={emptyStore}>
-        <DiffExprManager experimentId='1234' view='results' width={100} height={200} />
-      </Provider>,
-    );
-    expect(component.find(DiffExprResults).length).toEqual(1);
-  });
-
   it('on click of compute with changed parameters, DiffExprManager calls the results view', () => {
     const component = mount(
       <Provider store={emptyStore}>
@@ -77,26 +67,31 @@ describe('DiffExprManager', () => {
     expect(component.find(DiffExprResults).length).toEqual(0);
     expect(component.find(DiffExprCompute).length).toEqual(1);
 
-    const cellSets = { cellSet: 'cluster-1', compareWith: 'rest' };
+    const cellSets = { cellSet: 'louvain/cluster-1', compareWith: 'rest', basis: 'all' };
     act(() => {
-      component.find(DiffExprCompute).props().onCompute(cellSets);
+      component.find(DiffExprCompute).props().onCompute('between', cellSets);
     });
     component.update();
 
     const results = component.find(DiffExprResults);
     expect(results.length).toEqual(1);
-    expect(results.props().cellSets).toEqual(cellSets);
+    expect(results.props().cellSets).toEqual({ ...cellSets, cellSet: 'cluster-1' });
+
     expect(component.find(DiffExprCompute).length).toEqual(0);
   });
 
   it('on click of go back, DiffExprManager calls the compute view', () => {
     const component = mount(
       <Provider store={emptyStore}>
-        <DiffExprManager experimentId='1234' view='results' width={100} height={200} />
+        <DiffExprManager experimentId='1234' view='compute' width={100} height={200} />
       </Provider>,
     );
-    expect(component.find(DiffExprResults).length).toEqual(1);
-    expect(component.find(DiffExprCompute).length).toEqual(0);
+
+    const cellSets = { cellSet: 'louvain/cluster-1', compareWith: 'rest', basis: 'all' };
+    act(() => {
+      component.find(DiffExprCompute).props().onCompute('between', cellSets);
+    });
+    component.update();
 
     act(() => {
       component.find(DiffExprResults).props().onGoBack();

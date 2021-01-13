@@ -4,30 +4,38 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Typography, Tooltip,
+  Button, Form, Select, Typography, Radio, Empty,
 } from 'antd';
 
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 
+import composeTree from '../../../../../../utils/composeTree';
+
 const { Text } = Typography;
 
 const { Option, OptGroup } = Select;
 
+const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
+
 const DiffExprCompute = (props) => {
   const {
-    experimentId, onCompute, cellSets,
+    experimentId, onCompute, cellSets, diffExprType,
   } = props;
 
   const dispatch = useDispatch();
 
   const properties = useSelector((state) => state.cellSets.properties);
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
-  const [selectableClusters, setSelectableClusters] = useState(_.cloneDeep(hierarchy));
   const [isFormValid, setIsFormValid] = useState(false);
-  const defaultSelected = 'Select a cell set';
-  const [selectedCellSets, setSelectedCellSets] = useState(cellSets);
+  const [selectedGroups, setSelectedGroups] = useState(cellSets);
+  const [type, setType] = useState(diffExprType || ComparisonType.between);
+
+  // `between sampoles/groups` makes no sense if there is no metadata. First,
+  // assume there is and correct this if it's necessary.
+  const [hasMetadata, setHasMetadata] = useState(false);
+
   /**
    * Loads cell set on initial render if it does not already exist in the store.
    */
@@ -35,56 +43,60 @@ const DiffExprCompute = (props) => {
     dispatch(loadCellSets(experimentId));
   }, []);
 
-  const generateSpecialKey = (parentKey) => ({ key: ['all', parentKey].join('-') });
-  const isKeySpecial = (key) => (key === 'rest' || key === 'All' || key.startsWith('all-'));
-
-  /**
-   * Re-renders the list of selections when the hierarchy or the properties change.
-   *
-   * If the cell set previously selected is deleted, the selection is reset to the default.
-   */
   useEffect(() => {
     if (hierarchy.length === 0) return;
 
-    const newSelectableClusters = _.cloneDeep(hierarchy);
-    // create a new item for each hierarchy to represent All
-    // eslint-disable-next-line array-callback-return
-    newSelectableClusters.map(({ key, children }) => {
-      if (children && children.length > 0) {
-        children.unshift(generateSpecialKey(key));
+    // Make sure we are not rendering metadata-related options if there is no metadata in the data set.
+    const numMetadata = Object.values(properties).filter((o) => o.type === 'metadataCategorical').length;
+
+    if (!numMetadata) {
+      setType(ComparisonType.within);
+    }
+    setHasMetadata(numMetadata > 0);
+
+    // Update the hierarchies if a previously selected set were to be deleted.
+    setSelectedGroups(_.mapValues(selectedGroups, (cellSetKey) => {
+      if (!cellSetKey) {
+        return null;
       }
-    });
-    setSelectableClusters(newSelectableClusters);
-    setSelectedCellSets(_.mapValues(selectedCellSets, (cellSetKey) => {
-      if (isKeySpecial(cellSetKey)) {
-        return 'All';
+
+      const splitKey = cellSetKey.split('/')[1];
+
+      if (cellSetKey === 'all' || cellSetKey === 'background' || splitKey === 'rest') {
+        return cellSetKey;
       }
-      if (cellSetKey !== defaultSelected && !properties[cellSetKey]) {
-        return defaultSelected;
+
+      if (!properties[splitKey]) {
+        return null;
       }
+
       return cellSetKey;
     }));
   }, [hierarchy, properties]);
 
   const validateForm = () => {
-    if (selectedCellSets.cellSet === defaultSelected) {
+    if (!selectedGroups.cellSet) {
       setIsFormValid(false);
       return;
     }
-    if (selectedCellSets.compareWith === defaultSelected) {
+
+    if (!selectedGroups.compareWith) {
       setIsFormValid(false);
       return;
     }
-    if (selectedCellSets.cellSet === selectedCellSets.compareWith) {
+
+    if (!selectedGroups.basis) {
       setIsFormValid(false);
       return;
     }
+
     setIsFormValid(true);
   };
 
+  // Validate form when the groups selected changes.
   useEffect(() => {
     validateForm();
-  }, [selectedCellSets]);
+  }, [selectedGroups]);
 
   /**
    * Updates the selected clusters.
@@ -92,65 +104,167 @@ const DiffExprCompute = (props) => {
    * @param {string} option The option string (`cellSet` or `compareWith`).
    */
   const onSelectCluster = (cellSet, option) => {
-    setSelectedCellSets({
-      ...selectedCellSets,
-      [option]: cellSet,
+    setSelectedGroups({
+      ...selectedGroups,
+      [option]:
+        cellSet,
     });
   };
 
   /**
    * Constructs a form item, a `Select` field with selectable clusters.
    */
-  const renderClusterSelectorItem = (title, option) => {
-    const renderChildren = (children) => {
+  const renderClusterSelectorItem = ({
+    title, option, filterType,
+  }) => {
+    // Dependiung on the cell set type specified, set the default name
+    const placeholder = filterType === 'metadataCategorical' ? 'sample/group' : 'cell set';
+
+    // Get all the stuff we are going to show.
+    const tree = composeTree(hierarchy, properties, filterType);
+
+    const renderChildren = (rootKey, children) => {
       if (!children || children.length === 0) { return (<></>); }
 
-      return children.map(({ key }) => {
-        if (isKeySpecial(key) && title === 'Compare') {
-          return <></>;
+      // If this is the `compareWith` option, we need to add `the rest` under the group previously selected.
+      if (option === 'compareWith' && selectedGroups.cellSet?.startsWith(`${rootKey}/`)) {
+        children.unshift({ key: `rest`, name: `Rest of ${properties[rootKey].name}` });
+      }
+
+      const shouldDisable = (key) => {
+        // Should always disable something already selected.
+        if (Object.values(selectedGroups).includes(key)) {
+          return true;
         }
-        return (
-          <Option key={key} disabled={Object.values(selectedCellSets).includes(key)}>
-            {isKeySpecial(key) ? (
-              <Tooltip placement='left' title='Compare above selected set and its complements'>
-                <span style={{ display: 'flex', flexGrow: 1 }}>All</span>
-              </Tooltip>
-            ) : properties[key]?.name}
+
+        // Should disable everything in `compareWith` that is not under the same root group as `cellSet`.
+        if (option === 'compareWith' && !selectedGroups.cellSet?.startsWith(`${rootKey}/`)) {
+          return true;
+        }
+
+        return false;
+      }
+
+      if (selectedGroups) {
+        return children.map(({ key, name }) => {
+          const uniqueKey = `${rootKey}/${key}`;
+
+          return <Option key={uniqueKey} disabled={shouldDisable(uniqueKey)}>
+            {name}
           </Option>
-        );
-      });
+        });
+      }
     };
+
     return (
       <Form.Item label={title}>
         <Select
+          placeholder={`Select a ${placeholder}...`}
           style={{ width: 200 }}
           onChange={(cellSet) => onSelectCluster(cellSet, option)}
-          value={selectedCellSets[option]}
+          value={selectedGroups[option]}
           size='small'
         >
           {
-            selectableClusters && selectableClusters.map(({ key, children }) => (
+            option === 'basis' &&
+            <Option key='all'>
+              All
+              </Option>
+          }
+          {
+            option === 'compareWith' &&
+            <Option key='background'>
+              All other cells
+              </Option>
+          }
+          {
+            tree && tree.map(({ key, children }) => (
               <OptGroup label={properties[key]?.name} key={key}>
-                {renderChildren(children)}
+                {renderChildren(key, [...children])}
               </OptGroup>
             ))
           }
         </Select>
-      </Form.Item>
+      </Form.Item >
     );
+  };
+
+  const radioStyle = {
+    display: 'block',
+    height: '30px',
+    lineHeight: '30px',
   };
 
   return (
     <Form size='small' layout='vertical'>
-      {renderClusterSelectorItem('Compare:', 'cellSet')}
-      {renderClusterSelectorItem('Versus:', 'compareWith')}
+
+      <Radio.Group onChange={(e) => {
+        setType(e.target.value);
+
+        setSelectedGroups({
+          cellSet: null,
+          compareWith: null,
+          basis: null,
+        });
+      }} value={type}>
+        <Radio style={radioStyle} value={ComparisonType.between} disabled={!hasMetadata}>
+          Compare a selected cell set between samples/groups
+        </Radio>
+        <Radio style={radioStyle} value={ComparisonType.within}>
+          Compare cell sets within a sample/group
+        </Radio>
+      </Radio.Group>
+
+      {type === ComparisonType.between
+        ? (
+          <>
+            {renderClusterSelectorItem({
+              title: 'Compare cell set:',
+              option: 'basis',
+              filterType: 'cellSets',
+            })}
+
+            {renderClusterSelectorItem({
+              title: 'between sample/group:',
+              option: 'cellSet',
+              filterType: 'metadataCategorical',
+            })}
+
+            {renderClusterSelectorItem({
+              title: 'and sample/group:',
+              option: 'compareWith',
+              filterType: 'metadataCategorical',
+            })}
+          </>
+        )
+        : (
+          <>
+            {renderClusterSelectorItem({
+              title: 'Compare cell set:',
+              option: 'cellSet',
+              filterType: 'cellSets',
+            })}
+
+            {renderClusterSelectorItem({
+              title: 'and cell set:',
+              option: 'compareWith',
+              filterType: 'cellSets',
+            })}
+
+            {renderClusterSelectorItem({
+              title: 'within sample/group:',
+              option: 'basis',
+              filterType: 'metadataCategorical',
+            })}
+          </>
+        )}
 
       <p>
         <Text type='secondary'>
-          Performs a Wilcoxon rank-sum test between selected sets. Cite
+          Cite
           {' '}
-          <a href='https://diffxpy.readthedocs.io/en/latest/api/diffxpy.api.test.pairwise.html'>
-            diffxpy.api.test.pairwise
+          <a href='https://github.com/kharchenkolab/conos/blob/master/man/Conos.Rd'>
+            Conos$getDifferentialGenes
           </a>
           {' '}
           as appropriate.
@@ -161,12 +275,7 @@ const DiffExprCompute = (props) => {
         <Button
           size='small'
           disabled={!isFormValid}
-          onClick={() => onCompute(
-            {
-              cellSet: selectedCellSets.cellSet,
-              compareWith: isKeySpecial(selectedCellSets.compareWith) ? 'rest' : selectedCellSets.compareWith,
-            },
-          )}
+          onClick={() => onCompute(diffExprType, selectedGroups)}
         >
           Compute
         </Button>
@@ -176,10 +285,12 @@ const DiffExprCompute = (props) => {
 };
 
 DiffExprCompute.defaultProps = {
+  diffExprType: null,
 };
 
 DiffExprCompute.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  diffExprType: PropTypes.string,
   onCompute: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
 };
