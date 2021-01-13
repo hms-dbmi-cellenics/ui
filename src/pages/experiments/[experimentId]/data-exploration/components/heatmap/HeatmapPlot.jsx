@@ -34,6 +34,7 @@ const HeatmapPlot = (props) => {
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
 
+  const cellSetsLoading = useSelector((state) => state.cellSets.loading);
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const properties = useSelector((state) => state.cellSets.properties);
   const hidden = useSelector((state) => state.cellSets.hidden);
@@ -66,7 +67,7 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
-    if (hierarchy.length === 0) {
+    if (hierarchy.length === 0 || cellSetsLoading) {
       return;
     }
 
