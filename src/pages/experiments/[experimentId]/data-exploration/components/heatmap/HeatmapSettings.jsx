@@ -13,14 +13,10 @@ import HeatmapExpressionValuesSettings from './HeatmapExpressionValuesSettings';
 const { SubMenu, Item } = Menu;
 
 const HeatmapSettings = (props) => {
-  const {
-    experimentId,
-  } = props;
-
   const renderMenu = () => (
     <Menu size='small'>
       <SubMenu key='expression-values' title='Expression values' icon={<></>}>
-        <HeatmapExpressionValuesSettings experimentId={experimentId} />
+        <HeatmapExpressionValuesSettings />
       </SubMenu>
       <Item key='toggle-legend' disabled>
         Hide legend
