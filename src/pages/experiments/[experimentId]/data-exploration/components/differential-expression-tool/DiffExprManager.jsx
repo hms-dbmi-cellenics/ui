@@ -14,18 +14,22 @@ const DiffExprManager = (props) => {
     experimentId, view, width, height,
   } = props;
 
-  const defaultSelected = 'Select a cell set';
-  const [selectedCellSets, setSelectedCellSets] = useState({
-    cellSet: defaultSelected,
-    compareWith: defaultSelected,
+  const [selectedGroups, setSelectedGroups] = useState({
+    cellSet: null,
+    compareWith: null,
+    basis: null,
   });
+
+  const [diffExprType, setDiffExprType] = useState(null);
 
   const [currentView, setCurrentView] = useState(view);
 
-  const onCompute = (newSelectedCellSets) => {
-    if (!_.isEqual(newSelectedCellSets, selectedCellSets)) {
-      setSelectedCellSets(newSelectedCellSets);
+  const onCompute = (type, newSelectedCellSets) => {
+    if (!_.isEqual(newSelectedCellSets, selectedGroups)) {
+      setSelectedGroups(newSelectedCellSets);
     }
+
+    setDiffExprType(type);
 
     setCurrentView(DiffExprView.results);
   };
@@ -39,7 +43,8 @@ const DiffExprManager = (props) => {
       <DiffExprCompute
         experimentId={experimentId}
         onCompute={onCompute}
-        cellSets={selectedCellSets}
+        cellSets={selectedGroups}
+        diffExprType={diffExprType}
       />
     );
   }
@@ -47,7 +52,11 @@ const DiffExprManager = (props) => {
     return (
       <DiffExprResults
         onGoBack={onGoBack}
-        cellSets={selectedCellSets}
+        cellSets={{
+          cellSet: selectedGroups.cellSet.split('/')[1],
+          compareWith: selectedGroups.compareWith.split('/')[1] || selectedGroups.compareWith,
+          basis: selectedGroups.basis.split('/')[1] || selectedGroups.basis,
+        }}
         experimentId={experimentId}
         width={width}
         height={height}
@@ -66,6 +75,5 @@ DiffExprManager.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };
-
 
 export default DiffExprManager;
