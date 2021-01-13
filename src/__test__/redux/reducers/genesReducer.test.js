@@ -5,6 +5,7 @@ import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_ERROR, GENES_PROPERTIES_LOADED_PAGINATED,
+  GENES_EXPRESSION_TYPE_UPDATE,
 } from '../../../redux/actionTypes/genes';
 
 describe('genesReducer', () => {
@@ -110,6 +111,18 @@ describe('genesReducer', () => {
 
     expect(newState.expression.error).toEqual('asd');
     expect(newState).toMatchSnapshot();
+  });
+
+  it('Sets expressionType accordingly', () => {
+    const newState = genesReducer(initialState, {
+      type: GENES_EXPRESSION_TYPE_UPDATE,
+      payload: {
+        experimentId: '1234',
+        expressionType: 'zScore',
+      },
+    });
+
+    expect(newState.expression.expressionType).toEqual('zScore');
   });
 
   //

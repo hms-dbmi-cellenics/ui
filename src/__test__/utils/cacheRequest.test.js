@@ -4,11 +4,11 @@ import { /* cacheFetch, */ fetchCachedWork } from '../../utils/cacheRequest';
 enableFetchMocks();
 
 const fakeCacheKeyMappings = {
-  A: 'fd3161a878f67ebf54018720cffd6a66', // pragma: allowlist secret
-  B: '10250a11679234110a1c260d6fd81d3c', // pragma: allowlist secret
-  C: '76bf160685c4c80c67abd9a701da23e6', // pragma: allowlist secret
-  D: '21671038b9ac73c1f08a94c8213cb872', // pragma: allowlist secret
-  E: '33faa711a94a2028b5bae1778126aec0', // pragma: allowlist secret
+  A: '5b995fe9ed8f00cff155a59afa6c523c', // pragma: allowlist secret
+  B: '660bcd9c0cb1fd9ca1d6cde2e2e8a60f', // pragma: allowlist secret
+  C: 'a3324c2021c4855c5c788bffb860b087', // pragma: allowlist secret
+  D: '77b59a783da49797d750d6904f9c5972', // pragma: allowlist secret
+  E: 'ad0f4aeb13f02c99850ab52d473d187a', // pragma: allowlist secret
 };
 
 const fakeData = {
@@ -16,30 +16,34 @@ const fakeData = {
     min: 0,
     max: 6.8,
     expression: [0, 0, 0, 1.56, 0, 6.8, 3.4],
+    expressionType: 'raw',
   },
   B: {
     min: 0,
     max: 6.8,
     expression: [0, 0, 0, 2.56, 0, 6.8, 2.56],
+    expressionType: 'raw',
   },
   C: {
     min: 0,
     max: 3.4,
     expression: [0, 0, 0, 3.56, 0, 4.8, 3.4],
+    expressionType: 'raw',
   },
   D: {
     min: 0,
     max: 6.8,
     expression: [0, 0, 0, 1.56, 0, 6.8, 3.4],
+    expressionType: 'raw',
   },
   E: { hello: 'world' },
 };
 
 const fakeCacheContents = {
-  fd3161a878f67ebf54018720cffd6a66: 'A', // pragma: allowlist secret
-  '10250a11679234110a1c260d6fd81d3c': 'B', // pragma: allowlist secret
-  f5c957411a28de68f35e1f5c8a29da7e: 'C', // pragma: allowlist secret
-  '33faa711a94a2028b5bae1778126aec0': 'E', // pragma: allowlist secret
+  '5b995fe9ed8f00cff155a59afa6c523c': 'A', // pragma: allowlist secret
+  '660bcd9c0cb1fd9ca1d6cde2e2e8a60f': 'B', // pragma: allowlist secret
+  a3324c2021c4855c5c788bffb860b087: 'C', // pragma: allowlist secret
+  ad0f4aeb13f02c99850ab52d473d187a: 'E', // pragma: allowlist secret
 };
 
 const mockGet = jest.fn((x) => {
@@ -87,9 +91,10 @@ describe('tests for fetchCachedWork', () => {
     const res = await fetchCachedWork(experimentId, 10, {
       name: 'GeneExpression',
       genes: ['A', 'B', 'C', 'D'],
+      expressionType: 'raw',
     });
     expect(res).toEqual({ D: fakeData.D });
-    expect(mockSendWork).toHaveBeenCalledWith(experimentId, 10, { name: 'GeneExpression', genes: ['D'] });
+    expect(mockSendWork).toHaveBeenCalledWith(experimentId, 10, { name: 'GeneExpression', genes: ['D'], expressionType: 'raw' });
     expect(mockGet).toHaveBeenCalledTimes(4);
     expect(mockSet).toHaveBeenCalledTimes(1);
     expect(mockSet).toHaveBeenCalledWith(fakeCacheKeyMappings.D, fakeData.D);

@@ -3,14 +3,13 @@ import { initialViewState } from './initialState';
 
 const genesExpressionError = (state, action) => {
   const {
-    error, componentUuid, genes, expressionType,
+    error, componentUuid, genes,
   } = action.payload;
 
   return {
     ...state,
     expression: {
       ...state.expression,
-      expressionType,
       views: {
         ...state.properties.views,
         [componentUuid]: {

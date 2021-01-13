@@ -5,6 +5,7 @@ Object {
   "payload": Object {
     "componentUuid": "asd",
     "experimentId": "1234",
+    "expressionType": "zScore",
     "genes": Array [
       "a",
       "b",
@@ -21,6 +22,7 @@ Object {
     "componentUuid": "asd",
     "error": "Couldn't fetch expression data.",
     "experimentId": "1234",
+    "expressionType": "zScore",
     "genes": Array [
       "a",
       "b",
@@ -36,6 +38,7 @@ Object {
   "payload": Object {
     "componentUuid": "asd",
     "experimentId": "1234",
+    "expressionType": "zScore",
     "genes": Array [
       "a",
       "b",
@@ -54,6 +57,42 @@ Object {
       "a": "b",
     },
     "experimentId": "1234",
+    "expressionType": "zScore",
+    "genes": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/expressionLoaded",
+}
+`;
+
+exports[`loadGeneExpression action Dispatches data with the correct expressionType 1`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "experimentId": "1234",
+    "expressionType": "zScore",
+    "genes": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/expressionLoading",
+}
+`;
+
+exports[`loadGeneExpression action Dispatches data with the correct expressionType 2`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "data": Object {
+      "expressionType": "zScore",
+    },
+    "experimentId": "1234",
+    "expressionType": "zScore",
     "genes": Array [
       "a",
       "b",
@@ -71,6 +110,7 @@ exports[`loadGeneExpression action Does not send work for already loaded express
       "1234",
       30,
       Object {
+        "expressionType": "raw",
         "genes": Array [
           "b",
           "c",
@@ -95,6 +135,7 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
       "1234",
       30,
       Object {
+        "expressionType": "raw",
         "genes": Array [
           "b",
           "c",
@@ -106,6 +147,7 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
       "1234",
       30,
       Object {
+        "expressionType": "zScore",
         "genes": Array [
           "a",
           "b",

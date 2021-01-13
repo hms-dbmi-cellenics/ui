@@ -1,14 +1,16 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Radio } from 'antd';
-import { useRouter } from 'next/router';
+import PropTypes from 'prop-types';
 import updateGeneExpressionType from '../../../../../../redux/actions/genes/updateGeneExpressionType';
 
-const HeatmapExpressionValuesSettings = () => {
+const HeatmapExpressionValuesSettings = (props) => {
+  const {
+    experimentId,
+  } = props;
+
   const dispatch = useDispatch();
   const expressionType = useSelector((state) => state.genes.expression.expressionType);
-  const router = useRouter();
-  const { experimentId } = router.query;
 
   const expressionTypes = {
     raw: 'Raw values',
@@ -41,6 +43,7 @@ HeatmapExpressionValuesSettings.defaultProps = {
 };
 
 HeatmapExpressionValuesSettings.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default HeatmapExpressionValuesSettings;

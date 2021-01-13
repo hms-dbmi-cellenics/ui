@@ -5,6 +5,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -23,6 +24,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -45,6 +47,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -66,6 +69,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -101,6 +105,7 @@ Object {
       },
     },
     "error": false,
+    "expressionType": undefined,
     "loading": Array [
       "d",
       "e",
@@ -128,6 +133,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -167,6 +173,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -209,6 +216,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -236,6 +244,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": undefined,
     "loading": Array [
       "a",
       "b",
@@ -276,6 +285,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -309,6 +319,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -336,6 +347,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -358,6 +370,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": "raw",
     "loading": Array [],
     "views": Object {},
   },
@@ -380,6 +393,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": "asd",
+    "expressionType": undefined,
     "loading": Array [],
     "views": Object {
       "abc": Object {
@@ -415,6 +429,7 @@ Object {
       },
     },
     "error": false,
+    "expressionType": undefined,
     "loading": Array [],
     "views": Object {
       "abc": Object {
@@ -439,6 +454,7 @@ Object {
   "expression": Object {
     "data": Object {},
     "error": false,
+    "expressionType": undefined,
     "loading": Array [
       "A",
       "B",

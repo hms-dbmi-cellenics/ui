@@ -11,6 +11,9 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/extensions
 import { Scatterplot } from 'vitessce/dist/es/production/scatterplot.min.js';
+import {
+  Spin,
+} from 'antd';
 import Embedding from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/embedding/Embedding';
 import CrossHair from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/embedding/CrossHair';
 import CellInfo from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/CellInfo';
@@ -345,5 +348,47 @@ describe('Embedding', () => {
     const focusedGeneInfo = embedding.find('Embedding div label strong');
     expect(focusedGeneInfo.length).toEqual(1);
     expect(focusedGeneInfo.props().children).toEqual('REALGENE');
+  });
+
+  it('embedding is loading when it is focused and gene expression is loading', () => {
+    const focusedState = {
+      ...initialState,
+      cellSets: {
+        ...initialState.cellSets,
+        selected: [],
+      },
+      genes: {
+        ...initialState.genes,
+        expression: {
+          loading: ['a', 'b', 'c'],
+          data: {
+            REALGENE: {
+              min: 0,
+              max: 1.6,
+              expression: [0, 0.4, 0.5, 1.6],
+            },
+          },
+        },
+      },
+      cellInfo: {
+        ...initialState.cellInfo,
+        focus: {
+          ...initialState.cellInfo.focus,
+          store: 'genes',
+          key: 'REALGENE',
+        },
+      },
+    };
+
+    const geneExprStore = mockStore(focusedState);
+
+    const embedding = mount(
+      <Provider store={geneExprStore}>
+        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
+      </Provider>,
+    );
+
+    const legend = embedding.find(Spin);
+    expect(legend.length).toEqual(1);
   });
 });

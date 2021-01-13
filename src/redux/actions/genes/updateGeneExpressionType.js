@@ -6,25 +6,27 @@ const updateGeneExpressionType = (experimentId, expressionType) => async (dispat
     views,
   } = getState().genes.expression;
 
-  // Dispatch update gene expression type
+  // Get components currently using the gene data, then update the components
+  const updates = Object.keys(views).map((componentUuid) => dispatch(
+    loadGeneExpression(
+      experimentId,
+      views[componentUuid].data,
+      componentUuid,
+      expressionType,
+      true,
+    ),
+  ));
+
+  // Dispatch update gene expression after all updates are done
+  if (updates.length > 0) {
+    await Promise.all(updates);
+  }
+
   dispatch({
     type: GENES_EXPRESSION_TYPE_UPDATE,
     payload: {
       expressionType,
     },
-  });
-
-  // Get components currently using the gene data, then update the components
-  Object.keys(views).forEach((componentUuid) => {
-    dispatch(
-      loadGeneExpression(
-        experimentId,
-        views[componentUuid].data,
-        componentUuid,
-        expressionType,
-        true,
-      ),
-    );
   });
 };
 

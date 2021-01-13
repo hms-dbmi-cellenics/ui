@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HeatmapExpressionValuesSettings clicking on the other button will trigger the appropriate action 1`] = `
+Object {
+  "payload": Object {
+    "expressionType": "zScore",
+  },
+  "type": "genes/expressionTypeUpdate",
+}
+`;

@@ -2,13 +2,12 @@ import _ from 'lodash';
 import { initialViewState } from './initialState';
 
 const genesExpressionLoading = (state, action) => {
-  const { genes, componentUuid, expressionType } = action.payload;
+  const { genes, componentUuid } = action.payload;
 
   return {
     ...state,
     expression: {
       ...state.expression,
-      expressionType,
       views: {
         ...state.expression.views,
         [componentUuid]: {

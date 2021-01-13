@@ -135,6 +135,7 @@ describe('ComponentActions', () => {
     expect(fetchCachedWork).toHaveBeenCalledWith(experimentId, 30, {
       name: 'GeneExpression',
       genes: ['A', 'B', 'C'],
+      expressionType: 'raw',
     });
 
     expect(store.getActions().length).toEqual(2);

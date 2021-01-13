@@ -55,7 +55,7 @@ const ExplorationViewPage = () => {
     },
     Heatmap: {
       toolbarControls: [
-        <HeatmapSettings />,
+        <HeatmapSettings experimentId={experimentId} />,
         <RemoveButton />,
       ],
       component: (width, height) => (

@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateGeneExpressionType action Dispatches the correct action 1`] = `
+Object {
+  "payload": Object {
+    "expressionType": "zScore",
+  },
+  "type": "genes/expressionTypeUpdate",
+}
+`;

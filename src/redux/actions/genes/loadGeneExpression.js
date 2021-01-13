@@ -8,11 +8,14 @@ const loadGeneExpression = (
   experimentId, genes, componentUuid, expressionType = 'raw', forceReloadAll = false,
 ) => async (dispatch, getState) => {
   const {
-    loading, data: geneData,
+    loading, data: geneData, expressionType: oldExpressionType,
   } = getState().genes.expression;
 
-  // If other gene expression data is already being loaded, don't dispatch.
-  if (loading.length > 0) {
+  // If other gene expression data is already being loaded,
+  // and there is no change in expressionType, don't dispatch.
+  // Note : Change in expressionType may update multiple panels
+  // so dispatch has to be called concurrently, else only one panel is updated
+  if (loading.length > 0 && expressionType === oldExpressionType) {
     return null;
   }
 
@@ -43,7 +46,6 @@ const loadGeneExpression = (
         experimentId,
         componentUuid,
         genes,
-        expressionType,
       },
     });
   }
@@ -65,7 +67,6 @@ const loadGeneExpression = (
         experimentId,
         componentUuid,
         genes,
-        expressionType,
         data,
       },
     });
@@ -76,7 +77,6 @@ const loadGeneExpression = (
         experimentId,
         componentUuid,
         genes,
-        expressionType,
         error: "Couldn't fetch expression data.",
       },
     });

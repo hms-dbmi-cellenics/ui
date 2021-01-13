@@ -28,7 +28,7 @@ const getFromApiExpectOK = async (url) => {
 };
 
 const decomposeBody = async (body, experimentId) => {
-  const { genes: requestedGenes, expressionType } = body;
+  const { genes: requestedGenes } = body;
   const missingDataKeys = {};
   const cachedData = {};
 
@@ -37,7 +37,7 @@ const decomposeBody = async (body, experimentId) => {
       ...body,
       genes: g,
     };
-    const key = createObjectHash({ experimentId, newBody, expressionType });
+    const key = createObjectHash({ experimentId, newBody });
     const data = await cache.get(key);
     if (data) {
       cachedData[g] = data;

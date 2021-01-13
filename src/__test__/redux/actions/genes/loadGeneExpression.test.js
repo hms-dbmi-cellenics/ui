@@ -21,6 +21,7 @@ describe('loadGeneExpression action', () => {
   const experimentId = '1234';
   const componentUuid = 'asd';
   const loadingGenes = ['a', 'b', 'c'];
+  const expressionType = 'zScore';
 
   it('Does not dispatch when expression is already loading', async () => {
     const store = mockStore({
@@ -101,7 +102,11 @@ describe('loadGeneExpression action', () => {
       return new Promise((resolve) => resolve(resolveWith));
     });
 
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
+    await store.dispatch(loadGeneExpression(experimentId,
+      loadingGenes,
+      componentUuid,
+      expressionType,
+      true));
 
     const firstCall = sendWork.mock.calls[1];
     expect(firstCall[2].genes).toEqual(['a', 'b', 'c']);
@@ -130,7 +135,11 @@ describe('loadGeneExpression action', () => {
       return new Promise((resolve) => resolve(resolveWith));
     });
 
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
+    await store.dispatch(loadGeneExpression(experimentId,
+      loadingGenes,
+      componentUuid,
+      expressionType,
+      true));
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);
@@ -150,7 +159,11 @@ describe('loadGeneExpression action', () => {
     });
 
     sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
+    await store.dispatch(loadGeneExpression(experimentId,
+      loadingGenes,
+      componentUuid,
+      expressionType,
+      true));
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);
@@ -158,6 +171,48 @@ describe('loadGeneExpression action', () => {
 
     const loadedAction = store.getActions()[1];
     expect(loadedAction.type).toEqual(GENES_EXPRESSION_ERROR);
+    expect(loadedAction).toMatchSnapshot();
+  });
+
+  it('Dispatches data with the correct expressionType', async () => {
+    const store = mockStore({
+      genes: {
+        ...initialState,
+        expression: {
+          ...initialState.expression,
+          expressionType: 'asd',
+        },
+      },
+    });
+
+    sendWork.mockImplementation(() => {
+      // No need to mock the result accurately.
+
+      const resolveWith = {
+        results:
+          [
+            {
+              body: JSON.stringify({ expressionType }),
+            },
+          ],
+      };
+
+      return new Promise((resolve) => resolve(resolveWith));
+    });
+
+    await store.dispatch(loadGeneExpression(experimentId,
+      loadingGenes,
+      componentUuid,
+      expressionType,
+      true));
+
+    const loadingAction = store.getActions()[0];
+    expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);
+    expect(loadingAction).toMatchSnapshot();
+
+    const loadedAction = store.getActions()[1];
+    expect(loadedAction.type).toEqual(GENES_EXPRESSION_LOADED);
+    expect(loadedAction.payload.data).toEqual({ expressionType });
     expect(loadedAction).toMatchSnapshot();
   });
 });

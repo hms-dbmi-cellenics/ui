@@ -160,14 +160,14 @@ const Embedding = (props) => {
   };
 
   // Embedding data is loading.
-  if (!data || loading || (focusedExpression && expressionLoading.length > 0) || !isBrowser) {
-    return (<center><Spin size='large' /></center>);
+  if (!data || loading || !isBrowser) {
+    return (<center style={{ marginTop: height / 2 }}><Spin size='large' /></center>);
   }
 
   // We are focused on a gene and its expression is loading.
   if (focusData.store === 'genes'
     && expressionLoading.includes(focusData.key)) {
-    return (<center><Spin size='large' /></center>);
+    return (<center style={{ marginTop: height / 2 }}><Spin size='large' /></center>);
   }
 
   // The embedding couldn't load. Display an error condition.

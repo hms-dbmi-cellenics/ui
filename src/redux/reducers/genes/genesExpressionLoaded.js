@@ -3,14 +3,13 @@ import { initialViewState } from './initialState';
 
 const genesExpressionLoaded = (state, action) => {
   const {
-    data, componentUuid, genes, expressionType,
+    data, componentUuid, genes,
   } = action.payload;
 
   return {
     ...state,
     expression: {
       ...state.expression,
-      expressionType,
       views: {
         ...state.expression.views,
         [componentUuid]: {

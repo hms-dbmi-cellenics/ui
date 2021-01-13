@@ -5,6 +5,7 @@ Object {
   "payload": Object {
     "componentUuid": "asd",
     "experimentId": "1234",
+    "expressionType": "raw",
     "genes": Array [
       "D",
       "E",
@@ -54,6 +55,7 @@ Object {
       },
     },
     "experimentId": "1234",
+    "expressionType": "raw",
     "genes": Array [
       "D",
       "E",
@@ -71,6 +73,7 @@ Object {
   "payload": Object {
     "componentUuid": "asd",
     "experimentId": "1234",
+    "expressionType": "raw",
     "genes": Array [
       "D",
     ],
@@ -84,6 +87,7 @@ Object {
   "payload": Object {
     "componentUuid": "asd",
     "experimentId": "1234",
+    "expressionType": "raw",
     "genes": Array [
       "D",
     ],
@@ -97,6 +101,7 @@ Object {
   "payload": Object {
     "componentUuid": "asd",
     "experimentId": "1234",
+    "expressionType": "raw",
     "genes": Array [
       "E",
     ],
@@ -110,6 +115,7 @@ Object {
   "payload": Object {
     "componentUuid": "asd",
     "experimentId": "1234",
+    "expressionType": "raw",
     "genes": Array [
       "E",
     ],

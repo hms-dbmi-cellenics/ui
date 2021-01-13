@@ -5,17 +5,22 @@ import {
 import {
   Button, Dropdown, Menu, Tooltip,
 } from 'antd';
+import PropTypes from 'prop-types';
 import HeatmapMetadataTrackSettings from './HeatmapMetadataTrackSettings';
 import HeatmapGroupBySettings from './HeatmapGroupBySettings';
 import HeatmapExpressionValuesSettings from './HeatmapExpressionValuesSettings';
 
 const { SubMenu, Item } = Menu;
 
-const HeatmapSettings = () => {
+const HeatmapSettings = (props) => {
+  const {
+    experimentId,
+  } = props;
+
   const renderMenu = () => (
     <Menu size='small'>
       <SubMenu key='expression-values' title='Expression values' icon={<></>}>
-        <HeatmapExpressionValuesSettings />
+        <HeatmapExpressionValuesSettings experimentId={experimentId} />
       </SubMenu>
       <Item key='toggle-legend' disabled>
         Hide legend
@@ -50,6 +55,7 @@ HeatmapSettings.defaultProps = {
 };
 
 HeatmapSettings.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default HeatmapSettings;

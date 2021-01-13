@@ -7,7 +7,7 @@ const initialViewState = {
 const initialExpressionState = {
   min: 0,
   max: 0,
-  data: [],
+  expression: [],
 };
 
 const initialState = {
