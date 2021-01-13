@@ -22,7 +22,6 @@ Object {
     "componentUuid": "asd",
     "error": "Couldn't fetch expression data.",
     "experimentId": "1234",
-    "expressionType": "zScore",
     "genes": Array [
       "a",
       "b",
@@ -57,7 +56,6 @@ Object {
       "a": "b",
     },
     "experimentId": "1234",
-    "expressionType": "zScore",
     "genes": Array [
       "a",
       "b",
@@ -92,7 +90,6 @@ Object {
       "expressionType": "zScore",
     },
     "experimentId": "1234",
-    "expressionType": "zScore",
     "genes": Array [
       "a",
       "b",

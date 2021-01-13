@@ -350,7 +350,7 @@ describe('Embedding', () => {
     expect(focusedGeneInfo.props().children).toEqual('REALGENE');
   });
 
-  it('embedding is loading when it is focused and gene expression is loading', () => {
+  it('embedding is in a loading state when it is focused and gene expression is loading', () => {
     const focusedState = {
       ...initialState,
       cellSets: {
@@ -360,7 +360,7 @@ describe('Embedding', () => {
       genes: {
         ...initialState.genes,
         expression: {
-          loading: ['a', 'b', 'c'],
+          loading: ['REALGENE'],
           data: {
             REALGENE: {
               min: 0,

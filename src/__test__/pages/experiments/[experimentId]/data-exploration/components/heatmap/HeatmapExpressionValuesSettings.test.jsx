@@ -16,9 +16,10 @@ configure({ adapter: new Adapter() });
 
 let component;
 
-const initialState = {
+const geneState = {
   genes: {
     expression: {
+      views: {},
       expressionType: 'raw',
     },
   },
@@ -31,7 +32,7 @@ describe('HeatmapExpressionValuesSettings', () => {
 
   it('renders correctly', () => {
     const store = mockStore({
-      ...initialState,
+      ...geneState,
     });
 
     component = mount(
@@ -55,9 +56,9 @@ describe('HeatmapExpressionValuesSettings', () => {
     expect(component.find(Radio.Group).props().value).toEqual('raw');
   });
 
-  it('clicking on the other button will trigger the appropriate action', async () => {
+  it('choosing another setting will trigger the appropriate action', async () => {
     const store = mockStore({
-      ...initialState,
+      ...geneState,
     });
 
     component = mount(
