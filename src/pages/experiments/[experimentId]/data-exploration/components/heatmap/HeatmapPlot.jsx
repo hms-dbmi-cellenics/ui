@@ -12,6 +12,7 @@ import VegaHeatmap from './VegaHeatmap';
 import PlatformError from '../../../../../../components/PlatformError';
 import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 import { loadComponentConfig } from '../../../../../../redux/actions/componentConfig';
 
 import { union } from '../../../../../../utils/cellSetOperations';
@@ -34,6 +35,7 @@ const HeatmapPlot = (props) => {
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
 
+  const cellSetsLoading = useSelector((state) => state.cellSets.loading);
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const properties = useSelector((state) => state.cellSets.properties);
   const hidden = useSelector((state) => state.cellSets.hidden);
@@ -50,6 +52,13 @@ const HeatmapPlot = (props) => {
     setVegaData(data);
   }, 1500, { leading: true }), []);
 
+  /**
+   * Loads cell set on initial render if it does not already exist in the store.
+   */
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, []);
+
   useEffect(() => {
     if (!_.isEmpty(heatmapSettings)) {
       return;
@@ -59,6 +68,9 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
+    if (hierarchy.length === 0 || cellSetsLoading) {
+      return;
+    }
     const legends = legendIsVisible ? spec.legends : [];
     setVegaSpec({ ...spec, legends });
   }, [legendIsVisible]);
