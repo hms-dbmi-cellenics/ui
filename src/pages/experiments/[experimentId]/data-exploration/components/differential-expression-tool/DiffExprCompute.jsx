@@ -4,7 +4,7 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Typography, Radio,
+  Button, Form, Select, Typography, Radio, Empty,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -32,6 +32,10 @@ const DiffExprCompute = (props) => {
   const [selectedGroups, setSelectedGroups] = useState(cellSets);
   const [type, setType] = useState(diffExprType || ComparisonType.between);
 
+  // `between sampoles/groups` makes no sense if there is no metadata. First,
+  // assume there is and correct this if it's necessary.
+  const [hasMetadata, setHasMetadata] = useState(false);
+
   /**
    * Loads cell set on initial render if it does not already exist in the store.
    */
@@ -39,14 +43,18 @@ const DiffExprCompute = (props) => {
     dispatch(loadCellSets(experimentId));
   }, []);
 
-  /**
-   * Re-renders the list of selections when the hierarchy or the properties change.
-   *
-   * If the cell set previously selected is deleted, the selection is reset to the default.
-   */
   useEffect(() => {
     if (hierarchy.length === 0) return;
 
+    // Make sure we are not rendering metadata-related options if there is no metadata in the data set.
+    const numMetadata = Object.values(properties).filter((o) => o.type === 'metadataCategorical').length;
+
+    if (!numMetadata) {
+      setType(ComparisonType.within);
+    }
+    setHasMetadata(numMetadata > 0);
+
+    // Update the hierarchies if a previously selected set were to be deleted.
     setSelectedGroups(_.mapValues(selectedGroups, (cellSetKey) => {
       if (!cellSetKey) {
         return null;
@@ -98,7 +106,6 @@ const DiffExprCompute = (props) => {
    * @param {string} option The option string (`cellSet` or `compareWith`).
    */
   const onSelectCluster = (cellSet, option) => {
-
     setSelectedGroups({
       ...selectedGroups,
       [option]:
@@ -113,7 +120,7 @@ const DiffExprCompute = (props) => {
     title, option, filterType,
   }) => {
     // Dependiung on the cell set type specified, set the default name
-    const placeholder = `Select a ${filterType === 'metadataCategorical' ? 'sample/group' : 'cell set'}`;
+    const placeholder = filterType === 'metadataCategorical' ? 'sample/group' : 'cell set';
 
     // Get all the stuff we are going to show.
     const tree = composeTree(hierarchy, properties, filterType);
@@ -154,7 +161,7 @@ const DiffExprCompute = (props) => {
     return (
       <Form.Item label={title}>
         <Select
-          placeholder={placeholder}
+          placeholder={`Select a ${placeholder}...`}
           style={{ width: 200 }}
           onChange={(cellSet) => onSelectCluster(cellSet, option)}
           value={selectedGroups[option]}
@@ -202,7 +209,7 @@ const DiffExprCompute = (props) => {
           basis: null,
         });
       }} value={type}>
-        <Radio style={radioStyle} value={ComparisonType.between}>
+        <Radio style={radioStyle} value={ComparisonType.between} disabled={!hasMetadata}>
           Compare a selected cell set between samples/groups
         </Radio>
         <Radio style={radioStyle} value={ComparisonType.within}>
