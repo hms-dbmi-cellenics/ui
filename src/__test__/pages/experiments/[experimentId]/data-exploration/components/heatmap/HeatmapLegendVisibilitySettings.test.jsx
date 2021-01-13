@@ -117,7 +117,7 @@ describe('HeatmapLegendVisibilitySettings', () => {
   it('responds correctly to clicking to hide', () => {
     // Click hide button
     act(() => {
-      component.find('ForwardRef').props().onChange({ "target": { "value": false } });
+      component.find(Radio.Group).props().onChange({ "target": { "value": false } });
     });
 
     let storeActions = store.getActions();
@@ -133,14 +133,13 @@ describe('HeatmapLegendVisibilitySettings', () => {
 
     // With the correct property
     expect(configChange).toHaveProperty("legendIsVisible", false);
-
-    // QUESTION: Should I check that the object doesn't have any other property? (example: check size is 1)
+    expect(configChange).toMatchSnapshot();
   });
 
   it('responds correctly to clicking to show', () => {
     // Click show button
     act(() => {
-      component.find('ForwardRef').props().onChange({ "target": { "value": true } });
+      component.find(Radio.Group).props().onChange({ "target": { "value": true } });
     });
 
     let storeActions = store.getActions();
@@ -156,5 +155,6 @@ describe('HeatmapLegendVisibilitySettings', () => {
 
     // With the correct property
     expect(configChange).toHaveProperty("legendIsVisible", true);
+    expect(configChange).toMatchSnapshot();
   });
 });

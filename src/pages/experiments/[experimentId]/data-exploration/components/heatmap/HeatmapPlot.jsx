@@ -29,6 +29,7 @@ const HeatmapPlot = (props) => {
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
   const [vegaData, setVegaData] = useState(null);
+  const [vegaSpec, setVegaSpec] = useState(spec);
 
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
@@ -56,6 +57,11 @@ const HeatmapPlot = (props) => {
 
     dispatch(loadComponentConfig(experimentId, 'interactiveHeatmap', 'interactiveHeatmap'));
   }, [heatmapSettings]);
+
+  useEffect(() => {
+    const legends = legendIsVisible ? spec.legends : [];
+    setVegaSpec({ ...spec, legends });
+  }, [legendIsVisible]);
 
   useEffect(() => {
     if (!selectedGenes || selectedGenes.length === 0) {
@@ -305,13 +311,10 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  let specCopy = { ...spec };
-  specCopy.legends = legendIsVisible ? spec.legends : [];
-
   return (
     <div>
       <VegaHeatmap
-        spec={specCopy}
+        spec={vegaSpec}
         data={vegaData}
         showAxes={selectedGenes?.length <= 30}
         rowsNumber={selectedGenes.length}
