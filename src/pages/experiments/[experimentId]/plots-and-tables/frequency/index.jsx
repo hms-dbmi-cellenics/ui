@@ -82,7 +82,7 @@ const frequencyPlot = () => {
 
   const getMetadataClusters = (name) => (
     hierarchy.filter((cluster) => (
-      cluster.key === name))[0].children
+      cluster.key === name))[0]?.children
   );
 
   const generateData = () => {
@@ -93,7 +93,7 @@ const frequencyPlot = () => {
     const metadataClusters = getMetadataClusters(config.metadata);
     // if no metadata clusters are available
     // a plot is made with the louvain clusters
-    if (!metadataClusters.length) {
+    if (!metadataClusters) {
       const sum = calculateSum(chosenClusters, []);
       chosenClusters.forEach((clusterName) => {
         const x = 1;
