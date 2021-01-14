@@ -8,9 +8,9 @@ import {
 const SelectData = (props) => {
   const { onUpdate, config, cellSets } = props;
 
-  // const getMetadataOptions = (parent) => {
+  const getMetadataOptions = (parent) => {
 
-  // };
+  };
   const getMetadataParents = () => {
     const options = cellSets.hierarchy.map(({ key }) => ({ value: key }));
 
@@ -46,7 +46,7 @@ SelectData.propTypes = {
 };
 export default SelectData;
 
-/*
+
 <select name='clients'>
   {this.props.clients && this.props.clients.length > 0 && this.props.clients.map((e, key) => (
     <optgroup key={key} label={e.name}>
@@ -54,4 +54,17 @@ export default SelectData;
     </optgroup>
   ))}
 </select>;
-*/
+
+<Select defaultValue="lucy" style={{ width: 200 }} onChange={handleChange}>
+  <OptGroup label="Manager">
+    <Option value="jack">Jack</Option>
+    <Option value="lucy">Lucy</Option>
+  </OptGroup>
+  <OptGroup label="Engineer">
+    <Option value="Yiminghe">yiminghe</Option>
+  </OptGroup>
+</Select>,
+
+
+
+
