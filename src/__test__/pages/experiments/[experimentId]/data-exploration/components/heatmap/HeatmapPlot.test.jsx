@@ -8,8 +8,6 @@ import { ExclamationCircleFilled } from '@ant-design/icons';
 import HeatmapPlot from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/HeatmapPlot';
 import VegaHeatmap from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/VegaHeatmap';
 
-import { CELL_SETS_LOADING } from '../../../../../../../redux/actionTypes/cellSets';
-
 jest.mock('localforage');
 jest.mock('../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/VegaHeatmap');
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
@@ -215,31 +213,5 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
     expect(component.find(ExclamationCircleFilled).length).toEqual(1);
-  });
-
-  it('dispatches loadCellSets action when no cell sets are in the store', () => {
-    const store = mockStore({
-      ...initialState,
-      cellSets: {
-        ...initialState.cellSets,
-        hierarchy: [],
-        properties: [],
-        loading: false,
-        error: true,
-      },
-    });
-
-    component = mount(
-      <Provider store={store}>
-        <HeatmapPlot experimentId='123' width={200} height={200} />
-      </Provider>,
-    );
-
-    expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(store.getActions().length).toEqual(1);
-    const [loadAction] = store.getActions();
-
-    expect(loadAction.type).toBe(CELL_SETS_LOADING);
-    expect(loadAction).toMatchSnapshot();
   });
 });
