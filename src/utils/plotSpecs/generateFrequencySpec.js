@@ -74,7 +74,7 @@ const generateSpec = (config) => {
         name: 'color',
         type: 'ordinal',
         range: { data: 'data', field: 'color' },
-        domain: { data: 'data', field: 'c' },
+        domain: { data: 'data', field: 'c', sort: true },
       },
     ],
 

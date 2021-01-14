@@ -9,14 +9,14 @@ import {
 const SelectCellSets = (props) => {
   const { onUpdate, config, cellSets } = props;
   const changeClusters = (val) => {
-    const newValue = val.key.charAt(0).toLowerCase() + val.key.slice(1);
+    const newValue = val.key.toLowerCase();
     onUpdate({ chosenClusters: newValue });
   };
   let menuValue = config.metadata;
   let disabled = false;
   let toolTipText;
   const changeMetadata = (val) => {
-    const newValue = val.key.charAt(0).toLowerCase() + val.key.slice(1);
+    const newValue = val.key.toLowerCase();
     onUpdate({ metadata: newValue });
   };
 

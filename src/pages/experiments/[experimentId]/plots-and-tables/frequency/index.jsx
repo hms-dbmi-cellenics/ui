@@ -92,7 +92,7 @@ const frequencyPlot = () => {
 
     const metadataClusters = getMetadataClusters(config.metadata);
     // if no metadata clusters are available
-    // a plot is made with the louvain clusters
+    // a plot is made with the cellset clusters
     if (!metadataClusters) {
       const sum = calculateSum(chosenClusters, []);
       chosenClusters.forEach((clusterName) => {
