@@ -5,15 +5,15 @@ import {
 import {
   Button, Dropdown, Menu, Tooltip,
 } from 'antd';
-import PropTypes from 'prop-types';
+
 import HeatmapMetadataTrackSettings from './HeatmapMetadataTrackSettings';
 import HeatmapGroupBySettings from './HeatmapGroupBySettings';
 import HeatmapExpressionValuesSettings from './HeatmapExpressionValuesSettings';
 import HeatmapLegendVisibilitySettings from './HeatmapLegendVisibilitySettings';
 
-const { SubMenu, Item } = Menu;
+const { SubMenu } = Menu;
 
-const HeatmapSettings = (props) => {
+const HeatmapSettings = () => {
   const renderMenu = () => (
     <Menu size='small'>
       <SubMenu key='expression-values' title='Expression values' icon={<></>}>
@@ -45,9 +45,5 @@ const HeatmapSettings = (props) => {
     </Dropdown>
   );
 };
-HeatmapSettings.defaultProps = {
-};
-HeatmapSettings.propTypes = {
-  experimentId: PropTypes.string.isRequired,
-};
+
 export default HeatmapSettings;
