@@ -40,9 +40,13 @@ const HeatmapPlot = (props) => {
   const properties = useSelector((state) => state.cellSets.properties);
   const hidden = useSelector((state) => state.cellSets.hidden);
 
-  const heatmapSettings = useSelector((state) => state.componentConfig.interactiveHeatmap?.config) || {};
-                                      
-  const { selectedTracks, groupedTrack, expressionValue, legendIsVisible } = heatmapSettings;
+  const heatmapSettings = useSelector(
+    (state) => state.componentConfig.interactiveHeatmap?.config,
+  ) || {};
+
+  const {
+    selectedTracks, groupedTrack, expressionValue, legendIsVisible,
+  } = heatmapSettings;
 
   const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
@@ -94,7 +98,14 @@ const HeatmapPlot = (props) => {
 
     const data = createVegaData(selectedGenes, trackOrder, expressionData);
     setDataDebounce(data);
-  }, [loadingGenes, hidden, selectedTracks, groupedTrack, maxCells, properties, hierarchy, expressionValue]);
+  }, [loadingGenes,
+    hidden,
+    selectedTracks,
+    groupedTrack,
+    maxCells,
+    properties,
+    hierarchy,
+    expressionValue]);
 
   useEffect(() => {
     // Set sampler rate back to 1000 if the width is large anough.
@@ -231,12 +242,10 @@ const HeatmapPlot = (props) => {
     const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
 
     // Mapping between expressionValue with key to data
-    const dataDict = {
+    const dataSource = {
       raw: 'expression',
       zScore: 'zScore',
     };
-
-    const dataSource = dataDict[expressionValue];
 
     // Directly generate heatmap data.
     cartesian(
@@ -250,7 +259,7 @@ const HeatmapPlot = (props) => {
         data.heatmapData.push({
           cellId,
           gene,
-          expression: expression.data[gene][dataSource][cellId],
+          expression: expression.data[gene][dataSource[expressionValue]][cellId],
         });
       },
     );
