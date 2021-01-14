@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {
-  Form, Radio, Button, Select,
+  Form, Select, Button,
 } from 'antd';
 import DiffExprCompute from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/differential-expression-tool/DiffExprCompute';
 
@@ -14,7 +14,6 @@ jest.mock('localforage');
 jest.mock('../../../../../../../utils/environment', () => false);
 
 const { Item } = Form;
-
 const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({
@@ -38,43 +37,14 @@ const store = mockStore({
         cellIds: ['six'],
         color: '#0000FF',
       },
-      'sample-a': {
-        name: 'sample a',
-        key: 'sample-a',
-        cellIds: ['one', 'two'],
-        color: '#00FF00',
-      },
-      'sample-b': {
-        name: 'sample b',
-        key: 'sample-b',
-        cellIds: ['three', 'four', 'five'],
-        color: '#FF0000',
-      },
-      'sample-c': {
-        name: 'sample c',
-        key: 'sample-c',
-        cellIds: ['six'],
-        color: '#0000FF',
-      },
       louvain: {
         name: 'Louvain clusters',
         key: 'louvain',
-        type: 'cellSets',
-        cellIds: [],
         rootNode: true,
       },
       scratchpad: {
         name: 'Custom selections',
         key: 'scratchpad',
-        type: 'cellSets',
-        cellIds: [],
-        rootNode: true,
-      },
-      sample: {
-        name: 'Samples',
-        key: 'sample',
-        type: 'metadataCategorical',
-        cellIds: [],
         rootNode: true,
       },
     },
@@ -84,12 +54,7 @@ const store = mockStore({
         children: [{ key: 'cluster-a' }, { key: 'cluster-b' }, { key: 'cluster-c' }],
       },
       {
-        key: 'sample',
-        children: [{ key: 'sample-a' }, { key: 'sample-b' }, { key: 'sample-c' }],
-      },
-      {
         key: 'scratchpad',
-        children: [],
       },
     ],
   },
@@ -122,7 +87,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          cellSets={{ cellSet: null, compareWith: null, basis: null }}
+          cellSets={{ cellSet: 'Select a cell set', compareWith: 'Select a cell set' }}
           onCompute={jest.fn()}
         />
       </Provider>,
@@ -133,14 +98,11 @@ describe('DiffExprCompute', () => {
     // There should be one form.
     expect(form.length).toEqual(1);
 
-    // It should have a radio button group at the top
-    expect(form.find(Radio.Group).length).toEqual(1);
+    // It should have two items.
+    expect(form.find(Item).length).toEqual(3);
 
-    // It should have four items with the particular values.
-    expect(form.find(Item).length).toEqual(4);
-    expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare cell set:');
-    expect(form.find(Item).at(1).getElement().props.label).toEqual('between sample/group:');
-    expect(form.find(Item).at(2).getElement().props.label).toEqual('and sample/group:');
+    // The first one should be a radio group titled Compare
+    expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare:');
 
     // The second one should be a disabled button.
     const button = form.find(Button);
@@ -148,53 +110,65 @@ describe('DiffExprCompute', () => {
     expect(button.getElement().props.disabled).toEqual(true);
   });
 
-  it('clicking on the second comparison option changes items in form', () => {
+  it('renders correctly with versus rest comparison method', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          cellSets={{ cellSet: null, compareWith: null, basis: null }}
+          cellSets={{ cellSet: 'Select a cell set', compareWith: 'Select a cell set' }}
+          comparison='Versus rest'
           onCompute={jest.fn()}
         />
       </Provider>,
     );
 
-    let form = component.find(Form);
+    const form = component.find(Form);
 
-    // There should be one form.
     expect(form.length).toEqual(1);
+    expect(form.find(Item).length).toEqual(3);
 
-    // It should have a radio button group at the top
-    expect(form.find(Radio.Group).length).toEqual(1);
+    expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare:');
 
-    // Clicking on the second one should re-render the tool.
-    const { onChange } = form.find(Radio.Group).getElement().props;
+    // Second item is now a single select.
+    expect(form.find(Item).at(1).find(Select).length).toEqual(1);
 
-    onChange({ target: { value: 'within' } });
+    const button = form.find(Item).at(2).find(Button);
+    expect(button.length).toEqual(1);
+    expect(button.getElement().props.disabled).toEqual(true);
+  });
 
-    component.update();
-    form = component.find(Form);
+  it('renders correctly with across sets comparison method', () => {
+    const component = mount(
+      <Provider store={store}>
+        <DiffExprCompute
+          experimentId='1234'
+          cellSets={{ cellSet: 'Select a cell set', compareWith: 'Select a cell set' }}
+          comparison='Across sets'
+          onCompute={jest.fn()}
+        />
+      </Provider>,
+    );
 
-    // The form should still have four items.
-    expect(form.find(Item).length).toEqual(4);
+    const form = component.find(Form);
 
-    // It should have four items with different labels.
-    expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare cell set:');
-    expect(form.find(Item).at(1).getElement().props.label).toEqual('and cell set:');
-    expect(form.find(Item).at(2).getElement().props.label).toEqual('within sample/group:');
+    expect(form.length).toEqual(1);
+    expect(form.find(Item).length).toEqual(3);
 
-    // The second one should be a disabled button.
+    expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare:');
+
+    expect(form.find(Item).at(1).find(Select).length).toEqual(1);
+
     const button = form.find(Button);
     expect(button.length).toEqual(1);
     expect(button.getElement().props.disabled).toEqual(true);
   });
 
-  it('the `versus` option renders correctly when a set is already selected', () => {
+  it('the select options render correctly', () => {
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          cellSets={{ cellSet: 'sample/sample-a', compareWith: null, basis: null }}
+          cellSets={{ cellSet: 'Select a cell set', compareWith: 'Select a cell set' }}
           comparison='Versus rest'
           onCompute={jest.fn()}
         />
@@ -202,22 +176,68 @@ describe('DiffExprCompute', () => {
     );
 
     // Find the option groups
-    const selectField = component.find(Select).at(2).getElement().props.children;
-    expect(selectField.length).toEqual(3);
+    const select = component.find(Form).find(Item).at(1).find(Select)
+      .getElement();
 
-    // The first one should not be rendered.
-    expect(selectField[0]).toEqual(false);
+    // There should be two, one per root category.
+    expect(select.props.children.length).toEqual(2);
 
-    // The second one should be the 'background' option.
-    expect(selectField[1].key).toEqual('background');
+    // The default value should be displayed initially.
+    expect(select.props.value).toEqual('Select a cell set');
 
-    // The third one should be the other metadata.
-    const metadata = selectField[2];
+    // The labels should be appropriately generated.
+    select.props.children.forEach((rootNode, i) => {
+      const { key, label } = rootNode;
 
-    // The hierarchy should match.
-    metadata.forEach((rootNode, i) => {
-      expect(rootNode.key === store.getState().cellSets.hierarchy[i]);
-      expect(rootNode.props.label === store.getState().cellSets.properties[rootNode.key].name);
+      expect(key === store.getState().cellSets.hierarchy[i]);
+      expect(label === store.getState().cellSets.properties[key].name);
     });
+  });
+
+  it('renders correctly with previously selected clusters', () => {
+    const component = mount(
+      <Provider store={store}>
+        <DiffExprCompute
+          experimentId='1234'
+          cellSets={{ cellSet: 'cluster-a', compareWith: 'cluster-b' }}
+          comparison='Across sets'
+          onCompute={jest.fn()}
+        />
+      </Provider>,
+    );
+
+    const form = component.find(Form);
+    const firstSelected = form.find(Item).at(0).find(Select).at(0)
+      .getElement();
+    const secondSelected = form.find(Item).at(1).find(Select).at(0)
+      .getElement();
+
+    expect(firstSelected.props.value).toEqual('cluster-a');
+    expect(secondSelected.props.value).toEqual('cluster-b');
+
+    expect(form.find(Button)
+      .getElement().props.disabled).toEqual(false);
+  });
+
+  it('button is disabled when second select is not selected', () => {
+    const component = mount(
+      <Provider store={store}>
+        <DiffExprCompute
+          experimentId='1234'
+          cellSets={{ cellSet: 'cluster-a', compareWith: 'Select a cell set' }}
+          comparison='Versus rest'
+          onCompute={jest.fn()}
+        />
+      </Provider>,
+    );
+
+    const form = component.find(Form);
+    const firstSelected = form.find(Item).at(0).find(Select).at(0);
+    const secondSelected = form.find(Item).at(1).find(Select).at(0);
+
+    expect(firstSelected.getElement().props.value).toEqual('cluster-a');
+    expect(secondSelected.getElement().props.value).toEqual('Select a cell set');
+    expect(form.find(Button)
+      .getElement().props.disabled).toEqual(true);
   });
 });

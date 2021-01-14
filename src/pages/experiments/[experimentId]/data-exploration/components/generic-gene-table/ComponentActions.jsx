@@ -16,7 +16,7 @@ const geneOperations = {
 };
 
 const ComponentActions = (props) => {
-  const { experimentId, name, componentType } = props;
+  const { experimentId, componentType } = props;
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
   const displayedGenes = useSelector((state) => state.genes.expression?.views[componentType]?.data);
@@ -55,7 +55,7 @@ const ComponentActions = (props) => {
   return (
     <Dropdown arrow type='link' size='small' overlay={menu} trigger={['click']}>
       <Button type='link' size='small'>
-        {name}
+        {componentType}
         {' '}
         ...
       </Button>
@@ -69,7 +69,6 @@ ComponentActions.defaultProps = {
 ComponentActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
   componentType: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
 };
 
 export default ComponentActions;
