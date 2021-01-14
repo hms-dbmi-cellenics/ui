@@ -5,21 +5,29 @@ import {
   Select,
 } from 'antd';
 
+const { Option, OptGroup } = Select;
 const SelectData = (props) => {
   const { onUpdate, config, cellSets } = props;
-
+  const { hierarchy, properties } = cellSets;
   const getMetadataOptions = (parent) => {
-
+    const children = hierarchy.filter((cluster) => (
+      cluster.key === parent))[0]?.children;
+    console.log('lol');
+    return children;
   };
   const getMetadataParents = () => {
-    const options = cellSets.hierarchy.map(({ key }) => ({ value: key }));
+    const options = hierarchy.map(({ key }) => ({ value: key }));
 
     const filteredOptions = options.filter((element) => (
-      cellSets.properties[element.value].type === 'metadataCategorical'
+      properties[element.value].type === 'metadataCategorical'
     ));
     return filteredOptions;
   };
-  /*
+  const handleChange = (value) => {
+    onUpdate({ selectedSample: value });
+  };
+  const parents = getMetadataParents();
+
   return (
     <>
       <div>
@@ -28,16 +36,22 @@ const SelectData = (props) => {
       </div>
       <Form.Item>
         <Select
-          value={{ key: config.metadata }}
-          onChange={(value) => changeMetadata(value)}
-          labelInValue
-          style={{ width: '100%' }}
-          placeholder='Select cell set...'
-          options={generateCellOptions('metadataCategorical')}
-        />
+          defaultValue={config.selectedSample}
+          style={{ width: 200 }}
+          onChange={(value) => handleChange(value)}
+        >
+          <Option value='All'>All</Option>
+          {parents.map((parent) => (
+            <OptGroup label={properties[parent.value].name}>
+              {getMetadataOptions(parent.value).map((option) => (
+                <Option value={option.key}>{properties[option.key].name}</Option>
+              ))}
+            </OptGroup>
+          ))}
+        </Select>
       </Form.Item>
     </>
-  ); */
+  );
 };
 SelectData.propTypes = {
   onUpdate: PropTypes.func.isRequired,
@@ -45,26 +59,3 @@ SelectData.propTypes = {
   cellSets: PropTypes.object.isRequired,
 };
 export default SelectData;
-
-
-<select name='clients'>
-  {this.props.clients && this.props.clients.length > 0 && this.props.clients.map((e, key) => (
-    <optgroup key={key} label={e.name}>
-      {e.projects.map((project, projectKey) => <option key={projectKey} value={project.id}>{project.name}</option>)}
-    </optgroup>
-  ))}
-</select>;
-
-<Select defaultValue="lucy" style={{ width: 200 }} onChange={handleChange}>
-  <OptGroup label="Manager">
-    <Option value="jack">Jack</Option>
-    <Option value="lucy">Lucy</Option>
-  </OptGroup>
-  <OptGroup label="Engineer">
-    <Option value="Yiminghe">yiminghe</Option>
-  </OptGroup>
-</Select>,
-
-
-
-
