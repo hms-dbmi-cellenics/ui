@@ -5,7 +5,7 @@ import sendWork from './sendWork';
 import isBrowser from './environment';
 import CustomError from './customError';
 
-import { zScore } from './calculations';
+import { calculateZScore } from './postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
 
@@ -62,17 +62,10 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body) => {
   const responseData = JSON.parse(response.results[0].body);
 
   // Preprocessing data before entering cache
-  // Calculate z-score from response data
-  Object.keys(responseData).forEach((gene) => {
-    const { mean, stdev } = responseData[gene];
-    responseData[gene].zScore = [];
-    responseData[gene].expression.forEach((value) => {
-      responseData[gene].zScore.push(zScore(value, mean, stdev));
-    });
-  });
+  const processedData = calculateZScore(responseData);
 
   Object.keys(missingDataKeys).forEach(async (gene) => {
-    await cache.set(missingDataKeys[gene], responseData[gene]);
+    await cache.set(missingDataKeys[gene], processedData[gene]);
   });
 
   return responseData;
