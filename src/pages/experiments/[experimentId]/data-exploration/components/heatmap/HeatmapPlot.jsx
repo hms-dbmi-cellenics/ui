@@ -29,7 +29,6 @@ const HeatmapPlot = (props) => {
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
   const [vegaData, setVegaData] = useState(null);
-  const [vegaSpec, setVegaSpec] = useState(spec);
 
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
@@ -38,13 +37,9 @@ const HeatmapPlot = (props) => {
   const properties = useSelector((state) => state.cellSets.properties);
   const hidden = useSelector((state) => state.cellSets.hidden);
 
-  const heatmapSettings = useSelector(
-    (state) => state.componentConfig.interactiveHeatmap?.config,
-  ) || {};
+  const heatmapSettings = useSelector((state) => state.componentConfig.interactiveHeatmap?.config) || {};
+  const { selectedTracks, groupedTrack, expressionValue } = heatmapSettings;
 
-  const {
-    selectedTracks, groupedTrack, legendIsVisible, expressionValue,
-  } = heatmapSettings;
   const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
@@ -61,11 +56,6 @@ const HeatmapPlot = (props) => {
 
     dispatch(loadComponentConfig(experimentId, 'interactiveHeatmap', 'interactiveHeatmap'));
   }, [heatmapSettings]);
-
-  useEffect(() => {
-    const legends = legendIsVisible ? spec.legends : [];
-    setVegaSpec({ ...spec, legends });
-  }, [legendIsVisible]);
 
   useEffect(() => {
     if (!selectedGenes || selectedGenes.length === 0) {
@@ -85,14 +75,7 @@ const HeatmapPlot = (props) => {
 
     const data = createVegaData(selectedGenes, trackOrder, expressionData);
     setDataDebounce(data);
-  }, [loadingGenes,
-    hidden,
-    selectedTracks,
-    groupedTrack,
-    maxCells,
-    properties,
-    hierarchy,
-    expressionValue]);
+  }, [loadingGenes, hidden, selectedTracks, groupedTrack, maxCells, properties, hierarchy, expressionValue]);
 
   useEffect(() => {
     // Set sampler rate back to 1000 if the width is large anough.
@@ -333,7 +316,7 @@ const HeatmapPlot = (props) => {
   return (
     <div>
       <VegaHeatmap
-        spec={vegaSpec}
+        spec={spec}
         data={vegaData}
         showAxes={selectedGenes?.length <= 30}
         rowsNumber={selectedGenes.length}

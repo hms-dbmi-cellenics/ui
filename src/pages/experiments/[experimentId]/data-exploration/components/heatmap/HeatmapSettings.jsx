@@ -5,23 +5,23 @@ import {
 import {
   Button, Dropdown, Menu, Tooltip,
 } from 'antd';
+import PropTypes from 'prop-types';
 import HeatmapMetadataTrackSettings from './HeatmapMetadataTrackSettings';
 import HeatmapGroupBySettings from './HeatmapGroupBySettings';
 import HeatmapExpressionValuesSettings from './HeatmapExpressionValuesSettings';
-import HeatmapLegendVisibilitySettings from './HeatmapLegendVisibilitySettings';
 
-const { SubMenu } = Menu;
+const { SubMenu, Item } = Menu;
 
-const HeatmapSettings = () => {
+const HeatmapSettings = (props) => {
   const renderMenu = () => (
     <Menu size='small'>
       <SubMenu key='expression-values' title='Expression values' icon={<></>}>
         <HeatmapExpressionValuesSettings />
       </SubMenu>
-      <SubMenu key='legend' title='Legend' icon={<></>}>
-        <HeatmapLegendVisibilitySettings />
-      </SubMenu>
-      <SubMenu key='metadata-tracks' title='Metadata tracks...' icon={<></>}>
+      <Item key='toggle-legend' disabled>
+        Hide legend
+      </Item>
+      <SubMenu key='metadata-tracks' title='Metadata tracks' icon={<></>}>
         <HeatmapMetadataTrackSettings />
       </SubMenu>
       <SubMenu key='group-by' title='Group by' icon={<></>}>
@@ -45,5 +45,9 @@ const HeatmapSettings = () => {
     </Dropdown>
   );
 };
-
+HeatmapSettings.defaultProps = {
+};
+HeatmapSettings.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+};
 export default HeatmapSettings;
