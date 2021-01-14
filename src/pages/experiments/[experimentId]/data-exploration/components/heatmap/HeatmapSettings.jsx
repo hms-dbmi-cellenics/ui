@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import HeatmapMetadataTrackSettings from './HeatmapMetadataTrackSettings';
 import HeatmapGroupBySettings from './HeatmapGroupBySettings';
 import HeatmapExpressionValuesSettings from './HeatmapExpressionValuesSettings';
+import HeatmapLegendVisibilitySettings from './HeatmapLegendVisibilitySettings';
 
 const { SubMenu, Item } = Menu;
 
@@ -18,16 +19,15 @@ const HeatmapSettings = (props) => {
       <SubMenu key='expression-values' title='Expression values' icon={<></>}>
         <HeatmapExpressionValuesSettings />
       </SubMenu>
-      <Item key='toggle-legend' disabled>
-        Hide legend
-      </Item>
-      <SubMenu key='metadata-tracks' title='Metadata tracks' icon={<></>}>
+      <SubMenu key='legend' title='Legend' icon={<></>}>
+        <HeatmapLegendVisibilitySettings />
+      </SubMenu>
+      <SubMenu key='metadata-tracks' title='Metadata tracks...' icon={<></>}>
         <HeatmapMetadataTrackSettings />
       </SubMenu>
       <SubMenu key='group-by' title='Group by' icon={<></>}>
         <HeatmapGroupBySettings />
       </SubMenu>
-
     </Menu>
   );
   return (
