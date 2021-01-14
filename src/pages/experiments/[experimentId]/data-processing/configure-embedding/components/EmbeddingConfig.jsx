@@ -31,7 +31,7 @@ const EmbeddingConfig = () => {
         </span>
       )}
       >
-        <InputNumber defaultValue={0.01} step={0.1} />
+        <InputNumber defaultValue={0.1} step={0.1} />
       </Form.Item>
       <Form.Item label='Distance metric:'>
         <Select defaultValue='euclidean'>
@@ -51,7 +51,7 @@ const EmbeddingConfig = () => {
         <InputNumber defaultValue={30} min={5} />
       </Form.Item>
       <Form.Item label='Learning rate:'>
-        <InputNumber defaultValue={200} min={10} max={1000} />
+        <InputNumber defaultValue={200} min={10} max={1000} step={10} />
       </Form.Item>
     </>
   );

@@ -4,8 +4,7 @@
 import React from 'react';
 
 import {
-  Row, Col, Space, Button, Tooltip,
-  Collapse, PageHeader,
+  Row, Col, Space, Button, Tooltip, PageHeader,
 } from 'antd';
 import {
   InfoCircleOutlined,
