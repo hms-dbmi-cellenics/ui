@@ -9,7 +9,10 @@ const { Option } = Select;
 const { Panel } = Collapse;
 const { Text } = Typography;
 
-const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed compress points together. Larger values ensure embedded points are more evenly distributed, while smaller values allow the algorithm to optimise more accurately with regard to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
+const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed compress points together. '
+  + 'Larger values ensure embedded points are more evenly distributed, while '
+  + 'smaller values allow the algorithm to optimise more accurately with regard '
+  + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
 
 const EmbeddingConfig = () => {
   const [embeddingMethod, setEmbeddingMethod] = useState('umap');
