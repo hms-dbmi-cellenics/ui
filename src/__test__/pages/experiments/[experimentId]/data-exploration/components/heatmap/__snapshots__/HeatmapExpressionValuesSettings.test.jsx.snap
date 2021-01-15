@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HeatmapExpressionValuesSettings choosing another setting will trigger the appropriate action 1`] = `
+Object {
+  "payload": Object {
+    "configChange": Object {
+      "expressionValue": "zScore",
+    },
+    "plotUuid": "interactiveHeatmap",
+  },
+  "type": "componentConfig/update",
+}
+`;

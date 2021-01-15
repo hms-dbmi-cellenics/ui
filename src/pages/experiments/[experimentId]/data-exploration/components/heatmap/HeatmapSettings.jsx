@@ -5,31 +5,31 @@ import {
 import {
   Button, Dropdown, Menu, Tooltip,
 } from 'antd';
+
 import HeatmapMetadataTrackSettings from './HeatmapMetadataTrackSettings';
 import HeatmapGroupBySettings from './HeatmapGroupBySettings';
+import HeatmapExpressionValuesSettings from './HeatmapExpressionValuesSettings';
 import HeatmapLegendVisibilitySettings from './HeatmapLegendVisibilitySettings';
 
-const { SubMenu, Item } = Menu;
+const { SubMenu } = Menu;
 
 const HeatmapSettings = () => {
   const renderMenu = () => (
     <Menu size='small'>
-      <Item key='expression-values' disabled>
-        Expression values...
-      </Item>
+      <SubMenu key='expression-values' title='Expression values' icon={<></>}>
+        <HeatmapExpressionValuesSettings />
+      </SubMenu>
       <SubMenu key='legend' title='Legend' icon={<></>}>
         <HeatmapLegendVisibilitySettings />
       </SubMenu>
       <SubMenu key='metadata-tracks' title='Metadata tracks...' icon={<></>}>
         <HeatmapMetadataTrackSettings />
       </SubMenu>
-      <SubMenu key='group-by' title='Group by...' icon={<></>}>
+      <SubMenu key='group-by' title='Group by' icon={<></>}>
         <HeatmapGroupBySettings />
       </SubMenu>
-
     </Menu>
   );
-
   return (
     <Dropdown arrow type='link' size='small' overlay={renderMenu()} trigger={['click']}>
       <Tooltip title='Settings'>
@@ -44,12 +44,6 @@ const HeatmapSettings = () => {
       </Tooltip>
     </Dropdown>
   );
-};
-
-HeatmapSettings.defaultProps = {
-};
-
-HeatmapSettings.propTypes = {
 };
 
 export default HeatmapSettings;

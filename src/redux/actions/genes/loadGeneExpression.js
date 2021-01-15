@@ -56,6 +56,7 @@ const loadGeneExpression = (
     if (Object.keys(data).length === 0) {
       throw Error('There is no information available for selected genes.');
     }
+
     dispatch({
       type: GENES_EXPRESSION_LOADED,
       payload: {
