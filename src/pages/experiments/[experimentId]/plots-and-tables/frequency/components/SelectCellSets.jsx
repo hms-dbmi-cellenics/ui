@@ -8,6 +8,8 @@ import {
 
 const SelectCellSets = (props) => {
   const { onUpdate, config, cellSets } = props;
+  const firstLetterUppercase = (word) => word.charAt(0).toUpperCase() + word.slice(1);
+
   const changeClusters = (val) => {
     const newValue = val.key.toLowerCase();
     onUpdate({ chosenClusters: newValue });
@@ -35,7 +37,7 @@ const SelectCellSets = (props) => {
     const upperCaseOptions = [];
     filteredOptions.forEach((option) => {
       upperCaseOptions.push({
-        value: option.value.charAt(0).toUpperCase() + option.value.slice(1),
+        value: firstLetterUppercase(option.value),
       });
     });
     return upperCaseOptions;
@@ -56,8 +58,7 @@ const SelectCellSets = (props) => {
         <Tooltip title={toolTipText}>
           <Select
             value={{
-              key: menuValue.charAt(0).toUpperCase()
-                + menuValue.slice(1),
+              key: firstLetterUppercase(menuValue),
             }}
             onChange={(value) => changeMetadata(value)}
             labelInValue
@@ -74,8 +75,7 @@ const SelectCellSets = (props) => {
       <Form.Item>
         <Select
           value={{
-            key: config.chosenClusters.charAt(0).toUpperCase()
-              + config.chosenClusters.slice(1),
+            key: firstLetterUppercase(config.chosenClusters),
           }}
           onChange={(value) => changeClusters(value)}
           labelInValue

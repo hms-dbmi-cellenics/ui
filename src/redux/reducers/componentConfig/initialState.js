@@ -139,7 +139,6 @@ const frequencyInitialConfig = {
   frequencyType: 'proportional',
   metadata: 'condition',
   legendEnabled: true,
-  metadataDisabled: false,
   chosenClusters: 'louvain',
   currentData: 'sample',
   legendPosition: 'top',
