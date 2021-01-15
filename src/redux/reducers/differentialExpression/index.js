@@ -3,11 +3,15 @@ import {
   DIFF_EXPR_LOADING,
   DIFF_EXPR_LOADED,
   DIFF_EXPR_ERROR,
+  DIFF_EXPR_COMPARISON_TYPE_SET,
+  DIFF_EXPR_COMPARISON_GROUP_SET,
 } from '../../actionTypes/differentialExpression';
 
 import differentialExpressionLoading from './differentialExpressionLoading';
 import differentialExpressionLoaded from './differentialExpressionLoaded';
 import differentialExpressionError from './differentialExpressionError';
+import differentialExpressionSetType from './differentialExpressionSetType';
+import differentialExpressionSetGroup from './differentialExpressionSetGroup';
 
 const differentialExpressionReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -19,6 +23,12 @@ const differentialExpressionReducer = (state = initialState, action) => {
     }
     case DIFF_EXPR_ERROR: {
       return differentialExpressionError(state, action);
+    }
+    case DIFF_EXPR_COMPARISON_TYPE_SET: {
+      return differentialExpressionSetType(state, action);
+    }
+    case DIFF_EXPR_COMPARISON_GROUP_SET: {
+      return differentialExpressionSetGroup(state, action);
     }
     default: {
       return state;

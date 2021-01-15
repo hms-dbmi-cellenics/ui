@@ -32,7 +32,7 @@ import {
   updatePlotConfig,
   loadPlotConfig,
 } from '../../../../../redux/actions/componentConfig/index';
-import loadDifferentialExpression from '../../../../../redux/actions/loadDifferentialExpression';
+import loadDifferentialExpression from '../../../../../redux/actions/differentialExpression/loadDifferentialExpression';
 import PlatformError from '../../../../../components/PlatformError';
 
 const { Panel } = Collapse;

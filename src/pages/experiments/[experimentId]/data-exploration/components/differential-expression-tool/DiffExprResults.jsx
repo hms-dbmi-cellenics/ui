@@ -11,7 +11,7 @@ import { LeftOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import GeneTable from '../generic-gene-table/GeneTable';
 import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTableUpdateReason';
-import loadDifferentialExpression from '../../../../../../redux/actions/loadDifferentialExpression';
+import loadDifferentialExpression from '../../../../../../redux/actions/differentialExpression/loadDifferentialExpression';
 
 const DiffExprResults = (props) => {
   const {

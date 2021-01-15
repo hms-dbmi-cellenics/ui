@@ -1,8 +1,8 @@
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
-} from '../actionTypes/differentialExpression';
+} from '../../actionTypes/differentialExpression';
 
-import sendWork from '../../utils/sendWork';
+import sendWork from '../../../utils/sendWork';
 
 const REQUEST_TIMEOUT = 60;
 const loadDifferentialExpression = (
