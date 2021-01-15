@@ -14,7 +14,7 @@ import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
 import PlotStyling from '../../filter-cells/components/PlotStyling';
-import EmbeddingConfig from './EmbeddingConfig';
+import CalculationConfig from './CalculationConfig';
 import UMAP from './new_data.json';
 
 class EmbeddingPreview extends React.Component {
@@ -486,7 +486,7 @@ class EmbeddingPreview extends React.Component {
           </Col>
 
           <Col span={5}>
-            <EmbeddingConfig />
+            <CalculationConfig />
             <PlotStyling
               config={config}
               onUpdate={this.updatePlotWithChanges}
