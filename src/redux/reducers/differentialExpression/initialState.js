@@ -9,9 +9,11 @@ const initialState = {
   comparison: {
     type: 'between',
     group: {
-      cellSet: null,
-      compareWith: null,
-      basis: null,
+      between: {
+        cellSet: null,
+        compareWith: null,
+        basis: null,
+      },
     },
   },
 };

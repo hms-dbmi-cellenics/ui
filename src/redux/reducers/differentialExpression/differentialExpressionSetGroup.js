@@ -1,14 +1,19 @@
 const differentialExpressionSetGroup = (state, action) => {
-  const { cellSet, basis, compareWith } = action.payload;
+  const {
+    cellSet, basis, compareWith, type,
+  } = action.payload;
 
   return {
     ...state,
     comparison: {
       ...state.comparison,
       group: {
-        cellSet,
-        compareWith,
-        basis,
+        ...state.comparison.group,
+        [type]: {
+          cellSet,
+          compareWith,
+          basis,
+        },
       },
     },
   };

@@ -31,11 +31,11 @@ const DiffExprCompute = (props) => {
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const [isFormValid, setIsFormValid] = useState(false);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
-  const compared = useSelector((state) => state.differentialExpression.comparison.type);
+  const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
   // const [selectedGroups, setSelectedGroups] = useState(cellSets);
   // const [type, setType] = useState(diffExprType || ComparisonType.between);
 
-  // `between sampoles/groups` makes no sense if there is no metadata. First,
+  // `between samples/groups` makes no sense if there is no metadata. First,
   // assume there is and correct this if it's necessary.
   const [hasMetadata, setHasMetadata] = useState(false);
 
@@ -58,40 +58,42 @@ const DiffExprCompute = (props) => {
     setHasMetadata(numMetadata > 0);
 
     // Update the hierarchies if a previously selected set were to be deleted.
-    dispatch(
-      setComparisonGroup(
-        _.mapValues(comparisonGroup, (cellSetKey) => {
-          if (!cellSetKey) {
-            return null;
-          }
-
-        const splitKey = cellSetKey.split('/')[1];
-
-        if (cellSetKey === 'all' || cellSetKey === 'background' || splitKey === 'rest') {
-          return cellSetKey;
-        }
-
-        if (!properties[splitKey]) {
+    _.mapValues(comparisonGroup[selectedComparison], (cellSetKey) => {
+        if (!cellSetKey) {
           return null;
         }
 
+      const splitKey = cellSetKey.split('/')[1];
+
+      if (cellSetKey === 'all' || cellSetKey === 'background' || splitKey === 'rest') {
         return cellSetKey;
-      }))
-    );
+      }
+
+      if (!properties[splitKey]) {
+        return null;
+      }
+
+      return cellSetKey;
+    })
+    dispatch(
+      setComparisonGroup({
+        type: selectedComparison,
+        ...comparisonGroup[selectedComparison],
+    }))
   }, [hierarchy, properties]);
 
   const validateForm = () => {
-    if (!comparisonGroup.cellSet) {
+    if (!comparisonGroup[selectedComparison]?.cellSet) {
       setIsFormValid(false);
       return;
     }
 
-    if (!comparisonGroup.compareWith) {
+    if (!comparisonGroup[selectedComparison]?.compareWith) {
       setIsFormValid(false);
       return;
     }
 
-    if (!comparisonGroup.basis) {
+    if (!comparisonGroup[selectedComparison]?.basis) {
       setIsFormValid(false);
       return;
     }
@@ -102,7 +104,7 @@ const DiffExprCompute = (props) => {
   // Validate form when the groups selected changes.
   useEffect(() => {
     validateForm();
-  }, [comparisonGroup]);
+  }, [comparisonGroup[selectedComparison]]);
 
   /**
    * Updates the selected clusters.
@@ -111,7 +113,8 @@ const DiffExprCompute = (props) => {
    */
   const onSelectCluster = (cellSet, option) => {
     dispatch(setComparisonGroup({
-      ...comparisonGroup,
+      ...comparisonGroup[selectedComparison],
+      type: selectedComparison,
       [option]:
         cellSet,
     }));
@@ -133,25 +136,25 @@ const DiffExprCompute = (props) => {
       if (!children || children.length === 0) { return (<></>); }
 
       // If this is the `compareWith` option, we need to add `the rest` under the group previously selected.
-      if (option === 'compareWith' && comparisonGroup.cellSet?.startsWith(`${rootKey}/`)) {
+      if (option === 'compareWith' && comparisonGroup[selectedComparison]?.cellSet?.startsWith(`${rootKey}/`)) {
         children.unshift({ key: `rest`, name: `Rest of ${properties[rootKey].name}` });
       }
 
       const shouldDisable = (key) => {
         // Should always disable something already selected.
-        if (Object.values(comparisonGroup).includes(key)) {
+        if (Object.values(comparisonGroup[selectedComparison]).includes(key)) {
           return true;
         }
 
         // Should disable everything in `compareWith` that is not under the same root group as `cellSet`.
-        if (option === 'compareWith' && !comparisonGroup.cellSet?.startsWith(`${rootKey}/`)) {
+        if (option === 'compareWith' && !comparisonGroup[selectedComparison]?.cellSet?.startsWith(`${rootKey}/`)) {
           return true;
         }
 
         return false;
       }
 
-      if (comparisonGroup) {
+      if (comparisonGroup[selectedComparison]) {
         return children.map(({ key, name }) => {
           const uniqueKey = `${rootKey}/${key}`;
 
@@ -168,7 +171,9 @@ const DiffExprCompute = (props) => {
           placeholder={`Select a ${placeholder}...`}
           style={{ width: 200 }}
           onChange={(cellSet) => onSelectCluster(cellSet, option)}
-          value={comparisonGroup[option]}
+          value={
+            comparisonGroup[selectedComparison]? comparisonGroup[selectedComparison][option] : null
+          }
           size='small'
         >
           {
@@ -205,7 +210,17 @@ const DiffExprCompute = (props) => {
     <Form size='small' layout='vertical'>
 
       <Radio.Group onChange={(e) => {
+
         dispatch(setComparisonType(e.target.value));
+
+        // If comparisonType key is not available in group, add to grroup
+        dispatch(setComparisonGroup({
+        type: e.target.value,
+          cellSet: null,
+          compareWith: null,
+          basis: null,
+        }))
+
       }} defaultValue={ComparisonType.between}>
         <Radio
           style={radioStyle}
@@ -221,7 +236,7 @@ const DiffExprCompute = (props) => {
         </Radio>
       </Radio.Group>
 
-      {compared === ComparisonType.between
+      {selectedComparison === ComparisonType.between
         ? (
           <>
             {renderClusterSelectorItem({
@@ -281,7 +296,7 @@ const DiffExprCompute = (props) => {
         <Button
           size='small'
           disabled={!isFormValid}
-          onClick={() => onCompute(compared, comparisonGroup)}
+          onClick={() => onCompute(selectedComparison, comparisonGroup[selectedComparison])}
         >
           Compute
         </Button>
