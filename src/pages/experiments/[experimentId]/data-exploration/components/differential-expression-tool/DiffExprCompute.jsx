@@ -297,7 +297,7 @@ const DiffExprCompute = (props) => {
         <Button
           size='small'
           disabled={!isFormValid}
-          onClick={() => onCompute(selectedComparison, comparisonGroup[selectedComparison])}
+          onClick={() => onCompute()}
         >
           Compute
         </Button>

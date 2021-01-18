@@ -5,8 +5,6 @@ import PropTypes from 'prop-types';
 import DiffExprCompute from './DiffExprCompute';
 import DiffExprResults from './DiffExprResults';
 
-import { setComparisonGroup, setComparisonType } from '../../../../../../redux/actions/differentialExpression';
-
 const DiffExprView = {
   results: 'results',
   compute: 'compute',
@@ -22,13 +20,7 @@ const DiffExprManager = (props) => {
 
   const [currentView, setCurrentView] = useState(view);
 
-  const onCompute = (type, newSelectedCellSets) => {
-    if (!_.isEqual(newSelectedCellSets, comparisonGroup)) {
-      setComparisonGroup(newSelectedCellSets);
-    }
-
-    setComparisonType(type);
-
+  const onCompute = () => {
     setCurrentView(DiffExprView.results);
   };
 
@@ -51,9 +43,9 @@ const DiffExprManager = (props) => {
       <DiffExprResults
         onGoBack={onGoBack}
         cellSets={{
-          cellSet: comparisonGroup.cellSet.split('/')[1],
-          compareWith: comparisonGroup.compareWith.split('/')[1] || comparisonGroup.compareWith,
-          basis: comparisonGroup.basis.split('/')[1] || comparisonGroup.basis,
+          cellSet: comparisonGroup[comparisonType].cellSet.split('/')[1],
+          compareWith: comparisonGroup[comparisonType].compareWith.split('/')[1] || comparisonGroup[comparisonType].compareWith,
+          basis: comparisonGroup[comparisonType].basis.split('/')[1] || comparisonGroup[comparisonType].basis,
         }}
         experimentId={experimentId}
         width={width}
