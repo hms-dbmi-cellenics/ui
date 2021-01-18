@@ -4,7 +4,7 @@ import {
 
 const setComparisonType = (type) => async (dispatch) => {
   dispatch({
-    action: DIFF_EXPR_COMPARISON_TYPE_SET,
+    type: DIFF_EXPR_COMPARISON_TYPE_SET,
     payload: { type },
   });
 };

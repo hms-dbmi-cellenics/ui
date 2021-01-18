@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import DiffExprCompute from './DiffExprCompute';
 import DiffExprResults from './DiffExprResults';
+
+import { setComparisonGroup, setComparisonType } from '../../../../../../redux/actions/differentialExpression';
 
 const DiffExprView = {
   results: 'results',
@@ -14,22 +17,17 @@ const DiffExprManager = (props) => {
     experimentId, view, width, height,
   } = props;
 
-  const [selectedGroups, setSelectedGroups] = useState({
-    cellSet: null,
-    compareWith: null,
-    basis: null,
-  });
-
-  const [diffExprType, setDiffExprType] = useState(null);
+  const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
+  const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
 
   const [currentView, setCurrentView] = useState(view);
 
   const onCompute = (type, newSelectedCellSets) => {
-    if (!_.isEqual(newSelectedCellSets, selectedGroups)) {
-      setSelectedGroups(newSelectedCellSets);
+    if (!_.isEqual(newSelectedCellSets, comparisonGroup)) {
+      setComparisonGroup(newSelectedCellSets);
     }
 
-    setDiffExprType(type);
+    setComparisonType(type);
 
     setCurrentView(DiffExprView.results);
   };
@@ -43,8 +41,8 @@ const DiffExprManager = (props) => {
       <DiffExprCompute
         experimentId={experimentId}
         onCompute={onCompute}
-        cellSets={selectedGroups}
-        diffExprType={diffExprType}
+        cellSets={comparisonGroup}
+        diffExprType={comparisonType}
       />
     );
   }
@@ -53,9 +51,9 @@ const DiffExprManager = (props) => {
       <DiffExprResults
         onGoBack={onGoBack}
         cellSets={{
-          cellSet: selectedGroups.cellSet.split('/')[1],
-          compareWith: selectedGroups.compareWith.split('/')[1] || selectedGroups.compareWith,
-          basis: selectedGroups.basis.split('/')[1] || selectedGroups.basis,
+          cellSet: comparisonGroup.cellSet.split('/')[1],
+          compareWith: comparisonGroup.compareWith.split('/')[1] || comparisonGroup.compareWith,
+          basis: comparisonGroup.basis.split('/')[1] || comparisonGroup.basis,
         }}
         experimentId={experimentId}
         width={width}

@@ -10,6 +10,7 @@ import {
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { loadCellSets } from '../../../../../../redux/actions/cellSets';
+import { setComparisonGroup, setComparisonType } from '../../../../../../redux/actions/differentialExpression';
 
 import composeTree from '../../../../../../utils/composeTree';
 
@@ -21,7 +22,7 @@ const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
 
 const DiffExprCompute = (props) => {
   const {
-    experimentId, onCompute, cellSets, diffExprType,
+    experimentId, onCompute, cellSets,
   } = props;
 
   const dispatch = useDispatch();
@@ -29,8 +30,10 @@ const DiffExprCompute = (props) => {
   const properties = useSelector((state) => state.cellSets.properties);
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const [isFormValid, setIsFormValid] = useState(false);
-  const [selectedGroups, setSelectedGroups] = useState(cellSets);
-  const [type, setType] = useState(diffExprType || ComparisonType.between);
+  const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
+  const compared = useSelector((state) => state.differentialExpression.comparison.type);
+  // const [selectedGroups, setSelectedGroups] = useState(cellSets);
+  // const [type, setType] = useState(diffExprType || ComparisonType.between);
 
   // `between sampoles/groups` makes no sense if there is no metadata. First,
   // assume there is and correct this if it's necessary.
@@ -50,42 +53,45 @@ const DiffExprCompute = (props) => {
     const numMetadata = Object.values(properties).filter((o) => o.type === 'metadataCategorical').length;
 
     if (!numMetadata) {
-      setType(ComparisonType.within);
+      dispatch(setComparisonType(ComparisonType.within));
     }
     setHasMetadata(numMetadata > 0);
 
     // Update the hierarchies if a previously selected set were to be deleted.
-    setSelectedGroups(_.mapValues(selectedGroups, (cellSetKey) => {
-      if (!cellSetKey) {
-        return null;
-      }
+    dispatch(
+      setComparisonGroup(
+        _.mapValues(comparisonGroup, (cellSetKey) => {
+          if (!cellSetKey) {
+            return null;
+          }
 
-      const splitKey = cellSetKey.split('/')[1];
+        const splitKey = cellSetKey.split('/')[1];
 
-      if (cellSetKey === 'all' || cellSetKey === 'background' || splitKey === 'rest') {
+        if (cellSetKey === 'all' || cellSetKey === 'background' || splitKey === 'rest') {
+          return cellSetKey;
+        }
+
+        if (!properties[splitKey]) {
+          return null;
+        }
+
         return cellSetKey;
-      }
-
-      if (!properties[splitKey]) {
-        return null;
-      }
-
-      return cellSetKey;
-    }));
+      }))
+    );
   }, [hierarchy, properties]);
 
   const validateForm = () => {
-    if (!selectedGroups.cellSet) {
+    if (!comparisonGroup.cellSet) {
       setIsFormValid(false);
       return;
     }
 
-    if (!selectedGroups.compareWith) {
+    if (!comparisonGroup.compareWith) {
       setIsFormValid(false);
       return;
     }
 
-    if (!selectedGroups.basis) {
+    if (!comparisonGroup.basis) {
       setIsFormValid(false);
       return;
     }
@@ -96,7 +102,7 @@ const DiffExprCompute = (props) => {
   // Validate form when the groups selected changes.
   useEffect(() => {
     validateForm();
-  }, [selectedGroups]);
+  }, [comparisonGroup]);
 
   /**
    * Updates the selected clusters.
@@ -104,11 +110,11 @@ const DiffExprCompute = (props) => {
    * @param {string} option The option string (`cellSet` or `compareWith`).
    */
   const onSelectCluster = (cellSet, option) => {
-    setSelectedGroups({
-      ...selectedGroups,
+    dispatch(setComparisonGroup({
+      ...comparisonGroup,
       [option]:
         cellSet,
-    });
+    }));
   };
 
   /**
@@ -127,25 +133,25 @@ const DiffExprCompute = (props) => {
       if (!children || children.length === 0) { return (<></>); }
 
       // If this is the `compareWith` option, we need to add `the rest` under the group previously selected.
-      if (option === 'compareWith' && selectedGroups.cellSet?.startsWith(`${rootKey}/`)) {
+      if (option === 'compareWith' && comparisonGroup.cellSet?.startsWith(`${rootKey}/`)) {
         children.unshift({ key: `rest`, name: `Rest of ${properties[rootKey].name}` });
       }
 
       const shouldDisable = (key) => {
         // Should always disable something already selected.
-        if (Object.values(selectedGroups).includes(key)) {
+        if (Object.values(comparisonGroup).includes(key)) {
           return true;
         }
 
         // Should disable everything in `compareWith` that is not under the same root group as `cellSet`.
-        if (option === 'compareWith' && !selectedGroups.cellSet?.startsWith(`${rootKey}/`)) {
+        if (option === 'compareWith' && !comparisonGroup.cellSet?.startsWith(`${rootKey}/`)) {
           return true;
         }
 
         return false;
       }
 
-      if (selectedGroups) {
+      if (comparisonGroup) {
         return children.map(({ key, name }) => {
           const uniqueKey = `${rootKey}/${key}`;
 
@@ -162,7 +168,7 @@ const DiffExprCompute = (props) => {
           placeholder={`Select a ${placeholder}...`}
           style={{ width: 200 }}
           onChange={(cellSet) => onSelectCluster(cellSet, option)}
-          value={selectedGroups[option]}
+          value={comparisonGroup[option]}
           size='small'
         >
           {
@@ -199,23 +205,23 @@ const DiffExprCompute = (props) => {
     <Form size='small' layout='vertical'>
 
       <Radio.Group onChange={(e) => {
-        setType(e.target.value);
-
-        setSelectedGroups({
-          cellSet: null,
-          compareWith: null,
-          basis: null,
-        });
-      }} value={type}>
-        <Radio style={radioStyle} value={ComparisonType.between} disabled={!hasMetadata}>
+        dispatch(setComparisonType(e.target.value));
+      }} defaultValue={ComparisonType.between}>
+        <Radio
+          style={radioStyle}
+          value={ComparisonType.between}
+          disabled={!hasMetadata}
+        >
           Compare a selected cell set between samples/groups
         </Radio>
-        <Radio style={radioStyle} value={ComparisonType.within}>
+        <Radio
+          style={radioStyle}
+          value={ComparisonType.within}>
           Compare cell sets within a sample/group
         </Radio>
       </Radio.Group>
 
-      {type === ComparisonType.between
+      {compared === ComparisonType.between
         ? (
           <>
             {renderClusterSelectorItem({
@@ -275,7 +281,7 @@ const DiffExprCompute = (props) => {
         <Button
           size='small'
           disabled={!isFormValid}
-          onClick={() => onCompute(diffExprType, selectedGroups)}
+          onClick={() => onCompute(compared, comparisonGroup)}
         >
           Compute
         </Button>
@@ -284,13 +290,8 @@ const DiffExprCompute = (props) => {
   );
 };
 
-DiffExprCompute.defaultProps = {
-  diffExprType: null,
-};
-
 DiffExprCompute.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  diffExprType: PropTypes.string,
   onCompute: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
 };
