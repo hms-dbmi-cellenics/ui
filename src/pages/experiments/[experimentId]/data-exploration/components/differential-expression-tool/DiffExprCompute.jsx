@@ -172,7 +172,7 @@ const DiffExprCompute = (props) => {
           style={{ width: 200 }}
           onChange={(cellSet) => onSelectCluster(cellSet, option)}
           value={
-            comparisonGroup[selectedComparison]? comparisonGroup[selectedComparison][option] : null
+            comparisonGroup[selectedComparison][option] ?? null
           }
           size='small'
         >
@@ -215,10 +215,11 @@ const DiffExprCompute = (props) => {
 
         // If comparisonType key is not available in group, add to grroup
         dispatch(setComparisonGroup({
-        type: e.target.value,
+          type: e.target.value,
           cellSet: null,
           compareWith: null,
           basis: null,
+          ...comparisonGroup[e.target.value]
         }))
 
       }} defaultValue={ComparisonType.between}>
