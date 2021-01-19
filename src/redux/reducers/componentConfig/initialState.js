@@ -36,6 +36,7 @@ const embeddingContinuousInitialConfig = {
   spec: '1.0.0',
   width: 700,
   height: 550,
+  selectedSample: 'All',
   pointSize: 5,
   colGradient: 'viridis',
   toggleInvert: '#FFFFFF',
@@ -137,10 +138,9 @@ const volcanoInitialConfig = {
 };
 const frequencyInitialConfig = {
   frequencyType: 'proportional',
-  metadata: 'condition',
+  metadata: '',
   legendEnabled: true,
-  chosenClusters: 'louvain',
-  currentData: 'sample',
+  chosenClusters: '',
   legendPosition: 'top',
   spec: '1.0.0',
   width: 500,
@@ -169,7 +169,6 @@ const frequencyInitialConfig = {
   labelShow: 1,
   labelFont: 2,
   labelsEnabled: true,
-  selectedCellSet: 'louvain',
   testVar: null,
 };
 

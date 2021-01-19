@@ -16,6 +16,7 @@ import PointDesign from '../components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
+import SelectData from './components/SelectData';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -27,6 +28,7 @@ import { initialPlotConfigStates } from '../../../../../redux/reducers/component
 import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
 import PlatformError from '../../../../../components/PlatformError';
+import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -56,30 +58,41 @@ const EmbeddingContinuousPlot = () => {
   );
   const expressionError = useSelector((state) => state.genes.expression.error);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
+  const cellSets = useSelector((state) => state.cellSets);
+  const { properties } = cellSets;
 
   const router = useRouter();
   const { experimentId } = router.query;
 
   useEffect(() => {
-    if (isBrowser) {
-      if (!data) {
-        dispatch(loadEmbedding(experimentId, embeddingType));
-      }
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-      if (!selectedExpression) {
-        dispatch(loadGeneExpression(experimentId, [selectedGene.current]));
-      }
+    if (!experimentId || !isBrowser) {
+      return;
     }
+    if (!data) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+    }
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!selectedExpression) {
+      dispatch(loadGeneExpression(experimentId, [selectedGene.current]));
+    }
+    dispatch(loadCellSets(experimentId));
   }, [experimentId]);
 
   // obj is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
-
+  const filterSamples = () => {
+    if (config.selectedSample === 'All') {
+      return data;
+    }
+    const cellIds = Array.from(properties[config.selectedSample].cellIds);
+    const filteredData = data.filter((id) => cellIds.includes(data.indexOf(id)));
+    return filteredData;
+  };
   const generateVegaData = () => ({
     expression: selectedExpression,
-    embedding: _.cloneDeep(data),
+    embedding: _.cloneDeep(filterSamples()),
   });
 
   if (!config) {
@@ -107,7 +120,14 @@ const EmbeddingContinuousPlot = () => {
       return (
         <PlatformError
           description={error}
-          onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+        />
+      );
+    }
+    if (cellSets.error) {
+      return (
+        <PlatformError
+          description={cellSets.error}
+          onClick={() => dispatch(loadCellSets(experimentId))}
         />
       );
     }
@@ -118,6 +138,7 @@ const EmbeddingContinuousPlot = () => {
       || loading
       || !isBrowser
       || expressionLoading.includes(selectedGene.current)
+      || cellSets.loading
     ) {
       return (
         <center>
@@ -163,6 +184,13 @@ const EmbeddingContinuousPlot = () => {
                 enterButton='Search'
                 defaultValue={selectedGene.current}
                 onSearch={(val) => changeDislayedGene(val)}
+              />
+            </Panel>
+            <Panel header='Select Data' key='15'>
+              <SelectData
+                config={config}
+                onUpdate={updatePlotWithChanges}
+                cellSets={cellSets}
               />
             </Panel>
           </Collapse>
