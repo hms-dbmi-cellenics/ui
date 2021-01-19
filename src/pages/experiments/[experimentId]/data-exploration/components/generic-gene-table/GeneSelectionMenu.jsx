@@ -35,7 +35,7 @@ const GeneSelectionMenu = (props) => {
           />
         ) : (<></>)}
       </Space>
-      <ComponentActions experimentId={experimentId} componentType={COMPONENT_TYPE} />
+      <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
     </>
   );
 };

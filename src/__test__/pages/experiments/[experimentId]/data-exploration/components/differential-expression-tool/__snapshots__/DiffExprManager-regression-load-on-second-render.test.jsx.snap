@@ -13,6 +13,7 @@ exports[`DiffExprManager regression test -- diff exp would not reload after \`go
 Object {
   "payload": Object {
     "cellSets": Object {
+      "basis": "all",
       "cellSet": "cluster-2",
       "compareWith": "rest",
     },
@@ -68,6 +69,7 @@ exports[`DiffExprManager regression test -- diff exp would not reload after \`go
 Object {
   "payload": Object {
     "cellSets": Object {
+      "basis": "all",
       "cellSet": "cluster-3",
       "compareWith": "rest",
     },
@@ -123,6 +125,7 @@ exports[`DiffExprManager regression test -- diff exp would not reload after \`go
 Object {
   "payload": Object {
     "cellSets": Object {
+      "basis": "all",
       "cellSet": "cluster-1",
       "compareWith": "rest",
     },

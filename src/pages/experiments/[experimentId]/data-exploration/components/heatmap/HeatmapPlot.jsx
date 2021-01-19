@@ -12,6 +12,7 @@ import VegaHeatmap from './VegaHeatmap';
 import PlatformError from '../../../../../../components/PlatformError';
 import { updateCellInfo } from '../../../../../../redux/actions/cellInfo';
 import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 import { loadComponentConfig } from '../../../../../../redux/actions/componentConfig';
 
 import { union } from '../../../../../../utils/cellSetOperations';
@@ -29,16 +30,23 @@ const HeatmapPlot = (props) => {
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
   const [vegaData, setVegaData] = useState(null);
+  const [vegaSpec, setVegaSpec] = useState(spec);
 
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
 
+  const cellSetsLoading = useSelector((state) => state.cellSets.loading);
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const properties = useSelector((state) => state.cellSets.properties);
   const hidden = useSelector((state) => state.cellSets.hidden);
 
-  const heatmapSettings = useSelector((state) => state.componentConfig.interactiveHeatmap?.config) || {};
-  const { selectedTracks, groupedTrack } = heatmapSettings;
+  const heatmapSettings = useSelector(
+    (state) => state.componentConfig.interactiveHeatmap?.config,
+  ) || {};
+
+  const {
+    selectedTracks, groupedTrack, expressionValue, legendIsVisible,
+  } = heatmapSettings;
 
   const { error } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
@@ -49,6 +57,13 @@ const HeatmapPlot = (props) => {
     setVegaData(data);
   }, 1500, { leading: true }), []);
 
+  /**
+   * Loads cell set on initial render if it does not already exist in the store.
+   */
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, []);
+
   useEffect(() => {
     if (!_.isEmpty(heatmapSettings)) {
       return;
@@ -56,6 +71,14 @@ const HeatmapPlot = (props) => {
 
     dispatch(loadComponentConfig(experimentId, 'interactiveHeatmap', 'interactiveHeatmap'));
   }, [heatmapSettings]);
+
+  useEffect(() => {
+    if (hierarchy.length === 0 || cellSetsLoading) {
+      return;
+    }
+    const legends = legendIsVisible ? spec.legends : [];
+    setVegaSpec({ ...spec, legends });
+  }, [legendIsVisible]);
 
   useEffect(() => {
     if (!selectedGenes || selectedGenes.length === 0) {
@@ -75,7 +98,14 @@ const HeatmapPlot = (props) => {
 
     const data = createVegaData(selectedGenes, trackOrder, expressionData);
     setDataDebounce(data);
-  }, [loadingGenes, hidden, selectedTracks, groupedTrack, maxCells, properties, hierarchy]);
+  }, [loadingGenes,
+    hidden,
+    selectedTracks,
+    groupedTrack,
+    maxCells,
+    properties,
+    hierarchy,
+    expressionValue]);
 
   useEffect(() => {
     // Set sampler rate back to 1000 if the width is large anough.
@@ -211,6 +241,12 @@ const HeatmapPlot = (props) => {
     // eslint-disable-next-line no-shadow
     const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
 
+    // Mapping between expressionValue with key to data
+    const dataSource = {
+      raw: 'expression',
+      zScore: 'zScore',
+    };
+
     // Directly generate heatmap data.
     cartesian(
       data.geneOrder, data.cellOrder,
@@ -223,7 +259,7 @@ const HeatmapPlot = (props) => {
         data.heatmapData.push({
           cellId,
           gene,
-          expression: expression.data[gene].expression[cellId],
+          expression: expression.data[gene][dataSource[expressionValue]][cellId],
         });
       },
     );
@@ -308,7 +344,7 @@ const HeatmapPlot = (props) => {
   return (
     <div>
       <VegaHeatmap
-        spec={spec}
+        spec={vegaSpec}
         data={vegaData}
         showAxes={selectedGenes?.length <= 30}
         rowsNumber={selectedGenes.length}

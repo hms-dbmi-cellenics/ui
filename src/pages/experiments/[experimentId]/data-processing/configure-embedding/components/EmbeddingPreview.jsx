@@ -4,8 +4,7 @@
 import React from 'react';
 
 import {
-  Row, Col, Slider, Space, Input, Button, Tooltip,
-  InputNumber, Form, Select, Collapse, PageHeader,
+  Row, Col, Space, Button, Tooltip, PageHeader,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -15,10 +14,9 @@ import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
 import PlotStyling from '../../filter-cells/components/PlotStyling';
+import CalculationConfig from './CalculationConfig';
 import UMAP from './new_data.json';
 
-const { Option } = Select;
-const { Panel } = Collapse;
 class EmbeddingPreview extends React.Component {
   constructor(props) {
     super(props);
@@ -176,7 +174,6 @@ class EmbeddingPreview extends React.Component {
           }],
         }],
 
-
         scales: [
           {
             name: 'x',
@@ -269,7 +266,6 @@ class EmbeddingPreview extends React.Component {
               enter: {
                 x: { scale: 'x', field: 'um1' },
                 y: { scale: 'y', field: 'um2' },
-
 
                 text: {
                   field: 'cluster_id',
@@ -452,7 +448,6 @@ class EmbeddingPreview extends React.Component {
         />
         <Row>
           <Col span={15}>
-
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
 
@@ -490,79 +485,14 @@ class EmbeddingPreview extends React.Component {
             </Space>
           </Col>
 
-
           <Col span={5}>
-            <Collapse defaultActiveKey={['1']}>
-              <Panel header='Filtering Settings' key='1'>
-                <h1>Embedding Settings</h1>
-                <Form.Item
-                  label='Name:'
-                >
-                  <Input
-                    placeholder='Embedding1'
-                  />
-                </Form.Item>
-                <Space direction='vertical' style={{ width: '90%' }} />
-                <Form.Item
-                  label='Dimensions to use:'
-                >
-                  <Slider
-                    defaultValue={15}
-                    min={0}
-                    max={30}
-                  />
-                </Form.Item>
-                <Collapse>
-                  <Panel header='Advanced settings'>
-                    <Form.Item
-                      label='Method:'
-                    >
-                      <Select
-                        defaultValue='option1'
-                      >
-                        <Option value='option1'>UMAP</Option>
-                        <Option value='option2'>t-SNE</Option>
-                        <Option value='option3'>PCA</Option>
-                      </Select>
-                    </Form.Item>
-                    <Form.Item label='Min distance:'>
-                      <InputNumber
-                        defaultValue={0.01}
-                      // onPressEnter={(val) => changeCellSize(val)}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      label='Reduced space:'
-                    >
-                      <Select
-                        defaultValue='option1'
-                      >
-                        <Option value='option1'>PCA</Option>
-                        <Option value='option2'>option2</Option>
-                        <Option value='option3'>option3</Option>
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      label='Distance metric:'
-                    >
-                      <Select
-                        defaultValue='option1'
-                      >
-                        <Option value='option1'>Euclidean</Option>
-                        <Option value='option2'>option2</Option>
-                        <Option value='option3'>option3</Option>
-                      </Select>
-                    </Form.Item>
-                  </Panel>
-                </Collapse>
-              </Panel>
-              <PlotStyling
-                config={config}
-                onUpdate={this.updatePlotWithChanges}
-                updatePlotWithChanges={this.updatePlotWithChanges}
-                legendMenu
-              />
-            </Collapse>
+            <CalculationConfig />
+            <PlotStyling
+              config={config}
+              onUpdate={this.updatePlotWithChanges}
+              updatePlotWithChanges={this.updatePlotWithChanges}
+              legendMenu
+            />
           </Col>
         </Row>
       </>

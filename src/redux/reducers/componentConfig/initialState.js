@@ -176,6 +176,8 @@ const frequencyInitialConfig = {
 const interactiveHeatmapInitialConfig = {
   selectedTracks: ['louvain'],
   groupedTrack: 'louvain',
+  expressionValue: 'raw',
+  legendIsVisible: true,
 };
 
 const initialPlotConfigStates = {

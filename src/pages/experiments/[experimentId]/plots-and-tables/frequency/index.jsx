@@ -40,8 +40,9 @@ const frequencyPlot = () => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
-  const { loading, error } = cellSets;
-  const { hierarchy, properties } = cellSets;
+  const {
+    loading, error, hierarchy, properties,
+  } = cellSets;
   const router = useRouter();
   const { experimentId } = router.query;
   const [plotSpec, setPlotSpec] = useState({});
@@ -66,47 +67,70 @@ const frequencyPlot = () => {
 
   const calculateSum = (chosenClusters, metadataIds) => {
     let sum = 0;
-    chosenClusters.map((cellSetCluster) => {
+    if (!metadataIds.length) {
+      chosenClusters.forEach((cellSetCluster) => {
+        sum += properties[cellSetCluster.key].cellIds.size;
+      });
+      return sum;
+    }
+    chosenClusters.forEach((cellSetCluster) => {
       const cellSetIds = Array.from(properties[cellSetCluster.key].cellIds);
       sum += metadataIds.filter((id) => cellSetIds.includes(id)).length;
-      return cellSetIds;
     });
     return sum;
   };
 
   const getMetadataClusters = (name) => (
     hierarchy.filter((cluster) => (
-      cluster.key === name))[0].children
+      cluster.key === name))[0]?.children
   );
 
   const generateData = () => {
-    const data = [];
+    let data = [];
     const chosenClusters = hierarchy.filter((cluster) => (
       cluster.key === config.chosenClusters))[0].children;
 
     const metadataClusters = getMetadataClusters(config.metadata);
-    metadataClusters.map((metadataCluster) => {
+    // if no metadata clusters are available
+    // a plot is made with the cellset clusters
+    if (!metadataClusters) {
+      const sum = calculateSum(chosenClusters, []);
+      chosenClusters.forEach((clusterName) => {
+        const x = 1;
+        const y = properties[clusterName.key].cellIds.size;
+        const cluster = properties[clusterName.key];
+        data = populateData(x, y, cluster, sum, data);
+      });
+      return data;
+    }
+    metadataClusters.forEach((metadataCluster) => {
       const metadataIds = Array.from(properties[metadataCluster.key].cellIds);
       const sum = calculateSum(chosenClusters, metadataIds);
 
-      chosenClusters.map((clusterName) => {
-        let value;
+      chosenClusters.forEach((clusterName) => {
+        const x = properties[metadataCluster.key].name;
         const cellSetIds = Array.from(properties[clusterName.key].cellIds);
-        value = metadataIds.filter((id) => cellSetIds.includes(id)).length;
+        const y = metadataIds.filter((id) => cellSetIds.includes(id)).length;
+        const cluster = properties[clusterName.key];
 
-        if (config.frequencyType === 'proportional') {
-          value = (value / sum) * 100;
+        if (y !== 0) {
+          data = populateData(x, y, cluster, sum, data);
         }
-        if (value !== 0) {
-          data.push({
-            x: properties[metadataCluster.key].name,
-            y: value,
-            c: properties[clusterName.key].name,
-          });
-        }
-        return data;
       });
-      return 0;
+    });
+    return data;
+  };
+
+  const populateData = (x, y, cluster, sum, data) => {
+    let value = y;
+    if (config.frequencyType === 'proportional') {
+      value = (y / sum) * 100;
+    }
+    data.push({
+      x,
+      y: value,
+      c: cluster.name,
+      color: cluster.color,
     });
     return data;
   };
@@ -123,6 +147,7 @@ const frequencyPlot = () => {
       return (
         <PlatformError
           description={error}
+          onClick={() => loadCellSets(experimentId)}
         />
       );
     }

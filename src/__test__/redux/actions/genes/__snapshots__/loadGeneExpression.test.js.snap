@@ -51,7 +51,16 @@ Object {
   "payload": Object {
     "componentUuid": "asd",
     "data": Object {
-      "a": "b",
+      "geneA": Object {
+        "expression": Array [
+          1,
+        ],
+        "mean": 1,
+        "stdev": 1,
+        "zScore": Array [
+          0,
+        ],
+      },
     },
     "experimentId": "1234",
     "genes": Array [
