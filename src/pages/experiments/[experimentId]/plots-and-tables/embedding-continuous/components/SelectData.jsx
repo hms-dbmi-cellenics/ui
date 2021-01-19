@@ -12,7 +12,6 @@ const SelectData = (props) => {
   const getMetadataOptions = (parent) => {
     const children = hierarchy.filter((cluster) => (
       cluster.key === parent))[0]?.children;
-    console.log('lol');
     return children;
   };
   const getMetadataParents = () => {

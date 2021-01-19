@@ -59,9 +59,7 @@ const EmbeddingContinuousPlot = () => {
   const expressionError = useSelector((state) => state.genes.expression.error);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const cellSets = useSelector((state) => state.cellSets);
-  const {
-    loading2, error2, properties,
-  } = cellSets;
+  const { properties } = cellSets;
 
   const router = useRouter();
   const { experimentId } = router.query;
@@ -124,10 +122,10 @@ const EmbeddingContinuousPlot = () => {
         />
       );
     }
-    if (error2) {
+    if (cellSets.error) {
       return (
         <PlatformError
-          description={error2}
+          description={cellSets.error}
           onClick={() => dispatch(loadCellSets(experimentId))}
         />
       );
@@ -139,7 +137,7 @@ const EmbeddingContinuousPlot = () => {
       || loading
       || !isBrowser
       || expressionLoading.includes(selectedGene.current)
-      || loading2
+      || cellSets.loading
     ) {
       return (
         <center>
