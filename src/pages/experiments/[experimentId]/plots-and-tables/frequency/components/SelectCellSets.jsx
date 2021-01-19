@@ -7,7 +7,9 @@ import {
 } from 'antd';
 
 const SelectCellSets = (props) => {
-  const { onUpdate, config, cellSets } = props;
+  const {
+    onUpdate, config, optionsMetadata, optionsCellSets,
+  } = props;
   const firstLetterUppercase = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
   const changeClusters = (val) => {
@@ -22,27 +24,22 @@ const SelectCellSets = (props) => {
     onUpdate({ metadata: newValue });
   };
 
-  const generateCellOptions = (type) => {
-    if (cellSets.loading) {
-      return [];
+  const getSelectOptions = (options) => {
+    const selectOptions = [];
+    if (!options) {
+      return null;
     }
-    const options = cellSets.hierarchy.map(({ key }) => ({ value: key }));
-    const filteredOptions = options.filter((element) => (
-      cellSets.properties[element.value].type === type
-    ));
-    if (!filteredOptions.length) {
-      return [];
-    }
-    // making the options with capital letters as per requirement
-    const upperCaseOptions = [];
-    filteredOptions.forEach((option) => {
-      upperCaseOptions.push({
-        value: firstLetterUppercase(option.value),
+    Array.from(options).forEach((option) => {
+      selectOptions.push({
+        value: firstLetterUppercase(option.key),
       });
     });
-    return upperCaseOptions;
+    return selectOptions;
   };
-  if (!generateCellOptions('metadataCategorical').length) {
+  const metadataMenu = getSelectOptions(optionsMetadata);
+  const cellSetMenu = getSelectOptions(optionsCellSets);
+
+  if (!metadataMenu) {
     menuValue = 'Sample';
     disabled = true;
     toolTipText = 'The x-axis cannot be changed as this dataset has only a single sample.';
@@ -65,7 +62,7 @@ const SelectCellSets = (props) => {
             disabled={disabled}
             style={{ width: '100%' }}
             placeholder='Select cell set...'
-            options={generateCellOptions('metadataCategorical')}
+            options={metadataMenu}
           />
         </Tooltip>
       </Form.Item>
@@ -81,7 +78,7 @@ const SelectCellSets = (props) => {
           labelInValue
           style={{ width: '100%' }}
           placeholder='Select cell set...'
-          options={generateCellOptions('cellSets')}
+          options={cellSetMenu}
         />
       </Form.Item>
     </>
@@ -90,6 +87,7 @@ const SelectCellSets = (props) => {
 SelectCellSets.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
-  cellSets: PropTypes.object.isRequired,
+  optionsMetadata: PropTypes.array.isRequired,
+  optionsCellSets: PropTypes.array.isRequired,
 };
 export default SelectCellSets;
