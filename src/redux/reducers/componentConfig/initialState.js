@@ -36,6 +36,7 @@ const embeddingContinuousInitialConfig = {
   spec: '1.0.0',
   width: 700,
   height: 550,
+  selectedSample: 'All',
   pointSize: 5,
   colGradient: 'viridis',
   toggleInvert: '#FFFFFF',
