@@ -65,6 +65,28 @@ const frequencyPlot = () => {
     setPlotData(generateData());
   }, [config, properties]);
 
+  const getCellOptions = (type) => {
+    const filteredOptions = hierarchy.filter((element) => (
+      properties[element.key].type === type
+    ));
+    if (!filteredOptions.length) {
+      return [];
+    }
+    return filteredOptions;
+  };
+  const optionsMetadata = getCellOptions('metadataCategorical');
+  const optionsCellSets = getCellOptions('cellSets');
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+    updatePlotWithChanges({
+      metadata: optionsMetadata[0].key,
+      chosenClusters: optionsCellSets[0].key,
+    });
+  }, [experimentId]);
+
   const calculateSum = (chosenClusters, metadataIds) => {
     let sum = 0;
     if (!metadataIds.length) {
@@ -79,7 +101,6 @@ const frequencyPlot = () => {
     });
     return sum;
   };
-
   const getMetadataClusters = (name) => (
     hierarchy.filter((cluster) => (
       cluster.key === name))[0]?.children
@@ -88,8 +109,10 @@ const frequencyPlot = () => {
   const generateData = () => {
     let data = [];
     const chosenClusters = hierarchy.filter((cluster) => (
-      cluster.key === config.chosenClusters))[0].children;
-
+      cluster.key === config.chosenClusters))[0]?.children;
+    if (!chosenClusters) {
+      return [];
+    }
     const metadataClusters = getMetadataClusters(config.metadata);
     // if no metadata clusters are available
     // a plot is made with the cellset clusters
@@ -202,7 +225,8 @@ const frequencyPlot = () => {
               <SelectCellSets
                 onUpdate={updatePlotWithChanges}
                 config={config}
-                cellSets={cellSets}
+                optionsMetadata={optionsMetadata}
+                optionsCellSets={optionsCellSets}
               />
             </Panel>
             <Panel header='Plot Type' key='1'>

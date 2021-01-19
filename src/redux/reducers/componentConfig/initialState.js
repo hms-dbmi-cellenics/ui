@@ -140,7 +140,6 @@ const frequencyInitialConfig = {
   metadata: 'condition',
   legendEnabled: true,
   chosenClusters: 'louvain',
-  currentData: 'sample',
   legendPosition: 'top',
   spec: '1.0.0',
   width: 500,
@@ -169,7 +168,6 @@ const frequencyInitialConfig = {
   labelShow: 1,
   labelFont: 2,
   labelsEnabled: true,
-  selectedCellSet: 'louvain',
   testVar: null,
 };
 
