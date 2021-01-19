@@ -85,7 +85,7 @@ const frequencyPlot = () => {
       metadata: optionsMetadata[0].key,
       chosenClusters: optionsCellSets[0].key,
     });
-  }, [experimentId]);
+  }, [cellSets]);
 
   const calculateSum = (chosenClusters, metadataIds) => {
     let sum = 0;
