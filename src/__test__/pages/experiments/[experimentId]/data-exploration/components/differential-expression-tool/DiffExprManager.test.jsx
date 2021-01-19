@@ -16,7 +16,7 @@ jest.mock('../../../../../../../utils/environment', () => false);
 
 const mockStore = configureMockStore([thunk]);
 
-const emptyStore = mockStore({
+const emptyState = {
   differentialExpression: { ...initialState },
   cellSets: {
     hierarchy: [],
@@ -25,7 +25,30 @@ const emptyStore = mockStore({
   genes: {
     focused: undefined,
   },
-});
+};
+
+const filledState = {
+  ...emptyState,
+  differentialExpression: {
+    ...emptyState.differentialExpression,
+    comparison: {
+      ...emptyState.differentialExpression.comparison,
+      type: 'between',
+      group: {
+        ...emptyState.differentialExpression.comparison.group,
+        between: {
+          ...emptyState.differentialExpression.comparison.group.between,
+          cellSet: 'condition/condition-treated',
+          compareWith: 'condition/condition-control',
+          basis: 'louvain/cluster-a;',
+        },
+      },
+    },
+  },
+};
+
+const emptyStore = mockStore(emptyState);
+const filledStore = mockStore(filledState);
 
 describe('DiffExprManager', () => {
   beforeAll(async () => {
@@ -59,37 +82,36 @@ describe('DiffExprManager', () => {
   });
 
   it('on click of compute with changed parameters, DiffExprManager calls the results view', () => {
+    console.log(filledStore.getState());
     const component = mount(
-      <Provider store={emptyStore}>
+      <Provider store={filledStore}>
         <DiffExprManager experimentId='1234' view='compute' width={100} height={200} />
       </Provider>,
     );
+
     expect(component.find(DiffExprResults).length).toEqual(0);
     expect(component.find(DiffExprCompute).length).toEqual(1);
 
-    const cellSets = { cellSet: 'louvain/cluster-1', compareWith: 'rest', basis: 'all' };
     act(() => {
-      component.find(DiffExprCompute).props().onCompute('between', cellSets);
+      component.find(DiffExprCompute).props().onCompute();
     });
     component.update();
 
     const results = component.find(DiffExprResults);
     expect(results.length).toEqual(1);
-    expect(results.props().cellSets).toEqual({ ...cellSets, cellSet: 'cluster-1' });
 
     expect(component.find(DiffExprCompute).length).toEqual(0);
   });
 
   it('on click of go back, DiffExprManager calls the compute view', () => {
     const component = mount(
-      <Provider store={emptyStore}>
+      <Provider store={filledStore}>
         <DiffExprManager experimentId='1234' view='compute' width={100} height={200} />
       </Provider>,
     );
 
-    const cellSets = { cellSet: 'louvain/cluster-1', compareWith: 'rest', basis: 'all' };
     act(() => {
-      component.find(DiffExprCompute).props().onCompute('between', cellSets);
+      component.find(DiffExprCompute).props().onCompute();
     });
     component.update();
 

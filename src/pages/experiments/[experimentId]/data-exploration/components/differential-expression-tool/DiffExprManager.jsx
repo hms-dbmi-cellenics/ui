@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import DiffExprCompute from './DiffExprCompute';
 import DiffExprResults from './DiffExprResults';
@@ -34,7 +33,6 @@ const DiffExprManager = (props) => {
         experimentId={experimentId}
         onCompute={onCompute}
         cellSets={comparisonGroup}
-        diffExprType={comparisonType}
       />
     );
   }

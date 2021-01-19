@@ -7,6 +7,7 @@ const differentialExpressionSetGroup = (state, action) => {
     ...state,
     comparison: {
       ...state.comparison,
+      type,
       group: {
         ...state.comparison.group,
         [type]: {

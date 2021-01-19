@@ -2,6 +2,16 @@
 
 exports[`differentialExpressionReducer Sets error state on error action 1`] = `
 Object {
+  "comparison": Object {
+    "group": Object {
+      "between": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+    },
+    "type": "between",
+  },
   "properties": Object {
     "cellSets": Object {},
     "data": Array [],
@@ -14,6 +24,16 @@ Object {
 
 exports[`differentialExpressionReducer Sets loaded state on loaded action 1`] = `
 Object {
+  "comparison": Object {
+    "group": Object {
+      "between": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+    },
+    "type": "between",
+  },
   "properties": Object {
     "cellSets": Object {
       "first": "louvain-0",
@@ -66,6 +86,16 @@ Object {
 
 exports[`differentialExpressionReducer Sets loading state on loading action 1`] = `
 Object {
+  "comparison": Object {
+    "group": Object {
+      "between": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+    },
+    "type": "between",
+  },
   "properties": Object {
     "cellSets": Object {},
     "data": Array [],

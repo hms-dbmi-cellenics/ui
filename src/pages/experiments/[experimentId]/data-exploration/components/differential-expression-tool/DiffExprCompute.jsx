@@ -22,7 +22,7 @@ const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
 
 const DiffExprCompute = (props) => {
   const {
-    experimentId, onCompute, cellSets,
+    experimentId, onCompute,
   } = props;
 
   const dispatch = useDispatch();
@@ -32,8 +32,7 @@ const DiffExprCompute = (props) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
-  // const [selectedGroups, setSelectedGroups] = useState(cellSets);
-  // const [type, setType] = useState(diffExprType || ComparisonType.between);
+
 
   // `between samples/groups` makes no sense if there is no metadata. First,
   // assume there is and correct this if it's necessary.
@@ -309,7 +308,6 @@ const DiffExprCompute = (props) => {
 DiffExprCompute.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onCompute: PropTypes.func.isRequired,
-  cellSets: PropTypes.object.isRequired,
 };
 
 export default DiffExprCompute;

@@ -17,7 +17,7 @@ const { Item } = Form;
 
 const mockStore = configureMockStore([thunk]);
 
-const store = mockStore({
+const initialState = {
   cellSets: {
     properties: {
       'cluster-a': {
@@ -93,7 +93,26 @@ const store = mockStore({
       },
     ],
   },
-});
+  differentialExpression: {
+    properties: {
+      data: [],
+      cellSets: {},
+      loading: false,
+      error: false,
+      total: 0,
+    },
+    comparison: {
+      type: 'between',
+      group: {
+        between: {
+          cellSet: null,
+          compareWith: null,
+          basis: null,
+        },
+      },
+    },
+  },
+};
 
 describe('DiffExprCompute', () => {
   beforeAll(async () => {
@@ -118,6 +137,8 @@ describe('DiffExprCompute', () => {
 
   configure({ adapter: new Adapter() });
   it('renders correctly with no comparison method', () => {
+    const store = mockStore(initialState);
+
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
@@ -149,6 +170,25 @@ describe('DiffExprCompute', () => {
   });
 
   it('clicking on the second comparison option changes items in form', () => {
+    const store = mockStore({
+      ...initialState,
+      differentialExpression: {
+        ...initialState.differentialExpression,
+        comparison: {
+          ...initialState.differentialExpression.comparison,
+          type: 'within',
+          group: {
+            ...initialState.differentialExpression.comparison,
+            within: {
+              cellSet: null,
+              compareWith: null,
+              basis: null,
+            },
+          },
+        },
+      },
+    });
+
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
@@ -159,21 +199,13 @@ describe('DiffExprCompute', () => {
       </Provider>,
     );
 
-    let form = component.find(Form);
+    const form = component.find(Form);
 
     // There should be one form.
     expect(form.length).toEqual(1);
 
     // It should have a radio button group at the top
     expect(form.find(Radio.Group).length).toEqual(1);
-
-    // Clicking on the second one should re-render the tool.
-    const { onChange } = form.find(Radio.Group).getElement().props;
-
-    onChange({ target: { value: 'within' } });
-
-    component.update();
-    form = component.find(Form);
 
     // The form should still have four items.
     expect(form.find(Item).length).toEqual(4);
@@ -190,6 +222,8 @@ describe('DiffExprCompute', () => {
   });
 
   it('the `versus` option renders correctly when a set is already selected', () => {
+    const store = mockStore(initialState);
+
     const component = mount(
       <Provider store={store}>
         <DiffExprCompute
