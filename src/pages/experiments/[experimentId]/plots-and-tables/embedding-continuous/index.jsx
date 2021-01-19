@@ -65,16 +65,17 @@ const EmbeddingContinuousPlot = () => {
   const { experimentId } = router.query;
 
   useEffect(() => {
-    if (isBrowser) {
-      if (!data) {
-        dispatch(loadEmbedding(experimentId, embeddingType));
-      }
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-      if (!selectedExpression) {
-        dispatch(loadGeneExpression(experimentId, [selectedGene.current]));
-      }
-      dispatch(loadCellSets(experimentId));
+    if (!experimentId || !isBrowser) {
+      return;
     }
+    if (!data) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+    }
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!selectedExpression) {
+      dispatch(loadGeneExpression(experimentId, [selectedGene.current]));
+    }
+    dispatch(loadCellSets(experimentId));
   }, [experimentId]);
 
   // obj is a subset of what default config has and contains only the things we want change
@@ -83,15 +84,15 @@ const EmbeddingContinuousPlot = () => {
   };
   const filterSamples = () => {
     if (config.selectedSample === 'All') {
-      return generateVegaData(data);
+      return data;
     }
     const cellIds = Array.from(properties[config.selectedSample].cellIds);
     const filteredData = data.filter((id) => cellIds.includes(data.indexOf(id)));
-    return generateVegaData(filteredData);
+    return filteredData;
   };
-  const generateVegaData = (vegaData) => ({
+  const generateVegaData = () => ({
     expression: selectedExpression,
-    embedding: _.cloneDeep(vegaData),
+    embedding: _.cloneDeep(filterSamples()),
   });
 
   if (!config) {
@@ -150,7 +151,7 @@ const EmbeddingContinuousPlot = () => {
       <center>
         <Vega
           spec={generateSpec(config, selectedGene)}
-          data={filterSamples()}
+          data={generateVegaData()}
           renderer='canvas'
         />
       </center>
