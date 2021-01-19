@@ -81,7 +81,7 @@ const initialState = {
   componentConfig: {
     interactiveHeatmap: {
       config: {
-        groupedTrack: 'sample',
+        groupedTracks: ['sample'],
         selectedTracks: ['louvain'],
       },
     },

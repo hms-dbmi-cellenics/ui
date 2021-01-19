@@ -6,7 +6,7 @@ Object {
     "key": "GENE1",
     "store": "genes",
   },
-  "groupedTrack": "louvain",
+  "groupedTracks": ["louvain"],
   "selectedTracks": Array [
     "louvain",
   ],
@@ -19,7 +19,7 @@ Object {
     "key": null,
     "store": null,
   },
-  "groupedTrack": "louvain",
+  "groupedTracks": ["louvain"],
   "selectedTracks": Array [
     "louvain",
   ],
@@ -35,7 +35,7 @@ Object {
     "store": "cellSets",
   },
   "geneName": "G1",
-  "groupedTrack": "louvain",
+  "groupedTracks": ["louvain"],
   "selectedTracks": Array [
     "louvain",
   ],

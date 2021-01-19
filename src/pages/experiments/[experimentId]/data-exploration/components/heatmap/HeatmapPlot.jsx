@@ -45,7 +45,7 @@ const HeatmapPlot = (props) => {
   ) || {};
 
   const {
-    selectedTracks, groupedTrack, expressionValue, legendIsVisible,
+    selectedTracks, groupedTracks, expressionValue, legendIsVisible,
   } = heatmapSettings;
 
   const { error } = expressionData;
@@ -76,6 +76,7 @@ const HeatmapPlot = (props) => {
     if (hierarchy.length === 0 || cellSetsLoading) {
       return;
     }
+    
     const legends = legendIsVisible ? spec.legends : [];
     setVegaSpec({ ...spec, legends });
   }, [legendIsVisible]);
@@ -101,7 +102,7 @@ const HeatmapPlot = (props) => {
   }, [loadingGenes,
     hidden,
     selectedTracks,
-    groupedTrack,
+    groupedTracks,
     maxCells,
     properties,
     hierarchy,
@@ -121,83 +122,143 @@ const HeatmapPlot = (props) => {
     }
   }, [width]);
 
-  const downsample = (groupBy) => {
+  // Defines sorting order according to which group the cell belongs to
+  const positionInGrouping = (cellSetNames, cell) => {
+    let position = 0;
+
+    for (const { key: cellSetName } of cellSetNames) {
+      if (cellsInSet(cellSetName).has(cell)) {
+        return position;
+      }
+
+      position += 1;
+    }
+
+    // If not in grouping set it in the end
+    return position + 1;
+  };
+
+  const cellsInSet = (cellSetName) => {
+    return properties[cellSetName].cellIds;
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  // Returns a set of all cells relevant to the experiment (so the ones belonging to one or more of the enabled sets and not hidden).
+  const getAllRelevantCellIds = (arrayOfcellSetNamesByGroupByKey) => {
     // Find all hidden cells.
     const hiddenCellIds = union(Array.from(hidden), properties);
 
-    // Get how many cells we are sampling.
-    let total = 0;
+    let allCellsInSets = new Set();
 
-    // Create an object for storing the cells grouped by `groupBy`.
-    const groupedCells = {};
-
-    // Find the `groupBy` root node.
-    const rootNode = hierarchy.filter((clusters) => clusters.key === groupBy);
-
-    if (!rootNode.length) {
-      return [];
-    }
-
-    const { children } = rootNode[0];
-
-    // Iterate over each child node.
-    children.forEach(({ key }) => {
-      // Only work with non-hidden cells.
-      const shownCells = Array.from(
-        properties[key].cellIds,
-      ).filter(
-        (id) => !hiddenCellIds.has(id),
-      );
-
-      total += shownCells.length;
-
-      groupedCells[key] = shownCells;
+    Object.values(arrayOfcellSetNamesByGroupByKey).forEach((arrayOfSetNames) => {
+      // Add each set of cells into 
+      arrayOfSetNames.forEach((setNameObj) => {
+        const cellSet = cellsInSet(setNameObj.key);
+        // Union of allCellsInSets and cellSet
+        allCellsInSets = new Set([...allCellsInSets, ...cellSet]);
+      });
     });
 
-    // If we collected less than `max` number of cells, let's go with that.
-    const finalSampleSize = Math.min(total, maxCells);
+    // Only work with non-hidden cells.
+    const shownCells = new Set([...allCellsInSets].filter(x => !hiddenCellIds.has(x)));
 
-    if (total === 0) {
+    return shownCells;
+  }
+
+  const getCellSetNamesDict = (rootNodes) => {
+    const cellSetNamesByGroupByKey = {};
+    rootNodes.forEach((currentRootNode) => cellSetNamesByGroupByKey[currentRootNode.key] = currentRootNode.children);
+
+    return cellSetNamesByGroupByKey
+  };
+
+  const downsampled = (cellIds) => {
+    // If sample is within maxCells's limit then return original array
+    if (cellIds.length <= maxCells) {
+      return cellIds;
+    }
+
+    let downsampledCellIds = [];
+
+    // Take maxCells amount of cells, picking each one randomly
+    for (let i = 0; i < maxCells; i++) {
+      var randomIndex = Math.floor(Math.random() * cellIds.length);
+      const element = cellIds.splice(randomIndex, 1);
+
+      downsampledCellIds.push(element[0]);
+    }
+
+    return downsampledCellIds;
+  };
+
+  const downsampleAndSort = (groupByTracks) => {
+    // Find the `groupBy` root nodes.
+    const groupByRootNodes = 
+      groupByTracks
+        .map((groupByKey) => {
+            return hierarchy.find((cluster) => (cluster.key === groupByKey))
+        });
+
+    if (!groupByRootNodes.length) {
       return [];
     }
 
-    // Create a sample of cells to display.
-    const sample = [];
+    // Transform the groupByRootNodes element into a dictionary/object to make its searches by key faster 
+    // (this is important since it will be used in the sorting comparator) 
+    const cellSetNamesByGroupByKey = getCellSetNamesDict(groupByRootNodes);
 
-    children.forEach(({ key }) => {
-      const cells = groupedCells[key];
+    // Get all cellIds from cells that will show up (so those that aren't hidden and are in an enabled groupBy)
+    const cellIdsSet = getAllRelevantCellIds(cellSetNamesByGroupByKey);
+    const cellIdsArray = Array.from(cellIdsSet);
 
-      if (!cells) {
-        return;
+    const cellIdsSample = downsampled(cellIdsArray);
+
+    const groupingsComparator = (oneCellId, otherCellId) => {
+      let onePosition = 0;
+      let otherPosition = 0;
+
+      let amountOfGroupings = groupByRootNodes.length;
+      let currentGrouping = 0;
+
+      while (onePosition === otherPosition && currentGrouping < amountOfGroupings) {
+        onePosition = positionInGrouping(groupByRootNodes[currentGrouping].children, oneCellId);
+        otherPosition = positionInGrouping(groupByRootNodes[currentGrouping].children, otherCellId);
+
+        if (onePosition < otherPosition) {
+          return -1;
+        }
+
+        if (onePosition > otherPosition) {
+          return 1;
+        }
+
+        currentGrouping += 1;
       }
 
-      // Create a sample size proportional to the number of cells to show
-      // as well as the number of cells in the cluster.
-      const sampleSize = Math.floor(
-        (cells.length / total) * finalSampleSize,
-      );
+      return 0;
+    }
 
-      sample.push(..._.sampleSize(cells, sampleSize));
-    });
+    const sortedCells = cellIdsSample.sort(groupingsComparator);
 
-    return sample;
+    return sortedCells;
   };
 
   const generateTrackData = (cells, track) => {
     // Find the `groupBy` root node.
-    const rootNode = hierarchy.filter((clusters) => clusters.key === track);
+    const rootNodes = hierarchy.filter((clusters) => clusters.key === track);
 
-    if (!rootNode.length) {
+    if (!rootNodes.length) {
       return [];
     }
 
-    const { children } = rootNode[0];
+    let childrenCellSets = [];
+    rootNodes.forEach((rootNode) => childrenCellSets.push(...rootNode.children));
 
     const trackColorData = [];
     const groupData = [];
 
     // Iterate over each child node.
-    children.forEach(({ key }) => {
+    childrenCellSets.forEach(({ key }) => {
       const { cellIds, name, color } = properties[key];
 
       groupData.push({
@@ -235,8 +296,8 @@ const HeatmapPlot = (props) => {
       trackGroupData: [],
     };
 
-    // Do downsampling.
-    data.cellOrder = downsample(groupedTrack);
+    // Do downsampling and return cellIds with their order by groupings.
+    data.cellOrder = downsampleAndSort(groupedTracks);
 
     // eslint-disable-next-line no-shadow
     const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
@@ -331,6 +392,9 @@ const HeatmapPlot = (props) => {
   }
 
   if (error || viewError) {
+    console.log('error')
+    console.log(error);
+    console.log(viewError);
     return (
       <PlatformError
         description={error}
@@ -340,6 +404,8 @@ const HeatmapPlot = (props) => {
       />
     );
   }
+  
+
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -18,34 +18,6 @@ const HeatmapMetadataTrackSettings = () => {
   const cellSets = useSelector((state) => state.cellSets);
   const selectedTracks = useSelector((state) => state.componentConfig.interactiveHeatmap.config.selectedTracks);
 
-  const [trackData, setTrackData] = useState([]);
-
-  useEffect(() => {
-    setTrackData(
-      _.unionBy(
-        trackData,
-        getCellSets(
-          ['cellSets', 'metadataCategorical'],
-        ).map(
-          (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
-        ),
-        'key',
-      ),
-    );
-  }, [cellSets.hierarchy]);
-
-  useEffect(() => {
-    if (trackData.length === 0) {
-      return;
-    }
-
-    dispatch(
-      updatePlotConfig('interactiveHeatmap', {
-        selectedTracks: trackData.filter((o) => o.selected).map((o) => o.key),
-      }),
-    );
-  }, [trackData]);
-
   const getCellSets = (category) => {
     if (!cellSets || cellSets.loading) {
       return [];
@@ -59,6 +31,51 @@ const HeatmapMetadataTrackSettings = () => {
       ({ type }) => category.includes(type),
     );
   };
+
+  const getUpdatedTrackData = () => {
+    return _.unionBy(
+      trackData,
+      getCellSets(
+        ['cellSets', 'metadataCategorical'],
+      ).map(
+        (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
+      ),
+      'key',
+    )
+  };
+
+  const isInitialRenderRef = useRef(true);
+  const [trackData, setTrackData] = useState(getUpdatedTrackData());
+
+  useEffect(() => {
+    // Prevent initial dispatch when object appears
+    if (isInitialRenderRef.current) {
+      return;
+    }
+
+    setTrackData(getUpdatedTrackData());
+  }, [cellSets.hierarchy]);
+
+  useEffect(() => {
+    // Prevent initial dispatch when object appears
+    if (isInitialRenderRef.current) {
+      return;
+    }
+
+    if (trackData.length === 0) {
+      return;
+    }
+
+    dispatch(
+      updatePlotConfig('interactiveHeatmap', {
+        selectedTracks: trackData.filter((o) => o.selected).map((o) => o.key),
+      }),
+    );
+  }, [trackData]);
+
+  useEffect(() => {
+    isInitialRenderRef.current = false;
+  });
 
   const moveUp = (source, id) => {
     const index = source.findIndex((e) => e.key === id);

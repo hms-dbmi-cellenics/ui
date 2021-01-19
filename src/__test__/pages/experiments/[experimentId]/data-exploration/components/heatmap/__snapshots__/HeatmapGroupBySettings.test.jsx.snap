@@ -4,7 +4,7 @@ exports[`HeatmapGroupBySettings clicking on the other button will trigger the ap
 Object {
   "payload": Object {
     "configChange": Object {
-      "groupedTrack": "louvain",
+      "groupedTracks": ["louvain"],
     },
     "plotUuid": "interactiveHeatmap",
   },

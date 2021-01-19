@@ -173,7 +173,7 @@ const frequencyInitialConfig = {
 
 const interactiveHeatmapInitialConfig = {
   selectedTracks: ['louvain'],
-  groupedTrack: 'louvain',
+  groupedTracks: ['louvain'],
   expressionValue: 'raw',
   legendIsVisible: true,
 };
