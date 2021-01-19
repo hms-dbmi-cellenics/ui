@@ -29,7 +29,7 @@ const HeatmapExpressionValuesSettings = () => {
         )}
       >
         {Object.keys(expressionValues).map((type) => (
-          <Radio style={radioStyle} value={type}>
+          <Radio style={radioStyle} value={type} key={type}>
             {expressionValues[type]}
           </Radio>
         ))}
