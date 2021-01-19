@@ -23,8 +23,8 @@ const generateSpec = (config) => {
           },
         },
         direction: 'horizontal',
-        labelFont: { value: 'sans-serif' },
-        titleFont: { value: 'sans-serif' },
+        labelFont: { value: config.masterFont },
+        titleFont: { value: config.masterFont },
       },
     ];
   }
