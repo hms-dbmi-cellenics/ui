@@ -32,7 +32,6 @@ const DiffExprManager = (props) => {
       <DiffExprCompute
         experimentId={experimentId}
         onCompute={onCompute}
-        cellSets={comparisonGroup}
       />
     );
   }
@@ -42,8 +41,8 @@ const DiffExprManager = (props) => {
         onGoBack={onGoBack}
         cellSets={{
           cellSet: comparisonGroup[comparisonType].cellSet.split('/')[1],
-          compareWith: comparisonGroup[comparisonType].compareWith.split('/')[1],
-          basis: comparisonGroup[comparisonType].basis.split('/')[1],
+          compareWith: comparisonGroup[comparisonType].compareWith.split('/')[1] || comparisonGroup[comparisonType].compareWith,
+          basis: comparisonGroup[comparisonType].basis.split('/')[1] || comparisonGroup[comparisonType].basis,
         }}
         experimentId={experimentId}
         width={width}
