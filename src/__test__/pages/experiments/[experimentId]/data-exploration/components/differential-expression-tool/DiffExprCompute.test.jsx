@@ -9,6 +9,9 @@ import {
   Form, Radio, Button, Select,
 } from 'antd';
 import DiffExprCompute from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/differential-expression-tool/DiffExprCompute';
+import {
+  DIFF_EXPR_COMPARISON_GROUP_SET, DIFF_EXPR_COMPARISON_TYPE_SET,
+} from '../../../../../../../redux/actionTypes/differentialExpression';
 
 jest.mock('localforage');
 jest.mock('../../../../../../../utils/environment', () => false);
@@ -170,7 +173,9 @@ describe('DiffExprCompute', () => {
   });
 
   it('clicking on the second comparison option changes items in form', () => {
-    const store = mockStore({
+    // MockStore can not update state, therefore the store here reflects changes after click
+    // and click is checked by action
+    const store = mockStore(() => ({
       ...initialState,
       differentialExpression: {
         ...initialState.differentialExpression,
@@ -178,7 +183,6 @@ describe('DiffExprCompute', () => {
           ...initialState.differentialExpression.comparison,
           type: 'within',
           group: {
-            ...initialState.differentialExpression.comparison,
             within: {
               cellSet: null,
               compareWith: null,
@@ -187,7 +191,7 @@ describe('DiffExprCompute', () => {
           },
         },
       },
-    });
+    }));
 
     const component = mount(
       <Provider store={store}>
@@ -206,6 +210,14 @@ describe('DiffExprCompute', () => {
 
     // It should have a radio button group at the top
     expect(form.find(Radio.Group).length).toEqual(1);
+
+    // Clicking on the second one should re-render the tool.
+    const { onChange } = form.find(Radio.Group).getElement().props;
+
+    onChange({ target: { value: 'within' } });
+
+    // Check if the correct actions are fired
+    expect(store.getActions()[0].type).toEqual(DIFF_EXPR_COMPARISON_TYPE_SET);
 
     // The form should still have four items.
     expect(form.find(Item).length).toEqual(4);

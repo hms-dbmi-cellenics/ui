@@ -61,8 +61,10 @@ const DiffExprCompute = (props) => {
       const groupDiff = {};
 
       Object.entries(comparisonGroup[type]).forEach(([key, cellSet]) => {
-        cellSet = cellSet?.split('/')[1] || cellSet
-        if (cellSet !== null && properties[cellSet] === undefined) groupDiff[key] = null;
+        if(cellSet) {
+          cellSet = cellSet?.split('/')[1] || cellSet
+          if (properties[cellSet] === undefined) groupDiff[key] = null;
+        }
       });
       if (Object.keys(groupDiff).length) {
         dispatch(

@@ -82,7 +82,6 @@ describe('DiffExprManager', () => {
   });
 
   it('on click of compute with changed parameters, DiffExprManager calls the results view', () => {
-    console.log(filledStore.getState());
     const component = mount(
       <Provider store={filledStore}>
         <DiffExprManager experimentId='1234' view='compute' width={100} height={200} />
