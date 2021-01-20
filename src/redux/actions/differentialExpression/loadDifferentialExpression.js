@@ -6,7 +6,7 @@ import sendWork from '../../../utils/sendWork';
 
 const REQUEST_TIMEOUT = 60;
 const loadDifferentialExpression = (
-  experimentId, cellSets, tableState,
+  experimentId, cellSets, comparisonType, tableState,
 ) => async (dispatch) => {
   dispatch({
     type: DIFF_EXPR_LOADING,
@@ -17,7 +17,10 @@ const loadDifferentialExpression = (
 
   const body = {
     name: 'DifferentialExpression',
-    ...cellSets,
+    experimentId,
+    cellSet: cellSets.cellSet.split('/')[1],
+    compareWith: cellSets.compareWith.split('/')[1] || cellSets.compareWith,
+    basis: cellSets.basis.split('/')[1] || cellSets.basis,
   };
 
   let pagination = {};
@@ -62,6 +65,7 @@ const loadDifferentialExpression = (
         data: rows,
         cellSets,
         total,
+        comparisonType,
       },
     });
   } catch (error) {

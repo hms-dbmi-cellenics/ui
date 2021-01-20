@@ -77,13 +77,18 @@ const store = mockStore({
       error: false,
       total: 5,
     },
+    comparison: {
+      type: 'between',
+      group: {
+        between: {
+          cellSet: 'louvain/louvain-0',
+          compareWith: 'louvain/louvain-1',
+          basis: 'condition/condition-control',
+        },
+      },
+    },
   },
 });
-
-const cellSets = {
-  cellSet: 'louvain-0',
-  compareWith: 'louvain-1',
-};
 
 describe('DiffExprResults', () => {
   beforeAll(async () => {
@@ -110,7 +115,7 @@ describe('DiffExprResults', () => {
   it('renders correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} cellSets={cellSets} width={100} height={200} />
+        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
 
@@ -150,7 +155,7 @@ describe('DiffExprResults', () => {
 
     const component = mount(
       <Provider store={store}>
-        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} cellSets={cellSets} width={100} height={200} />
+        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
 
@@ -167,6 +172,8 @@ describe('DiffExprResults', () => {
       {
         cellSet: 'louvain-0',
         compareWith: 'louvain-1',
+        basis: 'condition-control',
+        experimentId: '1234',
         name: 'DifferentialExpression',
       },
       {
@@ -183,7 +190,7 @@ describe('DiffExprResults', () => {
     // Redefine store from `beforeEach`.
     const component = mount(
       <Provider store={store}>
-        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} cellSets={cellSets} width={100} height={200} />
+        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
 

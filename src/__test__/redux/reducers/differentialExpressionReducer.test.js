@@ -74,6 +74,7 @@ describe('differentialExpressionReducer', () => {
           },
         ],
         total: 6,
+        type: 'between',
       },
     });
 

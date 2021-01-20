@@ -2,6 +2,7 @@ const initialState = {
   properties: {
     data: [],
     cellSets: {},
+    comparisonType: null,
     loading: false,
     error: false,
     total: 0,

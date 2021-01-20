@@ -13,10 +13,11 @@ exports[`DiffExprManager regression test -- diff exp would not reload after \`go
 Object {
   "payload": Object {
     "cellSets": Object {
-      "basis": "cluster-a;",
-      "cellSet": "condition-treated",
-      "compareWith": "condition-control",
+      "basis": "louvain/cluster-a;",
+      "cellSet": "condition/condition-treated",
+      "compareWith": "condition/condition-control",
     },
+    "comparisonType": "between",
     "data": Array [
       Object {
         "gene_names": "A",
@@ -69,10 +70,11 @@ exports[`DiffExprManager regression test -- diff exp would not reload after \`go
 Object {
   "payload": Object {
     "cellSets": Object {
-      "basis": "cluster-a;",
-      "cellSet": "condition-treated",
-      "compareWith": "condition-control",
+      "basis": "louvain/cluster-a;",
+      "cellSet": "condition/condition-treated",
+      "compareWith": "condition/condition-control",
     },
+    "comparisonType": "between",
     "data": Array [
       Object {
         "gene_names": "A",
@@ -125,10 +127,11 @@ exports[`DiffExprManager regression test -- diff exp would not reload after \`go
 Object {
   "payload": Object {
     "cellSets": Object {
-      "basis": "cluster-a;",
-      "cellSet": "condition-treated",
-      "compareWith": "condition-control",
+      "basis": "louvain/cluster-a;",
+      "cellSet": "condition/condition-treated",
+      "compareWith": "condition/condition-control",
     },
+    "comparisonType": "between",
     "data": Array [
       Object {
         "gene_names": "A",

@@ -34,6 +34,7 @@ import {
 } from '../../../../../redux/actions/componentConfig/index';
 import loadDifferentialExpression from '../../../../../redux/actions/differentialExpression/loadDifferentialExpression';
 import PlatformError from '../../../../../components/PlatformError';
+import { setComparisonGroup } from '../../../../../redux/actions/differentialExpression';
 
 const { Panel } = Collapse;
 const route = {
@@ -49,9 +50,13 @@ const VolcanoPlot = () => {
   const { experimentId } = router.query;
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const { loading, data, error } = useSelector(
+  const {
+    loading, data, error, cellSets: propCellSets, comparisonType: propComparisonType,
+  } = useSelector(
     (state) => state.differentialExpression.properties,
   );
+  const comparison = useSelector((state) => state.differentialExpression.comparison);
+
   const [plotData, setPlotData] = useState([]);
   const [spec, setSpec] = useState({
     spec: null,
@@ -68,12 +73,16 @@ const VolcanoPlot = () => {
   }, [experimentId]);
 
   useEffect(() => {
-    if (!config) return;
-    if (_.isEmpty(config.cellSets)) return;
+    // Sync plot and settings with last used config
+    setComparisonGroup({
+      ...propCellSets,
+      type: propComparisonType,
+    });
 
-    console.warn(config);
-    dispatch(loadDifferentialExpression(experimentId, config.cellSets));
-  }, [config?.cellSets]);
+    // Show plot using last shown data
+    if (data.length === 0) return;
+    setDataPointStatus();
+  }, []);
 
   useEffect(() => {
     if (!config) return;
@@ -171,7 +180,7 @@ const VolcanoPlot = () => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const onComputeDiffExp = (cellSets) => {
+  const onComputeDiffExp = () => {
     // These reset the ranges to `null`, which makes them automatically
     // determined by the algorithm. Because of our bad DE, we have issues
     // where we have extreme values, so this is not necessary right now.
@@ -179,13 +188,20 @@ const VolcanoPlot = () => {
 
     // maxNegativeLogpValueDomain: null,
     // logFoldChangeDomain: null,
-    updatePlotWithChanges({ cellSets });
+    dispatch(
+      loadDifferentialExpression(experimentId, comparison.group[comparison.type], comparison.type),
+    );
+    updatePlotWithChanges(comparison.group[comparison.type]);
   };
 
   const generateExportDropdown = () => {
-    const {
+    let {
       cellSet, compareWith,
-    } = config.cellSets;
+    } = comparison.group[comparison.type];
+
+    // Remove groups
+    cellSet = cellSet.split('/')[1] || cellSet;
+    compareWith = compareWith.split('/')[1] || compareWith;
 
     const date = moment.utc().format('YYYY-MM-DD-HH-mm-ss');
     const fileName = `de_${experimentId}_${cellSet}_vs_${compareWith}_${date}.csv`;
@@ -214,7 +230,11 @@ const VolcanoPlot = () => {
           description='Could not load differential expression data.'
           onClick={() => {
             dispatch(
-              loadDifferentialExpression(experimentId, config.diffExpData),
+              loadDifferentialExpression(
+                experimentId,
+                comparison.group[comparison.type],
+                comparison.type,
+              ),
             );
           }}
         />
@@ -254,7 +274,6 @@ const VolcanoPlot = () => {
                 <DiffExprCompute
                   experimentId={experimentId}
                   onCompute={onComputeDiffExp}
-                  cellSets={config.cellSets}
                 />
               </Panel>
               <Panel header='Main Schema' key='1'>

@@ -15,7 +15,7 @@ import loadDifferentialExpression from '../../../../../../redux/actions/differen
 
 const DiffExprResults = (props) => {
   const {
-    experimentId, onGoBack, cellSets, width, height,
+    experimentId, onGoBack, width, height,
   } = props;
 
   const dispatch = useDispatch();
@@ -23,6 +23,8 @@ const DiffExprResults = (props) => {
   const data = useSelector((state) => state.differentialExpression.properties.data);
   const total = useSelector((state) => state.differentialExpression.properties.total);
   const error = useSelector((state) => state.differentialExpression.properties.error);
+  const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
+  const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
 
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
@@ -63,7 +65,12 @@ const DiffExprResults = (props) => {
     }
 
     dispatch(
-      loadDifferentialExpression(experimentId, cellSets, newState),
+      loadDifferentialExpression(
+        experimentId,
+        comparisonGroup[comparisonType],
+        comparisonType,
+        newState,
+      ),
     );
   };
 
@@ -138,7 +145,6 @@ DiffExprResults.defaultProps = {};
 DiffExprResults.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onGoBack: PropTypes.func.isRequired,
-  cellSets: PropTypes.object.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };

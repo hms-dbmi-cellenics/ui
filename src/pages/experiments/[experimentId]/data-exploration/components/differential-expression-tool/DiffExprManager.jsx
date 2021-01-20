@@ -14,9 +14,6 @@ const DiffExprManager = (props) => {
     experimentId, view, width, height,
   } = props;
 
-  const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
-  const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
-
   const [currentView, setCurrentView] = useState(view);
 
   const onCompute = () => {
@@ -39,11 +36,6 @@ const DiffExprManager = (props) => {
     return (
       <DiffExprResults
         onGoBack={onGoBack}
-        cellSets={{
-          cellSet: comparisonGroup[comparisonType].cellSet.split('/')[1],
-          compareWith: comparisonGroup[comparisonType].compareWith.split('/')[1] || comparisonGroup[comparisonType].compareWith,
-          basis: comparisonGroup[comparisonType].basis.split('/')[1] || comparisonGroup[comparisonType].basis,
-        }}
         experimentId={experimentId}
         width={width}
         height={height}

@@ -14,6 +14,7 @@ Object {
   },
   "properties": Object {
     "cellSets": Object {},
+    "comparisonType": null,
     "data": Array [],
     "error": "asd",
     "loading": false,
@@ -39,6 +40,7 @@ Object {
       "first": "louvain-0",
       "second": "louvain-1",
     },
+    "comparisonType": undefined,
     "data": Array [
       Object {
         "gene_names": "A",
@@ -98,6 +100,7 @@ Object {
   },
   "properties": Object {
     "cellSets": Object {},
+    "comparisonType": null,
     "data": Array [],
     "error": false,
     "loading": true,
