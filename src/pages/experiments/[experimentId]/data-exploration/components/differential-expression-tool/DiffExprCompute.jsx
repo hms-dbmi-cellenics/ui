@@ -4,7 +4,7 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Typography, Radio, Empty,
+  Button, Form, Select, Typography, Radio,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -56,29 +56,24 @@ const DiffExprCompute = (props) => {
     }
     setHasMetadata(numMetadata > 0);
 
-    // Update the hierarchies if a previously selected set were to be deleted.
-    _.mapValues(comparisonGroup[selectedComparison], (cellSetKey) => {
-        if (!cellSetKey) {
-          return null;
-        }
+    // If any key in group option is deleted, set option to null
+    Object.keys(comparisonGroup).forEach((type) => {
+      const groupDiff = {};
 
-      const splitKey = cellSetKey.split('/')[1];
+      Object.entries(comparisonGroup[type]).forEach(([key, cellSet]) => {
+        if (cellSet !== null && properties[cellSet] === undefined) groupDiff[key] = null;
+      });
 
-      if (cellSetKey === 'all' || cellSetKey === 'background' || splitKey === 'rest') {
-        return cellSetKey;
+      if (Object.keys(groupDiff).length) {
+        dispatch(
+          setComparisonGroup({
+            type,
+            ...comparisonGroup[type],
+            ...groupDiff,
+          }),
+        );
       }
-
-      if (!properties[splitKey]) {
-        return null;
-      }
-
-      return cellSetKey;
-    })
-    dispatch(
-      setComparisonGroup({
-        type: selectedComparison,
-        ...comparisonGroup[selectedComparison],
-    }))
+    });
   }, [hierarchy, properties]);
 
   const validateForm = () => {
@@ -102,6 +97,25 @@ const DiffExprCompute = (props) => {
 
   // Validate form when the groups selected changes.
   useEffect(() => {
+
+    // Check if `compareWith` is in the same group as `cellSet`
+    if (selectedComparison === ComparisonType.within
+        && comparisonGroup[selectedComparison].cellSet
+        && comparisonGroup[selectedComparison].compareWith
+    ) {
+      const inSameGroup = comparisonGroup[selectedComparison].cellSet.split('/')[0] === comparisonGroup[selectedComparison].compareWith.split('/')[0]
+
+      if (!inSameGroup) {
+        dispatch(
+          setComparisonGroup({
+            ...comparisonGroup[selectedComparison],
+            type: ComparisonType.within,
+            compareWith: null,
+          }),
+        );
+      }
+    }
+
     validateForm();
   }, [comparisonGroup[selectedComparison]]);
 
@@ -212,14 +226,16 @@ const DiffExprCompute = (props) => {
 
         dispatch(setComparisonType(e.target.value));
 
-        // If comparisonType key is not available in group, add to grroup
-        dispatch(setComparisonGroup({
-          type: e.target.value,
-          cellSet: null,
-          compareWith: null,
-          basis: null,
-          ...comparisonGroup[e.target.value]
-        }))
+        // If comparisonType key is not available, add to group
+        if(!comparisonGroup[e.target.value]) {
+          dispatch(setComparisonGroup({
+            type: e.target.value,
+            cellSet: null,
+            compareWith: null,
+            basis: null,
+            ...comparisonGroup[e.target.value]
+          }))
+        }
 
       }} defaultValue={ComparisonType.between}>
         <Radio
