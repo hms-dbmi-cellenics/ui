@@ -4,6 +4,8 @@ import {
 
 import sendWork from '../../../utils/sendWork';
 
+const getCellSetName = (name) => (name?.split('/')[1] || name);
+
 const REQUEST_TIMEOUT = 60;
 const loadDifferentialExpression = (
   experimentId, cellSets, comparisonType, tableState,
@@ -18,9 +20,9 @@ const loadDifferentialExpression = (
   const body = {
     name: 'DifferentialExpression',
     experimentId,
-    cellSet: cellSets.cellSet.split('/')[1],
-    compareWith: cellSets.compareWith.split('/')[1] || cellSets.compareWith,
-    basis: cellSets.basis.split('/')[1] || cellSets.basis,
+    cellSet: getCellSetName(cellSets.cellSet),
+    compareWith: getCellSetName(cellSets.compareWith),
+    basis: getCellSetName(cellSets.basis),
   };
 
   let pagination = {};

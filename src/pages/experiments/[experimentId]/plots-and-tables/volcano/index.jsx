@@ -51,7 +51,7 @@ const VolcanoPlot = () => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const {
-    loading, data, error, cellSets: propCellSets, comparisonType: propComparisonType,
+    loading, data, error, cellSets: plotCellSets, comparisonType: plotComparisonType,
   } = useSelector(
     (state) => state.differentialExpression.properties,
   );
@@ -75,8 +75,8 @@ const VolcanoPlot = () => {
   useEffect(() => {
     // Sync plot and settings with last used config
     setComparisonGroup({
-      ...propCellSets,
-      type: propComparisonType,
+      ...plotCellSets,
+      type: plotComparisonType,
     });
 
     // Show plot using last shown data
@@ -199,7 +199,7 @@ const VolcanoPlot = () => {
       cellSet, compareWith,
     } = comparison.group[comparison.type];
 
-    // Remove 'groups' from cluster name for use in filename below
+    // Remove 'groups' from 'group/cluster' name for use in filename below
     if (cellSet && compareWith) {
       cellSet = cellSet.split('/')[1] || cellSet;
       compareWith = compareWith.split('/')[1] || compareWith;

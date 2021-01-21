@@ -84,7 +84,6 @@ const volcanoInitialConfig = {
   spec: '1.0.0',
   width: 500,
   height: 500,
-  cellSets: { cellSet: 'louvain-0', compareWith: 'rest' },
   noDifferenceColor: '#aaaaaa',
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',

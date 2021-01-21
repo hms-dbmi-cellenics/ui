@@ -18,7 +18,6 @@ const { Text } = Typography;
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
-const getGroupName = (name) => ( name?.split('/')[0] || null )
 const getCellSetName = (name) => ( name?.split('/')[1] || name )
 
 const DiffExprCompute = (props) => {
@@ -206,20 +205,7 @@ const DiffExprCompute = (props) => {
     <Form size='small' layout='vertical'>
 
       <Radio.Group onChange={(e) => {
-
         dispatch(setComparisonType(e.target.value));
-
-        // If comparisonType key is not available, add to group
-        if(!comparisonGroup[e.target.value]) {
-          dispatch(setComparisonGroup({
-            type: e.target.value,
-            cellSet: null,
-            compareWith: null,
-            basis: null,
-            ...comparisonGroup[e.target.value]
-          }))
-        }
-
       }} defaultValue={selectedComparison}>
         <Radio
           style={radioStyle}

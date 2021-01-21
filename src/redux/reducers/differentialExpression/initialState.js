@@ -15,6 +15,11 @@ const initialState = {
         compareWith: null,
         basis: null,
       },
+      within: {
+        cellSet: null,
+        compareWith: null,
+        basis: null,
+      },
     },
   },
 };
