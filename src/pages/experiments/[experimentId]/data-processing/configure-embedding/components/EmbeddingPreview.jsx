@@ -486,7 +486,7 @@ class EmbeddingPreview extends React.Component {
           </Col>
 
           <Col span={5}>
-            <CalculationConfig />
+            <CalculationConfig experimentId={this.props.experimentId} />
             <PlotStyling
               config={config}
               onUpdate={this.updatePlotWithChanges}
