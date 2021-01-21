@@ -1,6 +1,6 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import loadDifferentialExpression from '../../../../redux/actions/loadDifferentialExpression';
+import loadDifferentialExpression from '../../../../redux/actions/differentialExpression/loadDifferentialExpression';
 
 import initialState from '../../../../redux/reducers/differentialExpression/initialState';
 import sendWork from '../../../../utils/sendWork';
@@ -28,9 +28,11 @@ const defaultTableState = {
 describe('loadDifferentialExpression action', () => {
   const experimentId = '1234';
   const cellSets = {
-    cellSet: 'louvain-0',
-    compareWith: 'louvain-1',
+    cellSet: 'louvain/louvain-0',
+    compareWith: 'louvain/louvain-1',
+    basis: 'condition/condition-control',
   };
+  const comparisonType = 'within';
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -44,12 +46,20 @@ describe('loadDifferentialExpression action', () => {
     });
     sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
-    await store.dispatch(loadDifferentialExpression(experimentId, cellSets, defaultTableState));
+    await store.dispatch(
+      loadDifferentialExpression(experimentId, cellSets, comparisonType, defaultTableState),
+    );
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(DIFF_EXPR_LOADING);
 
     expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith('1234', 60, { cellSet: 'louvain-0', compareWith: 'louvain-1', name: 'DifferentialExpression' }, {
+    expect(sendWork).toHaveBeenCalledWith('1234', 60, {
+      cellSet: 'louvain-0',
+      compareWith: 'louvain-1',
+      basis: 'condition-control',
+      name: 'DifferentialExpression',
+      experimentId: '1234',
+    }, {
       pagination: {
         limit: 50, offset: 0, orderBy: 'qval', orderDirection: 'ASC', responseKey: 0,
       },
@@ -102,14 +112,22 @@ describe('loadDifferentialExpression action', () => {
       return new Promise((resolve) => resolve(resolveWith));
     });
 
-    await store.dispatch(loadDifferentialExpression(experimentId, cellSets, defaultTableState));
+    await store.dispatch(
+      loadDifferentialExpression(experimentId, cellSets, comparisonType, defaultTableState),
+    );
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(DIFF_EXPR_LOADING);
     expect(loadingAction).toMatchSnapshot();
 
     expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith('1234', 60, { cellSet: 'louvain-0', compareWith: 'louvain-1', name: 'DifferentialExpression' }, {
+    expect(sendWork).toHaveBeenCalledWith('1234', 60, {
+      cellSet: 'louvain-0',
+      compareWith: 'louvain-1',
+      basis: 'condition-control',
+      name: 'DifferentialExpression',
+      experimentId: '1234',
+    }, {
       pagination: {
         limit: 50, offset: 0, orderBy: 'qval', orderDirection: 'ASC', responseKey: 0,
       },

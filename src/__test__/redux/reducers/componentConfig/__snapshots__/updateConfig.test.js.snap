@@ -49,10 +49,6 @@ Object {
       "axesOffset": 10,
       "axisTicks": 13,
       "axisTitlesize": 13,
-      "cellSets": Object {
-        "cellSet": "louvain-0",
-        "compareWith": "rest",
-      },
       "colGrid": "#000000",
       "downsampleRatio": 0,
       "height": 2000,

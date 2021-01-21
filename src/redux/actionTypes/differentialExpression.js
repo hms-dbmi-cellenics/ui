@@ -16,6 +16,14 @@ const DIFF_EXPR_LOADED = `${DIFF_EXPR}/loaded`;
 
 const DIFF_EXPR_ERROR = `${DIFF_EXPR}/error`;
 
+/**
+ * Sets the state for diffential expression settings
+ *
+ */
+const DIFF_EXPR_COMPARISON_TYPE_SET = `${DIFF_EXPR}/comparisonType`;
+const DIFF_EXPR_COMPARISON_GROUP_SET = `${DIFF_EXPR}/comparisonGroup`;
+
 export {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
+  DIFF_EXPR_COMPARISON_TYPE_SET, DIFF_EXPR_COMPARISON_GROUP_SET,
 };
