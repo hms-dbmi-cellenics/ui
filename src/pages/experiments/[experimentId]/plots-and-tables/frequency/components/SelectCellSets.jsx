@@ -11,12 +11,10 @@ const SelectCellSets = (props) => {
     onUpdate, config, optionsMetadata, optionsCellSets,
   } = props;
   const firstLetterUppercase = (word) => word.charAt(0).toUpperCase() + word.slice(1);
-
   const changeClusters = (val) => {
     const newValue = val.key.toLowerCase();
     onUpdate({ chosenClusters: newValue });
   };
-  let menuValue = config.metadata;
   let disabled = false;
   let toolTipText;
   const changeMetadata = (val) => {
@@ -26,8 +24,8 @@ const SelectCellSets = (props) => {
 
   const getSelectOptions = (options) => {
     const selectOptions = [];
-    if (!options) {
-      return null;
+    if (!options.length) {
+      return;
     }
     Array.from(options).forEach((option) => {
       selectOptions.push({
@@ -38,11 +36,13 @@ const SelectCellSets = (props) => {
   };
   const metadataMenu = getSelectOptions(optionsMetadata);
   const cellSetMenu = getSelectOptions(optionsCellSets);
-
+  let menuValue;
   if (!metadataMenu) {
     menuValue = 'Sample';
     disabled = true;
     toolTipText = 'The x-axis cannot be changed as this dataset has only a single sample.';
+  } else {
+    menuValue = firstLetterUppercase(config.metadata);
   }
   return (
     <>
@@ -55,7 +55,7 @@ const SelectCellSets = (props) => {
         <Tooltip title={toolTipText}>
           <Select
             value={{
-              key: firstLetterUppercase(menuValue),
+              key: menuValue,
             }}
             onChange={(value) => changeMetadata(value)}
             labelInValue

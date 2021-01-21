@@ -56,15 +56,6 @@ const frequencyPlot = () => {
 
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, [experimentId]);
-
-  useEffect(() => {
-    if (!config || loading) {
-      return;
-    }
-    setPlotSpec(generateSpec(config));
-    setPlotData(generateData());
-  }, [config, properties]);
-
   const getCellOptions = (type) => {
     const filteredOptions = hierarchy.filter((element) => (
       properties[element.key].type === type
@@ -76,16 +67,22 @@ const frequencyPlot = () => {
   };
   const optionsMetadata = getCellOptions('metadataCategorical');
   const optionsCellSets = getCellOptions('cellSets');
+  useEffect(() => {
+    if (!loading && config?.chosenClusters === '') {
+      updatePlotWithChanges({
+        metadata: optionsMetadata[0]?.key,
+        chosenClusters: optionsCellSets[0].key,
+      });
+    }
+  });
 
   useEffect(() => {
-    if (loading) {
+    if (!config || loading) {
       return;
     }
-    updatePlotWithChanges({
-      metadata: optionsMetadata[0].key,
-      chosenClusters: optionsCellSets[0].key,
-    });
-  }, [cellSets]);
+    setPlotSpec(generateSpec(config));
+    setPlotData(generateData());
+  }, [config, properties]);
 
   const calculateSum = (chosenClusters, metadataIds) => {
     let sum = 0;

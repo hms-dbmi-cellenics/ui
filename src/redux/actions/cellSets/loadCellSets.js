@@ -24,6 +24,7 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
   try {
     const response = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`);
     const json = await response.json();
+    // delete json.cellSets[1];
     dispatch({
       type: CELL_SETS_LOADED,
       payload: {
