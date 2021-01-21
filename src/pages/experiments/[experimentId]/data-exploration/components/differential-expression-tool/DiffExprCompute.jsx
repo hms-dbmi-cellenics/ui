@@ -15,10 +15,11 @@ import { setComparisonGroup, setComparisonType } from '../../../../../../redux/a
 import composeTree from '../../../../../../utils/composeTree';
 
 const { Text } = Typography;
-
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
+const getGroupName = (name) => ( name?.split('/')[0] || null )
+const getCellSetName = (name) => ( name?.split('/')[1] || name )
 
 const DiffExprCompute = (props) => {
   const {
@@ -57,29 +58,32 @@ const DiffExprCompute = (props) => {
     }
     setHasMetadata(numMetadata > 0);
 
-    // If any key in group option is deleted, set option to null
-    Object.keys(comparisonGroup).forEach((type) => {
-      const groupDiff = {};
 
-      Object.entries(comparisonGroup[type]).forEach(([key, cellSet]) => {
-        if(cellSet) {
-          cellSet = cellSet?.split('/')[1] || cellSet
-          if (properties[cellSet] === undefined) groupDiff[key] = null;
-        }
+    // If any selected option is deleted, set the option to null
+    Object.keys(comparisonGroup).forEach((type) => {
+      const deleteKeys = {};
+
+      Object.entries(comparisonGroup[type]).forEach(([comparisonKey, selectedCell]) => {
+        selectedCell = getCellSetName(selectedCell)
+        if(selectedCell || properties[selectedCell] === undefined) deleteKeys[comparisonKey] = null
       });
-      if (Object.keys(groupDiff).length) {
+
+      if (Object.keys(deleteKeys).length) {
         dispatch(
           setComparisonGroup({
             type,
             ...comparisonGroup[type],
-            ...groupDiff,
+            ...deleteKeys,
           }),
         );
       }
+
     });
+
   }, [hierarchy, properties]);
 
   const validateForm = () => {
+
     if (!comparisonGroup[selectedComparison]?.cellSet) {
       setIsFormValid(false);
       return;
@@ -100,25 +104,6 @@ const DiffExprCompute = (props) => {
 
   // Validate form when the groups selected changes.
   useEffect(() => {
-
-    // Check if `compareWith` is in the same group as `cellSet`
-    if (selectedComparison === ComparisonType.within
-        && comparisonGroup[selectedComparison].cellSet
-        && comparisonGroup[selectedComparison].compareWith
-    ) {
-      const inSameGroup = comparisonGroup[selectedComparison].cellSet.split('/')[0] === comparisonGroup[selectedComparison].compareWith.split('/')[0]
-
-      if (!inSameGroup) {
-        dispatch(
-          setComparisonGroup({
-            ...comparisonGroup[selectedComparison],
-            type: ComparisonType.within,
-            compareWith: null,
-          }),
-        );
-      }
-    }
-
     validateForm();
   }, [comparisonGroup[selectedComparison]]);
 
@@ -159,11 +144,6 @@ const DiffExprCompute = (props) => {
       const shouldDisable = (key) => {
         // Should always disable something already selected.
         if (Object.values(comparisonGroup[selectedComparison]).includes(key)) {
-          return true;
-        }
-
-        // Should disable everything in `compareWith` that is not under the same root group as `cellSet`.
-        if (option === 'compareWith' && !comparisonGroup[selectedComparison]?.cellSet?.startsWith(`${rootKey}/`)) {
           return true;
         }
 
