@@ -65,7 +65,7 @@ const DiffExprCompute = (props) => {
 
       Object.entries(comparisonGroup[type]).forEach(([comparisonKey, selectedCell]) => {
         selectedCell = getCellSetName(selectedCell)
-        if(selectedCell || properties[selectedCell] === undefined) deleteKeys[comparisonKey] = null
+        if(selectedCell || !properties.hasOwnProperty(selectedCell)) deleteKeys[comparisonKey] = null
       });
 
       if (Object.keys(deleteKeys).length) {
