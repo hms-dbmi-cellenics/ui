@@ -20,12 +20,7 @@ const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed compre
 const CalculationConfig = (props) => {
   const { experimentId } = props;
   const FILTER_UUID = 'configureEmbedding';
-
   const dispatch = useDispatch();
-
-  const [embeddingMethodOld, setEmbeddingMethod] = useState('umap');
-  const [clusteringMethodOld, setClusteringMethod] = useState('louvain');
-  const [resolutionOld, setResolution] = useState(0.5);
 
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
 
