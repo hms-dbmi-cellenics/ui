@@ -9,6 +9,11 @@ Object {
         "cellSet": null,
         "compareWith": null,
       },
+      "within": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
     },
     "type": "between",
   },
@@ -28,6 +33,11 @@ Object {
   "comparison": Object {
     "group": Object {
       "between": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+      "within": Object {
         "basis": null,
         "cellSet": null,
         "compareWith": null,
@@ -91,6 +101,11 @@ Object {
   "comparison": Object {
     "group": Object {
       "between": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+      "within": Object {
         "basis": null,
         "cellSet": null,
         "compareWith": null,
