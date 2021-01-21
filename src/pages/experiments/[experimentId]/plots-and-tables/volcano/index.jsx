@@ -199,9 +199,11 @@ const VolcanoPlot = () => {
       cellSet, compareWith,
     } = comparison.group[comparison.type];
 
-    // Remove groups
-    cellSet = cellSet.split('/')[1] || cellSet;
-    compareWith = compareWith.split('/')[1] || compareWith;
+    // Remove 'groups' from cluster name for use in filename below
+    if (cellSet && compareWith) {
+      cellSet = cellSet.split('/')[1] || cellSet;
+      compareWith = compareWith.split('/')[1] || compareWith;
+    }
 
     const date = moment.utc().format('YYYY-MM-DD-HH-mm-ss');
     const fileName = `de_${experimentId}_${cellSet}_vs_${compareWith}_${date}.csv`;

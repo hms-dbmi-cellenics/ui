@@ -10,7 +10,7 @@ import {
 } from 'antd';
 import DiffExprCompute from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/differential-expression-tool/DiffExprCompute';
 import {
-  DIFF_EXPR_COMPARISON_GROUP_SET, DIFF_EXPR_COMPARISON_TYPE_SET,
+  DIFF_EXPR_COMPARISON_TYPE_SET,
 } from '../../../../../../../redux/actionTypes/differentialExpression';
 
 jest.mock('localforage');

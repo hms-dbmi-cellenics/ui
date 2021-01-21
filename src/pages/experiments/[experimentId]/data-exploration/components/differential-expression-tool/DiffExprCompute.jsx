@@ -34,8 +34,9 @@ const DiffExprCompute = (props) => {
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
 
 
-  // `between samples/groups` makes no sense if there is no metadata. First,
-  // assume there is and correct this if it's necessary.
+  // Metadata marks whether cells belong to the same sample/group
+  // Therefore `between samples/groups` analysis makes no sense if there is no metadata.
+  // In the base state, assume there is no metadata. A check for this is done in a useEffect block below.
   const [hasMetadata, setHasMetadata] = useState(false);
 
   /**
