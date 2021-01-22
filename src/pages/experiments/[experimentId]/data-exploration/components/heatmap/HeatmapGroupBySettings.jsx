@@ -3,8 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 import {
-  PlusSquareOutlined,
-  MinusSquareOutlined,
   PlusOutlined,
   MinusOutlined,
   UpOutlined,
@@ -12,9 +10,8 @@ import {
 } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import {
-  Button, Space, Select, Tooltip, Menu, Dropdown
+  Button, Space, Menu, Dropdown
 } from 'antd';
-import cellSetsError from '../../../../../../redux/reducers/cellSets/cellSetsError';
 
 const HeatmapGroupBySettings = () => {
   const dispatch = useDispatch();
@@ -35,13 +32,21 @@ const HeatmapGroupBySettings = () => {
     );
   };
 
-  // Part of this is a placeholder acting on the initial filtering of the active cell sets that will eventually be performed in the UI
   const getCellSetsOrder = () => {
-    const allCellSets = getCellSets(['cellSets', 'metadataCategorical']);
+    const allCellSetsGroupBys = getCellSets(['cellSets', 'metadataCategorical']);
 
-    const groupedCellSets = allCellSets.filter((cellSet) => groupedTracksKeys.includes(cellSet.key));
+    let groupedCellSets = [];
 
-    return groupedCellSets;
+    // from the enabled cell sets keys we get, find their corresponding information
+    groupedTracksKeys
+      .forEach((trackKey) => {
+        const groupBy = allCellSetsGroupBys.find((cellSetGroupBy) => cellSetGroupBy.key === trackKey);
+        groupedCellSets.push(groupBy);
+      });
+
+    // About the filtering: If we have failed to find some of the groupbys information, 
+    // then ignore those (this is useful for groupbys that sometimes dont show up, like 'samples')
+    return groupedCellSets.filter((groupedCellSet) => groupedCellSet !== undefined);
   };
 
   const isInitialRenderRef = useRef(true);
@@ -109,7 +114,7 @@ const HeatmapGroupBySettings = () => {
             let positionInCellSetOrder = indexOfCellSet(cellSet);
 
             return (
-              <Menu.Item value={cellSet.key} size='small'>
+              <Menu.Item size='small'>
                 <div style={{ margin: '0px', width: '100%' }} onClick={(e) => { e.stopPropagation(); }}>
                   <Button
                     shape="square"
@@ -124,8 +129,8 @@ const HeatmapGroupBySettings = () => {
                       } else {
                         // If the cell is not included in the cellSet, we have to add it
                         newCellSetsOrder.push(cellSet);
-                      } 
-                      
+                      }
+
                       setCellSetsOrder(newCellSetsOrder);
                     }}
                   >
@@ -135,7 +140,7 @@ const HeatmapGroupBySettings = () => {
               </Menu.Item>
             );
           })
-        }
+      }
     </Menu>
   );
 
@@ -182,70 +187,6 @@ const HeatmapGroupBySettings = () => {
   );
 
 };
-
-
-
-
-// const menus = (
-//   cellSetsOrder.map((cellSet) => (
-//     <Option value={cellSet.key} size='small'>
-//       <div style={{ margin: '0px', width: '100%' }} onClick={(e) => { e.stopPropagation(); }}>
-//         <Button
-//           shape="square"
-//           size='small'
-//           style={{ marginRight: '5px' }}
-//           icon={<PlusOutlined />}
-//         >
-//         </Button>
-
-//         {cellSet.name}
-//       </div>
-//     </Option>
-//   ))
-// );
-
-// return (
-//   <div style={{ padding: '5px' }}>
-//     <Space direction='vertical'>
-//       <Select
-//         placeholder='Select the parameters to group by'
-//       >
-//         {menus}
-//       </Select>
-
-//       {
-//         cellSetsOrder.map((cellSet, i) => (
-//           <div>
-//             <Button
-//               size='small'
-//               icon={<UpOutlined />}
-//               shape='circle'
-//               disabled={i === 0}
-//               onClick={() => {
-//                 setCellSetsOrder(moveUp(cellSetsOrder, cellSet.key));
-//               }}
-//             />
-
-//             <Button
-//               size='small'
-//               shape='circle'
-//               disabled={i === cellSetsOrder.length - 1}
-//               icon={<DownOutlined />}
-//               onClick={() => {
-//                 setCellSetsOrder(moveDown(cellSetsOrder, cellSet.key));
-//               }}
-//               style={{ marginRight: '5px' }}
-//             />
-
-//             {cellSet.name}
-//           </div>
-//         ))
-//       }
-//     </Space>
-//   </div >
-// );
-
-// };
 
 HeatmapGroupBySettings.defaultProps = {
 };

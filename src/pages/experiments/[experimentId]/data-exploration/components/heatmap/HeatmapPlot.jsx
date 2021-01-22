@@ -76,7 +76,7 @@ const HeatmapPlot = (props) => {
     if (hierarchy.length === 0 || cellSetsLoading) {
       return;
     }
-    
+
     const legends = legendIsVisible ? spec.legends : [];
     setVegaSpec({ ...spec, legends });
   }, [legendIsVisible]);
@@ -193,11 +193,16 @@ const HeatmapPlot = (props) => {
 
   const downsampleAndSort = (groupByTracks) => {
     // Find the `groupBy` root nodes.
-    const groupByRootNodes = 
+
+    // About the filtering: If we have failed to find some of the groupbys information, 
+    // then ignore those (this is useful for groupbys that sometimes dont show up, like 'samples')
+    let groupByRootNodes =
       groupByTracks
         .map((groupByKey) => {
-            return hierarchy.find((cluster) => (cluster.key === groupByKey))
-        });
+          return hierarchy.find((cluster) => (cluster.key === groupByKey))
+        })
+        .filter((track => track !== undefined));
+
 
     if (!groupByRootNodes.length) {
       return [];
@@ -392,9 +397,6 @@ const HeatmapPlot = (props) => {
   }
 
   if (error || viewError) {
-    console.log('error')
-    console.log(error);
-    console.log(viewError);
     return (
       <PlatformError
         description={error}
@@ -404,7 +406,7 @@ const HeatmapPlot = (props) => {
       />
     );
   }
-  
+
 
 
   return (

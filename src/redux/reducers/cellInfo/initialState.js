@@ -3,7 +3,7 @@ const initialState = {
     store: 'cellSets',
     key: 'louvain',
   },
-  groupedTracks: ['louvain'],
+  groupedTrack: 'louvain',
   selectedTracks: ['louvain'],
 };
 

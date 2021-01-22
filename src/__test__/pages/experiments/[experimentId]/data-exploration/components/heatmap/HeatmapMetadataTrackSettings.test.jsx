@@ -133,15 +133,13 @@ describe('HeatmapGroupBySettings', () => {
       </Provider>,
     );
 
-    expect(store.getActions().length).toEqual(1);
-
     // Get switches and click on second one.
     const switches = component.find(Switch);
     switches.at(1).simulate('click');
 
     // The store should update.
-    expect(store.getActions().length).toEqual(2);
-    const action = store.getActions()[1];
+    expect(store.getActions().length).toEqual(1);
+    const action = store.getActions()[0];
     expect(action.type).toBe(UPDATE_CONFIG);
     expect(action).toMatchSnapshot();
 
@@ -152,8 +150,8 @@ describe('HeatmapGroupBySettings', () => {
     buttons.at(1).simulate('click');
 
     // The store should update.
-    expect(store.getActions().length).toEqual(3);
-    const reorderAction = store.getActions()[2];
+    expect(store.getActions().length).toEqual(2);
+    const reorderAction = store.getActions()[1];
     expect(reorderAction.type).toBe(UPDATE_CONFIG);
     expect(reorderAction).toMatchSnapshot();
   });

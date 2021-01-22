@@ -32,6 +32,17 @@ const HeatmapMetadataTrackSettings = () => {
     );
   };
 
+  const getInitialTrackData = () => {
+    return getCellSets(
+      ['cellSets', 'metadataCategorical'],
+    ).map(
+      (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
+    );
+  }
+
+  const isInitialRenderRef = useRef(true);
+  const [trackData, setTrackData] = useState(getInitialTrackData());
+
   const getUpdatedTrackData = () => {
     return _.unionBy(
       trackData,
@@ -43,9 +54,6 @@ const HeatmapMetadataTrackSettings = () => {
       'key',
     )
   };
-
-  const isInitialRenderRef = useRef(true);
-  const [trackData, setTrackData] = useState(getUpdatedTrackData());
 
   useEffect(() => {
     // Prevent initial dispatch when object appears

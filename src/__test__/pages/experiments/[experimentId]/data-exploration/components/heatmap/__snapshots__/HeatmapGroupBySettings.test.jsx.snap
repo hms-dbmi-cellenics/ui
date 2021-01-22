@@ -1,10 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`HeatmapGroupBySettings clicking on the other button will trigger the appropriate action 1`] = `
+exports[`HeatmapGroupBySettings interacting with the groupby add/remove options will trigger the appropriate actions 1`] = `
 Object {
   "payload": Object {
     "configChange": Object {
-      "groupedTracks": ["louvain"],
+      "groupedTracks": Array [
+        "sample",
+        "louvain",
+      ],
+    },
+    "plotUuid": "interactiveHeatmap",
+  },
+  "type": "componentConfig/update",
+}
+`;
+
+exports[`HeatmapGroupBySettings interacting with the groupby add/remove options will trigger the appropriate actions 2`] = `
+Object {
+  "payload": Object {
+    "configChange": Object {
+      "groupedTracks": Array [
+        "sample",
+        "louvain",
+      ],
+    },
+    "plotUuid": "interactiveHeatmap",
+  },
+  "type": "componentConfig/update",
+}
+`;
+
+exports[`HeatmapGroupBySettings interacting with the groupby reorder options will trigger the appropriate actions 1`] = `
+Object {
+  "payload": Object {
+    "configChange": Object {
+      "groupedTracks": Array [
+        "louvain",
+        "sample",
+      ],
     },
     "plotUuid": "interactiveHeatmap",
   },
