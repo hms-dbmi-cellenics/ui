@@ -147,7 +147,7 @@ const HeatmapGroupBySettings = () => {
   return (
     <div style={{ padding: '5px' }}>
       <Space direction='vertical'>
-        <Dropdown overlay={menu} trigger={["click"]}>
+        <Dropdown overlay={menu}>
           <div style={{ padding: '7px', border: '1px solid rgb(238,238,238)' }}>
             Select the parameters to group by
             <DownOutlined style={{ marginLeft: '5px' }} />
