@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider,
+  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
-import { updateProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+import { updateProcessingSettings, saveProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -22,6 +23,8 @@ const CalculationConfig = (props) => {
   const FILTER_UUID = 'configureEmbedding';
   const dispatch = useDispatch();
 
+  const [changesOutstanding, setChangesOutstanding] = useState(false);
+
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
 
   const { method: clusteringMethod } = data.clusteringSettings;
@@ -29,11 +32,33 @@ const CalculationConfig = (props) => {
   const { umap: umapSettings, tsne: tsneSettings } = data.embeddingSettings.methodSettings;
   const { louvain: louvainSettings } = data.clusteringSettings.methodSettings;
 
-  const updateSettings = (diff) => dispatch(updateProcessingSettings(
-    experimentId,
-    FILTER_UUID,
-    diff,
-  ));
+  const dispatchDebounce = useCallback(_.debounce((f) => {
+    dispatch(f);
+  }, 1500), []);
+
+  const updateSettings = (diff) => {
+    // Always update the settings in the Redux store.
+    dispatch(updateProcessingSettings(
+      experimentId,
+      FILTER_UUID,
+      diff,
+    ));
+
+    if (diff.embeddingSettings) {
+      // If this is an embedding change, indicate to user that their changes are not
+      // applied until they hit Apply.
+      setChangesOutstanding(true);
+    } else {
+      // If it's a clustering change, debounce the save process at 1.5s.
+      dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
+    }
+  };
+
+  // When the Apply button is pressed, remove the warning and save to DynamoDB.
+  const applyEmbeddingSettings = () => {
+    setChangesOutstanding(false);
+    dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
+  };
 
   const UMAPSettings = (
     <>
@@ -52,9 +77,11 @@ const CalculationConfig = (props) => {
         <InputNumber
           value={umapSettings.minimumDistance}
           step={0.1}
-          onChange={(value) => updateSettings(
-            { embeddingSettings: { methodSettings: { umap: { minimumDistance: value } } } },
-          )}
+          onInput={(e) => {
+            updateSettings(
+              { embeddingSettings: { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } } },
+            );
+          }}
         />
       </Form.Item>
       <Form.Item label='Distance metric:'>
@@ -80,8 +107,8 @@ const CalculationConfig = (props) => {
         <InputNumber
           value={tsneSettings.perplexity}
           min={5}
-          onChange={(value) => updateSettings(
-            { embeddingSettings: { methodSettings: { tsne: { perplexity: value } } } },
+          onInput={(e) => updateSettings(
+            { embeddingSettings: { methodSettings: { tsne: { perplexity: parseFloat(e.target.value) } } } },
           )}
         />
       </Form.Item>
@@ -91,8 +118,8 @@ const CalculationConfig = (props) => {
           min={10}
           max={1000}
           step={10}
-          onChange={(value) => updateSettings(
-            { embeddingSettings: { methodSettings: { tsne: { learningRate: value } } } },
+          onInput={(e) => updateSettings(
+            { embeddingSettings: { methodSettings: { tsne: { learningRate: parseFloat(e.target.value) } } } },
           )}
         />
       </Form.Item>
@@ -101,8 +128,13 @@ const CalculationConfig = (props) => {
 
   return (
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
-      <Panel header='Embedding settings' key='embedding-settings'>
+      <Panel header='Embedding settings' key='embedding-settings' collapsible={changesOutstanding ? 'disabled' : 'header'}>
         <Form size='small'>
+          {changesOutstanding && (
+            <Form.Item>
+              <Alert message='Your changes are not yet applied. To update the plots, click Apply.' type='warning' showIcon />
+            </Form.Item>
+          )}
           <Form.Item label='Method:'>
             <Select
               value={embeddingMethod}
@@ -116,6 +148,9 @@ const CalculationConfig = (props) => {
           </Form.Item>
           {embeddingMethod === 'umap' && UMAPSettings}
           {embeddingMethod === 'tsne' && TSNESettings}
+          <Form.Item>
+            <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={applyEmbeddingSettings}>Apply</Button>
+          </Form.Item>
         </Form>
       </Panel>
       <Panel header='Clustering settings' key='clustering-settings'>
@@ -139,7 +174,7 @@ const CalculationConfig = (props) => {
               max={2}
               step={0.1}
               onChange={(value) => updateSettings(
-                { clusteringSettings: { methodSettings: { louvain: { resolution: value } } } },
+                { clusteringSettings: { methodSettings: { louvain: { resolution: parseFloat(value) } } } },
               )}
             />
           </Form.Item>
