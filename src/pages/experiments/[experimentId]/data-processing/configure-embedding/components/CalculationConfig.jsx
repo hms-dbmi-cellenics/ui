@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import _ from 'lodash';
+import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert,
@@ -7,7 +8,7 @@ import {
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
-import { updateProcessingSettings, saveProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+import { updateProcessingSettings, saveProcessingSettings, loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -21,6 +22,7 @@ const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed compre
 const CalculationConfig = (props) => {
   const { experimentId } = props;
   const FILTER_UUID = 'configureEmbedding';
+
   const dispatch = useDispatch();
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
@@ -31,6 +33,8 @@ const CalculationConfig = (props) => {
   const { method: embeddingMethod } = data.embeddingSettings;
   const { umap: umapSettings, tsne: tsneSettings } = data.embeddingSettings.methodSettings;
   const { louvain: louvainSettings } = data.clusteringSettings.methodSettings;
+
+  console.log(data);
 
   const dispatchDebounce = useCallback(_.debounce((f) => {
     dispatch(f);
@@ -59,6 +63,14 @@ const CalculationConfig = (props) => {
     setChangesOutstanding(false);
     dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
   };
+
+  useEffect(() => {
+    if (!experimentId) {
+      return;
+    }
+
+    dispatch(loadProcessingSettings(experimentId, FILTER_UUID));
+  }, [experimentId]);
 
   const UMAPSettings = (
     <>
