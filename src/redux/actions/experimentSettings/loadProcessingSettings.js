@@ -1,4 +1,4 @@
-import { EXPERIMENT_SETTINGS_PROCESSING_LOADED } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_PROCESSING_LOAD } from '../../actionTypes/experimentSettings';
 
 import getApiEndpoint from '../../../utils/apiEndpoint';
 import pushNotificationMessage from '../notifications';
@@ -14,7 +14,7 @@ const loadProcessingSettings = (experimentId) => async (dispatch) => {
       const data = await response.json();
 
       dispatch({
-        type: EXPERIMENT_SETTINGS_PROCESSING_LOADED,
+        type: EXPERIMENT_SETTINGS_PROCESSING_LOAD,
         payload: { data: data.processingConfig },
       });
 
