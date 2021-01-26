@@ -87,14 +87,12 @@ const CalculationConfig = (props) => {
         <InputNumber
           value={umapSettings.minimumDistance}
           step={0.1}
-          onInput={(e) => {
-            updateSettings(
-              {
-                embeddingSettings:
-                  { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } },
-              },
-            );
-          }}
+          onInput={(e) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } },
+            },
+          )}
           onStep={(value) => updateSettings(
             {
               embeddingSettings:
