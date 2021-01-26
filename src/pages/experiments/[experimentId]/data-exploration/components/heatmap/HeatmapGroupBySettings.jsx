@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   PlusOutlined,
   MinusOutlined,
-  UpOutlined,
   DownOutlined,
 } from '@ant-design/icons';
 import 'antd/dist/antd.css';
@@ -12,6 +11,7 @@ import {
 } from 'antd';
 
 import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
+import ReorderableList from '../../../../../../components/ReorderableList';
 
 const HeatmapGroupBySettings = () => {
   const dispatch = useDispatch();
@@ -74,47 +74,10 @@ const HeatmapGroupBySettings = () => {
     );
   }, [cellSetsOrder]);
 
-  const moveUp = (source, id) => {
-    const index = source.findIndex((e) => e.key === id);
-
-    const arr = [...source];
-
-    if (index <= 0) {
-      return arr;
-    }
-
-    const el = arr[index];
-    arr[index] = arr[index - 1];
-    arr[index - 1] = el;
-
-    return arr;
-  };
-
-  const moveDown = (source, id) => {
-    const index = source.findIndex((e) => e.key === id);
-
-    const arr = [...source];
-
-    if (index === -1 || index >= source.length - 1) {
-      return arr;
-    }
-
-    const el = arr[index];
-    arr[index] = arr[index + 1];
-    arr[index + 1] = el;
-
-    return arr;
-  };
-
   const indexOfCellSet = (cellSet) => cellSetsOrder.findIndex((elem) => (elem.key === cellSet.key));
 
   // This is so that a click on + or - buttons doesn't close the menu
   const stopPropagationEvent = (e) => e.stopPropagation();
-  const hideChildrenIfInvisible = (visible, menu) => {
-    if (visible) { return; }
-
-    console.log(menu);
-  };
 
   const menu = (
     <Menu>
@@ -155,7 +118,7 @@ const HeatmapGroupBySettings = () => {
 
   return (
     <div style={{ padding: '5px' }}>
-      <Space direction='vertical' onVisibleChange={(visible) => hideChildrenIfInvisible(visible, menu)}>
+      <Space direction='vertical'>
         <Dropdown overlay={menu} trigger='click hover'>
           <div style={{ padding: '7px', border: '1px solid rgb(238,238,238)' }}>
             Select the parameters to group by
@@ -163,34 +126,12 @@ const HeatmapGroupBySettings = () => {
           </div>
         </Dropdown>
 
-        {
-          cellSetsOrder.map((cellSet, i) => (
-            <div>
-              <Button
-                size='small'
-                icon={<UpOutlined />}
-                shape='circle'
-                disabled={i === 0}
-                onClick={() => {
-                  setCellSetsOrder(moveUp(cellSetsOrder, cellSet.key));
-                }}
-              />
-
-              <Button
-                size='small'
-                shape='circle'
-                disabled={i === cellSetsOrder.length - 1}
-                icon={<DownOutlined />}
-                onClick={() => {
-                  setCellSetsOrder(moveDown(cellSetsOrder, cellSet.key));
-                }}
-                style={{ marginRight: '5px' }}
-              />
-
-              {cellSet.name}
-            </div>
-          ))
-        }
+        <ReorderableList
+          onMoveUp={setCellSetsOrder}
+          onMoveDown={setCellSetsOrder}
+          reorderableList={cellSetsOrder}
+          rightItem={(cellSet) => cellSet.name}
+        />
       </Space>
     </div>
   );

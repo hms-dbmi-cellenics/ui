@@ -1,11 +1,15 @@
 import React from 'react';
-import { shallow, configure, mount, key } from 'enzyme';
+import {
+  shallow, configure, mount,
+} from 'enzyme';
 import { Provider } from 'react-redux';
 import waitForActions from 'redux-mock-store-await-actions';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import { Button, Menu, Dropdown, Space } from 'antd';
+import {
+  Button, Dropdown,
+} from 'antd';
 import HeatmapGroupBySettings from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/HeatmapGroupBySettings';
 import { UPDATE_CONFIG } from '../../../../../../../redux/actionTypes/componentConfig';
 
@@ -100,12 +104,14 @@ describe('HeatmapGroupBySettings', () => {
     // Should be rendered.
     expect(component.find('HeatmapGroupBySettings').length).toEqual(1);
 
-    // with two items
-    const groupByItems = component.find('Item');
-    expect(groupByItems.length).toEqual(2);
+    const reorderableList = component.find('ReorderableList');
+    const groupByItems = reorderableList.find('Item');
 
-    // the second item should be samples (the first one is the dropdown)
-    expect(groupByItems.at(1).childAt(0).childAt(0).text()).toEqual('Sample');
+    // with one ite
+    expect(groupByItems.length).toEqual(1);
+
+    // the item should be samples
+    expect(groupByItems.at(0).childAt(0).childAt(0).text()).toEqual('Sample');
 
     // there's a dropdown
     const dropdown = component.find(Dropdown);
@@ -153,19 +159,21 @@ describe('HeatmapGroupBySettings', () => {
     store.clearActions();
     expect(store.getActions().length).toEqual(0);
 
-    // there should be 3 group by items
-    const groupByItems = component.find('Item');
-    expect(groupByItems.length).toEqual(3);
+    const reorderableList = component.find('ReorderableList');
+    const groupByItems = reorderableList.find('Item');
 
-    // the second item should be samples (the first one is the dropdown)
-    expect(groupByItems.at(1).childAt(0).childAt(0).text()).toEqual('Sample');
-    // the third item should be louvain (the first one is the dropdown)
-    expect(groupByItems.at(2).childAt(0).childAt(0).text()).toEqual('louvain clusters');
+    // there should be 2 group by items
+    expect(groupByItems.length).toEqual(2);
+
+    // the first item should be samples
+    expect(groupByItems.at(0).childAt(0).childAt(0).text()).toEqual('Sample');
+    // the second item should be louvain
+    expect(groupByItems.at(1).childAt(0).childAt(0).text()).toEqual('louvain clusters');
 
     // when the groupby is clicked again
     buttons.at(0).simulate('click');
     component.update();
-    
+
     await waitForActions(store, [UPDATE_CONFIG]);
 
     // The store should update.
@@ -176,11 +184,10 @@ describe('HeatmapGroupBySettings', () => {
     expect(secondAction).toMatchSnapshot();
 
     // there should be 2 group by items
-    const updatedGroupByItems = component.find('Item');
-    expect(groupByItems.length).toEqual(3);
+    expect(groupByItems.length).toEqual(2);
 
-    // and the second item should be samples (the first one is the dropdown)
-    expect(groupByItems.at(1).childAt(0).childAt(0).text()).toEqual('Sample');
+    // and the first item should be samples
+    expect(groupByItems.at(0).childAt(0).childAt(0).text()).toEqual('Sample');
   });
 
   test('interacting with the groupby reorder options will trigger the appropriate actions', async () => {
@@ -206,23 +213,23 @@ describe('HeatmapGroupBySettings', () => {
     addButtons.at(0).simulate('click');
     component.update();
 
-    // there should be 3 group by items
-    const groupByItems = component.find('Item');
-    expect(groupByItems.length).toEqual(3);
+    const reorderableList = component.find('ReorderableList');
+    const groupByItems = reorderableList.find('Item');
+
+    // there should be 2 group by items
+    expect(groupByItems.length).toEqual(2);
 
     // clear store from this action (not being tested here)
     await waitForActions(store, [UPDATE_CONFIG]);
     store.clearActions();
 
-    // the second item should be samples (the first one is the dropdown)
-    expect(groupByItems.at(1).childAt(0).childAt(0).text()).toEqual('Sample');
-    // the third item should be louvain (the first one is the dropdown)
-    expect(groupByItems.at(2).childAt(0).childAt(0).text()).toEqual('louvain clusters');
+    // the first item should be samples
+    expect(groupByItems.at(0).childAt(0).childAt(0).text()).toEqual('Sample');
+    // the second item should be louvain (the first one is the dropdown)
+    expect(groupByItems.at(1).childAt(0).childAt(0).text()).toEqual('louvain clusters');
 
     // after a click for sample to go down
-    const reorderButtonsSample = groupByItems.at(1).find('Button');
-    console.log('reorderButtonsSample');
-    console.log(reorderButtonsSample.debug());
+    const reorderButtonsSample = groupByItems.at(0).find('Button');
     reorderButtonsSample.at(1).simulate('click');
 
     // the store should update.
