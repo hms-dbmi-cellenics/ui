@@ -8,6 +8,7 @@ import differentialExpressionReducer from './differentialExpression';
 import layoutReducer from './layout/layout';
 import componentConfigReducer from './componentConfig/index';
 import cellInfoReducer from './cellInfo';
+import experimentSettingsReducer from './experimentSettings';
 
 export default combineReducers({
   cellSets: cellSetsReducer,
@@ -18,4 +19,5 @@ export default combineReducers({
   cellInfo: cellInfoReducer,
   layout: layoutReducer,
   componentConfig: componentConfigReducer,
+  experimentSettings: experimentSettingsReducer,
 });

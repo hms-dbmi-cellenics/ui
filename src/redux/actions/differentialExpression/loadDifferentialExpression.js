@@ -1,12 +1,14 @@
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
-} from '../actionTypes/differentialExpression';
+} from '../../actionTypes/differentialExpression';
 
-import sendWork from '../../utils/sendWork';
+import sendWork from '../../../utils/sendWork';
+
+const getCellSetName = (name) => (name?.split('/')[1] || name);
 
 const REQUEST_TIMEOUT = 60;
 const loadDifferentialExpression = (
-  experimentId, cellSets, tableState,
+  experimentId, cellSets, comparisonType, tableState,
 ) => async (dispatch) => {
   dispatch({
     type: DIFF_EXPR_LOADING,
@@ -17,7 +19,10 @@ const loadDifferentialExpression = (
 
   const body = {
     name: 'DifferentialExpression',
-    ...cellSets,
+    experimentId,
+    cellSet: getCellSetName(cellSets.cellSet),
+    compareWith: getCellSetName(cellSets.compareWith),
+    basis: getCellSetName(cellSets.basis),
   };
 
   let pagination = {};
@@ -62,6 +67,7 @@ const loadDifferentialExpression = (
         data: rows,
         cellSets,
         total,
+        comparisonType,
       },
     });
   } catch (error) {

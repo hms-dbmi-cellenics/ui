@@ -32,9 +32,11 @@ exports[`loadDifferentialExpression action Dispatches appropriately on success 2
 Object {
   "payload": Object {
     "cellSets": Object {
-      "cellSet": "louvain-0",
-      "compareWith": "louvain-1",
+      "basis": "condition/condition-control",
+      "cellSet": "louvain/louvain-0",
+      "compareWith": "louvain/louvain-1",
     },
+    "comparisonType": "within",
     "data": Array [
       Object {
         "gene_names": "A",

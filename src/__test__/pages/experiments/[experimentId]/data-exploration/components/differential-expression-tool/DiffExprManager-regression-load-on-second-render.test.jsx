@@ -52,13 +52,28 @@ jest.mock('../../../../../../../utils/sendWork', () => ({
 const mockStore = configureMockStore([thunk]);
 
 const storeState = {
-  differentialExpression: { ...initialState },
   cellSets: {
     hierarchy: [],
     properties: {},
   },
   genes: {
     focused: undefined,
+  },
+  differentialExpression: {
+    ...initialState,
+    comparison: {
+      ...initialState.comparison,
+      type: 'between',
+      group: {
+        ...initialState.comparison.group,
+        between: {
+          ...initialState.comparison.group.between,
+          cellSet: 'condition/condition-treated',
+          compareWith: 'condition/condition-control',
+          basis: 'louvain/cluster-a;',
+        },
+      },
+    },
   },
 };
 

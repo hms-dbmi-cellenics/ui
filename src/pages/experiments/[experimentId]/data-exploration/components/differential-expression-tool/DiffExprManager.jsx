@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import _ from 'lodash';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DiffExprCompute from './DiffExprCompute';
 import DiffExprResults from './DiffExprResults';
@@ -14,23 +14,9 @@ const DiffExprManager = (props) => {
     experimentId, view, width, height,
   } = props;
 
-  const [selectedGroups, setSelectedGroups] = useState({
-    cellSet: null,
-    compareWith: null,
-    basis: null,
-  });
-
-  const [diffExprType, setDiffExprType] = useState(null);
-
   const [currentView, setCurrentView] = useState(view);
 
-  const onCompute = (type, newSelectedCellSets) => {
-    if (!_.isEqual(newSelectedCellSets, selectedGroups)) {
-      setSelectedGroups(newSelectedCellSets);
-    }
-
-    setDiffExprType(type);
-
+  const onCompute = () => {
     setCurrentView(DiffExprView.results);
   };
 
@@ -43,8 +29,6 @@ const DiffExprManager = (props) => {
       <DiffExprCompute
         experimentId={experimentId}
         onCompute={onCompute}
-        cellSets={selectedGroups}
-        diffExprType={diffExprType}
       />
     );
   }
@@ -52,11 +36,6 @@ const DiffExprManager = (props) => {
     return (
       <DiffExprResults
         onGoBack={onGoBack}
-        cellSets={{
-          cellSet: selectedGroups.cellSet.split('/')[1],
-          compareWith: selectedGroups.compareWith.split('/')[1] || selectedGroups.compareWith,
-          basis: selectedGroups.basis.split('/')[1] || selectedGroups.basis,
-        }}
         experimentId={experimentId}
         width={width}
         height={height}
