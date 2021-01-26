@@ -1,8 +1,6 @@
-import { EXPERIMENT_SETTINGS_PROCESSING_LOAD } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_PROCESSING_LOAD, EXPERIMENT_SETTINGS_PROCESSING_ERROR } from '../../actionTypes/experimentSettings';
 
 import getApiEndpoint from '../../../utils/apiEndpoint';
-import pushNotificationMessage from '../notifications';
-import messages from '../../../components/notification/messages';
 
 const loadProcessingSettings = (experimentId) => async (dispatch) => {
   try {
@@ -23,7 +21,10 @@ const loadProcessingSettings = (experimentId) => async (dispatch) => {
 
     throw new Error('HTTP status code was not 200.');
   } catch (e) {
-    dispatch(pushNotificationMessage('error', messages.saveCellSets, 10));
+    dispatch({
+      type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
+      payload: {},
+    });
   }
 };
 

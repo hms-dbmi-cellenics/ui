@@ -34,8 +34,6 @@ const CalculationConfig = (props) => {
   const { umap: umapSettings, tsne: tsneSettings } = data.embeddingSettings.methodSettings;
   const { louvain: louvainSettings } = data.clusteringSettings.methodSettings;
 
-  console.log(data);
-
   const dispatchDebounce = useCallback(_.debounce((f) => {
     dispatch(f);
   }, 1500), []);
@@ -91,9 +89,18 @@ const CalculationConfig = (props) => {
           step={0.1}
           onInput={(e) => {
             updateSettings(
-              { embeddingSettings: { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } } },
+              {
+                embeddingSettings:
+                  { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } },
+              },
             );
           }}
+          onStep={(value) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { umap: { minimumDistance: parseFloat(value) } } },
+            },
+          )}
         />
       </Form.Item>
       <Form.Item label='Distance metric:'>
@@ -120,7 +127,16 @@ const CalculationConfig = (props) => {
           value={tsneSettings.perplexity}
           min={5}
           onInput={(e) => updateSettings(
-            { embeddingSettings: { methodSettings: { tsne: { perplexity: parseFloat(e.target.value) } } } },
+            {
+              embeddingSettings:
+                { methodSettings: { tsne: { perplexity: parseFloat(e.target.value) } } },
+            },
+          )}
+          onStep={(value) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { tsne: { perplexity: parseFloat(value) } } },
+            },
           )}
         />
       </Form.Item>
@@ -131,8 +147,18 @@ const CalculationConfig = (props) => {
           max={1000}
           step={10}
           onInput={(e) => updateSettings(
-            { embeddingSettings: { methodSettings: { tsne: { learningRate: parseFloat(e.target.value) } } } },
+            {
+              embeddingSettings:
+                { methodSettings: { tsne: { learningRate: parseFloat(e.target.value) } } },
+            },
           )}
+          onStep={(value) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { tsne: { learningRate: parseFloat(value) } } },
+            },
+          )}
+
         />
       </Form.Item>
     </>
