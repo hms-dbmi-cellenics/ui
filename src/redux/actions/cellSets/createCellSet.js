@@ -20,6 +20,11 @@ const createCellSet = (experimentId, name, color, cellIds) => (dispatch, getStat
     cellIds: new Set([...cellIds].map((id) => parseInt(id, 10))),
   };
 
+  if (data.cellIds.size === 0) {
+    dispatch(pushNotificationMessage('info', messages.emptyClusterNotCreated, 5));
+    return;
+  }
+
   dispatch({
     type: CELL_SETS_CREATE,
     payload: {
