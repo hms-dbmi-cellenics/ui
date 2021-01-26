@@ -122,71 +122,107 @@ const HeatmapPlot = (props) => {
     }
   }, [width]);
 
-  // Defines sorting order according to which group the cell belongs to
-  const positionInGrouping = (cellSetNames, cell) => {
-    let position = 0;
+  const cellsInSet = (cellSetName) => properties[cellSetName].cellIds;
 
-    for (const { key: cellSetName } of cellSetNames) {
-      if (cellsInSet(cellSetName).has(cell)) {
-        return position;
-      }
+  const getDifferenceBetween = (filteredSet, filteringSet) => {
+    const result = new Set(
+      [...filteredSet].filter((x) => !filteringSet.has(x)),
+    );
 
-      position += 1;
-    }
-
-    // If not in grouping set it in the end
-    return position + 1;
+    return result;
   };
 
-  const cellsInSet = (cellSetName) => {
-    return properties[cellSetName].cellIds;
+  const getIntersections = (cellSet, rootNode) => {
+    const cellSetsOfRootNode = rootNode.children.map(({ key }) => cellsInSet(key));
+
+    const rootNodeIntersections = [];
+
+    cellSetsOfRootNode.forEach((cellSetOfRootNode) => {
+      const currentIntersection = new Set([...cellSet].filter((x) => cellSetOfRootNode.has(x)));
+
+      if (currentIntersection.size > 0) { rootNodeIntersections.push(currentIntersection); }
+    });
+
+    return rootNodeIntersections;
   };
 
-  ///////////////////////////////////////////////////////////////////////////////////////////
-  // Returns a set of all cells relevant to the experiment (so the ones belonging to one or more of the enabled sets and not hidden).
-  const getAllRelevantCellIds = (arrayOfcellSetNamesByGroupByKey) => {
+  const cartesianProductIntersection = (cellSets, rootNode) => {
+    const intersectedCellSets = [];
+
+    cellSets.forEach((currentCellSet) => {
+      const currentCellSetIntersection = getIntersections(currentCellSet, rootNode);
+
+      // The cellIds that werent part of any intersection are also added at the end
+      const leftOverCellIds = currentCellSetIntersection
+        .reduce((acum, current) => getDifferenceBetween(acum, current), currentCellSet);
+
+      currentCellSetIntersection.push(leftOverCellIds);
+
+      intersectedCellSets.push(...currentCellSetIntersection);
+    });
+
+    return intersectedCellSets;
+  };
+
+  const getAllRelevantCellIds = (groupByRootNodes) => {
     // Find all hidden cells.
     const hiddenCellIds = union(Array.from(hidden), properties);
 
     let allCellsInSets = new Set();
 
-    Object.values(arrayOfcellSetNamesByGroupByKey).forEach((arrayOfSetNames) => {
-      // Add each set of cells into 
-      arrayOfSetNames.forEach((setNameObj) => {
-        const cellSet = cellsInSet(setNameObj.key);
+    groupByRootNodes.forEach((rootNode) => {
+      rootNode.children.forEach(({ key }) => {
+        const cellSet = cellsInSet(key);
         // Union of allCellsInSets and cellSet
         allCellsInSets = new Set([...allCellsInSets, ...cellSet]);
       });
     });
 
     // Only work with non-hidden cells.
-    const shownCells = new Set([...allCellsInSets].filter(x => !hiddenCellIds.has(x)));
+    const shownCells = new Set([...allCellsInSets].filter((x) => !hiddenCellIds.has(x)));
 
     return shownCells;
-  }
-
-  const getCellSetNamesDict = (rootNodes) => {
-    const cellSetNamesByGroupByKey = {};
-    rootNodes.forEach((currentRootNode) => cellSetNamesByGroupByKey[currentRootNode.key] = currentRootNode.children);
-
-    return cellSetNamesByGroupByKey
   };
 
-  const downsampled = (cellIds) => {
-    // If sample is within maxCells's limit then return original array
-    if (cellIds.length <= maxCells) {
-      return cellIds;
-    }
+  const splitByCartesianProduct = (groupByRootNodes) => {
+    let buckets = [getAllRelevantCellIds(groupByRootNodes)];
 
-    let downsampledCellIds = [];
+    // Perform successive cartesian product intersections across each groupby
+    groupByRootNodes.forEach((currentRootNode) => {
+      buckets = cartesianProductIntersection(
+        buckets,
+        currentRootNode,
+      );
+    });
 
-    // Take maxCells amount of cells, picking each one randomly
-    for (let i = 0; i < maxCells; i++) {
-      var randomIndex = Math.floor(Math.random() * cellIds.length);
-      const element = cellIds.splice(randomIndex, 1);
+    // We need to calculate size at the end because we may have repeated cells
+    // (due to group bys having the same cell in different groups)
+    const size = buckets.reduce((acum, currentBucket) => acum + currentBucket.size, 0);
 
-      downsampledCellIds.push(element[0]);
-    }
+    return { buckets, size };
+  };
+
+  const downsampleProportionally = (buckets, cellIdsLength) => {
+    const downsampledCellIds = [];
+
+    // If we collected less than `max` number of cells, let's go with that.
+    const finalSampleSize = Math.min(cellIdsLength, maxCells);
+
+    buckets.forEach((bucket) => {
+      const sampleSize = Math.floor(
+        (bucket.size / cellIdsLength) * finalSampleSize,
+      );
+
+      downsampledCellIds.push(..._.sampleSize(Array.from(bucket), sampleSize));
+    });
+
+    return downsampledCellIds;
+  };
+
+  const downsampled = (groupByRootNodes) => {
+    const { buckets, size } = splitByCartesianProduct(groupByRootNodes);
+
+    const downsampledCellIds = downsampleProportionally(buckets, size, groupByRootNodes);
 
     return downsampledCellIds;
   };
@@ -194,58 +230,19 @@ const HeatmapPlot = (props) => {
   const downsampleAndSort = (groupByTracks) => {
     // Find the `groupBy` root nodes.
 
-    // About the filtering: If we have failed to find some of the groupbys information, 
+    // About the filtering: If we have failed to find some of the groupbys information,
     // then ignore those (this is useful for groupbys that sometimes dont show up, like 'samples')
-    let groupByRootNodes =
-      groupByTracks
-        .map((groupByKey) => {
-          return hierarchy.find((cluster) => (cluster.key === groupByKey))
-        })
-        .filter((track => track !== undefined));
-
+    const groupByRootNodes = groupByTracks
+      .map((groupByKey) => hierarchy.find((cluster) => (cluster.key === groupByKey)))
+      .filter(((track) => track !== undefined));
 
     if (!groupByRootNodes.length) {
       return [];
     }
 
-    // Transform the groupByRootNodes element into a dictionary/object to make its searches by key faster 
-    // (this is important since it will be used in the sorting comparator) 
-    const cellSetNamesByGroupByKey = getCellSetNamesDict(groupByRootNodes);
+    const cellIdsSample = downsampled(groupByRootNodes);
 
-    // Get all cellIds from cells that will show up (so those that aren't hidden and are in an enabled groupBy)
-    const cellIdsSet = getAllRelevantCellIds(cellSetNamesByGroupByKey);
-    const cellIdsArray = Array.from(cellIdsSet);
-
-    const cellIdsSample = downsampled(cellIdsArray);
-
-    const groupingsComparator = (oneCellId, otherCellId) => {
-      let onePosition = 0;
-      let otherPosition = 0;
-
-      let amountOfGroupings = groupByRootNodes.length;
-      let currentGrouping = 0;
-
-      while (onePosition === otherPosition && currentGrouping < amountOfGroupings) {
-        onePosition = positionInGrouping(groupByRootNodes[currentGrouping].children, oneCellId);
-        otherPosition = positionInGrouping(groupByRootNodes[currentGrouping].children, otherCellId);
-
-        if (onePosition < otherPosition) {
-          return -1;
-        }
-
-        if (onePosition > otherPosition) {
-          return 1;
-        }
-
-        currentGrouping += 1;
-      }
-
-      return 0;
-    }
-
-    const sortedCells = cellIdsSample.sort(groupingsComparator);
-
-    return sortedCells;
+    return cellIdsSample;
   };
 
   const generateTrackData = (cells, track) => {
@@ -256,7 +253,7 @@ const HeatmapPlot = (props) => {
       return [];
     }
 
-    let childrenCellSets = [];
+    const childrenCellSets = [];
     rootNodes.forEach((rootNode) => childrenCellSets.push(...rootNode.children));
 
     const trackColorData = [];
@@ -406,8 +403,6 @@ const HeatmapPlot = (props) => {
       />
     );
   }
-
-
 
   return (
     <div>

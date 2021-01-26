@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
-import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 import {
   PlusOutlined,
   MinusOutlined,
@@ -10,12 +8,16 @@ import {
 } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import {
-  Button, Space, Menu, Dropdown
+  Button, Space, Menu, Dropdown,
 } from 'antd';
+
+import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 
 const HeatmapGroupBySettings = () => {
   const dispatch = useDispatch();
-  const groupedTracksKeys = useSelector((state) => state.componentConfig.interactiveHeatmap.config.groupedTracks);
+  const groupedTracksKeys = useSelector(
+    (state) => state.componentConfig.interactiveHeatmap.config.groupedTracks,
+  );
   const cellSets = useSelector((state) => state.cellSets);
 
   const getCellSets = (category) => {
@@ -35,16 +37,18 @@ const HeatmapGroupBySettings = () => {
   const getCellSetsOrder = () => {
     const allCellSetsGroupBys = getCellSets(['cellSets', 'metadataCategorical']);
 
-    let groupedCellSets = [];
+    const groupedCellSets = [];
 
     // from the enabled cell sets keys we get, find their corresponding information
     groupedTracksKeys
       .forEach((trackKey) => {
-        const groupBy = allCellSetsGroupBys.find((cellSetGroupBy) => cellSetGroupBy.key === trackKey);
+        const groupBy = allCellSetsGroupBys
+          .find((cellSetGroupBy) => cellSetGroupBy.key === trackKey);
+
         groupedCellSets.push(groupBy);
       });
 
-    // About the filtering: If we have failed to find some of the groupbys information, 
+    // About the filtering: If we have failed to find some of the groupbys information,
     // then ignore those (this is useful for groupbys that sometimes dont show up, like 'samples')
     return groupedCellSets.filter((groupedCellSet) => groupedCellSet !== undefined);
   };
@@ -65,8 +69,8 @@ const HeatmapGroupBySettings = () => {
 
     dispatch(
       updatePlotConfig('interactiveHeatmap', {
-        groupedTracks: cellSetsOrder.map((cellSet) => cellSet.key)
-      })
+        groupedTracks: cellSetsOrder.map((cellSet) => cellSet.key),
+      }),
     );
   }, [cellSetsOrder]);
 
@@ -102,27 +106,33 @@ const HeatmapGroupBySettings = () => {
     return arr;
   };
 
-  const indexOfCellSet = (cellSet) => {
-    return cellSetsOrder.findIndex((elem) => (elem.key === cellSet.key));
-  }
+  const indexOfCellSet = (cellSet) => cellSetsOrder.findIndex((elem) => (elem.key === cellSet.key));
+
+  // This is so that a click on + or - buttons doesn't close the menu
+  const stopPropagationEvent = (e) => e.stopPropagation();
+  const hideChildrenIfInvisible = (visible, menu) => {
+    if (visible) { return; }
+
+    console.log(menu);
+  };
 
   const menu = (
     <Menu>
       {
         getCellSets(['cellSets', 'metadataCategorical'])
           .map((cellSet) => {
-            let positionInCellSetOrder = indexOfCellSet(cellSet);
+            const positionInCellSetOrder = indexOfCellSet(cellSet);
 
             return (
               <Menu.Item size='small'>
-                <div style={{ margin: '0px', width: '100%' }} onClick={(e) => { e.stopPropagation(); }}>
+                <div onClick={stopPropagationEvent} onKeyDown={stopPropagationEvent}>
                   <Button
-                    shape="square"
+                    shape='square'
                     size='small'
                     style={{ marginRight: '5px' }}
                     icon={positionInCellSetOrder > -1 ? <MinusOutlined /> : <PlusOutlined />}
                     onClick={() => {
-                      let newCellSetsOrder = [...cellSetsOrder];
+                      const newCellSetsOrder = [...cellSetsOrder];
                       if (positionInCellSetOrder > -1) {
                         // If the cell is included in the cellSet, we have to remove it
                         newCellSetsOrder.splice(positionInCellSetOrder, 1);
@@ -133,8 +143,7 @@ const HeatmapGroupBySettings = () => {
 
                       setCellSetsOrder(newCellSetsOrder);
                     }}
-                  >
-                  </Button>
+                  />
                   {cellSet.name}
                 </div>
               </Menu.Item>
@@ -146,8 +155,8 @@ const HeatmapGroupBySettings = () => {
 
   return (
     <div style={{ padding: '5px' }}>
-      <Space direction='vertical'>
-        <Dropdown overlay={menu}>
+      <Space direction='vertical' onVisibleChange={(visible) => hideChildrenIfInvisible(visible, menu)}>
+        <Dropdown overlay={menu} trigger='click hover'>
           <div style={{ padding: '7px', border: '1px solid rgb(238,238,238)' }}>
             Select the parameters to group by
             <DownOutlined style={{ marginLeft: '5px' }} />
@@ -183,9 +192,8 @@ const HeatmapGroupBySettings = () => {
           ))
         }
       </Space>
-    </div >
+    </div>
   );
-
 };
 
 HeatmapGroupBySettings.defaultProps = {
