@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default-member */
 import _ from 'lodash';
 import initialState from './initialState';
 

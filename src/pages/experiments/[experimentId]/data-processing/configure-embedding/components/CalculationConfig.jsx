@@ -1,9 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import _ from 'lodash';
-import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert,
+  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert, Spin,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -14,7 +13,7 @@ const { Option } = Select;
 const { Panel } = Collapse;
 const { Text } = Typography;
 
-const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed compress points together. '
+const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to compress points together. '
   + 'Larger values ensure embedded points are more evenly distributed, while '
   + 'smaller values allow the algorithm to optimise more accurately with regard '
   + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
@@ -29,10 +28,10 @@ const CalculationConfig = (props) => {
 
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
 
-  const { method: clusteringMethod } = data.clusteringSettings;
-  const { method: embeddingMethod } = data.embeddingSettings;
-  const { umap: umapSettings, tsne: tsneSettings } = data.embeddingSettings.methodSettings;
-  const { louvain: louvainSettings } = data.clusteringSettings.methodSettings;
+  const { method: clusteringMethod } = data?.clusteringSettings || {};
+  const { method: embeddingMethod } = data?.embeddingSettings || {};
+  const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
+  const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
   const dispatchDebounce = useCallback(_.debounce((f) => {
     dispatch(f);
@@ -70,7 +69,11 @@ const CalculationConfig = (props) => {
     dispatch(loadProcessingSettings(experimentId, FILTER_UUID));
   }, [experimentId]);
 
-  const UMAPSettings = (
+  useEffect(() => {
+    console.log('data changed');
+  }, [data]);
+
+  const renderUMAPSettings = () => (
     <>
       <Form.Item>
         <Text strong>Settings for UMAP:</Text>
@@ -86,6 +89,7 @@ const CalculationConfig = (props) => {
       >
         <InputNumber
           value={umapSettings.minimumDistance}
+          min={0}
           step={0.1}
           onInput={(e) => updateSettings(
             {
@@ -115,7 +119,7 @@ const CalculationConfig = (props) => {
     </>
   );
 
-  const TSNESettings = (
+  const renderTSNESettings = () => (
     <>
       <Form.Item>
         <Text strong>Settings for t-SNE:</Text>
@@ -162,6 +166,10 @@ const CalculationConfig = (props) => {
     </>
   );
 
+  if (!data) {
+    return <Spin />;
+  }
+
   return (
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
       <Panel header='Embedding settings' key='embedding-settings' collapsible={changesOutstanding ? 'disabled' : 'header'}>
@@ -182,8 +190,8 @@ const CalculationConfig = (props) => {
               <Option value='tsne'>t-SNE</Option>
             </Select>
           </Form.Item>
-          {embeddingMethod === 'umap' && UMAPSettings}
-          {embeddingMethod === 'tsne' && TSNESettings}
+          {embeddingMethod === 'umap' && renderUMAPSettings()}
+          {embeddingMethod === 'tsne' && renderTSNESettings()}
           <Form.Item>
             <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={applyEmbeddingSettings}>Apply</Button>
           </Form.Item>
@@ -210,7 +218,11 @@ const CalculationConfig = (props) => {
               max={2}
               step={0.1}
               onChange={(value) => updateSettings(
-                { clusteringSettings: { methodSettings: { louvain: { resolution: parseFloat(value) } } } },
+                {
+                  clusteringSettings: {
+                    methodSettings: { louvain: { resolution: parseFloat(value) } },
+                  },
+                },
               )}
             />
           </Form.Item>

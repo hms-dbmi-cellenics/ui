@@ -5,26 +5,7 @@ Object {
   "meta": Object {},
   "processing": Object {
     "configureEmbedding": Object {
-      "clusteringSettings": Object {
-        "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
-            "resolution": 0.5,
-          },
-        },
-      },
       "embeddingSettings": Object {
-        "method": "newMethod",
-        "methodSettings": Object {
-          "tsne": Object {
-            "learningRate": 200,
-            "perplexity": 30,
-          },
-          "umap": Object {
-            "distanceMetric": "euclidean",
-            "minimumDistance": 0.1,
-          },
-        },
         "newProperty": Object {
           "name": "a",
           "value": "b",
@@ -32,10 +13,7 @@ Object {
       },
     },
   },
-  "root": Object {
-    "experimentId": null,
-    "experimentName": null,
-  },
+  "root": Object {},
 }
 `;
 
@@ -44,34 +22,12 @@ Object {
   "meta": Object {},
   "processing": Object {
     "configureEmbedding": Object {
-      "clusteringSettings": Object {
-        "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
-            "resolution": 0.5,
-          },
-        },
-      },
       "embeddingSettings": Object {
-        "method": "newMethod",
-        "methodSettings": Object {
-          "tsne": Object {
-            "learningRate": 200,
-            "perplexity": 30,
-          },
-          "umap": Object {
-            "distanceMetric": "euclidean",
-            "minimumDistance": 0.1,
-          },
-        },
         "newProperty": "property",
       },
     },
   },
-  "root": Object {
-    "experimentId": null,
-    "experimentName": null,
-  },
+  "root": Object {},
 }
 `;
 
@@ -80,32 +36,11 @@ Object {
   "meta": Object {},
   "processing": Object {
     "configureEmbedding": Object {
-      "clusteringSettings": Object {
-        "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
-            "resolution": 0.5,
-          },
-        },
-      },
       "embeddingSettings": Object {
         "method": "newMethod",
-        "methodSettings": Object {
-          "tsne": Object {
-            "learningRate": 200,
-            "perplexity": 30,
-          },
-          "umap": Object {
-            "distanceMetric": "euclidean",
-            "minimumDistance": 0.1,
-          },
-        },
       },
     },
   },
-  "root": Object {
-    "experimentId": null,
-    "experimentName": null,
-  },
+  "root": Object {},
 }
 `;

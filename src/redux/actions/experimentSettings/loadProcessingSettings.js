@@ -1,4 +1,7 @@
-import { EXPERIMENT_SETTINGS_PROCESSING_LOAD, EXPERIMENT_SETTINGS_PROCESSING_ERROR } from '../../actionTypes/experimentSettings';
+import {
+  EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+  EXPERIMENT_SETTINGS_PROCESSING_ERROR,
+} from '../../actionTypes/experimentSettings';
 
 import getApiEndpoint from '../../../utils/apiEndpoint';
 
