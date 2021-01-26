@@ -2,8 +2,24 @@
 
 exports[`differentialExpressionReducer Sets error state on error action 1`] = `
 Object {
+  "comparison": Object {
+    "group": Object {
+      "between": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+      "within": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+    },
+    "type": "between",
+  },
   "properties": Object {
     "cellSets": Object {},
+    "comparisonType": null,
     "data": Array [],
     "error": "asd",
     "loading": false,
@@ -14,11 +30,27 @@ Object {
 
 exports[`differentialExpressionReducer Sets loaded state on loaded action 1`] = `
 Object {
+  "comparison": Object {
+    "group": Object {
+      "between": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+      "within": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+    },
+    "type": "between",
+  },
   "properties": Object {
     "cellSets": Object {
       "first": "louvain-0",
       "second": "louvain-1",
     },
+    "comparisonType": undefined,
     "data": Array [
       Object {
         "gene_names": "A",
@@ -66,8 +98,24 @@ Object {
 
 exports[`differentialExpressionReducer Sets loading state on loading action 1`] = `
 Object {
+  "comparison": Object {
+    "group": Object {
+      "between": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+      "within": Object {
+        "basis": null,
+        "cellSet": null,
+        "compareWith": null,
+      },
+    },
+    "type": "between",
+  },
   "properties": Object {
     "cellSets": Object {},
+    "comparisonType": null,
     "data": Array [],
     "error": false,
     "loading": true,

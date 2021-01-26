@@ -3,6 +3,7 @@ import initialState from '../../../redux/reducers/differentialExpression/initial
 
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
+  DIFF_EXPR_COMPARISON_TYPE_SET, DIFF_EXPR_COMPARISON_GROUP_SET,
 } from '../../../redux/actionTypes/differentialExpression';
 
 describe('differentialExpressionReducer', () => {
@@ -73,6 +74,7 @@ describe('differentialExpressionReducer', () => {
           },
         ],
         total: 6,
+        type: 'between',
       },
     });
 
@@ -94,5 +96,59 @@ describe('differentialExpressionReducer', () => {
     });
 
     expect(newState).toMatchSnapshot();
+  });
+
+  it('Sets the correct comparison type', () => {
+    const newType = 'testState';
+
+    const newState = differentialExpressionReducer(initialState, {
+      type: DIFF_EXPR_COMPARISON_TYPE_SET,
+      payload: {
+        type: newType,
+      },
+    });
+
+    const result = {
+      ...initialState,
+      comparison: {
+        ...initialState.comparison,
+        type: newType,
+      },
+    };
+
+    expect(newState).toEqual(result);
+  });
+
+  it('Reduces to the correct chosen group ', () => {
+    const newType = 'testGroup';
+    const newGroup = {
+      [newType]: {
+        cellSet: 'newCellSet',
+        compareWith: 'newCompareWith',
+        basis: 'newBasis',
+      },
+    };
+
+    const newState = differentialExpressionReducer(initialState, {
+      type: DIFF_EXPR_COMPARISON_GROUP_SET,
+      payload: {
+        type: newType,
+        ...newGroup.testGroup,
+      },
+    });
+
+    const result = {
+      ...initialState,
+      comparison: {
+        ...initialState.comparison,
+        type: newType,
+        group: {
+          ...initialState.comparison.group,
+          ...newGroup,
+        },
+      },
+    };
+
+    expect(newState).toEqual(result);
   });
 });
