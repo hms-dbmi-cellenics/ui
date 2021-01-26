@@ -1,6 +1,9 @@
 import updateProcessingSettings from './updateProcessingSettings';
+import saveProcessingSettings from './saveProcessingSettings';
+import loadProcessingSettings from './loadProcessingSettings';
 
 export {
-  // eslint-disable-next-line import/prefer-default-export
+  loadProcessingSettings,
   updateProcessingSettings,
+  saveProcessingSettings,
 };

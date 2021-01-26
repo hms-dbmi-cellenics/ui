@@ -1,25 +1,25 @@
 const EXPERIMENT_SETTINGS = 'experimentSettings';
 
 /**
- * Turns on the loading state for a given processing component.
- */
-const EXPERIMENT_SETTINGS_PROCESSING_LOADING = `${EXPERIMENT_SETTINGS}/loadingProcessing`;
-
-/**
  * Sets the state of the processing component to a state displayable by the system.
  */
-const EXPERIMENT_SETTINGS_PROCESSING_LOADED = `${EXPERIMENT_SETTINGS}/loadedProcessing`;
+const EXPERIMENT_SETTINGS_PROCESSING_LOAD = `${EXPERIMENT_SETTINGS}/loadProcessing`;
 
 /**
  * Updates the processing component's configuration.
  */
 const EXPERIMENT_SETTINGS_PROCESSING_UPDATE = `${EXPERIMENT_SETTINGS}/updateProcessing`;
 
+/**
+ * Saves the current state of the configuration to DynamoDB.
+ */
+const EXPERIMENT_SETTINGS_PROCESSING_SAVE = `${EXPERIMENT_SETTINGS}/saveProcessing`;
+
 const EXPERIMENT_SETTINGS_PROCESSING_ERROR = `${EXPERIMENT_SETTINGS}/errorProcessing`;
 
 export {
-  EXPERIMENT_SETTINGS_PROCESSING_LOADING,
-  EXPERIMENT_SETTINGS_PROCESSING_LOADED,
+  EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+  EXPERIMENT_SETTINGS_PROCESSING_SAVE,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 };

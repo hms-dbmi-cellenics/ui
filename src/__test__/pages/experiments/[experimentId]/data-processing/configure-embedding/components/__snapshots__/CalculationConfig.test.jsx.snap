@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CalculationConfig clicking on button triggers save action 1`] = `
+Object {
+  "payload": Object {
+    "configChange": Object {
+      "embeddingSettings": Object {
+        "method": "tsne",
+      },
+    },
+    "experimentId": "1234",
+    "settingName": "configureEmbedding",
+  },
+  "type": "experimentSettings/updateProcessing",
+}
+`;
+
+exports[`CalculationConfig clicking on button triggers save action 2`] = `
+Object {
+  "payload": Object {
+    "experimentId": "1234",
+    "settingName": "configureEmbedding",
+  },
+  "type": "experimentSettings/saveProcessing",
+}
+`;
