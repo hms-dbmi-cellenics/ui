@@ -463,16 +463,18 @@ const generateDoubletScorePlotSpec = (config) => {
 
     background: config.toggleInvert,
     padding: 5,
-    data: {
+    data: [{
       name: 'embeddingCat',
-      transform: [{
-        type: 'filter',
-        expr: "datum.doubletScore !== 'NA'",
-      },
-      { type: 'formula', as: 'geneExpression', expr: 'datum.doubletScore*1' },
-      { type: 'formula', as: 'umap1', expr: 'datum.UMAP_1*1' },
-      { type: 'formula', as: 'umap2', expr: 'datum.UMAP_2*1' }],
-    },
+      transform: [
+        {
+          type: 'filter',
+          expr: "datum.doubletScore !== 'NA'",
+        },
+        { type: 'formula', as: 'geneExpression', expr: 'datum.doubletScore*1' },
+        { type: 'formula', as: 'umap1', expr: 'datum.UMAP_1*1' },
+        { type: 'formula', as: 'umap2', expr: 'datum.UMAP_2*1' },
+      ],
+    }],
     scales: [
       {
         name: 'x',

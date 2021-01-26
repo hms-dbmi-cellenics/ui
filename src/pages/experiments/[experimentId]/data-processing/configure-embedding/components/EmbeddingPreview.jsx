@@ -71,20 +71,22 @@ const EmbeddingPreview = () => {
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-    if (!config) {
-      setConfig(initialPlotConfigStates.EmbeddingPreview);
-    } else {
-      const spec = plots[selectedSpec].specGenerator(config);
-
-      // Set the spec.
-      setPlotSpec(spec);
+    if (!Object.keys(config).length) {
+      setConfig(initialPlotConfigStates.embeddingPreview);
     }
-  }, [config]);
+
+    const spec = plots[selectedSpec].specGenerator(config);
+
+    // Add data to spec
+    generateData(spec);
+    setPlotSpec(spec);
+  }, [selectedSpec, config]);
 
   // Replace this function when data source for embedding preview is available
-  const generateData = () => {
-    const data = UMAP;
-    return data;
+  const generateData = (spec) => {
+    spec.data.forEach((s) => {
+      s.values = s.name === 'embeddingCat' ? UMAP : '';
+    });
   };
 
   const updatePlotWithChanges = (obj) => {
@@ -113,7 +115,7 @@ const EmbeddingPreview = () => {
 
     return (
       <center>
-        <Vega data={generateData()} spec={plotSpec} renderer='canvas' />
+        <Vega spec={plotSpec} renderer='canvas' />
       </center>
     );
   };
@@ -141,6 +143,9 @@ const EmbeddingPreview = () => {
                 type='button'
                 key={key}
                 onClick={() => setSelectedSpec(key)}
+                style={{
+                  padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
+                }}
               >
                 <img
                   alt={plot.title}
