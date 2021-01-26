@@ -16,7 +16,9 @@ const HeatmapMetadataTrackSettings = () => {
   const dispatch = useDispatch();
 
   const cellSets = useSelector((state) => state.cellSets);
-  const selectedTracks = useSelector((state) => state.componentConfig.interactiveHeatmap.config.selectedTracks);
+  const selectedTracks = useSelector(
+    (state) => state.componentConfig.interactiveHeatmap.config.selectedTracks,
+  );
 
   const getCellSets = (category) => {
     if (!cellSets || cellSets.loading) {
@@ -32,28 +34,20 @@ const HeatmapMetadataTrackSettings = () => {
     );
   };
 
-  const getInitialTrackData = () => {
-    return getCellSets(
-      ['cellSets', 'metadataCategorical'],
-    ).map(
-      (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
-    );
-  }
+  const getTrackData = () => getCellSets(
+    ['cellSets', 'metadataCategorical'],
+  ).map(
+    (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
+  );
 
   const isInitialRenderRef = useRef(true);
-  const [trackData, setTrackData] = useState(getInitialTrackData());
+  const [trackData, setTrackData] = useState(getTrackData());
 
-  const getUpdatedTrackData = () => {
-    return _.unionBy(
-      trackData,
-      getCellSets(
-        ['cellSets', 'metadataCategorical'],
-      ).map(
-        (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
-      ),
-      'key',
-    )
-  };
+  const getUpdatedTrackData = () => _.unionBy(
+    trackData,
+    getTrackData(),
+    'key',
+  );
 
   useEffect(() => {
     // Prevent initial dispatch when object appears

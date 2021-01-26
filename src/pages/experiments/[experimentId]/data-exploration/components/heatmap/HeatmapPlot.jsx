@@ -16,6 +16,7 @@ import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 import { loadComponentConfig } from '../../../../../../redux/actions/componentConfig';
 
 import { union } from '../../../../../../utils/cellSetOperations';
+import SetOperations from '../../../../../../utils/setOperations';
 
 const COMPONENT_TYPE = 'InteractiveHeatmap';
 const { Text } = Typography;
@@ -122,39 +123,31 @@ const HeatmapPlot = (props) => {
     }
   }, [width]);
 
-  const cellsInSet = (cellSetName) => properties[cellSetName].cellIds;
+  const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
 
-  const getDifferenceBetween = (filteredSet, filteringSet) => {
-    const result = new Set(
-      [...filteredSet].filter((x) => !filteringSet.has(x)),
-    );
+  const getCellSetIntersections = (cellSet, rootNode) => {
+    const cellSetsOfRootNode = rootNode.children.map(({ key }) => getCellsInSet(key));
 
-    return result;
-  };
-
-  const getIntersections = (cellSet, rootNode) => {
-    const cellSetsOfRootNode = rootNode.children.map(({ key }) => cellsInSet(key));
-
-    const rootNodeIntersections = [];
+    const intersectionsSets = [];
 
     cellSetsOfRootNode.forEach((cellSetOfRootNode) => {
       const currentIntersection = new Set([...cellSet].filter((x) => cellSetOfRootNode.has(x)));
 
-      if (currentIntersection.size > 0) { rootNodeIntersections.push(currentIntersection); }
+      if (currentIntersection.size > 0) { intersectionsSets.push(currentIntersection); }
     });
 
-    return rootNodeIntersections;
+    return intersectionsSets;
   };
 
   const cartesianProductIntersection = (cellSets, rootNode) => {
     const intersectedCellSets = [];
 
     cellSets.forEach((currentCellSet) => {
-      const currentCellSetIntersection = getIntersections(currentCellSet, rootNode);
+      const currentCellSetIntersection = getCellSetIntersections(currentCellSet, rootNode);
 
       // The cellIds that werent part of any intersection are also added at the end
       const leftOverCellIds = currentCellSetIntersection
-        .reduce((acum, current) => getDifferenceBetween(acum, current), currentCellSet);
+        .reduce((acum, current) => SetOperations.difference(acum, current), currentCellSet);
 
       currentCellSetIntersection.push(leftOverCellIds);
 
@@ -164,28 +157,28 @@ const HeatmapPlot = (props) => {
     return intersectedCellSets;
   };
 
-  const getAllRelevantCellIds = (groupByRootNodes) => {
-    // Find all hidden cells.
-    const hiddenCellIds = union(Array.from(hidden), properties);
-
-    let allCellsInSets = new Set();
+  // Gets all cells that are in any enabled groupby and not hidden
+  const getAllEnabledCellIds = (groupByRootNodes) => {
+    let cellIdsInAnyGroupBy = new Set();
 
     groupByRootNodes.forEach((rootNode) => {
       rootNode.children.forEach(({ key }) => {
-        const cellSet = cellsInSet(key);
+        const cellSet = getCellsInSet(key);
         // Union of allCellsInSets and cellSet
-        allCellsInSets = new Set([...allCellsInSets, ...cellSet]);
+        cellIdsInAnyGroupBy = new Set([...cellIdsInAnyGroupBy, ...cellSet]);
       });
     });
 
     // Only work with non-hidden cells.
-    const shownCells = new Set([...allCellsInSets].filter((x) => !hiddenCellIds.has(x)));
+    const hiddenCellIds = union(Array.from(hidden), properties);
+    const enabledCellIds = new Set([...cellIdsInAnyGroupBy].filter((x) => !hiddenCellIds.has(x)));
 
-    return shownCells;
+    return enabledCellIds;
   };
 
-  const splitByCartesianProduct = (groupByRootNodes) => {
-    let buckets = [getAllRelevantCellIds(groupByRootNodes)];
+  const splitByCartesianProductIntersections = (groupByRootNodes) => {
+    // Beginning with only one set of all the cells that we want to see
+    let buckets = [getAllEnabledCellIds(groupByRootNodes)];
 
     // Perform successive cartesian product intersections across each groupby
     groupByRootNodes.forEach((currentRootNode) => {
@@ -202,7 +195,7 @@ const HeatmapPlot = (props) => {
     return { buckets, size };
   };
 
-  const downsampleProportionally = (buckets, cellIdsLength) => {
+  const downsampleWithProportions = (buckets, cellIdsLength) => {
     const downsampledCellIds = [];
 
     // If we collected less than `max` number of cells, let's go with that.
@@ -220,9 +213,9 @@ const HeatmapPlot = (props) => {
   };
 
   const downsampled = (groupByRootNodes) => {
-    const { buckets, size } = splitByCartesianProduct(groupByRootNodes);
+    const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
 
-    const downsampledCellIds = downsampleProportionally(buckets, size, groupByRootNodes);
+    const downsampledCellIds = downsampleWithProportions(buckets, size, groupByRootNodes);
 
     return downsampledCellIds;
   };
