@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider,
+  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert, Spin,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
-import { updateProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+import { updateProcessingSettings, saveProcessingSettings, loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
 const { Option } = Select;
 const { Panel } = Collapse;
 const { Text } = Typography;
 
-const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed compress points together. '
+const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to compress points together. '
   + 'Larger values ensure embedded points are more evenly distributed, while '
   + 'smaller values allow the algorithm to optimise more accurately with regard '
   + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
@@ -20,22 +21,59 @@ const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed compre
 const CalculationConfig = (props) => {
   const { experimentId } = props;
   const FILTER_UUID = 'configureEmbedding';
+
   const dispatch = useDispatch();
+
+  const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
 
-  const { method: clusteringMethod } = data.clusteringSettings;
-  const { method: embeddingMethod } = data.embeddingSettings;
-  const { umap: umapSettings, tsne: tsneSettings } = data.embeddingSettings.methodSettings;
-  const { louvain: louvainSettings } = data.clusteringSettings.methodSettings;
+  const { method: clusteringMethod } = data?.clusteringSettings || {};
+  const { method: embeddingMethod } = data?.embeddingSettings || {};
+  const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
+  const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
-  const updateSettings = (diff) => dispatch(updateProcessingSettings(
-    experimentId,
-    FILTER_UUID,
-    diff,
-  ));
+  const dispatchDebounce = useCallback(_.debounce((f) => {
+    dispatch(f);
+  }, 1500), []);
 
-  const UMAPSettings = (
+  const updateSettings = (diff) => {
+    // Always update the settings in the Redux store.
+    dispatch(updateProcessingSettings(
+      experimentId,
+      FILTER_UUID,
+      diff,
+    ));
+
+    if (diff.embeddingSettings) {
+      // If this is an embedding change, indicate to user that their changes are not
+      // applied until they hit Apply.
+      setChangesOutstanding(true);
+    } else {
+      // If it's a clustering change, debounce the save process at 1.5s.
+      dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
+    }
+  };
+
+  // When the Apply button is pressed, remove the warning and save to DynamoDB.
+  const applyEmbeddingSettings = () => {
+    setChangesOutstanding(false);
+    dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
+  };
+
+  useEffect(() => {
+    if (!experimentId) {
+      return;
+    }
+
+    dispatch(loadProcessingSettings(experimentId, FILTER_UUID));
+  }, [experimentId]);
+
+  useEffect(() => {
+    console.log('data changed');
+  }, [data]);
+
+  const renderUMAPSettings = () => (
     <>
       <Form.Item>
         <Text strong>Settings for UMAP:</Text>
@@ -51,9 +89,19 @@ const CalculationConfig = (props) => {
       >
         <InputNumber
           value={umapSettings.minimumDistance}
+          min={0}
           step={0.1}
-          onChange={(value) => updateSettings(
-            { embeddingSettings: { methodSettings: { umap: { minimumDistance: value } } } },
+          onInput={(e) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } },
+            },
+          )}
+          onStep={(value) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { umap: { minimumDistance: parseFloat(value) } } },
+            },
           )}
         />
       </Form.Item>
@@ -71,7 +119,7 @@ const CalculationConfig = (props) => {
     </>
   );
 
-  const TSNESettings = (
+  const renderTSNESettings = () => (
     <>
       <Form.Item>
         <Text strong>Settings for t-SNE:</Text>
@@ -80,8 +128,17 @@ const CalculationConfig = (props) => {
         <InputNumber
           value={tsneSettings.perplexity}
           min={5}
-          onChange={(value) => updateSettings(
-            { embeddingSettings: { methodSettings: { tsne: { perplexity: value } } } },
+          onInput={(e) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { tsne: { perplexity: parseFloat(e.target.value) } } },
+            },
+          )}
+          onStep={(value) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { tsne: { perplexity: parseFloat(value) } } },
+            },
           )}
         />
       </Form.Item>
@@ -91,18 +148,37 @@ const CalculationConfig = (props) => {
           min={10}
           max={1000}
           step={10}
-          onChange={(value) => updateSettings(
-            { embeddingSettings: { methodSettings: { tsne: { learningRate: value } } } },
+          onInput={(e) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { tsne: { learningRate: parseFloat(e.target.value) } } },
+            },
           )}
+          onStep={(value) => updateSettings(
+            {
+              embeddingSettings:
+                { methodSettings: { tsne: { learningRate: parseFloat(value) } } },
+            },
+          )}
+
         />
       </Form.Item>
     </>
   );
 
+  if (!data) {
+    return <Spin />;
+  }
+
   return (
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
-      <Panel header='Embedding settings' key='embedding-settings'>
+      <Panel header='Embedding settings' key='embedding-settings' collapsible={changesOutstanding ? 'disabled' : 'header'}>
         <Form size='small'>
+          {changesOutstanding && (
+            <Form.Item>
+              <Alert message='Your changes are not yet applied. To update the plots, click Apply.' type='warning' showIcon />
+            </Form.Item>
+          )}
           <Form.Item label='Method:'>
             <Select
               value={embeddingMethod}
@@ -114,8 +190,11 @@ const CalculationConfig = (props) => {
               <Option value='tsne'>t-SNE</Option>
             </Select>
           </Form.Item>
-          {embeddingMethod === 'umap' && UMAPSettings}
-          {embeddingMethod === 'tsne' && TSNESettings}
+          {embeddingMethod === 'umap' && renderUMAPSettings()}
+          {embeddingMethod === 'tsne' && renderTSNESettings()}
+          <Form.Item>
+            <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={applyEmbeddingSettings}>Apply</Button>
+          </Form.Item>
         </Form>
       </Panel>
       <Panel header='Clustering settings' key='clustering-settings'>
@@ -139,7 +218,11 @@ const CalculationConfig = (props) => {
               max={2}
               step={0.1}
               onChange={(value) => updateSettings(
-                { clusteringSettings: { methodSettings: { louvain: { resolution: value } } } },
+                {
+                  clusteringSettings: {
+                    methodSettings: { louvain: { resolution: parseFloat(value) } },
+                  },
+                },
               )}
             />
           </Form.Item>

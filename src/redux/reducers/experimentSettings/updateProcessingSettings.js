@@ -1,10 +1,11 @@
+/* eslint-disable import/no-named-as-default-member */
 import _ from 'lodash';
 import initialState from './initialState';
 
 const updateProcessingSettings = (state, action) => {
   const { settingName, configChange } = action.payload;
 
-  const newConfig = _.merge(state.processing[settingName], configChange);
+  const newConfig = _.cloneDeep(_.merge(state.processing[settingName], configChange));
 
   return {
     ...initialState,

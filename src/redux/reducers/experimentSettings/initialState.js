@@ -23,12 +23,11 @@ const configureEmbedding = {
 };
 
 export default {
-  root: {
-    experimentId: null,
-    experimentName: null,
-  },
+  root: {},
   meta: {},
-  processing: {
-    configureEmbedding,
-  },
+  processing: {},
 };
+
+const initialProcessingState = { configureEmbedding };
+
+export { initialProcessingState };
