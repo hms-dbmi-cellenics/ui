@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 import React, { useEffect, useState } from 'react';
 import {
   Row,
@@ -46,7 +48,6 @@ const frequencyPlot = () => {
   const router = useRouter();
   const { experimentId } = router.query;
   const [plotSpec, setPlotSpec] = useState({});
-  const [plotData, setPlotData] = useState();
 
   useEffect(() => {
     if (!experimentId || !isBrowser) {
@@ -80,8 +81,9 @@ const frequencyPlot = () => {
     if (!config || loading) {
       return;
     }
-    setPlotSpec(generateSpec(config));
-    setPlotData(generateData());
+    const spec = generateSpec(config);
+    generateData(spec);
+    setPlotSpec(spec);
   }, [config, properties]);
 
   const calculateSum = (chosenClusters, metadataIds) => {
@@ -103,7 +105,7 @@ const frequencyPlot = () => {
       cluster.key === name))[0]?.children
   );
 
-  const generateData = () => {
+  const generateData = (spec) => {
     let data = [];
     const chosenClusters = hierarchy.filter((cluster) => (
       cluster.key === config.chosenClusters))[0]?.children;
@@ -120,6 +122,9 @@ const frequencyPlot = () => {
         const y = properties[clusterName.key].cellIds.size;
         const cluster = properties[clusterName.key];
         data = populateData(x, y, cluster, sum, data);
+      });
+      spec.data.forEach((datum) => {
+        datum.values = data;
       });
       return data;
     }
@@ -182,7 +187,6 @@ const frequencyPlot = () => {
       <center>
         <Vega
           spec={plotSpec}
-          data={{ data: plotData }}
           renderer='canvas'
         />
       </center>
@@ -220,8 +224,8 @@ const frequencyPlot = () => {
           <Collapse accordion>
             <Panel header='Select Data' key='20'>
               <SelectCellSets
-                onUpdate={updatePlotWithChanges}
                 config={config}
+                onUpdate={updatePlotWithChanges}
                 optionsMetadata={optionsMetadata}
                 optionsCellSets={optionsCellSets}
               />

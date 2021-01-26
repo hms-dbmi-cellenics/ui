@@ -57,7 +57,7 @@ const SelectCellSets = (props) => {
             value={{
               key: menuValue,
             }}
-            onChange={(value) => changeMetadata(value)}
+            onChange={changeMetadata}
             labelInValue
             disabled={disabled}
             style={{ width: '100%' }}
@@ -74,7 +74,7 @@ const SelectCellSets = (props) => {
           value={{
             key: firstLetterUppercase(config.chosenClusters),
           }}
-          onChange={(value) => changeClusters(value)}
+          onChange={changeClusters}
           labelInValue
           style={{ width: '100%' }}
           placeholder='Select cell set...'
