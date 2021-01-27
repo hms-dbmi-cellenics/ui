@@ -38,6 +38,8 @@ const HeatmapPlot = () => {
   const { loading, error, data: expressionData } = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
 
+  console.log(cellSets);
+
   const router = useRouter();
   const { experimentId } = router.query;
 
@@ -142,7 +144,7 @@ const HeatmapPlot = () => {
     }));
   };
 
-  if (!config || cellSets.loading) {
+  if (!config || cellSets.loading || !cellSets.hierarchy) {
     return (<Skeleton />);
   }
 
