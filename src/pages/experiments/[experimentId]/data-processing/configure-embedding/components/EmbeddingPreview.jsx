@@ -21,12 +21,9 @@ import {
   loadPlotConfig,
 } from '../../../../../../redux/actions/componentConfig';
 import { initialPlotConfigStates } from '../../../../../../redux/reducers/componentConfig/initialState';
-import {
-  generateSamplePlotSpec,
-  generateCellSetClusterPlotSpec,
-  generateMitochondrialFractionReadsSpec,
-  generateDoubletScorePlotSpec,
-} from '../../../../../../utils/plotSpecs/generateEmbeddingPreviewSpec';
+import generateEmbeddingCategoricalSpec from '../../../../../../utils/plotSpecs/generateDataProcessingEmbeddingCategoricalSpec';
+import generateEmbeddingContinuousSpec from '../../../../../../utils/plotSpecs/generateDataProcessingEmbeddingContinuousSpec';
+import colorProvider from '../../../../../../utils/colorProvider';
 
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
@@ -41,29 +38,33 @@ const EmbeddingPreview = () => {
   const { experimentId } = router.query;
   const [selectedSpec, setSelectedSpec] = useState('sample');
   const [plotSpec, setPlotSpec] = useState({});
-  const [config, setConfig] = useState({});
+  const [config, setConfig] = useState(null);
 
   const error = false;
 
   const plots = {
     sample: {
-      title: 'group by sample',
-      specGenerator: generateSamplePlotSpec,
+      title: 'Samples',
+      initialConfig: initialPlotConfigStates.dataProcessingEmbeddingCategorical,
+      specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
     },
     cellCluster: {
-      title: 'default clusters',
-      specGenerator: generateCellSetClusterPlotSpec,
-      imgSrc: plot2Pic,
-    },
-    mitochondrialFraction: {
-      title: 'mitochondrial fraction reads',
-      specGenerator: generateMitochondrialFractionReadsSpec,
+      title: 'Default clusters',
+      initialConfig: initialPlotConfigStates.dataProcessingEmbeddingCategorical,
+      specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
     },
+    mitochondrialFraction: {
+      title: 'Mitochondrial fraction reads',
+      initialConfig: initialPlotConfigStates.embeddingContinuous,
+      specGenerator: generateEmbeddingContinuousSpec,
+      imgSrc: plot2Pic,
+    },
     doubletScore: {
-      title: 'cell doublet score',
-      specGenerator: generateDoubletScorePlotSpec,
+      title: 'Cell doublet score',
+      initialConfig: initialPlotConfigStates.embeddingContinuous,
+      specGenerator: generateEmbeddingContinuousSpec,
       imgSrc: plot2Pic,
     },
   };
@@ -71,21 +72,46 @@ const EmbeddingPreview = () => {
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-    if (!Object.keys(config).length) {
-      setConfig(initialPlotConfigStates.embeddingPreview);
+
+    if (!config) {
+      return;
     }
 
     const spec = plots[selectedSpec].specGenerator(config);
-
-    // Add data to spec
     generateData(spec);
+    console.log(config, spec);
     setPlotSpec(spec);
-  }, [selectedSpec, config]);
+  }, [config]);
 
-  // Replace this function when data source for embedding preview is available
+  useEffect(() => {
+    setConfig(plots[selectedSpec].initialConfig);
+  }, [selectedSpec]);
+
+  // Quick and dirty function to massage prepared data into a good shape.
+  // This will be changed once we actually load data from Redux.
   const generateData = (spec) => {
-    spec.data.forEach((s) => {
-      s.values = s.name === 'embeddingCat' ? UMAP : '';
+    spec.data.map((s) => {
+      if (s.name === 'cellSets') {
+        s.values = [];
+
+        UMAP.forEach((cell, i) => {
+          s.values[cell.cluster_id] = {
+            name: `${cell.cluster_id}`,
+            cellSetId: cell.cluster_id,
+            cellIds: s.values[cell.cluster_id]?.cellIds ? [...s.values[cell.cluster_id].cellIds, i] : [i],
+            color: colorProvider.getColor(),
+          };
+          // cluster_id
+        });
+      }
+
+      if (s.name === 'expression') {
+        s.values = { expression: UMAP.map((cell) => cell.doubletScore || 0) };
+      }
+
+      if (s.name === 'embedding') {
+        s.values = UMAP.map((cell) => [cell.UMAP_1, cell.UMAP_2]);
+      }
     });
   };
 
@@ -100,7 +126,7 @@ const EmbeddingPreview = () => {
       return (
         <PlatformError
           description={error}
-          onClick={() => {}}
+          onClick={() => { }}
         />
       );
     }
@@ -120,16 +146,23 @@ const EmbeddingPreview = () => {
     );
   };
 
+  if (!config) {
+    return (
+      <center>
+        <Spin size='large' />
+      </center>
+    );
+  }
+
   return (
     <>
       <PageHeader
-        title={config ? `Embedding preview (${config.plotTitle})` : ''}
-        subTitle='Powerful data exploration'
+        title={plots[selectedSpec].title}
         style={{ width: '100%', paddingRight: '0px' }}
       />
       <Row>
         <Col span={15}>
-          { renderPlot() }
+          {renderPlot()}
         </Col>
 
         <Col span={3}>
@@ -138,7 +171,7 @@ const EmbeddingPreview = () => {
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
 
-            { Object.entries(plots).map(([key, plot]) => (
+            {Object.entries(plots).map(([key, plot]) => (
               <button
                 type='button'
                 key={key}

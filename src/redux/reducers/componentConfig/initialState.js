@@ -214,6 +214,51 @@ const frequencyInitialConfig = {
   testVar: null,
 };
 
+// This is an updated spec that is only used in data processing and not in plots and tables.
+const dataProcessingEmbeddingCategorical = {
+  spec: '2.0.0',
+  dimensions: {
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    titleSize: 13,
+    fontSize: 13,
+    gridOpacity: 0,
+    gridWidth: 10,
+    offset: 10,
+    xText: 'UMAP 1',
+    yText: 'UMAP 2',
+    lineWidth: 2,
+  },
+  title: {
+    text: '',
+    size: 20,
+    anchor: 'start',
+  },
+  labels: {
+    show: true,
+    size: 28,
+  },
+  legend: {
+    show: true,
+    position: 'top',
+  },
+  markers: {
+    size: 5,
+    opacity: 5,
+    shape: 'circle',
+  },
+  text: {
+    font: 'sans-serif',
+    color: '#000000',
+  },
+  colorInverted: false,
+  data: {
+    cellSet: 'louvain',
+  },
+};
+
 const interactiveHeatmapInitialConfig = {
   selectedTracks: ['louvain'],
   groupedTrack: 'louvain',
@@ -228,13 +273,16 @@ const initialPlotConfigStates = {
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
   frequency: frequencyInitialConfig,
+
+  // These are updated plots with sensible config structures.
+  // Plots and tables should be updated to these when possible/feasible.
+  dataProcessingEmbeddingCategorical,
 };
 
 const initialComponentConfigStates = {
   interactiveHeatmap: interactiveHeatmapInitialConfig,
 };
+export { initialPlotConfigStates, initialComponentConfigStates };
 
 const initialState = {};
-
 export default initialState;
-export { initialPlotConfigStates, initialComponentConfigStates };
