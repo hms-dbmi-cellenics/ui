@@ -28,6 +28,7 @@ const DiffExprResults = (props) => {
 
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
+  const [settingsListed, setSettingsListed] = useState(false);
 
   const columns = [
     {
@@ -48,7 +49,6 @@ const DiffExprResults = (props) => {
       sorter: true,
     },
   ];
-
   // When data changes, update rows.
   useEffect(() => {
     if (data) {
@@ -73,6 +73,9 @@ const DiffExprResults = (props) => {
       ),
     );
   };
+  const optionName = (word) => word.split('/').pop();
+  const { basis, cellSet, compareWith } = comparisonGroup[comparisonType];
+  const settingsText = `${optionName(basis)} vs. ${optionName(cellSet)} in ${optionName(compareWith)}`;
 
   const renderExportAlert = () => {
     if (!exportAlert) return null;
@@ -115,8 +118,14 @@ const DiffExprResults = (props) => {
           </span>
         </Button>
         {renderExportAlert()}
+        <Button onClick={() => setSettingsListed(!settingsListed)}>
+          {settingsListed ? 'Hide' : 'Show'}
+          {' '}
+          settings
+        </Button>
       </Space>
-
+      {settingsListed
+        ? <div>{settingsText}</div> : <div />}
       <GeneTable
         experimentId={experimentId}
         initialTableState={{
