@@ -123,25 +123,25 @@ const frequencyPlot = () => {
         const cluster = properties[clusterName.key];
         data = populateData(x, y, cluster, sum, data);
       });
-      spec.data.forEach((datum) => {
-        datum.values = data;
+    } else {
+      metadataClusters.forEach((metadataCluster) => {
+        const metadataIds = Array.from(properties[metadataCluster.key].cellIds);
+        const sum = calculateSum(chosenClusters, metadataIds);
+
+        chosenClusters.forEach((clusterName) => {
+          const x = properties[metadataCluster.key].name;
+          const cellSetIds = Array.from(properties[clusterName.key].cellIds);
+          const y = metadataIds.filter((id) => cellSetIds.includes(id)).length;
+          const cluster = properties[clusterName.key];
+
+          if (y !== 0) {
+            data = populateData(x, y, cluster, sum, data);
+          }
+        });
       });
-      return data;
     }
-    metadataClusters.forEach((metadataCluster) => {
-      const metadataIds = Array.from(properties[metadataCluster.key].cellIds);
-      const sum = calculateSum(chosenClusters, metadataIds);
-
-      chosenClusters.forEach((clusterName) => {
-        const x = properties[metadataCluster.key].name;
-        const cellSetIds = Array.from(properties[clusterName.key].cellIds);
-        const y = metadataIds.filter((id) => cellSetIds.includes(id)).length;
-        const cluster = properties[clusterName.key];
-
-        if (y !== 0) {
-          data = populateData(x, y, cluster, sum, data);
-        }
-      });
+    spec.data.forEach((datum) => {
+      datum.values = data;
     });
     return data;
   };
