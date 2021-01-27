@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Spin,
+  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse,
 } from 'antd';
+
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
@@ -21,9 +22,21 @@ import {
   loadPlotConfig,
 } from '../../../../../../redux/actions/componentConfig';
 import { initialPlotConfigStates } from '../../../../../../redux/reducers/componentConfig/initialState';
-import generateEmbeddingCategoricalSpec from '../../../../../../utils/plotSpecs/generateDataProcessingEmbeddingCategoricalSpec';
-import generateEmbeddingContinuousSpec from '../../../../../../utils/plotSpecs/generateDataProcessingEmbeddingContinuousSpec';
+import generateEmbeddingCategoricalSpec from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import generateEmbeddingContinuousSpec from '../../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import colorProvider from '../../../../../../utils/colorProvider';
+import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
+import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
+import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
+import LogExpression from '../../../plots-and-tables/embedding-continuous/components/LogExpression';
+import AxesDesign from '../../../plots-and-tables/components/AxesDesign';
+import PointDesign from '../../../plots-and-tables/components/PointDesign';
+import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
+import FontDesign from '../../../plots-and-tables/components/FontDesign';
+import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
+import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
+
+const { Panel } = Collapse;
 
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
@@ -45,13 +58,13 @@ const EmbeddingPreview = () => {
   const plots = {
     sample: {
       title: 'Samples',
-      initialConfig: initialPlotConfigStates.dataProcessingEmbeddingCategorical,
+      initialConfig: initialPlotConfigStates.embeddingCategorical,
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
     },
     cellCluster: {
       title: 'Default clusters',
-      initialConfig: initialPlotConfigStates.dataProcessingEmbeddingCategorical,
+      initialConfig: initialPlotConfigStates.embeddingCategorical,
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
     },
@@ -199,12 +212,61 @@ const EmbeddingPreview = () => {
 
         <Col span={5}>
           <CalculationConfig experimentId={experimentId} />
-          <PlotStyling
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            updatePlotWithChanges={updatePlotWithChanges}
-            legendMenu
-          />
+          <Collapse>
+            <Panel header='Plot styling' key='styling'>
+              <Collapse accordion>
+                <Panel header='Main Schema' key='main-schema'>
+                  <DimensionsRangeEditor
+                    config={config}
+                    onUpdate={updatePlotWithChanges}
+                  />
+                  <Collapse accordion>
+                    <Panel header='Define and Edit Title' key='title'>
+                      <TitleDesign
+                        config={config}
+                        onUpdate={updatePlotWithChanges}
+                      />
+                    </Panel>
+                    <Panel header='Font' key='font'>
+                      <FontDesign
+                        config={config}
+                        onUpdate={updatePlotWithChanges}
+                      />
+                    </Panel>
+                  </Collapse>
+                </Panel>
+                <Panel header='Axes and Margins' key='axes'>
+                  <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
+                </Panel>
+                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingContinuous && (
+                  <Panel header='Colours' key='colors'>
+                    <ColourbarDesign
+                      config={config}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                    <ColourInversion
+                      config={config}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
+                )}
+                <Panel header='Markers' key='marker'>
+                  <PointDesign config={config} onUpdate={updatePlotWithChanges} />
+                </Panel>
+                <Panel header='Legend' key='legend'>
+                  <LegendEditor
+                    onUpdate={updatePlotWithChanges}
+                    legendEnabled={config.legendEnabled}
+                    legendPosition={config.legendPosition}
+                    legendOptions='corners'
+                  />
+                </Panel>
+                <Panel header='Labels' key='labels'>
+                  <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
+                </Panel>
+              </Collapse>
+            </Panel>
+          </Collapse>
         </Col>
       </Row>
     </>

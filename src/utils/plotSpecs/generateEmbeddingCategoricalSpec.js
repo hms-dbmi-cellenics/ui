@@ -199,3 +199,5 @@ export {
   // eslint-disable-next-line import/prefer-default-export
   generateSpec,
 };
+
+export default generateSpec;
