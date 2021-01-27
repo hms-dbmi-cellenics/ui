@@ -97,7 +97,7 @@ describe('HeatmapGroupBySettings', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapGroupBySettings experimentId='123' />
+        <HeatmapGroupBySettings componentType='interactiveHeatmap' experimentId='123' />
       </Provider>,
     );
 
@@ -111,7 +111,7 @@ describe('HeatmapGroupBySettings', () => {
     expect(groupByItems.length).toEqual(1);
 
     // the item should be samples
-    expect(groupByItems.at(0).childAt(0).childAt(0).text()).toEqual('Sample');
+    expect(groupByItems.at(0).text()).toEqual('Sample');
 
     // there's a dropdown
     const dropdown = component.find(Dropdown);
@@ -122,8 +122,8 @@ describe('HeatmapGroupBySettings', () => {
     expect(subMenuItems.length).toEqual(2);
 
     // each of which should have the right names.
-    expect(subMenuItems.at(0).childAt(0).text()).toEqual('louvain clusters');
-    expect(subMenuItems.at(1).childAt(0).text()).toEqual('Sample');
+    expect(subMenuItems.at(0).find('div').text()).toEqual('louvain clusters');
+    expect(subMenuItems.at(1).find('div').text()).toEqual('Sample');
   });
 
   test('interacting with the groupby add/remove options will trigger the appropriate actions', async () => {
@@ -133,7 +133,7 @@ describe('HeatmapGroupBySettings', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapGroupBySettings experimentId='123' width={200} height={200} />
+        <HeatmapGroupBySettings componentType='interactiveHeatmap' experimentId='123' width={200} height={200} />
       </Provider>,
     );
 
@@ -159,6 +159,7 @@ describe('HeatmapGroupBySettings', () => {
     store.clearActions();
     expect(store.getActions().length).toEqual(0);
 
+    component.update();
     const reorderableList = component.find('ReorderableList');
     const groupByItems = reorderableList.find('Item');
 
@@ -166,9 +167,9 @@ describe('HeatmapGroupBySettings', () => {
     expect(groupByItems.length).toEqual(2);
 
     // the first item should be samples
-    expect(groupByItems.at(0).childAt(0).childAt(0).text()).toEqual('Sample');
+    expect(groupByItems.at(0).text()).toEqual('Sample');
     // the second item should be louvain
-    expect(groupByItems.at(1).childAt(0).childAt(0).text()).toEqual('louvain clusters');
+    expect(groupByItems.at(1).text()).toEqual('louvain clusters');
 
     // when the groupby is clicked again
     buttons.at(0).simulate('click');
@@ -187,7 +188,7 @@ describe('HeatmapGroupBySettings', () => {
     expect(groupByItems.length).toEqual(2);
 
     // and the first item should be samples
-    expect(groupByItems.at(0).childAt(0).childAt(0).text()).toEqual('Sample');
+    expect(groupByItems.at(0).text()).toEqual('Sample');
   });
 
   test('interacting with the groupby reorder options will trigger the appropriate actions', async () => {
@@ -197,7 +198,7 @@ describe('HeatmapGroupBySettings', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapGroupBySettings experimentId='123' width={200} height={200} />
+        <HeatmapGroupBySettings componentType='interactiveHeatmap' experimentId='123' width={200} height={200} />
       </Provider>,
     );
 
@@ -211,6 +212,8 @@ describe('HeatmapGroupBySettings', () => {
     // Add a louvain group by
     const addButtons = subMenuItems.find(Button);
     addButtons.at(0).simulate('click');
+
+    await waitForActions(store, [UPDATE_CONFIG]);
     component.update();
 
     const reorderableList = component.find('ReorderableList');
@@ -224,9 +227,9 @@ describe('HeatmapGroupBySettings', () => {
     store.clearActions();
 
     // the first item should be samples
-    expect(groupByItems.at(0).childAt(0).childAt(0).text()).toEqual('Sample');
+    expect(groupByItems.at(0).text()).toEqual('Sample');
     // the second item should be louvain (the first one is the dropdown)
-    expect(groupByItems.at(1).childAt(0).childAt(0).text()).toEqual('louvain clusters');
+    expect(groupByItems.at(1).text()).toEqual('louvain clusters');
 
     // after a click for sample to go down
     const reorderButtonsSample = groupByItems.at(0).find('Button');

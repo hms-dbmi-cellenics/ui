@@ -18,7 +18,7 @@ import { loadComponentConfig } from '../../../../../../redux/actions/componentCo
 import { union } from '../../../../../../utils/cellSetOperations';
 import SetOperations from '../../../../../../utils/setOperations';
 
-const COMPONENT_TYPE = 'InteractiveHeatmap';
+const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
@@ -42,7 +42,7 @@ const HeatmapPlot = (props) => {
   const hidden = useSelector((state) => state.cellSets.hidden);
 
   const heatmapSettings = useSelector(
-    (state) => state.componentConfig.interactiveHeatmap?.config,
+    (state) => state.componentConfig[COMPONENT_TYPE]?.config,
   ) || {};
 
   const {
@@ -70,7 +70,7 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    dispatch(loadComponentConfig(experimentId, 'interactiveHeatmap', 'interactiveHeatmap'));
+    dispatch(loadComponentConfig(experimentId, COMPONENT_TYPE, COMPONENT_TYPE));
   }, [heatmapSettings]);
 
   useEffect(() => {
@@ -423,4 +423,4 @@ HeatmapPlot.propTypes = {
 
 export default HeatmapPlot;
 
-export { COMPONENT_TYPE };
+export { HeatmapPlot, COMPONENT_TYPE };

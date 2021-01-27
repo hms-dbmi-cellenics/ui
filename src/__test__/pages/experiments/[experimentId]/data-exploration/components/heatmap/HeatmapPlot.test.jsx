@@ -17,7 +17,7 @@ VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
 const mockStore = configureMockStore([thunk]);
 configure({ adapter: new Adapter() });
 let component;
-const componentType = 'InteractiveHeatmap';
+const componentType = 'interactiveHeatmap';
 
 const initialState = {
   genes: {

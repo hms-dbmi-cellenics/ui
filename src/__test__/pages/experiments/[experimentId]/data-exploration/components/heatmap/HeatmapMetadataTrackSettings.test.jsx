@@ -5,6 +5,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { Switch } from 'antd';
+
 import HeatmapMetadataTrackSettings from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/HeatmapMetadataTrackSettings';
 
 import { UPDATE_CONFIG } from '../../../../../../../redux/actionTypes/componentConfig';
@@ -100,7 +101,7 @@ describe('HeatmapGroupBySettings', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapMetadataTrackSettings experimentId='123' />
+        <HeatmapMetadataTrackSettings componentType='interactiveHeatmap' experimentId='123' />
       </Provider>,
     );
 
@@ -129,7 +130,7 @@ describe('HeatmapGroupBySettings', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapMetadataTrackSettings experimentId='123' />
+        <HeatmapMetadataTrackSettings componentType='interactiveHeatmap' experimentId='123' />
       </Provider>,
     );
 

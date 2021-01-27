@@ -79,7 +79,8 @@ const mockStore = configureMockStore([thunk]);
 configure({ adapter: new Adapter() });
 
 describe('HeatmapLegendVisibilitySettings', () => {
-  let component, store, buttons;
+  let component; let store; let
+    buttons;
 
   afterEach(() => {
     component.unmount();
@@ -92,7 +93,7 @@ describe('HeatmapLegendVisibilitySettings', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapLegendVisibilitySettings />
+        <HeatmapLegendVisibilitySettings componentType='interactiveHeatmap' />
       </Provider>,
     );
   });
@@ -117,44 +118,44 @@ describe('HeatmapLegendVisibilitySettings', () => {
   it('responds correctly to clicking to hide', () => {
     // Click hide button
     act(() => {
-      component.find(Radio.Group).props().onChange({ "target": { "value": false } });
+      component.find(Radio.Group).props().onChange({ target: { value: false } });
     });
 
-    let storeActions = store.getActions();
+    const storeActions = store.getActions();
 
     // Only one action was dispatched
     expect(storeActions.length).toEqual(1);
 
-    let action = storeActions[0];
-    let configChange = action.payload.configChange;
+    const action = storeActions[0];
+    const { configChange } = action.payload;
 
     // Of the correct type
     expect(action.type).toBe(UPDATE_CONFIG);
 
     // With the correct property
-    expect(configChange).toHaveProperty("legendIsVisible", false);
+    expect(configChange).toHaveProperty('legendIsVisible', false);
     expect(configChange).toMatchSnapshot();
   });
 
   it('responds correctly to clicking to show', () => {
     // Click show button
     act(() => {
-      component.find(Radio.Group).props().onChange({ "target": { "value": true } });
+      component.find(Radio.Group).props().onChange({ target: { value: true } });
     });
 
-    let storeActions = store.getActions();
+    const storeActions = store.getActions();
 
     // Only one action was dispatched
     expect(storeActions.length).toEqual(1);
 
-    let action = storeActions[0];
-    let configChange = action.payload.configChange;
+    const action = storeActions[0];
+    const { configChange } = action.payload;
 
     // Of the correct type
     expect(action.type).toBe(UPDATE_CONFIG);
 
     // With the correct property
-    expect(configChange).toHaveProperty("legendIsVisible", true);
+    expect(configChange).toHaveProperty('legendIsVisible', true);
     expect(configChange).toMatchSnapshot();
   });
 });

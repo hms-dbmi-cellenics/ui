@@ -9,14 +9,18 @@ import 'antd/dist/antd.css';
 import {
   Button, Space, Menu, Dropdown,
 } from 'antd';
+import PropTypes from 'prop-types';
 
 import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 import ReorderableList from '../../../../../../components/ReorderableList';
 
-const HeatmapGroupBySettings = () => {
+const HeatmapGroupBySettings = (props) => {
   const dispatch = useDispatch();
+
+  const { componentType } = props;
+
   const groupedTracksKeys = useSelector(
-    (state) => state.componentConfig.interactiveHeatmap.config.groupedTracks,
+    (state) => state.componentConfig[componentType].config.groupedTracks,
   );
   const cellSets = useSelector((state) => state.cellSets);
 
@@ -68,7 +72,7 @@ const HeatmapGroupBySettings = () => {
     }
 
     dispatch(
-      updatePlotConfig('interactiveHeatmap', {
+      updatePlotConfig(componentType, {
         groupedTracks: cellSetsOrder.map((cellSet) => cellSet.key),
       }),
     );
@@ -104,6 +108,8 @@ const HeatmapGroupBySettings = () => {
                         newCellSetsOrder.push(cellSet);
                       }
 
+                      console.log('newCellSetsOrder');
+                      console.log(newCellSetsOrder);
                       setCellSetsOrder(newCellSetsOrder);
                     }}
                   />
@@ -116,6 +122,8 @@ const HeatmapGroupBySettings = () => {
     </Menu>
   );
 
+  console.log('cellSetsOrder');
+  console.log(cellSetsOrder);
   return (
     <div style={{ padding: '5px' }}>
       <Space direction='vertical'>
@@ -127,9 +135,8 @@ const HeatmapGroupBySettings = () => {
         </Dropdown>
 
         <ReorderableList
-          onMoveUp={setCellSetsOrder}
-          onMoveDown={setCellSetsOrder}
-          reorderableList={cellSetsOrder}
+          onChange={setCellSetsOrder}
+          defaultList={cellSetsOrder}
           rightItem={(cellSet) => cellSet.name}
         />
       </Space>
@@ -141,6 +148,7 @@ HeatmapGroupBySettings.defaultProps = {
 };
 
 HeatmapGroupBySettings.propTypes = {
+  componentType: PropTypes.string.isRequired,
 };
 
 export default HeatmapGroupBySettings;

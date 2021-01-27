@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
   EyeOutlined,
   EyeInvisibleOutlined,
@@ -12,12 +13,14 @@ import {
 import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 import ReorderableList from '../../../../../../components/ReorderableList';
 
-const HeatmapMetadataTrackSettings = () => {
+const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
+
+  const { componentType } = props;
 
   const cellSets = useSelector((state) => state.cellSets);
   const selectedTracks = useSelector(
-    (state) => state.componentConfig.interactiveHeatmap.config.selectedTracks,
+    (state) => state.componentConfig[componentType].config.selectedTracks,
   );
 
   const getCellSets = (category) => {
@@ -69,7 +72,7 @@ const HeatmapMetadataTrackSettings = () => {
     }
 
     dispatch(
-      updatePlotConfig('interactiveHeatmap', {
+      updatePlotConfig(componentType, {
         selectedTracks: trackData.filter((o) => o.selected).map((o) => o.key),
       }),
     );
@@ -100,9 +103,8 @@ const HeatmapMetadataTrackSettings = () => {
   return (
     <div style={{ padding: '5px' }}>
       <ReorderableList
-        onMoveUp={setTrackData}
-        onMoveDown={setTrackData}
-        reorderableList={trackData}
+        onChange={setTrackData}
+        defaultList={trackData}
         leftItem={leftItem}
         rightItem={rightItem}
       />
@@ -114,6 +116,7 @@ HeatmapMetadataTrackSettings.defaultProps = {
 };
 
 HeatmapMetadataTrackSettings.propTypes = {
+  componentType: PropTypes.string.isRequired,
 };
 
 export default HeatmapMetadataTrackSettings;

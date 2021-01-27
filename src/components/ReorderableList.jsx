@@ -1,45 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Space } from 'antd';
 import { UpOutlined, DownOutlined } from '@ant-design/icons';
 
-const moveUp = (source, id) => {
-  const index = source.findIndex((e) => e.key === id);
-
-  const arr = [...source];
-
-  if (index <= 0) {
-    return arr;
-  }
-
-  const el = arr[index];
-  arr[index] = arr[index - 1];
-  arr[index - 1] = el;
-
-  return arr;
-};
-
-const moveDown = (source, id) => {
-  const index = source.findIndex((e) => e.key === id);
-
-  const arr = [...source];
-
-  if (index === -1 || index >= source.length - 1) {
-    return arr;
-  }
-
-  const el = arr[index];
-  arr[index] = arr[index + 1];
-  arr[index + 1] = el;
-
-  return arr;
-};
-
 const ReorderableList = (props) => {
   const {
-    onMoveUp, onMoveDown, reorderableList, leftItem, rightItem,
+    onChange, defaultList, leftItem, rightItem,
   } = props;
+
+  const [reorderableList, setReorderableList] = useState(defaultList);
+
+  useEffect(() => {
+    setReorderableList(defaultList);
+  }, [defaultList]);
+
+  const moveUp = (source, id) => {
+    const index = source.findIndex((e) => e.key === id);
+
+    const arr = [...source];
+
+    if (index <= 0) {
+      return arr;
+    }
+
+    const el = arr[index];
+    arr[index] = arr[index - 1];
+    arr[index - 1] = el;
+
+    setReorderableList(arr);
+
+    return arr;
+  };
+
+  const moveDown = (source, id) => {
+    const index = source.findIndex((e) => e.key === id);
+
+    const arr = [...source];
+
+    if (index === -1 || index >= source.length - 1) {
+      return arr;
+    }
+
+    const el = arr[index];
+    arr[index] = arr[index + 1];
+    arr[index + 1] = el;
+
+    setReorderableList(arr);
+
+    return arr;
+  };
 
   const upButton = (key, currentPosition) => (
     <Button
@@ -49,7 +59,7 @@ const ReorderableList = (props) => {
       icon={<UpOutlined />}
       style={{ marginLeft: '5px' }}
       onClick={() => {
-        onMoveUp(moveUp(reorderableList, key));
+        onChange(moveUp(defaultList, key));
       }}
     />
   );
@@ -58,39 +68,38 @@ const ReorderableList = (props) => {
     <Button
       size='small'
       shape='circle'
-      disabled={currentPosition === reorderableList.length - 1}
+      disabled={currentPosition === defaultList.length - 1}
       icon={<DownOutlined />}
       style={{ marginRight: '5px' }}
       onClick={() => {
-        onMoveDown(moveDown(reorderableList, key));
+        onChange(moveDown(defaultList, key));
       }}
     />
   );
 
-  const fullItem = (listItem, i) => (
+  const composeItem = (itemData, i) => (
     <div>
-      {leftItem(listItem, i)}
+      {leftItem(itemData, i)}
 
-      {upButton(listItem.key, i)}
-      {downButton(listItem.key, i)}
+      {upButton(itemData.key, i)}
+      {downButton(itemData.key, i)}
 
-      {rightItem(listItem, i)}
+      {rightItem(itemData, i)}
     </div>
   );
 
   return (
     <Space direction='vertical'>
-      {reorderableList.map((listItem, i) => (
-        fullItem(listItem, i)
+      {reorderableList.map((itemData, i) => (
+        composeItem(itemData, i)
       ))}
     </Space>
   );
 };
 
 ReorderableList.propTypes = {
-  onMoveUp: PropTypes.node.isRequired,
-  onMoveDown: PropTypes.node.isRequired,
-  reorderableList: PropTypes.node.isRequired,
+  onChange: PropTypes.node.isRequired,
+  defaultList: PropTypes.node.isRequired,
   leftItem: () => { },
   rightItem: () => { },
 };

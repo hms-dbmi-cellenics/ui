@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Radio } from 'antd';
+import PropTypes from 'prop-types';
+
 import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 
-const HeatmapLegendVisibilitySettings = () => {
+const HeatmapLegendVisibilitySettings = (props) => {
   const dispatch = useDispatch();
 
-  const heatmapSettings = useSelector((state) => state.componentConfig.interactiveHeatmap?.config) || {};
+  const { componentType } = props;
+
+  const heatmapSettings = useSelector((state) => state.componentConfig[componentType].config) || {};
 
   const [showLegend, setShowLegend] = useState(heatmapSettings.legendIsVisible);
 
@@ -18,9 +22,9 @@ const HeatmapLegendVisibilitySettings = () => {
 
   const changelegend = (e) => {
     dispatch(
-      updatePlotConfig('interactiveHeatmap', {
+      updatePlotConfig(componentType, {
         legendIsVisible: e.target.value,
-      })
+      }),
     );
 
     setShowLegend(e.target.value);
@@ -32,13 +36,13 @@ const HeatmapLegendVisibilitySettings = () => {
       <Radio key='2' style={radioStyle} value={false}>Hide</Radio>
     </Radio.Group>
   );
-
 };
 
 HeatmapLegendVisibilitySettings.defaultProps = {
 };
 
 HeatmapLegendVisibilitySettings.propTypes = {
+  componentType: PropTypes.string.isRequired,
 };
 
 export default HeatmapLegendVisibilitySettings;
