@@ -38,8 +38,6 @@ const HeatmapPlot = () => {
   const { loading, error, data: expressionData } = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
 
-  console.log(cellSets);
-
   const router = useRouter();
   const { experimentId } = router.query;
 
