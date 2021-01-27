@@ -108,7 +108,7 @@ const HeatmapPlot = (props) => {
     expressionValue]);
 
   useEffect(() => {
-    setMaxCells(Math.floor(Math.min(width * 0.7, 1000)));
+    setMaxCells(Math.floor(width * 0.8));
   }, [width]);
 
   const downsample = (groupBy) => {
