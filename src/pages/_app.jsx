@@ -23,6 +23,7 @@ const WrappedApp = ({ Component, pageProps }) => {
         </ContentWrapper>
       );
     }
+
     return (<PreloadContent />);
   };
 

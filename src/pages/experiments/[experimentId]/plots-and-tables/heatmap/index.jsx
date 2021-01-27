@@ -42,7 +42,7 @@ const HeatmapPlot = () => {
   const { experimentId } = router.query;
 
   useEffect(() => {
-    if (!isBrowser) return;
+    if (!isBrowser || !experimentId) return;
 
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
