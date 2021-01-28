@@ -237,6 +237,14 @@ const EmbeddingPreview = () => {
                     />
                   </Panel>
                 )}
+                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical && (
+                  <Panel header='Colour inversion'>
+                    <ColourInversion
+                      config={config}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
+                )}
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
