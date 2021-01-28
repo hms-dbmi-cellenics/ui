@@ -28,6 +28,8 @@ import legend from '../../../../../../../static/media/viridis.png';
 import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 
+import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+
 const Scatterplot = dynamic(
   () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
   { ssr: false },
@@ -54,6 +56,8 @@ const Embedding = (props) => {
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
 
+  const processingSettings = useSelector((state) => state.experimentSettings.processing);
+
   const cellCoordintes = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -64,9 +68,15 @@ const Embedding = (props) => {
   // Load the embedding if it isn't already.
   useEffect(() => {
     if (!data && isBrowser) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
+      dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
   }, []);
+
+  useEffect(() => {
+    if (processingSettings.configureEmbedding) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+    }
+  }, [processingSettings]);
 
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.

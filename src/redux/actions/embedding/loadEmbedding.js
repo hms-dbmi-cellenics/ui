@@ -1,6 +1,5 @@
 import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../../actionTypes/embeddings';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
-import { initialProcessingState } from '../../reducers/experimentSettings/initialState';
 
 const TIMEOUT_SECONDS = 50;
 
@@ -10,15 +9,9 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     return null;
   }
 
-  // Do not allow loading when we are no longer in a loading state if there is no error condition.
-  // if (getState().embeddings[embeddingType] && !getState().embeddings[embeddingType].error) {
-  //   return null;
-  // }
-
   // Use initial state if experiment settings is still loading
-  const embeddingState = getState().experimentSettings.processing?.configureEmbedding
-    ? getState().experimentSettings.processing?.configureEmbedding
-    : initialProcessingState.configureEmbedding;
+  const embeddingState = getState().experimentSettings?.processing?.configureEmbedding;
+  if (!embeddingState) return null;
 
   const embeddingConfig = Object.keys(embeddingState).reduce((conf, key) => {
     const { method } = embeddingState[key];
