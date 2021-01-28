@@ -67,13 +67,13 @@ const Embedding = (props) => {
 
   // Load the embedding if it isn't already.
   useEffect(() => {
-    if (isBrowser) {
+    if (!processingSettings.configureEmbedding) {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
-  }, []);
+  }, [experimentId]);
 
   useEffect(() => {
-    if (processingSettings.configureEmbedding && !data) {
+    if (!data && processingSettings.configureEmbedding) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
   }, [processingSettings]);
@@ -230,21 +230,26 @@ const Embedding = (props) => {
       }}
     >
       {renderExpressionView()}
-      <Scatterplot
-        cellOpacity={0.1}
-        cellRadiusScale={0.1}
-        uuid={embeddingType}
-        view={view}
-        cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
-        mapping='PCA'
-        selectedCellIds={selectedCellIds}
-        cellColors={(selectedCell) ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] })) : new Map(Object.entries(cellColors))}
-        updateStatus={updateStatus}
-        updateCellsSelection={updateCellsSelection}
-        updateCellsHover={updateCellsHover}
-        updateViewInfo={updateCellCoordinates}
-        clearPleaseWait={clearPleaseWait}
-      />
+      {
+        data && processingSettings.configureEmbedding ? (
+
+          <Scatterplot
+            cellOpacity={0.1}
+            cellRadiusScale={0.1}
+            uuid={embeddingType}
+            view={view}
+            cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
+            mapping='PCA'
+            selectedCellIds={selectedCellIds}
+            cellColors={(selectedCell) ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] })) : new Map(Object.entries(cellColors))}
+            updateStatus={updateStatus}
+            updateCellsSelection={updateCellsSelection}
+            updateCellsHover={updateCellsHover}
+            updateViewInfo={updateCellCoordinates}
+            clearPleaseWait={clearPleaseWait}
+          />
+        ) : ''
+      }
       {
         createClusterPopover
           ? (

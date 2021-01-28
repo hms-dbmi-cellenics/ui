@@ -9,7 +9,7 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     return null;
   }
 
-  // Use initial state if experiment settings is still loading
+  // Does not load anything if experiment settings is not loaded
   const embeddingState = getState().experimentSettings?.processing?.configureEmbedding;
   if (!embeddingState) return null;
 
