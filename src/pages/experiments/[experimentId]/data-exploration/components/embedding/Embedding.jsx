@@ -67,13 +67,13 @@ const Embedding = (props) => {
 
   // Load the embedding if it isn't already.
   useEffect(() => {
-    if (!data && isBrowser) {
+    if (isBrowser) {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
   }, []);
 
   useEffect(() => {
-    if (processingSettings.configureEmbedding) {
+    if (processingSettings.configureEmbedding && !data) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
   }, [processingSettings]);

@@ -32,6 +32,7 @@ import Header from '../components/Header';
 import PlatformError from '../../../../../components/PlatformError';
 
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
+import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import isBrowser from '../../../../../utils/environment';
 
@@ -53,6 +54,7 @@ const EmbeddingCategoricalPlot = () => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
+  const processingSettings = useSelector((state) => state.experimentSettings.processing);
 
   const router = useRouter();
   const { experimentId } = router.query;
@@ -64,10 +66,8 @@ const EmbeddingCategoricalPlot = () => {
       return;
     }
 
-    // If we haven't already gotten our embedding loaded,
-    // start loading the plots again.
-    if (!data) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
+    if (!processingSettings.configureEmbedding) {
+      dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
 
     // Simultaneously, try to load the plot configuration.
@@ -76,6 +76,12 @@ const EmbeddingCategoricalPlot = () => {
     // Also, try loading the cell sets in the experiment.
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
+
+  useEffect(() => {
+    if (!data && processingSettings.configureEmbedding) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+    }
+  }, [processingSettings]);
 
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
