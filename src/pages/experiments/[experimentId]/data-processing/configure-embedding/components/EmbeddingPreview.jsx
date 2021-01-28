@@ -85,25 +85,26 @@ const EmbeddingPreview = () => {
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-
     if (!config) {
       return;
     }
 
     const spec = plots[selectedSpec].specGenerator(config);
     generateData(spec);
-    console.log(config, spec);
     setPlotSpec(spec);
   }, [config]);
 
+  // If the user toggles to a different embedding, set the config to be the initial
+  // state for that type of plot.
   useEffect(() => {
     setConfig(plots[selectedSpec].initialConfig);
   }, [selectedSpec]);
 
   // Quick and dirty function to massage prepared data into a good shape.
   // This will be changed once we actually load data from Redux.
+  /* eslint-disable no-param-reassign */
   const generateData = (spec) => {
-    spec.data.map((s) => {
+    spec.data.forEach((s) => {
       if (s.name === 'cellSets') {
         s.values = [];
 
@@ -114,7 +115,6 @@ const EmbeddingPreview = () => {
             cellIds: s.values[cell.cluster_id]?.cellIds ? [...s.values[cell.cluster_id].cellIds, i] : [i],
             color: colorProvider.getColor(),
           };
-          // cluster_id
         });
       }
 
@@ -127,6 +127,7 @@ const EmbeddingPreview = () => {
       }
     });
   };
+  /* eslint-enable no-param-reassign */
 
   const updatePlotWithChanges = (obj) => {
     const newConfig = _.cloneDeep(config);
