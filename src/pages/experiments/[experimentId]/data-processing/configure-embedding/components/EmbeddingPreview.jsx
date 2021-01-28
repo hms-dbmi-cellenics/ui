@@ -145,14 +145,6 @@ const EmbeddingPreview = () => {
       );
     }
 
-    if (!config) {
-      return (
-        <center>
-          <Spin size='large' />
-        </center>
-      );
-    }
-
     return (
       <center>
         <Vega spec={plotSpec} renderer='canvas' />
