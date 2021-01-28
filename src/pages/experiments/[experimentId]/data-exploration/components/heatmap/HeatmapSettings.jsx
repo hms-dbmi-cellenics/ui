@@ -6,6 +6,7 @@ import {
   Button, Dropdown, Menu, Tooltip,
 } from 'antd';
 
+import PropTypes from 'prop-types';
 import HeatmapMetadataTrackSettings from './HeatmapMetadataTrackSettings';
 import HeatmapGroupBySettings from './HeatmapGroupBySettings';
 import HeatmapExpressionValuesSettings from './HeatmapExpressionValuesSettings';
@@ -13,20 +14,22 @@ import HeatmapLegendVisibilitySettings from './HeatmapLegendVisibilitySettings';
 
 const { SubMenu } = Menu;
 
-const HeatmapSettings = () => {
+const HeatmapSettings = (props) => {
+  const { componentType } = props;
+
   const renderMenu = () => (
     <Menu size='small'>
       <SubMenu key='expression-values' title='Expression values' icon={<></>}>
-        <HeatmapExpressionValuesSettings />
+        <HeatmapExpressionValuesSettings componentType={componentType} />
       </SubMenu>
       <SubMenu key='legend' title='Legend' icon={<></>}>
-        <HeatmapLegendVisibilitySettings />
+        <HeatmapLegendVisibilitySettings componentType={componentType} />
       </SubMenu>
       <SubMenu key='metadata-tracks' title='Metadata tracks...' icon={<></>}>
-        <HeatmapMetadataTrackSettings />
+        <HeatmapMetadataTrackSettings componentType={componentType} />
       </SubMenu>
       <SubMenu key='group-by' title='Group by' icon={<></>}>
-        <HeatmapGroupBySettings />
+        <HeatmapGroupBySettings componentType={componentType} />
       </SubMenu>
     </Menu>
   );
@@ -44,6 +47,10 @@ const HeatmapSettings = () => {
       </Tooltip>
     </Dropdown>
   );
+};
+
+HeatmapSettings.propTypes = {
+  componentType: PropTypes.string.isRequired,
 };
 
 export default HeatmapSettings;

@@ -218,7 +218,7 @@ const dataProcessingEmbeddingCategorical = {
 
 const interactiveHeatmapInitialConfig = {
   selectedTracks: ['louvain'],
-  groupedTrack: 'louvain',
+  groupedTracks: ['sample', 'louvain'],
   expressionValue: 'raw',
   legendIsVisible: true,
 };
