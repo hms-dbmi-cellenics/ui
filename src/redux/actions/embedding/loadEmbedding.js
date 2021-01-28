@@ -45,8 +45,6 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     config: embeddingConfig,
   };
 
-  console.log(`testing ${JSON.stringify(body)}`);
-
   try {
     const data = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body, 3600, 1);
     return dispatch({

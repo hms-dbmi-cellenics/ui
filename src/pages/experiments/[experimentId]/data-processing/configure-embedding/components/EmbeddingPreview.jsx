@@ -448,6 +448,9 @@ class EmbeddingPreview extends React.Component {
         />
         <Row>
           <Col span={15}>
+            {
+
+            }
             <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
 
