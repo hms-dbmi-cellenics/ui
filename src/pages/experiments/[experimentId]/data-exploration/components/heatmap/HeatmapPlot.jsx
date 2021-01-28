@@ -108,17 +108,7 @@ const HeatmapPlot = (props) => {
     expressionValue]);
 
   useEffect(() => {
-    // Set sampler rate back to 1000 if the width is large anough.
-    if (maxCells < 1000 && width >= 1.2 * maxCells) {
-      setMaxCells(1000);
-      return;
-    }
-
-    // Set rate to an appropriate amount when the container width is below the sample rate.
-    if (width <= 1.2 * maxCells) {
-      const sampleRate = Math.floor(Math.min(maxCells * (maxCells / width), 1000));
-      setMaxCells(sampleRate);
-    }
+    setMaxCells(Math.floor(width * 0.8));
   }, [width]);
 
   const downsample = (groupBy) => {
