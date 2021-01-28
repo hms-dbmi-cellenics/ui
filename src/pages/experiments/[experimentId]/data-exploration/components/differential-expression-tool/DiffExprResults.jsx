@@ -118,14 +118,14 @@ const DiffExprResults = (props) => {
           </span>
         </Button>
         {renderExportAlert()}
-        <Button onClick={() => setSettingsListed(!settingsListed)}>
+        <Button id='settingsButton' onClick={() => setSettingsListed(!settingsListed)}>
           {settingsListed ? 'Hide' : 'Show'}
           {' '}
           settings
         </Button>
       </Space>
       {settingsListed
-        ? <div>{settingsText}</div> : <div />}
+        ? <div id='settingsText'>{settingsText}</div> : <div />}
       <GeneTable
         experimentId={experimentId}
         initialTableState={{

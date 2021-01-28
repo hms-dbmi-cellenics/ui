@@ -222,12 +222,15 @@ describe('DiffExprResults', () => {
         <DiffExprResults experimentId='1234' onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
-    const button = component.find(Button).at(1);
-    expect(button.childAt(0).text()).toEqual('Show settings');
+    const button = component.find('#settingsButton').first();
+    expect(button.text()).toContain('Show');
     button.simulate('click');
-    expect(button.childAt(0).text()).toEqual('Hide settings');
+    expect(button.text()).toContain('Hide');
 
-    const div = component.find('div');
-    expect(div.at(0).childAt(1).text()).toEqual('condition-control vs. louvain-0 in louvain-1');
+    const div = component.find('#settingsText');
+    expect(div.text()).toEqual('condition-control vs. louvain-0 in louvain-1');
+    button.simulate('click');
+    expect(button.childAt(0).text()).toEqual('Show settings');
+    expect(!div);
   });
 });
