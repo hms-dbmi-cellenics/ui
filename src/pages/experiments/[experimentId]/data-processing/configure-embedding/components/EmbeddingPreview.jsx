@@ -38,12 +38,6 @@ import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
 
 const { Panel } = Collapse;
 
-// TODO: when we want to enable users to create their custom plots,
-// we will need to change this to proper Uuid
-// const plotUuid = 'embeddingCategoricalMain';
-// const plotType = 'embeddingCategorical';
-// const embeddingType = 'umap';
-
 const EmbeddingPreview = () => {
   const dispatch = useDispatch();
 
