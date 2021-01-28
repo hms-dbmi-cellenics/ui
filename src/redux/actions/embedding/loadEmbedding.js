@@ -14,6 +14,21 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     return null;
   }
 
+  // Get relevant configure embedding settings
+  const embeddingState = getState().experimentSettings.processing.configureEmbedding;
+
+  const embeddingConfig = Object.keys(embeddingState).reduce((conf, key) => {
+    const { method } = embeddingState[key];
+
+    // eslint-disable-next-line no-param-reassign
+    conf[key] = {
+      method,
+      methodSettings: embeddingState[key].methodSettings[method],
+    };
+
+    return conf;
+  }, {});
+
   // Set up loading state.
   await dispatch({
     type: EMBEDDINGS_LOADING,
@@ -27,7 +42,10 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
   const body = {
     name: 'GetEmbedding',
     type: embeddingType,
+    config: embeddingConfig,
   };
+
+  console.log(`testing ${JSON.stringify(body)}`);
 
   try {
     const data = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body, 3600, 1);
