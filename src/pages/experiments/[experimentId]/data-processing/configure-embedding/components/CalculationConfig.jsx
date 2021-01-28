@@ -71,7 +71,6 @@ const CalculationConfig = (props) => {
   }, [experimentId]);
 
   useEffect(() => {
-    console.log('data changed, reloading embedding');
     dispatch(loadEmbedding(experimentId, embeddingMethod));
   }, [data]);
 
