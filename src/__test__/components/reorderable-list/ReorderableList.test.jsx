@@ -44,9 +44,6 @@ describe('ReorderableList', () => {
     // renders the three items
     expect(items.length).toEqual(3);
 
-    console.log('items.at(0)');
-    console.log(items.at(0).debug());
-
     // in the correct order and with the correct items
     expect(items.at(0).text()).toEqual('1');
     expect(items.at(1).text()).toEqual('2');

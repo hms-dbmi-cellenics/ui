@@ -108,8 +108,6 @@ const HeatmapGroupBySettings = (props) => {
                         newCellSetsOrder.push(cellSet);
                       }
 
-                      console.log('newCellSetsOrder');
-                      console.log(newCellSetsOrder);
                       setCellSetsOrder(newCellSetsOrder);
                     }}
                   />
@@ -122,8 +120,6 @@ const HeatmapGroupBySettings = (props) => {
     </Menu>
   );
 
-  console.log('cellSetsOrder');
-  console.log(cellSetsOrder);
   return (
     <div style={{ padding: '5px' }}>
       <Space direction='vertical'>

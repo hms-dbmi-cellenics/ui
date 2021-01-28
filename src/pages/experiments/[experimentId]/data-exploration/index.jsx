@@ -59,7 +59,7 @@ const ExplorationViewPage = () => {
         <RemoveButton />,
       ],
       component: (width, height) => (
-        <HeatmapPlot componentType={COMPONENT_TYPE} experimentId={experimentId} width={width} height={height} />
+        <HeatmapPlot experimentId={experimentId} width={width} height={height} />
       ),
     },
     Tools: {

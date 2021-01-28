@@ -107,7 +107,7 @@ describe('HeatmapGroupBySettings', () => {
     const reorderableList = component.find('ReorderableList');
     const groupByItems = reorderableList.find('Item');
 
-    // with one ite
+    // with one item
     expect(groupByItems.length).toEqual(1);
 
     // the item should be samples
