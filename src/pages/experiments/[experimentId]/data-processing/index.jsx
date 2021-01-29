@@ -93,7 +93,7 @@ const DataProcessingPage = () => {
         />
       </div>
       <div style={{
-        backgroundColor: '#ffffff', minHeight: '100vh', paddingLeft: 32, paddingRight: 32, paddingTop: 16,
+        backgroundColor: '#ffffff', paddingLeft: 32, paddingRight: 32, paddingTop: 16,
       }}
       >
         <Space direction='vertical' style={{ width: '100%' }} size='large'>
