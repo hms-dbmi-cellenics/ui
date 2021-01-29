@@ -47,7 +47,7 @@ const EmbeddingPreview = () => {
   const [selectedSpec, setSelectedSpec] = useState('sample');
   const [plotSpec, setPlotSpec] = useState({});
   const [config, setConfig] = useState(null);
-  
+
   const embeddingConfig = useSelector((state) => state.experimentSettings.processing);
   const embedding = useSelector((state) => state.embeddings);
   const embeddingMethod = embeddingConfig?.configureEmbedding?.embeddingSettings?.method;
@@ -145,6 +145,14 @@ const EmbeddingPreview = () => {
       );
     }
 
+    if (!config || (embeddingMethod && embedding[embeddingMethod]?.loading)) {
+      return (
+        <center>
+          <Spin size='large' />
+        </center>
+      );
+    }
+
     return (
       <center>
         <Vega spec={plotSpec} renderer='canvas' />
@@ -159,7 +167,7 @@ const EmbeddingPreview = () => {
       </center>
     );
   }
-      
+
   return (
     <>
       <PageHeader
