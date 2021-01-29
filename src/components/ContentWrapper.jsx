@@ -66,9 +66,9 @@ const ContentWrapper = (props) => {
               </Link>
             </Menu.Item>
             <Menu.Item key='6'>
-              <Link as={`/experiments/${experimentId}/data-processing/reduce-dimensions`} href='/experiments/[experimentId]/data-processing/reduce-dimensions' passHref>
+              <Link as={`/experiments/${experimentId}/data-processing/data-integration`} href='/experiments/[experimentId]/data-processing/data-integration' passHref>
                 <div>
-                  <span>Reduce Dimensions</span>
+                  <span>Data Integration</span>
                 </div>
               </Link>
             </Menu.Item>

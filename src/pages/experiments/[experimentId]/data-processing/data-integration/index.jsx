@@ -2,7 +2,7 @@ import React from 'react';
 import {
   PageHeader, Collapse,
 } from 'antd';
-import DimensionalityReduction from './components/DimensionalityReduction/DimensionalityReduction';
+import DataIntegration from './components/DataIntegration/DataIntegration';
 import FeedbackButton from '../../../../../components/FeedbackButton';
 
 const { Panel } = Collapse;
@@ -18,7 +18,7 @@ class ProcessingViewPage extends React.Component {
     return (
       <>
         <PageHeader
-          title='Reduce dimensions'
+          title='Data Processing -> Data Integration'
           extra={<FeedbackButton />}
         />
 
@@ -27,7 +27,7 @@ class ProcessingViewPage extends React.Component {
             header='Dimensionality Reduction'
             key='1'
           >
-            <DimensionalityReduction />
+            <DataIntegration />
           </Panel>
         </Collapse>
       </>
