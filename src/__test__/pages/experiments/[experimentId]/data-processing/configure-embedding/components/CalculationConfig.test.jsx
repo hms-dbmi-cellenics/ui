@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Select, InputNumber,
+  Select, InputNumber, Spin, Form, Alert, Button,
 } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -11,8 +11,8 @@ import { Provider } from 'react-redux';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
-import { EXPERIMENT_SETTINGS_PROCESSING_LOAD, EXPERIMENT_SETTINGS_PROCESSING_SAVE, EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../../../../../../redux/actionTypes/experimentSettings';
-import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED } from '../../../../../../../redux/actionTypes/embeddings';
+import { EXPERIMENT_SETTINGS_PROCESSING_SAVE, EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../../../../../../redux/actionTypes/experimentSettings';
+import { EMBEDDINGS_LOADING } from '../../../../../../../redux/actionTypes/embeddings';
 
 import CalculationConfig from '../../../../../../../pages/experiments/[experimentId]/data-processing/configure-embedding/components/CalculationConfig';
 import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
@@ -50,142 +50,152 @@ describe('CalculationConfig', () => {
       })),
     });
 
-    const response = new Response(JSON.stringify({ processingConfig: { ...initialProcessingState } }));
+    const response = new Response(
+      JSON.stringify(
+        {
+          processingConfig:
+            { ...initialProcessingState },
+        },
+      ),
+    );
 
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResolvedValue(response);
   });
 
-  // it('renders correctly when nothing is loaded', () => {
-  //   const store = mockStore({
-  //     embeddings: {},
-  //     experimentSettings: {
-  //       ...initialExperimentState,
-  //     },
-  //   });
+  it('renders correctly when nothing is loaded', () => {
+    const store = mockStore({
+      embeddings: {},
+      experimentSettings: {
+        ...initialExperimentState,
+      },
+    });
 
-  //   const component = mount(
-  //     <Provider store={store}>
-  //       <CalculationConfig
-  //         experimentId='1234'
-  //         width={50}
-  //         height={50}
-  //       />
-  //     </Provider>,
-  //   );
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig
+          experimentId='1234'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
 
-  //   const spin = component.find(Spin);
+    const spin = component.find(Spin);
 
-  //   // There should be a spinner for loading state.
-  //   expect(spin.length).toEqual(1);
-  // });
+    // There should be a spinner for loading state.
+    expect(spin.length).toEqual(1);
+  });
 
-  // it('renders correctly when the data is in the store', () => {
-  //   const store = mockStore(storeState);
+  it('renders correctly when the data is in the store', () => {
+    const store = mockStore(storeState);
 
-  //   const component = mount(
-  //     <Provider store={store}>
-  //       <CalculationConfig
-  //         experimentId='1234'
-  //         width={50}
-  //         height={50}
-  //       />
-  //     </Provider>,
-  //   );
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig
+          experimentId='1234'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
 
-  //   // There should no spinner anymore.
-  //   const spin = component.find(Spin);
-  //   expect(spin.length).toEqual(0);
+    // There should no spinner anymore.
+    const spin = component.find(Spin);
+    expect(spin.length).toEqual(0);
 
-  //   // There should be a form loaded.
-  //   const form = component.find(Form);
-  //   expect(form.length).toBeGreaterThan(0);
-  // });
+    // There should be a form loaded.
+    const form = component.find(Form);
+    expect(form.length).toBeGreaterThan(0);
+  });
 
-  // it('changing an embedding setting should trigger an alert', () => {
-  //   const store = mockStore(storeState);
+  it('changing an embedding setting should trigger an alert', () => {
+    const store = mockStore(storeState);
 
-  //   const component = mount(
-  //     <Provider store={store}>
-  //       <CalculationConfig
-  //         experimentId='1234'
-  //         width={50}
-  //         height={50}
-  //       />
-  //     </Provider>,
-  //   );
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig
+          experimentId='1234'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
 
-  //   // There should no spinner anymore.
-  //   const spin = component.find(Spin);
-  //   expect(spin.length).toEqual(0);
+    // There should no spinner anymore.
+    const spin = component.find(Spin);
+    expect(spin.length).toEqual(0);
 
-  //   // There should be a form loaded.
-  //   const form = component.find(Form);
-  //   expect(form.length).toBeGreaterThan(0);
+    // There should be a form loaded.
+    const form = component.find(Form);
+    expect(form.length).toBeGreaterThan(0);
 
-  //   // There should be no alert loaded.
-  //   let alert = component.find(Alert);
-  //   expect(alert.length).toEqual(0);
+    // There should be no alert loaded.
+    let alert = component.find(Alert);
+    expect(alert.length).toEqual(0);
 
-  //   // The Apply button should be disabled.
-  //   let button = component.find(Button);
-  //   expect(button.at(0).getElement().props.disabled).toEqual(true);
+    // The Apply button should be disabled.
+    let button = component.find(Button);
+    expect(button.at(0).getElement().props.disabled).toEqual(true);
 
-  //   // Switching the embedding type...
-  //   component.find(Select).at(0).getElement().props.onChange('tsne');
-  //   component.update();
+    // Switching the embedding type...
+    component.find(Select).at(0).getElement().props.onChange('tsne');
+    component.update();
 
-  //   // The alert should appear.
-  //   alert = component.find(Alert);
-  //   expect(alert.length).toEqual(1);
+    // The alert should appear.
+    alert = component.find(Alert);
+    expect(alert.length).toEqual(1);
 
-  //   // The button should enable.
-  //   button = component.find(Button);
-  //   expect(button.at(0).getElement().props.disabled).toEqual(false);
-  // });
+    // The button should enable.
+    button = component.find(Button);
+    expect(button.at(0).getElement().props.disabled).toEqual(false);
+  });
 
-  // it('clicking on button triggers save action', async () => {
-  //   const store = mockStore(storeState);
+  it('clicking on button triggers save action', async () => {
+    const store = mockStore(storeState);
 
-  //   const component = mount(
-  //     <Provider store={store}>
-  //       <CalculationConfig
-  //         experimentId='1234'
-  //         width={50}
-  //         height={50}
-  //       />
-  //     </Provider>,
-  //   );
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig
+          experimentId='1234'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
 
-  //   // Switching the embedding type...
-  //   component.find(Select).at(0).getElement().props.onChange('tsne');
-  //   component.update();
+    // Switching the embedding type...
+    component.find(Select).at(0).getElement().props.onChange('tsne');
+    component.update();
 
-  //   // ... and clicking the Apply button.
-  //   const button = component.find(Button);
-  //   button.simulate('click', {});
+    // ... and clicking the Apply button.
+    const button = component.find(Button);
+    button.simulate('click', {});
 
-  //   // // Should update and save the config.
-  //   await waitForActions(store, [EMBEDDINGS_LOADING, EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EXPERIMENT_SETTINGS_PROCESSING_SAVE]);
+    // // Should update and save the config.
+    await waitForActions(store,
+      [EMBEDDINGS_LOADING,
+        EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+        EXPERIMENT_SETTINGS_PROCESSING_SAVE]);
 
-  //   expect(store.getActions().length).toEqual(4);
+    expect(store.getActions().length).toEqual(4);
 
-  //   // First there should be a reload of the embedding...
-  //   const reloadEmbedding = store.getActions()[0];
-  //   expect(reloadEmbedding.type).toBe(EMBEDDINGS_LOADING);
-  //   expect(reloadEmbedding).toMatchSnapshot();
+    // First there should be a reload of the embedding...
+    const reloadEmbedding = store.getActions()[0];
+    expect(reloadEmbedding.type).toBe(EMBEDDINGS_LOADING);
+    expect(reloadEmbedding).toMatchSnapshot();
 
-  //   // First there should be an update...
-  //   const updateAction = store.getActions()[1];
-  //   expect(updateAction.type).toBe(EXPERIMENT_SETTINGS_PROCESSING_UPDATE);
-  //   expect(updateAction).toMatchSnapshot();
+    // First there should be an update...
+    const updateAction = store.getActions()[1];
+    expect(updateAction.type).toBe(EXPERIMENT_SETTINGS_PROCESSING_UPDATE);
+    expect(updateAction).toMatchSnapshot();
 
-  //   // ... then there should be a save.
-  //   const saveAction = store.getActions()[2];
-  //   expect(saveAction.type).toBe(EXPERIMENT_SETTINGS_PROCESSING_SAVE);
-  //   expect(saveAction).toMatchSnapshot();
-  // });
+    // ... then there should be a save.
+    const saveAction = store.getActions()[2];
+    expect(saveAction.type).toBe(EXPERIMENT_SETTINGS_PROCESSING_SAVE);
+    expect(saveAction).toMatchSnapshot();
+  });
 
   it('Embeddings should reload as input is changed', async () => {
     const store = mockStore({
