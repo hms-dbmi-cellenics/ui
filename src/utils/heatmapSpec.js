@@ -183,6 +183,7 @@ const spec = {
         },
         update: {
           fill: { field: 'color' },
+          stroke: { field: 'color' },
         },
       },
     },
@@ -217,6 +218,10 @@ const spec = {
         },
         update: {
           fill: {
+            scale: 'color',
+            field: 'expression',
+          },
+          stroke: {
             scale: 'color',
             field: 'expression',
           },

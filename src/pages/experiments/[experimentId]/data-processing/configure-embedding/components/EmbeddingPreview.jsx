@@ -39,12 +39,6 @@ import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
 
 const { Panel } = Collapse;
 
-// TODO: when we want to enable users to create their custom plots,
-// we will need to change this to proper Uuid
-// const plotUuid = 'embeddingCategoricalMain';
-// const plotType = 'embeddingCategorical';
-// const embeddingType = 'umap';
-
 const EmbeddingPreview = () => {
   const dispatch = useDispatch();
 
@@ -53,6 +47,7 @@ const EmbeddingPreview = () => {
   const [selectedSpec, setSelectedSpec] = useState('sample');
   const [plotSpec, setPlotSpec] = useState({});
   const [config, setConfig] = useState(null);
+  
   const embeddingConfig = useSelector((state) => state.experimentSettings.processing);
   const embedding = useSelector((state) => state.embeddings);
   const embeddingMethod = embeddingConfig?.configureEmbedding?.embeddingSettings?.method;
@@ -99,14 +94,17 @@ const EmbeddingPreview = () => {
     setPlotSpec(spec);
   }, [config]);
 
+  // If the user toggles to a different embedding, set the config to be the initial
+  // state for that type of plot.
   useEffect(() => {
     setConfig(plots[selectedSpec].initialConfig);
   }, [selectedSpec]);
 
   // Quick and dirty function to massage prepared data into a good shape.
   // This will be changed once we actually load data from Redux.
+  /* eslint-disable no-param-reassign */
   const generateData = (spec) => {
-    spec.data.map((s) => {
+    spec.data.forEach((s) => {
       if (s.name === 'cellSets') {
         s.values = [];
 
@@ -117,7 +115,6 @@ const EmbeddingPreview = () => {
             cellIds: s.values[cell.cluster_id]?.cellIds ? [...s.values[cell.cluster_id].cellIds, i] : [i],
             color: colorProvider.getColor(),
           };
-          // cluster_id
         });
       }
 
@@ -131,12 +128,38 @@ const EmbeddingPreview = () => {
     });
   };
 
+  /* eslint-enable no-param-reassign */
   const updatePlotWithChanges = (obj) => {
     const newConfig = _.cloneDeep(config);
     _.merge(newConfig, obj);
     setConfig(newConfig);
   };
 
+  const renderPlot = () => {
+    if (error) {
+      return (
+        <PlatformError
+          description={error}
+          onClick={() => { }}
+        />
+      );
+    }
+
+    return (
+      <center>
+        <Vega spec={plotSpec} renderer='canvas' />
+      </center>
+    );
+  };
+
+  if (!config) {
+    return (
+      <center>
+        <Spin size='large' />
+      </center>
+    );
+  }
+      
   return (
     <>
       <PageHeader
@@ -145,23 +168,7 @@ const EmbeddingPreview = () => {
       />
       <Row>
         <Col span={15}>
-          {
-            error ? (
-              <PlatformError
-                description={error}
-                onClick={() => { }}
-              />
-            ) : !config || (embeddingMethod && embedding[embeddingMethod]?.loading) ? (
-              <center>
-                <Spin size='large' />
-              </center>
-            ) : (
-                  <center>
-                    <Vega spec={plotSpec} renderer='canvas' />
-                  </center>
-                )
-
-          }
+          {renderPlot()}
         </Col>
 
         <Col span={3}>
@@ -236,14 +243,24 @@ const EmbeddingPreview = () => {
                     />
                   </Panel>
                 )}
+
+                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical && (
+                  <Panel header='Colour inversion'>
+                    <ColourInversion
+                      config={config}
+                      onUpdate={updatePlotWithChanges}
+                    />
+                  </Panel>
+                )}
+
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
                 <Panel header='Legend' key='legend'>
                   <LegendEditor
                     onUpdate={updatePlotWithChanges}
-                    legendEnabled={config?.legendEnabled}
-                    legendPosition={config?.legendPosition}
+                    legendEnabled={config.legendEnabled}
+                    legendPosition={config.legendPosition}
                     legendOptions='corners'
                   />
                 </Panel>
