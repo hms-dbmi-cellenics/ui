@@ -93,7 +93,7 @@ const DataProcessingPage = () => {
         />
       </div>
       <div style={{
-        backgroundColor: '#ffffff', paddingLeft: 32, paddingRight: 32, paddingTop: 16,
+        backgroundColor: '#ffffff', paddingLeft: 32, paddingRight: 32, paddingTop: 16, paddingBottom: 16,
       }}
       >
         <Space direction='vertical' style={{ width: '100%' }} size='large'>
@@ -111,7 +111,7 @@ const DataProcessingPage = () => {
                     steps={steps.length}
                     showInfo={false}
                   />
-                  <Text type='secondary'>{`${stepId + 1} of ${steps.length} steps`}</Text>
+                  <Text type='primary'>{`${stepId + 1} of ${steps.length} steps`}</Text>
                   <Button
                     disabled={stepId === 0}
                     icon={<LeftOutlined />}
