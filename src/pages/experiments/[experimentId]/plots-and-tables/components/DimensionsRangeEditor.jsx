@@ -19,7 +19,6 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
-  const onUpdateThrottled = useRef(_.throttle((obj) => { onUpdate(obj); }, 10));
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       Dimensions
@@ -36,7 +35,7 @@ const DimensionsRangeEditor = (props) => {
             min={minWidth}
             max={maxWidth}
             onChange={(value) => {
-              onUpdateThrottled.current({ width: value });
+              onUpdate({ width: value });
             }}
             marks={widthMarks}
           />
@@ -49,7 +48,7 @@ const DimensionsRangeEditor = (props) => {
             min={minHeight}
             max={maxHeight}
             onChange={(value) => {
-              onUpdateThrottled.current({ height: value });
+              onUpdate({ height: value });
             }}
             marks={heighthMarks}
           />
