@@ -9,7 +9,6 @@ import layoutReducer from './layout/layout';
 import componentConfigReducer from './componentConfig/index';
 import cellInfoReducer from './cellInfo';
 import experimentSettingsReducer from './experimentSettings';
-import stylingConfigReducer from './stylingConfig';
 
 export default combineReducers({
   cellSets: cellSetsReducer,
@@ -21,5 +20,4 @@ export default combineReducers({
   layout: layoutReducer,
   componentConfig: componentConfigReducer,
   experimentSettings: experimentSettingsReducer,
-  stylingConfig: stylingConfigReducer,
 });
