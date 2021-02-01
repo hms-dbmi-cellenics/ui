@@ -10,20 +10,15 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
   }
 
   // Does not load anything if experiment settings is not loaded
-  const embeddingState = getState().experimentSettings?.processing?.configureEmbedding;
+  const embeddingState = getState()
+    .experimentSettings
+    ?.processing
+    ?.configureEmbedding
+    .embeddingSettings;
+
   if (!embeddingState) return null;
 
-  const embeddingConfig = Object.keys(embeddingState).reduce((conf, key) => {
-    const { method } = embeddingState[key];
-
-    // eslint-disable-next-line no-param-reassign
-    conf[key] = {
-      method,
-      methodSettings: embeddingState[key].methodSettings[method],
-    };
-
-    return conf;
-  }, {});
+  const { methodSettings } = embeddingState;
 
   // Set up loading state.
   await dispatch({
@@ -38,7 +33,7 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
   const body = {
     name: 'GetEmbedding',
     type: embeddingType,
-    config: embeddingConfig,
+    config: methodSettings[embeddingType],
   };
 
   try {
