@@ -133,7 +133,7 @@ const ElbowPlot = (props) => {
       text: { value: plotConfig.titleText },
       anchor: { value: plotConfig.titleAnchor },
       font: { value: plotConfig.masterFont },
-      dx: 10,
+      dx: { value: plotConfig.titleDx },
       fontSize: { value: plotConfig.titleSize },
     },
   });

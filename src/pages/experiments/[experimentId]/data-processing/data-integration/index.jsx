@@ -2,7 +2,7 @@ import React from 'react';
 import {
   PageHeader, Collapse,
 } from 'antd';
-import DataIntegration from './components/DataIntegration/DataIntegration';
+import DataIntegration from './components/DataIntegration';
 import FeedbackButton from '../../../../../components/FeedbackButton';
 
 const { Panel } = Collapse;

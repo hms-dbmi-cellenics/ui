@@ -1,22 +1,15 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-
 import React, { useState } from 'react';
 import {
-  Row, Col, Space, Select,
-  InputNumber, Form, Checkbox, Button, Tooltip,
+  Row, Col, Button, Tooltip,
 } from 'antd';
 import _ from 'lodash';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-// import _ from 'lodash';
 
+import PlotStyling from '../../filter-cells/components/PlotStyling';
+import CalculationConfig from './CalculationConfig';
 import ElbowPlot from './plots/ElbowPlot';
-import PlotStyling from '../../../filter-cells/components/PlotStyling';
-
-const { Option } = Select;
 
 const defaultStylingConfig = {
   xAxisText: 'Principal Components',
@@ -25,6 +18,7 @@ const defaultStylingConfig = {
   yDefaultTitle: 'Proportion of Variance Explained',
   titleSize: 12,
   titleText: '',
+  titleDx: 10,
   titleAnchor: 'start',
   masterFont: 'sans-serif',
   masterSize: 13,
@@ -60,35 +54,7 @@ const DataIntegration = () => {
           </Tooltip>
         </Col>
         <Col span={7}>
-          <Space direction='vertical' style={{ width: '100%' }} />
-          <Form.Item
-            label='Method:'
-          >
-            <Select
-              defaultValue='option1'
-            >
-              <Option value='option1'>PCA</Option>
-              <Option value='option2'>option2</Option>
-              <Option value='option3'>option3</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label='Max PCs:'>
-            <InputNumber
-              defaultValue={10}
-              max={50}
-              min={1}
-              onPressEnter={() => { }}
-            />
-          </Form.Item>
-          <Form.Item label='Exclude genes categories:'>
-            <Checkbox.Group onChange={() => { }}>
-              <Space direction='vertical'>
-                <Checkbox value='ribosomal'>ribosomal</Checkbox>
-                <Checkbox value='mitochondrial'>mitochondrial</Checkbox>
-                <Checkbox value='cellCycle'>cell cycle</Checkbox>
-              </Space>
-            </Checkbox.Group>
-          </Form.Item>
+          <CalculationConfig />
           <PlotStyling
             config={plotConfig}
             onUpdate={updatePlotWithChanges}
