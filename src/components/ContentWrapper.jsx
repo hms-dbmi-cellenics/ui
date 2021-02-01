@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Layout, Menu,
+  Layout, Menu, Typography,
 } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -12,18 +12,115 @@ import {
   DatabaseOutlined,
   FundViewOutlined,
   BuildOutlined,
-  BarsOutlined,
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 
 const { SubMenu } = Menu;
-const { Sider } = Layout;
+const { Sider, Footer, Header } = Layout;
+const { Paragraph } = Typography;
 
 const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(true);
   const { children } = props;
   const router = useRouter();
   const { experimentId } = router.query;
+
+  const BigLogo = () => (
+    <div
+      style={{
+        background: 'linear-gradient(315deg, #5B070A 0%, #8f0b10 30%, #A80D12 100%)',
+        paddingLeft: '32px',
+        paddingTop: '8px',
+        paddingBottom: '8px',
+        pointerEvents: 'none',
+        userSelect: 'none',
+      }}
+    >
+      <svg xmlns='http://www.w3.org/2000/svg' width={110} height={50}>
+        <defs id='svg_document_defs'>
+          <style id='IBM Plex Sans_Google_Webfont_import'>@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans);</style>
+        </defs>
+        <g>
+          <text
+            style={{ outlineStyle: 'none' }}
+            x='1px'
+            fontWeight='500'
+            textRendering='geometricPrecision'
+            fontFamily='IBM Plex Sans'
+            y='25px'
+            fill='#F0F2F5'
+            fontSize='25.00px'
+            textAnchor='start'
+          >
+            Cellscope
+          </text>
+          <text
+            stroke='none'
+            style={{ outlineStyle: 'none' }}
+            strokeWidth='1px'
+            x='3px'
+            fontWeight='200'
+            textRendering='geometricPrecision'
+            fontFamily='IBM Plex Sans'
+            fill='#aab6c1'
+            fontSize='12.80px'
+            y='45px'
+            textAnchor='start'
+          >
+            by Biomage
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+
+  const SmallLogo = () => (
+    <div
+      style={{
+        background: 'linear-gradient(315deg, #5B070A 0%, #8f0b10 30%, #A80D12 100%)',
+        paddingTop: '8px',
+        paddingBottom: '8px',
+        pointerEvents: 'none',
+        userSelect: 'none',
+      }}
+    >
+      <svg xmlns='http://www.w3.org/2000/svg' width={100} height={50}>
+        <defs id='svg_document_defs'>
+          <style id='IBM Plex Sans_Google_Webfont_import'>@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans);</style>
+        </defs>
+        <g>
+          <text
+            style={{ outlineStyle: 'none' }}
+            x='40px'
+            fontWeight='500'
+            textRendering='geometricPrecision'
+            fontFamily='IBM Plex Sans'
+            y='24px'
+            fill='#F0F2F5'
+            fontSize='25.00px'
+            textAnchor='middle'
+          >
+            Cs
+          </text>
+          <text
+            stroke='none'
+            style={{ outlineStyle: 'none' }}
+            strokeWidth='1px'
+            x='40px'
+            fontWeight='200'
+            textRendering='geometricPrecision'
+            fontFamily='IBM Plex Sans'
+            fill='#aab6c1'
+            fontSize='12.80px'
+            y='45px'
+            textAnchor='middle'
+          >
+            Biomage
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -35,62 +132,67 @@ const ContentWrapper = (props) => {
         collapsed={collapsed}
         onCollapse={(collapse) => setCollapsed(collapse)}
       >
-        <Menu theme='dark' defaultSelectedKeys={['3']} mode='inline'>
-          <Menu.Item disabled key='0'>
-            <svg width='125px' height='45px' viewBox='0 0 1968 448'>
-              <g id='Page-1' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
-                <g id='Group'>
-                  <g id='Product-logo' fill='#ffffff'>
-                    <rect id='Rectangle' x='320' y='384' width='64' height='64' />
-                    <rect id='Rectangle' x='0' y='0' width='192' height='64' />
-                    <rect id='Rectangle' x='0' y='384' width='192' height='64' />
-                    <rect id='Rectangle' x='64' y='64' width='64' height='320' />
-                    <rect id='Rectangle' x='256' y='0' width='64' height='384' />
-                    <rect id='Rectangle' x='384' y='0' width='64' height='384' />
-                  </g>
-                </g>
-              </g>
-            </svg>
-          </Menu.Item>
-          <Menu.Item disabled key='1'>
-            <BarsOutlined />
-            <span>Experiment Name</span>
-          </Menu.Item>
-          <SubMenu key='sub1' icon={<BuildOutlined />} title='Data Processing'>
-            <Menu.Item key='5'>
-              <Link as={`/experiments/${experimentId}/data-processing/filter-cells`} href='/experiments/[experimentId]/data-processing/filter-cells' passHref>
-                <div>
-                  <BuildOutlined />
-                  <span>Filter Cells</span>
-                </div>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          {!collapsed && <BigLogo />}
+          {collapsed && <SmallLogo />}
+          <Menu theme='dark' defaultSelectedKeys={['data-exploration']} mode='inline'>
+            <SubMenu key='data-processing' icon={<BuildOutlined />} title='Data Processing'>
+              <Menu.Item key='5'>
+                <Link as={`/experiments/${experimentId}/data-processing/filter-cells`} href='/experiments/[experimentId]/data-processing/filter-cells' passHref>
+                  <div>
+                    <span>Filter Cells</span>
+                  </div>
+                </Link>
+              </Menu.Item>
+              <Menu.Item key='6'>
+                <Link as={`/experiments/${experimentId}/data-processing/reduce-dimensions`} href='/experiments/[experimentId]/data-processing/reduce-dimensions' passHref>
+                  <div>
+                    <span>Reduce Dimensions</span>
+                  </div>
+                </Link>
+              </Menu.Item>
+              <Menu.Item key='7'>
+                <Link as={`/experiments/${experimentId}/data-processing/configure-embedding`} href='/experiments/[experimentId]/data-processing/configure-embedding' passHref>
+                  <div>
+                    <span>Configure Embedding</span>
+                  </div>
+                </Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item key='data-exploration' icon={<FundViewOutlined />}>
+              <Link as={`/experiments/${experimentId}/data-exploration`} href='/experiments/[experimentId]/data-exploration' passHref>
+                <a>Data Exploration</a>
               </Link>
             </Menu.Item>
-            <Menu.Item key='6'>
-              <Link as={`/experiments/${experimentId}/data-processing/reduce-dimensions`} href='/experiments/[experimentId]/data-processing/reduce-dimensions' passHref>
-                <div>
-                  <span>Reduce Dimensions</span>
-                </div>
+            <Menu.Item key='plots-and-tables' icon={<DatabaseOutlined />}>
+              <Link as={`/experiments/${experimentId}/plots-and-tables`} href='/experiments/[experimentId]/plots-and-tables' passHref>
+                <a>Plots and Tables</a>
               </Link>
             </Menu.Item>
-            <Menu.Item key='7'>
-              <Link as={`/experiments/${experimentId}/data-processing/configure-embedding`} href='/experiments/[experimentId]/data-processing/configure-embedding' passHref>
-                <div>
-                  <span>Configure Embedding</span>
-                </div>
-              </Link>
-            </Menu.Item>
-          </SubMenu>
-          <Menu.Item key='3' icon={<FundViewOutlined />}>
-            <Link as={`/experiments/${experimentId}/data-exploration`} href='/experiments/[experimentId]/data-exploration' passHref>
-              <a>Data Exploration</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key='4' icon={<DatabaseOutlined />}>
-            <Link as={`/experiments/${experimentId}/plots-and-tables`} href='/experiments/[experimentId]/plots-and-tables' passHref>
-              <a>Plots and Tables</a>
-            </Link>
-          </Menu.Item>
-        </Menu>
+          </Menu>
+          {!collapsed && (
+            <Footer style={{
+              textAlign: 'center', backgroundColor: 'inherit', marginTop: 'auto',
+            }}
+            >
+              <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#dddddd' }}>
+                <a href='//www.biomage.net/our-team'>Our team</a>
+                &nbsp;&middot;&nbsp;
+                <a href='mailto:hello@biomage.net'>Contact us</a>
+              </Paragraph>
+              <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
+                &copy;
+                {' '}
+                {new Date().getFullYear()}
+                {' '}
+                Biomage Ltd
+                {' & '}
+                other affiliates and contributors.
+              </Paragraph>
+            </Footer>
+          )}
+        </div>
+
       </Sider>
       <Layout>
         {children}

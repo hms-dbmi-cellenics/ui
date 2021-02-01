@@ -92,9 +92,10 @@ const DataProcessingPage = () => {
           )}
         />
       </div>
-      <div style={{
-        backgroundColor: '#ffffff', paddingLeft: 32, paddingRight: 32, paddingTop: 16, paddingBottom: 16,
-      }}
+      <div
+        style={{
+          backgroundColor: '#ffffff', paddingLeft: 32, paddingRight: 32, paddingTop: 16, paddingBottom: 16,
+        }}
       >
         <Space direction='vertical' style={{ width: '100%' }} size='large'>
           <Row justify='space-between'>
