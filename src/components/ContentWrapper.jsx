@@ -130,7 +130,6 @@ const ContentWrapper = (props) => {
         theme='dark'
         collapsible
         collapsed={collapsed}
-        onBreakpoint={(f) => console.log('lmao', f)}
         onCollapse={(collapse) => setCollapsed(collapse)}
       >
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
