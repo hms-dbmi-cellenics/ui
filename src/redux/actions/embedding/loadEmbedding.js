@@ -14,7 +14,7 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     .experimentSettings
     ?.processing
     ?.configureEmbedding
-    .embeddingSettings;
+    ?.embeddingSettings;
 
   if (!embeddingState) return null;
 
