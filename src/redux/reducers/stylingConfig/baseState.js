@@ -53,6 +53,7 @@ const titleBaseState = {
 const fontStyleBaseState = {
   value: 'Sans-serif',
   options: ['Sans-serif', 'Sans', 'Monospace'],
+  colour: '#000000',
 };
 
 const colourBaseState = {
@@ -60,6 +61,7 @@ const colourBaseState = {
     value: 'viridis',
     options: ['viridis', 'inferno', 'spectral', 'red-blue'],
   },
+  toggleInvert: '#FFFFFF',
   invert: {
     value: 'standard',
     options: ['standard', 'invert'],

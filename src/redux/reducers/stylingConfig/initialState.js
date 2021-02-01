@@ -2,8 +2,8 @@ import dataProcessingInitialConfig from './dataProcessingConfig';
 import plotsAndTablesInitialConfig from './plotsAndTablesConfig';
 
 const initialState = {
-  dataProcessing: dataProcessingInitialConfig,
-  plotsAndTables: plotsAndTablesInitialConfig,
+  ...dataProcessingInitialConfig,
+  ...plotsAndTablesInitialConfig,
 };
 
 export default initialState;

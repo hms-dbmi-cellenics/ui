@@ -24,6 +24,10 @@ const doubletScores = {
   ...baseState,
 };
 
+const configureEmbedding = {
+  ...baseState,
+};
+
 const initialState = {
   cellSizeAndDistribution,
   mitochondrialContent,
@@ -31,6 +35,7 @@ const initialState = {
   classifier,
   numberOfGenesVsNumberOfUMIs,
   doubletScores,
+  configureEmbedding,
 };
 
 export default initialState;
@@ -41,4 +46,5 @@ export {
   classifier,
   numberOfGenesVsNumberOfUMIs,
   doubletScores,
+  configureEmbedding,
 };
