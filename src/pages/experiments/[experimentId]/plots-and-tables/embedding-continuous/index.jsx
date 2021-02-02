@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
+import useSelection from 'antd/lib/table/hooks/useSelection';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
 import ColourInversion from '../components/ColourInversion';
@@ -29,6 +30,7 @@ import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
 import PlatformError from '../../../../../components/PlatformError';
 import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
+import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -59,6 +61,7 @@ const EmbeddingContinuousPlot = () => {
   const expressionError = useSelector((state) => state.genes.expression.error);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const cellSets = useSelector((state) => state.cellSets);
+  const processingSettings = useSelector((state) => state.experimentSettings.processing);
   const { properties } = cellSets;
 
   const router = useRouter();
@@ -68,8 +71,8 @@ const EmbeddingContinuousPlot = () => {
     if (!experimentId || !isBrowser) {
       return;
     }
-    if (!data) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
+    if (!processingSettings.configureEmbedding) {
+      dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     if (!selectedExpression) {
@@ -77,6 +80,12 @@ const EmbeddingContinuousPlot = () => {
     }
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
+
+  useEffect(() => {
+    if (!data && processingSettings.configureEmbedding) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+    }
+  }, [processingSettings]);
 
   // obj is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (obj) => {

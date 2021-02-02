@@ -28,6 +28,8 @@ import legend from '../../../../../../../static/media/viridis.png';
 import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 
+import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+
 const Scatterplot = dynamic(
   () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
   { ssr: false },
@@ -54,6 +56,8 @@ const Embedding = (props) => {
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
 
+  const processingSettings = useSelector((state) => state.experimentSettings.processing);
+
   const cellCoordintes = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -63,10 +67,16 @@ const Embedding = (props) => {
 
   // Load the embedding if it isn't already.
   useEffect(() => {
-    if (!data && isBrowser) {
+    if (!processingSettings.configureEmbedding) {
+      dispatch(loadProcessingSettings(experimentId, embeddingType));
+    }
+  }, [experimentId]);
+
+  useEffect(() => {
+    if (!data && processingSettings.configureEmbedding) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
-  }, []);
+  }, [processingSettings]);
 
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.
@@ -220,21 +230,26 @@ const Embedding = (props) => {
       }}
     >
       {renderExpressionView()}
-      <Scatterplot
-        cellOpacity={0.1}
-        cellRadiusScale={0.1}
-        uuid={embeddingType}
-        view={view}
-        cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
-        mapping='PCA'
-        selectedCellIds={selectedCellIds}
-        cellColors={(selectedCell) ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] })) : new Map(Object.entries(cellColors))}
-        updateStatus={updateStatus}
-        updateCellsSelection={updateCellsSelection}
-        updateCellsHover={updateCellsHover}
-        updateViewInfo={updateCellCoordinates}
-        clearPleaseWait={clearPleaseWait}
-      />
+      {
+        data && processingSettings.configureEmbedding ? (
+
+          <Scatterplot
+            cellOpacity={0.1}
+            cellRadiusScale={0.1}
+            uuid={embeddingType}
+            view={view}
+            cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
+            mapping='PCA'
+            selectedCellIds={selectedCellIds}
+            cellColors={(selectedCell) ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] })) : new Map(Object.entries(cellColors))}
+            updateStatus={updateStatus}
+            updateCellsSelection={updateCellsSelection}
+            updateCellsHover={updateCellsHover}
+            updateViewInfo={updateCellCoordinates}
+            clearPleaseWait={clearPleaseWait}
+          />
+        ) : ''
+      }
       {
         createClusterPopover
           ? (

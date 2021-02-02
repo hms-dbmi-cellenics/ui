@@ -9,10 +9,16 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     return null;
   }
 
-  // Do not allow loading when we are no longer in a loading state if there is no error condition.
-  if (getState().embeddings[embeddingType] && !getState().embeddings[embeddingType].error) {
-    return null;
-  }
+  // Does not load anything if experiment settings is not loaded
+  const embeddingState = getState()
+    .experimentSettings
+    ?.processing
+    ?.configureEmbedding
+    ?.embeddingSettings;
+
+  if (!embeddingState) return null;
+
+  const { methodSettings } = embeddingState;
 
   // Set up loading state.
   await dispatch({
@@ -27,6 +33,7 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
   const body = {
     name: 'GetEmbedding',
     type: embeddingType,
+    config: methodSettings[embeddingType],
   };
 
   try {

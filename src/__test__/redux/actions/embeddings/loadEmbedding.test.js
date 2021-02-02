@@ -2,6 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { loadEmbedding } from '../../../../redux/actions/embedding';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
+import initialExperimentState, { initialProcessingState } from '../../../../redux/reducers/experimentSettings/initialState';
 
 import sendWork from '../../../../utils/sendWork';
 
@@ -22,7 +23,7 @@ describe('loadEmbedding action', () => {
     jest.clearAllMocks();
   });
 
-  it('Does not dispatch on already loaded embedding', async () => {
+  it('Dispatches on already loaded embedding', async () => {
     const store = mockStore(
       {
         embeddings:
@@ -66,6 +67,10 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         embeddings: {},
+        experimentSettings: {
+          ...initialExperimentState,
+          processing: initialProcessingState,
+        },
       },
     );
 
@@ -104,6 +109,10 @@ describe('loadEmbedding action', () => {
       {
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, error: true, loading: false } },
+        experimentSettings: {
+          ...initialExperimentState,
+          processing: initialProcessingState,
+        },
       },
     );
 
@@ -126,6 +135,10 @@ describe('loadEmbedding action', () => {
       {
         embeddings:
           {},
+        experimentSettings: {
+          ...initialExperimentState,
+          processing: initialProcessingState,
+        },
       },
     );
 
@@ -143,5 +156,23 @@ describe('loadEmbedding action', () => {
     // The first action should have been an error condition.
     const secondAction = store.getActions()[1];
     expect(secondAction).toMatchSnapshot();
+  });
+
+  it('Does not return anything while waiting for config data to load', async () => {
+    const store = mockStore(
+      {
+        embeddings:
+          {},
+        experimentSettings: {
+          ...initialExperimentState,
+          processing: {},
+        },
+      },
+    );
+
+    await store.dispatch(loadEmbedding(experimentId, embeddingType));
+
+    // We should have been dispatched two events.
+    expect(store.getActions().length).toEqual(0);
   });
 });

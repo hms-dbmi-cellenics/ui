@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import {
   Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse,
@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from 'react-vega';
+import useSelection from 'antd/lib/table/hooks/useSelection';
 import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
 import PlotStyling from '../../filter-cells/components/PlotStyling';
@@ -47,6 +48,10 @@ const EmbeddingPreview = () => {
   const [plotSpec, setPlotSpec] = useState({});
   const [config, setConfig] = useState(null);
 
+  const embeddingConfig = useSelector((state) => state.experimentSettings.processing);
+  const embedding = useSelector((state) => state.embeddings);
+  const embeddingMethod = embeddingConfig?.configureEmbedding?.embeddingSettings?.method;
+
   const error = false;
 
   const plots = {
@@ -79,6 +84,7 @@ const EmbeddingPreview = () => {
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
+
     if (!config) {
       return;
     }
@@ -121,8 +127,8 @@ const EmbeddingPreview = () => {
       }
     });
   };
-  /* eslint-enable no-param-reassign */
 
+  /* eslint-enable no-param-reassign */
   const updatePlotWithChanges = (obj) => {
     const newConfig = _.cloneDeep(config);
     _.merge(newConfig, obj);
@@ -136,6 +142,14 @@ const EmbeddingPreview = () => {
           description={error}
           onClick={() => { }}
         />
+      );
+    }
+
+    if (!config || (embeddingMethod && embedding[embeddingMethod]?.loading)) {
+      return (
+        <center>
+          <Spin size='large' />
+        </center>
       );
     }
 
@@ -237,6 +251,7 @@ const EmbeddingPreview = () => {
                     />
                   </Panel>
                 )}
+
                 {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical && (
                   <Panel header='Colour inversion'>
                     <ColourInversion
@@ -245,6 +260,7 @@ const EmbeddingPreview = () => {
                     />
                   </Panel>
                 )}
+
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
