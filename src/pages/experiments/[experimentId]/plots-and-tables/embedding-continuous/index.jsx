@@ -221,7 +221,20 @@ const EmbeddingContinuousPlot = () => {
               </Collapse>
             </Panel>
             <Panel header='Axes and Margins' key='3'>
-              <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
+              <AxesDesign
+                xAxisText={config.axes.xAxisText}
+                yAxisText={config.axes.yAxisText}
+                labelSize={config.axes.labelSize}
+                tickSize={config.axes.tickSize}
+                offset={config.axes.offset}
+                gridLineWeight={config.axes.gridLineWeight}
+                onXAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { xAxisText: e.target.value } })}
+                onYAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { yAxisText: e.target.value } })}
+                onLabelSizeUpdate={(val) => updatePlotWithChanges({ axes: { labelSize: val } })}
+                onTickSizeUpdate={(val) => updatePlotWithChanges({ axes: { tickSize: val } })}
+                onOffsetUpdate={(val) => updatePlotWithChanges({ axes: { offset: val } })}
+                onGridLineWeightUpdate={(val) => updatePlotWithChanges({ axes: { gridLineWeight: val } })}
+              />
             </Panel>
             <Panel header='Colours' key='10'>
               <ColourbarDesign

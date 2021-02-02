@@ -14,7 +14,6 @@ const PointDesign = (props) => {
     onOpacityUpdate,
   } = props;
 
-  const onThrottledShapeUpdate = useRef(_.throttle((e) => onShapeUpdate(e), 10));
   const onThrottledSizeUpdate = useRef(_.throttle((val) => onSizeUpdate(val), 10));
   const onThrottledOpacityUpdate = useRef(_.throttle((val) => onOpacityUpdate(val), 10));
 
@@ -34,7 +33,7 @@ const PointDesign = (props) => {
         <p><strong>Point Shape</strong></p>
         <Form.Item>
           <Radio.Group
-            onChange={(e) => onThrottledShapeUpdate.current(e)}
+            onChange={(e) => onShapeUpdate(e)}
             value={shape}
           >
             {

@@ -90,10 +90,8 @@ const volcanoInitialConfig = {
   thresholdGuideWidth: 1,
   logFoldChangeThresholdColor: '#ff0000',
   pvalueThresholdColor: '#ff0000',
-  axisTicks: 13,
   colGrid: '#000000',
   widthGrid: 10,
-  transGrid: 5,
   lineWidth: 2,
   reverseCbar: false,
   textThresholdValue: 240,
@@ -116,9 +114,6 @@ const frequencyInitialConfig = {
   ...fontStyleBaseState,
   chosenClusters: '',
   axisTitlesize: 13,
-  axisTicks: 13,
-  transGrid: 0,
-  axesOffset: 10,
   geneexpLegendloc: '',
 };
 
