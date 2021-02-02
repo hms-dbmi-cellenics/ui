@@ -28,7 +28,6 @@ const titleBaseState = {
   title: {
     text: '',
     fontSize: 15,
-    location: 'left',
     anchor: 'start',
   },
 };

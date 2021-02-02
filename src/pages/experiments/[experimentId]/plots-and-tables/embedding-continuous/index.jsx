@@ -208,8 +208,12 @@ const EmbeddingContinuousPlot = () => {
               <Collapse accordion>
                 <Panel header='Define and Edit Title' key='6'>
                   <TitleDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
+                    title={config.title.text}
+                    fontSize={config.title.fontSize}
+                    anchor={config.title.anchor}
+                    onTitleUpdate={(e) => updatePlotWithChanges({ title: { text: e.target.value } })}
+                    onFontSizeUpdate={(val) => updatePlotWithChanges({ title: { fontSize: val } })}
+                    onAnchorUpdate={(e) => updatePlotWithChanges({ title: { anchor: e.target.value } })}
                   />
                 </Panel>
                 <Panel header='Font' key='9'>
