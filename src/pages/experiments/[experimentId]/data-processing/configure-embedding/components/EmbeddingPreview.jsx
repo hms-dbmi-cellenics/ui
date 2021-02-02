@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import {
   Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse,
