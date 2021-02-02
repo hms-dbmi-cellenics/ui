@@ -80,7 +80,6 @@ const DiffExprResults = (props) => {
     </span>
   );
   const { basis, cellSet, compareWith } = comparisonGroup[comparisonType];
-  // const settingsText = `${optionName(basis)} vs. ${optionName(cellSet)} in ${optionName(compareWith)}`;
 
   const renderExportAlert = () => {
     if (!exportAlert) return null;
