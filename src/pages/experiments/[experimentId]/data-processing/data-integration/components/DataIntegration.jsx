@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {
   Space, Row, Col,
@@ -54,23 +54,30 @@ const defaultElbowPlotStylingConfig = {
 const DataIntegration = () => {
   const plotElements = {
     elbowPlot: (configInput) => <ElbowPlot plotConfig={configInput} />,
+    otherPlot: (configInput) => <ElbowPlot plotConfig={configInput} />,
   };
 
-  const currentConfigs = {
-    elbowPlot: defaultElbowPlotStylingConfig,
+  // This will be taken with a useSelector eventually
+  const persistedConfigs = {
+    elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
+    otherPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
   };
 
   const [activePlotKey, setActivePlotKey] = useState('elbowPlot');
-  const [plotConfig, setPlotConfig] = useState(currentConfigs[activePlotKey]);
+  const [plotConfig, setCurrentConfig] = useState(persistedConfigs.elbowPlot);
 
-  const updatePlotWithChanges = (plotConfigUpdates) => {
+  useEffect(() => {
+    setCurrentConfig(persistedConfigs[activePlotKey]);
+  }, activePlotKey);
+
+  const updatePlotWithConfigChanges = (plotConfigUpdates) => {
     const newPlotConfig = _.cloneDeep(plotConfig);
     _.merge(newPlotConfig, plotConfigUpdates);
 
-    setPlotConfig(newPlotConfig);
+    setCurrentConfig(newPlotConfig);
   };
 
-  const setupConfigForNavigation = (config, updatedWidth) => {
+  const getMiniaturizedConfig = (config, updatedWidth) => {
     const {
       width, height, axisTicks, ...configWithoutSize
     } = config;
@@ -81,7 +88,7 @@ const DataIntegration = () => {
     miniPlotConfig.axisTitlesize = 5;
     miniPlotConfig.axisTicks = 5;
 
-    miniPlotConfig.width = updatedWidth * 1.1;
+    miniPlotConfig.width = updatedWidth;
     miniPlotConfig.height = updatedWidth * 0.8;
     miniPlotConfig.signals[0].bind = undefined;
 
@@ -93,16 +100,16 @@ const DataIntegration = () => {
       {({ width: updatedWidth }) => (
         <Col span={4}>
           <Space direction='vertical' align='center' style={{ marginLeft: '0px', marginRight: '0px' }}>
-            {Object.entries(currentConfigs).map(([key, config]) => (
+            {Object.entries(persistedConfigs).map(([key, config]) => (
               <button
                 type='button'
                 key={key}
-                onClick={() => { }}// setSelectedSpec(key)}
+                onClick={() => { setActivePlotKey(key); }}
                 style={{
                   padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
                 }}
               >
-                {plotElements[key](setupConfigForNavigation(config, updatedWidth))}
+                {plotElements[key](getMiniaturizedConfig(config, updatedWidth))}
               </button>
             ))}
           </Space>
@@ -114,7 +121,7 @@ const DataIntegration = () => {
   return (
     <Row>
       <Col span={14}>
-        {plotElements[activePlotKey](currentConfigs[activePlotKey])}
+        {plotElements[activePlotKey](plotConfig)}
       </Col>
       {miniaturesColumn}
       <Col span={1} />
@@ -122,7 +129,7 @@ const DataIntegration = () => {
         <CalculationConfig />
         <PlotStyling
           config={plotConfig}
-          onUpdate={updatePlotWithChanges}
+          onUpdate={updatePlotWithConfigChanges}
           singlePlot
         />
       </Col>
