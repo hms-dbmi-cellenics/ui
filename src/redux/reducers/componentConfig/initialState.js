@@ -26,7 +26,15 @@ const embeddingContinuousInitialConfig = {
   spec: '2.0.0',
   ...legendBaseState,
   ...dimensionsBaseState,
+  dimensions: {
+    width: 700,
+    height: 550,
+  },
   ...axesBaseState,
+  axes: {
+    xAxisText: 'UMAP 1',
+    yAxisText: 'UMAP 2',
+  },
   ...titleBaseState,
   ...fontStyleBaseState,
   ...colourBaseState,
@@ -36,6 +44,8 @@ const embeddingContinuousInitialConfig = {
   logEquation: 'datum.expression*1',
   shownGene: 'CST3',
   selectedSample: 'All',
+  widthGrid: 10,
+  lineWidth: 2,
 };
 
 const heatmapInitialConfig = {

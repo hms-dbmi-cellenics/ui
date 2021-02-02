@@ -38,11 +38,11 @@ const ColourInversion = (props) => {
 
 ColourInversion.propTypes = {
   onUpdate: PropTypes.func.isRequired,
-  value: PropTypes.object.isRequired,
+  value: PropTypes.string.isRequired,
 };
 
-// Default implementation of color inversion
 const invertColour = (value) => {
+  // Default implementation of color inversion
   if (value === '#FFFFFF') {
     return {
       colour: {

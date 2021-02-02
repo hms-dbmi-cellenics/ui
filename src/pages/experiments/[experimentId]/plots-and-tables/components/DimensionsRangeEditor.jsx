@@ -7,7 +7,12 @@ import {
 
 const DimensionsRangeEditor = (props) => {
   const {
-    onUpdate, config, maxHeight, maxWidth,
+    width,
+    height,
+    onWidthUpdate,
+    onHeightUpdate,
+    maxHeight,
+    maxWidth,
   } = props;
 
   const minWidth = 400;
@@ -19,7 +24,10 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
-  const onUpdateThrottled = useRef(_.throttle((obj) => { onUpdate(obj); }, 10));
+
+  const onHeightUpdateThrottled = useRef(_.throttle((val) => { onHeightUpdate(val); }, 10));
+  const onWidthUpdateThrottled = useRef(_.throttle((val) => { onWidthUpdate(val); }, 10));
+
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       Dimensions
@@ -32,12 +40,10 @@ const DimensionsRangeEditor = (props) => {
           label='Width'
         >
           <Slider
-            value={config.width}
+            value={width}
             min={minWidth}
             max={maxWidth}
-            onChange={(value) => {
-              onUpdateThrottled.current({ width: value });
-            }}
+            onChange={(val) => onWidthUpdateThrottled.current(val)}
             marks={widthMarks}
           />
         </Form.Item>
@@ -45,12 +51,10 @@ const DimensionsRangeEditor = (props) => {
           label='Height'
         >
           <Slider
-            value={config.height}
+            value={height}
             min={minHeight}
             max={maxHeight}
-            onChange={(value) => {
-              onUpdateThrottled.current({ height: value });
-            }}
+            onChange={(val) => onHeightUpdateThrottled.current(val)}
             marks={heighthMarks}
           />
         </Form.Item>
@@ -59,16 +63,20 @@ const DimensionsRangeEditor = (props) => {
   );
 };
 
-DimensionsRangeEditor.defaultProps = {
-  maxHeight: 1000,
-  maxWidth: 1200,
-};
-
 DimensionsRangeEditor.propTypes = {
-  onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
+  width: PropTypes.number,
+  height: PropTypes.number,
+  onWidthUpdate: PropTypes.func.isRequired,
+  onHeightUpdate: PropTypes.func.isRequired,
   maxHeight: PropTypes.number,
   maxWidth: PropTypes.number,
+};
+
+DimensionsRangeEditor.defaultProps = {
+  width: 400,
+  height: 400,
+  maxHeight: 1000,
+  maxWidth: 1200,
 };
 
 export default DimensionsRangeEditor;

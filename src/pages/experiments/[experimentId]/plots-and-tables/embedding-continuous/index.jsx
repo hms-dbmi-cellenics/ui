@@ -202,8 +202,10 @@ const EmbeddingContinuousPlot = () => {
           <Collapse accordion>
             <Panel header='Main Schema' key='2'>
               <DimensionsRangeEditor
-                config={config}
-                onUpdate={updatePlotWithChanges}
+                width={config.dimensions.width}
+                height={config.dimensions.height}
+                onWidthUpdate={(val) => updatePlotWithChanges({ dimensions: { width: val } })}
+                onHeightUpdate={(val) => updatePlotWithChanges({ dimensions: { height: val } })}
               />
               <Collapse accordion>
                 <Panel header='Define and Edit Title' key='6'>

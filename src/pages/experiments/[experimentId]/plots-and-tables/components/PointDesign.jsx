@@ -76,11 +76,11 @@ const PointDesign = (props) => {
 
 PointDesign.propTypes = {
   shape: PropTypes.string,
-  size: PropTypes.string,
-  opacity: PropTypes.string,
+  size: PropTypes.number,
+  opacity: PropTypes.number,
   onShapeUpdate: PropTypes.func.isRequired,
   onSizeUpdate: PropTypes.func.isRequired,
-  onOpacityUpdate: PropTypes.string.isRequired,
+  onOpacityUpdate: PropTypes.func.isRequired,
 };
 
 PointDesign.defaultProps = {
