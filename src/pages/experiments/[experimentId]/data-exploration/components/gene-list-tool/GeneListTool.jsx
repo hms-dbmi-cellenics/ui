@@ -19,8 +19,8 @@ const GeneListTool = (props) => {
 
   const dispatch = useDispatch();
   const properties = useSelector((state) => state.genes.properties.data);
-
   const propertiesLoading = useSelector((state) => state.genes.properties.loading);
+
   const viewState = useSelector((state) => state.genes.properties.views[tableUuid]);
   const error = useSelector((state) => state.genes.properties.views[tableUuid]?.error);
   const componentFetching = useSelector(
@@ -69,6 +69,7 @@ const GeneListTool = (props) => {
     if (reason === geneTableUpdateReason.loaded || reason === geneTableUpdateReason.loading) {
       return;
     }
+
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, newState));
   };
 

@@ -14,11 +14,10 @@ const loadPaginatedGeneProperties = (
   experimentId, properties, componentUuid, tableState,
 ) => async (dispatch, getState) => {
   const { loading } = getState().genes.properties;
-  // console.log('table state and componentuuid', JSON.stringify(tableState, componentUuid);
+
   if (_.intersection(loading, properties).length > 0) {
     return null;
   }
-  console.log('paginated gene properties ', experimentId, properties, componentUuid, tableState);
 
   dispatch({
     type: GENES_PROPERTIES_LOADING,
