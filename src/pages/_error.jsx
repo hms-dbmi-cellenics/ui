@@ -27,12 +27,7 @@ const Error = ({ errorText, statusCode }) => (
 
         <Space direction='vertical' style={{ width: '100%' }}>
           <Text>
-            If you need immediate help, please
-            {' '}
-            <a href='mailto:hello@biomage.net'>contact us</a>
-            .
-            {' '}
-            If the problem persists,
+            If you need immediate help, or if the problem persists,
             please leave feedback using the button below.
             <br />
             Thank you for your patience, we&apos;ll be up and running shortly.
