@@ -1,6 +1,6 @@
 import React from 'react';
 import { Result, Typography, Space } from 'antd';
-
+import PropTypes from 'prop-types';
 import FeedbackButton from '../components/FeedbackButton';
 
 const { Title, Text } = Typography;
@@ -59,6 +59,16 @@ const Error = ({ errorText, statusCode }) => (
     )}
   />
 );
+
+Error.defaultProps = {
+  statusCode: null,
+  errorText: null,
+};
+
+Error.propTypes = {
+  statusCode: PropTypes.number,
+  errorText: PropTypes.string,
+};
 
 Error.getInitialProps = ({ res, err }) => {
   const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
