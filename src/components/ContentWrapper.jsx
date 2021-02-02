@@ -136,29 +136,12 @@ const ContentWrapper = (props) => {
           {!collapsed && <BigLogo />}
           {collapsed && <SmallLogo />}
           <Menu theme='dark' defaultSelectedKeys={['data-exploration']} mode='inline'>
-            <SubMenu key='data-processing' icon={<BuildOutlined />} title='Data Processing'>
-              <Menu.Item key='5'>
-                <Link as={`/experiments/${experimentId}/data-processing/filter-cells`} href='/experiments/[experimentId]/data-processing/filter-cells' passHref>
-                  <div>
-                    <span>Filter Cells</span>
-                  </div>
-                </Link>
-              </Menu.Item>
-              <Menu.Item key='6'>
-                <Link as={`/experiments/${experimentId}/data-processing/reduce-dimensions`} href='/experiments/[experimentId]/data-processing/reduce-dimensions' passHref>
-                  <div>
-                    <span>Reduce Dimensions</span>
-                  </div>
-                </Link>
-              </Menu.Item>
-              <Menu.Item key='7'>
-                <Link as={`/experiments/${experimentId}/data-processing/configure-embedding`} href='/experiments/[experimentId]/data-processing/configure-embedding' passHref>
-                  <div>
-                    <span>Configure Embedding</span>
-                  </div>
-                </Link>
-              </Menu.Item>
-            </SubMenu>
+            <Menu.Item key='data-processing' icon={<BuildOutlined />}>
+              <Link as={`/experiments/${experimentId}/data-processing`} href='/experiments/[experimentId]/data-processing' passHref>
+                <a>Data Processing</a>
+              </Link>
+            </Menu.Item>
+
             <Menu.Item key='data-exploration' icon={<FundViewOutlined />}>
               <Link as={`/experiments/${experimentId}/data-exploration`} href='/experiments/[experimentId]/data-exploration' passHref>
                 <a>Data Exploration</a>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   PageHeader, Collapse, Switch, Tooltip, Select,
   Steps, Space, Button, Typography, Progress, Descriptions, Statistic,
@@ -34,30 +34,37 @@ const DataProcessingPage = () => {
 
   const steps = [
     {
+      id: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
-      render: () => <CellSizeDistribution />,
+      render: () => <CellSizeDistribution filtering />,
     },
     {
+      id: 'mitoContentFilter',
       name: 'Mitochondrial content filter',
-      render: () => <MitochondrialContent />,
+      render: () => <MitochondrialContent filtering />,
     },
     {
+      id: 'classifierFilter',
       name: 'Classifier filter',
-      render: () => <Classifier />,
+      render: () => <Classifier filtering />,
     },
     {
+      id: 'genesVsUMIFilter',
       name: 'Number of genes vs UMIs filter',
-      render: () => <GenesVsUMIs />,
+      render: () => <GenesVsUMIs filtering />,
     },
     {
+      id: 'doubletFilter',
       name: 'Doublet filter',
-      render: () => <DoubletScores />,
+      render: () => <DoubletScores filtering />,
     },
     {
+      id: 'dimensionReductionFilter',
       name: 'Dimensionality reduction',
-      render: () => <ReduceDimensions />,
+      render: () => <ReduceDimensions filtering />,
     },
     {
+      id: 'comptueEmbeddingFilter',
       name: 'Compute embedding',
       render: () => <EmbeddingPreview experimentId={experimentId} />,
     },
@@ -65,7 +72,13 @@ const DataProcessingPage = () => {
 
   const [stepId, setStepId] = useState(0);
 
+  const [completedSteps, setCompletedSteps] = useState(new Set());
+
   const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
+
+  useEffect(() => {
+    setCompletedSteps(new Set([...completedSteps]).add(steps[stepId].id));
+  }, [stepId]);
 
   if (error) {
     if (error.payload === undefined) {
@@ -100,19 +113,35 @@ const DataProcessingPage = () => {
         <Space direction='vertical' style={{ width: '100%' }} size='large'>
           <Row justify='space-between'>
             <Col span='8'>
-              <Select value={stepId} onChange={(id) => setStepId(id)} style={{ width: 360, fontWeight: 'bold' }} placeholder='Jump to a step...'>
-                {steps.map(({ name }, i) => (<Option value={i}>{name}</Option>))}
+              <Select
+                value={stepId}
+                onChange={(id) => setStepId(id)}
+                style={{ width: 360, fontWeight: 'bold' }}
+                placeholder='Jump to a step...'
+              >
+                {
+                  steps.map(
+                    ({ name, id }, i) => (
+                      <Option
+                        value={i}
+                        disabled={!completedSteps.has(id)}
+                      >
+                        {name}
+                      </Option>
+                    ),
+                  )
+                }
               </Select>
             </Col>
             <Col span='16'>
               <div style={{ float: 'right' }}>
                 <Space size='large'>
                   <Progress
-                    percent={((stepId + 1) / steps.length) * 100}
+                    percent={((completedSteps.size) / steps.length) * 100}
                     steps={steps.length}
                     showInfo={false}
                   />
-                  <Text type='primary'>{`${stepId + 1} of ${steps.length} steps`}</Text>
+                  <Text type='primary'>{`${completedSteps.size} of ${steps.length} steps complete`}</Text>
                   <Button
                     disabled={stepId === 0}
                     icon={<LeftOutlined />}
@@ -120,7 +149,15 @@ const DataProcessingPage = () => {
                   >
                     Previous
                   </Button>
-                  <Button type='primary' onClick={() => setStepId(Math.min(stepId + 1, steps.length - 1))}>
+                  <Button
+                    type='primary'
+                    onClick={
+                      () => {
+                        const newId = Math.min(stepId + 1, steps.length - 1);
+                        setStepId(newId);
+                      }
+                    }
+                  >
                     Next
                     <RightOutlined />
                   </Button>
