@@ -1,45 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CalculationConfig Embeddings should reload as input is changed 1`] = `
-Object {
-  "payload": Object {
-    "embeddingType": "tsne",
-    "experimentId": "1234",
-  },
-  "type": "embeddings/loading",
-}
-`;
-
-exports[`CalculationConfig Embeddings should reload as input is changed 2`] = `
-Object {
-  "payload": Object {
-    "configChange": Object {
-      "embeddingSettings": Object {
-        "methodSettings": Object {
-          "tsne": Object {
-            "perplexity": 1,
-          },
-        },
-      },
-    },
-    "experimentId": "1234",
-    "settingName": "configureEmbedding",
-  },
-  "type": "experimentSettings/updateProcessing",
-}
-`;
-
 exports[`CalculationConfig clicking on button triggers save action 1`] = `
-Object {
-  "payload": Object {
-    "embeddingType": "umap",
-    "experimentId": "1234",
-  },
-  "type": "embeddings/loading",
-}
-`;
-
-exports[`CalculationConfig clicking on button triggers save action 2`] = `
 Object {
   "payload": Object {
     "configChange": Object {
@@ -54,12 +15,12 @@ Object {
 }
 `;
 
-exports[`CalculationConfig clicking on button triggers save action 3`] = `
+exports[`CalculationConfig clicking on button triggers save action 2`] = `
 Object {
   "payload": Object {
+    "embeddingType": "umap",
     "experimentId": "1234",
-    "settingName": "configureEmbedding",
   },
-  "type": "experimentSettings/saveProcessing",
+  "type": "embeddings/loading",
 }
 `;

@@ -60,6 +60,7 @@ const CalculationConfig = (props) => {
   const applyEmbeddingSettings = () => {
     setChangesOutstanding(false);
     dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
+    dispatch(loadEmbedding(experimentId, embeddingMethod));
   };
 
   useEffect(() => {
@@ -69,10 +70,6 @@ const CalculationConfig = (props) => {
 
     dispatch(loadProcessingSettings(experimentId, FILTER_UUID));
   }, [experimentId]);
-
-  useEffect(() => {
-    dispatch(loadEmbedding(experimentId, embeddingMethod));
-  }, [data]);
 
   const renderUMAPSettings = () => (
     <>

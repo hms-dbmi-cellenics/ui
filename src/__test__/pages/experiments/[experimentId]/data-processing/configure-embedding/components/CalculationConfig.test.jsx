@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
 import { EXPERIMENT_SETTINGS_PROCESSING_SAVE, EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../../../../../../redux/actionTypes/experimentSettings';
-import { EMBEDDINGS_LOADING } from '../../../../../../../redux/actionTypes/embeddings';
+import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED } from '../../../../../../../redux/actionTypes/embeddings';
 
 import CalculationConfig from '../../../../../../../pages/experiments/[experimentId]/data-processing/configure-embedding/components/CalculationConfig';
 import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
@@ -152,7 +152,7 @@ describe('CalculationConfig', () => {
     expect(button.at(0).getElement().props.disabled).toEqual(false);
   });
 
-  it('clicking on button triggers save action', async () => {
+  it('clicking on button triggers save action and reloading of plot data', async () => {
     const store = mockStore(storeState);
 
     const component = mount(
@@ -173,76 +173,20 @@ describe('CalculationConfig', () => {
     const button = component.find(Button);
     button.simulate('click', {});
 
-    // // Should update and save the config.
-    await waitForActions(store,
-      [EMBEDDINGS_LOADING,
-        EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
-        EXPERIMENT_SETTINGS_PROCESSING_SAVE]);
+    // Should update and save the config.
+    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
 
-    expect(store.getActions().length).toEqual(4);
-
-    // First there should be a reload of the embedding...
-    const reloadEmbedding = store.getActions()[0];
-    expect(reloadEmbedding.type).toBe(EMBEDDINGS_LOADING);
-    expect(reloadEmbedding).toMatchSnapshot();
+    console.log(store.getActions());
+    expect(store.getActions().length).toEqual(2);
 
     // First there should be an update...
-    const updateAction = store.getActions()[1];
+    const updateAction = store.getActions()[0];
     expect(updateAction.type).toBe(EXPERIMENT_SETTINGS_PROCESSING_UPDATE);
     expect(updateAction).toMatchSnapshot();
 
     // ... then there should be a save.
-    const saveAction = store.getActions()[2];
-    expect(saveAction.type).toBe(EXPERIMENT_SETTINGS_PROCESSING_SAVE);
+    const saveAction = store.getActions()[1];
+    expect(saveAction.type).toBe(EMBEDDINGS_LOADING);
     expect(saveAction).toMatchSnapshot();
-  });
-
-  it('Embeddings should reload as input is changed', async () => {
-    const store = mockStore({
-      ...storeState,
-      experimentSettings: {
-        ...storeState.experimentSettings,
-        processing: {
-          ...storeState.experimentSettings.processing,
-          configureEmbedding: {
-            ...storeState.experimentSettings.processing.configureEmbedding,
-            embeddingSettings: {
-              ...storeState.experimentSettings.processing.configureEmbedding.embeddingSettings,
-              method: 'tsne',
-            },
-          },
-        },
-      },
-    });
-
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-
-    // Modifying input
-    component.find(InputNumber).at(0).getElement().props.onInput({ target: { value: 1 } });
-    component.update();
-
-    // Should trigger updates and embeeding loading
-    await waitForActions(store, [EMBEDDINGS_LOADING, EXPERIMENT_SETTINGS_PROCESSING_UPDATE]);
-
-    // There should be 2 actions
-    expect(store.getActions().length).toEqual(2);
-
-    // First there should be a reload of the map, then an update...
-    const reloadEmbedding1 = store.getActions()[0];
-    expect(reloadEmbedding1.type).toBe(EMBEDDINGS_LOADING);
-    expect(reloadEmbedding1).toMatchSnapshot();
-
-    // Then update
-    const updateAction1 = store.getActions()[1];
-    expect(updateAction1.type).toBe(EXPERIMENT_SETTINGS_PROCESSING_UPDATE);
-    expect(updateAction1).toMatchSnapshot();
   });
 });
