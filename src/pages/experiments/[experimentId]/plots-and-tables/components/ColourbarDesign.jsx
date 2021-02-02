@@ -6,9 +6,13 @@ import {
 } from 'antd';
 
 const ColourbarDesign = (props) => {
-  const { onUpdate, config } = props;
-  const onChange = (e) => {
-    onUpdate({ colGradient: e.target.value });
+  const { onUpdate, value } = props;
+
+  const options = {
+    viridis: 'Viridis',
+    inferno: 'Inferno',
+    spectral: 'Spectral',
+    redblue: 'Red-Blue',
   };
 
   return (
@@ -18,13 +22,14 @@ const ColourbarDesign = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Styles</div>
+        <p><strong>Color Schemes</strong></p>
         <Form.Item>
-          <Radio.Group onChange={onChange} value={config.colGradient}>
-            <Radio value='viridis'>Viridis</Radio>
-            <Radio value='inferno'>Inferno</Radio>
-            <Radio value='spectral'>Spectral</Radio>
-            <Radio value='redblue'>Red-Blue</Radio>
+          <Radio.Group onChange={(e) => onUpdate(e)} value={value}>
+            {
+              Object.entries(options).map(([val, text]) => (
+                <Radio value={val}>{text}</Radio>
+              ))
+            }
           </Radio.Group>
         </Form.Item>
       </Form>
@@ -34,7 +39,11 @@ const ColourbarDesign = (props) => {
 
 ColourbarDesign.propTypes = {
   onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
+  value: PropTypes.string,
+};
+
+ColourbarDesign.defaultProps = {
+  value: 'viridis',
 };
 
 export default ColourbarDesign;

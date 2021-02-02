@@ -9,7 +9,7 @@ import _ from 'lodash';
 import { useRouter } from 'next/router';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
-import ColourInversion from '../components/ColourInversion';
+import ColourInversion, { invertColour } from '../components/ColourInversion';
 import LogExpression from './components/LogExpression';
 import AxesDesign from '../components/AxesDesign';
 import PointDesign from '../components/PointDesign';
@@ -225,17 +225,13 @@ const EmbeddingContinuousPlot = () => {
             </Panel>
             <Panel header='Colours' key='10'>
               <ColourbarDesign
-                config={config}
-                onUpdate={updatePlotWithChanges}
+                value={config.colour.gradient}
+                onUpdate={(e) => updatePlotWithChanges({ colour: { gradient: e.target.value } })}
               />
-              <Collapse accordion>
-                <Panel header='Colour Inversion' key='4'>
-                  <ColourInversion
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
+              <ColourInversion
+                value={config.colour.toggleInvert}
+                onUpdate={(e) => updatePlotWithChanges(invertColour(e.target.value))}
+              />
             </Panel>
             <Panel header='Markers' key='11'>
               <PointDesign config={config} onUpdate={updatePlotWithChanges} />
@@ -246,7 +242,7 @@ const EmbeddingContinuousPlot = () => {
                 onValueChange={(e) => updatePlotWithChanges({ legend: { position: e.target.value } })}
                 enabled={config.legend.enabled}
                 position={config.legend.position}
-                option={{ positions: 'top-bottom' }}
+                option={{ positions: 'corners' }}
               />
             </Panel>
           </Collapse>

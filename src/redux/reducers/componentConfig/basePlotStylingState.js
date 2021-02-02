@@ -1,8 +1,8 @@
 const legendBaseState = {
   legend: {
     enabled: true,
-    position: 'top',
-    color: '#000000',
+    position: 'top-left',
+    colour: '#000000',
   },
 };
 
@@ -42,9 +42,11 @@ const fontStyleBaseState = {
 
 const colourBaseState = {
   colour: {
+    masterColour: '#000000',
     gradient: 'viridis',
     toggleInvert: '#FFFFFF',
     invert: 'standard',
+    reverseColourBar: false,
   },
 };
 

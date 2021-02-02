@@ -6,14 +6,13 @@ import {
 } from 'antd';
 
 const ColourInversion = (props) => {
-  const { onUpdate, config } = props;
-  const onChange = (e) => {
-    if (e.target.value === '#FFFFFF') {
-      onUpdate({ toggleInvert: e.target.value, masterColour: '#000000', reverseCbar: false });
-    } else {
-      onUpdate({ toggleInvert: e.target.value, masterColour: '#FFFFFF', reverseCbar: true });
-    }
+  const { onUpdate, value } = props;
+  const options = {
+    '#FFFFFF': 'Standard',
+    '#000000': 'Invert',
   };
+
+  console.log(value);
 
   return (
     <>
@@ -22,11 +21,16 @@ const ColourInversion = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Background</div>
+        <p><strong>Background</strong></p>
         <Form.Item>
-          <Radio.Group onChange={onChange} value={config.toggleInvert}>
-            <Radio value='#FFFFFF'>Standard</Radio>
-            <Radio value='#000000'>Invert</Radio>
+          <Radio.Group onChange={(e) => onUpdate(e)} value={value}>
+
+            {
+              Object.entries(options).map(([val, text]) => (
+                <Radio key={val} value={val}>{text}</Radio>
+              ))
+            }
+
           </Radio.Group>
         </Form.Item>
       </Form>
@@ -36,7 +40,28 @@ const ColourInversion = (props) => {
 
 ColourInversion.propTypes = {
   onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
+  value: PropTypes.object.isRequired,
 };
 
+// Default implementation of color inversion
+const invertColour = (value) => {
+  if (value === '#FFFFFF') {
+    return {
+      colour: {
+        toggleInvert: value,
+        masterColour: '#000000',
+        reverseColourBar: false,
+      },
+    };
+  }
+  return {
+    colour: {
+      toggleInvert: value,
+      masterColour: '#FFFFFF',
+      reverseColourbar: true,
+    },
+  };
+};
+
+export { invertColour };
 export default ColourInversion;

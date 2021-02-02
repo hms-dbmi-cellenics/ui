@@ -4,7 +4,7 @@ import { Radio, Form } from 'antd';
 import _ from 'lodash';
 
 const defaultOption = {
-  positions: 'top-bottom',
+  positions: 'corners',
   showEnableOption: true,
   showValueOption: true,
 };
@@ -34,7 +34,7 @@ const LegendEditor = (props) => {
     <Form size='small' labelCol={{ span: 12 }} wrapperCol={{ span: 12 }}>
       { elOption.showEnableOption && (
         <>
-          <p>Position</p>
+          <p><strong>Enabled</strong></p>
           <Form.Item>
             <Radio.Group onChange={(e) => onEnabledChange(e)} value={enabled}>
               <Radio value>Show</Radio>
@@ -46,7 +46,7 @@ const LegendEditor = (props) => {
 
       { enabled && elOption.showValueOption && (
         <>
-          <p>Position</p>
+          <p><strong>Position</strong></p>
           <Form.Item>
             <Radio.Group
               onChange={(e) => onValueChange(e)}
@@ -75,7 +75,7 @@ LegendEditor.propTypes = {
 
 LegendEditor.defaultProps = {
   enabled: true,
-  position: 'top',
+  position: 'top-left',
   option: defaultOption,
 };
 
