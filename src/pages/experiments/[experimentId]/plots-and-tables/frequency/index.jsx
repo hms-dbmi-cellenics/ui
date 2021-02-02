@@ -241,33 +241,53 @@ const frequencyPlot = () => {
             </Panel>
             <Panel header='Main Schema' key='2'>
               <DimensionsRangeEditor
-                config={config}
-                onUpdate={updatePlotWithChanges}
+                width={config.dimensions.width}
+                height={config.dimensions.height}
+                onWidthUpdate={(val) => updatePlotWithChanges({ dimensions: { width: val } })}
+                onHeightUpdate={(val) => updatePlotWithChanges({ dimensions: { height: val } })}
               />
               <Collapse accordion>
                 <Panel header='Define and Edit Title' key='6'>
                   <TitleDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
+                    title={config.title.text}
+                    fontSize={config.title.fontSize}
+                    anchor={config.title.anchor}
+                    onTitleUpdate={(e) => updatePlotWithChanges({ title: { text: e.target.value } })}
+                    onFontSizeUpdate={(val) => updatePlotWithChanges({ title: { fontSize: val } })}
+                    onAnchorUpdate={(e) => updatePlotWithChanges({ title: { anchor: e.target.value } })}
                   />
                 </Panel>
                 <Panel header='Font' key='9'>
                   <FontDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
+                    font={config.fontStyle.font}
+                    onUpdate={(e) => updatePlotWithChanges({ fontStyle: { font: e.target.value } })}
                   />
                 </Panel>
               </Collapse>
             </Panel>
             <Panel header='Axes and Margins' key='3'>
-              <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
+              <AxesDesign
+                xAxisText={config.axes.xAxisText}
+                yAxisText={config.axes.yAxisText}
+                labelSize={config.axes.labelSize}
+                tickSize={config.axes.tickSize}
+                offset={config.axes.offset}
+                gridLineWeight={config.axes.gridLineWeight}
+                onXAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { xAxisText: e.target.value } })}
+                onYAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { yAxisText: e.target.value } })}
+                onLabelSizeUpdate={(val) => updatePlotWithChanges({ axes: { labelSize: val } })}
+                onTickSizeUpdate={(val) => updatePlotWithChanges({ axes: { tickSize: val } })}
+                onOffsetUpdate={(val) => updatePlotWithChanges({ axes: { offset: val } })}
+                onGridLineWeightUpdate={(val) => updatePlotWithChanges({ axes: { gridLineWeight: val } })}
+              />
             </Panel>
             <Panel header='Legend' key='12'>
               <LegendEditor
-                onUpdate={updatePlotWithChanges}
-                legendEnabled={config.legendEnabled}
-                legendPosition={config.legendPosition}
-                legendOptions='top-bot'
+                onEnabledUpdate={(e) => updatePlotWithChanges({ legend: { enabled: e.target.value } })}
+                onValueUpdate={(e) => updatePlotWithChanges({ legend: { position: e.target.value } })}
+                enabled={config.legend.enabled}
+                position={config.legend.position}
+                option={{ positions: 'top-bottom' }}
               />
               <Alert
                 message='Changing cell set colours is not currently available here.
