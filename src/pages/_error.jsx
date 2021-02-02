@@ -38,7 +38,7 @@ const Error = ({ errorText, statusCode }) => (
           {errorText && (
             <>
               <span>
-                <Text type='secondary'>The error is reported to be the following:&nbsp;</Text>
+                <Text type='secondary'>The error is reported as:&nbsp;</Text>
                 <Text code>{errorText}</Text>
               </span>
             </>

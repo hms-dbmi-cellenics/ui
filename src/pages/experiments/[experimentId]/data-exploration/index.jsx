@@ -87,7 +87,7 @@ const ExplorationViewPage = () => {
 
   if (error) {
     if (error.payload === undefined) {
-      return <Error errorText='You are not connected to the backend.' />;
+      return <Error errorText='Cannot connect to API service.' />;
     }
     const { status } = error.payload;
     return <Error errorText={status} />;
