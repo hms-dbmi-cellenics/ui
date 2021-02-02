@@ -218,8 +218,8 @@ const EmbeddingContinuousPlot = () => {
                 </Panel>
                 <Panel header='Font' key='9'>
                   <FontDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
+                    font={config.fontStyle.font}
+                    onUpdate={(e) => updatePlotWithChanges({ fontStyle: { font: e.target.value } })}
                   />
                 </Panel>
               </Collapse>

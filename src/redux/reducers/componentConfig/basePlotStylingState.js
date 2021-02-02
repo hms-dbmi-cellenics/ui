@@ -34,7 +34,7 @@ const titleBaseState = {
 
 const fontStyleBaseState = {
   fontStyle: {
-    value: 'Sans-serif',
+    font: 'sans-serif',
     colour: '#000000',
   },
 };

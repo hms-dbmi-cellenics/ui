@@ -6,21 +6,26 @@ import {
 } from 'antd';
 
 const FontDesign = (props) => {
-  const { onUpdate, config } = props;
+  const { font, onUpdate } = props;
 
-  const onChange = (e) => {
-    onUpdate({ masterFont: e.target.value });
+  const options = {
+    'sans-serif': 'Sans-serif',
+    sans: 'Sans',
+    monospace: 'Monospace',
   };
 
   return (
     <Form size='small'>
       <Form.Item>
         <Space direction='vertical' style={{ width: '80%' }}>
-          <div> Font Styles </div>
-          <Radio.Group onChange={onChange} value={config.masterFont}>
-            <Radio value='sans-serif'>Sans-serif</Radio>
-            <Radio value='sans'>Sans</Radio>
-            <Radio value='monospace'>Monospace</Radio>
+          <p><strong>Font Styles</strong></p>
+          <Radio.Group onChange={(e) => onUpdate(e)} value={font}>
+
+            {
+              Object.entries(options).map(([val, text]) => (
+                <Radio value={val}>{text}</Radio>
+              ))
+            }
           </Radio.Group>
         </Space>
       </Form.Item>
@@ -29,8 +34,12 @@ const FontDesign = (props) => {
 };
 
 FontDesign.propTypes = {
+  font: PropTypes.string,
   onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
+};
+
+FontDesign.defaultProps = {
+  font: 'sans-serif',
 };
 
 export default FontDesign;
