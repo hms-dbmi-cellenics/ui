@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import preloadAll from 'jest-next-dynamic';
@@ -6,6 +7,7 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+
 import waitForActions from 'redux-mock-store-await-actions';
 import DiffExprResults from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/differential-expression-tool/DiffExprResults';
 import sendWork from '../../../../../../../utils/sendWork';
@@ -213,5 +215,22 @@ describe('DiffExprResults', () => {
 
       lookupComponent.unmount();
     });
+  });
+  it('Show comparison settings button works.', () => {
+    const component = mount(
+      <Provider store={store}>
+        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} width={100} height={200} />
+      </Provider>,
+    );
+    const button = component.find('#settingsButton').first();
+    expect(button.text()).toContain('Show');
+    button.simulate('click');
+    expect(button.text()).toContain('Hide');
+
+    const div = component.find('#settingsText');
+    expect(div.text()).toEqual('Louvain 0 vs. Louvain 1 in Condition control');
+    button.simulate('click');
+    expect(button.childAt(0).text()).toEqual('Show settings');
+    expect(!div);
   });
 });
