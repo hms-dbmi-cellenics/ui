@@ -7,12 +7,21 @@ import {
 } from 'antd';
 
 const PointDesign = (props) => {
-  const { onUpdate, config } = props;
+  const {
+    shape, size, opacity,
+    onShapeUpdate,
+    onSizeUpdate,
+    onOpacityUpdate,
+  } = props;
 
-  const onChange = (e) => {
-    onUpdate({ pointStyle: e.target.value });
+  const onThrottledShapeUpdate = useRef(_.throttle((e) => onShapeUpdate(e), 10));
+  const onThrottledSizeUpdate = useRef(_.throttle((val) => onSizeUpdate(val), 10));
+  const onThrottledOpacityUpdate = useRef(_.throttle((val) => onOpacityUpdate(val), 10));
+
+  const options = {
+    circle: 'Circle',
+    diamond: 'Diamond',
   };
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -21,39 +30,45 @@ const PointDesign = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Point Style</div>
+
+        <p><strong>Point Shape</strong></p>
+        <Form.Item>
+          <Radio.Group
+            onChange={(e) => onThrottledShapeUpdate.current(e)}
+            value={shape}
+          >
+            {
+              Object.entries(options).map(([val, text]) => (
+                <Radio key={val} value={val}>{text}</Radio>
+              ))
+            }
+          </Radio.Group>
+        </Form.Item>
+
+        <p><strong>Point Size</strong></p>
         <Form.Item
           label='Point Size'
         >
           <Slider
-            value={config.pointSize}
+            value={size}
             min={1}
             max={100}
-            onChange={(value) => {
-              onUpdateThrottled.current({ pointSize: value });
-            }}
+            onChange={(val) => onThrottledSizeUpdate.current(val)}
             marks={{ 1: 1, 100: 100 }}
           />
         </Form.Item>
+
+        <p><strong>Point Fill Opacity</strong></p>
         <Form.Item
           label='Point Fill Opacity'
         >
           <Slider
-            value={config.pointOpa}
+            value={opacity}
             min={1}
             max={10}
-            onChange={(value) => {
-              onUpdateThrottled.current({ pointOpa: value });
-            }}
+            onChange={(val) => onThrottledOpacityUpdate.current(val)}
             marks={{ 1: 1, 10: 10 }}
           />
-        </Form.Item>
-        <div>Point Shape</div>
-        <Form.Item>
-          <Radio.Group onChange={onChange} value={config.pointStyle}>
-            <Radio value='circle'>Circle</Radio>
-            <Radio value='diamond'>Diamond</Radio>
-          </Radio.Group>
         </Form.Item>
       </Form>
     </Space>
@@ -61,8 +76,18 @@ const PointDesign = (props) => {
 };
 
 PointDesign.propTypes = {
-  config: PropTypes.object.isRequired,
-  onUpdate: PropTypes.func.isRequired,
+  shape: PropTypes.string,
+  size: PropTypes.string,
+  opacity: PropTypes.string,
+  onShapeUpdate: PropTypes.func.isRequired,
+  onSizeUpdate: PropTypes.func.isRequired,
+  onOpacityUpdate: PropTypes.string.isRequired,
+};
+
+PointDesign.defaultProps = {
+  shape: 'circle',
+  size: 5,
+  opacity: 5,
 };
 
 export default PointDesign;

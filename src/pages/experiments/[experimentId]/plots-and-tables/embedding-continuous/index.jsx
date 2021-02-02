@@ -234,7 +234,14 @@ const EmbeddingContinuousPlot = () => {
               />
             </Panel>
             <Panel header='Markers' key='11'>
-              <PointDesign config={config} onUpdate={updatePlotWithChanges} />
+              <PointDesign
+                shape={config.marker.shape}
+                size={config.marker.size}
+                opacity={config.marker.opacity}
+                onShapeUpdate={(e) => updatePlotWithChanges({ marker: { shape: e.target.value } })}
+                onSizeUpdate={(val) => updatePlotWithChanges({ marker: { size: val } })}
+                onOpacityUpdate={(val) => updatePlotWithChanges({ marker: { opacity: val } })}
+              />
             </Panel>
             <Panel header='Legend' key='12'>
               <LegendEditor

@@ -12,8 +12,6 @@ const ColourInversion = (props) => {
     '#000000': 'Invert',
   };
 
-  console.log(value);
-
   return (
     <>
       <Form

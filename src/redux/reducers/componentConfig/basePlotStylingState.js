@@ -52,9 +52,9 @@ const colourBaseState = {
 
 const markerBaseState = {
   marker: {
-    pointSize: 5,
-    pointOpacity: 5,
-    pointShape: 'circle',
+    shape: 'circle',
+    opacity: 5,
+    size: 5,
   },
 };
 
