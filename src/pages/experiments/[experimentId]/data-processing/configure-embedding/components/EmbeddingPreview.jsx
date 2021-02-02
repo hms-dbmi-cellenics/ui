@@ -12,23 +12,17 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
-import PlotStyling from '../../filter-cells/components/PlotStyling';
 import CalculationConfig from './CalculationConfig';
 import UMAP from './new_data.json';
 
 import PlatformError from '../../../../../../components/PlatformError';
-import {
-  updatePlotConfig,
-  loadPlotConfig,
-} from '../../../../../../redux/actions/componentConfig';
 import { initialPlotConfigStates } from '../../../../../../redux/reducers/componentConfig/initialState';
 import generateEmbeddingCategoricalSpec from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import generateEmbeddingContinuousSpec from '../../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import colorProvider from '../../../../../../utils/colorProvider';
 import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
-import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
-import LogExpression from '../../../plots-and-tables/embedding-continuous/components/LogExpression';
+import ColourInversion, { invertColour } from '../../../plots-and-tables/components/ColourInversion';
 import AxesDesign from '../../../plots-and-tables/components/AxesDesign';
 import PointDesign from '../../../plots-and-tables/components/PointDesign';
 import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
@@ -39,8 +33,6 @@ import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
 const { Panel } = Collapse;
 
 const EmbeddingPreview = () => {
-  const dispatch = useDispatch();
-
   const router = useRouter();
   const { experimentId } = router.query;
   const [selectedSpec, setSelectedSpec] = useState('sample');
@@ -55,24 +47,32 @@ const EmbeddingPreview = () => {
       initialConfig: initialPlotConfigStates.embeddingCategorical,
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
+      plotUuid: 'embeddingContinuousMain',
+      plotType: 'embeddingContinuous',
     },
     cellCluster: {
       title: 'Default clusters',
       initialConfig: initialPlotConfigStates.embeddingCategorical,
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
+      plotUuid: 'embeddingContinuousMain',
+      plotType: 'embeddingContinuous',
     },
     mitochondrialFraction: {
       title: 'Mitochondrial fraction reads',
       initialConfig: initialPlotConfigStates.embeddingContinuous,
       specGenerator: generateEmbeddingContinuousSpec,
       imgSrc: plot2Pic,
+      plotUuid: 'embeddingCategoricalMain',
+      plotType: 'embeddingCategorical',
     },
     doubletScore: {
       title: 'Cell doublet score',
       initialConfig: initialPlotConfigStates.embeddingContinuous,
       specGenerator: generateEmbeddingContinuousSpec,
       imgSrc: plot2Pic,
+      plotUuid: 'embeddingCategoricalMain',
+      plotType: 'embeddingCategorical',
     },
   };
 
@@ -121,7 +121,6 @@ const EmbeddingPreview = () => {
       }
     });
   };
-  /* eslint-enable no-param-reassign */
 
   const updatePlotWithChanges = (obj) => {
     const newConfig = _.cloneDeep(config);
@@ -204,36 +203,55 @@ const EmbeddingPreview = () => {
               <Collapse accordion>
                 <Panel header='Main Schema' key='main-schema'>
                   <DimensionsRangeEditor
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
+                    width={config.dimensions.width}
+                    height={config.dimensions.height}
+                    onWidthUpdate={(val) => updatePlotWithChanges({ dimensions: { width: val } })}
+                    onHeightUpdate={(val) => updatePlotWithChanges({ dimensions: { height: val } })}
                   />
                   <Collapse accordion>
                     <Panel header='Define and Edit Title' key='title'>
                       <TitleDesign
-                        config={config}
-                        onUpdate={updatePlotWithChanges}
+                        title={config.title.text}
+                        fontSize={config.title.fontSize}
+                        anchor={config.title.anchor}
+                        onTitleUpdate={(e) => updatePlotWithChanges({ title: { text: e.target.value } })}
+                        onFontSizeUpdate={(val) => updatePlotWithChanges({ title: { fontSize: val } })}
+                        onAnchorUpdate={(e) => updatePlotWithChanges({ title: { anchor: e.target.value } })}
                       />
                     </Panel>
                     <Panel header='Font' key='font'>
                       <FontDesign
-                        config={config}
-                        onUpdate={updatePlotWithChanges}
+                        font={config.fontStyle.font}
+                        onUpdate={(e) => updatePlotWithChanges({ fontStyle: { font: e.target.value } })}
                       />
                     </Panel>
                   </Collapse>
                 </Panel>
                 <Panel header='Axes and Margins' key='axes'>
-                  <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
+                  <AxesDesign
+                    xAxisText={config.axes.xAxisText}
+                    yAxisText={config.axes.yAxisText}
+                    labelSize={config.axes.labelSize}
+                    tickSize={config.axes.tickSize}
+                    offset={config.axes.offset}
+                    gridLineWeight={config.axes.gridLineWeight}
+                    onXAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { xAxisText: e.target.value } })}
+                    onYAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { yAxisText: e.target.value } })}
+                    onLabelSizeUpdate={(val) => updatePlotWithChanges({ axes: { labelSize: val } })}
+                    onTickSizeUpdate={(val) => updatePlotWithChanges({ axes: { tickSize: val } })}
+                    onOffsetUpdate={(val) => updatePlotWithChanges({ axes: { offset: val } })}
+                    onGridLineWeightUpdate={(val) => updatePlotWithChanges({ axes: { gridLineWeight: val } })}
+                  />
                 </Panel>
                 {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingContinuous && (
                   <Panel header='Colours' key='colors'>
                     <ColourbarDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
+                      value={config.colour.gradient}
+                      onUpdate={(e) => updatePlotWithChanges({ colour: { gradient: e.target.value } })}
                     />
                     <ColourInversion
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
+                      value={config.colour.toggleInvert}
+                      onUpdate={(e) => updatePlotWithChanges(invertColour(e.target.value))}
                     />
                   </Panel>
                 )}
@@ -246,18 +264,31 @@ const EmbeddingPreview = () => {
                   </Panel>
                 )}
                 <Panel header='Markers' key='marker'>
-                  <PointDesign config={config} onUpdate={updatePlotWithChanges} />
+                  <PointDesign
+                    shape={config.marker.shape}
+                    size={config.marker.size}
+                    opacity={config.marker.opacity}
+                    onShapeUpdate={(e) => updatePlotWithChanges({ marker: { shape: e.target.value } })}
+                    onSizeUpdate={(val) => updatePlotWithChanges({ marker: { size: val } })}
+                    onOpacityUpdate={(val) => updatePlotWithChanges({ marker: { opacity: val } })}
+                  />
                 </Panel>
                 <Panel header='Legend' key='legend'>
                   <LegendEditor
-                    onUpdate={updatePlotWithChanges}
-                    legendEnabled={config.legendEnabled}
-                    legendPosition={config.legendPosition}
-                    legendOptions='corners'
+                    onEnabledUpdate={(e) => updatePlotWithChanges({ legend: { enabled: e.target.value } })}
+                    onValueUpdate={(e) => updatePlotWithChanges({ legend: { position: e.target.value } })}
+                    enabled={config.legend.enabled}
+                    position={config.legend.position}
+                    option={{ positions: 'corners' }}
                   />
                 </Panel>
                 <Panel header='Labels' key='labels'>
-                  <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
+                  <LabelsDesign
+                    enabled={config.label.enabled}
+                    size={config.label.size}
+                    onEnabledUpdate={(e) => updatePlotWithChanges({ label: { enabled: e.target.value } })}
+                    onSizeUpdate={(val) => updatePlotWithChanges({ label: { size: val } })}
+                  />
                 </Panel>
               </Collapse>
             </Panel>
