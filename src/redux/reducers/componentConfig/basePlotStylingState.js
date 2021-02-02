@@ -1,7 +1,7 @@
 const legendBaseState = {
   legend: {
     enabled: true,
-    position: 'top-left',
+    position: 'top-right',
     colour: '#000000',
   },
 };
@@ -9,7 +9,7 @@ const legendBaseState = {
 const dimensionsBaseState = {
   dimensions: {
     width: 400,
-    height: 200,
+    height: 400,
   },
 };
 

@@ -30,6 +30,7 @@ const embeddingCategoricalInitialConfig = {
   ...markerBaseState,
   ...labelBaseState,
   selectedCellSet: 'louvain',
+  selectedSample: 'All',
 };
 
 const embeddingContinuousInitialConfig = {
@@ -58,6 +59,7 @@ const embeddingContinuousInitialConfig = {
   selectedSample: 'All',
   widthGrid: 10,
   lineWidth: 2,
+  bounceX: 0,
 };
 
 const heatmapInitialConfig = {

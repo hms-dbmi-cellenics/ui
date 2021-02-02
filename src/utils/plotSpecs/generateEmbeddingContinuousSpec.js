@@ -91,7 +91,7 @@ const generateSpec = (config) => {
         offset: { value: config.axes.offset },
         titleFontSize: { value: config.axes.labelSize },
         titleColor: { value: config.colour.masterColour },
-        labelFontSize: { value: config.axes.tickSize },
+        labelFontSize: { value: config.axes.labelSize },
         domainWidth: { value: config.lineWidth },
       },
       {
@@ -111,7 +111,7 @@ const generateSpec = (config) => {
         labelColor: { value: config.colour.masterColour },
         titleFontSize: { value: config.axes.labelSize },
         titleColor: { value: config.colour.masterColour },
-        labelFontSize: { value: config.label.size },
+        labelFontSize: { value: config.axes.labelSize },
         domainWidth: { value: config.lineWidth },
       },
     ],
