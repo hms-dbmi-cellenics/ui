@@ -6,24 +6,26 @@ import ColorPickerOption from './ColorPickerOption';
 const { Option } = Select;
 
 const ColorBrowser = (props) => {
-  const { onUpdate, config, colorPickerOptions } = props;
+  const { colorPickerOptions, width } = props;
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
+
   return (
     <Select
       value='Browse ...'
-      style={{ width: 300 }}
+      style={{ width }}
       open={colorPickerOpen}
       onFocus={() => setColorPickerOpen(true)}
       onBlur={() => setColorPickerOpen(false)}
     >
       {
-        colorPickerOptions.map(({ config: configName, name: text }) => (
-          <Option value={configName} key={configName.concat('-key')}>
+        colorPickerOptions.map(({
+          key, text, colourHandler, colourValue,
+        }) => (
+          <Option value={key} key={key}>
             <ColorPickerOption
               text={text}
-              config={config}
-              onUpdate={onUpdate}
-              configType={configName}
+              value={colourValue}
+              onUpdate={colourHandler}
             />
           </Option>
         ))
@@ -33,10 +35,20 @@ const ColorBrowser = (props) => {
   );
 };
 
+const ColorPickerItem = PropTypes.shape({
+  key: PropTypes.string,
+  text: PropTypes.string,
+  colourHandler: PropTypes.func,
+  colourValue: PropTypes.func,
+});
+
 ColorBrowser.propTypes = {
-  onUpdate: PropTypes.func.isRequired,
-  colorPickerOptions: PropTypes.arrayOf(PropTypes.object).isRequired,
-  config: PropTypes.object.isRequired,
+  colorPickerOptions: PropTypes.arrayOf(ColorPickerItem).isRequired,
+  width: PropTypes.number,
+};
+
+ColorBrowser.defaultProps = {
+  width: 200,
 };
 
 export default ColorBrowser;

@@ -48,13 +48,13 @@ const generateSpec = (configSrc, data) => {
     ? config.pvalueThresholdColor
     : '#ffffff00';
 
-  if (config.toggleInvert === '#000000') {
-    config.reverseCbar = true;
-    config.masterColour = '#FFFFFF';
+  if (config.colour.toggleInvert === '#000000') {
+    config.colour.reverseColourBar = true;
+    config.colour.masterColour = '#FFFFFF';
   }
-  if (config.toggleInvert === '#FFFFFF') {
-    config.reverseCbar = false;
-    config.masterColour = '#000000';
+  if (config.colour.toggleInvert === '#FFFFFF') {
+    config.colour.reverseColourBar = false;
+    config.colour.masterColour = '#000000';
   }
   // Domain specifiers for the volcano plot axes.
   // If a logFoldChangeDomain is defined by the user (e.g. through the
@@ -71,11 +71,11 @@ const generateSpec = (configSrc, data) => {
 
   const textEquation = `datum.log2fc !== 'NA' && datum.neglogpvalue >${config.textThresholdValue}`;
   let legend = [];
-  if (config.legendEnabled) {
+  if (config.legend.enabled) {
     legend = [
       {
         fill: 'color',
-        orient: config.legendPosition,
+        orient: config.legend.position,
         encode: {
           title: {
             update: {
@@ -86,7 +86,7 @@ const generateSpec = (configSrc, data) => {
             interactive: true,
             update: {
               fontSize: { value: 12 },
-              fill: { value: config.masterColour },
+              fill: { value: config.colour.masterColour },
             },
             hover: {
               fill: { value: 'firebrick' },
@@ -108,10 +108,10 @@ const generateSpec = (configSrc, data) => {
     ];
   }
   const spec = {
-    width: config.width,
-    height: config.height,
+    width: config.dimensions.width,
+    height: config.dimensions.height,
     $schema: 'https://vega.github.io/schema/vega/v5.json',
-    background: config.toggleInvert,
+    background: config.colour.toggleInvert,
     padding: 5,
     data: [
       {
@@ -182,7 +182,7 @@ const generateSpec = (configSrc, data) => {
           data: 'data',
           field: 'status',
           sort: true,
-          reverse: config.reverseCbar,
+          reverse: config.colour.reverseColourBar,
 
         },
       },
@@ -194,18 +194,18 @@ const generateSpec = (configSrc, data) => {
         grid: true,
         domain: true,
         orient: 'bottom',
-        title: { value: config.xaxisText },
-        titleFont: { value: config.masterFont },
-        labelFont: { value: config.masterFont },
-        labelColor: { value: config.masterColour },
-        tickColor: { value: config.masterColour },
-        gridColor: { value: config.masterColour },
+        title: { value: config.axes.xaxisText },
+        titleFont: { value: config.fontStyle.font },
+        labelFont: { value: config.fontStyle.font },
+        labelColor: { value: config.colour.masterColour },
+        tickColor: { value: config.colour.masterColour },
+        gridColor: { value: config.colour.masterColour },
         gridOpacity: { value: (config.transGrid / 20) },
         gridWidth: { value: (config.widthGrid / 20) },
-        offset: { value: config.axesOffset },
-        titleFontSize: { value: config.axisTitlesize },
-        titleColor: { value: config.masterColour },
-        labelFontSize: { value: config.axisTicks },
+        offset: { value: config.axes.offset },
+        titleFontSize: { value: config.axes.fontSize },
+        titleColor: { value: config.colour.masterColour },
+        labelFontSize: { value: config.axes.tickSize },
         domainWidth: { value: config.lineWidth },
       },
       {
@@ -218,26 +218,26 @@ const generateSpec = (configSrc, data) => {
         gridOpacity: { value: (config.transGrid / 20) },
         gridWidth: { value: (config.widthGrid / 20) },
         tickColor: { value: config.masterColour },
-        offset: { value: config.axesOffset },
-        title: { value: config.yaxisText },
-        titleFont: { value: config.masterFont },
-        labelFont: { value: config.masterFont },
-        labelColor: { value: config.masterColour },
-        titleFontSize: { value: config.axisTitlesize },
-        titleColor: { value: config.masterColour },
-        labelFontSize: { value: config.axisTicks },
+        offset: { value: config.axes.Offset },
+        title: { value: config.axes.yAxisText },
+        titleFont: { value: config.fontStyle.font },
+        labelFont: { value: config.fontStyle.font },
+        labelColor: { value: config.colour.masterColour },
+        titleFontSize: { value: config.title.fontSize },
+        titleColor: { value: config.colour.masterColour },
+        labelFontSize: { value: config.label.fontSize },
         domainWidth: { value: config.lineWidth },
 
       },
     ],
     title:
     {
-      text: { value: config.titleText },
-      color: { value: config.masterColour },
-      anchor: { value: config.titleAnchor },
-      font: { value: config.masterFont },
+      text: { value: config.title.text },
+      color: { value: config.colour.masterColour },
+      anchor: { value: config.title.anchor },
+      font: { value: config.fontStyle.font },
       dx: 10,
-      fontSize: { value: config.titleSize },
+      fontSize: { value: config.title.fonSize },
     },
     marks: [
       {
@@ -247,15 +247,15 @@ const generateSpec = (configSrc, data) => {
           enter: {
             x: { scale: 'x', field: 'log2fc' },
             y: { scale: 'y', field: 'neglogpvalue' },
-            size: { value: config.pointSize },
-            shape: { value: config.pointStyle },
+            size: { value: config.marker.size },
+            shape: { value: config.marker.shape },
             strokeWidth: { value: 1 },
             strokeOpacity: { value: config.strokeOpa },
             stroke: {
               scale: 'color',
               field: 'status',
             },
-            fillOpacity: { value: config.pointOpa / 10 },
+            fillOpacity: { value: config.marker.opacity / 10 },
             fill: {
               scale: 'color',
               field: 'status',
@@ -271,7 +271,7 @@ const generateSpec = (configSrc, data) => {
             x: { scale: 'x', field: 'log2fc' },
             y: { scale: 'y', field: 'neglogpvalue' },
 
-            fill: { value: config.masterColour },
+            fill: { value: config.colour.masterColour },
             text: { field: 'gene_names' },
           },
           transform: [

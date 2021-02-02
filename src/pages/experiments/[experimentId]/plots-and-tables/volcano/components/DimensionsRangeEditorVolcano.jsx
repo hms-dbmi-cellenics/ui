@@ -7,9 +7,22 @@ import {
 
 const DimensionsRangeEditorVolcano = (props) => {
   const {
-    config, onUpdate, yMax, xMax,
+    width,
+    height,
+    xRange,
+    yRange,
+    xMax,
+    yMax,
+    onUpdateWidth,
+    onUpdateHeight,
+    onUpdateYAxisRange,
+    onUpdateXAxisRange,
   } = props;
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
+
+  const onUpdateWidthThrottled = useRef(_.throttle((val) => { onUpdateWidth(val); }, 10));
+  const onUpdateHeightThrottled = useRef(_.throttle((val) => { onUpdateHeight(val); }, 10));
+  const onUpdateYAxisRangeThrottled = useRef(_.throttle((val) => { onUpdateYAxisRange(val); }, 10));
+  const onUpdateXAxisRangeThrottled = useRef(_.throttle((val) => { onUpdateXAxisRange(val); }, 10));
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -24,61 +37,65 @@ const DimensionsRangeEditorVolcano = (props) => {
           label='Width'
         >
           <Slider
-            value={config.width}
+            value={width}
             min={200}
             max={1000}
-            onChange={(value) => {
-              onUpdateThrottled.current({ width: value });
-            }}
+            onChange={(val) => onUpdateWidthThrottled.current(val)}
           />
         </Form.Item>
         <Form.Item
           label='Height'
         >
           <Slider
-            value={config.height}
+            value={height}
             min={200}
             max={1000}
-            onChange={(value) => {
-              onUpdateThrottled.current({ height: value });
-            }}
-          />
-        </Form.Item>
-        <Form.Item
-          label='Y-axis Range'
-        >
-          <Slider
-            value={yMax}
-            min={0}
-            max={yMax}
-            onChange={(value) => {
-              onUpdateThrottled.current({ maxNegativeLogpValueDomain: value });
-            }}
+            onChange={(val) => onUpdateHeightThrottled.current(val)}
           />
         </Form.Item>
         <Form.Item
           label='X-axis Range'
         >
           <Slider
-            value={xMax}
+            value={yRange}
             min={0}
-            max={xMax}
-            onChange={(value) => {
-              onUpdateThrottled.current({ logFoldChangeDomain: value });
-            }}
+            max={yMax}
+            onChange={(val) => onUpdateYAxisRangeThrottled.current(val)}
           />
         </Form.Item>
-
+        <Form.Item
+          label='Y-axis Range'
+        >
+          <Slider
+            value={xRange}
+            min={0}
+            max={xMax}
+            onChange={(val) => onUpdateXAxisRangeThrottled.current(val)}
+          />
+        </Form.Item>
       </Form>
     </Space>
   );
 };
 
 DimensionsRangeEditorVolcano.propTypes = {
-  config: PropTypes.object.isRequired,
-  onUpdate: PropTypes.func.isRequired,
+  width: PropTypes.number,
+  height: PropTypes.number,
+  xRange: PropTypes.number,
+  yRange: PropTypes.number,
+  onUpdateWidth: PropTypes.func.isRequired,
+  onUpdateHeight: PropTypes.func.isRequired,
+  onUpdateYAxisRange: PropTypes.func.isRequired,
+  onUpdateXAxisRange: PropTypes.func.isRequired,
   yMax: PropTypes.number.isRequired,
   xMax: PropTypes.number.isRequired,
+};
+
+DimensionsRangeEditorVolcano.defaultProps = {
+  width: 500,
+  height: 500,
+  xRange: 0,
+  yRange: 50,
 };
 
 export default DimensionsRangeEditorVolcano;

@@ -10,7 +10,9 @@ const ColorPickerOption = (props) => {
   const COLOR_PICKER_Z_INDEX = 1050;
 
   const {
-    onUpdate, configType, text, config,
+    onUpdate,
+    text,
+    value,
   } = props;
 
   return (
@@ -20,11 +22,9 @@ const ColorPickerOption = (props) => {
       </span>
       <ColorPicker
         onColorChange={((color) => {
-          onUpdate({
-            [configType]: color,
-          });
+          onUpdate(color);
         })}
-        color={config[configType]}
+        color={value}
         zIndex={COLOR_PICKER_Z_INDEX}
       />
     </Space>
@@ -33,8 +33,7 @@ const ColorPickerOption = (props) => {
 
 ColorPickerOption.propTypes = {
   onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
-  configType: PropTypes.object.isRequired,
+  value: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
 };
 

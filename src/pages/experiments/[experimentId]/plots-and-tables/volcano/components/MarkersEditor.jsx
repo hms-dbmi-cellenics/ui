@@ -3,34 +3,58 @@ import PropTypes from 'prop-types';
 import { Form } from 'antd';
 import ColorBrowser from '../../components/ColorBrowser';
 
-
 const MarkersEditor = (props) => {
-  const { onUpdate, config } = props;
+  const {
+    significantDownregulatedColor,
+    significantUpregulatedColor,
+    notSignificantDownregulatedColor,
+    notSignificantUpregulatedColor,
+    significantChangeDirectionUnknownColor,
+    noDifferenceColor,
+    OnSignificantDownregulatedColorUpdate,
+    OnSignificantUpregulatedColorUpdate,
+    OnNotSignificantDownregulatedColorUpdate,
+    OnNotSignificantUpregulatedColorUpdate,
+    OnSignificantChangeDirectionUnknownColorUpdate,
+    OnNoDifferenceColorUpdate,
+  } = props;
 
   const colorPickerOptions = [
     {
-      config: 'significantDownregulatedColor',
-      name: 'Significantly downregulated genes',
+      key: 'significantDownregulatedColor',
+      text: 'Significantly downregulated genes',
+      colourValue: significantDownregulatedColor,
+      colourHandler: OnSignificantDownregulatedColorUpdate,
     },
     {
-      config: 'significantUpregulatedColor',
-      name: 'Significantly upregulated genes',
+      key: 'significantUpregulatedColor',
+      text: 'Significantly upregulated genes',
+      colourValue: significantUpregulatedColor,
+      colourHandler: OnSignificantUpregulatedColorUpdate,
     },
     {
-      config: 'notSignificantDownregulatedColor',
-      name: 'Insignificantly downregulated genes',
+      key: 'notSignificantDownregulatedColor',
+      text: 'Insignificantly downregulated genes',
+      colourValue: notSignificantDownregulatedColor,
+      colourHandler: OnNotSignificantDownregulatedColorUpdate,
     },
     {
-      config: 'notSignificantUpregulatedColor',
-      name: 'Insignificantly upregulated genes',
+      key: 'notSignificantUpregulatedColor',
+      text: 'Insignificantly upregulated genes',
+      colourValue: notSignificantUpregulatedColor,
+      colourHandler: OnNotSignificantUpregulatedColorUpdate,
     },
     {
-      config: 'significantChangeDirectionUnknownColor',
-      name: 'Significant genes, either direction',
+      key: 'significantChangeDirectionUnknownColor',
+      text: 'Significant genes, either direction',
+      colourValue: significantChangeDirectionUnknownColor,
+      colourHandler: OnSignificantChangeDirectionUnknownColorUpdate,
     },
     {
-      config: 'noDifferenceColor',
-      name: 'Genes with no measured difference',
+      key: 'noDifferenceColor',
+      text: 'Genes with no measured difference',
+      colourValue: noDifferenceColor,
+      colourHandler: OnNoDifferenceColorUpdate,
     },
   ];
 
@@ -44,15 +68,37 @@ const MarkersEditor = (props) => {
       <Form.Item
         label='Colors'
       >
-        <ColorBrowser onUpdate={onUpdate} colorPickerOptions={colorPickerOptions} config={config} />
+        <ColorBrowser
+          colorPickerOptions={colorPickerOptions}
+          width={300}
+        />
       </Form.Item>
     </Form>
   );
 };
 
 MarkersEditor.propTypes = {
-  config: PropTypes.object.isRequired,
-  onUpdate: PropTypes.func.isRequired,
+  significantDownregulatedColor: PropTypes.string,
+  significantUpregulatedColor: PropTypes.string,
+  notSignificantDownregulatedColor: PropTypes.string,
+  notSignificantUpregulatedColor: PropTypes.string,
+  significantChangeDirectionUnknownColor: PropTypes.string,
+  noDifferenceColor: PropTypes.string,
+  OnSignificantDownregulatedColorUpdate: PropTypes.func.isRequired,
+  OnSignificantUpregulatedColorUpdate: PropTypes.func.isRequired,
+  OnNotSignificantDownregulatedColorUpdate: PropTypes.func.isRequired,
+  OnNotSignificantUpregulatedColorUpdate: PropTypes.func.isRequired,
+  OnSignificantChangeDirectionUnknownColorUpdate: PropTypes.func.isRequired,
+  OnNoDifferenceColorUpdate: PropTypes.func.isRequired,
+};
+
+MarkersEditor.defaultProps = {
+  significantDownregulatedColor: '#ff0000',
+  significantUpregulatedColor: '#0000ffaa',
+  notSignificantDownregulatedColor: '#aaaaaa',
+  notSignificantUpregulatedColor: '#aaaaaa',
+  significantChangeDirectionUnknownColor: '#aaaaaa',
+  noDifferenceColor: '#aaaaaa',
 };
 
 export default MarkersEditor;

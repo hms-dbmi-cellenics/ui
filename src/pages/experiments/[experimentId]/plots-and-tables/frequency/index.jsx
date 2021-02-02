@@ -197,9 +197,9 @@ const frequencyPlot = () => {
       frequencyType: value.target.value,
     });
     if (value.target.value === 'proportional') {
-      updatePlotWithChanges({ yaxisText: 'Proportion' });
+      updatePlotWithChanges({ yAxisText: 'Proportion' });
     } else {
-      updatePlotWithChanges({ yaxisText: 'Count' });
+      updatePlotWithChanges({ yAxisText: 'Count' });
     }
   };
   return (

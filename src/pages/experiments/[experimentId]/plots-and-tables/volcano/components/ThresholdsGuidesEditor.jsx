@@ -1,61 +1,42 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, InputNumber, Checkbox, Space, Select, Typography,
+  Form, InputNumber, Checkbox, Space, Typography,
 } from 'antd';
-import ColorPicker from '../../../../../../components/ColorPicker';
+import ColorBrowser from '../../components/ColorBrowser';
 
-const { Option } = Select;
 const { Text } = Typography;
 
-const ColorPickerOption = (props) => {
-  // See the z index here:
-  // https://github.com/ant-design/ant-design/blob/master/components/style/themes/default.less#L332
-  // This ensures that the color selector is on top of any dropdown it may be embedded into.
-  const COLOR_PICKER_Z_INDEX = 1050;
-
-  const {
-    onUpdate, configType, text, config,
-  } = props;
-
-  return (
-    <Space>
-      <span>
-        {text}
-      </span>
-      <ColorPicker
-        onColorChange={((color) => {
-          onUpdate({
-            [configType]: color,
-          });
-        })}
-        color={config[configType]}
-        zIndex={COLOR_PICKER_Z_INDEX}
-      />
-    </Space>
-  );
-};
-
-ColorPickerOption.propTypes = {
-  onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
-  configType: PropTypes.string.isRequired,
-  text: PropTypes.string.isRequired,
-};
-
 const ThresholdsGuidesEditor = (props) => {
-  const { onUpdate, config } = props;
-
-  const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const {
+    negLogpValueThreshold,
+    showpvalueThresholdGuides,
+    logFoldChangeThreshold,
+    showLogFoldChangeThresholdGuides,
+    thresholdGuideWidth,
+    pvalueThresholdColor,
+    logFoldChangeThresholdColor,
+    onNegLogpValueThresholdUpdate,
+    onShowpvalueThresholdGuidesUpdate,
+    onLogFoldChangeThresholdUpdate,
+    onShowLogFoldChangeThresholdGuidesUpdate,
+    onThresholdGuideWidthUpdate,
+    onPvalueThresholdColorUpdate,
+    onLogFoldChangeThresholdColorUpdate,
+  } = props;
 
   const colorPickerOptions = [
     {
-      config: 'pvalueThresholdColor',
-      name: 'p-value guide',
+      key: 'pvalueThresholdColor',
+      text: 'p-value guide',
+      colourHandler: onPvalueThresholdColorUpdate,
+      colourValue: pvalueThresholdColor,
     },
     {
-      config: 'logFoldChangeThresholdColor',
-      name: 'fold change guide',
+      key: 'logFoldChangeThresholdColor',
+      text: 'fold change guide',
+      colourHandler: onLogFoldChangeThresholdColorUpdate,
+      colourValue: logFoldChangeThresholdColor,
     },
   ];
 
@@ -66,7 +47,7 @@ const ThresholdsGuidesEditor = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Significance thresholds</div>
+        <p><strong>Significance thresholds</strong></p>
         <Form.Item
           label={(
             <span>
@@ -78,19 +59,16 @@ const ThresholdsGuidesEditor = (props) => {
             <Space>
               <InputNumber
                 min={0}
-                defaultValue={config.negLogpValueThreshold}
+                defaultValue={negLogpValueThreshold}
                 step={1}
                 type='number'
-                onPressEnter={(e) => {
-                  const value = parseFloat(e.target.value);
-                  onUpdate({ negLogpValueThreshold: value });
-                }}
+                onChange={(val) => onNegLogpValueThresholdUpdate(val)}
+                onStep={(val) => onNegLogpValueThresholdUpdate(val)}
+                onPressEnter={(val) => onNegLogpValueThresholdUpdate(val)}
               />
               <Checkbox
-                checked={config.showpvalueThresholdGuides}
-                onChange={(e) => {
-                  onUpdate({ showpvalueThresholdGuides: e.target.checked });
-                }}
+                checked={showpvalueThresholdGuides}
+                onChange={() => onShowpvalueThresholdGuidesUpdate(!showpvalueThresholdGuides)}
               >
                 Show Guideline
               </Checkbox>
@@ -98,7 +76,7 @@ const ThresholdsGuidesEditor = (props) => {
             <Text type='secondary'>
               Equivalent to p &lt;
               {' '}
-              {(10 ** (-1 * config.negLogpValueThreshold)).toExponential(3)}
+              {(10 ** (-1 * negLogpValueThreshold)).toExponential(3)}
             </Text>
           </Space>
         </Form.Item>
@@ -115,56 +93,36 @@ const ThresholdsGuidesEditor = (props) => {
           <Space>
             <InputNumber
               min={0}
-              defaultValue={config.logFoldChangeThreshold}
-              onPressEnter={(e) => {
-                onUpdate({ logFoldChangeThreshold: e.target.value });
-              }}
+              defaultValue={logFoldChangeThreshold}
+              onChange={(val) => onLogFoldChangeThresholdUpdate(val)}
+              onStep={(val) => onLogFoldChangeThresholdUpdate(val)}
+              onPressEnter={(val) => onLogFoldChangeThresholdUpdate(val)}
             />
             <Checkbox
-              checked={config.showLogFoldChangeThresholdGuides}
-              onChange={(e) => {
-                onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
-              }}
+              checked={showLogFoldChangeThresholdGuides}
+              onChange={() => onShowLogFoldChangeThresholdGuidesUpdate(!showLogFoldChangeThresholdGuides)}
             >
               Show Guideline
             </Checkbox>
           </Space>
         </Form.Item>
 
-        <div>Guideline Design</div>
+        <p><strong>Guideline Design</strong></p>
         <Form.Item
           label='Width'
         >
           <InputNumber
             min={1}
-            defaultValue={config.thresholdGuideWidth}
-            onPressEnter={(e) => {
-              onUpdate({ thresholdGuideWidth: e.target.value });
-            }}
+            defaultValue={thresholdGuideWidth}
+            onChange={(val) => onThresholdGuideWidthUpdate(val)}
+            onStep={(val) => onThresholdGuideWidthUpdate(val)}
+            onPressEnter={(val) => onThresholdGuideWidthUpdate(val)}
           />
         </Form.Item>
         <Form.Item
           label='Colors'
         >
-          <Select
-            value='Browse...'
-            style={{ width: 200 }}
-            onChange={() => false}
-            open={colorPickerOpen}
-            onFocus={() => setColorPickerOpen(true)}
-            onBlur={() => setColorPickerOpen(false)}
-          >
-            {colorPickerOptions.map(({ config: configName, name: text }) => (
-              <Option value={configName}>
-                <ColorPickerOption
-                  text={text}
-                  config={config}
-                  onUpdate={onUpdate}
-                  configType={configName}
-                />
-              </Option>
-            ))}
-          </Select>
+          <ColorBrowser colorPickerOptions={colorPickerOptions} />
         </Form.Item>
       </Form>
     </>
@@ -172,8 +130,30 @@ const ThresholdsGuidesEditor = (props) => {
 };
 
 ThresholdsGuidesEditor.propTypes = {
-  onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
+  negLogpValueThreshold: PropTypes.number,
+  showpvalueThresholdGuides: PropTypes.bool,
+  logFoldChangeThreshold: PropTypes.number,
+  showLogFoldChangeThresholdGuides: PropTypes.bool,
+  thresholdGuideWidth: PropTypes.number,
+  pvalueThresholdColor: PropTypes.number,
+  logFoldChangeThresholdColor: PropTypes.number,
+  onNegLogpValueThresholdUpdate: PropTypes.func.isRequired,
+  onShowpvalueThresholdGuidesUpdate: PropTypes.func.isRequired,
+  onLogFoldChangeThresholdUpdate: PropTypes.func.isRequired,
+  onShowLogFoldChangeThresholdGuidesUpdate: PropTypes.func.isRequired,
+  onThresholdGuideWidthUpdate: PropTypes.func.isRequired,
+  onPvalueThresholdColorUpdate: PropTypes.func.isRequired,
+  onLogFoldChangeThresholdColorUpdate: PropTypes.func.isRequired,
+};
+
+ThresholdsGuidesEditor.defaultProps = {
+  negLogpValueThreshold: 4,
+  showpvalueThresholdGuides: true,
+  logFoldChangeThreshold: '#ff0000',
+  showLogFoldChangeThresholdGuides: true,
+  thresholdGuideWidth: 1,
+  pvalueThresholdColor: '#ff0000',
+  logFoldChangeThresholdColor: '#ff0000',
 };
 
 export default ThresholdsGuidesEditor;

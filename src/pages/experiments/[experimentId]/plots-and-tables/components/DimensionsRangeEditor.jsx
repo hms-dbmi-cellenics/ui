@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,

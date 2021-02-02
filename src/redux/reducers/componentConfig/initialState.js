@@ -14,11 +14,13 @@ const embeddingCategoricalInitialConfig = {
   ...legendBaseState,
   ...dimensionsBaseState,
   dimensions: {
+    ...dimensionsBaseState.dimensions,
     width: 700,
     height: 550,
   },
   ...axesBaseState,
   axes: {
+    ...axesBaseState.axes,
     xAxisText: 'UMAP 1',
     yAxisText: 'UMAP 2',
   },
@@ -35,11 +37,13 @@ const embeddingContinuousInitialConfig = {
   ...legendBaseState,
   ...dimensionsBaseState,
   dimensions: {
+    ...dimensionsBaseState.dimensions,
     width: 700,
     height: 550,
   },
   ...axesBaseState,
   axes: {
+    ...axesBaseState.axes,
     xAxisText: 'UMAP 1',
     yAxisText: 'UMAP 2',
   },
@@ -60,11 +64,13 @@ const heatmapInitialConfig = {
   spec: '2.0.0',
   ...legendBaseState,
   legend: {
+    ...legendBaseState.legend,
     show: true,
     positon: 'horizontal',
   },
   ...dimensionsBaseState,
   dimensions: {
+    ...dimensionsBaseState.dimensions,
     width: 500,
     height: 500,
   },
@@ -82,15 +88,22 @@ const volcanoInitialConfig = {
   spec: '2.0.0',
   ...legendBaseState,
   ...dimensionsBaseState,
+  dimensions: {
+    ...dimensionsBaseState.dimensions,
+    width: 500,
+    height: 500,
+  },
   ...markerBaseState,
   ...axesBaseState,
   axes: {
+    ...axesBaseState.axes,
     xAxisText: 'log2 fold change',
-    yaxisText: ' - log10(adj.p - value)',
+    yAxisText: ' - log10(adj.p - value)',
   },
   ...titleBaseState,
   ...fontStyleBaseState,
   ...colourBaseState,
+  ...labelBaseState,
   noDifferenceColor: '#aaaaaa',
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',
@@ -134,6 +147,7 @@ const frequencyInitialConfig = {
   ...titleBaseState,
   ...axesBaseState,
   axes: {
+    ...axesBaseState.axes,
     xAxisText: 'Sample',
     yAxisText: 'Proportion',
   },

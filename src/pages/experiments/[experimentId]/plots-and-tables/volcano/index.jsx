@@ -22,7 +22,7 @@ import TitleDesign from '../components/TitleDesign';
 import DimensionsRangeEditorVolcano from './components/DimensionsRangeEditorVolcano';
 import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
-import ColourInversion from '../components/ColourInversion';
+import ColourInversion, { invertColour } from '../components/ColourInversion';
 import LegendEditor from '../components/LegendEditor';
 import generateSpec from '../../../../../utils/plotSpecs/generateVolcanoSpec';
 import Header from '../components/Header';
@@ -280,47 +280,99 @@ const VolcanoPlot = () => {
               </Panel>
               <Panel header='Main Schema' key='1'>
                 <DimensionsRangeEditorVolcano
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
+                  width={config.dimensions.width}
+                  height={config.dimensions.height}
+                  xRange={config.logFoldChangeDomain}
+                  yRange={config.maxNegativeLogpValueDomain}
+                  onUpdateWidth={(val) => updatePlotWithChanges({ dimensions: { width: val } })}
+                  onUpdateHeight={(val) => updatePlotWithChanges({ dimensions: { width: val } })}
+                  onUpdateXAxisRange={(val) => updatePlotWithChanges({ logFoldChangeDomain: val })}
+                  onUpdateYAxisRange={(val) => updatePlotWithChanges({ maxNegativeLogpValueDomain: val })}
                   xMax={Math.round(spec.xMax)}
                   yMax={Math.round(spec.maxNegativeLogpValue) + 2}
                 />
                 <Collapse defaultActiveKey={['1']} accordion>
                   <Panel header='Define and Edit Title' key='6'>
                     <TitleDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
+                      title={config.title.text}
+                      fontSize={config.title.fontSize}
+                      anchor={config.title.anchor}
+                      onTitleUpdate={(e) => updatePlotWithChanges({ title: { text: e.target.value } })}
+                      onFontSizeUpdate={(val) => updatePlotWithChanges({ title: { fontSize: val } })}
+                      onAnchorUpdate={(e) => updatePlotWithChanges({ title: { anchor: e.target.value } })}
                     />
                   </Panel>
                   <Panel header='Font' key='9'>
                     <FontDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
+                      font={config.fontStyle.font}
+                      onUpdate={(e) => updatePlotWithChanges({ fontStyle: { font: e.target.value } })}
                     />
                   </Panel>
                 </Collapse>
               </Panel>
               <Panel header='Data Thresholding' key='8'>
                 <ThresholdsGuidesEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
+                  negLogpValueThreshold={config.negLogpValueThreshold}
+                  showpvalueThresholdGuides={config.showpvalueThresholdGuides}
+                  logFoldChangeThreshold={config.logFoldChangeThreshold}
+                  showLogFoldChangeThresholdGuides={config.showLogFoldChangeThresholdGuides}
+                  thresholdGuideWidth={config.thresholdGuideWidth}
+                  pvalueThresholdColor={config.pvalueThresholdColor}
+                  logFoldChangeThresholdColor={config.logFoldChangeThresholdColor}
+                  onNegLogpValueThresholdUpdate={(val) => updatePlotWithChanges({ negLogpValueThreshold: val })}
+                  onShowpvalueThresholdGuidesUpdate={(val) => updatePlotWithChanges({ showpvalueThresholdGuides: val })}
+                  onLogFoldChangeThresholdUpdate={(val) => updatePlotWithChanges({ logFoldChangeThreshold: val })}
+                  onShowLogFoldChangeThresholdGuidesUpdate={(val) => updatePlotWithChanges({ showLogFoldChangeThresholdGuides: val })}
+                  onThresholdGuideWidthUpdate={(e) => updatePlotWithChanges({ thresholdGuideWidth: e.target.value })}
+                  onPvalueThresholdColorUpdate={(val) => updatePlotWithChanges({ pvalueThresholdColor: val })}
+                  onLogFoldChangeThresholdColorUpdate={(val) => updatePlotWithChanges({ logFoldChangeThresholdColor: val })}
                 />
               </Panel>
               <Panel header='Axes and Margins' key='3'>
-                <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
+                <AxesDesign
+                  xAxisText={config.axes.xAxisText}
+                  yAxisText={config.axes.yAxisText}
+                  labelSize={config.axes.labelSize}
+                  tickSize={config.axes.tickSize}
+                  offset={config.axes.offset}
+                  gridLineWeight={config.axes.gridLineWeight}
+                  onXAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { xAxisText: e.target.value } })}
+                  onYAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { yAxisText: e.target.value } })}
+                  onLabelSizeUpdate={(val) => updatePlotWithChanges({ axes: { labelSize: val } })}
+                  onTickSizeUpdate={(val) => updatePlotWithChanges({ axes: { tickSize: val } })}
+                  onOffsetUpdate={(val) => updatePlotWithChanges({ axes: { offset: val } })}
+                  onGridLineWeightUpdate={(val) => updatePlotWithChanges({ axes: { gridLineWeight: val } })}
+                />
               </Panel>
               <Panel header='Colours' key='10'>
                 <MarkersEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
+                  significantDownregulatedColor={(val) => updatePlotWithChanges({ significantDownregulatedColor: val })}
+                  significantUpregulatedColor={(val) => updatePlotWithChanges({ significantUpregulatedColor: val })}
+                  notSignificantDownregulatedColor={(val) => updatePlotWithChanges({ notSignificantDownregulatedColor: val })}
+                  notSignificantUpregulatedColor={(val) => updatePlotWithChanges({ notSignificantUpregulatedColor: val })}
+                  significantChangeDirectionUnknownColor={(val) => updatePlotWithChanges({ significantChangeDirectionUnknownColor: val })}
+                  noDifferenceColor={(val) => updatePlotWithChanges({ noDifferenceColor: val })}
+                  OnSignificantDownregulatedColorUpdate={(val) => updatePlotWithChanges({ OnSignificantDownregulatedColorUpdate: val })}
+                  OnSignificantUpregulatedColorUpdate={(val) => updatePlotWithChanges({ OnSignificantUpregulatedColorUpdate: val })}
+                  OnNotSignificantDownregulatedColorUpdate={(val) => updatePlotWithChanges({ OnNotSignificantDownregulatedColorUpdate: val })}
+                  OnNotSignificantUpregulatedColorUpdate={(val) => updatePlotWithChanges({ OnNotSignificantUpregulatedColorUpdate: val })}
+                  OnSignificantChangeDirectionUnknownColorUpdate={(val) => updatePlotWithChanges({ OnSignificantChangeDirectionUnknownColorUpdate: val })}
+                  OnNoDifferenceColorUpdate={(val) => updatePlotWithChanges({ OnNoDifferenceColorUpdate: val })}
                 />
                 <ColourInversion
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
+                  value={config.colour.toggleInvert}
+                  onUpdate={(e) => updatePlotWithChanges(invertColour(e.target.value))}
                 />
               </Panel>
               <Panel header='Markers' key='4'>
-                <PointDesign config={config} onUpdate={updatePlotWithChanges} />
+                <PointDesign
+                  shape={config.marker.shape}
+                  size={config.marker.size}
+                  opacity={config.marker.opacity}
+                  onShapeUpdate={(e) => updatePlotWithChanges({ marker: { shape: e.target.value } })}
+                  onSizeUpdate={(val) => updatePlotWithChanges({ marker: { size: val } })}
+                  onOpacityUpdate={(val) => updatePlotWithChanges({ marker: { opacity: val } })}
+                />
               </Panel>
               <Panel header='Add Labels' key='11'>
                 <> Display Gene Labels Above (-log10 pvalue) </>
@@ -335,10 +387,11 @@ const VolcanoPlot = () => {
               </Panel>
               <Panel header='Legend' key='12'>
                 <LegendEditor
-                  onUpdate={updatePlotWithChanges}
-                  legendEnabled={config.legendEnabled}
-                  legendPosition={config.legendPosition}
-                  legendOptions='corners'
+                  onEnabledUpdate={(e) => updatePlotWithChanges({ legend: { enabled: e.target.value } })}
+                  onValueUpdate={(e) => updatePlotWithChanges({ legend: { position: e.target.value } })}
+                  enabled={config.legend.enabled}
+                  position={config.legend.position}
+                  option={{ positions: 'corners' }}
                 />
               </Panel>
             </Collapse>
