@@ -13,7 +13,15 @@ const embeddingCategoricalInitialConfig = {
   spec: '2.0.0',
   ...legendBaseState,
   ...dimensionsBaseState,
+  dimensions: {
+    width: 700,
+    height: 550,
+  },
   ...axesBaseState,
+  axes: {
+    xAxisText: 'UMAP 1',
+    yAxisText: 'UMAP 2',
+  },
   ...titleBaseState,
   ...fontStyleBaseState,
   ...colourBaseState,

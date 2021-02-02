@@ -11,7 +11,11 @@ const defaultOption = {
 
 const LegendEditor = (props) => {
   const {
-    enabled, position, option, onEnabledChange, onValueChange,
+    enabled,
+    position,
+    option,
+    onEnabledUpdate,
+    onValueUpdate,
   } = props;
 
   const elOption = _.merge(defaultOption, option);
@@ -36,7 +40,7 @@ const LegendEditor = (props) => {
         <>
           <p><strong>Enabled</strong></p>
           <Form.Item>
-            <Radio.Group onChange={(e) => onEnabledChange(e)} value={enabled}>
+            <Radio.Group onChange={(e) => onEnabledUpdate(e)} value={enabled}>
               <Radio value>Show</Radio>
               <Radio value={false}>Hide</Radio>
             </Radio.Group>
@@ -49,7 +53,7 @@ const LegendEditor = (props) => {
           <p><strong>Position</strong></p>
           <Form.Item>
             <Radio.Group
-              onChange={(e) => onValueChange(e)}
+              onChange={(e) => onValueUpdate(e)}
               value={position}
             >
               {
@@ -66,8 +70,8 @@ const LegendEditor = (props) => {
 };
 
 LegendEditor.propTypes = {
-  onEnabledChange: PropTypes.func.isRequired,
-  onValueChange: PropTypes.func.isRequired,
+  onEnabledUpdate: PropTypes.func.isRequired,
+  onValueUpdate: PropTypes.func.isRequired,
   enabled: PropTypes.bool,
   position: PropTypes.string,
   option: PropTypes.object,

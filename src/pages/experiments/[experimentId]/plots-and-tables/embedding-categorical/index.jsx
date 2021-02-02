@@ -16,7 +16,7 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourInversion from '../components/ColourInversion';
+import ColourInversion, { invertColour } from '../components/ColourInversion';
 import AxesDesign from '../components/AxesDesign';
 import PointDesign from '../components/PointDesign';
 import TitleDesign from '../components/TitleDesign';
@@ -132,12 +132,13 @@ const EmbeddingCategoricalPlot = () => {
     });
   };
 
-  const onUpdate = (obj) => {
+  // obj is a subset of what default config has and contains only the things we want change
+  const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
   const onCellSetSelect = ({ value }) => {
-    onUpdate({ selectedCellSet: value });
+    updatePlotWithChanges({ selectedCellSet: value });
   };
 
   if (!config || !isBrowser) {
@@ -213,36 +214,77 @@ const EmbeddingCategoricalPlot = () => {
               </Space>
             </Panel>
             <Panel header='Main Schema' key='2'>
-              <DimensionsRangeEditor config={config} onUpdate={onUpdate} />
-              <Collapse accordion defaultActiveKey={['1']}>
-                <Panel header='Define and Edit Title' key='6'>
-                  <TitleDesign config={config} onUpdate={onUpdate} />
-                </Panel>
-                <Panel header='Font' key='9'>
-                  <FontDesign config={config} onUpdate={onUpdate} />
-                </Panel>
-              </Collapse>
+              <DimensionsRangeEditor
+                width={config.dimensions.width}
+                height={config.dimensions.height}
+                onWidthUpdate={(val) => updatePlotWithChanges({ dimensions: { width: val } })}
+                onHeightUpdate={(val) => updatePlotWithChanges({ dimensions: { height: val } })}
+              />
+              <Panel header='Define and Edit Title' key='6'>
+                <TitleDesign
+                  title={config.title.text}
+                  fontSize={config.title.fontSize}
+                  anchor={config.title.anchor}
+                  onTitleUpdate={(e) => updatePlotWithChanges({ title: { text: e.target.value } })}
+                  onFontSizeUpdate={(val) => updatePlotWithChanges({ title: { fontSize: val } })}
+                  onAnchorUpdate={(e) => updatePlotWithChanges({ title: { anchor: e.target.value } })}
+                />
+              </Panel>
+              <Panel header='Font' key='9'>
+                <FontDesign
+                  font={config.fontStyle.font}
+                  onUpdate={(e) => updatePlotWithChanges({ fontStyle: { font: e.target.value } })}
+                />
+              </Panel>
             </Panel>
             <Panel header='Axes and Margins' key='3'>
-              <AxesDesign config={config} onUpdate={onUpdate} />
+              <AxesDesign
+                xAxisText={config.axes.xAxisText}
+                yAxisText={config.axes.yAxisText}
+                labelSize={config.axes.labelSize}
+                tickSize={config.axes.tickSize}
+                offset={config.axes.offset}
+                gridLineWeight={config.axes.gridLineWeight}
+                onXAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { xAxisText: e.target.value } })}
+                onYAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { yAxisText: e.target.value } })}
+                onLabelSizeUpdate={(val) => updatePlotWithChanges({ axes: { labelSize: val } })}
+                onTickSizeUpdate={(val) => updatePlotWithChanges({ axes: { tickSize: val } })}
+                onOffsetUpdate={(val) => updatePlotWithChanges({ axes: { offset: val } })}
+                onGridLineWeightUpdate={(val) => updatePlotWithChanges({ axes: { gridLineWeight: val } })}
+              />
             </Panel>
             <Panel header='Colour Inversion' key='4'>
-              <ColourInversion config={config} onUpdate={onUpdate} />
+              <ColourInversion
+                value={config.colour.toggleInvert}
+                onUpdate={(e) => updatePlotWithChanges(invertColour(e.target.value))}
+              />
             </Panel>
-            <Panel header='Markers' key='5'>
-              <PointDesign config={config} onUpdate={onUpdate} />
+            <Panel header='Markers' key='11'>
+              <PointDesign
+                shape={config.marker.shape}
+                size={config.marker.size}
+                opacity={config.marker.opacity}
+                onShapeUpdate={(e) => updatePlotWithChanges({ marker: { shape: e.target.value } })}
+                onSizeUpdate={(val) => updatePlotWithChanges({ marker: { size: val } })}
+                onOpacityUpdate={(val) => updatePlotWithChanges({ marker: { opacity: val } })}
+              />
             </Panel>
             <Panel header='Legend' key='10'>
               <LegendEditor
-                onUpdate={onUpdate}
-                legendEnabled={config.legendEnabled}
-                legendPosition={config.legendPosition}
-                legendOptions='top-bot'
-                plotUuid={plotUuid}
+                onEnabledUpdate={(e) => updatePlotWithChanges({ legend: { enabled: e.target.value } })}
+                onValueUpdate={(e) => updatePlotWithChanges({ legend: { position: e.target.value } })}
+                enabled={config.legend.enabled}
+                position={config.legend.position}
+                option={{ positions: 'top-bottom' }}
               />
             </Panel>
-            <Panel header='Labels' key='11'>
-              <LabelsDesign config={config} onUpdate={onUpdate} />
+            <Panel header='Labels' key='12'>
+              <LabelsDesign
+                enabled={config.label.enabled}
+                size={config.label.size}
+                onEnabledUpdate={(e) => updatePlotWithChanges({ label: { enabled: e.target.value } })}
+                onSizeUpdate={(val) => updatePlotWithChanges({ label: { size: val } })}
+              />
             </Panel>
           </Collapse>
         </Col>

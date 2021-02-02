@@ -82,6 +82,7 @@ const EmbeddingContinuousPlot = () => {
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
+
   const filterSamples = () => {
     if (config.selectedSample === 'All') {
       return data;
@@ -193,13 +194,9 @@ const EmbeddingContinuousPlot = () => {
                 cellSets={cellSets}
               />
             </Panel>
-          </Collapse>
-          <Collapse accordion>
             <Panel header='Log Transformation' key='5'>
               <LogExpression config={config} onUpdate={updatePlotWithChanges} />
             </Panel>
-          </Collapse>
-          <Collapse accordion>
             <Panel header='Main Schema' key='2'>
               <DimensionsRangeEditor
                 width={config.dimensions.width}
@@ -207,24 +204,22 @@ const EmbeddingContinuousPlot = () => {
                 onWidthUpdate={(val) => updatePlotWithChanges({ dimensions: { width: val } })}
                 onHeightUpdate={(val) => updatePlotWithChanges({ dimensions: { height: val } })}
               />
-              <Collapse accordion>
-                <Panel header='Define and Edit Title' key='6'>
-                  <TitleDesign
-                    title={config.title.text}
-                    fontSize={config.title.fontSize}
-                    anchor={config.title.anchor}
-                    onTitleUpdate={(e) => updatePlotWithChanges({ title: { text: e.target.value } })}
-                    onFontSizeUpdate={(val) => updatePlotWithChanges({ title: { fontSize: val } })}
-                    onAnchorUpdate={(e) => updatePlotWithChanges({ title: { anchor: e.target.value } })}
-                  />
-                </Panel>
-                <Panel header='Font' key='9'>
-                  <FontDesign
-                    font={config.fontStyle.font}
-                    onUpdate={(e) => updatePlotWithChanges({ fontStyle: { font: e.target.value } })}
-                  />
-                </Panel>
-              </Collapse>
+              <Panel header='Define and Edit Title' key='6'>
+                <TitleDesign
+                  title={config.title.text}
+                  fontSize={config.title.fontSize}
+                  anchor={config.title.anchor}
+                  onTitleUpdate={(e) => updatePlotWithChanges({ title: { text: e.target.value } })}
+                  onFontSizeUpdate={(val) => updatePlotWithChanges({ title: { fontSize: val } })}
+                  onAnchorUpdate={(e) => updatePlotWithChanges({ title: { anchor: e.target.value } })}
+                />
+              </Panel>
+              <Panel header='Font' key='9'>
+                <FontDesign
+                  font={config.fontStyle.font}
+                  onUpdate={(e) => updatePlotWithChanges({ fontStyle: { font: e.target.value } })}
+                />
+              </Panel>
             </Panel>
             <Panel header='Axes and Margins' key='3'>
               <AxesDesign
@@ -264,8 +259,8 @@ const EmbeddingContinuousPlot = () => {
             </Panel>
             <Panel header='Legend' key='12'>
               <LegendEditor
-                onEnabledChange={(e) => updatePlotWithChanges({ legend: { enabled: e.target.value } })}
-                onValueChange={(e) => updatePlotWithChanges({ legend: { position: e.target.value } })}
+                onEnabledUpdate={(e) => updatePlotWithChanges({ legend: { enabled: e.target.value } })}
+                onValueUpdate={(e) => updatePlotWithChanges({ legend: { position: e.target.value } })}
                 enabled={config.legend.enabled}
                 position={config.legend.position}
                 option={{ positions: 'corners' }}
