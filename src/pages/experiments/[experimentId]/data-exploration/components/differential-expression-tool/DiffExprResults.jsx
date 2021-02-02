@@ -73,9 +73,14 @@ const DiffExprResults = (props) => {
       ),
     );
   };
-  const optionName = (word) => word.split('/').pop();
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  const optionName = (word) => (
+    <span style={{ color: 'red' }}>
+      {capitalize(word.split('/').pop().replace('-', ' '))}
+    </span>
+  );
   const { basis, cellSet, compareWith } = comparisonGroup[comparisonType];
-  const settingsText = `${optionName(basis)} vs. ${optionName(cellSet)} in ${optionName(compareWith)}`;
+  // const settingsText = `${optionName(basis)} vs. ${optionName(cellSet)} in ${optionName(compareWith)}`;
 
   const renderExportAlert = () => {
     if (!exportAlert) return null;
@@ -125,7 +130,19 @@ const DiffExprResults = (props) => {
         </Button>
       </Space>
       {settingsListed
-        ? <div id='settingsText'>{settingsText}</div> : <div />}
+        ? (
+          <div id='settingsText'>
+            {optionName(cellSet)}
+            {' '}
+            vs.
+            {' '}
+            {optionName(compareWith)}
+            {' '}
+            in
+            {' '}
+            {optionName(basis)}
+          </div>
+        ) : <div />}
       <GeneTable
         experimentId={experimentId}
         initialTableState={{

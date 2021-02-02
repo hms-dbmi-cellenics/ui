@@ -228,7 +228,7 @@ describe('DiffExprResults', () => {
     expect(button.text()).toContain('Hide');
 
     const div = component.find('#settingsText');
-    expect(div.text()).toEqual('condition-control vs. louvain-0 in louvain-1');
+    expect(div.text()).toEqual('Louvain 0 vs. Louvain 1 in Condition control');
     button.simulate('click');
     expect(button.childAt(0).text()).toEqual('Show settings');
     expect(!div);
