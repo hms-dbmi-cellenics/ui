@@ -8,7 +8,7 @@ import { Vega } from 'react-vega';
 
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
-import LegendEditorSpecial from './components/LegendEditorSpecial';
+import LegendEditor from '../components/LegendEditor';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
@@ -201,34 +201,43 @@ const HeatmapPlot = () => {
 
               <Panel header='Main Schema' key='1'>
                 <DimensionsRangeEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
+                  width={config.dimensions.width}
+                  height={config.dimensions.height}
+                  onWidthUpdate={(val) => updatePlotWithChanges({ dimensions: { width: val } })}
+                  onHeightUpdate={(val) => updatePlotWithChanges({ dimensions: { height: val } })}
                 />
                 <Collapse defaultActiveKey={['1']} accordion>
                   <Panel header='Define and Edit Title' key='6'>
                     <TitleDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
+                      title={config.title.text}
+                      fontSize={config.title.fontSize}
+                      anchor={config.title.anchor}
+                      onTitleUpdate={(e) => updatePlotWithChanges({ title: { text: e.target.value } })}
+                      onFontSizeUpdate={(val) => updatePlotWithChanges({ title: { fontSize: val } })}
+                      onAnchorUpdate={(e) => updatePlotWithChanges({ title: { anchor: e.target.value } })}
                     />
                   </Panel>
                   <Panel header='Font' key='9'>
                     <FontDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
+                      font={config.fontStyle.font}
+                      onUpdate={(e) => updatePlotWithChanges({ fontStyle: { font: e.target.value } })}
                     />
                   </Panel>
                 </Collapse>
               </Panel>
               <Panel header='Colours' key='10'>
                 <ColourbarDesign
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
+                  value={config.colour.gradient}
+                  onUpdate={(e) => updatePlotWithChanges({ colour: { gradient: e.target.value } })}
                 />
               </Panel>
               <Panel header='Legend' key='11'>
-                <LegendEditorSpecial
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
+                <LegendEditor
+                  onEnabledUpdate={(e) => updatePlotWithChanges({ legend: { enabled: e.target.value } })}
+                  onValueUpdate={(e) => updatePlotWithChanges({ legend: { position: e.target.value } })}
+                  enabled={config.legend.enabled}
+                  position={config.legend.position}
+                  option={{ positions: 'heatmap' }}
                 />
               </Panel>
             </Collapse>

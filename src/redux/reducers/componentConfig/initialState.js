@@ -59,7 +59,15 @@ const embeddingContinuousInitialConfig = {
 const heatmapInitialConfig = {
   spec: '2.0.0',
   ...legendBaseState,
+  legend: {
+    show: true,
+    positon: 'horizontal',
+  },
   ...dimensionsBaseState,
+  dimensions: {
+    width: 500,
+    height: 500,
+  },
   ...titleBaseState,
   ...fontStyleBaseState,
   ...colourBaseState,
