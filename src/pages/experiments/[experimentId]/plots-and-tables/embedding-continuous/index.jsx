@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   Row, Col, Space, Collapse, Spin, Skeleton, Input,
 } from 'antd';
@@ -24,7 +24,6 @@ import {
 import { loadGeneExpression, loadPaginatedGeneProperties } from '../../../../../redux/actions/genes';
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
 import PlatformError from '../../../../../components/PlatformError';
@@ -43,7 +42,6 @@ const route = {
 const plotUuid = 'embeddingContinuousMain';
 const plotType = 'embeddingContinuous';
 const embeddingType = 'umap';
-const defaultShownGene = initialPlotConfigStates[plotType].shownGene;
 
 const EmbeddingContinuousPlot = () => {
   //  const selectedGene = useRef(defaultShownGene);
@@ -60,12 +58,10 @@ const EmbeddingContinuousPlot = () => {
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const cellSets = useSelector((state) => state.cellSets);
   const { properties } = cellSets;
-  const geneProperties = useSelector((state) => state.genes.properties.data);
-  const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]);
-  const genesLoading = useSelector((state) => state.genes.properties.loading);
   const router = useRouter();
   const { experimentId } = router.query;
   const PROPERTIES = ['dispersions'];
+  const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]?.data[0]);
   // temporal solution for selecting the default gene until they are displayed with a table
   const tableState = {
     pagination: {
@@ -74,12 +70,14 @@ const EmbeddingContinuousPlot = () => {
     geneNamesFilter: null,
     sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
   };
-  useEffect(() => {
-    if (config?.shownGene === 'notSelected') {
-      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-    }
-  });
-  // console.log(highestDispersionGene.keys());
+  if (config?.shownGene === 'notSelected') {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+  }
+
+  // obj is a subset of what default config has and contains only the things we want change
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
   useEffect(() => {
     if (!experimentId || !isBrowser) {
       return;
@@ -88,18 +86,14 @@ const EmbeddingContinuousPlot = () => {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (!selectedExpression && config?.shownGene !== 'notSelected' && config) {
-      dispatch(loadGeneExpression(experimentId, [highestDispersionGene]));
-      updatePlotWithChanges({ shownGene: highestDispersionGene });
-    }
+
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
-  console.log(geneProperties);
+  if (config && config.shownGene === 'notSelected' && highestDispersionGene) {
+    dispatch(loadGeneExpression(experimentId, [highestDispersionGene]));
+    updatePlotWithChanges({ shownGene: highestDispersionGene });
+  }
 
-  // obj is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
   const filterSamples = () => {
     if (config.selectedSample === 'All') {
       return data;
