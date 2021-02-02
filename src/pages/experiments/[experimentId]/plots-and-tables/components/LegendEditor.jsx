@@ -1,71 +1,82 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Radio, Form } from 'antd';
+import _ from 'lodash';
+
+const defaultOption = {
+  positions: 'top-bottom',
+  showEnableOption: true,
+  showValueOption: true,
+};
 
 const LegendEditor = (props) => {
   const {
-    onUpdate, legendEnabled, legendPosition, legendOptions,
+    enabled, position, option, onEnabledChange, onValueChange,
   } = props;
 
-  const onChange = (e) => {
-    onUpdate({ legendEnabled: e.target.value });
+  const elOption = _.merge(defaultOption, option);
+
+  // Setting object containing value:text of position options
+  const positions = {
+    corners: {
+      'top-left': 'Top left',
+      'top-right': 'Top right',
+      'bottom-left': 'Bottom left',
+      'bottom-right': 'Bottom right',
+    },
+    'top-bottom': {
+      top: 'Top',
+      bottom: 'Bottom',
+    },
   };
-  const changePosition = (value) => {
-    onUpdate({ legendPosition: value.target.value });
-  };
-  let position = null;
-  if (legendOptions === 'top-bot') {
-    position = (
-      <>
-        <div> Position</div>
-        <Form.Item>
-          <Radio.Group
-            onChange={(value) => changePosition(value)}
-            value={legendPosition}
-          >
-            <Radio value='top'>Top</Radio>
-            <Radio value='bottom'>Bottom</Radio>
-          </Radio.Group>
-        </Form.Item>
-      </>
-    );
-  }
-  if (legendOptions === 'corners') {
-    position = (
-      <>
-        <div>Position</div>
-        <Form.Item>
-          <Radio.Group
-            onChange={(value) => changePosition(value)}
-            value={legendPosition}
-          >
-            <Radio value='top-left'>Top-Left</Radio>
-            <Radio value='top-right'>Top-Right</Radio>
-            <Radio value='bottom-left'>Bot-Left</Radio>
-            <Radio value='bottom-right'>Bot-Right</Radio>
-          </Radio.Group>
-        </Form.Item>
-      </>
-    );
-  }
+
   return (
     <Form size='small' labelCol={{ span: 12 }} wrapperCol={{ span: 12 }}>
-      <Form.Item>
-        <Radio.Group onChange={onChange} value={legendEnabled}>
-          <Radio value>Show</Radio>
-          <Radio value={false}>Hide</Radio>
-        </Radio.Group>
-      </Form.Item>
-      {position}
+      { elOption.showEnableOption && (
+        <>
+          <p>Position</p>
+          <Form.Item>
+            <Radio.Group onChange={(e) => onEnabledChange(e)} value={enabled}>
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </>
+      )}
+
+      { enabled && elOption.showValueOption && (
+        <>
+          <p>Position</p>
+          <Form.Item>
+            <Radio.Group
+              onChange={(e) => onValueChange(e)}
+              value={position}
+            >
+              {
+                Object.entries(positions[elOption.positions]).map(([val, text]) => (
+                  <Radio key={val} value={val}>{text}</Radio>
+                ))
+              }
+            </Radio.Group>
+          </Form.Item>
+        </>
+      )}
     </Form>
   );
 };
 
 LegendEditor.propTypes = {
-  onUpdate: PropTypes.func.isRequired,
-  legendEnabled: PropTypes.array.isRequired,
-  legendPosition: PropTypes.array.isRequired,
-  legendOptions: PropTypes.array.isRequired,
+  onEnabledChange: PropTypes.func.isRequired,
+  onValueChange: PropTypes.func.isRequired,
+  enabled: PropTypes.bool,
+  position: PropTypes.string,
+  option: PropTypes.object,
+};
+
+LegendEditor.defaultProps = {
+  enabled: true,
+  position: 'top',
+  option: defaultOption,
 };
 
 export default LegendEditor;

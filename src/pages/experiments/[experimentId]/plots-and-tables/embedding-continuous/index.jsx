@@ -242,10 +242,11 @@ const EmbeddingContinuousPlot = () => {
             </Panel>
             <Panel header='Legend' key='12'>
               <LegendEditor
-                onUpdate={updatePlotWithChanges}
-                legendEnabled={config.legendEnabled}
-                legendPosition={config.legendPosition}
-                legendOptions='corners'
+                onEnabledChange={(e) => updatePlotWithChanges({ legend: { enabled: e.target.value } })}
+                onValueChange={(e) => updatePlotWithChanges({ legend: { position: e.target.value } })}
+                enabled={config.legend.enabled}
+                position={config.legend.position}
+                option={{ positions: 'top-bottom' }}
               />
             </Panel>
           </Collapse>
