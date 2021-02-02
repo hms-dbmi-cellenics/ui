@@ -5,7 +5,7 @@ import FeedbackButton from '../components/FeedbackButton';
 
 const { Title, Text } = Typography;
 
-const Error = ({ statusCode }) => (
+const Error = ({ errorText, statusCode }) => (
   <Result
     title={<Title level={2}>It&apos;s not you, it&apos;s us.</Title>}
     icon={(
@@ -38,9 +38,17 @@ const Error = ({ statusCode }) => (
             Thank you for your patience, we&apos;ll be up and running shortly.
           </Text>
 
-          <Text type='secondary'>
-            {statusCode ? `HTTP ${statusCode}` : 'SSR error'}
-          </Text>
+          {statusCode && <Text type='secondary'>{`HTTP ${statusCode}`}</Text>}
+
+          {errorText && (
+            <>
+              <span>
+                <Text type='secondary'>The error is reported to be the following:&nbsp;</Text>
+                <Text code>{errorText}</Text>
+              </span>
+            </>
+          )}
+
         </Space>
       </>
     )}

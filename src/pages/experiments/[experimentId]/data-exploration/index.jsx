@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
-import Error from 'next/error';
 import useSWR from 'swr';
 import { Tabs } from 'antd';
 import { Mosaic, MosaicWindow, RemoveButton } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
+import Error from '../../../_error';
 import Header from './components/header';
 import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
 import GeneListTool from './components/gene-list-tool/GeneListTool';
@@ -87,10 +87,10 @@ const ExplorationViewPage = () => {
 
   if (error) {
     if (error.payload === undefined) {
-      return <Error statusCode='You are not connected to the backend.' />;
+      return <Error errorText='You are not connected to the backend.' />;
     }
     const { status } = error.payload;
-    return <Error statusCode={status} />;
+    return <Error errorText={status} />;
   }
 
   if (!data) {

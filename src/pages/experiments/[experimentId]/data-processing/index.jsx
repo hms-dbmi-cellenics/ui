@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {
-  PageHeader, Collapse, Switch, Tooltip, Select,
-  Steps, Space, Button, Typography, Progress, Descriptions, Statistic,
-  Row, Col,
+  PageHeader, Select, Space, Button, Typography, Progress, Row, Col,
 } from 'antd';
 
 import {
   LeftOutlined,
   RightOutlined,
 } from '@ant-design/icons';
-import Error from 'next/error';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
+import Error from '../../../_error';
 import FeedbackButton from '../../../../components/FeedbackButton';
 import getApiEndpoint from '../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../utils/cacheRequest';
@@ -82,10 +80,10 @@ const DataProcessingPage = () => {
 
   if (error) {
     if (error.payload === undefined) {
-      return <Error statusCode='You are not connected to the backend.' />;
+      return <Error errorText='You are not connected to the backend.' />;
     }
     const { status } = error.payload;
-    return <Error statusCode={status} />;
+    return <Error errorText={status} />;
   }
 
   if (!data) {
