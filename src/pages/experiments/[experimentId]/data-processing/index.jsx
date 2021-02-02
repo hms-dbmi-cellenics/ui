@@ -20,7 +20,7 @@ import MitochondrialContent from './filter-cells/components/MitochondrialContent
 import Classifier from './filter-cells/components/Classifier/Classifier';
 import GenesVsUMIs from './filter-cells/components/GenesVsUMIs/GenesVsUMIs';
 import DoubletScores from './filter-cells/components/DoubletScores/DoubletScores';
-import ReduceDimensions from './reduce-dimensions/components/DimensionalityReduction/DimensionalityReduction';
+import DataIntegration from './data-integration/components/DataIntegration';
 import EmbeddingPreview from './configure-embedding/components/EmbeddingPreview';
 
 const { Text } = Typography;
@@ -56,6 +56,10 @@ const DataProcessingPage = () => {
       name: 'Doublet filter',
       render: () => <DoubletScores filtering />,
     },
+    {
+      id: 'dataIntegration',
+      name: 'Data integration',
+      render: () => <DataIntegration filtering />,
     {
       id: 'dimensionReductionFilter',
       name: 'Dimensionality reduction',

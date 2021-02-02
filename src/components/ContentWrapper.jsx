@@ -141,7 +141,6 @@ const ContentWrapper = (props) => {
                 <a>Data Processing</a>
               </Link>
             </Menu.Item>
-
             <Menu.Item key='data-exploration' icon={<FundViewOutlined />}>
               <Link as={`/experiments/${experimentId}/data-exploration`} href='/experiments/[experimentId]/data-exploration' passHref>
                 <a>Data Exploration</a>
