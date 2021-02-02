@@ -44,8 +44,6 @@ const plotType = 'embeddingContinuous';
 const embeddingType = 'umap';
 
 const EmbeddingContinuousPlot = () => {
-  //  const selectedGene = useRef(defaultShownGene);
-
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expressionLoading = useSelector(
