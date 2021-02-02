@@ -60,10 +60,6 @@ const DataProcessingPage = () => {
       id: 'dataIntegration',
       name: 'Data integration',
       render: () => <DataIntegration filtering />,
-    {
-      id: 'dimensionReductionFilter',
-      name: 'Dimensionality reduction',
-      render: () => <ReduceDimensions filtering />,
     },
     {
       id: 'comptueEmbeddingFilter',
