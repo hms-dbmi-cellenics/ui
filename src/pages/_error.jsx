@@ -10,7 +10,7 @@ const Error = ({ errorText, statusCode }) => (
     title={<Title level={2}>It&apos;s not you, it&apos;s us.</Title>}
     icon={(
       <img
-        alt='Illustration of a creature ripping the cable between a PC and a server.'
+        alt='A creature ripping the cable between a PC and a server (illustration).'
         src='/undraw_server_down_s4lk.svg'
         width={250}
         height={250}

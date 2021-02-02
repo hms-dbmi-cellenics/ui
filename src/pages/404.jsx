@@ -11,7 +11,7 @@ export default function Custom404() {
       title={<Title level={2}>Oops</Title>}
       icon={(
         <img
-          alt='Illustration of people looking into bushes to find something.'
+          alt='People looking into bushes to find something (illustration).'
           src='/undraw_not_found_60pq.svg'
           width={250}
           height={250}
