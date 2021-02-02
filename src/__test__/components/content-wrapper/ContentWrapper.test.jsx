@@ -37,12 +37,15 @@ describe('ContentWrapper', () => {
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);
-    expect(menus.length).toEqual(2);
+    expect(menus.length).toEqual(3);
 
-    const dataExplorationLink = menus.at(0).find('Link');
+    const dataProcessingLink = menus.at(0).find('Link');
+    expect(dataProcessingLink.props().as).toEqual('/experiments/1234/data-processing');
+
+    const dataExplorationLink = menus.at(1).find('Link');
     expect(dataExplorationLink.props().as).toEqual('/experiments/1234/data-exploration');
 
-    const plotsTablesLink = menus.at(1).find('Link');
+    const plotsTablesLink = menus.at(2).find('Link');
     expect(plotsTablesLink.props().as).toEqual('/experiments/1234/plots-and-tables');
   });
 });
