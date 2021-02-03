@@ -336,9 +336,7 @@ const VolcanoPlot = () => {
               <Panel header='Legend' key='12'>
                 <LegendEditor
                   onUpdate={updatePlotWithChanges}
-                  legendEnabled={config.legendEnabled}
-                  legendPosition={config.legendPosition}
-                  legendOptions='corners'
+                  config={config}
                 />
               </Panel>
             </Collapse>

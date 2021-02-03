@@ -31,11 +31,11 @@ const DimensionsRangeEditor = (props) => {
           label='Width'
         >
           <Slider
-            value={config.width}
+            value={config.dimensions.width}
             min={minWidth}
             max={maxWidth}
             onChange={(value) => {
-              onUpdate({ width: value });
+              onUpdate({ dimensions: { width: value } });
             }}
             marks={widthMarks}
           />
@@ -44,11 +44,11 @@ const DimensionsRangeEditor = (props) => {
           label='Height'
         >
           <Slider
-            value={config.height}
+            value={config.dimensions.height}
             min={minHeight}
             max={maxHeight}
             onChange={(value) => {
-              onUpdate({ height: value });
+              onUpdate({ dimensions: { height: value } });
             }}
             marks={heighthMarks}
           />

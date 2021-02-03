@@ -1,21 +1,21 @@
 const generateSpec = (config) => {
   let legend = [];
 
-  if (config.legendEnabled) {
+  if (config.legend.enabled) {
     legend = [
       {
         fill: 'color',
         type: 'gradient',
-        orient: config.legendPosition,
+        orient: config.legend.position,
         title: config.shownGene,
         gradientLength: 100,
-        labelColor: { value: config.masterColour },
-        titleColor: { value: config.masterColour },
+        labelColor: { value: config.colour.masterColour },
+        titleColor: { value: config.colour.masterColour },
         labels: {
           interactive: true,
           update: {
             fontSize: { value: 12 },
-            fill: { value: config.masterColour },
+            fill: { value: config.colour.masterColour },
           },
 
         },
@@ -24,11 +24,11 @@ const generateSpec = (config) => {
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'A basic scatter plot example depicting gene expression in the context of UMAP.',
-    width: config.width,
-    height: config.height,
+    width: config.dimensions.width,
+    height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },
 
-    background: config.toggleInvert,
+    background: config.colour.toggleInvert,
     padding: 5,
     data: [
       {
@@ -69,9 +69,9 @@ const generateSpec = (config) => {
       {
         name: 'color',
         type: 'linear',
-        range: { scheme: config.colGradient },
+        range: { scheme: config.colour.gradient },
         domain: { data: 'embedding', field: 'expression' },
-        reverse: config.reverseCbar,
+        reverse: config.colour.reverseCbar,
       },
     ],
     axes: [
@@ -80,19 +80,19 @@ const generateSpec = (config) => {
         grid: true,
         domain: true,
         orient: 'bottom',
-        title: { value: config.xaxisText },
-        titleFont: { value: config.masterFont },
-        labelFont: { value: config.masterFont },
-        labelColor: { value: config.masterColour },
-        tickColor: { value: config.masterColour },
-        gridColor: { value: config.masterColour },
-        gridOpacity: { value: (config.transGrid / 20) },
-        gridWidth: { value: (config.widthGrid / 20) },
-        offset: { value: config.axesOffset },
-        titleFontSize: { value: config.axisTitlesize },
-        titleColor: { value: config.masterColour },
-        labelFontSize: { value: config.axisTicks },
-        domainWidth: { value: config.lineWidth },
+        title: { value: config.axes.xAxisText },
+        titleFont: { value: config.fontStyle.font },
+        labelFont: { value: config.fontStyle.font },
+        labelColor: { value: config.colour.masterColour },
+        tickColor: { value: config.colour.masterColour },
+        gridColor: { value: config.colour.masterColour },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        gridWidth: { value: (config.gridWidth / 20) },
+        offset: { value: config.axes.offset },
+        titleFontSize: { value: config.axes.labelFontSize },
+        titleColor: { value: config.colour.masterColour },
+        labelFontSize: { value: config.axes.labelFontSize },
+        domainWidth: { value: config.axesdomainWidth },
       },
       {
         scale: 'y',
@@ -100,19 +100,19 @@ const generateSpec = (config) => {
         domain: true,
         orient: 'left',
         titlePadding: 5,
-        gridColor: { value: config.masterColour },
-        gridOpacity: { value: (config.transGrid / 20) },
-        gridWidth: { value: (config.widthGrid / 20) },
-        tickColor: { value: config.masterColour },
-        offset: { value: config.axesOffset },
-        title: { value: config.yaxisText },
-        titleFont: { value: config.masterFont },
-        labelFont: { value: config.masterFont },
-        labelColor: { value: config.masterColour },
-        titleFontSize: { value: config.axisTitlesize },
-        titleColor: { value: config.masterColour },
-        labelFontSize: { value: config.axisTicks },
-        domainWidth: { value: config.lineWidth },
+        gridColor: { value: config.colour.masterColour },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        gridWidth: { value: (config.axes.gridWidth / 20) },
+        tickColor: { value: config.colour.masterColour },
+        offset: { value: config.axes.offset },
+        title: { value: config.axes.yAxisText },
+        titleFont: { value: config.fontStyle.font },
+        labelFont: { value: config.fontStyle.font },
+        labelColor: { value: config.colour.masterColour },
+        titleFontSize: { value: config.axes.labelFontSize },
+        titleColor: { value: config.colour.masterColour },
+        labelFontSize: { value: config.axes.labelFontSize },
+        domainWidth: { value: config.axesdomainWidth },
       },
     ],
     marks: [
@@ -123,7 +123,7 @@ const generateSpec = (config) => {
           enter: {
             x: { scale: 'x', field: '0' },
             y: { scale: 'y', field: '1' },
-            size: { value: config.pointSize },
+            size: { value: config.marker.size },
             stroke: {
               scale: 'color',
               field: 'expression',
@@ -132,8 +132,8 @@ const generateSpec = (config) => {
               scale: 'color',
               field: 'expression',
             },
-            shape: { value: config.pointStyle },
-            fillOpacity: { value: config.pointOpa / 10 },
+            shape: { value: config.marker.shape },
+            fillOpacity: { value: config.marker.opacity / 10 },
           },
         },
       },
@@ -142,12 +142,12 @@ const generateSpec = (config) => {
     legends: legend,
     title:
     {
-      text: { value: config.titleText },
-      color: { value: config.masterColour },
-      anchor: { value: config.titleAnchor },
-      font: { value: config.masterFont },
-      dx: { value: config.bounceX },
-      fontSize: { value: config.titleSize },
+      text: { value: config.title.text },
+      color: { value: config.colour.masterColour },
+      anchor: { value: config.title.anchor },
+      font: { value: config.fontStyle.font },
+      dx: { value: config.title.dx },
+      fontSize: { value: config.title.fontSize },
     },
   };
 };

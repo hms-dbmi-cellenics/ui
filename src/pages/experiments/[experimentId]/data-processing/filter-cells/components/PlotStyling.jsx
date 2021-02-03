@@ -39,10 +39,8 @@ const PlotStyling = (props) => {
     legend = (
       <Panel header='Legend'>
         <LegendEditor
-          legendEnabled={config.legendEnabled}
+          config={config}
           onUpdate={onUpdate}
-          legendOptions='corners'
-          legendPosition={config.legendPosition}
         />
       </Panel>
     );

@@ -265,9 +265,8 @@ const frequencyPlot = () => {
             <Panel header='Legend' key='12'>
               <LegendEditor
                 onUpdate={updatePlotWithChanges}
-                legendEnabled={config.legendEnabled}
-                legendPosition={config.legendPosition}
-                legendOptions='top-bot'
+                config={config}
+                options={{ positions: 'top-bottom' }}
               />
               <Alert
                 message='Changing cell set colours is not currently available here.

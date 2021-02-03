@@ -7,7 +7,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
-import useSelection from 'antd/lib/table/hooks/useSelection';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
 import ColourInversion from '../components/ColourInversion';
@@ -252,9 +251,7 @@ const EmbeddingContinuousPlot = () => {
             <Panel header='Legend' key='12'>
               <LegendEditor
                 onUpdate={updatePlotWithChanges}
-                legendEnabled={config.legendEnabled}
-                legendPosition={config.legendPosition}
-                legendOptions='corners'
+                config={config}
               />
             </Panel>
           </Collapse>
