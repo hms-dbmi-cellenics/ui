@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   Row, Col, Space, Collapse, Spin, Skeleton, Input,
 } from 'antd';
@@ -21,10 +21,9 @@ import {
   updatePlotConfig,
   loadPlotConfig,
 } from '../../../../../redux/actions/componentConfig/index';
-import { loadGeneExpression } from '../../../../../redux/actions/genes';
+import { loadGeneExpression, loadPaginatedGeneProperties } from '../../../../../redux/actions/genes';
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
 import PlatformError from '../../../../../components/PlatformError';
@@ -44,28 +43,41 @@ const route = {
 const plotUuid = 'embeddingContinuousMain';
 const plotType = 'embeddingContinuous';
 const embeddingType = 'umap';
-const defaultShownGene = initialPlotConfigStates[plotType].shownGene;
 
 const EmbeddingContinuousPlot = () => {
-  const selectedGene = useRef(defaultShownGene);
-
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expressionLoading = useSelector(
     (state) => state.genes.expression.loading,
   );
   const selectedExpression = useSelector(
-    (state) => state.genes.expression.data[selectedGene.current],
+    (state) => state.genes.expression.data[config?.shownGene],
   );
   const expressionError = useSelector((state) => state.genes.expression.error);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const cellSets = useSelector((state) => state.cellSets);
   const processingSettings = useSelector((state) => state.experimentSettings.processing);
   const { properties } = cellSets;
-
   const router = useRouter();
   const { experimentId } = router.query;
+  const PROPERTIES = ['dispersions'];
+  const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]?.data[0]);
+  // temporary solution for selecting the default gene until they are displayed with a table
+  const tableState = {
+    pagination: {
+      current: 1, pageSize: 1, showSizeChanger: true, total: 0,
+    },
+    geneNamesFilter: null,
+    sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
+  };
+  if (config?.shownGene === 'notSelected') {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+  }
 
+  // updateField is a subset of what default config has and contains only the things we want change
+  const updatePlotWithChanges = (updateField) => {
+    dispatch(updatePlotConfig(plotUuid, updateField));
+  };
   useEffect(() => {
     if (!experimentId || !isBrowser) {
       return;
@@ -74,11 +86,13 @@ const EmbeddingContinuousPlot = () => {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (!selectedExpression) {
-      dispatch(loadGeneExpression(experimentId, [selectedGene.current]));
-    }
+
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
+  if (config && config.shownGene === 'notSelected' && highestDispersionGene) {
+    dispatch(loadGeneExpression(experimentId, [highestDispersionGene]));
+    updatePlotWithChanges({ shownGene: highestDispersionGene });
+  }
 
   useEffect(() => {
     if (!data && processingSettings.configureEmbedding) {
@@ -86,10 +100,6 @@ const EmbeddingContinuousPlot = () => {
     }
   }, [processingSettings]);
 
-  // obj is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
   const filterSamples = () => {
     if (config.selectedSample === 'All') {
       return data;
@@ -109,7 +119,7 @@ const EmbeddingContinuousPlot = () => {
 
   const changeDislayedGene = (geneName) => {
     updatePlotWithChanges({ shownGene: geneName });
-    selectedGene.current = geneName;
+    config.shownGene = geneName;
     dispatch(loadGeneExpression(experimentId, [geneName]));
   };
 
@@ -119,7 +129,7 @@ const EmbeddingContinuousPlot = () => {
       return (
         <PlatformError
           description={expressionError}
-          onClick={() => dispatch(loadGeneExpression(experimentId, [selectedGene.current]))}
+          onClick={() => dispatch(loadGeneExpression(experimentId, [config.shownGene]))}
         />
       );
     }
@@ -145,7 +155,7 @@ const EmbeddingContinuousPlot = () => {
       || !data
       || loading
       || !isBrowser
-      || expressionLoading.includes(selectedGene.current)
+      || expressionLoading.includes(config.shownGene)
       || cellSets.loading
     ) {
       return (
@@ -158,7 +168,7 @@ const EmbeddingContinuousPlot = () => {
     return (
       <center>
         <Vega
-          spec={generateSpec(config, selectedGene)}
+          spec={generateSpec(config, config.shownGene)}
           data={generateVegaData()}
           renderer='canvas'
         />
@@ -190,7 +200,7 @@ const EmbeddingContinuousPlot = () => {
               <Search
                 style={{ width: '100%' }}
                 enterButton='Search'
-                defaultValue={selectedGene.current}
+                defaultValue={config.shownGene}
                 onSearch={(val) => changeDislayedGene(val)}
               />
             </Panel>
