@@ -141,7 +141,7 @@ describe('CalculationConfig', () => {
     expect(button.at(0).getElement().props.disabled).toEqual(false);
   });
 
-  it('clicking on button triggers save action', async () => {
+  it('clicking on button triggers save action and reloading of plot data', async () => {
     const store = mockStore(storeState);
 
     const component = mount(

@@ -6,7 +6,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-
+import { loadEmbedding } from '../../../../../../redux/actions/embedding';
 import { updateProcessingSettings, saveProcessingSettings, loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
 const { Option } = Select;
@@ -59,6 +59,7 @@ const CalculationConfig = (props) => {
   const applyEmbeddingSettings = () => {
     setChangesOutstanding(false);
     dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
+    dispatch(loadEmbedding(experimentId, embeddingMethod));
   };
 
   useEffect(() => {
