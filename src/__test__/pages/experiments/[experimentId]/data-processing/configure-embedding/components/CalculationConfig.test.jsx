@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Select, InputNumber, Spin, Form, Alert, Button,
+  Select, Form, Alert, Button,
 } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -11,8 +11,8 @@ import { Provider } from 'react-redux';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
-import { EXPERIMENT_SETTINGS_PROCESSING_SAVE, EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../../../../../../redux/actionTypes/experimentSettings';
-import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED } from '../../../../../../../redux/actionTypes/embeddings';
+import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EXPERIMENT_SETTINGS_PROCESSING_SAVE } from '../../../../../../../redux/actionTypes/experimentSettings';
+import { EMBEDDINGS_LOADED, EMBEDDINGS_LOADING } from '../../../../../../../redux/actionTypes/embeddings';
 
 import CalculationConfig from '../../../../../../../pages/experiments/[experimentId]/data-processing/configure-embedding/components/CalculationConfig';
 import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
@@ -82,10 +82,10 @@ describe('CalculationConfig', () => {
       </Provider>,
     );
 
-    const spin = component.find(Spin);
+    const preloadContent = component.find('PreloadContent');
 
     // There should be a spinner for loading state.
-    expect(spin.length).toEqual(1);
+    expect(preloadContent.length).toEqual(1);
   });
 
   it('renders correctly when the data is in the store', () => {
@@ -102,8 +102,8 @@ describe('CalculationConfig', () => {
     );
 
     // There should no spinner anymore.
-    const spin = component.find(Spin);
-    expect(spin.length).toEqual(0);
+    const preloadContent = component.find('PreloadContent');
+    expect(preloadContent.length).toEqual(0);
 
     // There should be a form loaded.
     const form = component.find(Form);
@@ -124,8 +124,8 @@ describe('CalculationConfig', () => {
     );
 
     // There should no spinner anymore.
-    const spin = component.find(Spin);
-    expect(spin.length).toEqual(0);
+    const preloadContent = component.find('PreloadContent');
+    expect(preloadContent.length).toEqual(0);
 
     // There should be a form loaded.
     const form = component.find(Form);
@@ -173,20 +173,12 @@ describe('CalculationConfig', () => {
     const button = component.find(Button);
     button.simulate('click', {});
 
-    // Should update and save the config.
-    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
+    // Should load the new embedding and save the config.
+    await waitForActions(store,
+      [EMBEDDINGS_LOADING, EXPERIMENT_SETTINGS_PROCESSING_SAVE,
+      ]);
 
-    console.log(store.getActions());
     expect(store.getActions().length).toEqual(2);
-
-    // First there should be an update...
-    const updateAction = store.getActions()[0];
-    expect(updateAction.type).toBe(EXPERIMENT_SETTINGS_PROCESSING_UPDATE);
-    expect(updateAction).toMatchSnapshot();
-
-    // ... then there should be a save.
-    const saveAction = store.getActions()[1];
-    expect(saveAction.type).toBe(EMBEDDINGS_LOADING);
-    expect(saveAction).toMatchSnapshot();
+    expect(store.getActions()).toMatchSnapshot();
   });
 });
