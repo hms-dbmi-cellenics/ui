@@ -54,13 +54,11 @@ const defaultElbowPlotStylingConfig = {
 const DataIntegration = () => {
   const plotElements = {
     elbowPlot: (configInput) => <ElbowPlot plotConfig={configInput} />,
-    otherPlot: (configInput) => <ElbowPlot plotConfig={configInput} />,
   };
 
   // This will be taken with a useSelector eventually
   const persistedConfigs = {
     elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
-    otherPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
   };
 
   const [activePlotKey, setActivePlotKey] = useState('elbowPlot');
@@ -68,7 +66,7 @@ const DataIntegration = () => {
 
   useEffect(() => {
     setCurrentConfig(persistedConfigs[activePlotKey]);
-  }, activePlotKey);
+  }, [activePlotKey]);
 
   const updatePlotWithConfigChanges = (plotConfigUpdates) => {
     const newPlotConfig = _.cloneDeep(plotConfig);
