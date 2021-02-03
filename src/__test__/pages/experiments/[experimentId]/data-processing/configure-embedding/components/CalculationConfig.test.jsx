@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Spin, Form, Alert, Button, Select,
+  Select, InputNumber, Spin, Form, Alert, Button,
 } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -12,9 +12,11 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
 import { EXPERIMENT_SETTINGS_PROCESSING_SAVE, EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../../../../../../redux/actionTypes/experimentSettings';
+import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED } from '../../../../../../../redux/actionTypes/embeddings';
 
 import CalculationConfig from '../../../../../../../pages/experiments/[experimentId]/data-processing/configure-embedding/components/CalculationConfig';
-import initialState, { initialProcessingState } from '../../../../../../../redux/reducers/experimentSettings/initialState';
+import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
+import initialExperimentState, { initialProcessingState } from '../../../../../../../redux/reducers/experimentSettings/initialState';
 
 jest.mock('localforage');
 enableFetchMocks();
@@ -22,8 +24,9 @@ const mockStore = configureStore([thunk]);
 
 describe('CalculationConfig', () => {
   const storeState = {
+    embeddings: initialEmbeddingState,
     experimentSettings: {
-      ...initialState,
+      ...initialExperimentState,
       processing: initialProcessingState,
     },
   };
@@ -47,7 +50,14 @@ describe('CalculationConfig', () => {
       })),
     });
 
-    const response = new Response(JSON.stringify({ processingConfig: { ...initialProcessingState } }));
+    const response = new Response(
+      JSON.stringify(
+        {
+          processingConfig:
+            { ...initialProcessingState },
+        },
+      ),
+    );
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -56,8 +66,9 @@ describe('CalculationConfig', () => {
 
   it('renders correctly when nothing is loaded', () => {
     const store = mockStore({
+      embeddings: {},
       experimentSettings: {
-        ...initialState,
+        ...initialExperimentState,
       },
     });
 
@@ -141,7 +152,7 @@ describe('CalculationConfig', () => {
     expect(button.at(0).getElement().props.disabled).toEqual(false);
   });
 
-  it('clicking on button triggers save action', async () => {
+  it('clicking on button triggers save action and reloading of plot data', async () => {
     const store = mockStore(storeState);
 
     const component = mount(
@@ -163,9 +174,10 @@ describe('CalculationConfig', () => {
     button.simulate('click', {});
 
     // Should update and save the config.
-    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EXPERIMENT_SETTINGS_PROCESSING_SAVE]);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
 
-    expect(store.getActions().length).toEqual(3);
+    console.log(store.getActions());
+    expect(store.getActions().length).toEqual(2);
 
     // First there should be an update...
     const updateAction = store.getActions()[0];
@@ -174,7 +186,7 @@ describe('CalculationConfig', () => {
 
     // ... then there should be a save.
     const saveAction = store.getActions()[1];
-    expect(saveAction.type).toBe(EXPERIMENT_SETTINGS_PROCESSING_SAVE);
+    expect(saveAction.type).toBe(EMBEDDINGS_LOADING);
     expect(saveAction).toMatchSnapshot();
   });
 });

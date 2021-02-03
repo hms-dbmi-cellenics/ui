@@ -178,7 +178,7 @@ const PlotsTablesHome = () => {
             )}
           />
           <Space direction='vertical' style={{ width: '100%' }}>
-            <h1>Recent</h1>
+            <h1>Recommended</h1>
             <List
               grid={{ gutter: 16, column: 3 }}
               dataSource={openedPlots}

@@ -1,11 +1,16 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Radio } from 'antd';
+import PropTypes from 'prop-types';
+
 import { updatePlotConfig } from '../../../../../../redux/actions/componentConfig';
 
-const HeatmapExpressionValuesSettings = () => {
+const HeatmapExpressionValuesSettings = (props) => {
   const dispatch = useDispatch();
-  const expressionValue = useSelector((state) => state.componentConfig.interactiveHeatmap.config.expressionValue);
+
+  const { componentType } = props;
+
+  const expressionValue = useSelector((state) => state.componentConfig[componentType].config.expressionValue);
 
   const expressionValues = {
     raw: 'Raw values',
@@ -23,7 +28,7 @@ const HeatmapExpressionValuesSettings = () => {
       <Radio.Group
         value={expressionValue}
         onChange={({ target }) => dispatch(
-          updatePlotConfig('interactiveHeatmap', {
+          updatePlotConfig(componentType, {
             expressionValue: target.value,
           }),
         )}
@@ -36,6 +41,10 @@ const HeatmapExpressionValuesSettings = () => {
       </Radio.Group>
     </div>
   );
+};
+
+HeatmapExpressionValuesSettings.propTypes = {
+  componentType: PropTypes.string.isRequired,
 };
 
 export default HeatmapExpressionValuesSettings;

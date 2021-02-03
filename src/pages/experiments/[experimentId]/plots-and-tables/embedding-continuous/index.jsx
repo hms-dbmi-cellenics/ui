@@ -28,6 +28,7 @@ import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
 import PlatformError from '../../../../../components/PlatformError';
 import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
+import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -55,6 +56,7 @@ const EmbeddingContinuousPlot = () => {
   const expressionError = useSelector((state) => state.genes.expression.error);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const cellSets = useSelector((state) => state.cellSets);
+  const processingSettings = useSelector((state) => state.experimentSettings.processing);
   const { properties } = cellSets;
   const router = useRouter();
   const { experimentId } = router.query;
@@ -80,8 +82,8 @@ const EmbeddingContinuousPlot = () => {
     if (!experimentId || !isBrowser) {
       return;
     }
-    if (!data) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
+    if (!processingSettings.configureEmbedding) {
+      dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
 
@@ -91,6 +93,12 @@ const EmbeddingContinuousPlot = () => {
     dispatch(loadGeneExpression(experimentId, [highestDispersionGene]));
     updatePlotWithChanges({ shownGene: highestDispersionGene });
   }
+
+  useEffect(() => {
+    if (!data && processingSettings.configureEmbedding) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+    }
+  }, [processingSettings]);
 
   const filterSamples = () => {
     if (config.selectedSample === 'All') {

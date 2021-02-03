@@ -26,7 +26,7 @@ const VegaHeatmap = (props) => {
     return heightPerGene * rowsNumber;
   };
 
-  const getAxes = () => {
+  const getAxes = () => {    
     if (showAxes) {
       return axes;
     }
