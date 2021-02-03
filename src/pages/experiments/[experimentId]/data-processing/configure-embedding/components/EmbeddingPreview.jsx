@@ -1,4 +1,6 @@
+/* eslint-disable no-param-reassign */
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import {
   Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse,
@@ -7,18 +9,25 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
 import CalculationConfig from './CalculationConfig';
-import UMAP from './new_data.json';
+import { loadEmbedding } from '../../../../../../redux/actions/embedding';
+import { loadGeneExpression } from '../../../../../../redux/actions/genes';
+import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 
 import PlatformError from '../../../../../../components/PlatformError';
 import { initialPlotConfigStates } from '../../../../../../redux/reducers/componentConfig/initialState';
+
+import {
+  updatePlotConfig,
+  loadPlotConfig,
+} from '../../../../../../redux/actions/componentConfig';
+
 import generateEmbeddingCategoricalSpec from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import generateEmbeddingContinuousSpec from '../../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import colorProvider from '../../../../../../utils/colorProvider';
+import isBrowser from '../../../../../../utils/environment';
 import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
 import ColourInversion, { invertColour } from '../../../plots-and-tables/components/ColourInversion';
@@ -36,95 +45,127 @@ const EmbeddingPreview = () => {
   const { experimentId } = router.query;
   const [selectedSpec, setSelectedSpec] = useState('sample');
   const [plotSpec, setPlotSpec] = useState({});
-  const [config, setConfig] = useState(null);
+
+  const dispatch = useDispatch();
 
   const error = false;
 
   const plots = {
     sample: {
-      title: 'Samples',
-      initialConfig: initialPlotConfigStates.embeddingCategorical,
+      title: 'Colored by Samples',
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
-      plotUuid: 'embeddingContinuousMain',
-      plotType: 'embeddingContinuous',
+      plotUuid: 'embeddingPreviewBySample',
+      plotType: 'embeddingCategorical',
     },
     cellCluster: {
-      title: 'Default clusters',
-      initialConfig: initialPlotConfigStates.embeddingCategorical,
+      title: 'Colored by CellSets',
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
-      plotUuid: 'embeddingContinuousMain',
-      plotType: 'embeddingContinuous',
+      plotUuid: 'embeddingPreviewByCellSets',
+      plotType: 'embeddingCategorical',
     },
     mitochondrialFraction: {
       title: 'Mitochondrial fraction reads',
-      initialConfig: initialPlotConfigStates.embeddingContinuous,
       specGenerator: generateEmbeddingContinuousSpec,
       imgSrc: plot2Pic,
-      plotUuid: 'embeddingCategoricalMain',
-      plotType: 'embeddingCategorical',
+      plotUuid: 'embeddingPreviewMitochondrialReads',
+      plotType: 'embeddingContinuous',
     },
     doubletScore: {
       title: 'Cell doublet score',
-      initialConfig: initialPlotConfigStates.embeddingContinuous,
       specGenerator: generateEmbeddingContinuousSpec,
       imgSrc: plot2Pic,
-      plotUuid: 'embeddingCategoricalMain',
-      plotType: 'embeddingCategorical',
+      plotUuid: 'embeddingPreviewDoubletScore',
+      plotType: 'embeddingContinuous',
     },
   };
+
+  const config = useSelector((state) => state.componentConfig[plots[selectedSpec].plotUuid]?.config);
+
+  // Prepare data for categorical embedding
+  const embeddingType = 'umap';
+
+  const cellSets = useSelector((state) => state.cellSets);
+  const { data } = useSelector((state) => state.embeddings[embeddingType]) || {};
+  const selectedExpression = useSelector((state) => state.genes.expression.data[config?.shownGene]);
+
+  useEffect(() => {
+    if (!data) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+      dispatch(loadCellSets(experimentId));
+    }
+  }, [experimentId]);
 
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-    if (!config) {
+    if (!config || !data) {
+      return;
+    }
+
+    if (!selectedExpression && config.shownGene) {
+      dispatch(loadGeneExpression(experimentId, [config.shownGene]));
+    }
+
+    if ((plots[selectedSpec].plotType === 'embeddingContinuous' && !selectedExpression)
+      || !cellSets) {
       return;
     }
 
     const spec = plots[selectedSpec].specGenerator(config);
-    generateData(spec);
+
+    if (plots[selectedSpec].plotType === 'embeddingContinuous') {
+      // If embedding is continuous
+
+      spec.data.forEach((s) => {
+        if (s.name === 'expression') {
+          s.values = selectedExpression;
+        } else if (s.name === 'embedding') {
+          s.values = data;
+        }
+      });
+    } else {
+      // If embedding categorical
+      // First, find the child nodes in the hirerarchy.
+      let newCellSets = cellSets.hierarchy.find(
+        (rootNode) => rootNode.key === config.selectedCellSet,
+      )?.children || [];
+
+      // Build up the data source based on the properties. Note that the child nodes
+      // in the hierarchy are /objects/ with a `key` property, hence the destructuring
+      // in the function.
+      newCellSets = newCellSets.map(({ key }) => ({
+        cellSetId: key,
+        ...cellSets.properties[key],
+        cellIds: Array.from(cellSets.properties[key].cellIds),
+      }));
+
+      spec.data.forEach((s) => {
+        if (s.name === 'cellSets') {
+          s.values = newCellSets;
+        } else if (s.name === 'embedding') {
+          s.values = data;
+        }
+      });
+    }
+
     setPlotSpec(spec);
-  }, [config]);
+  }, [config, data, selectedExpression, cellSets]);
 
   // If the user toggles to a different embedding, set the config to be the initial
   // state for that type of plot.
   useEffect(() => {
-    setConfig(plots[selectedSpec].initialConfig);
+    if (!isBrowser) return;
+    const { plotUuid, plotType } = plots[selectedSpec];
+
+    if (!config) {
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    }
   }, [selectedSpec]);
 
-  // Quick and dirty function to massage prepared data into a good shape.
-  // This will be changed once we actually load data from Redux.
-  /* eslint-disable no-param-reassign */
-  const generateData = (spec) => {
-    spec.data.forEach((s) => {
-      if (s.name === 'cellSets') {
-        s.values = [];
-
-        UMAP.forEach((cell, i) => {
-          s.values[cell.cluster_id] = {
-            name: `${cell.cluster_id}`,
-            cellSetId: cell.cluster_id,
-            cellIds: s.values[cell.cluster_id]?.cellIds ? [...s.values[cell.cluster_id].cellIds, i] : [i],
-            color: colorProvider.getColor(),
-          };
-        });
-      }
-
-      if (s.name === 'expression') {
-        s.values = { expression: UMAP.map((cell) => cell.doubletScore || 0) };
-      }
-
-      if (s.name === 'embedding') {
-        s.values = UMAP.map((cell) => [cell.UMAP_1, cell.UMAP_2]);
-      }
-    });
-  };
-
   const updatePlotWithChanges = (obj) => {
-    const newConfig = _.cloneDeep(config);
-    _.merge(newConfig, obj);
-    setConfig(newConfig);
+    dispatch(updatePlotConfig(plots[selectedSpec].plotUuid, obj));
   };
 
   const renderPlot = () => {
@@ -257,8 +298,8 @@ const EmbeddingPreview = () => {
                 {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical && (
                   <Panel header='Colour inversion'>
                     <ColourInversion
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
+                      value={config.colour.toggleInvert}
+                      onUpdate={(e) => updatePlotWithChanges(invertColour(e.target.value))}
                     />
                   </Panel>
                 )}

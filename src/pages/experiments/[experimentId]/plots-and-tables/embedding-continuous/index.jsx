@@ -148,8 +148,6 @@ const EmbeddingContinuousPlot = () => {
       );
     }
 
-    console.log(generateSpec(config, selectedGene));
-
     return (
       <center>
         <Vega

@@ -9,6 +9,7 @@ import {
   labelBaseState,
 } from './basePlotStylingState';
 
+// PLOTS & TABLES - Categorical Embedding
 const embeddingCategoricalInitialConfig = {
   spec: '1.0.0',
   legend: {
@@ -38,6 +39,7 @@ const embeddingCategoricalInitialConfig = {
   selectedSample: 'All',
 };
 
+// PLOTS & TABLES - Continuous Embedding
 const embeddingContinuousInitialConfig = {
   spec: '1.0.0',
   legend: legendBaseState,
@@ -67,6 +69,7 @@ const embeddingContinuousInitialConfig = {
   selectedSample: 'All',
 };
 
+// PLOTS & TABLES - Heatmap
 const heatmapInitialConfig = {
   spec: '1.0.0',
   legend: {
@@ -93,6 +96,7 @@ const heatmapInitialConfig = {
   labelColour: 'transparent',
 };
 
+// PLOTS & TABLES - Volcano plot
 const volcanoInitialConfig = {
   spec: '1.0.0',
   legend: legendBaseState,
@@ -146,6 +150,8 @@ const volcanoInitialConfig = {
   strokeOpa: 1,
   strokeCol: '#000000',
 };
+
+// PLOTS & TABLES - Frequency
 const frequencyInitialConfig = {
   spec: '1.0.0',
   frequencyType: 'proportional',
@@ -171,6 +177,126 @@ const frequencyInitialConfig = {
   geneexpLegendloc: '',
 };
 
+// EMBEDDING PREVIEW - Coloured by sample
+const embeddingPreviewBySampleInitialConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'UMAP 1',
+    yAxisText: 'UMAP 2',
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  selectedCellSet: 'louvain',
+  selectedSample: 'All',
+};
+
+// EMBEDDING PREVIEW - Coloured by cell sets
+const embeddingPreviewByCellSetsInitialConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'UMAP 1',
+    yAxisText: 'UMAP 2',
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  selectedCellSet: 'louvain',
+  selectedSample: 'All',
+};
+
+// EMBEDDING PREVIEW - Config for fraction of mitochondrial reads
+const embeddingPreviewMitochondrialReadsInitialConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'UMAP 1',
+    yAxisText: 'UMAP 2',
+    domainWidth: 2,
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  logEquation: 'datum.expression*1',
+  shownGene: 'CST3',
+  selectedSample: 'All',
+};
+
+// EMBEDDING PREVIEW - Config for doublet score
+const embeddingPreviewDoubletScoreInitialConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'UMAP 1',
+    yAxisText: 'UMAP 2',
+    domainWidth: 2,
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  logEquation: 'datum.expression*1',
+  shownGene: 'CST3',
+  selectedSample: 'All',
+};
+
 const interactiveHeatmapInitialConfig = {
   selectedTracks: ['louvain'],
   groupedTracks: ['sample', 'louvain'],
@@ -184,6 +310,10 @@ const initialPlotConfigStates = {
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
   frequency: frequencyInitialConfig,
+  embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
+  embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
+  embeddingPreviewMitochondrialReads: embeddingPreviewMitochondrialReadsInitialConfig,
+  embeddingPreviewDoubletScore: embeddingPreviewDoubletScoreInitialConfig,
 };
 
 const initialComponentConfigStates = {
