@@ -62,7 +62,7 @@ const EmbeddingContinuousPlot = () => {
   const { experimentId } = router.query;
   const PROPERTIES = ['dispersions'];
   const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]?.data[0]);
-  // temporal solution for selecting the default gene until they are displayed with a table
+  // temporary solution for selecting the default gene until they are displayed with a table
   const tableState = {
     pagination: {
       current: 1, pageSize: 1, showSizeChanger: true, total: 0,
@@ -74,9 +74,9 @@ const EmbeddingContinuousPlot = () => {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 
-  // obj is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
+  // updateField is a subset of what default config has and contains only the things we want change
+  const updatePlotWithChanges = (updateField) => {
+    dispatch(updatePlotConfig(plotUuid, updateField));
   };
   useEffect(() => {
     if (!experimentId || !isBrowser) {
