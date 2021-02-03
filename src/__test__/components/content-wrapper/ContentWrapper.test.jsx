@@ -7,7 +7,6 @@ import thunk from 'redux-thunk';
 import { Menu } from 'antd';
 import ContentWrapper from '../../../components/ContentWrapper';
 
-
 const { Item } = Menu;
 
 jest.mock('next/router', () => ({
@@ -38,12 +37,12 @@ describe('ContentWrapper', () => {
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);
-    expect(menus.length).toEqual(4);
+    expect(menus.length).toEqual(2);
 
-    const dataExplorationLink = menus.at(2).find('Link');
+    const dataExplorationLink = menus.at(0).find('Link');
     expect(dataExplorationLink.props().as).toEqual('/experiments/1234/data-exploration');
 
-    const plotsTablesLink = menus.at(3).find('Link');
+    const plotsTablesLink = menus.at(1).find('Link');
     expect(plotsTablesLink.props().as).toEqual('/experiments/1234/plots-and-tables');
   });
 });

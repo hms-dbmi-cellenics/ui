@@ -20,7 +20,7 @@ const initialState = {
   componentConfig: {
     interactiveHeatmap: {
       config: {
-        groupedTrack: 'sample',
+        groupedTracks: ['sample'],
         selectedTracks: ['louvain'],
         expressionValue: 'raw',
       },
@@ -40,7 +40,7 @@ describe('HeatmapExpressionValuesSettings', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapExpressionValuesSettings />
+        <HeatmapExpressionValuesSettings componentType='interactiveHeatmap' />
       </Provider>,
     );
 
@@ -66,7 +66,7 @@ describe('HeatmapExpressionValuesSettings', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapExpressionValuesSettings />
+        <HeatmapExpressionValuesSettings componentType='interactiveHeatmap' />
       </Provider>,
     );
 

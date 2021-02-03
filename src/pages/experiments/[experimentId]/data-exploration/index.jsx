@@ -11,7 +11,7 @@ import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
 import GeneListTool from './components/gene-list-tool/GeneListTool';
 import DiffExprManager from './components/differential-expression-tool/DiffExprManager';
 import Embedding from './components/embedding/Embedding';
-import HeatmapPlot from './components/heatmap/HeatmapPlot';
+import { COMPONENT_TYPE, HeatmapPlot } from './components/heatmap/HeatmapPlot';
 import HeatmapSettings from './components/heatmap/HeatmapSettings';
 import { updateLayout } from '../../../../redux/actions/layout';
 import getApiEndpoint from '../../../../utils/apiEndpoint';
@@ -55,7 +55,7 @@ const ExplorationViewPage = () => {
     },
     Heatmap: {
       toolbarControls: [
-        <HeatmapSettings />,
+        <HeatmapSettings componentType={COMPONENT_TYPE} />,
         <RemoveButton />,
       ],
       component: (width, height) => (
