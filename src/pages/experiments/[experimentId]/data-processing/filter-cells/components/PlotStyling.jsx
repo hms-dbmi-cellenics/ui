@@ -122,11 +122,11 @@ const PlotStyling = (props) => {
               label='Grid-line weight'
             >
               <Slider
-                defaultValue={config.transGrid}
+                defaultValue={config.axes.gridOpacity}
                 min={0}
                 max={10}
                 onAfterChange={(value) => {
-                  onUpdate({ transGrid: value });
+                  onUpdate({ gridOpacity: value });
                 }}
               />
             </Form.Item>

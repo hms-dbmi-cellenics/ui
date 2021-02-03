@@ -12,19 +12,19 @@ const AxesDesign = (props) => {
     labelSize,
     tickSize,
     offset,
-    gridLineWeight,
+    gridOpacity,
     onXAxisTextUpdate,
     onYAxisTextUpdate,
     onLabelSizeUpdate,
     onTickSizeUpdate,
     onOffsetUpdate,
-    onGridLineWeightUpdate,
+    onGridOpacityUpdate,
   } = props;
 
   const onUpdateLabelSizeThrottled = useRef(_.throttle((val) => onLabelSizeUpdate(val), 10));
   const onUpdateTickSizeThrottled = useRef(_.throttle((val) => onTickSizeUpdate(val), 10));
   const onUpdateOffsetThrottled = useRef(_.throttle((val) => onOffsetUpdate(val), 10));
-  const onUpdateGridLineWeightThrottled = useRef(_.throttle((val) => onGridLineWeightUpdate(val), 10));
+  const onUpdateGridOpacityThrottled = useRef(_.throttle((val) => onGridOpacityUpdate(val), 10));
 
   return (
     <Form
@@ -78,10 +78,10 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Grid-line weight'>
         <Slider
-          value={gridLineWeight}
+          value={gridOpacity}
           min={0}
           max={10}
-          onChange={(val) => onUpdateGridLineWeightThrottled.current(val)}
+          onChange={(val) => onUpdateGridOpacityThrottled.current(val)}
           marks={{ 0: 0, 10: 10 }}
         />
       </Form.Item>
@@ -95,13 +95,13 @@ AxesDesign.propTypes = {
   labelSize: PropTypes.number,
   tickSize: PropTypes.number,
   offset: PropTypes.number,
-  gridLineWeight: PropTypes.number,
+  gridOpacity: PropTypes.number,
   onXAxisTextUpdate: PropTypes.func.isRequired,
   onYAxisTextUpdate: PropTypes.func.isRequired,
   onLabelSizeUpdate: PropTypes.func.isRequired,
   onTickSizeUpdate: PropTypes.func.isRequired,
   onOffsetUpdate: PropTypes.func.isRequired,
-  onGridLineWeightUpdate: PropTypes.func.isRequired,
+  onGridOpacityUpdate: PropTypes.func.isRequired,
 };
 
 AxesDesign.defaultProps = {
@@ -110,7 +110,7 @@ AxesDesign.defaultProps = {
   labelSize: 12,
   tickSize: 13,
   offset: 0,
-  gridLineWeight: 0,
+  gridOpacity: 0,
 };
 
 export default AxesDesign;

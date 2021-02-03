@@ -33,7 +33,7 @@ class Classifier extends React.Component {
       axisTitlesize: 13,
       axisTicks: 13,
       axisOffset: 0,
-      transGrid: 10,
+      gridOpacity: 10,
       width: 630,
       height: 500,
       maxWidth: 789,
@@ -135,7 +135,7 @@ class Classifier extends React.Component {
           titleFontSize: { value: config.axisTitlesize },
           labelFontSize: { value: config.axisTicks },
           offset: { value: config.axisOffset },
-          gridOpacity: { value: (config.transGrid / 20) },
+          gridOpacity: { value: (config.axes.gridOpacity / 20) },
         },
         {
           scale: 'y',
@@ -150,7 +150,7 @@ class Classifier extends React.Component {
           titleFontSize: { value: config.axisTitlesize },
           labelFontSize: { value: config.axisTicks },
           offset: { value: config.axisOffset },
-          gridOpacity: { value: (config.transGrid / 20) },
+          gridOpacity: { value: (config.axes.gridOpacity / 20) },
         },
       ],
       marks: [
@@ -250,7 +250,7 @@ class Classifier extends React.Component {
                 <BandwidthOrBinstep
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
-                  type={'bandwidth'}
+                  type='bandwidth'
                 />
               </Panel>
               <PlotStyling

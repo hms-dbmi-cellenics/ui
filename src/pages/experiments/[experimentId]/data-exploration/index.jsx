@@ -18,6 +18,8 @@ import getApiEndpoint from '../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../utils/cacheRequest';
 import PreloadContent from '../../../../components/PreloadContent';
 
+import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+
 import 'react-mosaic-component/react-mosaic-component.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
@@ -45,6 +47,8 @@ const ExplorationViewPage = () => {
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
+
+  console.log(initialPlotConfigStates);
 
   const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
 

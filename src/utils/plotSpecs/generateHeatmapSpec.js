@@ -255,7 +255,7 @@ const generateSpec = (config, groupName) => {
       color: { value: config.colour.masterColour },
       anchor: { value: config.title.anchor },
       font: { value: config.fontStyle.font },
-      dx: { value: config.bounceX },
+      dx: { value: config.title.dx },
       fontSize: { value: config.title.fontSize },
     },
   };

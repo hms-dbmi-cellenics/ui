@@ -44,7 +44,7 @@ class ReadAlignment extends React.Component {
       axisTitlesize: 13,
       axisTicks: 13,
       axisOffset: 0,
-      transGrid: 10,
+      gridOpacity: 10,
       width: 530,
       height: 400,
       maxWidth: 660,
@@ -152,7 +152,7 @@ class ReadAlignment extends React.Component {
             titleFontSize: { value: config.axisTitlesize },
             labelFontSize: { value: config.axisTicks },
             offset: { value: config.axisOffset },
-            gridOpacity: { value: (config.transGrid / 20) },
+            gridOpacity: { value: (config.axes.gridOpacity / 20) },
 
           },
           {
@@ -168,7 +168,7 @@ class ReadAlignment extends React.Component {
             titleFontSize: { value: config.axisTitlesize },
             labelFontSize: { value: config.axisTicks },
             offset: { value: config.axisOffset },
-            gridOpacity: { value: (config.transGrid / 20) },
+            gridOpacity: { value: (config.axes.gridOpacity / 20) },
 
           },
         ],
@@ -293,7 +293,7 @@ class ReadAlignment extends React.Component {
           titleFontSize: { value: config.axisTitlesize },
           labelFontSize: { value: config.axisTicks },
           offset: { value: config.axisOffset },
-          gridOpacity: { value: (config.transGrid / 20) },
+          gridOpacity: { value: (config.axes.gridOpacity / 20) },
         },
         {
           orient: 'left',
@@ -307,7 +307,7 @@ class ReadAlignment extends React.Component {
           titleFontSize: { value: config.axisTitlesize },
           labelFontSize: { value: config.axisTicks },
           offset: { value: config.axisOffset },
-          gridOpacity: { value: (config.transGrid / 20) },
+          gridOpacity: { value: (config.axes.gridOpacity / 20) },
         },
       ],
 

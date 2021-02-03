@@ -241,16 +241,16 @@ const EmbeddingCategoricalPlot = () => {
               <AxesDesign
                 xAxisText={config.axes.xAxisText}
                 yAxisText={config.axes.yAxisText}
-                labelSize={config.axes.labelSize}
+                labelSize={config.axes.labelFontSize}
                 tickSize={config.axes.tickSize}
                 offset={config.axes.offset}
-                gridLineWeight={config.axes.gridLineWeight}
+                gridOpacity={config.axes.gridOpacity}
                 onXAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { xAxisText: e.target.value } })}
                 onYAxisTextUpdate={(e) => updatePlotWithChanges({ axes: { yAxisText: e.target.value } })}
                 onLabelSizeUpdate={(val) => updatePlotWithChanges({ axes: { labelSize: val } })}
                 onTickSizeUpdate={(val) => updatePlotWithChanges({ axes: { tickSize: val } })}
                 onOffsetUpdate={(val) => updatePlotWithChanges({ axes: { offset: val } })}
-                onGridLineWeightUpdate={(val) => updatePlotWithChanges({ axes: { gridLineWeight: val } })}
+                onGridOpacityUpdate={(val) => updatePlotWithChanges({ axes: { gridOpacity: val } })}
               />
             </Panel>
             <Panel header='Colour Inversion' key='4'>
