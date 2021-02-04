@@ -13,7 +13,7 @@ import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
 import Header from '../components/Header';
-import generateSpec from '../../../../../utils/plotSpecs/generateHeatmapSpec';
+import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression } from '../../../../../redux/actions/genes';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import isBrowser from '../../../../../utils/environment';

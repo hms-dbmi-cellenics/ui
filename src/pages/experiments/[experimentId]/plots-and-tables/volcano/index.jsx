@@ -24,7 +24,7 @@ import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
 import ColourInversion from '../components/ColourInversion';
 import LegendEditor from '../components/LegendEditor';
-import generateSpec from '../../../../../utils/plotSpecs/generateVolcanoSpec';
+import { generateSpec } from '../../../../../utils/plotSpecs/generateVolcanoSpec';
 import Header from '../components/Header';
 import DiffExprCompute from '../../data-exploration/components/differential-expression-tool/DiffExprCompute';
 import isBrowser from '../../../../../utils/environment';

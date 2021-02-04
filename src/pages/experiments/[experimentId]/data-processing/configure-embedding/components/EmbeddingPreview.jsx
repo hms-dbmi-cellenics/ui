@@ -9,24 +9,20 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
 import CalculationConfig from './CalculationConfig';
-import { loadEmbedding } from '../../../../../../redux/actions/embedding';
-import { loadGeneExpression } from '../../../../../../redux/actions/genes';
-import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 
-import PlatformError from '../../../../../../components/PlatformError';
 import { initialPlotConfigStates } from '../../../../../../redux/reducers/componentConfig/initialState';
+
+import CategoricalEmbeddingPlot from './CategoricalEmbeddingPlot';
+import ContinuousEmbeddingPlot from './ContinuousEmbeddingPlot';
 
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from '../../../../../../redux/actions/componentConfig';
 
-import generateEmbeddingCategoricalSpec, { generateData as generateCategoricalSpecData } from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import generateEmbeddingContinuousSpec, { generateData as generateContinuousSpecData } from '../../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import isBrowser from '../../../../../../utils/environment';
 import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
@@ -43,8 +39,8 @@ const { Panel } = Collapse;
 const EmbeddingPreview = () => {
   const router = useRouter();
   const { experimentId } = router.query;
-  const [selectedSpec, setSelectedSpec] = useState('sample');
-  const [plotSpec, setPlotSpec] = useState({});
+  const [selectedPlot, setSelectedPlot] = useState('sample');
+  const [plot, setPlot] = useState(false);
 
   const embeddingConfig = useSelector((state) => state.experimentSettings.processing);
   const embedding = useSelector((state) => state.embeddings);
@@ -57,117 +53,65 @@ const EmbeddingPreview = () => {
   const plots = {
     sample: {
       title: 'Colored by Samples',
-      specGenerator: generateEmbeddingCategoricalSpec,
-      dataGenerator: generateDataCategoricalSpec
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
       plotType: 'embeddingCategorical',
     },
     cellCluster: {
       title: 'Colored by CellSets',
-      specGenerator: generateEmbeddingCategoricalSpec,
-      dataGenerator: generateDataCategoricalSpec
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
       plotType: 'embeddingCategorical',
     },
     mitochondrialFraction: {
       title: 'Mitochondrial fraction reads',
-      specGenerator: generateEmbeddingContinuousSpec,
-      dataGenerator:
-        imgSrc: plot2Pic,
+      imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialReads',
       plotType: 'embeddingContinuous',
     },
     doubletScore: {
       title: 'Cell doublet score',
-      specGenerator: generateEmbeddingContinuousSpec,
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewDoubletScore',
       plotType: 'embeddingContinuous',
     },
   };
 
-  const config = useSelector((state) => state.componentConfig[plots[selectedSpec].plotUuid]?.config);
-
-  // Prepare data for categorical embedding
-  const embeddingType = embeddingConfig.configureEmbedding?.embeddingSettings.method;
-
-  const cellSets = useSelector((state) => state.cellSets);
-  const { data: embeddingData } = useSelector((state) => state.embeddings[embeddingType]) || {};
-
-  useEffect(() => {
-    if (!embeddingData) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
-      dispatch(loadCellSets(experimentId));
-    }
-  }, [experimentId]);
+  const config = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config);
 
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-    if (!config || !embeddingData) {
+    if (!config) {
       return;
     }
 
-    if (config.shownGene) {
-      dispatch(loadGeneExpression(experimentId, [config.shownGene]));
+    switch (plots[selectedPlot].plotType) {
+      case 'embeddingContinuous':
+        setPlot(<ContinuousEmbeddingPlot experimentId={experimentId} config={config} />);
+        break;
+
+      // Set this as default plot because default plot is 'sample' which is categorical
+      case 'embeddingCategorical':
+      default:
+        setPlot(<CategoricalEmbeddingPlot experimentId={experimentId} config={config} />);
+        break;
     }
-
-    if ((plots[selectedSpec].plotType === 'embeddingContinuous') || !cellSets) {
-      return;
-    }
-
-    const spec = plots[selectedSpec].specGenerator(config);
-
-    if (plots[selectedSpec].plotType === 'embeddingContinuous') {
-      generateContinuousSpecData(spec, config.shownGene, embeddingData)
-    } else {
-      generateCategoricalSpecData(spec, cellSets, config.selectedCellSet, embeddingData)
-    }
-    setPlotSpec(spec);
-
-  }, [config, embeddingData, selectedExpression, cellSets]);
+  }, [config]);
 
   // If the user toggles to a different embedding, set the config to be the initial
   // state for that type of plot.
   useEffect(() => {
     if (!isBrowser) return;
-    const { plotUuid, plotType } = plots[selectedSpec];
+    const { plotUuid, plotType } = plots[selectedPlot];
 
     if (!config) {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
-  }, [selectedSpec]);
+  }, [selectedPlot]);
 
   const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plots[selectedSpec].plotUuid, obj));
-  };
-
-  const renderPlot = () => {
-    if (error) {
-      return (
-        <PlatformError
-          description={error}
-          onClick={() => { }}
-        />
-      );
-    }
-
-    // Spinner for plot loading
-    if (!config || (embeddingMethod && embedding[embeddingMethod]?.loading)) {
-      return (
-        <center>
-          <Spin size='large' />
-        </center>
-      );
-    }
-
-    return (
-      <center>
-        <Vega spec={plotSpec} renderer='canvas' />
-      </center>
-    );
+    dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
   };
 
   // Spinner for main window
@@ -182,12 +126,12 @@ const EmbeddingPreview = () => {
   return (
     <>
       <PageHeader
-        title={plots[selectedSpec].title}
+        title={plots[selectedPlot].title}
         style={{ width: '100%', paddingRight: '0px' }}
       />
       <Row>
         <Col span={15}>
-          {renderPlot()}
+          {plot}
         </Col>
 
         <Col span={3}>
@@ -200,7 +144,7 @@ const EmbeddingPreview = () => {
               <button
                 type='button'
                 key={key}
-                onClick={() => setSelectedSpec(key)}
+                onClick={() => setSelectedPlot(key)}
                 style={{
                   padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
                 }}
@@ -241,13 +185,13 @@ const EmbeddingPreview = () => {
                 <Panel header='Axes and Margins' key='axes'>
                   <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
-                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingContinuous && (
+                {plots[selectedPlot].initialConfig === initialPlotConfigStates.embeddingContinuous && (
                   <Panel header='Colours' key='colors'>
                     <ColourbarDesign config={config} onUpdate={updatePlotWithChanges} />
                     <ColourInversion config={config} onUpdate={updatePlotWithChanges} />
                   </Panel>
                 )}
-                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical && (
+                {plots[selectedPlot].initialConfig === initialPlotConfigStates.embeddingCategorical && (
                   <Panel header='Colour inversion'>
                     <ColourInversion config={config} onUpdate={updatePlotWithChanges} />
                   </Panel>
@@ -255,12 +199,12 @@ const EmbeddingPreview = () => {
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
-                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingContinuous && (
+                {plots[selectedPlot].initialConfig === initialPlotConfigStates.embeddingContinuous && (
                   <Panel header='Legend' key='legend'>
                     <LegendEditor config={config} onUpdate={updatePlotWithChanges} />
                   </Panel>
                 )}
-                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical && (
+                {plots[selectedPlot].initialConfig === initialPlotConfigStates.embeddingCategorical && (
                   <Panel header='Legend' key='legend'>
                     <LegendEditor config={config} onUpdate={updatePlotWithChanges} option={{ position: 'top-bottom' }} />
                   </Panel>

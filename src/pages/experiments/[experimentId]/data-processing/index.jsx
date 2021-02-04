@@ -68,7 +68,7 @@ const DataProcessingPage = () => {
     },
   ];
 
-  const [stepId, setStepId] = useState(0);
+  const [stepId, setStepId] = useState(6);
 
   const [completedSteps, setCompletedSteps] = useState(new Set());
 

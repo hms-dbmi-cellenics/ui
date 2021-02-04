@@ -153,12 +153,24 @@ const generateSpec = (config) => {
   };
 };
 
-const generateData = (spec, selectedExpression, embeddingData) => {
+const generateData = (spec,
+  selectedExpression,
+  selectedSample,
+  embeddingData,
+  cellSetProperties) => {
+  let filteredData = [];
+  if (selectedSample !== 'All') {
+    const cellIds = Array.from(cellSetProperties[selectedSample].cellIds);
+    filteredData = embeddingData.filter((id) => cellIds.includes(embeddingData.indexOf(id)));
+  } else {
+    filteredData = embeddingData;
+  }
+
   spec.data.forEach((s) => {
     if (s.name === 'expression') {
       s.values = selectedExpression;
     } else if (s.name === 'embedding') {
-      s.values = embeddingData;
+      s.values = filteredData;
     }
   });
 
@@ -169,5 +181,3 @@ export {
   generateSpec,
   generateData,
 };
-
-export default generateSpec;

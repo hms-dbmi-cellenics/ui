@@ -347,4 +347,6 @@ const generateSpec = (configSrc, data) => {
   };
 };
 
-export default generateSpec;
+const generateData = () => { };
+
+export { generateSpec, generateData };

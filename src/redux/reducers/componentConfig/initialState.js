@@ -256,7 +256,7 @@ const embeddingPreviewMitochondrialReadsInitialConfig = {
   marker: markerBaseState,
   label: labelBaseState,
   logEquation: 'datum.expression*1',
-  shownGene: 'notSelected',
+  shownGene: 'CST3',
   selectedSample: 'All',
 };
 
@@ -285,7 +285,7 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   marker: markerBaseState,
   label: labelBaseState,
   logEquation: 'datum.expression*1',
-  shownGene: 'notSelected',
+  shownGene: 'CST3',
   selectedSample: 'All',
 };
 

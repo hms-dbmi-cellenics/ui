@@ -261,4 +261,6 @@ const generateSpec = (config, groupName) => {
   };
 };
 
-export default generateSpec;
+const generateData = () => { };
+
+export { generateSpec, generateData };

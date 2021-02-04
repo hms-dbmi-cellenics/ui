@@ -225,5 +225,3 @@ export {
   generateSpec,
   generateData,
 };
-
-export default generateSpec;
