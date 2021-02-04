@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -6,8 +6,12 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import PreloadContent from '../../../../../../components/PreloadContent';
 
-import { updateProcessingSettings, saveProcessingSettings, loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+import {
+  updateProcessingSettings,
+  saveProcessingSettings,
+} from '../../../../../../redux/actions/experimentSettings';
 import { loadEmbedding } from '../../../../../../redux/actions/embedding';
 
 const { Option } = Select;
@@ -28,7 +32,6 @@ const CalculationConfig = (props) => {
   const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
-
   const { method: clusteringMethod } = data?.clusteringSettings || {};
   const { method: embeddingMethod } = data?.embeddingSettings || {};
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
@@ -39,20 +42,25 @@ const CalculationConfig = (props) => {
   }, 1500), []);
 
   const updateSettings = (diff) => {
-    // Always update the settings in the Redux store.
-    dispatch(updateProcessingSettings(
-      experimentId,
-      FILTER_UUID,
-      diff,
-    ));
-
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Apply.
-      setChangesOutstanding(true);
+      setChangesOutstanding(true, () => {
+        dispatch(updateProcessingSettings(
+          experimentId,
+          FILTER_UUID,
+          diff,
+        ));
+      });
     } else {
       // If it's a clustering change, debounce the save process at 1.5s.
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
+
+      dispatch(updateProcessingSettings(
+        experimentId,
+        FILTER_UUID,
+        diff,
+      ));
     }
   };
 
@@ -62,14 +70,6 @@ const CalculationConfig = (props) => {
     dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
     dispatch(loadEmbedding(experimentId, embeddingMethod));
   };
-
-  useEffect(() => {
-    if (!experimentId) {
-      return;
-    }
-
-    dispatch(loadProcessingSettings(experimentId, FILTER_UUID));
-  }, [experimentId]);
 
   const renderUMAPSettings = () => (
     <>
@@ -165,7 +165,7 @@ const CalculationConfig = (props) => {
   );
 
   if (!data) {
-    return <Spin />;
+    return <PreloadContent />;
   }
 
   return (

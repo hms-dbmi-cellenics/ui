@@ -4,7 +4,7 @@ import getApiEndpoint from '../../../utils/apiEndpoint';
 const saveProcessingSettings = (experimentId, settingName) => async (dispatch, getState) => {
   const content = getState().experimentSettings.processing[settingName];
 
-  const response = await fetch(
+  await fetch(
     `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
     {
       method: 'PUT',
@@ -15,8 +15,6 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
       }]),
     },
   );
-
-  console.log(response);
 
   dispatch({
     type: EXPERIMENT_SETTINGS_PROCESSING_SAVE,

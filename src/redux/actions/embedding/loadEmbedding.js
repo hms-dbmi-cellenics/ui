@@ -52,7 +52,7 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
       payload: {
         experimentId,
         embeddingType,
-        error: "Oops, we couldn't load your embedding. The computation took too long or your connection is broken.",
+        error: "We're sorry, we were unable to load your embedding.",
       },
     });
   }
