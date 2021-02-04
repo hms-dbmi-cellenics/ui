@@ -55,7 +55,7 @@ const CalculationConfig = () => {
     },
   ];
 
-  const changesOutstanding = true;
+  const changesOutstanding = false;
 
   return (
     <>
