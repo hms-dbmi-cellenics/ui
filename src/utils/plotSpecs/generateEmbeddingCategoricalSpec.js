@@ -196,7 +196,7 @@ const generateSpec = (config) => {
   };
 };
 
-const generateData = (spec, cellSets, selectedCellSet, embeddingData) => {
+const filterCells = (cellSets, selectedCellSet) => {
   let newCellSets = cellSets.hierarchy.find(
     (rootNode) => rootNode.key === selectedCellSet,
   )?.children || [];
@@ -209,6 +209,12 @@ const generateData = (spec, cellSets, selectedCellSet, embeddingData) => {
     ...cellSets.properties[key],
     cellIds: Array.from(cellSets.properties[key].cellIds),
   }));
+
+  return newCellSets;
+};
+
+const generateData = (spec, cellSets, selectedCellSet, embeddingData) => {
+  const newCellSets = filterCells(cellSets, selectedCellSet);
 
   spec.data.forEach((s) => {
     if (s.name === 'cellSets') {
@@ -224,4 +230,5 @@ const generateData = (spec, cellSets, selectedCellSet, embeddingData) => {
 export {
   generateSpec,
   generateData,
+  filterCells,
 };

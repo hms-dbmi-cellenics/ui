@@ -43,33 +43,37 @@ const ContinuousEmbeddingPlot = (props) => {
     }
   }, [embeddingData, geneExpression, rawSpec]);
 
+  const render = () => {
+
+    if (error) {
+      return (
+        <PlatformError
+          description={error}
+          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingType)) }}
+        />
+      )
+    }
+
+    if (!embeddingData
+      || !Object.keys(geneExpression).length
+      || loading) {
+      return (
+        <Spin size='large' />
+      )
+    }
+
+    <Vega spec={plotSpec} renderer='canvas' />
+
+  }
+
   return (
     <>
-      {
-        error ? (
-          <PlatformError
-            description={error}
-            onClick={() => { }}
-          />
-        ) : ''
-      }
-
-      <center>
-        {(!embeddingData
-          || !Object.keys(geneExpression).length
-          || !Object.keys(geneExpression).length
-        || loading) ? (
-            <Spin size='large' />
-          ) : (
-            <Vega spec={plotSpec} renderer='canvas' />
-          )}
-      </center>
-    </>
+      { render}
   );
 };
 
 ContinuousEmbeddingPlot.propTypes = {
-  experimentId: PropTypes.string.isRequired,
+        experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
 };
 

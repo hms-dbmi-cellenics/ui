@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse,
+  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse, Empty,
 } from 'antd';
 
 import {
@@ -33,6 +33,7 @@ import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
 import FontDesign from '../../../plots-and-tables/components/FontDesign';
 import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
 import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
+import { filterCells } from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 
 const { Panel } = Collapse;
 
@@ -41,6 +42,7 @@ const EmbeddingPreview = () => {
   const { experimentId } = router.query;
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(false);
+  const { cellSets } = useSelector((state) => state.cellSets);
 
   const dispatch = useDispatch();
 
@@ -108,6 +110,17 @@ const EmbeddingPreview = () => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
   };
 
+  const renderPlot = () => {
+    if (selectedPlot === 'sample'
+      && filterCells(cellSets, config.selectedCellSet).length === 0) {
+      return (
+        <Empty description='Your project has only one sample.' />
+      );
+    }
+
+    return plot;
+  };
+
   // Spinner for main window
   if (!config) {
     return (
@@ -125,7 +138,7 @@ const EmbeddingPreview = () => {
       />
       <Row>
         <Col span={15}>
-          {plot}
+          {renderPlot}
         </Col>
 
         <Col span={3}>

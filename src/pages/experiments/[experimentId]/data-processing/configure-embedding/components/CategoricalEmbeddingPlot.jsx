@@ -37,27 +37,34 @@ const CategoricalEmbeddingPlot = (props) => {
     }
   }, [cellSets, embeddingData, embeddingType, rawSpec]);
 
-  return (
-    <>
-
-      { error ? (
+  const render = () => {
+    if (error) {
+      return (
         <PlatformError
           description={error}
-          onClick={() => { }}
+          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingType)); }}
         />
-      ) : ''}
+      );
+    }
 
-      {
-        (!cellSets || !embeddingData || loading) ? (
-          <center>
-            <Spin size='large' />
-          </center>
-        ) : (
-            <center>
-              <Vega spec={plotSpec} renderer='canvas' />
-            </center>
-          )
-      }
+    if (!cellSets || !embeddingData || loading) {
+      return (
+        <center>
+          <Spin size='large' />
+        </center>
+      );
+    }
+
+    return (
+      <center>
+        <Vega spec={plotSpec} renderer='canvas' />
+      </center>
+    );
+  };
+
+  return (
+    <>
+      { render}
     </>
   );
 };
