@@ -8,7 +8,6 @@ import {
 } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 
-import PlotStyling from '../../filter-cells/components/PlotStyling';
 import CalculationConfig from './CalculationConfig';
 import ElbowPlot from './plots/ElbowPlot';
 
@@ -23,7 +22,6 @@ import FontDesign from '../../../plots-and-tables/components/FontDesign';
 import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
 import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
 import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
-import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
 
 const defaultStylingConfig = {
   legendEnabled: 'true',
@@ -91,7 +89,7 @@ const DataIntegration = () => {
   return (
     <>
       <Row>
-        <Col span={15}>
+        <Col span={14}>
           <ElbowPlot config={config} />
         </Col>
 
@@ -127,10 +125,12 @@ const DataIntegration = () => {
           </Space>
         </Col>
 
-        <Col span={5}>
-          <CalculationConfig experimentId={experimentId} />
-          <Collapse>
-            <Panel header='Plot styling' key='styling'>
+        <Col span={7}>
+          <Collapse defaultActiveKey={['data-integration']}>
+            <Panel header='Data Integration' key='data-integration'>
+              <CalculationConfig experimentId={experimentId} />
+            </Panel>
+            <Panel header='Plot Styling' key='styling'>
               <Collapse accordion>
                 <Panel header='Main Schema' key='main-schema'>
                   <DimensionsRangeEditor
@@ -196,7 +196,6 @@ const DataIntegration = () => {
             </Panel>
           </Collapse>
         </Col>
-        >
       </Row>
     </>
   );
