@@ -215,7 +215,7 @@ const EmbeddingPreview = (props) => {
     if (selectedSpec === 'sample'
       && plotSpec.data.find((d) => d.name === 'cellSets').values.length === 0) {
       return (
-        <Empty description='Your data set has only one sample.' />
+        <Empty description='Your project has only one sample.' />
 
       );
     }
