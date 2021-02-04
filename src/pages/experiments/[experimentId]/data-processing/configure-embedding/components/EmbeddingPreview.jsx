@@ -25,8 +25,8 @@ import {
   loadPlotConfig,
 } from '../../../../../../redux/actions/componentConfig';
 
-import generateEmbeddingCategoricalSpec from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import generateEmbeddingContinuousSpec from '../../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
+import generateEmbeddingCategoricalSpec, { generateData as generateCategoricalSpecData } from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import generateEmbeddingContinuousSpec, { generateData as generateContinuousSpecData } from '../../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import isBrowser from '../../../../../../utils/environment';
 import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
@@ -46,6 +46,10 @@ const EmbeddingPreview = () => {
   const [selectedSpec, setSelectedSpec] = useState('sample');
   const [plotSpec, setPlotSpec] = useState({});
 
+  const embeddingConfig = useSelector((state) => state.experimentSettings.processing);
+  const embedding = useSelector((state) => state.embeddings);
+  const embeddingMethod = embeddingConfig?.configureEmbedding?.embeddingSettings?.method;
+
   const dispatch = useDispatch();
 
   const error = false;
@@ -54,6 +58,7 @@ const EmbeddingPreview = () => {
     sample: {
       title: 'Colored by Samples',
       specGenerator: generateEmbeddingCategoricalSpec,
+      dataGenerator: generateDataCategoricalSpec
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
       plotType: 'embeddingCategorical',
@@ -61,6 +66,7 @@ const EmbeddingPreview = () => {
     cellCluster: {
       title: 'Colored by CellSets',
       specGenerator: generateEmbeddingCategoricalSpec,
+      dataGenerator: generateDataCategoricalSpec
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
       plotType: 'embeddingCategorical',
@@ -68,7 +74,8 @@ const EmbeddingPreview = () => {
     mitochondrialFraction: {
       title: 'Mitochondrial fraction reads',
       specGenerator: generateEmbeddingContinuousSpec,
-      imgSrc: plot2Pic,
+      dataGenerator:
+        imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialReads',
       plotType: 'embeddingContinuous',
     },
@@ -84,14 +91,13 @@ const EmbeddingPreview = () => {
   const config = useSelector((state) => state.componentConfig[plots[selectedSpec].plotUuid]?.config);
 
   // Prepare data for categorical embedding
-  const embeddingType = useSelector((state) => state.experimentSettings.configureEmbedding?.embeddingSettings.method);
+  const embeddingType = embeddingConfig.configureEmbedding?.embeddingSettings.method;
 
   const cellSets = useSelector((state) => state.cellSets);
-  const { data } = useSelector((state) => state.embeddings[embeddingType]) || {};
-  const selectedExpression = useSelector((state) => state.genes.expression.data[config?.shownGene]);
+  const { data: embeddingData } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
   useEffect(() => {
-    if (!data) {
+    if (!embeddingData) {
       dispatch(loadEmbedding(experimentId, embeddingType));
       dispatch(loadCellSets(experimentId));
     }
@@ -100,58 +106,28 @@ const EmbeddingPreview = () => {
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-    if (!config || !data) {
+    if (!config || !embeddingData) {
       return;
     }
 
-    if (!selectedExpression && config.shownGene) {
+    if (config.shownGene) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene]));
     }
 
-    if ((plots[selectedSpec].plotType === 'embeddingContinuous' && !selectedExpression)
-      || !cellSets) {
+    if ((plots[selectedSpec].plotType === 'embeddingContinuous') || !cellSets) {
       return;
     }
 
     const spec = plots[selectedSpec].specGenerator(config);
 
     if (plots[selectedSpec].plotType === 'embeddingContinuous') {
-      // If embedding is continuous
-
-      spec.data.forEach((s) => {
-        if (s.name === 'expression') {
-          s.values = selectedExpression;
-        } else if (s.name === 'embedding') {
-          s.values = data;
-        }
-      });
+      generateContinuousSpecData(spec, config.shownGene, embeddingData)
     } else {
-      // If embedding categorical
-      // First, find the child nodes in the hirerarchy.
-      let newCellSets = cellSets.hierarchy.find(
-        (rootNode) => rootNode.key === config.selectedCellSet,
-      )?.children || [];
-
-      // Build up the data source based on the properties. Note that the child nodes
-      // in the hierarchy are /objects/ with a `key` property, hence the destructuring
-      // in the function.
-      newCellSets = newCellSets.map(({ key }) => ({
-        cellSetId: key,
-        ...cellSets.properties[key],
-        cellIds: Array.from(cellSets.properties[key].cellIds),
-      }));
-
-      spec.data.forEach((s) => {
-        if (s.name === 'cellSets') {
-          s.values = newCellSets;
-        } else if (s.name === 'embedding') {
-          s.values = data;
-        }
-      });
+      generateCategoricalSpecData(spec, cellSets, config.selectedCellSet, embeddingData)
     }
-
     setPlotSpec(spec);
-  }, [config, data, selectedExpression, cellSets]);
+
+  }, [config, embeddingData, selectedExpression, cellSets]);
 
   // If the user toggles to a different embedding, set the config to be the initial
   // state for that type of plot.
@@ -178,6 +154,15 @@ const EmbeddingPreview = () => {
       );
     }
 
+    // Spinner for plot loading
+    if (!config || (embeddingMethod && embedding[embeddingMethod]?.loading)) {
+      return (
+        <center>
+          <Spin size='large' />
+        </center>
+      );
+    }
+
     return (
       <center>
         <Vega spec={plotSpec} renderer='canvas' />
@@ -185,6 +170,7 @@ const EmbeddingPreview = () => {
     );
   };
 
+  // Spinner for main window
   if (!config) {
     return (
       <center>

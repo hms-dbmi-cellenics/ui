@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const generateSpec = (config) => {
   let legend = [];
   if (config.legend.enabled) {
@@ -195,9 +196,34 @@ const generateSpec = (config) => {
   };
 };
 
+const generateData = (spec, cellSets, selectedCellSet, embeddingData) => {
+  let newCellSets = cellSets.hierarchy.find(
+    (rootNode) => rootNode.key === selectedCellSet,
+  )?.children || [];
+
+  // Build up the data source based on the properties. Note that the child nodes
+  // in the hierarchy are /objects/ with a `key` property, hence the destructuring
+  // in the function.
+  newCellSets = newCellSets.map(({ key }) => ({
+    cellSetId: key,
+    ...cellSets.properties[key],
+    cellIds: Array.from(cellSets.properties[key].cellIds),
+  }));
+
+  spec.data.forEach((s) => {
+    if (s.name === 'cellSets') {
+      s.values = newCellSets;
+    } else if (s.name === 'embedding') {
+      s.values = embeddingData;
+    }
+  });
+
+  return spec;
+};
+
 export {
-  // eslint-disable-next-line import/prefer-default-export
   generateSpec,
+  generateData,
 };
 
 export default generateSpec;

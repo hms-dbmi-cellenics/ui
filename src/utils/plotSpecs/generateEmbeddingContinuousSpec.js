@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const generateSpec = (config) => {
   let legend = [];
 
@@ -152,9 +153,21 @@ const generateSpec = (config) => {
   };
 };
 
+const generateData = (spec, selectedExpression, embeddingData) => {
+  spec.data.forEach((s) => {
+    if (s.name === 'expression') {
+      s.values = selectedExpression;
+    } else if (s.name === 'embedding') {
+      s.values = embeddingData;
+    }
+  });
+
+  return spec;
+};
+
 export {
-  // eslint-disable-next-line import/prefer-default-export
   generateSpec,
+  generateData,
 };
 
 export default generateSpec;
