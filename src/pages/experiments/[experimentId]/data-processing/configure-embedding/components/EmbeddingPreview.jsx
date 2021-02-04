@@ -86,6 +86,10 @@ const EmbeddingPreview = (props) => {
 
   // Once the config is loaded, we can also load the embedding.
   useEffect(() => {
+    if (!embeddingMethod) {
+      return;
+    }
+
     dispatch(loadEmbedding(experimentId, embeddingMethod));
   }, [embeddingMethod]);
 
@@ -137,7 +141,7 @@ const EmbeddingPreview = (props) => {
 
         switch (selectedSpec) {
           case 'sample': {
-            rootCellSetName = 'condition';
+            rootCellSetName = 'samplsssses';
             break;
           }
           case 'cellCluster': {
