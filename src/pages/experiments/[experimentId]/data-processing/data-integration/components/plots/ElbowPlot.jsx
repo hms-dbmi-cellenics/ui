@@ -5,11 +5,11 @@ import PropTypes from 'prop-types';
 import plotData from './fake_new_data.json';
 
 const ElbowPlot = (props) => {
-  const { plotConfig } = props;
+  const { config } = props;
 
   const generateSpec = () => ({
-    width: plotConfig.width,
-    height: plotConfig.height,
+    width: config.width,
+    height: config.height,
     autosize: { type: 'fit', resize: true },
     padding: 5,
 
@@ -71,13 +71,13 @@ const ElbowPlot = (props) => {
         grid: true,
         tickCount: 15,
         zindex: 1,
-        title: { value: plotConfig.xAxisText },
-        titleFont: { value: plotConfig.masterFont },
-        labelFont: { value: plotConfig.masterFont },
-        titleFontSize: { value: plotConfig.axisTitlesize },
-        labelFontSize: { value: plotConfig.axisTicks },
-        offset: { value: plotConfig.axisOffset },
-        gridOpacity: { value: (plotConfig.transGrid / 20) },
+        title: { value: config.xAxisText },
+        titleFont: { value: config.masterFont },
+        labelFont: { value: config.masterFont },
+        titleFontSize: { value: config.axisTitlesize },
+        labelFontSize: { value: config.axisTicks },
+        offset: { value: config.axisOffset },
+        gridOpacity: { value: (config.transGrid / 20) },
       },
       {
         orient: 'left',
@@ -85,13 +85,13 @@ const ElbowPlot = (props) => {
         grid: true,
         format: '%',
         zindex: 1,
-        title: { value: plotConfig.yAxisText },
-        titleFont: { value: plotConfig.masterFont },
-        labelFont: { value: plotConfig.masterFont },
-        titleFontSize: { value: plotConfig.axisTitlesize },
-        labelFontSize: { value: plotConfig.axisTicks },
-        offset: { value: plotConfig.axisOffset },
-        gridOpacity: { value: (plotConfig.transGrid / 20) },
+        title: { value: config.yAxisText },
+        titleFont: { value: config.masterFont },
+        labelFont: { value: config.masterFont },
+        titleFontSize: { value: config.axisTitlesize },
+        labelFontSize: { value: config.axisTicks },
+        offset: { value: config.axisOffset },
+        gridOpacity: { value: (config.transGrid / 20) },
       },
     ],
 
@@ -118,7 +118,7 @@ const ElbowPlot = (props) => {
         type: 'rule',
         encode: {
           update: {
-            x: { scale: 'x', value: plotConfig.minProbability, round: true },
+            x: { scale: 'x', value: config.minProbability, round: true },
             y: { value: 0 },
             y2: { field: { group: 'height' } },
             strokeWidth: { value: 2 },
@@ -130,11 +130,11 @@ const ElbowPlot = (props) => {
     ],
     title:
     {
-      text: { value: plotConfig.titleText },
-      anchor: { value: plotConfig.titleAnchor },
-      font: { value: plotConfig.masterFont },
-      dx: { value: plotConfig.titleDx },
-      fontSize: { value: plotConfig.titleSize },
+      text: { value: config.titleText },
+      anchor: { value: config.titleAnchor },
+      font: { value: config.masterFont },
+      dx: { value: config.titleDx },
+      fontSize: { value: config.titleSize },
     },
   });
 
@@ -145,7 +145,7 @@ ElbowPlot.defaultProps = {
 };
 
 ElbowPlot.propTypes = {
-  plotConfig: PropTypes.object.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 export default ElbowPlot;

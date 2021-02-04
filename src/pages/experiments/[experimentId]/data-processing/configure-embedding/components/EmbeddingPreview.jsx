@@ -29,7 +29,6 @@ import colorProvider from '../../../../../../utils/colorProvider';
 import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
 import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
-import LogExpression from '../../../plots-and-tables/embedding-continuous/components/LogExpression';
 import AxesDesign from '../../../plots-and-tables/components/AxesDesign';
 import PointDesign from '../../../plots-and-tables/components/PointDesign';
 import TitleDesign from '../../../plots-and-tables/components/TitleDesign';

@@ -25,6 +25,7 @@ const LegendEditor = (props) => {
           >
             <Radio value='top'>Top</Radio>
             <Radio value='bottom'>Bottom</Radio>
+            <Radio value='right'>Right</Radio>
           </Radio.Group>
         </Form.Item>
       </>
