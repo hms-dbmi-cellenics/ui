@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse,
+  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse, Empty,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -39,7 +39,7 @@ const EmbeddingPreview = (props) => {
 
   const dispatch = useDispatch();
 
-  const [selectedSpec, setSelectedSpec] = useState('sample');
+  const [selectedSpec, setSelectedSpec] = useState('cellCluster');
   const [plotSpec, setPlotSpec] = useState({});
   const [config, setConfig] = useState(null);
 
@@ -52,14 +52,14 @@ const EmbeddingPreview = (props) => {
   const FILTER_UUID = 'configureEmbedding';
 
   const plots = {
-    sample: {
-      title: 'Samples',
+    cellCluster: {
+      title: 'Default clusters',
       initialConfig: initialPlotConfigStates.embeddingCategorical,
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
     },
-    cellCluster: {
-      title: 'Default clusters',
+    sample: {
+      title: 'Samples',
       initialConfig: initialPlotConfigStates.embeddingCategorical,
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
@@ -141,7 +141,7 @@ const EmbeddingPreview = (props) => {
 
         switch (selectedSpec) {
           case 'sample': {
-            rootCellSetName = 'samplsssses';
+            rootCellSetName = 'sample';
             break;
           }
           case 'cellCluster': {
@@ -189,7 +189,7 @@ const EmbeddingPreview = (props) => {
     if (embeddingMethod && embedding[embeddingMethod]?.error) {
       return (
         <PlatformError
-          error={embedding[embeddingMethod]?.error}
+          description={embedding[embeddingMethod]?.error}
           onClick={() => dispatch(loadEmbedding(experimentId, embeddingMethod))}
         />
       );
@@ -198,7 +198,7 @@ const EmbeddingPreview = (props) => {
     if (cellSets && cellSets.error) {
       return (
         <PlatformError
-          error={cellSets.error}
+          description={cellSets.error}
           onClick={() => dispatch(loadCellSets(experimentId))}
         />
       );
@@ -209,6 +209,14 @@ const EmbeddingPreview = (props) => {
         <center>
           <Spin size='large' />
         </center>
+      );
+    }
+
+    if (selectedSpec === 'sample'
+      && plotSpec.data.find((d) => d.name === 'cellSets').values.length === 0) {
+      return (
+        <Empty description='Your data set has only one sample.' />
+
       );
     }
 
