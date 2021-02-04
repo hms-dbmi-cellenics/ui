@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Empty } from 'antd';
 import HeatmapPlot from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/HeatmapPlot';
 import VegaHeatmap from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/heatmap/VegaHeatmap';
 
@@ -121,7 +121,7 @@ describe('HeatmapPlot', () => {
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find('Empty').length).toEqual(2);
+    expect(component.find(Empty).length).toEqual(1);
   });
 
   it('renders Spinner when no expression data', () => {
@@ -186,7 +186,7 @@ describe('HeatmapPlot', () => {
     );
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find(ExclamationCircleFilled).length).toEqual(1);
+    expect(component.find(Empty).length).toEqual(1);
   });
 
   it('renders error state when the view errors out', () => {
@@ -214,7 +214,7 @@ describe('HeatmapPlot', () => {
     );
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find(ExclamationCircleFilled).length).toEqual(1);
+    expect(component.find(Empty).length).toEqual(1);
   });
 
   it('dispatches loadCellSets action when no cell sets are in the store', () => {

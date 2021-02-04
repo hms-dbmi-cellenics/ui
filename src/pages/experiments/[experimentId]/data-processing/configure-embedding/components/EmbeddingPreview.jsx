@@ -1,35 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
+import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse,
+  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse, Empty,
 } from 'antd';
-
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from 'react-vega';
-import useSelection from 'antd/lib/table/hooks/useSelection';
 import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
-import PlotStyling from '../../filter-cells/components/PlotStyling';
 import CalculationConfig from './CalculationConfig';
 import UMAP from './new_data.json';
-
-import PlatformError from '../../../../../../components/PlatformError';
 import {
-  updatePlotConfig,
-  loadPlotConfig,
-} from '../../../../../../redux/actions/componentConfig';
+  loadProcessingSettings,
+} from '../../../../../../redux/actions/experimentSettings';
+import PlatformError from '../../../../../../components/PlatformError';
 import { initialPlotConfigStates } from '../../../../../../redux/reducers/componentConfig/initialState';
+import { loadCellSets } from '../../../../../../redux/actions/cellSets';
+import { loadEmbedding } from '../../../../../../redux/actions/embedding';
 import generateEmbeddingCategoricalSpec from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import generateEmbeddingContinuousSpec from '../../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import colorProvider from '../../../../../../utils/colorProvider';
 import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
 import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
-import LogExpression from '../../../plots-and-tables/embedding-continuous/components/LogExpression';
 import AxesDesign from '../../../plots-and-tables/components/AxesDesign';
 import PointDesign from '../../../plots-and-tables/components/PointDesign';
 import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
@@ -39,30 +34,32 @@ import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
 
 const { Panel } = Collapse;
 
-const EmbeddingPreview = () => {
+const EmbeddingPreview = (props) => {
+  const { experimentId } = props;
+
   const dispatch = useDispatch();
 
-  const router = useRouter();
-  const { experimentId } = router.query;
-  const [selectedSpec, setSelectedSpec] = useState('sample');
+  const [selectedSpec, setSelectedSpec] = useState('cellCluster');
   const [plotSpec, setPlotSpec] = useState({});
   const [config, setConfig] = useState(null);
 
-  const embeddingConfig = useSelector((state) => state.experimentSettings.processing);
+  const embeddingSettings = useSelector((state) => state.experimentSettings.processing.configureEmbedding);
+  const embeddingMethod = embeddingSettings?.embeddingSettings?.method;
+  const clusteringMethod = embeddingSettings?.clusteringSettings?.method;
   const embedding = useSelector((state) => state.embeddings);
-  const embeddingMethod = embeddingConfig?.configureEmbedding?.embeddingSettings?.method;
+  const cellSets = useSelector((state) => state.cellSets);
 
-  const error = false;
+  const FILTER_UUID = 'configureEmbedding';
 
   const plots = {
-    sample: {
-      title: 'Samples',
+    cellCluster: {
+      title: 'Default clusters',
       initialConfig: initialPlotConfigStates.embeddingCategorical,
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
     },
-    cellCluster: {
-      title: 'Default clusters',
+    sample: {
+      title: 'Samples',
       initialConfig: initialPlotConfigStates.embeddingCategorical,
       specGenerator: generateEmbeddingCategoricalSpec,
       imgSrc: plot1Pic,
@@ -81,23 +78,55 @@ const EmbeddingPreview = () => {
     },
   };
 
+  // Start loading by fetching the settings and cell sets.
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+    dispatch(loadProcessingSettings(experimentId, FILTER_UUID));
+  }, []);
+
+  // Once the config is loaded, we can also load the embedding.
+  useEffect(() => {
+    if (!embeddingMethod) {
+      return;
+    }
+
+    dispatch(loadEmbedding(experimentId, embeddingMethod));
+  }, [embeddingMethod]);
+
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-
     if (!config) {
       return;
     }
 
+    // If no embedding method is available yet, the config did not load.
+    // We can skip processing until it is done.
+    if (!embeddingMethod) {
+      return;
+    }
+
+    // If the config is loaded, but the embedding is still loading, we
+    // don't have any data to add.
+    if (!embedding[embeddingMethod] || embedding[embeddingMethod].loading) {
+      return;
+    }
+
+    // If cell sets don't exist yet or they're loading, wait until they are done.
+    if (!cellSets || cellSets.loading) {
+      return;
+    }
+
+    // Otherwise, begin by creating the spec appropriate for the plot.
     const spec = plots[selectedSpec].specGenerator(config);
     generateData(spec);
     setPlotSpec(spec);
-  }, [config]);
+  }, [config, embeddingSettings, embedding]);
 
-  // If the user toggles to a different embedding, set the config to be the initial
-  // state for that type of plot.
   useEffect(() => {
-    setConfig(plots[selectedSpec].initialConfig);
+    // If the user toggles to a different embedding, set the config to be the initial
+    // state for that type of plot.
+    setConfig(_.cloneDeep(plots[selectedSpec].initialConfig));
   }, [selectedSpec]);
 
   // Quick and dirty function to massage prepared data into a good shape.
@@ -108,13 +137,34 @@ const EmbeddingPreview = () => {
       if (s.name === 'cellSets') {
         s.values = [];
 
-        UMAP.forEach((cell, i) => {
-          s.values[cell.cluster_id] = {
-            name: `${cell.cluster_id}`,
-            cellSetId: cell.cluster_id,
-            cellIds: s.values[cell.cluster_id]?.cellIds ? [...s.values[cell.cluster_id].cellIds, i] : [i],
-            color: colorProvider.getColor(),
-          };
+        let rootCellSetName = null;
+
+        switch (selectedSpec) {
+          case 'sample': {
+            rootCellSetName = 'sample';
+            break;
+          }
+          case 'cellCluster': {
+            rootCellSetName = clusteringMethod;
+            break;
+          }
+          default: {
+            throw new Error('Invalid categorical plot type, unsure what cell set to display.');
+          }
+        }
+
+        const clusters = cellSets.hierarchy
+          .find((o) => o.key === rootCellSetName)?.children
+          .map((child) => child.key) || [];
+
+        clusters.forEach((cluster) => {
+          const { name, cellIds, color } = cellSets.properties[cluster];
+          s.values.push({
+            name,
+            cellSetId: cluster,
+            cellIds: Array.from(cellIds),
+            color,
+          });
         });
       }
 
@@ -123,7 +173,7 @@ const EmbeddingPreview = () => {
       }
 
       if (s.name === 'embedding') {
-        s.values = UMAP.map((cell) => [cell.UMAP_1, cell.UMAP_2]);
+        s.values = embedding[embeddingMethod].data;
       }
     });
   };
@@ -136,20 +186,37 @@ const EmbeddingPreview = () => {
   };
 
   const renderPlot = () => {
-    if (error) {
+    if (embeddingMethod && embedding[embeddingMethod]?.error) {
       return (
         <PlatformError
-          description={error}
-          onClick={() => { }}
+          description={embedding[embeddingMethod]?.error}
+          onClick={() => dispatch(loadEmbedding(experimentId, embeddingMethod))}
         />
       );
     }
 
-    if (!config || (embeddingMethod && embedding[embeddingMethod]?.loading)) {
+    if (cellSets && cellSets.error) {
+      return (
+        <PlatformError
+          description={cellSets.error}
+          onClick={() => dispatch(loadCellSets(experimentId))}
+        />
+      );
+    }
+
+    if (embeddingMethod && embedding[embeddingMethod]?.loading) {
       return (
         <center>
           <Spin size='large' />
         </center>
+      );
+    }
+
+    if (selectedSpec === 'sample'
+      && plotSpec.data.find((d) => d.name === 'cellSets').values.length === 0) {
+      return (
+        <Empty description='Your project has only one sample.' />
+
       );
     }
 
@@ -252,14 +319,15 @@ const EmbeddingPreview = () => {
                   </Panel>
                 )}
 
-                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical && (
-                  <Panel header='Colour inversion'>
-                    <ColourInversion
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                )}
+                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical
+                  && (
+                    <Panel header='Colour inversion'>
+                      <ColourInversion
+                        config={config}
+                        onUpdate={updatePlotWithChanges}
+                      />
+                    </Panel>
+                  )}
 
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
@@ -282,6 +350,13 @@ const EmbeddingPreview = () => {
       </Row>
     </>
   );
+};
+
+EmbeddingPreview.defaultProps = {
+};
+
+EmbeddingPreview.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default EmbeddingPreview;
