@@ -200,7 +200,7 @@ module.exports = withCSS(
       return [
         {
           source: '/',
-          destination: '/experiments/5e959f9c9f4b120771249001/data-exploration',
+          destination: '/experiments/5928a56c7cbff9de78974ab50765ed20/data-exploration',
           permanent: false,
         },
       ];
