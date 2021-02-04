@@ -149,7 +149,9 @@ const EmbeddingContinuousPlot = () => {
         />
       );
     }
-
+    if (config.shownGene === 'notSelected' && experimentId) {
+      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+    }
     if (
       !config
       || !data
