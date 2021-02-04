@@ -7,7 +7,7 @@ import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Empty } from 'antd';
 import waitForActions from 'redux-mock-store-await-actions';
 import GeneListTool from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/gene-list-tool/GeneListTool';
 import { fetchCachedWork } from '../../../../../../../utils/cacheRequest';
@@ -259,6 +259,6 @@ describe('GeneListTool', () => {
       </Provider>,
     );
 
-    expect(component.find(ExclamationCircleFilled).length).toEqual(1);
+    expect(component.find(Empty).length).toEqual(1);
   });
 });

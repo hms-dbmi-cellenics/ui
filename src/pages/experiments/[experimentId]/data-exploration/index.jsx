@@ -51,7 +51,7 @@ const ExplorationViewPage = () => {
   const TILE_MAP = {
     'UMAP Embedding': {
       toolbarControls: [<RemoveButton />],
-      component: (width, height) => <Embedding experimentId={experimentId} embeddingType='umap' width={width} height={height} />,
+      component: (width, height) => <Embedding experimentId={experimentId} width={width} height={height} />,
     },
     Heatmap: {
       toolbarControls: [
@@ -85,16 +85,16 @@ const ExplorationViewPage = () => {
     },
   };
 
+  if (!data || !experimentId) {
+    return <PreloadContent />;
+  }
+
   if (error) {
     if (error.payload === undefined) {
       return <Error errorText='Cannot connect to API service.' />;
     }
     const { status } = error.payload;
     return <Error errorText={status} />;
-  }
-
-  if (!data) {
-    return <PreloadContent />;
   }
 
   return (
