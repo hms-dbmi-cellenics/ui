@@ -42,13 +42,7 @@ const EmbeddingPreview = () => {
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(false);
 
-  const embeddingConfig = useSelector((state) => state.experimentSettings.processing);
-  const embedding = useSelector((state) => state.embeddings);
-  const embeddingMethod = embeddingConfig?.configureEmbedding?.embeddingSettings?.method;
-
   const dispatch = useDispatch();
-
-  const error = false;
 
   const plots = {
     sample: {
@@ -140,7 +134,7 @@ const EmbeddingPreview = () => {
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
 
-            {Object.entries(plots).map(([key, plot]) => (
+            {Object.entries(plots).map(([key, option]) => (
               <button
                 type='button'
                 key={key}
@@ -150,8 +144,8 @@ const EmbeddingPreview = () => {
                 }}
               >
                 <img
-                  alt={plot.title}
-                  src={plot.imgSrc}
+                  alt={option.title}
+                  src={option.imgSrc}
                   style={{
                     height: '100px',
                     width: '100px',
@@ -185,13 +179,13 @@ const EmbeddingPreview = () => {
                 <Panel header='Axes and Margins' key='axes'>
                   <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
-                {plots[selectedPlot].initialConfig === initialPlotConfigStates.embeddingContinuous && (
+                {plots[selectedPlot].plotType === 'embeddingContinuous' && (
                   <Panel header='Colours' key='colors'>
                     <ColourbarDesign config={config} onUpdate={updatePlotWithChanges} />
                     <ColourInversion config={config} onUpdate={updatePlotWithChanges} />
                   </Panel>
                 )}
-                {plots[selectedPlot].initialConfig === initialPlotConfigStates.embeddingCategorical && (
+                {plots[selectedPlot].plotType === 'embeddingCategorical' && (
                   <Panel header='Colour inversion'>
                     <ColourInversion config={config} onUpdate={updatePlotWithChanges} />
                   </Panel>
@@ -199,12 +193,12 @@ const EmbeddingPreview = () => {
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
-                {plots[selectedPlot].initialConfig === initialPlotConfigStates.embeddingContinuous && (
+                {plots[selectedPlot].plotType === initialPlotConfigStates.embeddingContinuous && (
                   <Panel header='Legend' key='legend'>
                     <LegendEditor config={config} onUpdate={updatePlotWithChanges} />
                   </Panel>
                 )}
-                {plots[selectedPlot].initialConfig === initialPlotConfigStates.embeddingCategorical && (
+                {plots[selectedPlot].plotType === 'embeddingCategorical' && (
                   <Panel header='Legend' key='legend'>
                     <LegendEditor config={config} onUpdate={updatePlotWithChanges} option={{ position: 'top-bottom' }} />
                   </Panel>
