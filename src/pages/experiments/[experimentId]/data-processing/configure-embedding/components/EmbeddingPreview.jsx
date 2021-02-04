@@ -151,7 +151,7 @@ const EmbeddingPreview = (props) => {
 
         const clusters = cellSets.hierarchy
           .find((o) => o.key === rootCellSetName)?.children
-          .map((child) => child.key);
+          .map((child) => child.key) || [];
 
         clusters.forEach((cluster) => {
           const { name, cellIds, color } = cellSets.properties[cluster];

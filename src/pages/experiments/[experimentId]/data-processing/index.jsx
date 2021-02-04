@@ -64,7 +64,7 @@ const DataProcessingPage = () => {
     {
       id: 'comptueEmbeddingFilter',
       name: 'Compute embedding',
-      render: () => <EmbeddingPreview experimentId={experimentId} />,
+      render: (expId) => <EmbeddingPreview experimentId={expId} />,
     },
   ];
 
@@ -171,7 +171,7 @@ const DataProcessingPage = () => {
           style={{ flex: 1 }}
         >
           <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
-            {steps.map((step) => step.render())}
+            {steps.map((step) => step.render(experimentId))}
           </Carousel>
         </Card>
       </div>
