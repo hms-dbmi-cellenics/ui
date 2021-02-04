@@ -51,7 +51,7 @@ const ExplorationViewPage = () => {
   const TILE_MAP = {
     'UMAP Embedding': {
       toolbarControls: [<RemoveButton />],
-      component: (width, height) => <Embedding experimentId={experimentId} embeddingType='umap' width={width} height={height} />,
+      component: (width, height) => <Embedding experimentId={experimentId} width={width} height={height} />,
     },
     Heatmap: {
       toolbarControls: [
