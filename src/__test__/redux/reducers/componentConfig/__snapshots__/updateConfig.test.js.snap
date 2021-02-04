@@ -5,11 +5,12 @@ Object {
   "embeddingCategoricalMain": Object {
     "config": Object {
       "axes": Object {
+        "domainWidth": 2,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
         "offset": 10,
-        "tickSize": 13,
+        "titleFontSize": 13,
         "xAxisText": "UMAP 1",
         "yAxisText": "UMAP 2",
       },
@@ -67,7 +68,7 @@ Object {
         "gridWidth": 10,
         "labelFontSize": 12,
         "offset": 10,
-        "tickSize": 13,
+        "titleFontSize": 13,
         "xAxisText": "log2 fold change",
         "yAxisText": " - log10(adj.p - value)",
       },

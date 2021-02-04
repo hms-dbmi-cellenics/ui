@@ -23,7 +23,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
           experimentId,
           plotUuid,
           plotType,
-          config: _.cloneDeep(initialPlotConfigStates[plotUuid]),
+          config: _.cloneDeep(initialPlotConfigStates[plotType]),
         },
       });
     } else {
