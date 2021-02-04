@@ -31,7 +31,7 @@ const height = 200;
 describe('Embedding', () => {
   const initialState = {
     embeddings: {
-      umap: {
+      [initialProcessingState.configureEmbedding.embeddingSettings.method]: {
         ...initialEmbeddingState,
         loading: false,
         data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
