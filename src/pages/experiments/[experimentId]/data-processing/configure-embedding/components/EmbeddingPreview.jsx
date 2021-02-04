@@ -84,7 +84,7 @@ const EmbeddingPreview = () => {
   const config = useSelector((state) => state.componentConfig[plots[selectedSpec].plotUuid]?.config);
 
   // Prepare data for categorical embedding
-  const embeddingType = 'umap';
+  const embeddingType = useSelector((state) => state.experimentSettings.configureEmbedding?.embeddingSettings.method);
 
   const cellSets = useSelector((state) => state.cellSets);
   const { data } = useSelector((state) => state.embeddings[embeddingType]) || {};
@@ -269,9 +269,17 @@ const EmbeddingPreview = () => {
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
-                <Panel header='Legend' key='legend'>
-                  <LegendEditor config={config} onUpdate={updatePlotWithChanges} />
-                </Panel>
+                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingContinuous && (
+                  <Panel header='Legend' key='legend'>
+                    <LegendEditor config={config} onUpdate={updatePlotWithChanges} />
+                  </Panel>
+                )}
+                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical && (
+                  <Panel header='Legend' key='legend'>
+                    <LegendEditor config={config} onUpdate={updatePlotWithChanges} option={{ position: 'top-bottom' }} />
+                  </Panel>
+                )}
+
                 <Panel header='Labels' key='labels'>
                   <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>

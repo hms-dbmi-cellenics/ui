@@ -9,7 +9,7 @@ import {
 const PointDesign = (props) => {
   const { onUpdate, config } = props;
 
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
+  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 50));
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>

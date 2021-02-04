@@ -12,11 +12,12 @@ const dimensionsBaseState = {
 const axesBaseState = {
   xAxisText: '',
   yAxisText: '',
+  titleFontSize: 13,
   labelFontSize: 12,
-  tickSize: 13,
   offset: 0,
   gridOpacity: 0,
   gridWidth: 10,
+  domainWidth: 2,
 };
 
 const titleBaseState = {

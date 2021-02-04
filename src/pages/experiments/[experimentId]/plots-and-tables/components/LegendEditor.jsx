@@ -5,8 +5,6 @@ import _ from 'lodash';
 
 const defaultOption = {
   positions: 'corners',
-  showEnableOption: true,
-  showValueOption: true,
 };
 
 const LegendEditor = (props) => {
@@ -31,8 +29,6 @@ const LegendEditor = (props) => {
     },
   };
 
-  const elOption = _.merge(defaultOption, option);
-
   return (
     <Form size='small' labelCol={{ span: 12 }} wrapperCol={{ span: 12 }}>
       <Form.Item>
@@ -43,16 +39,16 @@ const LegendEditor = (props) => {
       </Form.Item>
 
       {
-        config.legend.enabled && elOption.showValueOption && (
+        config.legend.enabled && (
           <>
-            <p><strong>Position</strong></p>
+            <div>Position</div>
             <Form.Item>
               <Radio.Group
                 onChange={(e) => onUpdate({ legend: { position: e.target.value } })}
                 value={config.legend.position}
               >
                 {
-                  Object.entries(positions[elOption.positions]).map(([val, text]) => (
+                  Object.entries(positions[option.positions]).map(([val, text]) => (
                     <Radio key={val} value={val}>{text}</Radio>
                   ))
                 }

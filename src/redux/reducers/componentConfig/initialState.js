@@ -52,7 +52,6 @@ const embeddingContinuousInitialConfig = {
     ...axesBaseState,
     xAxisText: 'UMAP 1',
     yAxisText: 'UMAP 2',
-    domainWidth: 2,
     offset: 10,
   },
   title: {
@@ -65,7 +64,7 @@ const embeddingContinuousInitialConfig = {
   marker: markerBaseState,
   label: labelBaseState,
   logEquation: 'datum.expression*1',
-  shownGene: 'CST3',
+  shownGene: 'notSelected',
   selectedSample: 'All',
 };
 
@@ -100,11 +99,7 @@ const heatmapInitialConfig = {
 const volcanoInitialConfig = {
   spec: '1.0.0',
   legend: legendBaseState,
-  dimensions: {
-    ...dimensionsBaseState,
-    width: 500,
-    height: 500,
-  },
+  dimensions: dimensionsBaseState,
   marker: {
     ...markerBaseState,
     size: 32,
@@ -113,7 +108,6 @@ const volcanoInitialConfig = {
     ...axesBaseState,
     xAxisText: 'log2 fold change',
     yAxisText: ' - log10(adj.p - value)',
-    domainWidth: 2,
     gridOpacity: 5,
     offset: 10,
   },
@@ -158,7 +152,7 @@ const frequencyInitialConfig = {
   metadata: '',
   legend: {
     ...legendBaseState,
-    position: 'top-right',
+    position: 'top',
   },
   label: labelBaseState,
   dimensions: dimensionsBaseState,
@@ -250,7 +244,6 @@ const embeddingPreviewMitochondrialReadsInitialConfig = {
     ...axesBaseState,
     xAxisText: 'UMAP 1',
     yAxisText: 'UMAP 2',
-    domainWidth: 2,
     offset: 10,
   },
   title: {
@@ -263,7 +256,7 @@ const embeddingPreviewMitochondrialReadsInitialConfig = {
   marker: markerBaseState,
   label: labelBaseState,
   logEquation: 'datum.expression*1',
-  shownGene: 'CST3',
+  shownGene: 'notSelected',
   selectedSample: 'All',
 };
 
@@ -280,7 +273,6 @@ const embeddingPreviewDoubletScoreInitialConfig = {
     ...axesBaseState,
     xAxisText: 'UMAP 1',
     yAxisText: 'UMAP 2',
-    domainWidth: 2,
     offset: 10,
   },
   title: {
@@ -293,7 +285,7 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   marker: markerBaseState,
   label: labelBaseState,
   logEquation: 'datum.expression*1',
-  shownGene: 'CST3',
+  shownGene: 'notSelected',
   selectedSample: 'All',
 };
 

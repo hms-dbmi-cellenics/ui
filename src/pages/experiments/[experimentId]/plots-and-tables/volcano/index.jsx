@@ -63,9 +63,7 @@ const VolcanoPlot = () => {
     maxNegativeLogpValue: null,
     xMax: null,
   });
-  const onUpdateThrottled = useRef(
-    _.throttle((obj) => updatePlotWithChanges(obj), 10),
-  );
+  const onUpdateThrottled = useRef(_.throttle((obj) => updatePlotWithChanges(obj), 50));
 
   useEffect(() => {
     if (!isBrowser) return;

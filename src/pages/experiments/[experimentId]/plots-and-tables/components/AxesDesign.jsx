@@ -7,7 +7,7 @@ import {
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
+  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 50));
 
   return (
     <Form
@@ -17,11 +17,11 @@ const AxesDesign = (props) => {
     >
       <Form.Item label='Axes Label Size'>
         <Slider
-          value={config.axes.labelFontSize}
+          value={config.axes.titleFontSize}
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { labelFontSize: value } });
+            onUpdateThrottled.current({ axes: { titleFontSize: value } });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -29,11 +29,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Axes Ticks Size'>
         <Slider
-          value={config.axes.tickSize}
+          value={config.axes.labelFontSize}
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { tickSize: value } });
+            onUpdateThrottled.current({ axes: { labelFontSize: value } });
           }}
           marks={{ 5: 5, 21: 21 }}
         />

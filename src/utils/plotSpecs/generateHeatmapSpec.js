@@ -68,7 +68,7 @@ const generateSpec = (config, groupName) => {
         },
       }];
   }
-  if (config.legend.position === 'hide') {
+  if (!config.legend.enabled) {
     legend = null;
   }
 
