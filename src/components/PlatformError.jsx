@@ -8,7 +8,7 @@ const PlatformError = (props) => {
     <Empty
       image={(
         <img
-          alt='People looking into bushes to find something (illustration).'
+          alt='A woman with a paintbrush staring at an empty canvas (illustration).'
           src='/undraw_blank_canvas_3rbb.svg'
         />
       )}
@@ -19,19 +19,22 @@ const PlatformError = (props) => {
     >
       <Button
         type='primary'
-        onClick={onClick}
+        onClick={onClick || window.location.reload()}
       >
         Try again
       </Button>
+
     </Empty>
   );
 };
 
-PlatformError.defaultProps = {};
+PlatformError.defaultProps = {
+  onClick: null,
+};
 
 PlatformError.propTypes = {
   description: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
 };
 
 export default PlatformError;

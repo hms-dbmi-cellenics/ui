@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
   Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse,
 } from 'antd';
-
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
@@ -186,7 +186,7 @@ const EmbeddingPreview = (props) => {
       return (
         <PlatformError
           error={embedding[embeddingMethod]?.error}
-          onClick={() => { }}
+          onClick={() => dispatch(loadEmbedding(experimentId, embeddingMethod))}
         />
       );
     }
@@ -195,7 +195,7 @@ const EmbeddingPreview = (props) => {
       return (
         <PlatformError
           error={cellSets.error}
-          onClick={() => { }}
+          onClick={() => dispatch(loadCellSets(experimentId))}
         />
       );
     }
@@ -307,14 +307,15 @@ const EmbeddingPreview = (props) => {
                   </Panel>
                 )}
 
-                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical && (
-                  <Panel header='Colour inversion'>
-                    <ColourInversion
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                )}
+                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical
+                  && (
+                    <Panel header='Colour inversion'>
+                      <ColourInversion
+                        config={config}
+                        onUpdate={updatePlotWithChanges}
+                      />
+                    </Panel>
+                  )}
 
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
@@ -337,6 +338,13 @@ const EmbeddingPreview = (props) => {
       </Row>
     </>
   );
+};
+
+EmbeddingPreview.defaultProps = {
+};
+
+EmbeddingPreview.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default EmbeddingPreview;
