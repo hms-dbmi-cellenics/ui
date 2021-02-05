@@ -51,24 +51,28 @@ const EmbeddingPreview = () => {
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
       plotType: 'embeddingPreviewBySample',
+      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewBySample' />),
     },
     cellCluster: {
       title: 'Colored by CellSets',
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
       plotType: 'embeddingPreviewByCellSets',
+      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewByCellSets' />),
     },
     mitochondrialFraction: {
       title: 'Mitochondrial fraction reads',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialReads',
       plotType: 'embeddingPreviewMitochondrialReads',
+      plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewMitochondrialReads' />),
     },
     doubletScore: {
       title: 'Cell doublet score',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewDoubletScore',
       plotType: 'embeddingPreviewDoubletScore',
+      plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewDoubletScore' />),
     },
   };
 
@@ -85,20 +89,8 @@ const EmbeddingPreview = () => {
       return;
     }
 
-    if (!cellSets.loading && !cellSets.error) {
-      switch (plots[selectedPlot].plotType) {
-        case 'embeddingPreviewMitochondrialReads':
-        case 'embeddingPreviewDoubletScore':
-          setPlot(<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid={plots[selectedPlot].plotUuid} />);
-          break;
-
-        // Set this as default plot because default plot is 'sample' which is categorical
-        case 'embeddingPreviewBySample':
-        case 'embeddingPreviewByCellSets':
-        default:
-          setPlot(<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid={plots[selectedPlot].plotUuid} />);
-          break;
-      }
+    if (!cellSets.loading && !cellSets.error && config) {
+      setPlot(plots[selectedPlot].plot(config));
     }
   }, [config, cellSets]);
 
