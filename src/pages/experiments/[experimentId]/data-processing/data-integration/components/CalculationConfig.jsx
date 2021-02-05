@@ -87,8 +87,6 @@ const CalculationConfig = () => {
             <InputNumber
               defaultValue={2000}
               min={1}
-              onPressEnter={() => { }}
-              onChange={() => { }}
             />
           </Form.Item>
           <Form.Item label='Normalisation:'>
@@ -113,28 +111,22 @@ const CalculationConfig = () => {
           <Form.Item label='Number of Principal Components'>
             <InputNumber
               defaultValue={30}
-              onPressEnter={() => { }}
-              onChange={() => { }}
             />
           </Form.Item>
           <Form.Item label='% variation explained'>
             <InputNumber
               defaultValue={91.00}
               step={0.01}
-              onPressEnter={() => { }}
-              onChange={() => { }}
             />
           </Form.Item>
           <Form.Item label='# of genes:'>
             <InputNumber
               defaultValue={2000}
               min={1}
-              onPressEnter={() => { }}
-              onChange={() => { }}
             />
           </Form.Item>
           <Form.Item label='Exclude genes categories:'>
-            <Checkbox.Group onChange={() => { }}>
+            <Checkbox.Group>
               <Space direction='vertical'>
                 <Checkbox value='ribosomal'>ribosomal</Checkbox>
                 <Checkbox value='mitochondrial'>mitochondrial</Checkbox>

@@ -69,11 +69,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
+        <CalculationConfig />
       </Provider>,
     );
 
@@ -88,11 +84,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
+        <CalculationConfig />
       </Provider>,
     );
 

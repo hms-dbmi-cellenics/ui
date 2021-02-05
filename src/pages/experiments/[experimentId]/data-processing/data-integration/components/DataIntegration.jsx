@@ -75,14 +75,75 @@ const DataIntegration = () => {
     sample: {
       title: 'Samples',
       imgSrc: cellBySamplePic,
+      specifics: () => (
+        <>
+          <Panel header='Colours' key='colors'>
+            <ColourInversion
+              config={config}
+              onUpdate={updatePlotWithChanges}
+            />
+            <Alert
+              message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+              type='info'
+            />
+          </Panel>
+
+          <Panel header='Legend' key='legend'>
+            <LegendEditor
+              onUpdate={updatePlotWithChanges}
+              legendEnabled={config.legendEnabled}
+              legendPosition={config.legendPosition}
+              legendOptions='top-bot'
+            />
+          </Panel>
+          <Panel header='Markers' key='marker'>
+            <PointDesign config={config} onUpdate={updatePlotWithChanges} />
+          </Panel>
+          <Panel header='Labels' key='labels'>
+            <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
+          </Panel>
+        </>
+      ),
     },
     frequency: {
       title: 'Default clusters',
       imgSrc: frequencyPic,
+      specifics: () => (
+        <>
+          <Panel header='Colours' key='colors'>
+            <ColourInversion
+              config={config}
+              onUpdate={updatePlotWithChanges}
+            />
+            <Alert
+              message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+              type='info'
+            />
+          </Panel>
+          <Panel header='Legend' key='legend'>
+            <LegendEditor
+              onUpdate={updatePlotWithChanges}
+              legendEnabled={config.legendEnabled}
+              legendPosition={config.legendPosition}
+              legendOptions='top-bot'
+            />
+          </Panel>
+        </>
+      ),
     },
     elbow: {
       title: 'Mitochondrial fraction reads',
       imgSrc: elbowPic,
+      specifics: () => (
+        <>
+          <Panel header='Colours' key='colors'>
+            <ColourInversion
+              config={config}
+              onUpdate={updatePlotWithChanges}
+            />
+          </Panel>
+        </>
+      ),
     },
   };
 
@@ -155,42 +216,7 @@ const DataIntegration = () => {
                 <Panel header='Axes and Margins' key='axes'>
                   <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
-                <Panel header='Colours' key='colors'>
-                  <ColourInversion
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                  {(selectedPlot === 'sample' || selectedPlot === 'frequency') ? (
-                    <Alert
-                      message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
-                      type='info'
-                    />
-                  ) : ''}
-                </Panel>
-
-                {(selectedPlot === 'sample' || selectedPlot === 'frequency') ? (
-
-                  <Panel header='Legend' key='legend'>
-                    <LegendEditor
-                      onUpdate={updatePlotWithChanges}
-                      legendEnabled={config.legendEnabled}
-                      legendPosition={config.legendPosition}
-                      legendOptions='top-bot'
-                    />
-                  </Panel>
-
-                ) : ''}
-
-                {(selectedPlot === 'sample') ? (
-                  <>
-                    <Panel header='Markers' key='marker'>
-                      <PointDesign config={config} onUpdate={updatePlotWithChanges} />
-                    </Panel>
-                    <Panel header='Labels' key='labels'>
-                      <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
-                    </Panel>
-                  </>
-                ) : ''}
+                {plots[selectedPlot].specifics()}
 
               </Collapse>
             </Panel>
