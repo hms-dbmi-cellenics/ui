@@ -86,6 +86,7 @@ const CalculationConfig = () => {
           <Form.Item label='# of genes:'>
             <InputNumber
               defaultValue={2000}
+              step={100}
               min={1}
             />
           </Form.Item>
@@ -110,19 +111,13 @@ const CalculationConfig = () => {
         <div style={{ paddingLeft: '1rem' }}>
           <Form.Item label='Number of Principal Components'>
             <InputNumber
-              defaultValue={30}
+              defaultValue={10}
             />
           </Form.Item>
           <Form.Item label='% variation explained'>
             <InputNumber
-              defaultValue={91.00}
-              step={0.01}
-            />
-          </Form.Item>
-          <Form.Item label='# of genes:'>
-            <InputNumber
-              defaultValue={2000}
-              min={1}
+              value={10}
+              readOnly
             />
           </Form.Item>
           <Form.Item label='Exclude genes categories:'>
