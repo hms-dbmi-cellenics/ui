@@ -16,6 +16,7 @@ import CrossHair from '../../../../../../../pages/experiments/[experimentId]/dat
 import CellInfo from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/CellInfo';
 import { CELL_SETS_CREATE } from '../../../../../../../redux/actionTypes/cellSets';
 import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
+import initialExperimentState, { initialProcessingState } from '../../../../../../../redux/reducers/experimentSettings/initialState';
 import { CELL_INFO_UPDATE } from '../../../../../../../redux/actionTypes/cellInfo';
 
 jest.mock('localforage');
@@ -30,7 +31,7 @@ const height = 200;
 describe('Embedding', () => {
   const initialState = {
     embeddings: {
-      pca: {
+      [initialProcessingState.configureEmbedding.embeddingSettings.method]: {
         ...initialEmbeddingState,
         loading: false,
         data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
@@ -68,6 +69,10 @@ describe('Embedding', () => {
         key: 'louvain',
       },
     },
+    experimentSettings: {
+      ...initialExperimentState,
+      processing: initialProcessingState,
+    },
   };
 
   beforeAll(async () => {
@@ -80,7 +85,7 @@ describe('Embedding', () => {
 
     component = mount(
       <Provider store={store}>
-        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
+        <Embedding experimentId='1234' width={width} height={height} />
       </Provider>,
     );
   });
@@ -228,7 +233,7 @@ describe('Embedding', () => {
   it('renders CrossHair and CellInfo components when user hovers over cell', () => {
     store = mockStore(initialState);
 
-    const mockProject = jest.fn((cellId) => store.getState().embeddings.pca.data[cellId]);
+    const mockProject = jest.fn((cellId) => store.getState().embeddings.umap.data[cellId]);
 
     const cellCoordinates = {
       project: mockProject,
@@ -236,7 +241,7 @@ describe('Embedding', () => {
 
     component = mount(
       <Provider store={store}>
-        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
+        <Embedding experimentId='1234' width={width} height={height} />
       </Provider>,
     );
     const scatterplot = component.find(Scatterplot);
@@ -257,8 +262,8 @@ describe('Embedding', () => {
     expect(crossHairs.length).toEqual(1);
     expect(crossHairs.props().coordinates.current).toEqual(
       {
-        x: store.getState().embeddings.pca.data[2][0],
-        y: store.getState().embeddings.pca.data[2][1],
+        x: store.getState().embeddings.umap.data[2][0],
+        y: store.getState().embeddings.umap.data[2][1],
         width,
         height,
       },
@@ -270,7 +275,7 @@ describe('Embedding', () => {
   it('does not render CrossHair and CellInfo components when user zooms in or out of the embedding', () => {
     store = mockStore(initialState);
 
-    const mockProject = jest.fn((cellId) => store.getState().embeddings.pca.data[cellId]);
+    const mockProject = jest.fn((cellId) => store.getState().embeddings.umap.data[cellId]);
 
     const cellCoordinates = {
       project: mockProject,
@@ -278,7 +283,7 @@ describe('Embedding', () => {
 
     component = mount(
       <Provider store={store}>
-        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
+        <Embedding experimentId='1234' width={width} height={height} />
       </Provider>,
     );
     const scatterplot = component.find(Scatterplot);
@@ -335,7 +340,7 @@ describe('Embedding', () => {
 
     const embedding = mount(
       <Provider store={geneExprStore}>
-        <Embedding experimentId='1234' embeddingType='pca' width={width} height={height} />
+        <Embedding experimentId='1234' width={width} height={height} />
       </Provider>,
     );
 

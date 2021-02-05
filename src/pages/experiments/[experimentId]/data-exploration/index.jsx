@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
-import Error from 'next/error';
 import useSWR from 'swr';
 import { Tabs } from 'antd';
 import { Mosaic, MosaicWindow, RemoveButton } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
+import Error from '../../../_error';
 import Header from './components/header';
 import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
 import GeneListTool from './components/gene-list-tool/GeneListTool';
@@ -51,7 +51,7 @@ const ExplorationViewPage = () => {
   const TILE_MAP = {
     'UMAP Embedding': {
       toolbarControls: [<RemoveButton />],
-      component: (width, height) => <Embedding experimentId={experimentId} embeddingType='umap' width={width} height={height} />,
+      component: (width, height) => <Embedding experimentId={experimentId} width={width} height={height} />,
     },
     Heatmap: {
       toolbarControls: [
@@ -85,16 +85,16 @@ const ExplorationViewPage = () => {
     },
   };
 
-  if (error) {
-    if (error.payload === undefined) {
-      return <Error statusCode='You are not connected to the backend.' />;
-    }
-    const { status } = error.payload;
-    return <Error statusCode={status} />;
+  if (!data || !experimentId) {
+    return <PreloadContent />;
   }
 
-  if (!data) {
-    return <PreloadContent />;
+  if (error) {
+    if (error.payload === undefined) {
+      return <Error errorText='Cannot connect to API service.' />;
+    }
+    const { status } = error.payload;
+    return <Error errorText={status} />;
   }
 
   return (

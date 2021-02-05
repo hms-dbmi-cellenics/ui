@@ -1,26 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CalculationConfig clicking on button triggers save action 1`] = `
-Object {
-  "payload": Object {
-    "configChange": Object {
-      "embeddingSettings": Object {
-        "method": "tsne",
-      },
+exports[`CalculationConfig clicking on button triggers save action and reloading of plot data 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "embeddingType": "umap",
+      "experimentId": "1234",
     },
-    "experimentId": "1234",
-    "settingName": "configureEmbedding",
+    "type": "embeddings/loading",
   },
-  "type": "experimentSettings/updateProcessing",
-}
-`;
-
-exports[`CalculationConfig clicking on button triggers save action 2`] = `
-Object {
-  "payload": Object {
-    "experimentId": "1234",
-    "settingName": "configureEmbedding",
+  Object {
+    "payload": Object {
+      "experimentId": "1234",
+      "settingName": "configureEmbedding",
+    },
+    "type": "experimentSettings/saveProcessing",
   },
-  "type": "experimentSettings/saveProcessing",
-}
+]
 `;

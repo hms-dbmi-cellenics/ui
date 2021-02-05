@@ -77,6 +77,7 @@ const fetchCachedWork = async (experimentId, timeout, body) => {
       return fetchCachedGeneExpressionWork(experimentId, timeout, body);
     }
     const key = createObjectHash({ experimentId, body });
+
     const data = await cache.get(key);
     if (data) return data;
     const response = await sendWork(experimentId, timeout, body);

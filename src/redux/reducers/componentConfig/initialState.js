@@ -44,7 +44,7 @@ const embeddingContinuousInitialConfig = {
   reverseCbar: false,
   logEquation: 'datum.expression*1',
   titleText: '',
-  shownGene: 'CST3',
+  shownGene: 'notSelected',
   titleSize: 20,
   titleAnchor: 'start',
   axisTitlesize: 13,

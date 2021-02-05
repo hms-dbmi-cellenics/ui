@@ -5,13 +5,21 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
+import { Vega } from 'react-vega';
 
 import DataIntegration from '../../../../../../../pages/experiments/[experimentId]/data-processing/data-integration/components/DataIntegration';
 import CalculationConfig from '../../../../../../../pages/experiments/[experimentId]/data-processing/data-integration/components/CalculationConfig';
-import PlotStyling from '../../../../../../../pages/experiments/[experimentId]/data-processing/filter-cells/components/PlotStyling';
-import ElbowPlot from '../../../../../../../pages/experiments/[experimentId]/data-processing/data-integration/components/plots/ElbowPlot';
 
+jest.mock('localforage');
 const mockStore = configureStore([thunk]);
+
+jest.mock('next/router', () => ({
+  useRouter: jest.fn().mockImplementation(() => ({
+    query: {
+      experimentId: '1234',
+    },
+  })),
+}));
 
 describe('DataIntegration', () => {
   configure({ adapter: new Adapter() });
@@ -53,14 +61,9 @@ describe('DataIntegration', () => {
     // There is a config element
     expect(calculationConfig.length).toEqual(1);
 
-    const plotStyling = dataIntegration.find(PlotStyling);
+    const plots = dataIntegration.find(Vega);
 
-    // There is a styling element
-    expect(plotStyling.length).toEqual(1);
-
-    const elbowPlots = dataIntegration.find(ElbowPlot);
-
-    // There are two elbow plots, the miniature version and the actually shown one
-    expect(elbowPlots.length).toEqual(2);
+    // There are 4 plots, the miniature versions and the actually shown one
+    expect(plots.length).toEqual(4);
   });
 });

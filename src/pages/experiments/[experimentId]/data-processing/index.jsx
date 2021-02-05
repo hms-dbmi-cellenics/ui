@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  PageHeader, Collapse, Switch, Tooltip, Select,
-  Steps, Space, Button, Typography, Progress, Descriptions, Statistic,
-  Row, Col,
+  PageHeader, Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
 } from 'antd';
 
 import {
   LeftOutlined,
   RightOutlined,
 } from '@ant-design/icons';
-import Error from 'next/error';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
+import Error from '../../../_error';
 import FeedbackButton from '../../../../components/FeedbackButton';
 import getApiEndpoint from '../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../utils/cacheRequest';
@@ -34,55 +32,131 @@ const DataProcessingPage = () => {
 
   const steps = [
     {
+      id: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
-      render: () => <CellSizeDistribution />,
+      render: () => <CellSizeDistribution filtering />,
     },
     {
+      id: 'mitoContentFilter',
       name: 'Mitochondrial content filter',
-      render: () => <MitochondrialContent />,
+      render: () => <MitochondrialContent filtering />,
     },
     {
+      id: 'classifierFilter',
       name: 'Classifier filter',
-      render: () => <Classifier />,
+      render: () => <Classifier filtering />,
     },
     {
+      id: 'genesVsUMIFilter',
       name: 'Number of genes vs UMIs filter',
-      render: () => <GenesVsUMIs />,
+      render: () => <GenesVsUMIs filtering />,
     },
     {
+      id: 'doubletFilter',
       name: 'Doublet filter',
-      render: () => <DoubletScores />,
+      render: () => <DoubletScores filtering />,
     },
     {
+      id: 'dataIntegration',
       name: 'Data integration',
-      render: () => <DataIntegration />,
+      render: () => <DataIntegration filtering />,
     },
     {
+      id: 'comptueEmbeddingFilter',
       name: 'Compute embedding',
-      render: () => <EmbeddingPreview experimentId={experimentId} />,
+      render: (expId) => <EmbeddingPreview experimentId={expId} />,
     },
   ];
 
+  const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
+
   const [stepId, setStepId] = useState(0);
 
-  const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
+  const [completedSteps, setCompletedSteps] = useState(new Set());
+
+  const carouselRef = useRef(null);
+
+  useEffect(() => {
+    setCompletedSteps(new Set([...completedSteps]).add(steps[stepId].id));
+
+    if (carouselRef.current) {
+      carouselRef.current.goTo(stepId);
+    }
+  }, [stepId]);
+
+  if (!data || !experimentId) {
+    return <PreloadContent />;
+  }
 
   if (error) {
     if (error.payload === undefined) {
-      return <Error statusCode='You are not connected to the backend.' />;
+      return <Error errorText='Cannot connect to API service.' />;
     }
     const { status } = error.payload;
-    return <Error statusCode={status} />;
+    return <Error errorText={status} />;
   }
 
-  if (!data) {
-    return <PreloadContent />;
-  }
+  const renderTitle = () => (
+    <Row justify='space-between'>
+      <Col span='8'>
+        <Select
+          value={stepId}
+          onChange={(id) => setStepId(id)}
+          style={{ width: 360, fontWeight: 'bold' }}
+          placeholder='Jump to a step...'
+        >
+          {
+            steps.map(
+              ({ name, id }, i) => (
+                <Option
+                  value={i}
+                  disabled={!completedSteps.has(id)}
+                >
+                  {name}
+                </Option>
+              ),
+            )
+          }
+        </Select>
+      </Col>
+      <Col span='16'>
+        <div style={{ float: 'right' }}>
+          <Space size='large'>
+            <Progress
+              percent={((completedSteps.size) / steps.length) * 100}
+              steps={steps.length}
+              showInfo={false}
+            />
+            <Text type='primary'>{`${completedSteps.size} of ${steps.length} steps complete`}</Text>
+            <Button
+              disabled={stepId === 0}
+              icon={<LeftOutlined />}
+              onClick={() => setStepId(Math.max(stepId - 1, 0))}
+            >
+              Previous
+            </Button>
+            <Button
+              type='primary'
+              onClick={
+                () => {
+                  const newId = Math.min(stepId + 1, steps.length - 1);
+                  setStepId(newId);
+                }
+              }
+            >
+              Next
+              <RightOutlined />
+            </Button>
+          </Space>
+        </div>
+      </Col>
+    </Row>
+  );
 
   return (
     <>
       <div style={{
-        paddingLeft: 32, paddingRight: 32,
+        paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', minHeight: '100vh',
       }}
       >
         <PageHeader
@@ -91,46 +165,15 @@ const DataProcessingPage = () => {
             <FeedbackButton />
           )}
         />
-      </div>
-      <div
-        style={{
-          backgroundColor: '#ffffff', paddingLeft: 32, paddingRight: 32, paddingTop: 16, paddingBottom: 16,
-        }}
-      >
-        <Space direction='vertical' style={{ width: '100%' }} size='large'>
-          <Row justify='space-between'>
-            <Col span='8'>
-              <Select value={stepId} onChange={(id) => setStepId(id)} style={{ width: 360, fontWeight: 'bold' }} placeholder='Jump to a step...'>
-                {steps.map(({ name }, i) => (<Option value={i}>{name}</Option>))}
-              </Select>
-            </Col>
-            <Col span='16'>
-              <div style={{ float: 'right' }}>
-                <Space size='large'>
-                  <Progress
-                    percent={((stepId + 1) / steps.length) * 100}
-                    steps={steps.length}
-                    showInfo={false}
-                  />
-                  <Text type='primary'>{`${stepId + 1} of ${steps.length} steps`}</Text>
-                  <Button
-                    disabled={stepId === 0}
-                    icon={<LeftOutlined />}
-                    onClick={() => setStepId(Math.max(stepId - 1, 0))}
-                  >
-                    Previous
-                  </Button>
-                  <Button type='primary' onClick={() => setStepId(Math.min(stepId + 1, steps.length - 1))}>
-                    Next
-                    <RightOutlined />
-                  </Button>
-                </Space>
-              </div>
-            </Col>
-          </Row>
-          {steps[stepId].render()}
 
-        </Space>
+        <Card
+          title={renderTitle()}
+          style={{ flex: 1 }}
+        >
+          <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
+            {steps.map((step) => step.render(experimentId))}
+          </Carousel>
+        </Card>
       </div>
     </>
   );

@@ -28,6 +28,8 @@ import legend from '../../../../../../../static/media/viridis.png';
 import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 
+import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+
 const Scatterplot = dynamic(
   () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
   { ssr: false },
@@ -35,13 +37,16 @@ const Scatterplot = dynamic(
 
 const Embedding = (props) => {
   const {
-    experimentId, embeddingType, height, width,
+    experimentId, height, width,
   } = props;
 
   const dispatch = useDispatch();
 
   const view = { target: [4, -4, 0], zoom: 4.00 };
   const selectedCellIds = new Set();
+
+  const embeddingSettings = useSelector((state) => state.experimentSettings?.processing?.configureEmbedding?.embeddingSettings);
+  const embeddingType = embeddingSettings?.method;
 
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
@@ -61,12 +66,19 @@ const Embedding = (props) => {
 
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
-  // Load the embedding if it isn't already.
+  // Load embedding settings if they aren't already.
   useEffect(() => {
-    if (!data && isBrowser) {
+    if (!embeddingSettings) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, [experimentId]);
+
+  // Then, try to load the embedding with the appropriate data.
+  useEffect(() => {
+    if (embeddingSettings && !data) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
-  }, []);
+  }, [embeddingSettings]);
 
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.
@@ -77,7 +89,7 @@ const Embedding = (props) => {
       // For genes/continous data, we cannot do this in one go,
       // we need to wait for the thing to load in first.
       case 'genes': {
-        dispatch(loadGeneExpression(experimentId, [key], embeddingType));
+        dispatch(loadGeneExpression(experimentId, [key], 'embedding'));
         setCellInfoVisible(false);
         return;
       }
@@ -220,21 +232,26 @@ const Embedding = (props) => {
       }}
     >
       {renderExpressionView()}
-      <Scatterplot
-        cellOpacity={0.1}
-        cellRadiusScale={0.1}
-        uuid={embeddingType}
-        view={view}
-        cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
-        mapping='PCA'
-        selectedCellIds={selectedCellIds}
-        cellColors={(selectedCell) ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] })) : new Map(Object.entries(cellColors))}
-        updateStatus={updateStatus}
-        updateCellsSelection={updateCellsSelection}
-        updateCellsHover={updateCellsHover}
-        updateViewInfo={updateCellCoordinates}
-        clearPleaseWait={clearPleaseWait}
-      />
+      {
+        data ? (
+
+          <Scatterplot
+            cellOpacity={0.1}
+            cellRadiusScale={0.1}
+            uuid={embeddingType}
+            view={view}
+            cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
+            mapping='PCA'
+            selectedCellIds={selectedCellIds}
+            cellColors={(selectedCell) ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] })) : new Map(Object.entries(cellColors))}
+            updateStatus={updateStatus}
+            updateCellsSelection={updateCellsSelection}
+            updateCellsHover={updateCellsHover}
+            updateViewInfo={updateCellCoordinates}
+            clearPleaseWait={clearPleaseWait}
+          />
+        ) : ''
+      }
       {
         createClusterPopover
           ? (

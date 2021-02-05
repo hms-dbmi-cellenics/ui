@@ -18,7 +18,7 @@ const { Text } = Typography;
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
-const getCellSetName = (name) => ( name?.split('/')[1] || name )
+const getCellSetName = (name) => (name?.split('/')[1] || name)
 
 const DiffExprCompute = (props) => {
   const {
@@ -64,7 +64,7 @@ const DiffExprCompute = (props) => {
 
       Object.entries(comparisonGroup[type]).forEach(([comparisonKey, selectedCell]) => {
         selectedCell = getCellSetName(selectedCell)
-        if(selectedCell && !properties.hasOwnProperty(selectedCell)) deleteKeys[comparisonKey] = null
+        if (selectedCell && !properties.hasOwnProperty(selectedCell)) deleteKeys[comparisonKey] = null
       });
 
       if (Object.keys(deleteKeys).length) {
