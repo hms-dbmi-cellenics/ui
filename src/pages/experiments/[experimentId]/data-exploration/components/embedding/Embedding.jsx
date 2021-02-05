@@ -37,13 +37,16 @@ const Scatterplot = dynamic(
 
 const Embedding = (props) => {
   const {
-    experimentId, embeddingType, height, width,
+    experimentId, height, width,
   } = props;
 
   const dispatch = useDispatch();
 
   const view = { target: [4, -4, 0], zoom: 4.00 };
   const selectedCellIds = new Set();
+
+  const embeddingSettings = useSelector((state) => state.experimentSettings?.processing?.configureEmbedding?.embeddingSettings);
+  const embeddingType = embeddingSettings?.method;
 
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
@@ -56,8 +59,6 @@ const Embedding = (props) => {
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
 
-  const processingSettings = useSelector((state) => state.experimentSettings.processing);
-
   const cellCoordintes = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -65,18 +66,19 @@ const Embedding = (props) => {
 
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
-  // Load the embedding if it isn't already.
+  // Load embedding settings if they aren't already.
   useEffect(() => {
-    if (!processingSettings.configureEmbedding) {
-      dispatch(loadProcessingSettings(experimentId, embeddingType));
+    if (!embeddingSettings) {
+      dispatch(loadProcessingSettings(experimentId));
     }
   }, [experimentId]);
 
+  // Then, try to load the embedding with the appropriate data.
   useEffect(() => {
-    if (!data && processingSettings.configureEmbedding) {
+    if (embeddingSettings && !data) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
-  }, [processingSettings]);
+  }, [embeddingSettings]);
 
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.
@@ -87,7 +89,7 @@ const Embedding = (props) => {
       // For genes/continous data, we cannot do this in one go,
       // we need to wait for the thing to load in first.
       case 'genes': {
-        dispatch(loadGeneExpression(experimentId, [key], embeddingType));
+        dispatch(loadGeneExpression(experimentId, [key], 'embedding'));
         setCellInfoVisible(false);
         return;
       }
@@ -231,7 +233,7 @@ const Embedding = (props) => {
     >
       {renderExpressionView()}
       {
-        data && processingSettings.configureEmbedding ? (
+        data ? (
 
           <Scatterplot
             cellOpacity={0.1}

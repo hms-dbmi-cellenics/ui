@@ -14,7 +14,7 @@ exports[`loadEmbedding action Dispatches error action on unsuccessful loading 2`
 Object {
   "payload": Object {
     "embeddingType": "4567",
-    "error": "Oops, we couldn't load your embedding. The computation took too long or your connection is broken.",
+    "error": "We're sorry, we were unable to load your embedding.",
     "experimentId": "1234",
   },
   "type": "embeddings/error",

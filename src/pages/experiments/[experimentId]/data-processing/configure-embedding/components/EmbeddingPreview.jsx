@@ -1,11 +1,10 @@
 /* eslint-disable no-param-reassign */
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
+import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
   Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse, Empty,
 } from 'antd';
-
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
@@ -53,6 +52,7 @@ const EmbeddingPreview = () => {
       plotType: 'embeddingPreviewBySample',
       plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewBySample' />),
     },
+
     cellCluster: {
       title: 'Colored by CellSets',
       imgSrc: plot1Pic,
@@ -94,8 +94,6 @@ const EmbeddingPreview = () => {
     }
   }, [config, cellSets]);
 
-  // If the user toggles to a different embedding, set the config to be the initial
-  // state for that type of plot.
   useEffect(() => {
     if (!isBrowser) return;
     const { plotUuid, plotType } = plots[selectedPlot];
@@ -229,6 +227,13 @@ const EmbeddingPreview = () => {
       </Row>
     </>
   );
+};
+
+EmbeddingPreview.defaultProps = {
+};
+
+EmbeddingPreview.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default EmbeddingPreview;
