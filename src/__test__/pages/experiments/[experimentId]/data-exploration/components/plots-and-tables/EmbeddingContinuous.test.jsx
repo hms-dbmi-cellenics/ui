@@ -91,8 +91,6 @@ const data = [
   [18, 10],
 ];
 const config = initialPlotConfigStates.embeddingContinuous;
-
-const selectedGene = 'CST3';
 const expression = [0.844880940781665, 0, 0, 0, 0, 0, 1, 2, 1.0892605007475098, 0.9444651009182008, 0, 0, 0.9955310761799436, 0, 0];
 
 const initialState = {
@@ -131,7 +129,7 @@ const generateVegaData = () => ({
 const testPlot = () => mount(
   <Provider store={store}>
     <Vega
-      spec={generateSpec(config, selectedGene)}
+      spec={generateSpec(config)}
       data={generateVegaData()}
       renderer='canvas'
     />

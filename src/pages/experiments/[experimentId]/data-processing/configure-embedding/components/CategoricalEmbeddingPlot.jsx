@@ -10,18 +10,13 @@ import { loadEmbedding } from '../../../../../../redux/actions/embedding';
 import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 
 const CategoricalEmbeddingPlot = (props) => {
-  const { experimentId, config } = props;
+  const { experimentId, config, plotUuid } = props;
   const dispatch = useDispatch();
 
   const cellSets = useSelector((state) => state.cellSets);
   const embeddingType = useSelector((state) => state.experimentSettings.processing.configureEmbedding?.embeddingSettings.method);
   const { data: embeddingData, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
-  const [rawSpec, setRawSpec] = useState(false);
   const [plotSpec, setPlotSpec] = useState({});
-
-  useEffect(() => {
-    setRawSpec(generateSpec(config));
-  }, [config]);
 
   useEffect(() => {
     if (!embeddingData) {
@@ -32,10 +27,10 @@ const CategoricalEmbeddingPlot = (props) => {
       dispatch(loadCellSets(experimentId));
     }
 
-    if (cellSets.hierarchy.length && embeddingData && rawSpec) {
-      setPlotSpec(generateData(rawSpec, cellSets, config.selectedCellSet, embeddingData));
+    if (cellSets.hierarchy.length && embeddingData) {
+      setPlotSpec(generateData(generateSpec(config), cellSets, config.selectedCellSet, embeddingData));
     }
-  }, [cellSets, embeddingData, embeddingType, rawSpec]);
+  }, [cellSets, embeddingData, embeddingType]);
 
   const render = () => {
     if (error) {
@@ -47,7 +42,7 @@ const CategoricalEmbeddingPlot = (props) => {
       );
     }
 
-    if (!cellSets || !embeddingData || loading) {
+    if (cellSets.loading || !embeddingData || loading) {
       return (
         <center>
           <Spin size='large' />
@@ -64,7 +59,7 @@ const CategoricalEmbeddingPlot = (props) => {
 
   return (
     <>
-      { render}
+      { render()}
     </>
   );
 };
@@ -72,6 +67,7 @@ const CategoricalEmbeddingPlot = (props) => {
 CategoricalEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
+  plotUuid: PropTypes.object.isRequired,
 };
 
 export default CategoricalEmbeddingPlot;

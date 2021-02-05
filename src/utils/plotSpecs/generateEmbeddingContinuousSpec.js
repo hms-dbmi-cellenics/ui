@@ -153,11 +153,13 @@ const generateSpec = (config) => {
   };
 };
 
-const generateData = (spec,
+const generateData = (
+  spec,
   selectedExpression,
   selectedSample,
   embeddingData,
-  cellSetProperties) => {
+  cellSetProperties,
+) => {
   let filteredData = [];
   if (selectedSample !== 'All') {
     const cellIds = Array.from(cellSetProperties[selectedSample].cellIds);

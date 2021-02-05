@@ -13,8 +13,6 @@ import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
 import CalculationConfig from './CalculationConfig';
 
-import { initialPlotConfigStates } from '../../../../../../redux/reducers/componentConfig/initialState';
-
 import CategoricalEmbeddingPlot from './CategoricalEmbeddingPlot';
 import ContinuousEmbeddingPlot from './ContinuousEmbeddingPlot';
 
@@ -34,6 +32,7 @@ import FontDesign from '../../../plots-and-tables/components/FontDesign';
 import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
 import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
 import { filterCells } from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 
 const { Panel } = Collapse;
 
@@ -42,7 +41,7 @@ const EmbeddingPreview = () => {
   const { experimentId } = router.query;
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(false);
-  const { cellSets } = useSelector((state) => state.cellSets);
+  const cellSets = useSelector((state) => state.cellSets);
 
   const dispatch = useDispatch();
 
@@ -51,29 +50,33 @@ const EmbeddingPreview = () => {
       title: 'Colored by Samples',
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
-      plotType: 'embeddingCategorical',
+      plotType: 'embeddingPreviewBySample',
     },
     cellCluster: {
       title: 'Colored by CellSets',
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
-      plotType: 'embeddingCategorical',
+      plotType: 'embeddingPreviewByCellSets',
     },
     mitochondrialFraction: {
       title: 'Mitochondrial fraction reads',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialReads',
-      plotType: 'embeddingContinuous',
+      plotType: 'embeddingPreviewMitochondrialReads',
     },
     doubletScore: {
       title: 'Cell doublet score',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewDoubletScore',
-      plotType: 'embeddingContinuous',
+      plotType: 'embeddingPreviewDoubletScore',
     },
   };
 
   const config = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config);
+
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, [experimentId]);
 
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
@@ -82,18 +85,22 @@ const EmbeddingPreview = () => {
       return;
     }
 
-    switch (plots[selectedPlot].plotType) {
-      case 'embeddingContinuous':
-        setPlot(<ContinuousEmbeddingPlot experimentId={experimentId} config={config} />);
-        break;
+    if (!cellSets.loading && !cellSets.error) {
+      switch (plots[selectedPlot].plotType) {
+        case 'embeddingPreviewMitochondrialReads':
+        case 'embeddingPreviewDoubletScore':
+          setPlot(<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid={plots[selectedPlot].plotUuid} />);
+          break;
 
-      // Set this as default plot because default plot is 'sample' which is categorical
-      case 'embeddingCategorical':
-      default:
-        setPlot(<CategoricalEmbeddingPlot experimentId={experimentId} config={config} />);
-        break;
+        // Set this as default plot because default plot is 'sample' which is categorical
+        case 'embeddingPreviewBySample':
+        case 'embeddingPreviewByCellSets':
+        default:
+          setPlot(<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid={plots[selectedPlot].plotUuid} />);
+          break;
+      }
     }
-  }, [config]);
+  }, [config, cellSets]);
 
   // If the user toggles to a different embedding, set the config to be the initial
   // state for that type of plot.
@@ -112,13 +119,16 @@ const EmbeddingPreview = () => {
 
   const renderPlot = () => {
     if (selectedPlot === 'sample'
+      && !cellSets.loading
       && filterCells(cellSets, config.selectedCellSet).length === 0) {
       return (
         <Empty description='Your project has only one sample.' />
       );
     }
 
-    return plot;
+    if (plot) {
+      return plot;
+    }
   };
 
   // Spinner for main window
@@ -138,7 +148,7 @@ const EmbeddingPreview = () => {
       />
       <Row>
         <Col span={15}>
-          {renderPlot}
+          {renderPlot()}
         </Col>
 
         <Col span={3}>
@@ -206,7 +216,7 @@ const EmbeddingPreview = () => {
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
-                {plots[selectedPlot].plotType === initialPlotConfigStates.embeddingContinuous && (
+                {plots[selectedPlot].plotType === 'embeddingContinuous' && (
                   <Panel header='Legend' key='legend'>
                     <LegendEditor config={config} onUpdate={updatePlotWithChanges} />
                   </Panel>
