@@ -8,29 +8,39 @@ import PlatformError from '../../../../../../components/PlatformError';
 import { generateSpec, generateData } from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { loadEmbedding } from '../../../../../../redux/actions/embedding';
 import { loadCellSets } from '../../../../../../redux/actions/cellSets';
+import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
 const CategoricalEmbeddingPlot = (props) => {
   const { experimentId, config, plotUuid } = props;
   const dispatch = useDispatch();
 
+  const defaultEmbeddingType = 'umap';
+
   const cellSets = useSelector((state) => state.cellSets);
-  const embeddingType = useSelector((state) => state.experimentSettings.processing.configureEmbedding?.embeddingSettings.method);
+  const processingSettings = useSelector((state) => state.experimentSettings.processing);
+  const embeddingType = processingSettings?.configureEmbedding?.embeddingSettings?.method;
   const { data: embeddingData, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (!embeddingData) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
+    if (!Object.getOwnPropertyDescriptor(processingSettings, 'configureEmbedding')) {
+      dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
     }
 
-    if (!cellSets.hierarchy.length) {
+    if (cellSets.loading) {
       dispatch(loadCellSets(experimentId));
     }
 
-    if (cellSets.hierarchy.length && embeddingData) {
+    if (!embeddingData) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+    }
+  }, [experimentId, embeddingType]);
+
+  useEffect(() => {
+    if (!cellSets.loading && !cellSets.error && embeddingData) {
       setPlotSpec(generateData(generateSpec(config), cellSets, config.selectedCellSet, embeddingData));
     }
-  }, [cellSets, embeddingData, embeddingType]);
+  }, [cellSets, embeddingData, config]);
 
   const render = () => {
     if (error) {

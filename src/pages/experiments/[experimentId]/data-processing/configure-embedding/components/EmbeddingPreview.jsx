@@ -35,9 +35,8 @@ import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 
 const { Panel } = Collapse;
 
-const EmbeddingPreview = () => {
-  const router = useRouter();
-  const { experimentId } = router.query;
+const EmbeddingPreview = (props) => {
+  const { experimentId } = props;
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(false);
   const cellSets = useSelector((state) => state.cellSets);

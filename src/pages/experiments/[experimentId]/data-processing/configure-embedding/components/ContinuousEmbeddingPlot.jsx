@@ -14,10 +14,12 @@ import { updatePlotConfig } from '../../../../../../redux/actions/componentConfi
 
 const ContinuousEmbeddingPlot = (props) => {
   const { experimentId, config, plotUuid } = props;
+  const defaultEmbeddingType = 'umap';
 
   const dispatch = useDispatch();
 
-  const embeddingType = useSelector((state) => state.experimentSettings.processing.configureEmbedding?.embeddingSettings.method);
+  const processingSettings = useSelector((state) => state.experimentSettings.processing);
+  const embeddingType = processingSettings?.configureEmbedding?.embeddingSettings?.method;
   const { data: embeddingData, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const geneExpression = useSelector((state) => state.genes.expression);
   const geneProperties = useSelector((state) => state.genes.propreties);
@@ -35,18 +37,22 @@ const ContinuousEmbeddingPlot = (props) => {
   };
 
   useEffect(() => {
-    if (cellSets.loading) {
+    if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
 
-    if (!embeddingType) {
-      dispatch(loadProcessingSettings(experimentId, embeddingType));
+    if (!Object.getOwnPropertyDescriptor(processingSettings, 'configureEmbedding')) {
+      dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
     }
 
     if (config?.shownGene === 'notSelected') {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
-  }, [experimentId]);
+
+    if (!embeddingData && embeddingType) {
+      dispatch(loadEmbedding(experimentId, embeddingType));
+    }
+  }, [experimentId, embeddingType]);
 
   useEffect(() => {
     if (config.shownGene === 'notSelected' && highestDispersionGene) {
@@ -59,24 +65,18 @@ const ContinuousEmbeddingPlot = (props) => {
     if (config.shownGene !== 'notSelected' && !geneExpression.error) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene]));
     }
-  }, [config]);
-
-  useEffect(() => {
-    if (!embeddingData && embeddingType) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
-    }
-  }, [embeddingType]);
+  }, [experimentId, config]);
 
   useEffect(() => {
     if (!loading
       && !error
-      && geneExpression.data.hasOwnProperty(config.shownGene)
+      && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
       && !cellSets.loading
       && !cellSets.error) {
       setPlotSpec(generateData(generateSpec(config), geneExpression.data[config.shownGene], config.selectedSample, embeddingData, cellSets.properties));
     }
-  }, [embeddingData, geneExpression]);
+  }, [embeddingData, geneExpression, config]);
 
   const render = () => {
     if (error) {
