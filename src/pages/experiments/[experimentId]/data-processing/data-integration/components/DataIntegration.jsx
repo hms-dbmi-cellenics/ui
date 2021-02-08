@@ -6,12 +6,6 @@ import {
 import _ from 'lodash';
 import { useRouter } from 'next/router';
 
-import { Vega } from 'react-vega';
-import CalculationConfig from './CalculationConfig';
-
-import generateElbowSpec from '../../../../../../utils/plotSpecs/generateElbowSpec';
-import fakeData from './fake_new_data.json';
-
 import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 import AxesDesign from '../../../plots-and-tables/components/AxesDesign';
 import PointDesign from '../../../plots-and-tables/components/PointDesign';
@@ -20,6 +14,11 @@ import FontDesign from '../../../plots-and-tables/components/FontDesign';
 import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
 import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
 import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
+
+import CalculationConfig from './CalculationConfig';
+import fakeData from './fake_new_data.json';
+
+import ElbowPlot from './plots/ElbowPlot';
 
 const defaultPlotStylingConfig = {
   legendEnabled: 'true',
@@ -87,11 +86,17 @@ const DataIntegration = () => {
   const [activePlotKey, setActivePlotKey] = useState('elbowPlot');
   const [config, setCurrentConfig] = useState(persistedConfigs.elbowPlot);
 
-  const plotElements = {
-    samplePlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
-    frequencyPlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
-    elbowPlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
+  const plots = {
+    samplePlot: (configInput, actions) => <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />,
+    frequencyPlot: (configInput, actions) => <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />,
+    elbowPlot: (configInput, actions) => <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />,
   };
+
+  // const plotElements = {
+  //   samplePlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
+  //   frequencyPlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
+  //   elbowPlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
+  // };
 
   const plotSpecificStyling = {
     samplePlot: () => (
@@ -199,7 +204,7 @@ const DataIntegration = () => {
                   padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
                 }}
               >
-                {plotElements[key](getMiniaturizedConfig(persistedConfig, updatedWidth), false)}
+                {plots[key](getMiniaturizedConfig(persistedConfig, updatedWidth), false)}
               </button>
             ))}
           </Space>
@@ -211,7 +216,7 @@ const DataIntegration = () => {
   return (
     <Row>
       <Col span={14}>
-        {plotElements[activePlotKey](config, true)}
+        {plots[activePlotKey](config, true)}
       </Col>
       {miniaturesColumn}
       <Col span={1} />
