@@ -153,6 +153,7 @@ const frequencyInitialConfig = {
   legend: {
     ...legendBaseState,
     position: 'top',
+    offset: 40,
   },
   label: labelBaseState,
   dimensions: dimensionsBaseState,
@@ -296,6 +297,33 @@ const interactiveHeatmapInitialConfig = {
   legendIsVisible: true,
 };
 
+// PLOTS & TABLES - Frequency
+const dataIntegrationFrequencyInitialConfig = {
+  spec: '1.0.0',
+  frequencyType: 'proportional',
+  metadata: 'louvain',
+  chosenClusters: 'condition',
+  legend: {
+    ...legendBaseState,
+    position: 'right',
+    offset: 10,
+  },
+  label: labelBaseState,
+  dimensions: dimensionsBaseState,
+  marker: markerBaseState,
+  colour: colourBaseState,
+  title: titleBaseState,
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Sample',
+    yAxisText: 'Proportion',
+    offset: 10,
+  },
+  fontStyle: fontStyleBaseState,
+  axisTitlesize: 13,
+  geneexpLegendloc: '',
+};
+
 const initialPlotConfigStates = {
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
@@ -306,6 +334,7 @@ const initialPlotConfigStates = {
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
   embeddingPreviewMitochondrialReads: embeddingPreviewMitochondrialReadsInitialConfig,
   embeddingPreviewDoubletScore: embeddingPreviewDoubletScoreInitialConfig,
+  dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
 };
 
 const initialComponentConfigStates = {

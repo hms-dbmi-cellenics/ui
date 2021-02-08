@@ -5,13 +5,10 @@ import PropTypes from 'prop-types';
 const ElbowPlot = (props) => {
   const { config, plotData, actions } = props;
 
-  console.log('plotData');
-  console.log(plotData);
-
   const generateSpec = () => ({
-    width: config.width,
-    height: config.height,
-    autosize: { type: 'none', resize: true, contains: 'padding' },
+    width: config.dimensions.width,
+    height: config.dimensions.height,
+    autosize: { type: 'fit', resize: true },
     padding: 5,
 
     signals: config.signals,
@@ -53,27 +50,28 @@ const ElbowPlot = (props) => {
         grid: true,
         tickCount: 15,
         zindex: 1,
-        title: { value: config.xAxisText },
-        titleFont: { value: config.masterFont },
-        labelFont: { value: config.masterFont },
-        titleFontSize: { value: config.axisTitlesize },
-        labelFontSize: { value: config.axisTicks },
-        offset: { value: config.axisOffset },
-        gridOpacity: { value: (config.transGrid / 20) },
+        title: { value: config.axes.xAxisText },
+        titleFont: { value: config.axes.titleFont },
+        labelFont: { value: config.axes.labelFont },
+        titleFontSize: { value: config.axes.titleFontSize },
+        labelFontSize: { value: config.axes.labelFontSize },
+        offset: { value: config.axes.offset },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
       },
       {
         orient: 'left',
         scale: 'y',
         grid: true,
+        tickCount: 15,
         format: '%',
         zindex: 1,
-        title: { value: config.yAxisText },
-        titleFont: { value: config.masterFont },
-        labelFont: { value: config.masterFont },
-        titleFontSize: { value: config.axisTitlesize },
-        labelFontSize: { value: config.axisTicks },
-        offset: { value: config.axisOffset },
-        gridOpacity: { value: (config.transGrid / 20) },
+        title: { value: config.axes.yAxisText },
+        titleFont: { value: config.axes.titleFont },
+        labelFont: { value: config.axes.labelFont },
+        titleFontSize: { value: config.axes.titleFontSize },
+        labelFontSize: { value: config.axes.labelFontSize },
+        offset: { value: config.axes.offset },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
       },
     ],
 
@@ -112,11 +110,11 @@ const ElbowPlot = (props) => {
     ],
     title:
     {
-      text: { value: config.titleText },
-      anchor: { value: config.titleAnchor },
-      font: { value: config.masterFont },
-      dx: { value: config.titleDx },
-      fontSize: { value: config.titleSize },
+      text: { value: config.title.text },
+      anchor: { value: config.title.anchor },
+      font: { value: config.title.font },
+      fontSize: { value: config.title.fontSize },
+      dx: { value: config.title.dx },
     },
   });
 
