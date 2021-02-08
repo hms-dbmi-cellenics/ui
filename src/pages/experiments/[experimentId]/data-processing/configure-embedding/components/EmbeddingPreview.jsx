@@ -107,6 +107,15 @@ const EmbeddingPreview = (props) => {
   };
 
   const renderPlot = () => {
+    // Spinner for main window
+    if (!config) {
+      return (
+        <center>
+          <Spin size='large' />
+        </center>
+      );
+    }
+
     if (selectedPlot === 'sample'
       && !cellSets.loading
       && filterCells(cellSets, config.selectedCellSet).length === 0) {
@@ -119,15 +128,6 @@ const EmbeddingPreview = (props) => {
       return plot;
     }
   };
-
-  // Spinner for main window
-  if (!config) {
-    return (
-      <center>
-        <Spin size='large' />
-      </center>
-    );
-  }
 
   return (
     <>
