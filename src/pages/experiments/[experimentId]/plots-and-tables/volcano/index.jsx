@@ -24,7 +24,7 @@ import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
 import ColourInversion from '../components/ColourInversion';
 import LegendEditor from '../components/LegendEditor';
-import generateSpec from '../../../../../utils/plotSpecs/generateVolcanoSpec';
+import { generateSpec } from '../../../../../utils/plotSpecs/generateVolcanoSpec';
 import Header from '../components/Header';
 import DiffExprCompute from '../../data-exploration/components/differential-expression-tool/DiffExprCompute';
 import isBrowser from '../../../../../utils/environment';
@@ -63,9 +63,7 @@ const VolcanoPlot = () => {
     maxNegativeLogpValue: null,
     xMax: null,
   });
-  const onUpdateThrottled = useRef(
-    _.throttle((obj) => updatePlotWithChanges(obj), 10),
-  );
+  const onUpdateThrottled = useRef(_.throttle((obj) => updatePlotWithChanges(obj), 50));
 
   useEffect(() => {
     if (!isBrowser) return;
@@ -336,9 +334,7 @@ const VolcanoPlot = () => {
               <Panel header='Legend' key='12'>
                 <LegendEditor
                   onUpdate={updatePlotWithChanges}
-                  legendEnabled={config.legendEnabled}
-                  legendPosition={config.legendPosition}
-                  legendOptions='corners'
+                  config={config}
                 />
               </Panel>
             </Collapse>

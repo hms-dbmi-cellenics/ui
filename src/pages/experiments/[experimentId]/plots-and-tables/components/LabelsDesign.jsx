@@ -7,19 +7,15 @@ import {
 
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;
-  // const [labelsEnabled, setlabelsEnabled] = useState(true);
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
 
-  const onChange = (e) => {
-    onUpdate({ labelsEnabled: e.target.value, labelShow: e.target.value ? 1 : 0 });
-  };
+  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
 
   const minLabelSize = 0;
   const maxLabelSize = 50;
 
   return (
     <>
-      <Radio.Group onChange={onChange} value={config.labelsEnabled}>
+      <Radio.Group onChange={(e) => onUpdate({ label: { enabled: e.target.value } })} value={config.label.enabled}>
         <Radio value>Show</Radio>
         <Radio value={false}>Hide</Radio>
       </Radio.Group>
@@ -28,12 +24,12 @@ const LabelsDesign = (props) => {
         label='Size'
       >
         <Slider
-          value={config.labelSize}
+          value={config.label.size}
           min={minLabelSize}
           max={maxLabelSize}
-          disabled={!config.labelsEnabled}
+          disabled={!config.label.enabled}
           onChange={(value) => {
-            onUpdateThrottled.current({ labelSize: value });
+            onUpdateThrottled.current({ label: { size: value } });
           }}
           marks={{ 0: minLabelSize, 50: maxLabelSize }}
         />

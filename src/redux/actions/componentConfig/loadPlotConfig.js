@@ -5,7 +5,7 @@ import pushNotificationMessage from '../notifications';
 import messages from '../../../components/notification/messages';
 import { initialPlotConfigStates } from '../../reducers/componentConfig/initialState';
 
-const loadPlotConfig = (experimentId, plotUuid, type) => async (dispatch) => {
+const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
   try {
     const response = await fetch(
       `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
@@ -22,8 +22,8 @@ const loadPlotConfig = (experimentId, plotUuid, type) => async (dispatch) => {
         payload: {
           experimentId,
           plotUuid,
-          type,
-          config: _.cloneDeep(initialPlotConfigStates[type]),
+          plotType,
+          config: _.cloneDeep(initialPlotConfigStates[plotType]),
         },
       });
     } else {

@@ -20,7 +20,7 @@ import AxesDesign from '../components/AxesDesign';
 import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
 import SelectCellSets from './components/SelectCellSets';
-import generateSpec from '../../../../../utils/plotSpecs/generateFrequencySpec';
+import { generateSpec } from '../../../../../utils/plotSpecs/generateFrequencySpec';
 import Header from '../components/Header';
 import isBrowser from '../../../../../utils/environment';
 import {
@@ -265,9 +265,8 @@ const frequencyPlot = () => {
             <Panel header='Legend' key='12'>
               <LegendEditor
                 onUpdate={updatePlotWithChanges}
-                legendEnabled={config.legendEnabled}
-                legendPosition={config.legendPosition}
-                legendOptions='top-bot'
+                config={config}
+                option={{ positions: 'top-bottom' }}
               />
               <Alert
                 message='Changing cell set colours is not currently available here.

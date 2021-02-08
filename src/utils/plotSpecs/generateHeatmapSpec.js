@@ -1,6 +1,6 @@
 const generateSpec = (config, groupName) => {
   let legend = [];
-  if (config.legendLocation === 'horizontal') {
+  if (config.legend.position === 'horizontal') {
     legend = [
       {
         fill: 'color',
@@ -8,8 +8,8 @@ const generateSpec = (config, groupName) => {
         orient: 'bottom',
         direction: 'horizontal',
         title: ['Intensity'],
-        labelFont: { value: config.masterFont },
-        titleFont: { value: config.masterFont },
+        labelFont: { value: config.fontStyle.font },
+        titleFont: { value: config.fontStyle.font },
         gradientLength: {
           signal: 'width',
         },
@@ -30,18 +30,18 @@ const generateSpec = (config, groupName) => {
           },
         },
         direction: 'horizontal',
-        labelFont: { value: config.masterFont },
-        titleFont: { value: config.masterFont },
+        labelFont: { value: config.fontStyle.font },
+        titleFont: { value: config.fontStyle.font },
       }];
   }
-  if (config.legendLocation === 'vertical') {
+  if (config.legend.position === 'vertical') {
     legend = [
       {
         fill: 'color',
         type: 'gradient',
         title: ['Intensity'],
-        labelFont: { value: config.masterFont },
-        titleFont: { value: config.masterFont },
+        labelFont: { value: config.fontStyle.font },
+        titleFont: { value: config.fontStyle.font },
         gradientLength: {
           signal: 'height / 3',
         },
@@ -61,21 +61,21 @@ const generateSpec = (config, groupName) => {
           },
         },
         direction: 'vertical',
-        labelFont: { value: config.masterFont },
-        titleFont: { value: config.masterFont },
+        labelFont: { value: config.fontStyle.font },
+        titleFont: { value: config.fontStyle.font },
         labels: {
           text: 'asdsa',
         },
       }];
   }
-  if (config.legendLocation === 'hide') {
+  if (!config.legend.enabled) {
     legend = null;
   }
 
   return {
     $schema: 'http//s:vega.github.io/schema/vega/v5.json',
-    width: config.width,
-    height: config.height,
+    width: config.dimensions.width,
+    height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },
 
     data: [
@@ -130,7 +130,7 @@ const generateSpec = (config, groupName) => {
         name: 'color',
         type: 'linear',
         range: {
-          scheme: config.colGradient,
+          scheme: config.colour.gradient,
         },
         domain: {
           data: 'expression',
@@ -171,11 +171,11 @@ const generateSpec = (config, groupName) => {
         from: { data: 'expression' },
         orient: 'left',
         scale: 'y',
-        labelColor: config.labelColour,
+        labelColor: config.label.colour,
         domain: false,
         // title: 'Gene',
-        labelFont: { value: config.masterFont },
-        titleFont: { value: config.masterFont },
+        labelFont: { value: config.fontStyle.font },
+        titleFont: { value: config.fontStyle.font },
       },
     ],
 
@@ -251,14 +251,16 @@ const generateSpec = (config, groupName) => {
     ],
     title:
     {
-      text: { value: config.titleText },
-      color: { value: config.masterColour },
-      anchor: { value: config.titleAnchor },
-      font: { value: config.masterFont },
-      dx: { value: config.bounceX },
-      fontSize: { value: config.titleSize },
+      text: { value: config.title.text },
+      color: { value: config.colour.masterColour },
+      anchor: { value: config.title.anchor },
+      font: { value: config.fontStyle.font },
+      dx: { value: config.title.dx },
+      fontSize: { value: config.title.fontSize },
     },
   };
 };
 
-export default generateSpec;
+const generateData = () => { };
+
+export { generateSpec, generateData };

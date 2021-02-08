@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -7,21 +8,19 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import _ from 'lodash';
-import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
 import CalculationConfig from './CalculationConfig';
-import UMAP from './new_data.json';
+
+import CategoricalEmbeddingPlot from './CategoricalEmbeddingPlot';
+import ContinuousEmbeddingPlot from './ContinuousEmbeddingPlot';
+
 import {
-  loadProcessingSettings,
-} from '../../../../../../redux/actions/experimentSettings';
-import PlatformError from '../../../../../../components/PlatformError';
-import { initialPlotConfigStates } from '../../../../../../redux/reducers/componentConfig/initialState';
-import { loadCellSets } from '../../../../../../redux/actions/cellSets';
-import { loadEmbedding } from '../../../../../../redux/actions/embedding';
-import generateEmbeddingCategoricalSpec from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import generateEmbeddingContinuousSpec from '../../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
+  updatePlotConfig,
+  loadPlotConfig,
+} from '../../../../../../redux/actions/componentConfig';
+
+import isBrowser from '../../../../../../utils/environment';
 import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
 import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
@@ -31,67 +30,56 @@ import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
 import FontDesign from '../../../plots-and-tables/components/FontDesign';
 import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
 import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
+import { filterCells } from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 
 const { Panel } = Collapse;
 
 const EmbeddingPreview = (props) => {
   const { experimentId } = props;
+  const [selectedPlot, setSelectedPlot] = useState('sample');
+  const [plot, setPlot] = useState(false);
+  const cellSets = useSelector((state) => state.cellSets);
 
   const dispatch = useDispatch();
 
-  const [selectedSpec, setSelectedSpec] = useState('cellCluster');
-  const [plotSpec, setPlotSpec] = useState({});
-  const [config, setConfig] = useState(null);
-
-  const embeddingSettings = useSelector((state) => state.experimentSettings.processing.configureEmbedding);
-  const embeddingMethod = embeddingSettings?.embeddingSettings?.method;
-  const clusteringMethod = embeddingSettings?.clusteringSettings?.method;
-  const embedding = useSelector((state) => state.embeddings);
-  const cellSets = useSelector((state) => state.cellSets);
-
-  const FILTER_UUID = 'configureEmbedding';
-
   const plots = {
-    cellCluster: {
-      title: 'Default clusters',
-      initialConfig: initialPlotConfigStates.embeddingCategorical,
-      specGenerator: generateEmbeddingCategoricalSpec,
-      imgSrc: plot1Pic,
-    },
     sample: {
-      title: 'Samples',
-      initialConfig: initialPlotConfigStates.embeddingCategorical,
-      specGenerator: generateEmbeddingCategoricalSpec,
+      title: 'Colored by Samples',
       imgSrc: plot1Pic,
+      plotUuid: 'embeddingPreviewBySample',
+      plotType: 'embeddingPreviewBySample',
+      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewBySample' />),
+    },
+
+    cellCluster: {
+      title: 'Colored by CellSets',
+      imgSrc: plot1Pic,
+      plotUuid: 'embeddingPreviewByCellSets',
+      plotType: 'embeddingPreviewByCellSets',
+      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewByCellSets' />),
     },
     mitochondrialFraction: {
       title: 'Mitochondrial fraction reads',
-      initialConfig: initialPlotConfigStates.embeddingContinuous,
-      specGenerator: generateEmbeddingContinuousSpec,
       imgSrc: plot2Pic,
+      plotUuid: 'embeddingPreviewMitochondrialReads',
+      plotType: 'embeddingPreviewMitochondrialReads',
+      plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewMitochondrialReads' />),
     },
     doubletScore: {
       title: 'Cell doublet score',
-      initialConfig: initialPlotConfigStates.embeddingContinuous,
-      specGenerator: generateEmbeddingContinuousSpec,
       imgSrc: plot2Pic,
+      plotUuid: 'embeddingPreviewDoubletScore',
+      plotType: 'embeddingPreviewDoubletScore',
+      plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewDoubletScore' />),
     },
   };
 
-  // Start loading by fetching the settings and cell sets.
+  const config = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config);
+
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
-    dispatch(loadProcessingSettings(experimentId, FILTER_UUID));
-  }, []);
-
-  // Once the config is loaded, we can also load the embedding.
-  useEffect(() => {
-    if (!embeddingMethod) {
-      return;
-    }
-
-    dispatch(loadEmbedding(experimentId, embeddingMethod));
-  }, [embeddingMethod]);
+  }, [experimentId]);
 
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
@@ -100,111 +88,27 @@ const EmbeddingPreview = (props) => {
       return;
     }
 
-    // If no embedding method is available yet, the config did not load.
-    // We can skip processing until it is done.
-    if (!embeddingMethod) {
-      return;
+    if (!cellSets.loading && !cellSets.error && config) {
+      setPlot(plots[selectedPlot].plot(config));
     }
-
-    // If the config is loaded, but the embedding is still loading, we
-    // don't have any data to add.
-    if (!embedding[embeddingMethod] || embedding[embeddingMethod].loading) {
-      return;
-    }
-
-    // If cell sets don't exist yet or they're loading, wait until they are done.
-    if (!cellSets || cellSets.loading) {
-      return;
-    }
-
-    // Otherwise, begin by creating the spec appropriate for the plot.
-    const spec = plots[selectedSpec].specGenerator(config);
-    generateData(spec);
-    setPlotSpec(spec);
-  }, [config, embeddingSettings, embedding]);
+  }, [config, cellSets]);
 
   useEffect(() => {
-    // If the user toggles to a different embedding, set the config to be the initial
-    // state for that type of plot.
-    setConfig(_.cloneDeep(plots[selectedSpec].initialConfig));
-  }, [selectedSpec]);
+    if (!isBrowser) return;
+    const { plotUuid, plotType } = plots[selectedPlot];
 
-  // Quick and dirty function to massage prepared data into a good shape.
-  // This will be changed once we actually load data from Redux.
-  /* eslint-disable no-param-reassign */
-  const generateData = (spec) => {
-    spec.data.forEach((s) => {
-      if (s.name === 'cellSets') {
-        s.values = [];
+    if (!config) {
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    }
+  }, [selectedPlot]);
 
-        let rootCellSetName = null;
-
-        switch (selectedSpec) {
-          case 'sample': {
-            rootCellSetName = 'sample';
-            break;
-          }
-          case 'cellCluster': {
-            rootCellSetName = clusteringMethod;
-            break;
-          }
-          default: {
-            throw new Error('Invalid categorical plot type, unsure what cell set to display.');
-          }
-        }
-
-        const clusters = cellSets.hierarchy
-          .find((o) => o.key === rootCellSetName)?.children
-          .map((child) => child.key) || [];
-
-        clusters.forEach((cluster) => {
-          const { name, cellIds, color } = cellSets.properties[cluster];
-          s.values.push({
-            name,
-            cellSetId: cluster,
-            cellIds: Array.from(cellIds),
-            color,
-          });
-        });
-      }
-
-      if (s.name === 'expression') {
-        s.values = { expression: UMAP.map((cell) => cell.doubletScore || 0) };
-      }
-
-      if (s.name === 'embedding') {
-        s.values = embedding[embeddingMethod].data;
-      }
-    });
-  };
-
-  /* eslint-enable no-param-reassign */
   const updatePlotWithChanges = (obj) => {
-    const newConfig = _.cloneDeep(config);
-    _.merge(newConfig, obj);
-    setConfig(newConfig);
+    dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
   };
 
   const renderPlot = () => {
-    if (embeddingMethod && embedding[embeddingMethod]?.error) {
-      return (
-        <PlatformError
-          description={embedding[embeddingMethod]?.error}
-          onClick={() => dispatch(loadEmbedding(experimentId, embeddingMethod))}
-        />
-      );
-    }
-
-    if (cellSets && cellSets.error) {
-      return (
-        <PlatformError
-          description={cellSets.error}
-          onClick={() => dispatch(loadCellSets(experimentId))}
-        />
-      );
-    }
-
-    if (embeddingMethod && embedding[embeddingMethod]?.loading) {
+    // Spinner for main window
+    if (!config) {
       return (
         <center>
           <Spin size='large' />
@@ -212,33 +116,23 @@ const EmbeddingPreview = (props) => {
       );
     }
 
-    if (selectedSpec === 'sample'
-      && plotSpec.data.find((d) => d.name === 'cellSets').values.length === 0) {
+    if (selectedPlot === 'sample'
+      && !cellSets.loading
+      && filterCells(cellSets, config.selectedCellSet).length === 0) {
       return (
         <Empty description='Your project has only one sample.' />
-
       );
     }
 
-    return (
-      <center>
-        <Vega spec={plotSpec} renderer='canvas' />
-      </center>
-    );
+    if (plot) {
+      return plot;
+    }
   };
-
-  if (!config) {
-    return (
-      <center>
-        <Spin size='large' />
-      </center>
-    );
-  }
 
   return (
     <>
       <PageHeader
-        title={plots[selectedSpec].title}
+        title={plots[selectedPlot].title}
         style={{ width: '100%', paddingRight: '0px' }}
       />
       <Row>
@@ -252,18 +146,18 @@ const EmbeddingPreview = (props) => {
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
 
-            {Object.entries(plots).map(([key, plot]) => (
+            {Object.entries(plots).map(([key, option]) => (
               <button
                 type='button'
                 key={key}
-                onClick={() => setSelectedSpec(key)}
+                onClick={() => setSelectedPlot(key)}
                 style={{
                   padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
                 }}
               >
                 <img
-                  alt={plot.title}
-                  src={plot.imgSrc}
+                  alt={option.title}
+                  src={option.imgSrc}
                   style={{
                     height: '100px',
                     width: '100px',
@@ -284,62 +178,44 @@ const EmbeddingPreview = (props) => {
             <Panel header='Plot styling' key='styling'>
               <Collapse accordion>
                 <Panel header='Main Schema' key='main-schema'>
-                  <DimensionsRangeEditor
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
+                  <DimensionsRangeEditor config={config} onUpdate={updatePlotWithChanges} />
                   <Collapse accordion>
                     <Panel header='Define and Edit Title' key='title'>
-                      <TitleDesign
-                        config={config}
-                        onUpdate={updatePlotWithChanges}
-                      />
+                      <TitleDesign config={config} onUpdate={updatePlotWithChanges} />
                     </Panel>
                     <Panel header='Font' key='font'>
-                      <FontDesign
-                        config={config}
-                        onUpdate={updatePlotWithChanges}
-                      />
+                      <FontDesign config={config} onUpdate={updatePlotWithChanges} />
                     </Panel>
                   </Collapse>
                 </Panel>
                 <Panel header='Axes and Margins' key='axes'>
                   <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
-                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingContinuous && (
+                {plots[selectedPlot].plotType === 'embeddingContinuous' && (
                   <Panel header='Colours' key='colors'>
-                    <ColourbarDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                    <ColourInversion
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
+                    <ColourbarDesign config={config} onUpdate={updatePlotWithChanges} />
+                    <ColourInversion config={config} onUpdate={updatePlotWithChanges} />
                   </Panel>
                 )}
-
-                {plots[selectedSpec].initialConfig === initialPlotConfigStates.embeddingCategorical
-                  && (
-                    <Panel header='Colour inversion'>
-                      <ColourInversion
-                        config={config}
-                        onUpdate={updatePlotWithChanges}
-                      />
-                    </Panel>
-                  )}
-
+                {plots[selectedPlot].plotType === 'embeddingCategorical' && (
+                  <Panel header='Colour inversion'>
+                    <ColourInversion config={config} onUpdate={updatePlotWithChanges} />
+                  </Panel>
+                )}
                 <Panel header='Markers' key='marker'>
                   <PointDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>
-                <Panel header='Legend' key='legend'>
-                  <LegendEditor
-                    onUpdate={updatePlotWithChanges}
-                    legendEnabled={config.legendEnabled}
-                    legendPosition={config.legendPosition}
-                    legendOptions='corners'
-                  />
-                </Panel>
+                {plots[selectedPlot].plotType === 'embeddingContinuous' && (
+                  <Panel header='Legend' key='legend'>
+                    <LegendEditor config={config} onUpdate={updatePlotWithChanges} />
+                  </Panel>
+                )}
+                {plots[selectedPlot].plotType === 'embeddingCategorical' && (
+                  <Panel header='Legend' key='legend'>
+                    <LegendEditor config={config} onUpdate={updatePlotWithChanges} option={{ position: 'top-bottom' }} />
+                  </Panel>
+                )}
+
                 <Panel header='Labels' key='labels'>
                   <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
                 </Panel>

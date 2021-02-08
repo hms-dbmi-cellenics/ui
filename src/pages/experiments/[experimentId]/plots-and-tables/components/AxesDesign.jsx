@@ -17,11 +17,11 @@ const AxesDesign = (props) => {
     >
       <Form.Item label='Axes Label Size'>
         <Slider
-          value={config.axisTitlesize}
+          value={config.axes.titleFontSize}
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled.current({ axisTitlesize: value });
+            onUpdateThrottled.current({ axes: { titleFontSize: value } });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -29,11 +29,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Axes Ticks Size'>
         <Slider
-          value={config.axisTicks}
+          value={config.axes.labelFontSize}
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled.current({ axisTicks: value });
+            onUpdateThrottled.current({ axes: { labelFontSize: value } });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -41,11 +41,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Offset Margins'>
         <Slider
-          value={config.axesOffset}
+          value={config.axes.offset}
           min={0}
           max={20}
           onChange={(value) => {
-            onUpdateThrottled.current({ axesOffset: value });
+            onUpdateThrottled.current({ axes: { offset: value } });
           }}
           marks={{ 0: 0, 20: 20 }}
         />
@@ -53,11 +53,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Grid-line weight'>
         <Slider
-          value={config.transGrid}
+          value={config.axes.gridOpacity}
           min={0}
           max={10}
           onChange={(value) => {
-            onUpdateThrottled.current({ transGrid: value });
+            onUpdateThrottled.current({ axes: { gridOpacity: value } });
           }}
           marks={{ 0: 0, 10: 10 }}
         />
@@ -65,19 +65,18 @@ const AxesDesign = (props) => {
 
       <Form.Item label='X axis Title'>
         <Input
-          value={config.xaxisText}
+          value={config.axes.xAxisText}
           onChange={(e) => {
-            onUpdateThrottled.current({ xaxisText: e.target.value });
+            onUpdateThrottled.current({ axes: { xAxisText: e.target.value } });
           }}
         />
       </Form.Item>
 
       <Form.Item label='Y Axis Title'>
         <Input
-          value={config.yaxisText}
+          value={config.axes.yAxisText}
           onChange={(e) => {
-            const { value } = e.target;
-            onUpdateThrottled.current({ yaxisText: value });
+            onUpdateThrottled.current({ axes: { yAxisText: e.target.value } });
           }}
         />
       </Form.Item>
