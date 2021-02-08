@@ -8,7 +8,7 @@ import {
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;
 
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 50));
+  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
 
   const minLabelSize = 0;
   const maxLabelSize = 50;

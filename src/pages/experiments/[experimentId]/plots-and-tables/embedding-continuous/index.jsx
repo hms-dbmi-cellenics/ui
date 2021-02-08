@@ -108,14 +108,10 @@ const EmbeddingContinuousPlot = () => {
     const filteredData = data.filter((id) => cellIds.includes(data.indexOf(id)));
     return filteredData;
   };
-  const generateVegaData = () => {
-    console.log(selectedExpression);
-
-    return {
-      expression: selectedExpression,
-      embedding: _.cloneDeep(filterSamples()),
-    };
-  };
+  const generateVegaData = () => ({
+    expression: selectedExpression,
+    embedding: _.cloneDeep(filterSamples()),
+  });
 
   if (!config) {
     return <Skeleton />;
