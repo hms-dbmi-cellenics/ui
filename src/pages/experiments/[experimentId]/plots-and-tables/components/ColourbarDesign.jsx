@@ -7,9 +7,6 @@ import {
 
 const ColourbarDesign = (props) => {
   const { onUpdate, config } = props;
-  const onChange = (e) => {
-    onUpdate({ colGradient: e.target.value });
-  };
 
   return (
     <>
@@ -20,7 +17,7 @@ const ColourbarDesign = (props) => {
       >
         <div>Styles</div>
         <Form.Item>
-          <Radio.Group onChange={onChange} value={config.colGradient}>
+          <Radio.Group onChange={(e) => onUpdate({ colour: { gradient: e.target.value } })} value={config.colour.gradient}>
             <Radio value='viridis'>Viridis</Radio>
             <Radio value='inferno'>Inferno</Radio>
             <Radio value='spectral'>Spectral</Radio>

@@ -9,9 +9,9 @@ const ColourInversion = (props) => {
   const { onUpdate, config } = props;
   const onChange = (e) => {
     if (e.target.value === '#FFFFFF') {
-      onUpdate({ toggleInvert: e.target.value, masterColour: '#000000', reverseCbar: false });
+      onUpdate({ colour: { toggleInvert: e.target.value, masterColour: '#000000', reverseColourBar: false } });
     } else {
-      onUpdate({ toggleInvert: e.target.value, masterColour: '#FFFFFF', reverseCbar: true });
+      onUpdate({ colour: { toggleInvert: e.target.value, masterColour: '#FFFFFF', reverseColourBar: true } });
     }
   };
 
@@ -24,7 +24,7 @@ const ColourInversion = (props) => {
       >
         <div>Background</div>
         <Form.Item>
-          <Radio.Group onChange={onChange} value={config.toggleInvert}>
+          <Radio.Group onChange={onChange} value={config.colour.toggleInvert}>
             <Radio value='#FFFFFF'>Standard</Radio>
             <Radio value='#000000'>Invert</Radio>
           </Radio.Group>

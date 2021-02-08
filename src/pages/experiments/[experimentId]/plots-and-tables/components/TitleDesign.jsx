@@ -8,10 +8,6 @@ import {
 const TitleDesign = (props) => {
   const { onUpdate, config } = props;
 
-  const onChange = (e) => {
-    onUpdate({ titleAnchor: e.target.value });
-  };
-
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <Form
@@ -25,8 +21,9 @@ const TitleDesign = (props) => {
         >
           <Input
             placeholder='Enter title'
-            onPressEnter={(e) => {
-              onUpdate({ titleText: e.target.value });
+            value={config.title.text}
+            onChange={(e) => {
+              onUpdate({ title: { text: e.target.value } });
             }}
           />
         </Form.Item>
@@ -34,11 +31,11 @@ const TitleDesign = (props) => {
           label='Title Font Size'
         >
           <Slider
-            value={config.titleSize}
+            value={config.title.fontSize}
             min={15}
             max={40}
             onChange={(value) => {
-              onUpdate({ titleSize: value });
+              onUpdate({ title: { fontSize: value } });
             }}
             marks={{ 15: 15, 40: 40 }}
           />
@@ -47,8 +44,8 @@ const TitleDesign = (props) => {
           label='Title Location'
         >
           <Radio.Group
-            onChange={onChange}
-            value={config.titleAnchor}
+            onChange={(e) => onUpdate({ title: { anchor: e.target.value } })}
+            value={config.title.anchor}
           >
             <Radio value='start'>Left</Radio>
             <Radio value='middle'>Middle</Radio>
