@@ -70,9 +70,11 @@ const CalculationConfig = () => {
     },
   };
 
-  const [changesOutstanding, setChangesOutstanding] = useState(false);
+  // const [changesOutstanding, setChangesOutstanding] = useState(false);
   const [settings, setSettings] = useState(initialState);
   const [savedSettings, setSavedSettings] = useState(initialState);
+
+  const changesOutstanding = !_.isEqual(settings, savedSettings);
 
   const updateSettings = (diff) => {
     const newSettings = _.cloneDeep(settings);
@@ -85,8 +87,6 @@ const CalculationConfig = () => {
     };
 
     _.mergeWith(newSettings, diff, arrayMerge);
-
-    setChangesOutstanding(!_.isEqual(newSettings, savedSettings));
     setSettings(newSettings);
   };
 
@@ -189,7 +189,6 @@ const CalculationConfig = () => {
                   disabled={!changesOutstanding}
                   onClick={() => {
                     setSavedSettings(settings);
-                    setChangesOutstanding(!changesOutstanding);
                   }}
                 >
                   Run
