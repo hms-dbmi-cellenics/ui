@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
 import {
   Row, Col, Space, Collapse, Alert,
@@ -8,6 +9,8 @@ import { useRouter } from 'next/router';
 
 import { Vega } from 'react-vega';
 import CalculationConfig from './CalculationConfig';
+
+import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
 import generateElbowSpec from '../../../../../../utils/plotSpecs/generateElbowSpec';
 import fakeData from './fake_new_data.json';
@@ -84,8 +87,16 @@ const DataIntegration = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
+  const calculationConfig = useSelector((state) => state.experimentSettings.processing.dataIntegration);
+
   const [activePlotKey, setActivePlotKey] = useState('elbowPlot');
   const [config, setCurrentConfig] = useState(persistedConfigs.elbowPlot);
+
+  useEffect(() => {
+    if (experimentId && !calculationConfig?.dataIntegration) {
+      loadProcessingSettings(experimentId);
+    }
+  }, [experimentId]);
 
   const plotElements = {
     samplePlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
@@ -218,7 +229,7 @@ const DataIntegration = () => {
       <Col span={5}>
         <Collapse defaultActiveKey={['data-integration']}>
           <Panel header='Data Integration' key='data-integration'>
-            <CalculationConfig experimentId={experimentId} />
+            <CalculationConfig experimentId={experimentId} config={calculationConfig} />
           </Panel>
           <Panel header='Plot Styling' key='styling'>
             <Collapse accordion>

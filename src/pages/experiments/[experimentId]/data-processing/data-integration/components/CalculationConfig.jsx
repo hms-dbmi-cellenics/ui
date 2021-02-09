@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 import {
   Space,
@@ -19,11 +21,22 @@ import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
 
+import SeuratV4Options from './SeuratV4Options';
+
+import { updateProcessingSettings, saveProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+
 const { Option } = Select;
 const { Text } = Typography;
 
-const CalculationConfig = () => {
-  const methodOptions = [
+const CalculationConfig = (props) => {
+  const { experimentId, config } = props;
+  const FILTER_UUID = 'dataIntegration';
+
+  const dispatch = useDispatch();
+
+  const { dataIntegration, dimensionalityReduction } = config;
+
+  const methods = [
     {
       value: 'seuratv4',
       text: 'Seurat v4',
@@ -56,38 +69,25 @@ const CalculationConfig = () => {
     },
   ];
 
-  const initialState = {
-    dataIntegration: {
-      method: 'seuratv4',
-      noGenes: 2000,
-      normalisation: 'logNormalise',
-    },
-    dimensionalityReduction: {
-      numPCs: 30,
-      variationExplained: 91,
-      excludeGeneCategories: [],
-      method: 'rpca',
-    },
-  };
-
-  // const [changesOutstanding, setChangesOutstanding] = useState(false);
-  const [settings, setSettings] = useState(initialState);
-  const [savedSettings, setSavedSettings] = useState(initialState);
-
-  const changesOutstanding = !_.isEqual(settings, savedSettings);
+  const [numPCs, setNumPCs] = useState(dimensionalityReduction.numPCs);
+  const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const updateSettings = (diff) => {
-    const newSettings = _.cloneDeep(settings);
+    setChangesOutstanding(true);
+    dispatch(updateProcessingSettings(
+      experimentId,
+      FILTER_UUID,
+      diff,
+    ));
+  };
 
-    // Customizer function to replace value of array in object
-    const arrayMerge = (obj, src) => {
-      if (_.isArray(obj)) {
-        return src;
-      }
-    };
+  const applyDataIntegrationSettings = () => {
+    setChangesOutstanding(false);
+    dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
+  };
 
-    _.mergeWith(newSettings, diff, arrayMerge);
-    setSettings(newSettings);
+  const methodOptions = {
+    seuratv4: () => <SeuratV4Options config={dataIntegration.methodSettings.seuratv4} onUpdate={updateSettings} />,
   };
 
   return (
@@ -107,34 +107,21 @@ const CalculationConfig = () => {
             label='Method:'
           >
             <Select
-              value={settings.dataIntegration.method}
+              value={dataIntegration.method}
               onChange={(val) => updateSettings({ dataIntegration: { method: val } })}
             >
               {
-                methodOptions.map((el) => (
+                methods.map((el) => (
                   <Option value={el.value} disabled={el.disabled}>{el.text}</Option>
                 ))
               }
             </Select>
           </Form.Item>
-          <Form.Item label='# of genes:'>
-            <InputNumber
-              value={settings.dataIntegration.noGenes}
-              step={100}
-              min={1}
-              onChange={(value) => updateSettings({ dataIntegration: { noGenes: value } })}
-              onStep={(value) => updateSettings({ dataIntegration: { noGenes: value } })}
-            />
-          </Form.Item>
-          <Form.Item label='Normalisation:'>
-            <Select
-              value={settings.dataIntegration.normalisation}
-              onChange={(val) => updateSettings({ dataIntegration: { normalisation: val } })}
-            >
-              <Option value='logNormalise'>LogNormalise</Option>
-              <Option value='scTransform'>SCTransform</Option>
-            </Select>
-          </Form.Item>
+
+          {
+            methodOptions[dataIntegration.method]()
+          }
+
         </div>
 
         <Form.Item>
@@ -148,21 +135,23 @@ const CalculationConfig = () => {
         <div style={{ paddingLeft: '1rem' }}>
           <Form.Item label='Number of Principal Components'>
             <InputNumber
-              value={settings.dimensionalityReduction.numPCs}
-              onChange={(value) => updateSettings({ dimensionalityReduction: { numPCs: value } })}
+              value={numPCs}
+              onChange={(value) => setNumPCs(value)}
+              onPressEnter={(e) => e.preventDefault()}
               onStep={(value) => updateSettings({ dimensionalityReduction: { numPCs: value } })}
+              onBlur={(e) => updateSettings({ dimensionalityReduction: { numPCs: parseInt(e.target.value, 0) } })}
             />
           </Form.Item>
           <Form.Item label='% variation explained'>
             <InputNumber
-              value={settings.dimensionalityReduction.variationExplained}
+              value={dimensionalityReduction.variationExplained}
               readOnly
             />
           </Form.Item>
           <Form.Item label='Exclude genes categories:'>
             <Checkbox.Group
               onChange={(val) => updateSettings({ dimensionalityReduction: { excludeGeneCategories: val } })}
-              value={settings.dimensionalityReduction.excludeGeneCategories}
+              value={dimensionalityReduction.excludeGeneCategories}
             >
               <Space direction='vertical'>
                 <Checkbox value='ribosomal'>ribosomal</Checkbox>
@@ -173,7 +162,7 @@ const CalculationConfig = () => {
           </Form.Item>
           <Form.Item label='Method:'>
             <Select
-              value={settings.dimensionalityReduction.method}
+              value={dimensionalityReduction.method}
               onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
             >
               <Option value='rpca'>Reciprocal PCA (RPCA)</Option>
@@ -187,9 +176,7 @@ const CalculationConfig = () => {
                   type='primary'
                   htmlType='submit'
                   disabled={!changesOutstanding}
-                  onClick={() => {
-                    setSavedSettings(settings);
-                  }}
+                  onClick={applyDataIntegrationSettings}
                 >
                   Run
 
@@ -210,6 +197,11 @@ const CalculationConfig = () => {
       </Form>
     </>
   );
+};
+
+CalculationConfig.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 export default CalculationConfig;

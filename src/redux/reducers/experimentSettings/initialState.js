@@ -1,3 +1,21 @@
+const dataIntegration = {
+  dataIntegration: {
+    method: 'seuratv4',
+    methodSettings: {
+      seuratv4: {
+        numGenes: 2000,
+        normalisation: 'logNormalise',
+      },
+    },
+  },
+  dimensionalityReduction: {
+    method: 'rpca',
+    numPCs: 30,
+    variationExplained: 91,
+    excludeGeneCategories: [],
+  },
+};
+
 const configureEmbedding = {
   embeddingSettings: {
     method: 'umap',
@@ -28,6 +46,9 @@ export default {
   processing: {},
 };
 
-const initialProcessingState = { configureEmbedding };
+const initialProcessingState = {
+  configureEmbedding,
+  dataIntegration,
+};
 
 export { initialProcessingState };
