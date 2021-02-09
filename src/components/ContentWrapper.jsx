@@ -23,8 +23,7 @@ const ContentWrapper = (props) => {
   const { children } = props;
   const router = useRouter();
   const { experimentId } = router.query;
-
-  const { route } = router;
+  const route = router.route || '';
 
   const BigLogo = () => (
     <div
