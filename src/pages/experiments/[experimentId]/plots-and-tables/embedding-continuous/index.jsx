@@ -70,7 +70,7 @@ const EmbeddingContinuousPlot = () => {
     geneNamesFilter: null,
     sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
   };
-  if (config?.shownGene === 'notSelected') {
+  if (config?.shownGene === 'notSelected' && experimentId && isBrowser) {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 
@@ -149,7 +149,9 @@ const EmbeddingContinuousPlot = () => {
         />
       );
     }
-
+    if (!highestDispersionGene) {
+      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+    }
     if (
       !config
       || !data
