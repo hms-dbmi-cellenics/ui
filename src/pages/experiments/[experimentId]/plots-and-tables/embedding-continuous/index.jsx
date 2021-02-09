@@ -149,7 +149,7 @@ const EmbeddingContinuousPlot = () => {
         />
       );
     }
-    if (config.shownGene === 'notSelected' && experimentId) {
+    if (!highestDispersionGene) {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
     if (
@@ -248,14 +248,10 @@ const EmbeddingContinuousPlot = () => {
                 config={config}
                 onUpdate={updatePlotWithChanges}
               />
-              <Collapse accordion>
-                <Panel header='Colour Inversion' key='4'>
-                  <ColourInversion
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
+              <ColourInversion
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
             <Panel header='Markers' key='11'>
               <PointDesign config={config} onUpdate={updatePlotWithChanges} />
@@ -263,9 +259,7 @@ const EmbeddingContinuousPlot = () => {
             <Panel header='Legend' key='12'>
               <LegendEditor
                 onUpdate={updatePlotWithChanges}
-                legendEnabled={config.legendEnabled}
-                legendPosition={config.legendPosition}
-                legendOptions='corners'
+                config={config}
               />
             </Panel>
           </Collapse>

@@ -8,12 +8,12 @@ import { Vega } from 'react-vega';
 
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
-import LegendEditorSpecial from './components/LegendEditorSpecial';
+import LegendEditor from '../components/LegendEditor';
 import TitleDesign from '../components/TitleDesign';
 import FontDesign from '../components/FontDesign';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
 import Header from '../components/Header';
-import generateSpec from '../../../../../utils/plotSpecs/generateHeatmapSpec';
+import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression } from '../../../../../redux/actions/genes';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import isBrowser from '../../../../../utils/environment';
@@ -226,9 +226,10 @@ const HeatmapPlot = () => {
                 />
               </Panel>
               <Panel header='Legend' key='11'>
-                <LegendEditorSpecial
+                <LegendEditor
                   config={config}
                   onUpdate={updatePlotWithChanges}
+                  option={{ positions: 'heatmap' }}
                 />
               </Panel>
             </Collapse>

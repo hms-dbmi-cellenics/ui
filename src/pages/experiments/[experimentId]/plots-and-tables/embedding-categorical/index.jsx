@@ -241,10 +241,8 @@ const EmbeddingCategoricalPlot = () => {
             <Panel header='Legend' key='10'>
               <LegendEditor
                 onUpdate={onUpdate}
-                legendEnabled={config.legendEnabled}
-                legendPosition={config.legendPosition}
-                legendOptions='top-bot'
-                plotUuid={plotUuid}
+                config={config}
+                option={{ positions: 'top-bottom' }}
               />
             </Panel>
             <Panel header='Labels' key='11'>

@@ -9,9 +9,6 @@ import {
 const PointDesign = (props) => {
   const { onUpdate, config } = props;
 
-  const onChange = (e) => {
-    onUpdate({ pointStyle: e.target.value });
-  };
   const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
 
   return (
@@ -26,11 +23,11 @@ const PointDesign = (props) => {
           label='Point Size'
         >
           <Slider
-            value={config.pointSize}
+            value={config.marker.size}
             min={1}
             max={100}
             onChange={(value) => {
-              onUpdateThrottled.current({ pointSize: value });
+              onUpdateThrottled.current({ marker: { size: value } });
             }}
             marks={{ 1: 1, 100: 100 }}
           />
@@ -39,18 +36,18 @@ const PointDesign = (props) => {
           label='Point Fill Opacity'
         >
           <Slider
-            value={config.pointOpa}
+            value={config.marker.opacity}
             min={1}
             max={10}
             onChange={(value) => {
-              onUpdateThrottled.current({ pointOpa: value });
+              onUpdateThrottled.current({ marker: { opacity: value } });
             }}
             marks={{ 1: 1, 10: 10 }}
           />
         </Form.Item>
         <div>Point Shape</div>
         <Form.Item>
-          <Radio.Group onChange={onChange} value={config.pointStyle}>
+          <Radio.Group onChange={(e) => onUpdate({ marker: { shape: e.target.value } })} value={config.marker.shape}>
             <Radio value='circle'>Circle</Radio>
             <Radio value='diamond'>Diamond</Radio>
           </Radio.Group>

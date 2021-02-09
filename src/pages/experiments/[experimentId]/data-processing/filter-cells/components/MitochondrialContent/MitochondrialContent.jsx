@@ -18,7 +18,6 @@ import plotData from './data2.json';
 
 import PlotStyling from '../PlotStyling';
 
-
 const { Panel } = Collapse;
 const { Option } = Select;
 class MitochondrialContent extends React.Component {
@@ -508,7 +507,6 @@ class MitochondrialContent extends React.Component {
             </Space>
           </Col>
 
-
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['1']}>
@@ -537,7 +535,7 @@ class MitochondrialContent extends React.Component {
                 <BandwidthOrBinstep
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
-                  type={'bin step'}
+                  type='bin step'
                 />
               </Panel>
               <PlotStyling

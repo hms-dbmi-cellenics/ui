@@ -8,16 +8,12 @@ import {
 const FontDesign = (props) => {
   const { onUpdate, config } = props;
 
-  const onChange = (e) => {
-    onUpdate({ masterFont: e.target.value });
-  };
-
   return (
     <Form size='small'>
       <Form.Item>
         <Space direction='vertical' style={{ width: '80%' }}>
           <div> Font Styles </div>
-          <Radio.Group onChange={onChange} value={config.masterFont}>
+          <Radio.Group onChange={(e) => onUpdate({ fontStyle: { font: e.target.value } })} value={config.fontStyle.font}>
             <Radio value='sans-serif'>Sans-serif</Radio>
             <Radio value='sans'>Sans</Radio>
             <Radio value='monospace'>Monospace</Radio>

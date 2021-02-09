@@ -1,13 +1,14 @@
+/* eslint-disable no-param-reassign */
 const generateSpec = (config) => {
   let legend = [];
-  if (config.legendEnabled) {
+  if (config.legend.enabled) {
     legend = [
       {
         fill: 'cellSetColors',
         title: 'Cluster Name',
-        titleColor: config.masterColour,
+        titleColor: config.colour.masterColour,
         type: 'symbol',
-        orient: config.legendPosition,
+        orient: config.legend.position,
         offset: 40,
         symbolType: 'square',
         symbolSize: { value: 200 },
@@ -17,24 +18,24 @@ const generateSpec = (config) => {
               text: {
                 scale: 'cellSetIDToName', field: 'label',
               },
-              fill: { value: config.masterColour },
+              fill: { value: config.colour.masterColour },
             },
 
           },
         },
         direction: 'horizontal',
-        labelFont: { value: config.masterFont },
-        titleFont: { value: config.masterFont },
+        labelFont: { value: config.fontStyle.font },
+        titleFont: { value: config.fontStyle.font },
       },
     ];
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'A basic scatter plot example depicting automobile statistics.',
-    width: config.width,
-    height: config.height,
+    width: config.dimensions.width,
+    height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },
-    background: config.toggleInvert,
+    background: config.colour.toggleInvert,
     padding: 5,
     data: [
       {
@@ -111,19 +112,19 @@ const generateSpec = (config) => {
         grid: true,
         domain: true,
         orient: 'bottom',
-        title: { value: config.xaxisText },
-        titleFont: { value: config.masterFont },
-        labelFont: { value: config.masterFont },
-        labelColor: { value: config.masterColour },
-        tickColor: { value: config.masterColour },
-        gridColor: { value: config.masterColour },
-        gridOpacity: { value: (config.transGrid / 20) },
-        gridWidth: { value: (config.widthGrid / 20) },
-        offset: { value: config.axesOffset },
-        titleFontSize: { value: config.axisTitlesize },
-        titleColor: { value: config.masterColour },
-        labelFontSize: { value: config.axisTicks },
-        domainWidth: { value: config.lineWidth },
+        title: { value: config.axes.xAxisText },
+        titleFont: { value: config.fontStyle.font },
+        labelFont: { value: config.fontStyle.font },
+        labelColor: { value: config.colour.masterColour },
+        tickColor: { value: config.colour.masterColour },
+        gridColor: { value: config.colour.masterColour },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        gridWidth: { value: (config.axes.gridWidth / 20) },
+        offset: { value: config.axes.offset },
+        titleFontSize: { value: config.axes.titleFontSize },
+        titleColor: { value: config.colour.masterColour },
+        labelFontSize: { value: config.axes.labelFontSize },
+        domainWidth: { value: config.axes.domainWidth },
       },
       {
         scale: 'y',
@@ -131,19 +132,19 @@ const generateSpec = (config) => {
         domain: true,
         orient: 'left',
         titlePadding: 5,
-        gridColor: { value: config.masterColour },
-        gridOpacity: { value: (config.transGrid / 20) },
-        gridWidth: { value: (config.widthGrid / 20) },
-        tickColor: { value: config.masterColour },
-        offset: { value: config.axesOffset },
-        title: { value: config.yaxisText },
-        titleFont: { value: config.masterFont },
-        labelFont: { value: config.masterFont },
-        labelColor: { value: config.masterColour },
-        titleFontSize: { value: config.axisTitlesize },
-        titleColor: { value: config.masterColour },
-        labelFontSize: { value: config.axisTicks },
-        domainWidth: { value: config.lineWidth },
+        gridColor: { value: config.colour.masterColour },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        gridWidth: { value: (config.axes.gridWidth / 20) },
+        tickColor: { value: config.colour.masterColour },
+        offset: { value: config.axes.offset },
+        title: { value: config.axes.yAxisText },
+        titleFont: { value: config.fontStyle.font },
+        labelFont: { value: config.fontStyle.font },
+        labelColor: { value: config.colour.masterColour },
+        titleFontSize: { value: config.axes.titleFontSize },
+        titleColor: { value: config.colour.masterColour },
+        labelFontSize: { value: config.axes.labelFontSize },
+        domainWidth: { value: config.axes.domainWidth },
       },
     ],
     marks: [
@@ -154,11 +155,11 @@ const generateSpec = (config) => {
           enter: {
             x: { scale: 'x', field: '0' },
             y: { scale: 'y', field: '1' },
-            size: { value: config.pointSize },
+            size: { value: config.marker.size },
             stroke: { scale: 'cellSetColors', field: 'cellSetId' },
             fill: { scale: 'cellSetColors', field: 'cellSetId' },
-            shape: { value: config.pointStyle },
-            fillOpacity: { value: config.pointOpa / 10 },
+            shape: { value: config.marker.shape },
+            fillOpacity: { value: config.marker.opacity / 10 },
           },
         },
       },
@@ -170,11 +171,11 @@ const generateSpec = (config) => {
             x: { scale: 'x', field: 'mean0' },
             y: { scale: 'y', field: 'mean1' },
             text: { scale: 'cellSetIDToName', field: 'cellSetId' },
-            fontSize: { value: config.labelSize },
+            fontSize: { value: config.label.size },
             strokeWidth: { value: 1.2 },
-            fill: { value: config.masterColour },
-            fillOpacity: { value: config.labelShow },
-            font: { value: config.masterFont },
+            fill: { value: config.colour.masterColour },
+            fillOpacity: { value: config.label.enabled },
+            font: { value: config.fontStyle.font },
 
           },
           transform: [
@@ -185,19 +186,49 @@ const generateSpec = (config) => {
     legends: legend,
     title:
     {
-      text: { value: config.titleText },
-      color: { value: config.masterColour },
-      anchor: { value: config.titleAnchor },
-      font: { value: config.masterFont },
+      text: { value: config.title.text },
+      color: { value: config.colour.masterColour },
+      anchor: { value: config.anchor },
+      font: { value: config.fontStyle.font },
       dx: 10,
-      fontSize: { value: config.titleSize },
+      fontSize: { value: config.title.fontSize },
     },
   };
 };
 
-export {
-  // eslint-disable-next-line import/prefer-default-export
-  generateSpec,
+const filterCells = (cellSets, selectedCellSet) => {
+  let newCellSets = cellSets.hierarchy.find(
+    (rootNode) => rootNode.key === selectedCellSet,
+  )?.children || [];
+
+  // Build up the data source based on the properties. Note that the child nodes
+  // in the hierarchy are /objects/ with a `key` property, hence the destructuring
+  // in the function.
+  newCellSets = newCellSets.map(({ key }) => ({
+    cellSetId: key,
+    ...cellSets.properties[key],
+    cellIds: Array.from(cellSets.properties[key].cellIds),
+  }));
+
+  return newCellSets;
 };
 
-export default generateSpec;
+const generateData = (spec, cellSets, selectedCellSet, embeddingData) => {
+  const newCellSets = filterCells(cellSets, selectedCellSet);
+
+  spec.data.forEach((s) => {
+    if (s.name === 'cellSets') {
+      s.values = newCellSets;
+    } else if (s.name === 'embedding') {
+      s.values = embeddingData;
+    }
+  });
+
+  return spec;
+};
+
+export {
+  generateSpec,
+  generateData,
+  filterCells,
+};
