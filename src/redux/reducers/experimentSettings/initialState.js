@@ -23,11 +23,11 @@ const configureEmbedding = {
 };
 
 export default {
-  root: {},
-  meta: {},
-  processing: {},
+  processing: {
+    status: {
+      complete: false,
+      stepsDone: [],
+    },
+    ...configureEmbedding,
+  },
 };
-
-const initialProcessingState = { configureEmbedding };
-
-export { initialProcessingState };
