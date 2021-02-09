@@ -59,6 +59,9 @@ describe('Data Integration Calculation Config', () => {
     fetchMock.mockResolvedValue(response);
   });
 
+  const experimentId = '1234';
+  const config = storeState.experimentSettings.processing.dataIntegration;
+
   it('renders correctly when nothing is loaded', () => {
     const store = mockStore({
       embeddings: {},
@@ -69,7 +72,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig />
+        <CalculationConfig experimentId={experimentId} config={config} />
       </Provider>,
     );
 
@@ -84,7 +87,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig />
+        <CalculationConfig experimentId={experimentId} config={config} />
       </Provider>,
     );
 
@@ -102,7 +105,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig />
+        <CalculationConfig experimentId={experimentId} config={config} />
       </Provider>,
     );
 
@@ -110,23 +113,5 @@ describe('Data Integration Calculation Config', () => {
     component.update();
 
     expect(component.find(Alert).length).toEqual(1);
-  });
-
-  it('hides the settings is changed warning when settings is changed back to initial state', () => {
-    const store = mockStore(storeState);
-
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig />
-      </Provider>,
-    );
-
-    component.find(Select).at(0).getElement().props.onChange('seuratv3');
-    component.update();
-    expect(component.find(Alert).length).toEqual(1);
-
-    component.find(Select).at(0).getElement().props.onChange('seuratv4');
-    component.update();
-    expect(component.find(Alert).length).toEqual(0);
   });
 });

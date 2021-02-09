@@ -93,7 +93,7 @@ const DataIntegration = () => {
   const [config, setCurrentConfig] = useState(persistedConfigs.elbowPlot);
 
   useEffect(() => {
-    if (experimentId && !calculationConfig?.dataIntegration) {
+    if (experimentId && !calculationConfig) {
       loadProcessingSettings(experimentId);
     }
   }, [experimentId]);
