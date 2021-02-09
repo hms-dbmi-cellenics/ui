@@ -86,12 +86,7 @@ const CalculationConfig = () => {
 
     _.mergeWith(newSettings, diff, arrayMerge);
 
-    if (!_.isEqual(newSettings, savedSettings)) {
-      setChangesOutstanding(true);
-    } else {
-      setChangesOutstanding(false);
-    }
-
+    setChangesOutstanding(!_.isEqual(newSettings, savedSettings));
     setSettings(newSettings);
   };
 
