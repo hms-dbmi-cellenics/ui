@@ -10,6 +10,8 @@ import {
   LeftOutlined,
   RightOutlined,
   CheckOutlined,
+  CaretRightOutlined,
+  EllipsisOutlined,
 } from '@ant-design/icons';
 
 import Error from '../../../_error';
@@ -114,7 +116,33 @@ const DataProcessingPage = () => {
                   key={key}
                   disabled={!completedSteps.has(key)}
                 >
-                  {name}
+
+                  {completedSteps.has(key) && (
+                    <Text
+                      type='success'
+                    >
+                      <CheckOutlined />
+                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                    </Text>
+                  )}
+
+                  {!completedSteps.has(key) && stepId === i && (
+                    <Text
+                      type='default'
+                    >
+                      <CaretRightOutlined />
+                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                    </Text>
+                  )}
+
+                  {!completedSteps.has(key) && stepId !== i && (
+                    <Text
+                      disabled
+                    >
+                      <EllipsisOutlined />
+                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                    </Text>
+                  )}
                 </Option>
               ),
             )
