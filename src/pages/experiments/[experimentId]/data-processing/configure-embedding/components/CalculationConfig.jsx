@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -37,21 +37,36 @@ const CalculationConfig = (props) => {
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
-  const dispatchDebounce = useCallback(_.debounce((f) => {
+  const [resolution, setResolution] = useState(null);
+  const [minDistance, setMinDistance] = useState(null);
+
+  useEffect(() => {
+    if (!resolution && louvainSettings) {
+      setResolution(louvainSettings.resolution);
+    }
+  }, [louvainSettings]);
+
+  useEffect(() => {
+    if (!minDistance && umapSettings) {
+      setMinDistance(umapSettings.minimumDistance);
+    }
+  }, [umapSettings]);
+
+  const dispatchDebounce = _.debounce((f) => {
     dispatch(f);
-  }, 1500), []);
+  }, 1500);
 
   const updateSettings = (diff) => {
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Apply.
-      setChangesOutstanding(true, () => {
-        dispatch(updateProcessingSettings(
-          experimentId,
-          FILTER_UUID,
-          diff,
-        ));
-      });
+
+      setChangesOutstanding(true);
+      dispatch(updateProcessingSettings(
+        experimentId,
+        FILTER_UUID,
+        diff,
+      ));
     } else {
       // If it's a clustering change, debounce the save process at 1.5s.
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
@@ -86,21 +101,33 @@ const CalculationConfig = (props) => {
       )}
       >
         <InputNumber
-          value={umapSettings.minimumDistance}
+          value={minDistance}
           min={0}
           step={0.1}
-          onInput={(e) => updateSettings(
-            {
-              embeddingSettings:
-                { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } },
-            },
-          )}
+          onChange={(value) => setMinDistance(value)}
           onStep={(value) => updateSettings(
             {
               embeddingSettings:
                 { methodSettings: { umap: { minimumDistance: parseFloat(value) } } },
             },
           )}
+          onPressEnter={(e) => {
+            e.preventDefault();
+            updateSettings(
+              {
+                embeddingSettings:
+                  { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } },
+              },
+            );
+          }}
+          onBlur={(e) => {
+            updateSettings(
+              {
+                embeddingSettings:
+                  { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } },
+              },
+            );
+          }}
         />
       </Form.Item>
       <Form.Item label='Distance metric:'>
@@ -211,17 +238,22 @@ const CalculationConfig = (props) => {
           </Form.Item>
           <Form.Item label='Resolution'>
             <Slider
-              value={louvainSettings.resolution}
+              value={resolution}
               min={0}
               max={2}
               step={0.1}
-              onChange={(value) => updateSettings(
-                {
+              onChange={(value) => {
+                setResolution(value);
+              }}
+              onAfterChange={(value) => {
+                updateSettings({
                   clusteringSettings: {
-                    methodSettings: { louvain: { resolution: parseFloat(value) } },
+                    methodSettings: {
+                      louvain: { resolution: value },
+                    },
                   },
-                },
-              )}
+                });
+              }}
             />
           </Form.Item>
         </Form>
