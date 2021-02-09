@@ -78,10 +78,10 @@ const EmbeddingCategoricalPlot = () => {
   }, [experimentId]);
 
   useEffect(() => {
-    if (!data && processingSettings.configureEmbedding) {
+    if (!data && processingSettings.configureEmbedding && experimentId) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
-  }, [processingSettings]);
+  }, [processingSettings, experimentId]);
 
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if

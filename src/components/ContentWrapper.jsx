@@ -24,6 +24,8 @@ const ContentWrapper = (props) => {
   const router = useRouter();
   const { experimentId } = router.query;
 
+  const { route } = router;
+
   const BigLogo = () => (
     <div
       style={{
@@ -121,6 +123,24 @@ const ContentWrapper = (props) => {
     </div>
   );
 
+  const menuLinks = [
+    {
+      path: '/experiments/[experimentId]/data-processing',
+      icon: <BuildOutlined />,
+      name: 'Data processing',
+    },
+    {
+      path: '/experiments/[experimentId]/data-exploration',
+      icon: <FundViewOutlined />,
+      name: 'Data exploration',
+    },
+    {
+      path: '/experiments/[experimentId]/plots-and-tables',
+      icon: <DatabaseOutlined />,
+      name: 'Plots and tables',
+    },
+  ];
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <NotificationManager />
@@ -134,22 +154,25 @@ const ContentWrapper = (props) => {
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {!collapsed && <BigLogo />}
           {collapsed && <SmallLogo />}
-          <Menu theme='dark' defaultSelectedKeys={['data-exploration']} mode='inline'>
-            <Menu.Item key='data-processing' icon={<BuildOutlined />}>
-              <Link as={`/experiments/${experimentId}/data-processing`} href='/experiments/[experimentId]/data-processing' passHref>
-                <a>Data Processing</a>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key='data-exploration' icon={<FundViewOutlined />}>
-              <Link as={`/experiments/${experimentId}/data-exploration`} href='/experiments/[experimentId]/data-exploration' passHref>
-                <a>Data Exploration</a>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key='plots-and-tables' icon={<DatabaseOutlined />}>
-              <Link as={`/experiments/${experimentId}/plots-and-tables`} href='/experiments/[experimentId]/plots-and-tables' passHref>
-                <a>Plots and Tables</a>
-              </Link>
-            </Menu.Item>
+          <Menu
+            theme='dark'
+            onSelect={({ key }) => {
+              console.log(key);
+            }}
+            selectedKeys={
+              menuLinks
+                .filter(({ path }) => route.includes(path))
+                .map(({ path }) => path)
+            }
+            mode='inline'
+          >
+            {menuLinks.map(({ path, icon, name }) => (
+              <Menu.Item key={path} icon={icon}>
+                <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
+                  <a>{name}</a>
+                </Link>
+              </Menu.Item>
+            ))}
           </Menu>
           {!collapsed && (
             <Footer style={{
