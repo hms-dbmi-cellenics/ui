@@ -70,7 +70,7 @@ const DataProcessingPage = () => {
 
   const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
 
-  const [stepId, setStepId] = useState(5);
+  const [stepId, setStepId] = useState(0);
 
   const [completedSteps, setCompletedSteps] = useState(new Set());
 

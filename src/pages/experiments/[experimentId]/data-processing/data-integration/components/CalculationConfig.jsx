@@ -18,7 +18,6 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import { ISO_8601 } from 'moment';
 
 const { Option } = Select;
 const { Text } = Typography;
