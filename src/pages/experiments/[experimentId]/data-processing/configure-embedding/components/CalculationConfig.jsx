@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert, Spin,
+  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -52,9 +52,9 @@ const CalculationConfig = (props) => {
     }
   }, [umapSettings]);
 
-  const dispatchDebounce = _.debounce((f) => {
+  const dispatchDebounce = useCallback(_.debounce((f) => {
     dispatch(f);
-  }, 1500);
+  }, 1500), []);
 
   const updateSettings = (diff) => {
     if (diff.embeddingSettings) {
@@ -111,15 +111,7 @@ const CalculationConfig = (props) => {
                 { methodSettings: { umap: { minimumDistance: parseFloat(value) } } },
             },
           )}
-          onPressEnter={(e) => {
-            e.preventDefault();
-            updateSettings(
-              {
-                embeddingSettings:
-                  { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } },
-              },
-            );
-          }}
+          onPressEnter={(e) => e.preventDefault()}
           onBlur={(e) => {
             updateSettings(
               {
