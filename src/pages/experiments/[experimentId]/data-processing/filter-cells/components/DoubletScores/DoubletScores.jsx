@@ -279,11 +279,11 @@ class DoubletScores extends React.Component {
           </Col>
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse defaultActiveKey={['1']}>
-              <Panel header='Filtering settings' disabled={!filtering} key='1'>
+            <Collapse defaultActiveKey={['filtering-settings']}>
+              <Panel header='Filtering settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
                 <Form.Item label='Probability threshold'>
                   <Slider
-                    disabled={!filtering}
+                    collapsible={!filtering ? 'disabled' : 'header'}
                     defaultValue={0.2}
                     min={0}
                     max={1}

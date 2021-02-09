@@ -47,8 +47,8 @@ const BandwidthOrBinstep = (props) => {
 BandwidthOrBinstep.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
-  type: PropTypes.object.isRequired,
-  max: PropTypes.object.isRequired,
+  type: PropTypes.string.isRequired,
+  max: PropTypes.number.isRequired,
 };
 
 export default BandwidthOrBinstep;

@@ -1,20 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
+import useSWR from 'swr';
+
 import {
   PageHeader, Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
 } from 'antd';
-
 import {
   LeftOutlined,
   RightOutlined,
+  CheckOutlined,
 } from '@ant-design/icons';
-import useSWR from 'swr';
-import { useRouter } from 'next/router';
+
 import Error from '../../../_error';
-import FeedbackButton from '../../../../components/FeedbackButton';
 import getApiEndpoint from '../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../utils/cacheRequest';
 import PreloadContent from '../../../../components/PreloadContent';
-
+import FeedbackButton from '../../../../components/FeedbackButton';
 import CellSizeDistribution from './filter-cells/components/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from './filter-cells/components/MitochondrialContent/MitochondrialContent';
 import Classifier from './filter-cells/components/Classifier/Classifier';
@@ -22,63 +24,60 @@ import GenesVsUMIs from './filter-cells/components/GenesVsUMIs/GenesVsUMIs';
 import DoubletScores from './filter-cells/components/DoubletScores/DoubletScores';
 import DataIntegration from './data-integration/components/DataIntegration';
 import EmbeddingPreview from './configure-embedding/components/EmbeddingPreview';
+import { completeProcessingStep } from '../../../../redux/actions/experimentSettings';
 
 const { Text } = Typography;
 const { Option } = Select;
 
 const DataProcessingPage = () => {
-  const router = useRouter();
-  const { experimentId } = router.query;
-
   const steps = [
     {
-      id: 'cellSizeDistribution',
+      key: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
-      render: () => <CellSizeDistribution filtering />,
+      render: (key) => <CellSizeDistribution filtering key={key} />,
     },
     {
-      id: 'mitoContentFilter',
+      key: 'mitoContentFilter',
       name: 'Mitochondrial content filter',
-      render: () => <MitochondrialContent filtering />,
+      render: (key) => <MitochondrialContent filtering key={key} />,
     },
     {
-      id: 'classifierFilter',
+      key: 'classifierFilter',
       name: 'Classifier filter',
-      render: () => <Classifier filtering />,
+      render: (key) => <Classifier filtering key={key} />,
     },
     {
-      id: 'genesVsUMIFilter',
+      key: 'genesVsUMIFilter',
       name: 'Number of genes vs UMIs filter',
-      render: () => <GenesVsUMIs filtering />,
+      render: (key) => <GenesVsUMIs filtering key={key} />,
     },
     {
-      id: 'doubletFilter',
+      key: 'doubletFilter',
       name: 'Doublet filter',
-      render: () => <DoubletScores filtering />,
+      render: (key) => <DoubletScores filtering key={key} />,
     },
     {
-      id: 'dataIntegration',
+      key: 'dataIntegration',
       name: 'Data integration',
-      render: () => <DataIntegration filtering />,
+      render: (key) => <DataIntegration filtering key={key} />,
     },
     {
-      id: 'comptueEmbeddingFilter',
+      key: 'comptueEmbeddingFilter',
       name: 'Compute embedding',
-      render: (expId) => <EmbeddingPreview experimentId={expId} />,
+      render: (key, expId) => <EmbeddingPreview experimentId={expId} key={key} />,
     },
   ];
 
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { experimentId } = router.query;
   const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
-
   const [stepId, setStepId] = useState(0);
 
-  const [completedSteps, setCompletedSteps] = useState(new Set());
-
+  const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    setCompletedSteps(new Set([...completedSteps]).add(steps[stepId].id));
-
     if (carouselRef.current) {
       carouselRef.current.goTo(stepId);
     }
@@ -101,16 +100,19 @@ const DataProcessingPage = () => {
       <Col span='8'>
         <Select
           value={stepId}
-          onChange={(id) => setStepId(id)}
+          onChange={(id) => {
+            setStepId(id);
+          }}
           style={{ width: 360, fontWeight: 'bold' }}
           placeholder='Jump to a step...'
         >
           {
             steps.map(
-              ({ name, id }, i) => (
+              ({ name, key }, i) => (
                 <Option
                   value={i}
-                  disabled={!completedSteps.has(id)}
+                  key={key}
+                  disabled={!completedSteps.has(key)}
                 >
                   {name}
                 </Option>
@@ -141,11 +143,24 @@ const DataProcessingPage = () => {
                 () => {
                   const newId = Math.min(stepId + 1, steps.length - 1);
                   setStepId(newId);
+
+                  dispatch(completeProcessingStep(experimentId, steps[stepId].key, steps.length));
                 }
               }
             >
-              Next
-              <RightOutlined />
+              {stepId !== steps.length - 1
+                ? (
+                  <>
+                    Next
+                    <RightOutlined />
+                  </>
+                )
+                : (
+                  <>
+                    <span style={{ marginRight: '0.25rem' }}>Finish</span>
+                    <CheckOutlined />
+                  </>
+                )}
             </Button>
           </Space>
         </div>
@@ -171,7 +186,7 @@ const DataProcessingPage = () => {
           style={{ flex: 1 }}
         >
           <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
-            {steps.map((step) => step.render(experimentId))}
+            {steps.map(({ render, key }) => render(key, experimentId))}
           </Carousel>
         </Card>
       </div>

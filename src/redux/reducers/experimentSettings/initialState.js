@@ -24,9 +24,9 @@ const configureEmbedding = {
 
 export default {
   processing: {
-    status: {
+    meta: {
       complete: false,
-      stepsDone: [],
+      stepsDone: new Set([]),
     },
     ...configureEmbedding,
   },

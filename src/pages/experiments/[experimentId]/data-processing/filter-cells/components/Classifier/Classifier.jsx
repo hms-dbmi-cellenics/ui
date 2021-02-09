@@ -236,8 +236,8 @@ class Classifier extends React.Component {
           </Col>
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse defaultActiveKey={['1']}>
-              <Panel header='Filtering Settings' disabled={!filtering} key='1'>
+            <Collapse defaultActiveKey={['filtering-settings']}>
+              <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
                 <Form.Item label='Min probability:'>
                   <Slider
                     defaultValue={0.82}
@@ -250,7 +250,7 @@ class Classifier extends React.Component {
                 <BandwidthOrBinstep
                   config={config}
                   onUpdate={this.updatePlotWithChanges}
-                  type={'bandwidth'}
+                  type='bandwidth'
                 />
               </Panel>
               <PlotStyling
