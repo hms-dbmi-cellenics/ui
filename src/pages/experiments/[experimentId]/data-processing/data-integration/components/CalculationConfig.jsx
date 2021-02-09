@@ -33,12 +33,12 @@ const CalculationConfig = () => {
     {
       value: 'seuratv3',
       text: 'Seurat v3',
-      disabled: false,
+      disabled: true,
     },
     {
       value: 'harmony',
       text: 'Harmony',
-      disabled: false,
+      disabled: true,
     },
     {
       value: 'conos',
