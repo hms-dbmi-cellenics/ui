@@ -171,7 +171,6 @@ class GenesVsUMIs extends React.Component {
                 x2: {
                   scale: 'xscale',
                   field: 'bin1',
-                  // offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
                 },
                 y: { scale: 'yscale', field: 'count' },
                 y2: { scale: 'yscale', value: 0 },

@@ -68,6 +68,10 @@ describe('CalculationConfig', () => {
       embeddings: {},
       experimentSettings: {
         ...initialExperimentState,
+        processing: {
+          ...initialExperimentState.processing,
+          configureEmbedding: null,
+        },
       },
     });
 

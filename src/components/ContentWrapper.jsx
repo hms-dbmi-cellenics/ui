@@ -15,8 +15,7 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 
-const { SubMenu } = Menu;
-const { Sider, Footer, Header } = Layout;
+const { Sider, Footer } = Layout;
 const { Paragraph } = Typography;
 
 const ContentWrapper = (props) => {

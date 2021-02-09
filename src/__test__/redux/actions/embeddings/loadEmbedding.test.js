@@ -17,7 +17,7 @@ const mockStore = configureStore([thunk]);
 
 describe('loadEmbedding action', () => {
   const experimentId = '1234';
-  const embeddingType = '4567';
+  const embeddingType = 'umap';
 
   afterEach(() => {
     jest.clearAllMocks();
