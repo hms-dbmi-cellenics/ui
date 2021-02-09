@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import _ from 'lodash';
 
 import {
   Space,
@@ -24,12 +25,12 @@ const { Text } = Typography;
 const CalculationConfig = () => {
   const methodOptions = [
     {
-      value: 'seuratV4',
+      value: 'seuratv4',
       text: 'Seurat v4',
       disabled: false,
     },
     {
-      value: 'seuratV3',
+      value: 'seuratv3',
       text: 'Seurat v3',
       disabled: true,
     },
@@ -55,7 +56,39 @@ const CalculationConfig = () => {
     },
   ];
 
-  const changesOutstanding = false;
+  const initialState = {
+    dataIntegration: {
+      method: 'seuratv4',
+      noGenes: 2000,
+      normalisation: 'logNormalise',
+    },
+    dimensionalityReduction: {
+      numPCs: 30,
+      variationExplained: 91,
+      excludeGeneCategories: [],
+      method: 'rpca',
+    },
+  };
+
+  // const [changesOutstanding, setChangesOutstanding] = useState(false);
+  const [settings, setSettings] = useState(initialState);
+  const [savedSettings, setSavedSettings] = useState(initialState);
+
+  const changesOutstanding = !_.isEqual(settings, savedSettings);
+
+  const updateSettings = (diff) => {
+    const newSettings = _.cloneDeep(settings);
+
+    // Customizer function to replace value of array in object
+    const arrayMerge = (obj, src) => {
+      if (_.isArray(obj)) {
+        return src;
+      }
+    };
+
+    _.mergeWith(newSettings, diff, arrayMerge);
+    setSettings(newSettings);
+  };
 
   return (
     <>
@@ -74,7 +107,8 @@ const CalculationConfig = () => {
             label='Method:'
           >
             <Select
-              defaultValue='seuratV4'
+              value={settings.dataIntegration.method}
+              onChange={(val) => updateSettings({ dataIntegration: { method: val } })}
             >
               {
                 methodOptions.map((el) => (
@@ -85,14 +119,17 @@ const CalculationConfig = () => {
           </Form.Item>
           <Form.Item label='# of genes:'>
             <InputNumber
-              defaultValue={2000}
+              value={settings.dataIntegration.noGenes}
               step={100}
               min={1}
+              onChange={(value) => updateSettings({ dataIntegration: { noGenes: value } })}
+              onStep={(value) => updateSettings({ dataIntegration: { noGenes: value } })}
             />
           </Form.Item>
           <Form.Item label='Normalisation:'>
             <Select
-              defaultValue='logNormalise'
+              value={settings.dataIntegration.normalisation}
+              onChange={(val) => updateSettings({ dataIntegration: { normalisation: val } })}
             >
               <Option value='logNormalise'>LogNormalise</Option>
               <Option value='scTransform'>SCTransform</Option>
@@ -111,17 +148,22 @@ const CalculationConfig = () => {
         <div style={{ paddingLeft: '1rem' }}>
           <Form.Item label='Number of Principal Components'>
             <InputNumber
-              defaultValue={10}
+              value={settings.dimensionalityReduction.numPCs}
+              onChange={(value) => updateSettings({ dimensionalityReduction: { numPCs: value } })}
+              onStep={(value) => updateSettings({ dimensionalityReduction: { numPCs: value } })}
             />
           </Form.Item>
           <Form.Item label='% variation explained'>
             <InputNumber
-              value={10}
+              value={settings.dimensionalityReduction.variationExplained}
               readOnly
             />
           </Form.Item>
           <Form.Item label='Exclude genes categories:'>
-            <Checkbox.Group>
+            <Checkbox.Group
+              onChange={(val) => updateSettings({ dimensionalityReduction: { excludeGeneCategories: val } })}
+              value={settings.dimensionalityReduction.excludeGeneCategories}
+            >
               <Space direction='vertical'>
                 <Checkbox value='ribosomal'>ribosomal</Checkbox>
                 <Checkbox value='mitochondrial'>mitochondrial</Checkbox>
@@ -131,7 +173,8 @@ const CalculationConfig = () => {
           </Form.Item>
           <Form.Item label='Method:'>
             <Select
-              defaultValue='rpca'
+              value={settings.dimensionalityReduction.method}
+              onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
             >
               <Option value='rpca'>Reciprocal PCA (RPCA)</Option>
               <Option value='cca'>Cannonical Correlation Analysis (CCA)</Option>
@@ -140,7 +183,17 @@ const CalculationConfig = () => {
           <Form.Item>
             <Row>
               <Col span={6}>
-                <Button size='large' type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={() => { }}>Run</Button>
+                <Button
+                  type='primary'
+                  htmlType='submit'
+                  disabled={!changesOutstanding}
+                  onClick={() => {
+                    setSavedSettings(settings);
+                  }}
+                >
+                  Run
+
+                </Button>
               </Col>
               <Col span={18}>
                 {changesOutstanding && (
