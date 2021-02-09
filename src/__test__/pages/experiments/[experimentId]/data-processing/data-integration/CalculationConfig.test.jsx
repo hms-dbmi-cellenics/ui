@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Spin, Form,
+  Spin, Form, Select, Alert,
 } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -95,5 +95,38 @@ describe('Data Integration Calculation Config', () => {
     // There should be a form loaded.
     const form = component.find(Form);
     expect(form.length).toBeGreaterThan(0);
+  });
+
+  it('shows settings changed warning when the settings is changed', () => {
+    const store = mockStore(storeState);
+
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig />
+      </Provider>,
+    );
+
+    component.find(Select).at(0).getElement().props.onChange('seuratv3');
+    component.update();
+
+    expect(component.find(Alert).length).toEqual(1);
+  });
+
+  it('hides the settings is changed warning when settings is changed back to initial state', () => {
+    const store = mockStore(storeState);
+
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig />
+      </Provider>,
+    );
+
+    component.find(Select).at(0).getElement().props.onChange('seuratv3');
+    component.update();
+    expect(component.find(Alert).length).toEqual(1);
+
+    component.find(Select).at(0).getElement().props.onChange('seuratv4');
+    component.update();
+    expect(component.find(Alert).length).toEqual(0);
   });
 });
