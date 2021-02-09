@@ -104,6 +104,7 @@ const DataProcessingPage = () => {
           value={stepIdx}
           onChange={(idx) => {
             setStepIdx(idx);
+            dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
           }}
           style={{ width: 360, fontWeight: 'bold' }}
           placeholder='Jump to a step...'
@@ -114,16 +115,18 @@ const DataProcessingPage = () => {
                 <Option
                   value={i}
                   key={key}
-                  disabled={!completedSteps.has(key)}
+                  disabled={!completedSteps.has(key) && i !== stepIdx + 1}
                 >
 
                   {completedSteps.has(key) && (
-                    <Text
-                      type='success'
-                    >
-                      <CheckOutlined />
+                    <>
+                      <Text
+                        type='success'
+                      >
+                        <CheckOutlined />
+                      </Text>
                       <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                    </Text>
+                    </>
                   )}
 
                   {!completedSteps.has(key) && stepIdx === i && (
@@ -136,12 +139,14 @@ const DataProcessingPage = () => {
                   )}
 
                   {!completedSteps.has(key) && stepIdx !== i && (
-                    <Text
-                      disabled
-                    >
-                      <EllipsisOutlined />
+                    <>
+                      <Text
+                        disabled
+                      >
+                        <EllipsisOutlined />
+                      </Text>
                       <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                    </Text>
+                    </>
                   )}
                 </Option>
               ),
