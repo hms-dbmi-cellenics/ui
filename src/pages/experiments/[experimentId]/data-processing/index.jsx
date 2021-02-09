@@ -74,16 +74,16 @@ const DataProcessingPage = () => {
   const dispatch = useDispatch();
   const { experimentId } = router.query;
   const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
-  const [stepId, setStepId] = useState(0);
+  const [stepIdx, setStepIdx] = useState(0);
 
   const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
   const carouselRef = useRef(null);
 
   useEffect(() => {
     if (carouselRef.current) {
-      carouselRef.current.goTo(stepId);
+      carouselRef.current.goTo(stepIdx);
     }
-  }, [stepId]);
+  }, [stepIdx]);
 
   if (!data || !experimentId) {
     return <PreloadContent />;
@@ -101,9 +101,9 @@ const DataProcessingPage = () => {
     <Row justify='space-between'>
       <Col span='8'>
         <Select
-          value={stepId}
-          onChange={(id) => {
-            setStepId(id);
+          value={stepIdx}
+          onChange={(idx) => {
+            setStepIdx(idx);
           }}
           style={{ width: 360, fontWeight: 'bold' }}
           placeholder='Jump to a step...'
@@ -126,7 +126,7 @@ const DataProcessingPage = () => {
                     </Text>
                   )}
 
-                  {!completedSteps.has(key) && stepId === i && (
+                  {!completedSteps.has(key) && stepIdx === i && (
                     <Text
                       type='default'
                     >
@@ -135,7 +135,7 @@ const DataProcessingPage = () => {
                     </Text>
                   )}
 
-                  {!completedSteps.has(key) && stepId !== i && (
+                  {!completedSteps.has(key) && stepIdx !== i && (
                     <Text
                       disabled
                     >
@@ -159,9 +159,9 @@ const DataProcessingPage = () => {
             />
             <Text type='primary'>{`${completedSteps.size} of ${steps.length} steps complete`}</Text>
             <Button
-              disabled={stepId === 0}
+              disabled={stepIdx === 0}
               icon={<LeftOutlined />}
-              onClick={() => setStepId(Math.max(stepId - 1, 0))}
+              onClick={() => setStepIdx(Math.max(stepIdx - 1, 0))}
             >
               Previous
             </Button>
@@ -169,14 +169,14 @@ const DataProcessingPage = () => {
               type='primary'
               onClick={
                 () => {
-                  const newId = Math.min(stepId + 1, steps.length - 1);
-                  setStepId(newId);
+                  const newId = Math.min(stepIdx + 1, steps.length - 1);
+                  setStepIdx(newId);
 
-                  dispatch(completeProcessingStep(experimentId, steps[stepId].key, steps.length));
+                  dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
                 }
               }
             >
-              {stepId !== steps.length - 1
+              {stepIdx !== steps.length - 1
                 ? (
                   <>
                     Next
