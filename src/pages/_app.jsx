@@ -20,6 +20,10 @@ Router.events.on('routeChangeError', () => NProgress.done());
 
 const WrappedApp = ({ Component, pageProps }) => {
   const mainContent = () => {
+    if (Component === Error || Component === NotFoundPage) {
+      return <Component {...pageProps} />;
+    }
+
     if (!isBrowser) {
       return (<PreloadContent />);
     }
