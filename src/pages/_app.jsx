@@ -5,6 +5,10 @@ import Router from 'next/router';
 import NProgress from 'nprogress';
 import ContentWrapper from '../components/ContentWrapper';
 import PreloadContent from '../components/PreloadContent';
+
+import NotFoundPage from './404';
+import Error from './_error';
+
 import isBrowser from '../utils/environment';
 import wrapper from '../redux/store';
 import '../../assets/self-styles.less';
@@ -16,7 +20,7 @@ Router.events.on('routeChangeError', () => NProgress.done());
 
 const WrappedApp = ({ Component, pageProps }) => {
   const mainContent = () => {
-    if (isBrowser) {
+    if (isBrowser || Component === NotFoundPage || Component === Error) {
       return (
         <ContentWrapper>
           <Component {...pageProps} />
