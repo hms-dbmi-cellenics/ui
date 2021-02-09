@@ -155,9 +155,6 @@ const ContentWrapper = (props) => {
           {collapsed && <SmallLogo />}
           <Menu
             theme='dark'
-            onSelect={({ key }) => {
-              console.log(key);
-            }}
             selectedKeys={
               menuLinks
                 .filter(({ path }) => route.includes(path))
