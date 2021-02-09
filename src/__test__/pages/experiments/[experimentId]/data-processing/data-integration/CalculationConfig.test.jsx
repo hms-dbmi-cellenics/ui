@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Spin, Form, Select, Alert,
+  Spin, Form, Select, Alert, Button,
 } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -8,11 +8,16 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
+import waitForActions from 'redux-mock-store-await-actions';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import CalculationConfig from '../../../../../../pages/experiments/[experimentId]/data-processing/data-integration/components/CalculationConfig';
 import initialExperimentState, { initialProcessingState } from '../../../../../../redux/reducers/experimentSettings/initialState';
+import {
+  EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+  EXPERIMENT_SETTINGS_PROCESSING_SAVE,
+} from '../../../../../../redux/actionTypes/experimentSettings';
 
 jest.mock('localforage');
 enableFetchMocks();
@@ -113,5 +118,66 @@ describe('Data Integration Calculation Config', () => {
     component.update();
 
     expect(component.find(Alert).length).toEqual(1);
+  });
+
+  it('fires action to update config settings when options are changed', () => {
+    const store = mockStore(storeState);
+
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig experimentId={experimentId} config={config} />
+      </Provider>,
+    );
+
+    component.find(Select).at(0).getElement().props.onChange('seuratv3');
+    component.update();
+
+    const actions = store.getActions();
+    expect(actions.length).toEqual(1);
+
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_UPDATE);
+  });
+
+  it('button is disabled if there are no changes', () => {
+    const store = mockStore(storeState);
+
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig experimentId={experimentId} config={config} />
+      </Provider>,
+    );
+
+    // Button is the 3rd element, because of 2 info buttons
+    const button = component.find(Button).at(2).getElement();
+    expect(button.props.disabled).toBe(true);
+  });
+
+  it('fires action to save config when run is pressed', async () => {
+    const store = mockStore(storeState);
+
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig experimentId={experimentId} config={config} />
+      </Provider>,
+    );
+
+    component.find(Select).at(0).getElement().props.onChange('seuratv3');
+    component.update();
+
+    expect(component.find(Alert).length).toEqual(1);
+
+    // Simulate click
+    const button = component.find(Button).at(2);
+    button.simulate('click');
+    component.update();
+
+    // Alert disappears
+    expect(component.find(Alert).length).toEqual(0);
+
+    await waitForActions(store,
+      [
+        EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+        EXPERIMENT_SETTINGS_PROCESSING_SAVE,
+      ]);
   });
 });
