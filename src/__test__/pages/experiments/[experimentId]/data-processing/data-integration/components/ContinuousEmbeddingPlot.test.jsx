@@ -11,7 +11,7 @@ import ContinuousEmbeddingPlot from '../../../../../../../pages/experiments/[exp
 import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
 import initialCellSetsState from '../../../../../../../redux/reducers/cellSets/initialState';
 import initialGeneExpressionState, { initialExpressionState } from '../../../../../../../redux/reducers/genes/initialState';
-import initialExperimentState, { initialProcessingState } from '../../../../../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState from '../../../../../../../redux/reducers/experimentSettings/initialState';
 import { initialPlotConfigStates } from '../../../../../../../redux/reducers/componentConfig/initialState';
 
 jest.mock('localforage');
@@ -37,7 +37,6 @@ describe('Continuous embedding plot', () => {
     },
     experimentSettings: {
       ...initialExperimentState,
-      processing: initialProcessingState,
     },
   };
 
@@ -105,7 +104,6 @@ describe('Continuous embedding plot', () => {
     },
     experimentSettings: {
       ...initialExperimentState,
-      processing: initialProcessingState,
     },
   };
 

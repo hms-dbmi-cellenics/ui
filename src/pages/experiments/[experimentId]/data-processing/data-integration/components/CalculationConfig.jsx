@@ -16,7 +16,7 @@ import {
 } from 'antd';
 
 import {
-  InfoCircleOutlined,
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 const { Option } = Select;
@@ -94,11 +94,20 @@ const CalculationConfig = () => {
     <>
       <Space direction='vertical' style={{ width: '100%' }} />
       <Form size='small'>
+        {changesOutstanding && (
+          <Form.Item>
+            <Alert
+              message='Your changes are not yet applied. To update the plots, click Apply.'
+              type='warning'
+              showIcon
+            />
+          </Form.Item>
+        )}
         <Form.Item>
           <Text>
-            <span style={{ marginRight: '0.5rem' }}>Set the parameters for Data Integration</span>
+            <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
             <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. The latest Seurat method is selected as default.'>
-              <Button icon={<InfoCircleOutlined />} />
+              <QuestionCircleOutlined />
             </Tooltip>
           </Text>
         </Form.Item>
@@ -117,7 +126,7 @@ const CalculationConfig = () => {
               }
             </Select>
           </Form.Item>
-          <Form.Item label='# of genes:'>
+          <Form.Item label='Number of genes:'>
             <InputNumber
               value={settings.dataIntegration.noGenes}
               step={100}
@@ -139,9 +148,9 @@ const CalculationConfig = () => {
 
         <Form.Item>
           <Text>
-            <span style={{ marginRight: '0.5rem' }}>Set the parameters for Dimensionality Reduction</span>
+            <strong style={{ marginRight: '0.5rem' }}>Dimensionality reduction settings:</strong>
             <Tooltip title='Dimensionality reduction is necessary to summarise and visualise single cell RNA-seq data. The most common method is Principal Component Analysis. The user sets the number of Principal Components (PCs). This is the number that explains the majority of the variation within the dataset (ideally >90%), and is typically set between 5 and 30.'>
-              <Button icon={<InfoCircleOutlined />} />
+              <QuestionCircleOutlined />
             </Tooltip>
           </Text>
         </Form.Item>
@@ -181,30 +190,7 @@ const CalculationConfig = () => {
             </Select>
           </Form.Item>
           <Form.Item>
-            <Row>
-              <Col span={6}>
-                <Button
-                  type='primary'
-                  htmlType='submit'
-                  disabled={!changesOutstanding}
-                  onClick={() => {
-                    setSavedSettings(settings);
-                  }}
-                >
-                  Run
-
-                </Button>
-              </Col>
-              <Col span={18}>
-                {changesOutstanding && (
-                  <Alert
-                    message='The settings changes are not reflected in the plots - click run to update the plots.'
-                    type='warning'
-                    showIcon
-                  />
-                )}
-              </Col>
-            </Row>
+            <Button size='small' type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={() => { setSavedSettings(settings); }}>Apply</Button>
           </Form.Item>
         </div>
       </Form>

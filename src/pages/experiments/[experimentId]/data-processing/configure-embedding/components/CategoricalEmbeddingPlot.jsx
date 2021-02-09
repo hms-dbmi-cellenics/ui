@@ -17,24 +17,25 @@ const CategoricalEmbeddingPlot = (props) => {
   const defaultEmbeddingType = 'umap';
 
   const cellSets = useSelector((state) => state.cellSets);
-  const processingSettings = useSelector((state) => state.experimentSettings.processing);
-  const embeddingType = processingSettings?.configureEmbedding?.embeddingSettings?.method;
-  const { data: embeddingData, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
+
+  const embeddingSettings = useSelector((state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings);
+  const { data: embeddingData, loading, error } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
+
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (!Object.getOwnPropertyDescriptor(processingSettings, 'configureEmbedding')) {
+    if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
     }
 
-    if (cellSets.loading) {
+    if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
 
     if (!embeddingData) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
+      dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
-  }, [experimentId, embeddingType]);
+  }, [experimentId, embeddingSettings.method]);
 
   useEffect(() => {
     if (!cellSets.loading && !cellSets.error && embeddingData) {
@@ -47,7 +48,7 @@ const CategoricalEmbeddingPlot = (props) => {
       return (
         <PlatformError
           description={error}
-          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingType)); }}
+          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings.method)); }}
         />
       );
     }

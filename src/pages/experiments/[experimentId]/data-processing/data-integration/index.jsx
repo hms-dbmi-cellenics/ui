@@ -22,10 +22,10 @@ class ProcessingViewPage extends React.Component {
           extra={<FeedbackButton />}
         />
 
-        <Collapse accordion defaultActiveKey={['1']}>
+        <Collapse accordion defaultActiveKey={['dim-red']}>
           <Panel
             header='Dimensionality Reduction'
-            key='1'
+            key='dim-red'
           >
             <DataIntegration />
           </Panel>
