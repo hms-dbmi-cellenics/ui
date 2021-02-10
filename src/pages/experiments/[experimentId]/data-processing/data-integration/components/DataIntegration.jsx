@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
 import { useSelector, useDispatch } from 'react-redux';
-
 import ReactResizeDetector from 'react-resize-detector';
 import {
   Row, Col, Space, Collapse, Alert, Spin,
@@ -21,6 +19,8 @@ import ColourInversion from '../../../plots-and-tables/components/ColourInversio
 import isBrowser from '../../../../../../utils/environment';
 
 import loadCellSets from '../../../../../../redux/actions/cellSets/loadCellSets';
+
+import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
 // TODO This loadPlotConfig should probably be changed on the redux ticket? because it fetches in a url that seems dedicated to plots and tables:
 // ${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}
@@ -108,6 +108,10 @@ const DataIntegration = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
+  const calculationConfig = useSelector(
+    (state) => state.experimentSettings.processing.dataIntegration,
+  );
+
   // This will be taken with a useSelector eventually
   const persistedConfigs = {
     samplePlot: _.cloneDeep(defaultElbowPlotStylingConfig),
@@ -159,6 +163,10 @@ const DataIntegration = () => {
   useEffect(() => {
     if (!experimentId || !isBrowser) {
       return;
+    }
+
+    if (!calculationConfig) {
+      dispatch(loadProcessingSettings(experimentId));
     }
 
     dispatch(loadCellSets(experimentId));
@@ -300,7 +308,7 @@ const DataIntegration = () => {
       <Col span={5}>
         <Collapse defaultActiveKey={['data-integration']}>
           <Panel header='Data Integration' key='data-integration'>
-            <CalculationConfig experimentId={experimentId} />
+            <CalculationConfig experimentId={experimentId} config={calculationConfig} />
           </Panel>
           <Panel header='Plot Styling' key='styling'>
             <Collapse accordion>

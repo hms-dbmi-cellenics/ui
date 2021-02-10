@@ -11,23 +11,22 @@ import { Provider } from 'react-redux';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
-import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EXPERIMENT_SETTINGS_PROCESSING_SAVE } from '../../../../../../../redux/actionTypes/experimentSettings';
-import { EMBEDDINGS_LOADED, EMBEDDINGS_LOADING } from '../../../../../../../redux/actionTypes/embeddings';
+import { EXPERIMENT_SETTINGS_PROCESSING_SAVE } from '../../../../../../../redux/actionTypes/experimentSettings';
+import { EMBEDDINGS_LOADING } from '../../../../../../../redux/actionTypes/embeddings';
 
 import CalculationConfig from '../../../../../../../pages/experiments/[experimentId]/data-processing/configure-embedding/components/CalculationConfig';
 import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
-import initialExperimentState, { initialProcessingState } from '../../../../../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState from '../../../../../../../redux/reducers/experimentSettings/initialState';
 
 jest.mock('localforage');
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
-describe('CalculationConfig', () => {
+describe('Data Processing CalculationConfig', () => {
   const storeState = {
     embeddings: initialEmbeddingState,
     experimentSettings: {
       ...initialExperimentState,
-      processing: initialProcessingState,
     },
   };
 
@@ -54,7 +53,7 @@ describe('CalculationConfig', () => {
       JSON.stringify(
         {
           processingConfig:
-            { ...initialProcessingState },
+            { ...initialExperimentState.processing },
         },
       ),
     );
@@ -69,6 +68,10 @@ describe('CalculationConfig', () => {
       embeddings: {},
       experimentSettings: {
         ...initialExperimentState,
+        processing: {
+          ...initialExperimentState.processing,
+          configureEmbedding: null,
+        },
       },
     });
 
@@ -174,9 +177,7 @@ describe('CalculationConfig', () => {
     button.simulate('click', {});
 
     // Should load the new embedding and save the config.
-    await waitForActions(store,
-      [EMBEDDINGS_LOADING, EXPERIMENT_SETTINGS_PROCESSING_SAVE,
-      ]);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
 
     expect(store.getActions().length).toEqual(2);
     expect(store.getActions()).toMatchSnapshot();

@@ -171,7 +171,6 @@ class GenesVsUMIs extends React.Component {
                 x2: {
                   scale: 'xscale',
                   field: 'bin1',
-                  //offset: { signal: 'binStep > 0.02 ? -0.5 : 0' },
                 },
                 y: { scale: 'yscale', field: 'count' },
                 y2: { scale: 'yscale', value: 0 },
@@ -411,15 +410,15 @@ class GenesVsUMIs extends React.Component {
           </Col>
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse defaultActiveKey={['1']}>
-              <Panel header='Filtering Settings' disabled={!filtering} key='1'>
+            <Collapse defaultActiveKey={['filtering-settings']}>
+              <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
                 <Form.Item
                   label='Regression type:'
                 >
                   <Select
                     defaultValue='option1'
                     style={{ width: 200 }}
-                    disabled={!filtering}
+                    collapsible={!filtering ? 'disabled' : 'header'}
                   >
                     <Option value='option1'>Gam</Option>
                     <Option value='option2'>option2</Option>
@@ -430,7 +429,7 @@ class GenesVsUMIs extends React.Component {
                   label='Smoothing:'
                 >
                   <Slider
-                    disabled={!filtering}
+                    collapsible={!filtering ? 'disabled' : 'header'}
                     defaultValue={13}
                     min={5}
                     max={21}
@@ -441,7 +440,7 @@ class GenesVsUMIs extends React.Component {
                 >
                   <Slider
                     defaultValue={4.8}
-                    disabled={!filtering}
+                    collapsible={!filtering ? 'disabled' : 'header'}
                     min={2}
                     max={config.sliderMax}
                     onAfterChange={(val) => this.updatePlotWithChanges({ upCutoff: val })}
@@ -453,7 +452,7 @@ class GenesVsUMIs extends React.Component {
                 >
                   <Slider
                     defaultValue={2.1}
-                    disabled={!filtering}
+                    collapsible={!filtering ? 'disabled' : 'header'}
                     min={2}
                     max={config.sliderMax}
                     onAfterChange={(val) => this.updatePlotWithChanges({ lowCutoff: val })}
@@ -462,7 +461,7 @@ class GenesVsUMIs extends React.Component {
                 </Form.Item>
                 <Form.Item label='Stringency'>
                   <InputNumber
-                    disabled={!filtering}
+                    collapsible={!filtering ? 'disabled' : 'header'}
                     max={5}
                     min={0}
                     step={0.1}

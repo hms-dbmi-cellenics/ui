@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import {
   Space,
@@ -15,21 +17,32 @@ import {
 } from 'antd';
 
 import {
-  InfoCircleOutlined,
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
+
+import SeuratV4Options from './SeuratV4Options';
+
+import { updateProcessingSettings, saveProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
 const { Option } = Select;
 const { Text } = Typography;
 
-const CalculationConfig = () => {
-  const methodOptions = [
+const CalculationConfig = (props) => {
+  const { experimentId, config } = props;
+  const FILTER_UUID = 'dataIntegration';
+
+  const dispatch = useDispatch();
+
+  const { dataIntegration, dimensionalityReduction } = config;
+
+  const methods = [
     {
-      value: 'seuratV4',
+      value: 'seuratv4',
       text: 'Seurat v4',
       disabled: false,
     },
     {
-      value: 'seuratV3',
+      value: 'seuratv3',
       text: 'Seurat v3',
       disabled: true,
     },
@@ -55,17 +68,45 @@ const CalculationConfig = () => {
     },
   ];
 
-  const changesOutstanding = false;
+  const [numPCs, setNumPCs] = useState(dimensionalityReduction.numPCs);
+  const [changesOutstanding, setChangesOutstanding] = useState(false);
+
+  const updateSettings = (diff) => {
+    setChangesOutstanding(true);
+    dispatch(updateProcessingSettings(
+      experimentId,
+      FILTER_UUID,
+      diff,
+    ));
+  };
+
+  const applyDataIntegrationSettings = () => {
+    setChangesOutstanding(false);
+    dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
+  };
+
+  const methodOptions = {
+    seuratv4: () => <SeuratV4Options config={dataIntegration.methodSettings.seuratv4} onUpdate={updateSettings} onChange={() => setChangesOutstanding(true)} />,
+  };
 
   return (
     <>
       <Space direction='vertical' style={{ width: '100%' }} />
       <Form size='small'>
+        {changesOutstanding && (
+          <Form.Item>
+            <Alert
+              message='Your changes are not yet applied. To rerun data integration, click Apply.'
+              type='warning'
+              showIcon
+            />
+          </Form.Item>
+        )}
         <Form.Item>
           <Text>
-            <span style={{ marginRight: '0.5rem' }}>Set the parameters for Data Integration</span>
+            <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
             <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. The latest Seurat method is selected as default.'>
-              <Button icon={<InfoCircleOutlined />} />
+              <QuestionCircleOutlined />
             </Tooltip>
           </Text>
         </Form.Item>
@@ -74,54 +115,55 @@ const CalculationConfig = () => {
             label='Method:'
           >
             <Select
-              defaultValue='seuratV4'
+              value={dataIntegration.method}
+              onChange={(val) => updateSettings({ dataIntegration: { method: val } })}
             >
               {
-                methodOptions.map((el) => (
-                  <Option value={el.value} disabled={el.disabled}>{el.text}</Option>
+                methods.map((el) => (
+                  <Option key={el.text} value={el.value} disabled={el.disabled}>{el.text}</Option>
                 ))
               }
             </Select>
           </Form.Item>
-          <Form.Item label='# of genes:'>
-            <InputNumber
-              defaultValue={2000}
-              step={100}
-              min={1}
-            />
-          </Form.Item>
-          <Form.Item label='Normalisation:'>
-            <Select
-              defaultValue='logNormalise'
-            >
-              <Option value='logNormalise'>LogNormalise</Option>
-              <Option value='scTransform'>SCTransform</Option>
-            </Select>
-          </Form.Item>
+
+          {
+            methodOptions[dataIntegration.method]()
+          }
+
         </div>
 
         <Form.Item>
           <Text>
-            <span style={{ marginRight: '0.5rem' }}>Set the parameters for Dimensionality Reduction</span>
+            <strong style={{ marginRight: '0.5rem' }}>Dimensionality reduction settings:</strong>
             <Tooltip title='Dimensionality reduction is necessary to summarise and visualise single cell RNA-seq data. The most common method is Principal Component Analysis. The user sets the number of Principal Components (PCs). This is the number that explains the majority of the variation within the dataset (ideally >90%), and is typically set between 5 and 30.'>
-              <Button icon={<InfoCircleOutlined />} />
+              <QuestionCircleOutlined />
             </Tooltip>
           </Text>
         </Form.Item>
         <div style={{ paddingLeft: '1rem' }}>
           <Form.Item label='Number of Principal Components'>
             <InputNumber
-              defaultValue={10}
+              value={numPCs}
+              onChange={(value) => {
+                setChangesOutstanding(true);
+                setNumPCs(value);
+              }}
+              onPressEnter={(e) => e.preventDefault()}
+              onStep={(value) => updateSettings({ dimensionalityReduction: { numPCs: value } })}
+              onBlur={(e) => updateSettings({ dimensionalityReduction: { numPCs: parseInt(e.target.value, 0) } })}
             />
           </Form.Item>
           <Form.Item label='% variation explained'>
             <InputNumber
-              value={10}
+              value={dimensionalityReduction.variationExplained}
               readOnly
             />
           </Form.Item>
           <Form.Item label='Exclude genes categories:'>
-            <Checkbox.Group>
+            <Checkbox.Group
+              onChange={(val) => updateSettings({ dimensionalityReduction: { excludeGeneCategories: val } })}
+              value={dimensionalityReduction.excludeGeneCategories}
+            >
               <Space direction='vertical'>
                 <Checkbox value='ribosomal'>ribosomal</Checkbox>
                 <Checkbox value='mitochondrial'>mitochondrial</Checkbox>
@@ -131,25 +173,27 @@ const CalculationConfig = () => {
           </Form.Item>
           <Form.Item label='Method:'>
             <Select
-              defaultValue='rpca'
+              value={dimensionalityReduction.method}
+              onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
             >
-              <Option value='rpca'>Reciprocal PCA (RPCA)</Option>
-              <Option value='cca'>Cannonical Correlation Analysis (CCA)</Option>
+              <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
+              <Option key='cca' value='cca'>Cannonical Correlation Analysis (CCA)</Option>
             </Select>
           </Form.Item>
           <Form.Item>
             <Row>
               <Col span={6}>
-                <Button size='large' type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={() => { }}>Run</Button>
-              </Col>
-              <Col span={18}>
-                {changesOutstanding && (
-                  <Alert
-                    message='The settings changes are not reflected in the plots - click run to update the plots.'
-                    type='warning'
-                    showIcon
-                  />
-                )}
+                <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
+                  <Button
+                    size='small'
+                    type='primary'
+                    htmlType='submit'
+                    disabled={!changesOutstanding}
+                    onClick={applyDataIntegrationSettings}
+                  >
+                    Apply
+                  </Button>
+                </Tooltip>
               </Col>
             </Row>
           </Form.Item>
@@ -157,6 +201,11 @@ const CalculationConfig = () => {
       </Form>
     </>
   );
+};
+
+CalculationConfig.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 export default CalculationConfig;

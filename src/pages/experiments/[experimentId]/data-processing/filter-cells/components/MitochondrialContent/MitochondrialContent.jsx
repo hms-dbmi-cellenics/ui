@@ -509,13 +509,13 @@ class MitochondrialContent extends React.Component {
 
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse defaultActiveKey={['1']}>
-              <Panel header='Filtering settings' disabled={!filtering} key='1'>
+            <Collapse defaultActiveKey={['filtering-settings']}>
+              <Panel header='Filtering settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
                 <Form.Item label='Method:'>
                   <Select
                     defaultValue='option1'
                     style={{ width: 200 }}
-                    disabled={!filtering}
+                    collapsible={!filtering ? 'disabled' : 'header'}
                   >
                     <Option value='option1'>Absolute threshold</Option>
                     <Option value='option2'>option2</Option>
@@ -528,7 +528,7 @@ class MitochondrialContent extends React.Component {
                     min={config.sliderMin}
                     max={config.sliderMax}
                     step={0.05}
-                    disabled={!filtering}
+                    collapsible={!filtering ? 'disabled' : 'header'}
                     onAfterChange={(val) => changeFraction(val)}
                   />
                 </Form.Item>

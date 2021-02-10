@@ -18,15 +18,21 @@ const ContinuousEmbeddingPlot = (props) => {
 
   const dispatch = useDispatch();
 
-  const processingSettings = useSelector((state) => state.experimentSettings.processing);
-  const embeddingType = processingSettings?.configureEmbedding?.embeddingSettings?.method;
-  const { data: embeddingData, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
+  const embeddingSettings = useSelector(
+    (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
+  );
+  const {
+    data: embeddingData,
+    loading, error,
+  } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
   const geneExpression = useSelector((state) => state.genes.expression);
   const geneProperties = useSelector((state) => state.genes.propreties);
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
   const PROPERTIES = ['dispersions'];
-  const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]?.data[0]);
+  const highestDispersionGene = useSelector(
+    (state) => state.genes.properties.views[plotUuid]?.data[0],
+  );
 
   const tableState = {
     pagination: {
@@ -41,7 +47,7 @@ const ContinuousEmbeddingPlot = (props) => {
       dispatch(loadCellSets(experimentId));
     }
 
-    if (!Object.getOwnPropertyDescriptor(processingSettings, 'configureEmbedding')) {
+    if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
     }
 
@@ -49,10 +55,10 @@ const ContinuousEmbeddingPlot = (props) => {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
 
-    if (!embeddingData && embeddingType) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
+    if (!embeddingData && embeddingSettings.method) {
+      dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
-  }, [experimentId, embeddingType]);
+  }, [experimentId, embeddingSettings.method]);
 
   useEffect(() => {
     if (config.shownGene === 'notSelected' && highestDispersionGene) {

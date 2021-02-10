@@ -16,7 +16,7 @@ import CrossHair from '../../../../../../../pages/experiments/[experimentId]/dat
 import CellInfo from '../../../../../../../pages/experiments/[experimentId]/data-exploration/components/CellInfo';
 import { CELL_SETS_CREATE } from '../../../../../../../redux/actionTypes/cellSets';
 import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
-import initialExperimentState, { initialProcessingState } from '../../../../../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState from '../../../../../../../redux/reducers/experimentSettings/initialState';
 import { CELL_INFO_UPDATE } from '../../../../../../../redux/actionTypes/cellInfo';
 
 jest.mock('localforage');
@@ -31,7 +31,7 @@ const height = 200;
 describe('Embedding', () => {
   const initialState = {
     embeddings: {
-      [initialProcessingState.configureEmbedding.embeddingSettings.method]: {
+      [initialExperimentState.processing.configureEmbedding.embeddingSettings.method]: {
         ...initialEmbeddingState,
         loading: false,
         data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
@@ -71,7 +71,6 @@ describe('Embedding', () => {
     },
     experimentSettings: {
       ...initialExperimentState,
-      processing: initialProcessingState,
     },
   };
 

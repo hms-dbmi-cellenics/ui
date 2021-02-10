@@ -7,7 +7,7 @@ import {
   Slider,
   Skeleton,
   Spin,
-  Button,
+  Button, Empty, Typography,
 } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -36,7 +36,9 @@ import loadDifferentialExpression from '../../../../../redux/actions/differentia
 import PlatformError from '../../../../../components/PlatformError';
 import { setComparisonGroup } from '../../../../../redux/actions/differentialExpression';
 
+const { Text } = Typography;
 const { Panel } = Collapse;
+
 const route = {
   path: 'volcano',
   breadcrumbName: 'Volcano plot',
@@ -48,7 +50,7 @@ const VolcanoPlot = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { experimentId } = router.query;
-
+  const comparisonCreated = useRef(false);
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const {
     loading, data, error, cellSets: plotCellSets, comparisonType: plotComparisonType,
@@ -56,7 +58,6 @@ const VolcanoPlot = () => {
     (state) => state.differentialExpression.properties,
   );
   const comparison = useSelector((state) => state.differentialExpression.comparison);
-
   const [plotData, setPlotData] = useState([]);
   const [spec, setSpec] = useState({
     spec: null,
@@ -186,6 +187,7 @@ const VolcanoPlot = () => {
 
     // maxNegativeLogpValueDomain: null,
     // logFoldChangeDomain: null,
+    comparisonCreated.current = true;
     dispatch(
       loadDifferentialExpression(experimentId, comparison.group[comparison.type], comparison.type),
     );
@@ -240,6 +242,18 @@ const VolcanoPlot = () => {
         />
       );
     }
+    if (!comparisonCreated.current) {
+      return (
+        <Empty description={(
+          <>
+            <p>
+              <Text>Create a comparison to get started.</Text>
+            </p>
+          </>
+        )}
+        />
+      );
+    }
 
     if (plotData.length === 0 || loading || _.isEmpty(spec.spec)) {
       return <Spin />;
@@ -270,20 +284,20 @@ const VolcanoPlot = () => {
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']} accordion>
-              <Panel header='Differential Expression' key='15'>
+              <Panel header='Differential Expression' key='1'>
                 <DiffExprCompute
                   experimentId={experimentId}
                   onCompute={onComputeDiffExp}
                 />
               </Panel>
-              <Panel header='Main Schema' key='1'>
+              <Panel header='Main Schema' key='15'>
                 <DimensionsRangeEditorVolcano
                   config={config}
                   onUpdate={updatePlotWithChanges}
                   xMax={Math.round(spec.xMax)}
                   yMax={Math.round(spec.maxNegativeLogpValue) + 2}
                 />
-                <Collapse defaultActiveKey={['1']} accordion>
+                <Collapse accordion>
                   <Panel header='Define and Edit Title' key='6'>
                     <TitleDesign
                       config={config}

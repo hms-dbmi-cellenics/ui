@@ -85,16 +85,17 @@ const ExplorationViewPage = () => {
     },
   };
 
-  if (!data || !experimentId) {
-    return <PreloadContent />;
-  }
-
   if (error) {
     if (error.payload === undefined) {
       return <Error errorText='Cannot connect to API service.' />;
     }
+
     const { status } = error.payload;
     return <Error errorText={status} />;
+  }
+
+  if (!data || !experimentId) {
+    return <PreloadContent />;
   }
 
   return (
