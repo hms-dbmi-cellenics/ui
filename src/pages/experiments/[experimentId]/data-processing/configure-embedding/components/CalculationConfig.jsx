@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert, Spin,
+  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';

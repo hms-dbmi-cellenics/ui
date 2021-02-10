@@ -4,7 +4,7 @@ import { Form, InputNumber, Select } from 'antd';
 
 const { Option } = Select;
 
-const MethodOptions = (props) => {
+const SeuratV4Options = (props) => {
   const { config, onUpdate, onChange } = props;
 
   const [numGenes, setNumGenes] = useState(config.numGenes);
@@ -60,14 +60,14 @@ const MethodOptions = (props) => {
   );
 };
 
-MethodOptions.propTypes = {
+SeuratV4Options.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
   onChange: PropTypes.func,
 };
 
-MethodOptions.defaultProps = {
+SeuratV4Options.defaultProps = {
   onChange: null,
 };
 
-export default MethodOptions;
+export default SeuratV4Options;
