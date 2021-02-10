@@ -96,7 +96,7 @@ const CalculationConfig = (props) => {
         {changesOutstanding && (
           <Form.Item>
             <Alert
-              message='Your changes are not yet applied. To re run data integration, click Apply.'
+              message='Your changes are not yet applied. To rerun data integration, click Apply.'
               type='warning'
               showIcon
             />
