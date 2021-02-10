@@ -27,10 +27,6 @@ const GeneTable = (props) => {
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [geneNameFilterState, setGeneNameFilterState] = useState({});
 
-  if (!isBrowser) {
-    return (<Skeleton active />);
-  }
-
   const [tableState, setTableState] = useState(
     _.merge(
       {

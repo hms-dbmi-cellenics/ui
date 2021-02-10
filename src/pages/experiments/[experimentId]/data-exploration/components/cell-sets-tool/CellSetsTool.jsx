@@ -87,7 +87,7 @@ const CellSetsTool = (props) => {
    * or a hierarchical tree listing all cell sets.
    */
   const renderContent = () => {
-    if (loading || !isBrowser) return <Skeleton active />;
+    if (loading) return <Skeleton active />;
 
     if (error) {
       return (

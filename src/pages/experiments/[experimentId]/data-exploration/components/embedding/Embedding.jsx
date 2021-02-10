@@ -171,7 +171,7 @@ const Embedding = (props) => {
   };
 
   // Embedding data is loading.
-  if (!data || loading || !isBrowser) {
+  if (!data || loading) {
     return (<center><Spin size='large' /></center>);
   }
 

@@ -94,7 +94,6 @@ const EmbeddingPreview = (props) => {
   }, [config, cellSets]);
 
   useEffect(() => {
-    if (!isBrowser) return;
     const { plotUuid, plotType } = plots[selectedPlot];
 
     if (!config) {

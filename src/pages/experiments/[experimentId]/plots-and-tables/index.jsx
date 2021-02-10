@@ -7,14 +7,13 @@ import {
 import { useSelector } from 'react-redux';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import SearchMenu from '../../../../components/SearchMenu';
 import heatmap from '../../../../../static/media/heatmap.png';
 import embeddingContinuous from '../../../../../static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../static/media/embeddingCategorical.png';
 import volcano from '../../../../../static/media/volcano.png';
 import frequency from '../../../../../static/media/frequency.png';
-import FeedbackButton from '../../../../components/FeedbackButton';
+import Header from '../../../../components/Header';
 
 const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
   <Card.Grid
@@ -45,7 +44,7 @@ CardItem.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-const PlotsTablesHome = () => {
+const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
   let lastUpdatedVolcano = useSelector((state) => state.componentConfig.volcanoPlotMain?.lastUpdated);
   let lastUpdatedContinuous = useSelector((state) => state.componentConfig.embeddingContinuousMain?.lastUpdated);
   let lastUpdatedCategorical = useSelector((state) => state.componentConfig.embeddingCategoricalMain?.lastUpdated);
@@ -66,8 +65,6 @@ const PlotsTablesHome = () => {
   if (!lastUpdatedFrequency) {
     lastUpdatedFrequency = 'never';
   }
-  const router = useRouter();
-  const { experimentId } = router.query;
   const plots = [
     {
       name: 'Continuous Embedding',
@@ -147,13 +144,13 @@ const PlotsTablesHome = () => {
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Row gutter={16}>
         <Col span={18}>
-          <PageHeader
-            title='Plots and Tables'
-            subTitle='Home'
-            style={{ width: '100%', paddingRight: '0px' }}
+          <Header
+            experimentId={experimentId}
+            experimentData={experimentData}
+            route={route}
+            title='Plots and tables'
             extra={(
               <Space>
-                <FeedbackButton />
                 <Dropdown
                   trigger={['click']}
                   overlay={searchMenu}

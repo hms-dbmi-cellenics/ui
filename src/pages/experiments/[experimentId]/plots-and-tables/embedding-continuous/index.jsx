@@ -6,7 +6,6 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
-import { useRouter } from 'next/router';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import ColourbarDesign from '../components/ColourbarDesign';
 import ColourInversion from '../components/ColourInversion';
@@ -44,7 +43,7 @@ const plotUuid = 'embeddingContinuousMain';
 const plotType = 'embeddingContinuous';
 const embeddingType = 'umap';
 
-const EmbeddingContinuousPlot = () => {
+const EmbeddingContinuousPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expressionLoading = useSelector(
@@ -58,8 +57,6 @@ const EmbeddingContinuousPlot = () => {
   const cellSets = useSelector((state) => state.cellSets);
   const processingSettings = useSelector((state) => state.experimentSettings.processing);
   const { properties } = cellSets;
-  const router = useRouter();
-  const { experimentId } = router.query;
   const PROPERTIES = ['dispersions'];
   const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]?.data[0]);
   // temporary solution for selecting the default gene until they are displayed with a table
@@ -70,8 +67,7 @@ const EmbeddingContinuousPlot = () => {
     geneNamesFilter: null,
     sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
   };
-  if (config?.shownGene === 'notSelected' && experimentId && isBrowser) {
-    console.log(experimentId, PROPERTIES, plotUuid, tableState);
+  if (config?.shownGene === 'notSelected') {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 
@@ -81,10 +77,6 @@ const EmbeddingContinuousPlot = () => {
   };
 
   useEffect(() => {
-    if (!experimentId || !isBrowser) {
-      return;
-    }
-
     if (!processingSettings.configureEmbedding) {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
@@ -161,7 +153,6 @@ const EmbeddingContinuousPlot = () => {
       !config
       || !data
       || loading
-      || !isBrowser
       || expressionLoading.includes(config.shownGene)
       || cellSets.loading
     ) {
