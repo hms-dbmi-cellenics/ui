@@ -11,7 +11,7 @@ import { Provider } from 'react-redux';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
-import { EXPERIMENT_SETTINGS_PROCESSING_SAVE } from '../../../../../../../redux/actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../../../../../../redux/actionTypes/experimentSettings';
 import { EMBEDDINGS_LOADING } from '../../../../../../../redux/actionTypes/embeddings';
 
 import CalculationConfig from '../../../../../../../pages/experiments/[experimentId]/data-processing/configure-embedding/components/CalculationConfig';
