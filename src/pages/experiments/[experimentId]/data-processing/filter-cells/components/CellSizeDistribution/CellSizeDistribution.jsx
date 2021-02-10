@@ -19,7 +19,7 @@ import plot1Pic from '../../../../../../../../static/media/plot1.png';
 import plot2Pic from '../../../../../../../../static/media/plot2.png';
 import plotData2 from './cellRank_sorted.json';
 import plotData from './new_data.json';
-import PlotStyling from '../PlotStyling';
+import PlotStyling from '../../../../../../../components/plotStyling/PlotStyling';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;

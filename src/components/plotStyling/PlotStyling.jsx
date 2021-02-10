@@ -5,10 +5,10 @@ import {
 } from 'antd';
 import React from 'react';
 
-import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
-import FontDesign from '../../../plots-and-tables/components/FontDesign';
-import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
-import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
+import TitleDesign from '../../pages/experiments/[experimentId]/plots-and-tables/components/TitleDesign';
+import FontDesign from '../../pages/experiments/[experimentId]/plots-and-tables/components/FontDesign';
+import LegendEditor from '../../pages/experiments/[experimentId]/plots-and-tables/components/LegendEditor';
+import DimensionsRangeEditor from '../../pages/experiments/[experimentId]/plots-and-tables/components/DimensionsRangeEditor';
 
 const { Panel } = Collapse;
 const PlotStyling = (props) => {
