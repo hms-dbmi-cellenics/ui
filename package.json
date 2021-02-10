@@ -66,8 +66,8 @@
     "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.3.2",
     "swr": "^0.3.2",
-    "object-hash": "^2.0.3",
-    "prop-types": "^15.7.2"
+    "prop-types": "^15.7.2",
+    "object-hash": "^2.0.3"
   },
   "devDependencies": {
     "@ant-design/icons": "^4.2.1",
