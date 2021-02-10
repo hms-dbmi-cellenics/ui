@@ -71,6 +71,7 @@ const EmbeddingContinuousPlot = () => {
     sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
   };
   if (config?.shownGene === 'notSelected' && experimentId && isBrowser) {
+    console.log(experimentId, PROPERTIES, plotUuid, tableState);
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 
@@ -78,27 +79,31 @@ const EmbeddingContinuousPlot = () => {
   const updatePlotWithChanges = (updateField) => {
     dispatch(updatePlotConfig(plotUuid, updateField));
   };
+
   useEffect(() => {
     if (!experimentId || !isBrowser) {
       return;
     }
+
     if (!processingSettings.configureEmbedding) {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
+
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
 
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
+
   if (config && config.shownGene === 'notSelected' && highestDispersionGene) {
     dispatch(loadGeneExpression(experimentId, [highestDispersionGene]));
     updatePlotWithChanges({ shownGene: highestDispersionGene });
   }
 
   useEffect(() => {
-    if (!data && processingSettings.configureEmbedding) {
+    if (!data && processingSettings.configureEmbedding && experimentId) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
-  }, [processingSettings]);
+  }, [processingSettings, experimentId]);
 
   const filterSamples = () => {
     if (config.selectedSample === 'All') {

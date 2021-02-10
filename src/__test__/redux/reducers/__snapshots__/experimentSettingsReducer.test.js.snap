@@ -2,45 +2,107 @@
 
 exports[`experimentSettingsReducer Adds new object properly 1`] = `
 Object {
-  "meta": Object {},
   "processing": Object {
     "configureEmbedding": Object {
+      "clusteringSettings": Object {
+        "method": "louvain",
+        "methodSettings": Object {
+          "louvain": Object {
+            "resolution": 0.5,
+          },
+        },
+      },
       "embeddingSettings": Object {
+        "method": "newMethod",
+        "methodSettings": Object {
+          "tsne": Object {
+            "learningRate": 200,
+            "perplexity": 30,
+          },
+          "umap": Object {
+            "distanceMetric": "euclidean",
+            "minimumDistance": 0.1,
+          },
+        },
         "newProperty": Object {
           "name": "a",
           "value": "b",
         },
       },
     },
+    "meta": Object {
+      "complete": false,
+      "stepsDone": Set {},
+    },
   },
-  "root": Object {},
 }
 `;
 
 exports[`experimentSettingsReducer Adds new value properly 1`] = `
 Object {
-  "meta": Object {},
   "processing": Object {
     "configureEmbedding": Object {
+      "clusteringSettings": Object {
+        "method": "louvain",
+        "methodSettings": Object {
+          "louvain": Object {
+            "resolution": 0.5,
+          },
+        },
+      },
       "embeddingSettings": Object {
+        "method": "newMethod",
+        "methodSettings": Object {
+          "tsne": Object {
+            "learningRate": 200,
+            "perplexity": 30,
+          },
+          "umap": Object {
+            "distanceMetric": "euclidean",
+            "minimumDistance": 0.1,
+          },
+        },
         "newProperty": "property",
       },
     },
+    "meta": Object {
+      "complete": false,
+      "stepsDone": Set {},
+    },
   },
-  "root": Object {},
 }
 `;
 
 exports[`experimentSettingsReducer Updates existing value properly 1`] = `
 Object {
-  "meta": Object {},
   "processing": Object {
     "configureEmbedding": Object {
+      "clusteringSettings": Object {
+        "method": "louvain",
+        "methodSettings": Object {
+          "louvain": Object {
+            "resolution": 0.5,
+          },
+        },
+      },
       "embeddingSettings": Object {
         "method": "newMethod",
+        "methodSettings": Object {
+          "tsne": Object {
+            "learningRate": 200,
+            "perplexity": 30,
+          },
+          "umap": Object {
+            "distanceMetric": "euclidean",
+            "minimumDistance": 0.1,
+          },
+        },
       },
     },
+    "meta": Object {
+      "complete": false,
+      "stepsDone": Set {},
+    },
   },
-  "root": Object {},
 }
 `;

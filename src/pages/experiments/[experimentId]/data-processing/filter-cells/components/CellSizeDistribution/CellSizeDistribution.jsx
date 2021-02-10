@@ -70,7 +70,7 @@ class CellSizeDistribution extends React.Component {
   }
 
   updatePlotWithChanges(obj) {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const newState = _.cloneDeep(prevState);
 
       _.merge(newState.config, obj);
@@ -82,7 +82,7 @@ class CellSizeDistribution extends React.Component {
   generateData() {
     let { data } = this.state;
     data = _.cloneDeep(data);
-    data = data.map(datum => {
+    data = data.map((datum) => {
       let newStatus;
 
       if (datum.u <= 8800) {
@@ -110,8 +110,7 @@ class CellSizeDistribution extends React.Component {
     let legend = null;
     const minHigh = 2500;
     const minUnknown = 2300;
-    const coloringExpressionPlot1 =
-      "(datum.bin1 < 8800) ? 'low' : (datum.bin1 >10800) ? 'high' : 'unknown'";
+    const coloringExpressionPlot1 = "(datum.bin1 < 8800) ? 'low' : (datum.bin1 >10800) ? 'high' : 'unknown'";
     const coloringExpressionPlot2 = `(datum.u < ${minUnknown}) ? 'low' : (datum.u >${minHigh}) ? 'high' : 'unknown'`;
 
     if (config.legendEnabled) {
@@ -440,7 +439,7 @@ class CellSizeDistribution extends React.Component {
       'Total genes detected   21,425',
       'Median UMI counts per cell   4,064',
     ];
-    const changePlot = val => {
+    const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
       if (val) {
         this.updatePlotWithChanges({
@@ -461,7 +460,7 @@ class CellSizeDistribution extends React.Component {
       }
     };
 
-    const changeCellSize = val => {
+    const changeCellSize = (val) => {
       if (config.plotToDraw) {
         this.updatePlotWithChanges({ minCellSize: val.target.value });
       } else {
@@ -472,16 +471,16 @@ class CellSizeDistribution extends React.Component {
       <>
         <Row>
           <Col span={13}>
-            <Vega data={data} spec={this.generateSpec()} renderer="canvas" />
+            <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
           </Col>
 
           <Col span={5}>
-            <Space direction="vertical">
-              <Tooltip title="The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). Look for bimodal distribution to set the cut-off.">
+            <Space direction='vertical'>
+              <Tooltip title='The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). Look for bimodal distribution to set the cut-off.'>
                 <Button icon={<InfoCircleOutlined />} />
               </Tooltip>
               <img
-                alt=""
+                alt=''
                 src={plot1Pic}
                 style={{
                   height: '100px',
@@ -493,7 +492,7 @@ class CellSizeDistribution extends React.Component {
                 onClick={() => changePlot(true)}
               />
               <img
-                alt=""
+                alt=''
                 src={plot2Pic}
                 style={{
                   height: '100px',
@@ -507,19 +506,19 @@ class CellSizeDistribution extends React.Component {
             </Space>
             <List
               dataSource={listData}
-              size="small"
-              renderItem={item => <List.Item>{item}</List.Item>}
+              size='small'
+              renderItem={(item) => <List.Item>{item}</List.Item>}
             />
           </Col>
 
           <Col span={6}>
-            <Space direction="vertical" style={{ width: '100%' }} />
-            <Collapse defaultActiveKey={['1']}>
-              <Panel header="Filtering Settings" disabled={!filtering} key="1">
-                <Form.Item label="Min cell size:">
+            <Space direction='vertical' style={{ width: '100%' }} />
+            <Collapse defaultActiveKey={['filtering-settings']}>
+              <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
+                <Form.Item label='Min cell size:'>
                   <InputNumber
-                    disabled={!filtering}
-                    onPressEnter={val => changeCellSize(val)}
+                    collapsible={!filtering ? 'disabled' : 'header'}
+                    onPressEnter={(val) => changeCellSize(val)}
                     placeholder={config.placeholder}
                     step={100}
                   />

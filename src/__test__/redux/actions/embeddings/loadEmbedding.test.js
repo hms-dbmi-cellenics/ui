@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { loadEmbedding } from '../../../../redux/actions/embedding';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import initialExperimentState, { initialProcessingState } from '../../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 
 import sendWork from '../../../../utils/sendWork';
 
@@ -17,7 +17,7 @@ const mockStore = configureStore([thunk]);
 
 describe('loadEmbedding action', () => {
   const experimentId = '1234';
-  const embeddingType = '4567';
+  const embeddingType = 'umap';
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -69,7 +69,6 @@ describe('loadEmbedding action', () => {
         embeddings: {},
         experimentSettings: {
           ...initialExperimentState,
-          processing: initialProcessingState,
         },
       },
     );
@@ -111,7 +110,6 @@ describe('loadEmbedding action', () => {
           { [embeddingType]: { ...initialEmbeddingState, error: true, loading: false } },
         experimentSettings: {
           ...initialExperimentState,
-          processing: initialProcessingState,
         },
       },
     );
@@ -137,7 +135,6 @@ describe('loadEmbedding action', () => {
           {},
         experimentSettings: {
           ...initialExperimentState,
-          processing: initialProcessingState,
         },
       },
     );

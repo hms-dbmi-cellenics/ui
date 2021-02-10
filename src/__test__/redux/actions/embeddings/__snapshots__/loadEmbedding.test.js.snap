@@ -3,7 +3,7 @@
 exports[`loadEmbedding action Dispatches error action on unsuccessful loading 1`] = `
 Object {
   "payload": Object {
-    "embeddingType": "4567",
+    "embeddingType": "umap",
     "experimentId": "1234",
   },
   "type": "embeddings/loading",
@@ -13,7 +13,7 @@ Object {
 exports[`loadEmbedding action Dispatches error action on unsuccessful loading 2`] = `
 Object {
   "payload": Object {
-    "embeddingType": "4567",
+    "embeddingType": "umap",
     "error": "We're sorry, we were unable to load your embedding.",
     "experimentId": "1234",
   },
@@ -24,7 +24,7 @@ Object {
 exports[`loadEmbedding action Dispatches on a previous error condition 1`] = `
 Object {
   "payload": Object {
-    "embeddingType": "4567",
+    "embeddingType": "umap",
     "experimentId": "1234",
   },
   "type": "embeddings/loading",
@@ -44,7 +44,7 @@ Object {
         4,
       ],
     ],
-    "embeddingType": "4567",
+    "embeddingType": "umap",
     "experimentId": "1234",
   },
   "type": "embeddings/loaded",
@@ -54,7 +54,7 @@ Object {
 exports[`loadEmbedding action Dispatches on a previously unseen embedding 1`] = `
 Object {
   "payload": Object {
-    "embeddingType": "4567",
+    "embeddingType": "umap",
     "experimentId": "1234",
   },
   "type": "embeddings/loading",
@@ -74,7 +74,7 @@ Object {
         4,
       ],
     ],
-    "embeddingType": "4567",
+    "embeddingType": "umap",
     "experimentId": "1234",
   },
   "type": "embeddings/loaded",
