@@ -112,7 +112,6 @@ const EmbeddingPreview = (props) => {
   useEffect(() => {
     Object.keys(plots).forEach((key) => {
       if (key.notSaved) {
-        console.log('saving ', key.plotUuid);
         dispatch(savePlotConfig(experimentId, key.plotUuid));
       }
     });
