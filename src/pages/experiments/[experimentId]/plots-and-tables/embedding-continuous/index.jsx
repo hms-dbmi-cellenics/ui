@@ -125,7 +125,7 @@ const EmbeddingContinuousPlot = () => {
 
   const renderPlot = () => {
     // The embedding couldn't load. Display an error condition.
-    if (expressionError) {
+    if (expressionError || !expressionLoading.length) {
       return (
         <PlatformError
           description={expressionError}
@@ -149,7 +149,7 @@ const EmbeddingContinuousPlot = () => {
         />
       );
     }
-    if (!highestDispersionGene) {
+    if (config.shownGene === 'notSelected' && experimentId) {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
     if (

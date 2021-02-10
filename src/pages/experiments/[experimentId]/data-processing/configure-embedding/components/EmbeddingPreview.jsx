@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 /* eslint-disable no-param-reassign */
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,6 +9,7 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
+import { useRouter } from 'next/router';
 import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
 import CalculationConfig from './CalculationConfig';
@@ -18,6 +20,7 @@ import ContinuousEmbeddingPlot from './ContinuousEmbeddingPlot';
 import {
   updatePlotConfig,
   loadPlotConfig,
+  savePlotConfig,
 } from '../../../../../../redux/actions/componentConfig';
 
 import isBrowser from '../../../../../../utils/environment';
@@ -40,7 +43,7 @@ const EmbeddingPreview = (props) => {
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(false);
   const cellSets = useSelector((state) => state.cellSets);
-
+  const router = useRouter();
   const dispatch = useDispatch();
 
   const plots = {
@@ -49,6 +52,7 @@ const EmbeddingPreview = (props) => {
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
       plotType: 'embeddingPreviewBySample',
+      notSaved: useSelector((state) => state.componentConfig['embeddingPreviewBySample']?.outstandingChanges),
       plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewBySample' />),
     },
 
@@ -57,6 +61,7 @@ const EmbeddingPreview = (props) => {
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
       plotType: 'embeddingPreviewByCellSets',
+      notSaved: useSelector((state) => state.componentConfig['embeddingPreviewByCellSets']?.outstandingChanges),
       plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewByCellSets' />),
     },
     mitochondrialFraction: {
@@ -64,6 +69,7 @@ const EmbeddingPreview = (props) => {
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialReads',
       plotType: 'embeddingPreviewMitochondrialReads',
+      notSaved: useSelector((state) => state.componentConfig['embeddingPreviewMitochondrialReads']?.outstandingChanges),
       plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewMitochondrialReads' />),
     },
     doubletScore: {
@@ -71,6 +77,7 @@ const EmbeddingPreview = (props) => {
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewDoubletScore',
       plotType: 'embeddingPreviewDoubletScore',
+      notSaved: useSelector((state) => state.componentConfig['embeddingPreviewDoubletScore']?.outstandingChanges),
       plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewDoubletScore' />),
     },
   };
@@ -101,6 +108,15 @@ const EmbeddingPreview = (props) => {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
   }, [selectedPlot]);
+
+  useEffect(() => {
+    Object.keys(plots).forEach((key) => {
+      if (key.notSaved) {
+        console.log('saving ', key.plotUuid);
+        dispatch(savePlotConfig(experimentId, key.plotUuid));
+      }
+    });
+  }, [router.asPath, router.events]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));

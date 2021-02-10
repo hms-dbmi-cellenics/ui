@@ -3,8 +3,9 @@ import getApiEndpoint from '../../../utils/apiEndpoint';
 
 const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) => {
   // Do not save the 'outstandingChanges' state to the database.
-  const { outstandingChanges, ...content } = getState().plots[plotUuid];
-
+  const { outstandingChanges, ...content } = getState().componentConfig[plotUuid];
+  // api expects the 'type' parameter, so it has to be set
+  content.type = content.plotType;
   const response = await fetch(
     `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
     {
@@ -14,6 +15,7 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
     },
   );
   const { lastUpdated } = await response.json();
+
   dispatch({
     type: SAVE_CONFIG,
     payload:

@@ -46,36 +46,10 @@ const Header = (props) => {
   });
 
   useEffect(() => {
-    const showPopupWhenUnsaved = (url) => {
-      // Only handle if we are navigating away.
-      if (router.asPath === url || saved) {
-        return;
-      }
-
-      // Show a confirmation dialog. Prevent moving away if the user decides not to.
-      // eslint-disable-next-line no-alert
-      if (
-        !window.confirm(
-          'Are you sure you want to leave? Changes that you made will not be saved.',
-        )
-      ) {
-        router.events.emit('routeChangeError');
-
-        // Following is a hack-ish solution to abort a Next.js route change
-        // as there's currently no official API to do so
-        // See https://github.com/zeit/next.js/issues/2476#issuecomment-573460710
-        // eslint-disable-next-line no-throw-literal
-        throw `Route change to "${url}" was aborted (this error can be safely ignored). See https://github.com/zeit/next.js/issues/2476.`;
-      }
-    };
-
-    router.events.on('routeChangeStart', showPopupWhenUnsaved);
-
-    return () => {
-      router.events.off('routeChangeStart', showPopupWhenUnsaved);
-    };
+    if (!saved) {
+      dispatch(savePlotConfig(experimentId, plotUuid));
+    }
   }, [router.asPath, router.events, saved]);
-
   const { data } = useSWR(
     `${getApiEndpoint()}/v1/experiments/${experimentId}`,
     getFromApiExpectOK,
@@ -145,17 +119,6 @@ const Header = (props) => {
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
           extra={[
-            <Space>
-              <FeedbackButton />
-              <Button
-                key='save'
-                type='primary'
-                disabled={saved}
-                onClick={onClickSave}
-              >
-                Save
-              </Button>
-            </Space>,
             <Space>
               <Button
                 key='reset'
