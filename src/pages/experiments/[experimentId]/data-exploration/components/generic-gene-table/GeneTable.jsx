@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Space, Skeleton,
+  Table, Space,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -12,7 +12,6 @@ import GeneSelectionStatus from '../../../../../../redux/actions/genes/geneSelec
 import { geneTableUpdateReason } from '../../../../../../utils/geneTable/geneTableUpdateReason';
 
 import FocusButton from '../../../../../../components/FocusButton';
-import isBrowser from '../../../../../../utils/environment';
 import PlatformError from '../../../../../../components/PlatformError';
 import useLazyEffect from '../../../../../../utils/useLazyEffect';
 import GeneSelectionMenu from './GeneSelectionMenu';

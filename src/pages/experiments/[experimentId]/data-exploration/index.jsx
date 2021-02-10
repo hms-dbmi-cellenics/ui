@@ -6,6 +6,7 @@ import {
 import { Mosaic, MosaicWindow, RemoveButton } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
 import Header from '../../../../components/Header';
 import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
 import GeneListTool from './components/gene-list-tool/GeneListTool';
@@ -48,7 +49,13 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
   const TILE_MAP = {
     'UMAP Embedding': {
       toolbarControls: [<RemoveButton />],
-      component: (width, height) => <Embedding experimentId={experimentId} width={width} height={height} />,
+      component: (width, height) => (
+        <Embedding
+          experimentId={experimentId}
+          width={width}
+          height={height}
+        />
+      ),
     },
     Heatmap: {
       toolbarControls: [
@@ -78,7 +85,13 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
     },
     'Data Management': {
       toolbarControls: [<RemoveButton />],
-      component: (width, height) => <CellSetsTool experimentId={experimentId} width={width} height={height} />,
+      component: (width, height) => (
+        <CellSetsTool
+          experimentId={experimentId}
+          width={width}
+          height={height}
+        />
+      ),
     },
   };
 
@@ -183,6 +196,12 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
       </div>
     </>
   );
+};
+
+ExplorationViewPage.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  experimentData: PropTypes.object.isRequired,
+  route: PropTypes.string.isRequired,
 };
 
 export default ExplorationViewPage;

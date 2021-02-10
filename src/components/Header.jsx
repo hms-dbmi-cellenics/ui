@@ -65,6 +65,10 @@ const Header = (props) => {
 
 Header.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  experimentData: PropTypes.object.isRequired,
+  route: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  extra: PropTypes.object.isRequired,
 };
 
 export default Header;

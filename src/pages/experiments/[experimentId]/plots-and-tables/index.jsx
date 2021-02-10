@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  PageHeader, Row, Col, Space, Button, List, Card, Tooltip, Dropdown,
+  Row, Col, Space, Button, List, Card, Tooltip, Dropdown,
 } from 'antd';
 import { useSelector } from 'react-redux';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
@@ -45,11 +45,22 @@ CardItem.propTypes = {
 };
 
 const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
-  let lastUpdatedVolcano = useSelector((state) => state.componentConfig.volcanoPlotMain?.lastUpdated);
-  let lastUpdatedContinuous = useSelector((state) => state.componentConfig.embeddingContinuousMain?.lastUpdated);
-  let lastUpdatedCategorical = useSelector((state) => state.componentConfig.embeddingCategoricalMain?.lastUpdated);
-  let lastUpdatedHeatmap = useSelector((state) => state.componentConfig.heatmapPlotMain?.lastUpdated);
-  let lastUpdatedFrequency = useSelector((state) => state.componentConfig.frequencyPlotMain?.lastUpdated);
+  let lastUpdatedVolcano = useSelector(
+    (state) => state.componentConfig.volcanoPlotMain?.lastUpdated,
+  );
+  let lastUpdatedContinuous = useSelector(
+    (state) => state.componentConfig.embeddingContinuousMain?.lastUpdated,
+  );
+  let lastUpdatedCategorical = useSelector(
+    (state) => state.componentConfig.embeddingCategoricalMain?.lastUpdated,
+  );
+  let lastUpdatedHeatmap = useSelector(
+    (state) => state.componentConfig.heatmapPlotMain?.lastUpdated,
+  );
+  let lastUpdatedFrequency = useSelector(
+    (state) => state.componentConfig.frequencyPlotMain?.lastUpdated,
+  );
+
   if (!lastUpdatedVolcano) {
     lastUpdatedVolcano = 'never';
   }
@@ -202,4 +213,11 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
     </div>
   );
 };
+
+PlotsTablesHome.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  experimentData: PropTypes.object.isRequired,
+  route: PropTypes.string.isRequired,
+};
+
 export default PlotsTablesHome;

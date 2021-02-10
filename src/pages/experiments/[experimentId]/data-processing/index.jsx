@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
+import PropTypes from 'prop-types';
 import {
-  PageHeader, Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
+  Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
 } from 'antd';
 import {
   LeftOutlined,
@@ -204,6 +204,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       </div>
     </>
   );
+};
+
+DataProcessingPage.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  experimentData: PropTypes.object.isRequired,
+  route: PropTypes.string.isRequired,
 };
 
 export default DataProcessingPage;

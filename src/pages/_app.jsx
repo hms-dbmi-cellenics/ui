@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
+import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import useSWR from 'swr';
@@ -65,12 +66,22 @@ const WrappedApp = ({ Component, pageProps }) => {
       }
 
       const { status } = experimentError.payload;
-      return <Error errorText={status} />;
+
+      if (status === 404) {
+        return <NotFoundPage />;
+      }
+
+      return <Error statusCode={status} />;
     }
 
     return (
       <ContentWrapper>
-        <Component experimentId={experimentId} experimentData={experimentData} route={router.route} {...pageProps} />
+        <Component
+          experimentId={experimentId}
+          experimentData={experimentData}
+          route={router.route}
+          {...pageProps}
+        />
       </ContentWrapper>
     );
   };
@@ -84,6 +95,11 @@ const WrappedApp = ({ Component, pageProps }) => {
       {mainContent(Component, pageProps)}
     </>
   );
+};
+
+WrappedApp.propTypes = {
+  Component: PropTypes.object.isRequired,
+  pageProps: PropTypes.string.isRequired,
 };
 
 export default wrapper.withRedux(WrappedApp);

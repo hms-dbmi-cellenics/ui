@@ -45,7 +45,9 @@ const Embedding = (props) => {
   const view = { target: [4, -4, 0], zoom: 4.00 };
   const selectedCellIds = new Set();
 
-  const embeddingSettings = useSelector((state) => state.experimentSettings?.processing?.configureEmbedding?.embeddingSettings);
+  const embeddingSettings = useSelector(
+    (state) => state.experimentSettings?.processing?.configureEmbedding?.embeddingSettings,
+  );
   const embeddingType = embeddingSettings?.method;
 
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
@@ -183,7 +185,12 @@ const Embedding = (props) => {
 
   // The embedding couldn't load. Display an error condition.
   if (error) {
-    return <PlatformError description={error} onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))} />;
+    return (
+      <PlatformError
+        description={error}
+        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+      />
+    );
   }
 
   const renderExpressionView = () => {
@@ -243,7 +250,11 @@ const Embedding = (props) => {
             cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
             mapping='PCA'
             selectedCellIds={selectedCellIds}
-            cellColors={(selectedCell) ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] })) : new Map(Object.entries(cellColors))}
+            cellColors={
+              (selectedCell)
+                ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
+                : new Map(Object.entries(cellColors))
+            }
             updateStatus={updateStatus}
             updateCellsSelection={updateCellsSelection}
             updateCellsHover={updateCellsHover}
@@ -286,6 +297,5 @@ Embedding.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   experimentId: PropTypes.string.isRequired,
-  embeddingType: PropTypes.string.isRequired,
 };
 export default Embedding;
