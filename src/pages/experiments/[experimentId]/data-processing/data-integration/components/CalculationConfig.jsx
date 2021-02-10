@@ -96,7 +96,7 @@ const CalculationConfig = (props) => {
         {changesOutstanding && (
           <Form.Item>
             <Alert
-              message='Your changes are not yet applied. To update the plots, click Apply.'
+              message='Your changes are not yet applied. To re run data integration, click Apply.'
               type='warning'
               showIcon
             />
@@ -181,13 +181,13 @@ const CalculationConfig = (props) => {
             <Row>
               <Col span={6}>
                 <Button
+                  size='small'
                   type='primary'
                   htmlType='submit'
                   disabled={!changesOutstanding}
                   onClick={applyDataIntegrationSettings}
                 >
-                  Run
-
+                  Apply
                 </Button>
               </Col>
             </Row>
