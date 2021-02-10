@@ -111,7 +111,9 @@ const DataIntegration = () => {
   // This will be taken with a useSelector eventually
   const persistedConfigs = {
     samplePlot: _.cloneDeep(defaultElbowPlotStylingConfig),
-    frequencyPlot: useSelector((state) => state.componentConfig[frequencyPlotConfigRedux.uuid]?.config),
+    frequencyPlot: useSelector(
+      (state) => state.componentConfig[frequencyPlotConfigRedux.uuid]?.config,
+    ),
     elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
   };
 
@@ -138,9 +140,20 @@ const DataIntegration = () => {
   };
 
   const plots = {
-    samplePlot: (configInput, actions) => <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />,
-    frequencyPlot: (configInput, actions) => <FrequencyPlot config={configInput} hierarchy={hierarchy} properties={properties} actions={actions} />,
-    elbowPlot: (configInput, actions) => <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />,
+    samplePlot: (configInput, actions) => (
+      <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />
+    ),
+    frequencyPlot: (configInput, actions) => (
+      <FrequencyPlot
+        config={configInput}
+        hierarchy={hierarchy}
+        properties={properties}
+        actions={actions}
+      />
+    ),
+    elbowPlot: (configInput, actions) => (
+      <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />
+    ),
   };
 
   useEffect(() => {
@@ -149,7 +162,9 @@ const DataIntegration = () => {
     }
 
     dispatch(loadCellSets(experimentId));
-    dispatch(loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type));
+    dispatch(
+      loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
+    );
   }, [experimentId]);
 
   const plotSpecificStyling = {
@@ -259,7 +274,14 @@ const DataIntegration = () => {
                   padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
                 }}
               >
-                {renderIfAvailable((loadedConfig) => plots[key](getMiniaturizedConfig(loadedConfig, updatedWidth), false), persistedConfig)}
+                {
+                  renderIfAvailable(
+                    (loadedConfig) => (
+                      plots[key](getMiniaturizedConfig(loadedConfig, updatedWidth), false)
+                    ),
+                    persistedConfig,
+                  )
+                }
               </button>
             ))}
           </Space>
