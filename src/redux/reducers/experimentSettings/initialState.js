@@ -4,6 +4,23 @@ export default {
       complete: false,
       stepsDone: new Set([]),
     },
+    dataIntegration: {
+      dataIntegration: {
+        method: 'seuratv4',
+        methodSettings: {
+          seuratv4: {
+            numGenes: 2000,
+            normalisation: 'logNormalise',
+          },
+        },
+      },
+      dimensionalityReduction: {
+        method: 'rpca',
+        numPCs: 30,
+        variationExplained: 91,
+        excludeGeneCategories: [],
+      },
+    },
     configureEmbedding: {
       embeddingSettings: {
         method: 'umap',
