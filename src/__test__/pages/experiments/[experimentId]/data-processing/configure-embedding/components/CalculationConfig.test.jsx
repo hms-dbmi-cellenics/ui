@@ -22,7 +22,7 @@ jest.mock('localforage');
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
-describe('CalculationConfig', () => {
+describe('Data Processing CalculationConfig', () => {
   const storeState = {
     embeddings: initialEmbeddingState,
     experimentSettings: {
@@ -177,9 +177,7 @@ describe('CalculationConfig', () => {
     button.simulate('click', {});
 
     // Should load the new embedding and save the config.
-    await waitForActions(store,
-      [EMBEDDINGS_LOADING, EXPERIMENT_SETTINGS_PROCESSING_SAVE,
-      ]);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
 
     expect(store.getActions().length).toEqual(2);
     expect(store.getActions()).toMatchSnapshot();
