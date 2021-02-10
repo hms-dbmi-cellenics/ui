@@ -7,15 +7,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourbarDesign from '../components/ColourbarDesign';
-import ColourInversion from '../components/ColourInversion';
+import DimensionsRangeEditor from '../../../../../components/plotStyling/DimensionsRangeEditor';
+import ColourbarDesign from '../../../../../components/plotStyling/ColourbarDesign';
+import ColourInversion from '../../../../../components/plotStyling/ColourInversion';
 import LogExpression from './components/LogExpression';
-import AxesDesign from '../components/AxesDesign';
-import PointDesign from '../components/PointDesign';
-import TitleDesign from '../components/TitleDesign';
-import FontDesign from '../components/FontDesign';
-import LegendEditor from '../components/LegendEditor';
+import AxesDesign from '../../../../../components/plotStyling/AxesDesign';
+import PointDesign from '../../../../../components/plotStyling/PointDesign';
+import TitleDesign from '../../../../../components/plotStyling/TitleDesign';
+import FontDesign from '../../../../../components/plotStyling/FontDesign';
+import LegendEditor from '../../../../../components/plotStyling/LegendEditor';
 import SelectData from './components/SelectData';
 import {
   updatePlotConfig,
