@@ -9,6 +9,7 @@ import { Vega } from 'react-vega';
 
 import DataIntegration from '../../../../../../../pages/experiments/[experimentId]/data-processing/data-integration/components/DataIntegration';
 import CalculationConfig from '../../../../../../../pages/experiments/[experimentId]/data-processing/data-integration/components/CalculationConfig';
+import initialExperimentState from '../../../../../../../redux/reducers/experimentSettings/initialState';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -20,6 +21,12 @@ jest.mock('next/router', () => ({
     },
   })),
 }));
+
+const store = mockStore({
+  experimentSettings: {
+    ...initialExperimentState,
+  },
+});
 
 describe('DataIntegration', () => {
   configure({ adapter: new Adapter() });
@@ -43,8 +50,6 @@ describe('DataIntegration', () => {
   });
 
   it('renders correctly', () => {
-    const store = mockStore({});
-
     const component = mount(
       <Provider store={store}>
         <DataIntegration
