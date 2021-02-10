@@ -22,8 +22,6 @@ import loadCellSets from '../../../../../../redux/actions/cellSets/loadCellSets'
 
 import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
-// TODO This loadPlotConfig should probably be changed on the redux ticket? because it fetches in a url that seems dedicated to plots and tables:
-// ${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}
 import {
   loadPlotConfig,
 } from '../../../../../../redux/actions/componentConfig/index';
@@ -123,10 +121,6 @@ const DataIntegration = () => {
 
   const [activePlotKey, setActivePlotKey] = useState('frequencyPlot');
   const config = persistedConfigs[activePlotKey];
-
-  const setCurrentConfig = () => {
-    // This will be used for dispatching the config updates to redux
-  };
 
   const cellSets = useSelector((state) => state.cellSets);
   const {
@@ -237,15 +231,9 @@ const DataIntegration = () => {
     ),
   };
 
-  useEffect(() => {
-    setCurrentConfig(persistedConfigs[activePlotKey]);
-  }, [activePlotKey]);
-
   const updatePlotWithChanges = (configUpdates) => {
     const newPlotConfig = _.cloneDeep(config);
     _.merge(newPlotConfig, configUpdates);
-
-    setCurrentConfig(newPlotConfig);
   };
 
   const getMiniaturizedConfig = (miniaturesConfig, updatedWidth) => {
