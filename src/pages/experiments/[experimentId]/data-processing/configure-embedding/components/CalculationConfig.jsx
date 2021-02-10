@@ -191,7 +191,9 @@ const CalculationConfig = (props) => {
           {embeddingMethod === 'umap' && renderUMAPSettings()}
           {embeddingMethod === 'tsne' && renderTSNESettings()}
           <Form.Item>
-            <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={applyEmbeddingSettings}>Apply</Button>
+            <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
+              <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={applyEmbeddingSettings}>Apply</Button>
+            </Tooltip>
           </Form.Item>
         </Form>
       </Panel>

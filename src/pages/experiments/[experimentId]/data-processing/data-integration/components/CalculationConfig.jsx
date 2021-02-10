@@ -86,7 +86,7 @@ const CalculationConfig = (props) => {
   };
 
   const methodOptions = {
-    seuratv4: () => <SeuratV4Options config={dataIntegration.methodSettings.seuratv4} onUpdate={updateSettings} />,
+    seuratv4: () => <SeuratV4Options config={dataIntegration.methodSettings.seuratv4} onUpdate={updateSettings} onChange={() => setChangesOutstanding(true)} />,
   };
 
   return (
@@ -120,7 +120,7 @@ const CalculationConfig = (props) => {
             >
               {
                 methods.map((el) => (
-                  <Option value={el.value} disabled={el.disabled}>{el.text}</Option>
+                  <Option key={el.text} value={el.value} disabled={el.disabled}>{el.text}</Option>
                 ))
               }
             </Select>
@@ -144,7 +144,10 @@ const CalculationConfig = (props) => {
           <Form.Item label='Number of Principal Components'>
             <InputNumber
               value={numPCs}
-              onChange={(value) => setNumPCs(value)}
+              onChange={(value) => {
+                setChangesOutstanding(true);
+                setNumPCs(value);
+              }}
               onPressEnter={(e) => e.preventDefault()}
               onStep={(value) => updateSettings({ dimensionalityReduction: { numPCs: value } })}
               onBlur={(e) => updateSettings({ dimensionalityReduction: { numPCs: parseInt(e.target.value, 0) } })}
@@ -173,22 +176,24 @@ const CalculationConfig = (props) => {
               value={dimensionalityReduction.method}
               onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
             >
-              <Option value='rpca'>Reciprocal PCA (RPCA)</Option>
-              <Option value='cca'>Cannonical Correlation Analysis (CCA)</Option>
+              <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
+              <Option key='cca' value='cca'>Cannonical Correlation Analysis (CCA)</Option>
             </Select>
           </Form.Item>
           <Form.Item>
             <Row>
               <Col span={6}>
-                <Button
-                  size='small'
-                  type='primary'
-                  htmlType='submit'
-                  disabled={!changesOutstanding}
-                  onClick={applyDataIntegrationSettings}
-                >
-                  Apply
-                </Button>
+                <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
+                  <Button
+                    size='small'
+                    type='primary'
+                    htmlType='submit'
+                    disabled={!changesOutstanding}
+                    onClick={applyDataIntegrationSettings}
+                  >
+                    Apply
+                  </Button>
+                </Tooltip>
               </Col>
             </Row>
           </Form.Item>

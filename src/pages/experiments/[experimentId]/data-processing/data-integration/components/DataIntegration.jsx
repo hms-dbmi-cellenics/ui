@@ -86,6 +86,7 @@ const DataIntegration = () => {
   const { Panel } = Collapse;
   const router = useRouter();
   const { experimentId } = router.query;
+  const dispatch = useDispatch();
 
   const calculationConfig = useSelector((state) => state.experimentSettings.processing.dataIntegration);
 
@@ -94,7 +95,7 @@ const DataIntegration = () => {
 
   useEffect(() => {
     if (experimentId && !calculationConfig) {
-      loadProcessingSettings(experimentId);
+      dispatch(loadProcessingSettings(experimentId));
     }
   }, [experimentId]);
 

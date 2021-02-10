@@ -5,7 +5,7 @@ import { Form, InputNumber, Select } from 'antd';
 const { Option } = Select;
 
 const MethodOptions = (props) => {
-  const { config, onUpdate } = props;
+  const { config, onUpdate, onChange } = props;
 
   const [numGenes, setNumGenes] = useState(config.numGenes);
 
@@ -16,7 +16,10 @@ const MethodOptions = (props) => {
           value={numGenes}
           step={100}
           min={1}
-          onChange={(value) => setNumGenes(value)}
+          onChange={(value) => {
+            onChange();
+            setNumGenes(value);
+          }}
           onPressEnter={(e) => e.preventDefault()}
           onStep={(value) => onUpdate({
             dataIntegration: {
@@ -60,6 +63,11 @@ const MethodOptions = (props) => {
 MethodOptions.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
+};
+
+MethodOptions.defaultProps = {
+  onChange: null,
 };
 
 export default MethodOptions;
