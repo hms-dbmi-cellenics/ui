@@ -16,8 +16,6 @@ import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
 import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
 import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
 
-import isBrowser from '../../../../../../utils/environment';
-
 import loadCellSets from '../../../../../../redux/actions/cellSets/loadCellSets';
 
 import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
@@ -29,7 +27,7 @@ import {
 import CalculationConfig from './CalculationConfig';
 import fakeData from './fake_new_data.json';
 
-import FrequencyPlot from '../../../../../../utils/sharedPlots/FrequencyPlot';
+import FrequencyPlot from '../../../../../../components/sharedPlots/FrequencyPlot';
 import ElbowPlot from './plots/ElbowPlot';
 
 const defaultElbowPlotStylingConfig = {
@@ -99,6 +97,22 @@ const frequencyPlotConfigRedux = {
   type: 'dataIntegrationFrequency',
 };
 
+const getConfigForDeploymentEnvironment = (config) => {
+  const newConfig = _.cloneDeep(config);
+
+  try {
+    const url = new URL(window.location.href);
+
+    if (url.hostname.includes('localhost') || url.hostname.includes('127.0.0.1')) {
+      newConfig.chosenClusters = 'condition';
+    }
+  } catch (error) {
+    console.error('Failed to check if running locally or in staging/prod, defaulting to staging/prod config');
+  }
+
+  return newConfig;
+};
+
 const DataIntegration = () => {
   const { Panel } = Collapse;
 
@@ -114,11 +128,11 @@ const DataIntegration = () => {
   const persistedConfigs = {
     samplePlot: _.cloneDeep(defaultElbowPlotStylingConfig),
     frequencyPlot: useSelector(
-      (state) => {
-        console.log('state');
-        console.log(state);
-        return state.componentConfig[frequencyPlotConfigRedux.uuid]?.config;
-      },
+      (state) => (
+        getConfigForDeploymentEnvironment(
+          state.componentConfig[frequencyPlotConfigRedux.uuid]?.config,
+        )
+      ),
     ),
     elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
   };

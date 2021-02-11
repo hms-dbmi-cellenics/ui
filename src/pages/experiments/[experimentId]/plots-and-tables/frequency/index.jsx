@@ -26,7 +26,7 @@ import {
 import PlatformError from '../../../../../components/PlatformError';
 import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
 
-import FrequencyPlot from '../../../../../utils/sharedPlots/FrequencyPlot';
+import FrequencyPlot from '../../../../../components/sharedPlots/FrequencyPlot';
 
 const { Panel } = Collapse;
 const plotUuid = 'frequencyPlotMain';

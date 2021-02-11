@@ -302,7 +302,7 @@ const dataIntegrationFrequencyInitialConfig = {
   spec: '1.0.0',
   frequencyType: 'proportional',
   metadata: 'louvain',
-  chosenClusters: 'condition',
+  chosenClusters: 'sample',
   legend: {
     ...legendBaseState,
     position: 'right',

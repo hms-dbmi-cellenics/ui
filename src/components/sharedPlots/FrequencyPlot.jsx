@@ -201,14 +201,6 @@ const FrequencyPlot = (props) => {
       metadataClusters.forEach((metadataCluster) => {
         const metadataIds = Array.from(properties[metadataCluster.key].cellIds);
 
-        // const exhangedValues = [0, 21, 29, 31, 34, 55, 58];
-        // // 206 198
-        // if (metadataIds.count === 206) {
-        //   metadataIds = metadataIds.filter((value) => !exhangedValues.contains(value));
-        // } else {
-        //   metadataIds = metadataIds.concat(exhangedValues);
-        // }
-
         const sum = calculateSum(chosenClusters, metadataIds);
 
         chosenClusters.forEach((clusterName) => {
