@@ -18,6 +18,8 @@ import ColourInversion from '../../../plots-and-tables/components/ColourInversio
 
 import loadCellSets from '../../../../../../redux/actions/cellSets/loadCellSets';
 
+import PlatformError from '../../../../../../components/PlatformError';
+
 import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
 
 import {
@@ -97,26 +99,6 @@ const frequencyPlotConfigRedux = {
   type: 'dataIntegrationFrequency',
 };
 
-const getConfigForDeploymentEnvironment = (config) => {
-  if (!config) {
-    return config;
-  }
-
-  const newConfig = _.cloneDeep(config);
-
-  try {
-    const url = new URL(window.location.href);
-
-    if (url.hostname.includes('localhost') || url.hostname.includes('127.0.0.1')) {
-      newConfig.chosenClusters = 'condition';
-    }
-  } catch (error) {
-    console.error('Failed to check if running locally or in staging/prod, defaulting to staging/prod config');
-  }
-
-  return newConfig;
-};
-
 const DataIntegration = () => {
   const { Panel } = Collapse;
 
@@ -124,40 +106,60 @@ const DataIntegration = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
+  const [activePlotKey, setActivePlotKey] = useState('frequencyPlot');
+
+  const cellSets = useSelector((state) => state.cellSets);
+  const {
+    loading, error, hierarchy, properties,
+  } = cellSets;
+
   const calculationConfig = useSelector(
     (state) => state.experimentSettings.processing.dataIntegration,
   );
+
+  // const updatedForCurrentEnvironment = (originalConfig) => {
+  //   if (!originalConfig) { return originalConfig; }
+
+  //   if (properties.sample) {
+  //     return originalConfig;
+  //   }
+
+  //   // We are in local environment, so display the other cluster we can show, which is 'condition'
+  //   const newConfig = _.cloneDeep(originalConfig);
+  //   newConfig.chosenClusters = 'condition';
+
+  //   return newConfig;
+  // };
 
   // This will be taken with a useSelector eventually
   const persistedConfigs = {
     samplePlot: _.cloneDeep(defaultElbowPlotStylingConfig),
     frequencyPlot: useSelector(
-      (state) => (
-        getConfigForDeploymentEnvironment(
-          state.componentConfig[frequencyPlotConfigRedux.uuid]?.config,
-        )
-      ),
+      (state) => (state.componentConfig[frequencyPlotConfigRedux.uuid]?.config),
     ),
     elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
   };
 
-  const [activePlotKey, setActivePlotKey] = useState('frequencyPlot');
-  const config = persistedConfigs[activePlotKey];
-
-  const cellSets = useSelector((state) => state.cellSets);
-  const {
-    hierarchy, properties,
-  } = cellSets;
-
   const renderIfAvailable = (renderFunc, loadingElement) => {
-    if (!loadingElement) {
+    if (!loadingElement || loading) {
       return (
         <Spin size='large' />
       );
     }
 
+    if (error) {
+      return (
+        <PlatformError
+          description={error}
+          onClick={() => loadCellSets(experimentId)}
+        />
+      );
+    }
+
     return renderFunc(loadingElement);
   };
+
+  const activeConfig = persistedConfigs[activePlotKey];
 
   const plots = {
     samplePlot: (configInput, actions) => (
@@ -192,7 +194,7 @@ const DataIntegration = () => {
       <>
         <Panel header='Colours' key='colors'>
           <ColourInversion
-            config={config}
+            config={activeConfig}
             onUpdate={updatePlotWithChanges}
           />
           <Alert
@@ -204,15 +206,15 @@ const DataIntegration = () => {
         <Panel header='Legend' key='legend'>
           <LegendEditor
             onUpdate={updatePlotWithChanges}
-            config={config}
+            config={activeConfig}
             option='top-bottom'
           />
         </Panel>
         <Panel header='Markers' key='marker'>
-          <PointDesign config={config} onUpdate={updatePlotWithChanges} />
+          <PointDesign config={activeConfig} onUpdate={updatePlotWithChanges} />
         </Panel>
         <Panel header='Labels' key='labels'>
-          <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
+          <LabelsDesign config={activeConfig} onUpdate={updatePlotWithChanges} />
         </Panel>
       </>
     ),
@@ -220,7 +222,7 @@ const DataIntegration = () => {
       <>
         <Panel header='Colours' key='colors'>
           <ColourInversion
-            config={config}
+            config={activeConfig}
             onUpdate={updatePlotWithChanges}
           />
           <Alert
@@ -231,7 +233,7 @@ const DataIntegration = () => {
         <Panel header='Legend' key='legend'>
           <LegendEditor
             onUpdate={updatePlotWithChanges}
-            config={config}
+            config={activeConfig}
             option='top-bottom'
           />
         </Panel>
@@ -241,7 +243,7 @@ const DataIntegration = () => {
       <>
         <Panel header='Colours' key='colors'>
           <ColourInversion
-            config={config}
+            config={activeConfig}
             onUpdate={updatePlotWithChanges}
           />
         </Panel>
@@ -250,7 +252,7 @@ const DataIntegration = () => {
   };
 
   const updatePlotWithChanges = (configUpdates) => {
-    const newPlotConfig = _.cloneDeep(config);
+    const newPlotConfig = _.cloneDeep(activeConfig);
     _.merge(newPlotConfig, configUpdates);
   };
 
@@ -273,25 +275,6 @@ const DataIntegration = () => {
 
     return miniPlotConfig;
   };
-
-  const getCellOptions = (type) => {
-    const filteredOptions = hierarchy.filter((element) => (
-      properties[element.key].type === type
-    ));
-    if (!filteredOptions.length) {
-      return [];
-    }
-    return filteredOptions;
-  };
-
-  const optionsMetadata = getCellOptions('metadataCategorical');
-  const optionsCellSets = getCellOptions('cellSets');
-
-  console.log('optionsMetadata');
-  console.log(optionsMetadata);
-
-  console.log('optionsCellSets');
-  console.log(optionsCellSets);
 
   const miniaturesColumn = (
     <ReactResizeDetector handleWidth handleHeight>
@@ -326,7 +309,9 @@ const DataIntegration = () => {
   return (
     <Row>
       <Col span={14}>
-        {renderIfAvailable((loadedConfig) => plots[activePlotKey](loadedConfig, true), config)}
+        {renderIfAvailable(
+          (loadedConfig) => plots[activePlotKey](loadedConfig, true), activeConfig,
+        )}
       </Col>
       {miniaturesColumn}
       <Col span={1} />
@@ -339,26 +324,26 @@ const DataIntegration = () => {
             <Collapse accordion>
               <Panel header='Main Schema' key='main-schema'>
                 <DimensionsRangeEditor
-                  config={config}
+                  config={activeConfig}
                   onUpdate={updatePlotWithChanges}
                 />
                 <Collapse accordion>
                   <Panel header='Define and Edit Title' key='title'>
                     <TitleDesign
-                      config={config}
+                      config={activeConfig}
                       onUpdate={updatePlotWithChanges}
                     />
                   </Panel>
                   <Panel header='Font' key='font'>
                     <FontDesign
-                      config={config}
+                      config={activeConfig}
                       onUpdate={updatePlotWithChanges}
                     />
                   </Panel>
                 </Collapse>
               </Panel>
               <Panel header='Axes and Margins' key='axes'>
-                <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
+                <AxesDesign config={activeConfig} onUpdate={updatePlotWithChanges} />
               </Panel>
               {plotSpecificStyling[activePlotKey]()}
             </Collapse>
