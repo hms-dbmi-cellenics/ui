@@ -7,15 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
-import DimensionsRangeEditor from '../../../../../components/plotStyling/DimensionsRangeEditor';
-import ColourbarDesign from '../../../../../components/plotStyling/ColourbarDesign';
-import ColourInversion from '../../../../../components/plotStyling/ColourInversion';
-import LogExpression from './components/LogExpression';
-import AxesDesign from '../../../../../components/plotStyling/AxesDesign';
-import PointDesign from '../../../../../components/plotStyling/PointDesign';
-import TitleDesign from '../../../../../components/plotStyling/TitleDesign';
-import FontDesign from '../../../../../components/plotStyling/FontDesign';
-import LegendEditor from '../../../../../components/plotStyling/LegendEditor';
+import PlotStyling from '../../../../../components/plotStyling/PlotStyling';
 import SelectData from './components/SelectData';
 import {
   updatePlotConfig,
@@ -118,6 +110,39 @@ const EmbeddingContinuousPlot = () => {
     embedding: _.cloneDeep(filterSamples()),
   });
 
+  const plotStylingConfig = [
+    {
+      panel: 'Main schema',
+      form: ['dimensions'],
+      children: [
+        {
+          panel: 'Title',
+          form: ['title'],
+        },
+        {
+          panel: 'Font',
+          form: ['font'],
+        },
+      ],
+    },
+    {
+      panel: 'Axes and Margins',
+      form: ['axes'],
+    },
+    {
+      panel: 'Colours',
+      form: ['colourbar', 'colourInversion'],
+    },
+    {
+      panel: 'Marker',
+      form: ['marker'],
+    },
+    {
+      panel: 'Legend',
+      form: ['legend'],
+    },
+  ];
+
   if (!config) {
     return <Skeleton />;
   }
@@ -219,55 +244,7 @@ const EmbeddingContinuousPlot = () => {
               />
             </Panel>
           </Collapse>
-          <Collapse accordion>
-            <Panel header='Log Transformation' key='5'>
-              <LogExpression config={config} onUpdate={updatePlotWithChanges} />
-            </Panel>
-          </Collapse>
-          <Collapse accordion>
-            <Panel header='Main Schema' key='2'>
-              <DimensionsRangeEditor
-                config={config}
-                onUpdate={updatePlotWithChanges}
-              />
-              <Collapse accordion>
-                <Panel header='Define and Edit Title' key='6'>
-                  <TitleDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-                <Panel header='Font' key='9'>
-                  <FontDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
-            </Panel>
-            <Panel header='Axes and Margins' key='3'>
-              <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
-            </Panel>
-            <Panel header='Colours' key='10'>
-              <ColourbarDesign
-                config={config}
-                onUpdate={updatePlotWithChanges}
-              />
-              <ColourInversion
-                config={config}
-                onUpdate={updatePlotWithChanges}
-              />
-            </Panel>
-            <Panel header='Markers' key='11'>
-              <PointDesign config={config} onUpdate={updatePlotWithChanges} />
-            </Panel>
-            <Panel header='Legend' key='12'>
-              <LegendEditor
-                onUpdate={updatePlotWithChanges}
-                config={config}
-              />
-            </Panel>
-          </Collapse>
+          <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
         </Col>
       </Row>
     </div>

@@ -20,6 +20,7 @@ const LabelsDesign = (props) => {
         <Radio value={false}>Hide</Radio>
       </Radio.Group>
 
+      <p><strong>Label Options</strong></p>
       <Form.Item
         label='Size'
       >

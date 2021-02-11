@@ -1,149 +1,84 @@
 /* eslint-disable react/prop-types */
 import {
-  Collapse, Form, Input,
-  Slider,
+  Collapse,
 } from 'antd';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import TitleDesign from './TitleDesign';
 import FontDesign from './FontDesign';
 import LegendEditor from './LegendEditor';
 import DimensionsRangeEditor from './DimensionsRangeEditor';
+import AxesDesign from './AxesDesign';
+import PointDesign from './PointDesign';
+import ColourbarDesign from './ColourbarDesign';
+import ColourInversion from './ColourInversion';
 
 const { Panel } = Collapse;
 const PlotStyling = (props) => {
   const {
-    config, onUpdate, singlePlot, legendMenu,
+    formConfig, config, onUpdate,
   } = props;
-  //  legendMenu is true if the plot has a legend
-  //  singlePlot is true if there is only one plot in the dropdown
 
-  const setAxis = (val, axe) => {
-    if (axe === 'x') {
-      if (config.plotToDraw || singlePlot) {
-        onUpdate({ xAxisText: val.target.value });
-      } else {
-        onUpdate({ xAxisText2: val.target.value });
-      }
-    }
-    if (axe === 'y') {
-      if (config.plotToDraw || singlePlot) {
-        onUpdate({ yAxisText: val.target.value });
-      } else {
-        onUpdate({ yAxisText2: val.target.value });
-      }
-    }
+  const ComponentMapping = {
+    dimensions: <DimensionsRangeEditor config={config} onUpdate={onUpdate} />,
+    title: <TitleDesign config={config} onUpdate={onUpdate} />,
+    font: <FontDesign config={config} onUpdate={onUpdate} />,
+    axes: <AxesDesign config={config} onUpdate={onUpdate} />,
+    colourbar: <ColourbarDesign config={config} onUpdate={onUpdate} />,
+    colourInversion: <ColourInversion config={config} onUpdate={onUpdate} />,
+    marker: <PointDesign config={config} onUpdate={onUpdate} />,
+    legend: <LegendEditor onUpdate={onUpdate} config={config} />,
   };
-  let legend;
-  if (legendMenu) {
-    legend = (
-      <Panel header='Legend'>
-        <LegendEditor
-          config={config}
-          onUpdate={onUpdate}
-        />
-      </Panel>
-    );
-  } else {
-    legend = null;
-  }
-  return (
-    <Collapse>
-      <Panel header='Plot Styling'>
+
+  const buildForm = (configObj) => configObj.map((el) => {
+    // Build component object from component
+
+    if (Object.getOwnPropertyDescriptor(el, 'form') && el.form.length > 0) {
+      return (
         <Collapse accordion>
-          {legend}
-          <Panel header='Plot Dimensions'>
-            <DimensionsRangeEditor
-              config={config}
-              onUpdate={onUpdate}
-              maxHeight={config.maxHeight}
-              maxWidth={config.maxWidth}
-            />
-          </Panel>
-          <Panel header='Axes'>
-            <Form.Item
-              label='X axis Title'
-            >
-              <Input
-                placeholder={config.xDefaultTitle}
-                onPressEnter={(val) => setAxis(val, 'x')}
-              />
-            </Form.Item>
-            <Form.Item
-              label='Y axis Title'
-            >
-              <Input
-                placeholder={config.yDefaultTitle}
-                onPressEnter={(val) => setAxis(val, 'y')}
-              />
-            </Form.Item>
-            <Form.Item
-              label='Axes Label Size'
-            >
-              <Slider
-                defaultValue={config.axisTitlesize}
-                min={5}
-                max={21}
-                onAfterChange={(value) => {
-                  onUpdate({ axisTitlesize: value });
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label='Axes Ticks Size'
-            >
-              <Slider
-                defaultValue={config.axisTicks}
-                min={5}
-                max={21}
-                onAfterChange={(value) => {
-                  onUpdate({ axisTicks: value });
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label='Offset Margins'
-            >
-              <Slider
-                defaultValue={config.axisOffset}
-                min={0}
-                max={20}
-                onAfterChange={(value) => {
-                  onUpdate({ axisOffset: value });
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label='Grid-line weight'
-            >
-              <Slider
-                defaultValue={config.transGrid}
-                min={0}
-                max={10}
-                onAfterChange={(value) => {
-                  onUpdate({ transGrid: value });
-                }}
-              />
-            </Form.Item>
-          </Panel>
-          <Panel header='Title'>
-            <TitleDesign
-              config={config}
-              onUpdate={onUpdate}
-            />
-          </Panel>
-          <Panel header='Font' key='9'>
-            <FontDesign
-              config={config}
-              onUpdate={onUpdate}
-            />
+          <Panel header={el.panel} key={el.panel}>
+            {el.form.map((component) => ComponentMapping[component])}
+            {
+              Object.getOwnPropertyDescriptor(el, 'children')
+                && el.children.length > 0
+                ? buildForm(el.children)
+                : ''
+            }
           </Panel>
         </Collapse>
-      </Panel>
-    </Collapse>
+      );
+    }
+
+    // if (Object.getOwnPropertyDescriptor(configObj, 'children')) {
+    //   buildForm(el.children);
+    // }
+  });
+
+  return (
+    <>
+      {
+        console.log(buildForm(formConfig))
+      }
+
+      {
+        buildForm(formConfig)
+      }
+    </>
   );
 };
+
+PlotStyling.propTypes = {
+  components: PropTypes.array,
+  config: PropTypes.object,
+  onUpdate: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
+};
+
+PlotStyling.defaultProps = {
+  components: [],
+  config: {},
+  onChange: null,
+};
+
 export default PlotStyling;
