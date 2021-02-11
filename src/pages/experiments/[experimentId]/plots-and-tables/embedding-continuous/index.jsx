@@ -63,7 +63,6 @@ const EmbeddingContinuousPlot = () => {
     sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
   };
   if (config?.shownGene === 'notSelected' && experimentId && isBrowser) {
-    console.log(experimentId, PROPERTIES, plotUuid, tableState);
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 

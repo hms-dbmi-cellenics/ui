@@ -49,18 +49,10 @@ const PlotStyling = (props) => {
         </Collapse>
       );
     }
-
-    // if (Object.getOwnPropertyDescriptor(configObj, 'children')) {
-    //   buildForm(el.children);
-    // }
   });
 
   return (
     <>
-      {
-        console.log(buildForm(formConfig))
-      }
-
       {
         buildForm(formConfig)
       }
