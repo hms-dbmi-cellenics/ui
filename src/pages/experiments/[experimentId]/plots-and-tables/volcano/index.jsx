@@ -4,7 +4,6 @@ import {
   Col,
   Space,
   Collapse,
-  Slider,
   Skeleton,
   Spin,
   Button, Empty, Typography,
@@ -15,16 +14,7 @@ import { CSVLink } from 'react-csv';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import ThresholdsGuidesEditor from '../../../../../components/plotStyling/VolcanoThresholdsGuidesEditor';
-import MarkersEditor from '../../../../../components/plotStyling/VolcanoMarkersEditor';
-import PointDesign from '../../../../../components/plotStyling/PointDesign';
-import TitleDesign from '../../../../../components/plotStyling/TitleDesign';
-import AxesDesign from '../../../../../components/plotStyling/AxesDesign';
-import FontDesign from '../../../../../components/plotStyling/FontDesign';
-import ColourInversion from '../../../../../components/plotStyling/ColourInversion';
-import LegendEditor from '../../../../../components/plotStyling/LegendEditor';
-import DimensionsRangeEditorVolcano from '../../../../../components/plotStyling/VolcanoDimensionsRangeEditor';
-import PlotStyling from '../../../../../components/plotStyling';
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateVolcanoSpec';
 import Header from '../components/Header';
 import DiffExprCompute from '../../data-exploration/components/differential-expression-tool/DiffExprCompute';
@@ -65,7 +55,6 @@ const VolcanoPlot = () => {
     maxNegativeLogpValue: null,
     xMax: null,
   });
-  const onUpdateThrottled = useRef(_.throttle((obj) => updatePlotWithChanges(obj), 50));
 
   useEffect(() => {
     if (!isBrowser) return;
@@ -90,8 +79,8 @@ const VolcanoPlot = () => {
       controls: [{
         name: 'volcanoDimensions',
         props: {
-          xMax: 0,
-          yMax: 0,
+          xMax: Math.round(spec.xMax),
+          yMax: Math.round(spec.maxNegativeLogpValue) + 2,
         },
       }],
       children: [
@@ -122,6 +111,17 @@ const VolcanoPlot = () => {
       controls: ['markers'],
     },
     {
+      panelTitle: 'Add Labels',
+      controls: [{
+        name: 'volcanoLabels',
+        props: {
+          min: 0,
+          max: spec.maxNegativeLogpValue + 5,
+        },
+      },
+      ],
+    },
+    {
       panelTitle: 'Legend',
       controls: ['legend'],
     },
@@ -132,6 +132,7 @@ const VolcanoPlot = () => {
     setDataPointStatus();
     const generatedSpec = generateSpec(config, plotData);
     setSpec(generatedSpec);
+    console.log(plotStylingConfig);
   }, [config]);
 
   useEffect(() => {
@@ -332,67 +333,6 @@ const VolcanoPlot = () => {
                 <DiffExprCompute
                   experimentId={experimentId}
                   onCompute={onComputeDiffExp}
-                />
-              </Panel>
-              <Panel header='Main Schema' key='15'>
-                <DimensionsRangeEditorVolcano
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                  xMax={Math.round(spec.xMax)}
-                  yMax={Math.round(spec.maxNegativeLogpValue) + 2}
-                />
-                <Collapse accordion>
-                  <Panel header='Define and Edit Title' key='6'>
-                    <TitleDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                  <Panel header='Font' key='9'>
-                    <FontDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                </Collapse>
-              </Panel>
-              <Panel header='Data Thresholding' key='8'>
-                <ThresholdsGuidesEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                />
-              </Panel>
-              <Panel header='Axes and Margins' key='3'>
-                <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
-              </Panel>
-              <Panel header='Colours' key='10'>
-                <MarkersEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                />
-                <ColourInversion
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                />
-              </Panel>
-              <Panel header='Markers' key='4'>
-                <PointDesign config={config} onUpdate={updatePlotWithChanges} />
-              </Panel>
-              <Panel header='Add Labels' key='11'>
-                <> Display Gene Labels Above (-log10 pvalue) </>
-                <Slider
-                  value={config.textThresholdValue}
-                  min={0}
-                  max={spec.maxNegativeLogpValue + 5}
-                  onChange={(value) => {
-                    onUpdateThrottled.current({ textThresholdValue: value });
-                  }}
-                />
-              </Panel>
-              <Panel header='Legend' key='12'>
-                <LegendEditor
-                  onUpdate={updatePlotWithChanges}
-                  config={config}
                 />
               </Panel>
             </Collapse>

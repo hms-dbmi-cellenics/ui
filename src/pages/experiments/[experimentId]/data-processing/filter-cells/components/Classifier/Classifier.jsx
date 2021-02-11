@@ -9,7 +9,7 @@ import {
 import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
-import PlotStyling from '../../../../../../../components/plotStyling';
+import PlotStyling from '../../../../../../../components/plots/styling/PlotStyling';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;

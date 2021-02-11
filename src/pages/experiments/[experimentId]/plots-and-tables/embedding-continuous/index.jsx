@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
-import PlotStyling from '../../../../../components/plotStyling';
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import SelectData from './components/SelectData';
 import {
   updatePlotConfig,

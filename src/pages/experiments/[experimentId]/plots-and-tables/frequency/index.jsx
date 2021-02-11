@@ -14,7 +14,7 @@ import {
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import PlotStyling from '../../../../../components/plotStyling';
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import SelectCellSets from './components/SelectCellSets';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateFrequencySpec';
 import Header from '../components/Header';

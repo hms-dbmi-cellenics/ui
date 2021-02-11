@@ -21,15 +21,15 @@ import {
 } from '../../../../../../redux/actions/componentConfig';
 
 import isBrowser from '../../../../../../utils/environment';
-import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
-import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
-import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
-import AxesDesign from '../../../plots-and-tables/components/AxesDesign';
-import PointDesign from '../../../plots-and-tables/components/PointDesign';
-import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
-import FontDesign from '../../../plots-and-tables/components/FontDesign';
-import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
-import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
+import DimensionsRangeEditor from '../../../../../../components/plots/styling/DimensionsRangeEditor';
+import ColourbarDesign from '../../../../../../components/plots/styling/ColourbarDesign';
+import ColourInversion from '../../../../../../components/plots/styling/ColourInversion';
+import AxesDesign from '../../../../../../components/plots/styling/AxesDesign';
+import PointDesign from '../../../../../../components/plots/styling/PointDesign';
+import TitleDesign from '../../../../../../components/plots/styling/TitleDesign';
+import FontDesign from '../../../../../../components/plots/styling/FontDesign';
+import LegendEditor from '../../../../../../components/plots/styling/LegendEditor';
+import LabelsDesign from '../../../../../../components/plots/styling/LabelsDesign';
 import { filterCells } from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { loadCellSets } from '../../../../../../redux/actions/cellSets';
 

@@ -7,7 +7,7 @@ import {
 
 const VolcanoDimensionsRangeEditor = (props) => {
   const {
-    config, onUpdate, yMax, xMax,
+    config, onUpdate, min, max,
   } = props;
   const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
 
@@ -26,8 +26,8 @@ const VolcanoDimensionsRangeEditor = (props) => {
           <>  </>
           <Slider
             value={config.textThresholdValue}
-            min={0}
-            max={spec.maxNegativeLogpValue + 5}
+            min={min}
+            max={max}
             onChange={(value) => {
               onUpdateThrottled.current({ textThresholdValue: value });
             }}
@@ -41,8 +41,8 @@ const VolcanoDimensionsRangeEditor = (props) => {
 VolcanoDimensionsRangeEditor.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
-  yMax: PropTypes.number.isRequired,
-  xMax: PropTypes.number.isRequired,
+  min: PropTypes.number.isRequired,
+  max: PropTypes.number.isRequired,
 };
 
 export default VolcanoDimensionsRangeEditor;

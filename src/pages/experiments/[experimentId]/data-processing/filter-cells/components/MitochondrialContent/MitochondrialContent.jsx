@@ -16,7 +16,7 @@ import plot2Pic from '../../../../../../../../static/media/plot4.png';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 import plotData from './data2.json';
 
-import PlotStyling from '../../../../../../../components/plotStyling';
+import PlotStyling from '../../../../../../../components/plots/styling/PlotStyling';
 
 const { Panel } = Collapse;
 const { Option } = Select;

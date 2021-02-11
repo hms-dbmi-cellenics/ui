@@ -19,6 +19,7 @@ import ColourInversion from './ColourInversion';
 import VolcanoDimensionsRangeEditor from './VolcanoDimensionsRangeEditor';
 import VolcanoThresholdsGuidesEditor from './VolcanoThresholdsGuidesEditor';
 import VolcanoMarkersEditor from './VolcanoMarkersEditor';
+import VolcanoDisplayLabels from './VolcanoDisplayLabels';
 
 const { Panel } = Collapse;
 const PlotStyling = (props) => {
@@ -38,6 +39,7 @@ const PlotStyling = (props) => {
     volcanoDimensions: (attr) => <VolcanoDimensionsRangeEditor key='volcanoDimensions' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoThresholds: (attr) => <VolcanoThresholdsGuidesEditor key='volcanoThresholds' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoMarkers: (attr) => <VolcanoMarkersEditor key='volcanoMarkers' config={config} onUpdate={onUpdate} {...attr} />,
+    volcanoLabels: (attr) => <VolcanoDisplayLabels key='volcanoLabels' config={config} onUpdate={onUpdate} {...attr} />,
   };
 
   const buildForm = (configObj) => configObj.map((el) => {
@@ -77,9 +79,6 @@ const PlotStyling = (props) => {
   return (
     <Collapse accordion style={{ marginTop: '-9px' }}>
       {
-        console.log(buildForm(formConfig))
-      }
-      {
         buildForm(formConfig)
       }
     </Collapse>
@@ -90,13 +89,11 @@ PlotStyling.propTypes = {
   formConfig: PropTypes.array,
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
-  onChange: PropTypes.func,
 };
 
 PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
-  onChange: null,
 };
 
 export default PlotStyling;

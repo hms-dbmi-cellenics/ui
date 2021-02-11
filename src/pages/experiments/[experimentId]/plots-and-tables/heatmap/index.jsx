@@ -5,7 +5,7 @@ import {
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import PlotStyling from '../../../../../components/plotStyling';
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
 import Header from '../components/Header';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';

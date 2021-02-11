@@ -15,7 +15,7 @@ import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../../static/media/plot5.png';
 import plot2Pic from '../../../../../../../../static/media/plot6.png';
 import plotData from './new_data.json';
-import PlotStyling from '../../../../../../../components/plotStyling';
+import PlotStyling from '../../../../../../../components/plots/styling/PlotStyling';
 import BandwidthOrBinstep from './PlotStyleMisc';
 
 const { Panel } = Collapse;

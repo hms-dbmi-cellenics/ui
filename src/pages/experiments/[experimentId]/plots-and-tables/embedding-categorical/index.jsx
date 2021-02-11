@@ -15,7 +15,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import PlotStyling from '../../../../../components/plotStyling';
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
