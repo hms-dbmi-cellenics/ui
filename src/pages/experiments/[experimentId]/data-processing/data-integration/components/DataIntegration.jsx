@@ -27,7 +27,7 @@ import {
 import CalculationConfig from './CalculationConfig';
 import fakeData from './fake_new_data.json';
 
-import FrequencyPlot from '../../../../../../components/sharedPlots/FrequencyPlot';
+import FrequencyPlot from '../../../../../../components/plots/FrequencyPlot';
 import ElbowPlot from './plots/ElbowPlot';
 
 const defaultElbowPlotStylingConfig = {
