@@ -33,6 +33,7 @@ const Header = (props) => {
   const type = useSelector((state) => state.componentConfig[plotUuid].type);
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const reset = useRef(true);
+  const debounceSave = useRef(_.debounce(savePlotConfig(experimentId, plotUuid), 3000)).current;
 
   if (!_.isEqual(config, initialPlotConfigStates[type])) {
     reset.current = false;
@@ -44,11 +45,47 @@ const Header = (props) => {
       e.preventDefault();
     }
   });
-
   useEffect(() => {
     if (!saved) {
-      dispatch(savePlotConfig(experimentId, plotUuid));
+      debounceSave();
+      console.log('saved');
     }
+  }, [config]);
+  // useEffect(() => {
+  //   if (!saved) {
+  //     dispatch(savePlotConfig(experimentId, plotUuid));
+  //   }
+  // }, [router.asPath, router.events, saved]);
+  useEffect(() => {
+    const showPopupWhenUnsaved = (url) => {
+      // Only handle if we are navigating away.
+      if (router.asPath === url || saved) {
+        return;
+      }
+
+      // Show a confirmation dialog. Prevent moving away if the user decides not to.
+      // eslint-disable-next-line no-alert
+      if (
+        !window.confirm(
+          'You have unsaved changes. Do you wish to save?',
+        )
+      ) {
+        router.events.emit('routeChangeError');
+        // Following is a hack-ish solution to abort a Next.js route change
+        // as there's currently no official API to do so
+        // See https://github.com/zeit/next.js/issues/2476#issuecomment-573460710
+        // eslint-disable-next-line no-throw-literal
+        throw `Route change to "${url}" was aborted (this error can be safely ignored). See https://github.com/zeit/next.js/issues/2476.`;
+      } else {
+        savePlotConfig(experimentId, plotUuid);
+      }
+    };
+
+    router.events.on('routeChangeStart', showPopupWhenUnsaved);
+
+    return () => {
+      router.events.off('routeChangeStart', showPopupWhenUnsaved);
+    };
   }, [router.asPath, router.events, saved]);
   const { data } = useSWR(
     `${getApiEndpoint()}/v1/experiments/${experimentId}`,
