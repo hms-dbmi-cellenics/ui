@@ -18,6 +18,7 @@ import ColourInversion from '../../../plots-and-tables/components/ColourInversio
 
 import loadCellSets from '../../../../../../redux/actions/cellSets/loadCellSets';
 
+import CategoricalEmbeddingPlot from '../../../../../../components/plots/CategoricalEmbeddingPlot';
 import PlatformError from '../../../../../../components/PlatformError';
 
 import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
@@ -99,6 +100,11 @@ const frequencyPlotConfigRedux = {
   type: 'dataIntegrationFrequency',
 };
 
+const samplePlotConfigRedux = {
+  uuid: 'dataIntegrationEmbedding',
+  type: 'dataIntegrationEmbedding',
+};
+
 const DataIntegration = () => {
   const { Panel } = Collapse;
 
@@ -106,9 +112,10 @@ const DataIntegration = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
-  const [activePlotKey, setActivePlotKey] = useState('frequencyPlot');
+  const [activePlotKey, setActivePlotKey] = useState('samplePlot');
 
   const cellSets = useSelector((state) => state.cellSets);
+
   const {
     loading, error, hierarchy, properties,
   } = cellSets;
@@ -117,31 +124,17 @@ const DataIntegration = () => {
     (state) => state.experimentSettings.processing.dataIntegration,
   );
 
-  // const updatedForCurrentEnvironment = (originalConfig) => {
-  //   if (!originalConfig) { return originalConfig; }
-
-  //   if (properties.sample) {
-  //     return originalConfig;
-  //   }
-
-  //   // We are in local environment, so display the other cluster we can show, which is 'condition'
-  //   const newConfig = _.cloneDeep(originalConfig);
-  //   newConfig.chosenClusters = 'condition';
-
-  //   return newConfig;
-  // };
-
   // This will be taken with a useSelector eventually
   const persistedConfigs = {
-    samplePlot: _.cloneDeep(defaultElbowPlotStylingConfig),
+    samplePlot: useSelector((state) => state.componentConfig[samplePlotConfigRedux.uuid]?.config),
     frequencyPlot: useSelector(
       (state) => (state.componentConfig[frequencyPlotConfigRedux.uuid]?.config),
     ),
     elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
   };
 
-  const renderIfAvailable = (renderFunc, loadingElement) => {
-    if (!loadingElement || loading) {
+  const renderIfAvailable = (renderFunc, elementToRender) => {
+    if (!elementToRender || loading) {
       return (
         <Spin size='large' />
       );
@@ -156,14 +149,18 @@ const DataIntegration = () => {
       );
     }
 
-    return renderFunc(loadingElement);
+    return renderFunc(elementToRender);
   };
 
   const activeConfig = persistedConfigs[activePlotKey];
 
   const plots = {
     samplePlot: (configInput, actions) => (
-      <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />
+      <CategoricalEmbeddingPlot
+        experimentId={experimentId}
+        config={configInput}
+        actions={actions}
+      />
     ),
     frequencyPlot: (configInput, actions) => (
       <FrequencyPlot
@@ -184,6 +181,11 @@ const DataIntegration = () => {
     }
 
     dispatch(loadCellSets(experimentId));
+
+    dispatch(
+      loadPlotConfig(experimentId, samplePlotConfigRedux.uuid, samplePlotConfigRedux.type),
+    );
+
     dispatch(
       loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
     );
@@ -310,7 +312,16 @@ const DataIntegration = () => {
     <Row>
       <Col span={14}>
         {renderIfAvailable(
-          (loadedConfig) => plots[activePlotKey](loadedConfig, true), activeConfig,
+          (loadedConfig) => {
+            console.log('RENDERING');
+
+            console.log('loadedConfig');
+            console.log(loadedConfig);
+
+            console.log('activePlotKey');
+            console.log(activePlotKey);
+            return plots[activePlotKey](loadedConfig, true);
+          }, activeConfig,
         )}
       </Col>
       {miniaturesColumn}
