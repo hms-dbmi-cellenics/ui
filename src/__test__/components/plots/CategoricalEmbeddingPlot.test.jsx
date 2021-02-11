@@ -7,34 +7,21 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { Vega } from 'react-vega';
 
-import ContinuousEmbeddingPlot from '../../../../../../../pages/experiments/[experimentId]/data-processing/configure-embedding/components/ContinuousEmbeddingPlot';
-import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
-import initialCellSetsState from '../../../../../../../redux/reducers/cellSets/initialState';
-import initialGeneExpressionState, { initialExpressionState } from '../../../../../../../redux/reducers/genes/initialState';
-import initialExperimentState from '../../../../../../../redux/reducers/experimentSettings/initialState';
-import { initialPlotConfigStates } from '../../../../../../../redux/reducers/componentConfig/initialState';
+import CategoricalEmbeddingPlot from '../../../components/plots/CategoricalEmbeddingPlot';
+import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
+import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
+import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
+import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
-describe('Continuous embedding plot', () => {
-  const config = initialPlotConfigStates.embeddingContinuous;
-
+describe('Categorical embedding', () => {
   const emptyStore = {
     cellSets: {
       ...initialCellSetsState,
     },
     embeddings: initialEmbeddingState,
-    genes: {
-      ...initialGeneExpressionState,
-      expression: {
-        loading: [],
-        error: false,
-        data: {
-          ...initialExpressionState,
-        },
-      },
-    },
     experimentSettings: {
       ...initialExperimentState,
     },
@@ -84,24 +71,6 @@ describe('Continuous embedding plot', () => {
         error: false,
       },
     },
-    genes: {
-      ...initialGeneExpressionState,
-      expression: {
-        loading: [],
-        error: false,
-        data: {
-          CST3: {
-            min: 1,
-            max: 6,
-            mean: 3.5,
-            stdev: 1.870828693387,
-            expression: [
-              1, 2, 3, 4, 5, 6,
-            ],
-          },
-        },
-      },
-    },
     experimentSettings: {
       ...initialExperimentState,
     },
@@ -109,12 +78,14 @@ describe('Continuous embedding plot', () => {
 
   configure({ adapter: new Adapter() });
 
+  const config = initialPlotConfigStates.embeddingCategorical;
+
   it('shows spinner when data is still loading', () => {
     const store = mockStore(emptyStore);
 
     const component = mount(
       <Provider store={store}>
-        <ContinuousEmbeddingPlot
+        <CategoricalEmbeddingPlot
           config={config}
         />
       </Provider>,
@@ -129,15 +100,10 @@ describe('Continuous embedding plot', () => {
   it('renders correctly when data is in the store', () => {
     const store = mockStore(mockedStore);
 
-    const chosenStore = {
-      ...config,
-      shownGene: 'CST3',
-    };
-
     const component = mount(
       <Provider store={store}>
-        <ContinuousEmbeddingPlot
-          config={chosenStore}
+        <CategoricalEmbeddingPlot
+          config={config}
         />
       </Provider>,
     );
