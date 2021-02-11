@@ -40,8 +40,6 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
   const [selectedTab, setSelectedTab] = useState(panel);
   const [addMenuVisible, setAddMenuVisible] = useState(false);
 
-  console.log(route);
-
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
