@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import { Spin } from 'antd';
 import { Vega } from 'react-vega';
 
-import PlatformError from '../../../../../../components/PlatformError';
-import { generateSpec, generateData } from '../../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import { loadEmbedding } from '../../../../../../redux/actions/embedding';
-import { loadCellSets } from '../../../../../../redux/actions/cellSets';
-import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+import PlatformError from '../PlatformError';
+import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import { loadEmbedding } from '../../redux/actions/embedding';
+import { loadCellSets } from '../../redux/actions/cellSets';
+import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const CategoricalEmbeddingPlot = (props) => {
   const { experimentId, config, plotUuid } = props;

@@ -12,8 +12,8 @@ import plot1Pic from '../../../../../../../static/media/plot9.png';
 import plot2Pic from '../../../../../../../static/media/plot10.png';
 import CalculationConfig from './CalculationConfig';
 
-import CategoricalEmbeddingPlot from './CategoricalEmbeddingPlot';
-import ContinuousEmbeddingPlot from './ContinuousEmbeddingPlot';
+import CategoricalEmbeddingPlot from '../../../../../../components/plots/CategoricalEmbeddingPlot';
+import ContinuousEmbeddingPlot from '../../../../../../components/plots/ContinuousEmbeddingPlot';
 
 import {
   updatePlotConfig,
