@@ -64,10 +64,10 @@ const frequencyPlot = ({ experimentId }) => {
   const optionsCellSets = getCellOptions('cellSets');
 
   useEffect(() => {
-    if (!loading && config?.chosenClusters === '') {
+    if (!loading && config?.proportionGrouping === '') {
       updatePlotWithChanges({
-        metadata: optionsMetadata[0]?.key,
-        chosenClusters: optionsCellSets[0].key,
+        xAxisGrouping: optionsMetadata[0]?.key,
+        proportionGrouping: optionsCellSets[0].key,
       });
     }
   });

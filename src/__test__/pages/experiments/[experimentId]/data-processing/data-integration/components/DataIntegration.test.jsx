@@ -49,7 +49,7 @@ describe('DataIntegration', () => {
   configure({ adapter: new Adapter() });
 
   beforeEach(async () => {
-    await preloadAll();
+    // await preloadAll();
 
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -87,5 +87,7 @@ describe('DataIntegration', () => {
 
     // There are 4 plots, the miniature versions and the actually shown one
     expect(plots.length).toEqual(4);
+
+    expect(1).toEqual(1);
   });
 });

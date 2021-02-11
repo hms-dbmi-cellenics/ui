@@ -149,9 +149,10 @@ const volcanoInitialConfig = {
 const frequencyInitialConfig = {
   spec: '1.0.0',
   frequencyType: 'proportional',
-  metadata: '',
+  proportionGrouping: '',
   legend: {
     ...legendBaseState,
+    title: 'Cell Set',
     position: 'top',
     offset: 40,
   },
@@ -167,7 +168,7 @@ const frequencyInitialConfig = {
     offset: 10,
   },
   fontStyle: fontStyleBaseState,
-  chosenClusters: '',
+  xAxisGrouping: '',
   axisTitlesize: 13,
   geneexpLegendloc: '',
 };
@@ -301,11 +302,12 @@ const interactiveHeatmapInitialConfig = {
 const dataIntegrationFrequencyInitialConfig = {
   spec: '1.0.0',
   frequencyType: 'proportional',
-  metadata: 'louvain',
-  chosenClusters: 'sample',
+  xAxisGrouping: 'louvain',
+  proportionGrouping: 'sample',
   legend: {
     ...legendBaseState,
-    position: 'right',
+    title: 'Sample',
+    position: 'top',
     offset: 10,
   },
   label: labelBaseState,
@@ -315,7 +317,7 @@ const dataIntegrationFrequencyInitialConfig = {
   title: titleBaseState,
   axes: {
     ...axesBaseState,
-    xAxisText: 'Sample',
+    xAxisText: 'Louvain clusters',
     yAxisText: 'Proportion',
     offset: 10,
   },
