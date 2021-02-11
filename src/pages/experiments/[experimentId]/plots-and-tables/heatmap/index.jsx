@@ -6,11 +6,12 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourbarDesign from '../components/ColourbarDesign';
-import LegendEditor from '../components/LegendEditor';
-import TitleDesign from '../components/TitleDesign';
-import FontDesign from '../components/FontDesign';
+import DimensionsRangeEditor from '../../../../../components/plotStyling/DimensionsRangeEditor';
+import ColourbarDesign from '../../../../../components/plotStyling/ColourbarDesign';
+import LegendEditor from '../../../../../components/plotStyling/LegendEditor';
+import TitleDesign from '../../../../../components/plotStyling/TitleDesign';
+import FontDesign from '../../../../../components/plotStyling/FontDesign';
+import PlotStyling from '../../../../../components/plotStyling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
 import Header from '../components/Header';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
@@ -116,11 +117,7 @@ const HeatmapPlot = () => {
     if (config.selectedGenes.length === 0) {
       return (
         <Empty description={(
-          <>
-            <p>
-              <Text>Add some genes to this heatmap to get started.</Text>
-            </p>
-          </>
+          <Text>Add some genes to this heatmap to get started.</Text>
         )}
         />
       );
@@ -141,6 +138,40 @@ const HeatmapPlot = () => {
       label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
     }));
   };
+
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Main Schema',
+      controls: ['dimensions'],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Colours',
+      controls: ['colourbar'],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: [
+        {
+          name: 'legend',
+          props: {
+            option: {
+              positions: 'horizontal-vertical',
+            },
+          },
+        },
+      ],
+    },
+  ];
 
   if (!config || cellSets.loading) {
     return (<Skeleton />);
@@ -198,41 +229,8 @@ const HeatmapPlot = () => {
                   />
                 </Space>
               </Panel>
-
-              <Panel header='Main Schema' key='1'>
-                <DimensionsRangeEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                />
-                <Collapse defaultActiveKey={['1']} accordion>
-                  <Panel header='Define and Edit Title' key='6'>
-                    <TitleDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                  <Panel header='Font' key='9'>
-                    <FontDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                </Collapse>
-              </Panel>
-              <Panel header='Colours' key='10'>
-                <ColourbarDesign
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                />
-              </Panel>
-              <Panel header='Legend' key='11'>
-                <LegendEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                  option={{ positions: 'heatmap' }}
-                />
-              </Panel>
             </Collapse>
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
           </Space>
         </Col>
       </Row>

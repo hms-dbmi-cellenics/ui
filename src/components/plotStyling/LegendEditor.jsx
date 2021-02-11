@@ -23,7 +23,7 @@ const LegendEditor = (props) => {
       top: 'Top',
       bottom: 'Bottom',
     },
-    heatmap: {
+    'horizontal-vertical': {
       horizontal: 'Horizontal',
       vertical: 'Vertical',
     },

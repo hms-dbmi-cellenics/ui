@@ -15,14 +15,15 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourInversion from '../components/ColourInversion';
-import AxesDesign from '../components/AxesDesign';
-import PointDesign from '../components/PointDesign';
-import TitleDesign from '../components/TitleDesign';
-import FontDesign from '../components/FontDesign';
-import LegendEditor from '../components/LegendEditor';
-import LabelsDesign from '../components/LabelsDesign';
+import DimensionsRangeEditor from '../../../../../components/plotStyling/DimensionsRangeEditor';
+import ColourInversion from '../../../../../components/plotStyling/ColourInversion';
+import AxesDesign from '../../../../../components/plotStyling/AxesDesign';
+import PointDesign from '../../../../../components/plotStyling/PointDesign';
+import TitleDesign from '../../../../../components/plotStyling/TitleDesign';
+import FontDesign from '../../../../../components/plotStyling/FontDesign';
+import LegendEditor from '../../../../../components/plotStyling/LegendEditor';
+import LabelsDesign from '../../../../../components/plotStyling/LabelsDesign';
+import PlotStyling from '../../../../../components/plotStyling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -138,13 +139,53 @@ const EmbeddingCategoricalPlot = () => {
     });
   };
 
-  const onUpdate = (obj) => {
+  const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
   const onCellSetSelect = ({ value }) => {
-    onUpdate({ selectedCellSet: value });
+    updatePlotWithChanges({ selectedCellSet: value });
   };
+
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Main schema',
+      controls: ['dimensions'],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Axes and Margins',
+      controls: ['axes'],
+    },
+    {
+      panelTitle: 'Colour Inversion',
+      controls: ['colourInversion'],
+    },
+    {
+      panelTitle: 'Markers',
+      controls: ['markers'],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+        },
+      }],
+    },
+  ];
 
   if (!config || !isBrowser) {
     return <Skeleton />;
@@ -218,37 +259,8 @@ const EmbeddingCategoricalPlot = () => {
                 />
               </Space>
             </Panel>
-            <Panel header='Main Schema' key='2'>
-              <DimensionsRangeEditor config={config} onUpdate={onUpdate} />
-              <Collapse accordion defaultActiveKey={['1']}>
-                <Panel header='Define and Edit Title' key='6'>
-                  <TitleDesign config={config} onUpdate={onUpdate} />
-                </Panel>
-                <Panel header='Font' key='9'>
-                  <FontDesign config={config} onUpdate={onUpdate} />
-                </Panel>
-              </Collapse>
-            </Panel>
-            <Panel header='Axes and Margins' key='3'>
-              <AxesDesign config={config} onUpdate={onUpdate} />
-            </Panel>
-            <Panel header='Colour Inversion' key='4'>
-              <ColourInversion config={config} onUpdate={onUpdate} />
-            </Panel>
-            <Panel header='Markers' key='5'>
-              <PointDesign config={config} onUpdate={onUpdate} />
-            </Panel>
-            <Panel header='Legend' key='10'>
-              <LegendEditor
-                onUpdate={onUpdate}
-                config={config}
-                option={{ positions: 'top-bottom' }}
-              />
-            </Panel>
-            <Panel header='Labels' key='11'>
-              <LabelsDesign config={config} onUpdate={onUpdate} />
-            </Panel>
           </Collapse>
+          <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
         </Col>
       </Row>
     </div>

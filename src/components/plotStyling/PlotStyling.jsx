@@ -23,14 +23,14 @@ const PlotStyling = (props) => {
   } = props;
 
   const ComponentMapping = {
-    dimensions: (attr) => <DimensionsRangeEditor config={config} onUpdate={onUpdate} {...attr} />,
-    title: (attr) => <TitleDesign config={config} onUpdate={onUpdate} {...attr} />,
-    font: (attr) => <FontDesign config={config} onUpdate={onUpdate} {...attr} />,
-    axes: (attr) => <AxesDesign config={config} onUpdate={onUpdate} {...attr} />,
-    colourbar: (attr) => <ColourbarDesign config={config} onUpdate={onUpdate} {...attr} />,
-    colourInversion: (attr) => <ColourInversion config={config} onUpdate={onUpdate} {...attr} />,
-    marker: (attr) => <PointDesign config={config} onUpdate={onUpdate} {...attr} />,
-    legend: (attr) => <LegendEditor onUpdate={onUpdate} config={config} {...attr} />,
+    dimensions: (attr) => <DimensionsRangeEditor key='dimensions' config={config} onUpdate={onUpdate} {...attr} />,
+    title: (attr) => <TitleDesign key='title' config={config} onUpdate={onUpdate} {...attr} />,
+    font: (attr) => <FontDesign key='font' config={config} onUpdate={onUpdate} {...attr} />,
+    axes: (attr) => <AxesDesign key='axes' config={config} onUpdate={onUpdate} {...attr} />,
+    colourbar: (attr) => <ColourbarDesign key='colourbar' config={config} onUpdate={onUpdate} {...attr} />,
+    colourInversion: (attr) => <ColourInversion key='colourInversion' config={config} onUpdate={onUpdate} {...attr} />,
+    markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
+    legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
   };
 
   const buildForm = (configObj) => configObj.map((el) => {
@@ -38,33 +38,44 @@ const PlotStyling = (props) => {
 
     if (Object.getOwnPropertyDescriptor(el, 'controls') && el.controls.length > 0) {
       return (
-        <Collapse accordion>
-          <Panel header={el.panelTitle} keys={el.panelTitle}>
-            {el.controls.map((control) => {
-              // If control is a string, no prop is passed
-              if (_.isString(control)) {
-                return ComponentMapping[control]({});
-              }
-              return ComponentMapping[control.name](control.props || {});
-            })}
-            {
-              Object.getOwnPropertyDescriptor(el, 'children')
-                && el.children.length > 0
-                ? buildForm(el.children)
-                : ''
+        <Panel header={el.panelTitle} key={el.panelTitle}>
+          {el.header}
+
+          {el.controls.map((control) => {
+            // If control is a string, no prop is passed
+            if (_.isString(control)) {
+              return ComponentMapping[control]({});
             }
-          </Panel>
-        </Collapse>
+            return ComponentMapping[control.name](control.props || {});
+          })}
+
+          {
+            Object.getOwnPropertyDescriptor(el, 'children')
+              && el.children.length > 0
+              ? (
+                <Collapse accordion>
+                  { buildForm(el.children)}
+                </Collapse>
+              )
+              : ''
+          }
+
+          {el.footer}
+        </Panel>
       );
     }
+    return <></>;
   });
 
   return (
-    <>
+    <Collapse accordion style={{ marginTop: '-9px' }}>
+      {
+        console.log(buildForm(formConfig))
+      }
       {
         buildForm(formConfig)
       }
-    </>
+    </Collapse>
   );
 };
 

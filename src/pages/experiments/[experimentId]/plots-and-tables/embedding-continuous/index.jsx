@@ -133,20 +133,12 @@ const EmbeddingContinuousPlot = () => {
       controls: ['colourbar', 'colourInversion'],
     },
     {
-      panelTitle: 'Marker',
-      controls: ['marker'],
+      panelTitle: 'Markers',
+      controls: ['markers'],
     },
     {
       panelTitle: 'Legend',
-      controls: [
-        {
-          name: 'legend',
-          props: {
-            option: {
-              positions: 'top-bottom',
-            },
-          },
-        }],
+      controls: ['legend'],
     },
   ];
 
@@ -233,25 +225,26 @@ const EmbeddingContinuousPlot = () => {
           </Space>
         </Col>
         <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }} />
-          <Collapse accordion>
-            <Panel header='Gene Selection' key='666'>
-              <Search
-                style={{ width: '100%' }}
-                enterButton='Search'
-                defaultValue={config.shownGene}
-                onSearch={(val) => changeDislayedGene(val)}
-              />
-            </Panel>
-            <Panel header='Select Data' key='15'>
-              <SelectData
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                cellSets={cellSets}
-              />
-            </Panel>
-          </Collapse>
-          <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse accordion>
+              <Panel header='Gene Selection' key='666'>
+                <Search
+                  style={{ width: '100%' }}
+                  enterButton='Search'
+                  defaultValue={config.shownGene}
+                  onSearch={(val) => changeDislayedGene(val)}
+                />
+              </Panel>
+              <Panel header='Select Data' key='15'>
+                <SelectData
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                  cellSets={cellSets}
+                />
+              </Panel>
+            </Collapse>
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+          </Space>
         </Col>
       </Row>
     </div>
