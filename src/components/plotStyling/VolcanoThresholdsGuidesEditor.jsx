@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Form, InputNumber, Checkbox, Space, Select, Typography,
 } from 'antd';
-import ColorPicker from '../../../../../../components/ColorPicker';
+import ColorPicker from '../ColorPicker';
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -43,7 +43,7 @@ ColorPickerOption.propTypes = {
   text: PropTypes.string.isRequired,
 };
 
-const ThresholdsGuidesEditor = (props) => {
+const VolcanoThresholdsGuidesEditor = (props) => {
   const { onUpdate, config } = props;
 
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
@@ -66,7 +66,7 @@ const ThresholdsGuidesEditor = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Significance thresholds</div>
+        <p><strong>Significance Thresholds</strong></p>
         <Form.Item
           label={(
             <span>
@@ -171,9 +171,9 @@ const ThresholdsGuidesEditor = (props) => {
   );
 };
 
-ThresholdsGuidesEditor.propTypes = {
+VolcanoThresholdsGuidesEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
 };
 
-export default ThresholdsGuidesEditor;
+export default VolcanoThresholdsGuidesEditor;

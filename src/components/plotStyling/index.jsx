@@ -16,10 +16,14 @@ import PointDesign from './PointDesign';
 import ColourbarDesign from './ColourbarDesign';
 import ColourInversion from './ColourInversion';
 
+import VolcanoDimensionsRangeEditor from './VolcanoDimensionsRangeEditor';
+import VolcanoThresholdsGuidesEditor from './VolcanoThresholdsGuidesEditor';
+import VolcanoMarkersEditor from './VolcanoMarkersEditor';
+
 const { Panel } = Collapse;
 const PlotStyling = (props) => {
   const {
-    formConfig, config, onUpdate, onChange,
+    formConfig, config, onUpdate,
   } = props;
 
   const ComponentMapping = {
@@ -31,6 +35,9 @@ const PlotStyling = (props) => {
     colourInversion: (attr) => <ColourInversion key='colourInversion' config={config} onUpdate={onUpdate} {...attr} />,
     markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
     legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
+    volcanoDimensions: (attr) => <VolcanoDimensionsRangeEditor key='volcanoDimensions' config={config} onUpdate={onUpdate} {...attr} />,
+    volcanoThresholds: (attr) => <VolcanoThresholdsGuidesEditor key='volcanoThresholds' config={config} onUpdate={onUpdate} {...attr} />,
+    volcanoMarkers: (attr) => <VolcanoMarkersEditor key='volcanoMarkers' config={config} onUpdate={onUpdate} {...attr} />,
   };
 
   const buildForm = (configObj) => configObj.map((el) => {

@@ -15,15 +15,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import DimensionsRangeEditor from '../../../../../components/plotStyling/DimensionsRangeEditor';
-import ColourInversion from '../../../../../components/plotStyling/ColourInversion';
-import AxesDesign from '../../../../../components/plotStyling/AxesDesign';
-import PointDesign from '../../../../../components/plotStyling/PointDesign';
-import TitleDesign from '../../../../../components/plotStyling/TitleDesign';
-import FontDesign from '../../../../../components/plotStyling/FontDesign';
-import LegendEditor from '../../../../../components/plotStyling/LegendEditor';
-import LabelsDesign from '../../../../../components/plotStyling/LabelsDesign';
-import PlotStyling from '../../../../../components/plotStyling/PlotStyling';
+import PlotStyling from '../../../../../components/plotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,

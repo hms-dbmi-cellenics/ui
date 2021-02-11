@@ -15,15 +15,16 @@ import { CSVLink } from 'react-csv';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import ThresholdsGuidesEditor from './components/ThresholdsGuidesEditor';
-import MarkersEditor from './components/MarkersEditor';
-import PointDesign from '../components/PointDesign';
-import TitleDesign from '../components/TitleDesign';
-import DimensionsRangeEditorVolcano from './components/DimensionsRangeEditorVolcano';
-import AxesDesign from '../components/AxesDesign';
-import FontDesign from '../components/FontDesign';
-import ColourInversion from '../components/ColourInversion';
-import LegendEditor from '../components/LegendEditor';
+import ThresholdsGuidesEditor from '../../../../../components/plotStyling/VolcanoThresholdsGuidesEditor';
+import MarkersEditor from '../../../../../components/plotStyling/VolcanoMarkersEditor';
+import PointDesign from '../../../../../components/plotStyling/PointDesign';
+import TitleDesign from '../../../../../components/plotStyling/TitleDesign';
+import AxesDesign from '../../../../../components/plotStyling/AxesDesign';
+import FontDesign from '../../../../../components/plotStyling/FontDesign';
+import ColourInversion from '../../../../../components/plotStyling/ColourInversion';
+import LegendEditor from '../../../../../components/plotStyling/LegendEditor';
+import DimensionsRangeEditorVolcano from '../../../../../components/plotStyling/VolcanoDimensionsRangeEditor';
+import PlotStyling from '../../../../../components/plotStyling';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateVolcanoSpec';
 import Header from '../components/Header';
 import DiffExprCompute from '../../data-exploration/components/differential-expression-tool/DiffExprCompute';
@@ -82,6 +83,49 @@ const VolcanoPlot = () => {
     if (data.length === 0) return;
     setDataPointStatus();
   }, []);
+
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Main Schema',
+      controls: [{
+        name: 'volcanoDimensions',
+        props: {
+          xMax: 0,
+          yMax: 0,
+        },
+      }],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Data Thresholding',
+      controls: ['volcanoThresholds'],
+    },
+    {
+      panelTitle: 'Axes and Margins',
+      controls: ['axes'],
+    },
+    {
+      panelTitle: 'Colours',
+      controls: ['volcanoMarkers', 'colourInversion'],
+    },
+    {
+      panelTitle: 'Markers',
+      controls: ['markers'],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: ['legend'],
+    },
+  ];
 
   useEffect(() => {
     if (!config) return;
@@ -352,6 +396,7 @@ const VolcanoPlot = () => {
                 />
               </Panel>
             </Collapse>
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
           </Space>
         </Col>
       </Row>

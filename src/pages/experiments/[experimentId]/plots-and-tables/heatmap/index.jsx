@@ -5,13 +5,7 @@ import {
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-
-import DimensionsRangeEditor from '../../../../../components/plotStyling/DimensionsRangeEditor';
-import ColourbarDesign from '../../../../../components/plotStyling/ColourbarDesign';
-import LegendEditor from '../../../../../components/plotStyling/LegendEditor';
-import TitleDesign from '../../../../../components/plotStyling/TitleDesign';
-import FontDesign from '../../../../../components/plotStyling/FontDesign';
-import PlotStyling from '../../../../../components/plotStyling/PlotStyling';
+import PlotStyling from '../../../../../components/plotStyling';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
 import Header from '../components/Header';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';

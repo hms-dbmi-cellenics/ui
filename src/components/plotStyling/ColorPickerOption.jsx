@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Space } from 'antd';
-import ColorPicker from '../../../../../components/ColorPicker';
+import ColorPicker from '../ColorPicker';
 
 const ColorPickerOption = (props) => {
   // See the z index here:
