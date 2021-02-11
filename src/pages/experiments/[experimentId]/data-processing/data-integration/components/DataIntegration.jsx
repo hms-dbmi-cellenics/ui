@@ -98,6 +98,10 @@ const frequencyPlotConfigRedux = {
 };
 
 const getConfigForDeploymentEnvironment = (config) => {
+  if (!config) {
+    return config;
+  }
+
   const newConfig = _.cloneDeep(config);
 
   try {
@@ -269,6 +273,25 @@ const DataIntegration = () => {
 
     return miniPlotConfig;
   };
+
+  const getCellOptions = (type) => {
+    const filteredOptions = hierarchy.filter((element) => (
+      properties[element.key].type === type
+    ));
+    if (!filteredOptions.length) {
+      return [];
+    }
+    return filteredOptions;
+  };
+
+  const optionsMetadata = getCellOptions('metadataCategorical');
+  const optionsCellSets = getCellOptions('cellSets');
+
+  console.log('optionsMetadata');
+  console.log(optionsMetadata);
+
+  console.log('optionsCellSets');
+  console.log(optionsCellSets);
 
   const miniaturesColumn = (
     <ReactResizeDetector handleWidth handleHeight>
