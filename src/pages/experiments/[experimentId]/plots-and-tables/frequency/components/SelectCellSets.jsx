@@ -10,7 +10,8 @@ const SelectCellSets = (props) => {
   const {
     onUpdate, config, optionsMetadata, optionsCellSets,
   } = props;
-  const firstLetterUppercase = (word) => word.charAt(0).toUpperCase() + word.slice(1);
+
+  const firstLetterUppercase = (word) => word?.charAt(0).toUpperCase() + word?.slice(1);
   const changeClusters = (val) => {
     const newValue = val.key.toLowerCase();
     onUpdate({ chosenClusters: newValue });
@@ -28,6 +29,8 @@ const SelectCellSets = (props) => {
       return;
     }
     Array.from(options).forEach((option) => {
+      console.log('option key is ', option.key);
+
       selectOptions.push({
         value: firstLetterUppercase(option.key),
       });
@@ -36,6 +39,7 @@ const SelectCellSets = (props) => {
   };
   const metadataMenu = getSelectOptions(optionsMetadata);
   const cellSetMenu = getSelectOptions(optionsCellSets);
+  console.log('menus', metadataMenu, cellSetMenu);
   let menuValue;
   if (!metadataMenu) {
     menuValue = 'Sample';

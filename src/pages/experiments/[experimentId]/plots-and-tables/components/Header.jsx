@@ -46,9 +46,9 @@ const Header = (props) => {
     }
   });
   useEffect(() => {
-    if (!saved) {
+    if (!saved && config) {
       debounceSave();
-      console.log('saved');
+      console.log('****************saved', config);
     }
   }, [config]);
   // useEffect(() => {
