@@ -66,9 +66,7 @@
     "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.3.2",
     "swr": "^0.3.2",
-    "prop-types": "^15.7.2",
-    "object-hash": "^2.0.3",
-    "localforage": "^1.7.4"
+    "prop-types": "^15.7.2"
   },
   "devDependencies": {
     "@ant-design/icons": "^4.2.1",
@@ -122,6 +120,8 @@
     "vega": "^5.13.0",
     "vega-lite": "^4.13.0",
     "vitessce": "^0.2.1",
-    "webpack": "^4.43.0"
+    "webpack": "^4.43.0",
+    "object-hash": "^2.0.3",
+    "localforage": "^1.7.4"
   }
 }

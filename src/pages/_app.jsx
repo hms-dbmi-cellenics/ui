@@ -12,7 +12,7 @@ import Error from './_error';
 import isBrowser from '../utils/environment';
 import wrapper from '../redux/store';
 import getApiEndpoint from '../utils/apiEndpoint';
-import { getFromApiExpectOK } from '../utils/cacheRequest';
+import getFromApiExpectOK from '../utils/getFromApiExpectOK';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
