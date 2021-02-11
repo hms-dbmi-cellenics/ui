@@ -7,7 +7,7 @@ const { Title } = Typography;
 
 const NotFoundPage = () => (
   <Result
-    title={<Title level={2}>Oops</Title>}
+    title={<Title level={2}>Page not found</Title>}
     icon={(
       <img
         alt='People looking into bushes to find something (illustration).'

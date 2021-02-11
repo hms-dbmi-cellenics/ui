@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import {
   Row, Col, Space, Collapse, Select, Button, Skeleton, Spin, Empty, Typography,
 } from 'antd';
-import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 
@@ -32,18 +31,13 @@ const route = {
 const plotUuid = 'heatmapPlotMain';
 const plotType = 'heatmap';
 
-const HeatmapPlot = () => {
+const HeatmapPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const { loading, error, data: expressionData } = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
 
-  const router = useRouter();
-  const { experimentId } = router.query;
-
   useEffect(() => {
-    if (!isBrowser || !experimentId) return;
-
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);

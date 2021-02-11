@@ -12,7 +12,6 @@ import {
 import _ from 'lodash';
 import moment from 'moment';
 import { CSVLink } from 'react-csv';
-import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import ThresholdsGuidesEditor from './components/ThresholdsGuidesEditor';
@@ -46,10 +45,9 @@ const route = {
 
 const plotUuid = 'volcanoPlotMain';
 const plotType = 'volcano';
-const VolcanoPlot = () => {
+
+const VolcanoPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
-  const { experimentId } = router.query;
   const comparisonCreated = useRef(false);
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const {
@@ -67,7 +65,6 @@ const VolcanoPlot = () => {
   const onUpdateThrottled = useRef(_.throttle((obj) => updatePlotWithChanges(obj), 50));
 
   useEffect(() => {
-    if (!isBrowser) return;
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, [experimentId]);
 

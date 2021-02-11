@@ -87,7 +87,7 @@ const CellSetsTool = (props) => {
    * or a hierarchical tree listing all cell sets.
    */
   const renderContent = () => {
-    if (loading || !isBrowser) return <Skeleton active />;
+    if (loading) return <Skeleton active />;
 
     if (error) {
       return (
@@ -114,7 +114,9 @@ const CellSetsTool = (props) => {
           <CellSetOperation
             icon={<BlockOutlined />}
             onCreate={(name, color) => {
-              dispatch(createCellSet(experimentId, name, color, intersection(selected, properties)));
+              dispatch(
+                createCellSet(experimentId, name, color, intersection(selected, properties)),
+              );
             }}
             helpTitle='Create new cell set from intersection of selected sets'
           />

@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useRouter } from 'next/router';
-import useSWR from 'swr';
-import { Tabs } from 'antd';
+import {
+  Tabs, Button, Dropdown,
+} from 'antd';
 import { Mosaic, MosaicWindow, RemoveButton } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
-import Error from '../../../_error';
-import Header from './components/header';
+import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
+import Header from '../../../../components/Header';
 import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
 import GeneListTool from './components/gene-list-tool/GeneListTool';
 import DiffExprManager from './components/differential-expression-tool/DiffExprManager';
 import Embedding from './components/embedding/Embedding';
 import { COMPONENT_TYPE, HeatmapPlot } from './components/heatmap/HeatmapPlot';
 import HeatmapSettings from './components/heatmap/HeatmapSettings';
-import { updateLayout } from '../../../../redux/actions/layout';
-import getApiEndpoint from '../../../../utils/apiEndpoint';
-import { getFromApiExpectOK } from '../../../../utils/cacheRequest';
-import PreloadContent from '../../../../components/PreloadContent';
+import { updateLayout, addWindow, addToWindow } from '../../../../redux/actions/layout';
+import SearchMenu from '../../../../components/SearchMenu';
 
 import 'react-mosaic-component/react-mosaic-component.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
@@ -34,24 +33,27 @@ const renderWindow = (tile, width, height) => {
   return <></>;
 };
 
-const ExplorationViewPage = () => {
+const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
-  const { experimentId } = router.query;
   const layout = useSelector((state) => state.layout);
   const { windows, panel } = layout;
   const [selectedTab, setSelectedTab] = useState(panel);
+  const [addMenuVisible, setAddMenuVisible] = useState(false);
 
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
 
-  const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
-
   const TILE_MAP = {
     'UMAP Embedding': {
       toolbarControls: [<RemoveButton />],
-      component: (width, height) => <Embedding experimentId={experimentId} width={width} height={height} />,
+      component: (width, height) => (
+        <Embedding
+          experimentId={experimentId}
+          width={width}
+          height={height}
+        />
+      ),
     },
     Heatmap: {
       toolbarControls: [
@@ -81,26 +83,89 @@ const ExplorationViewPage = () => {
     },
     'Data Management': {
       toolbarControls: [<RemoveButton />],
-      component: (width, height) => <CellSetsTool experimentId={experimentId} width={width} height={height} />,
+      component: (width, height) => (
+        <CellSetsTool
+          experimentId={experimentId}
+          width={width}
+          height={height}
+        />
+      ),
     },
   };
 
-  if (error) {
-    if (error.payload === undefined) {
-      return <Error errorText='Cannot connect to API service.' />;
-    }
+  const categoryItems = {
+    Tools: [
+      {
+        description: 'Create and manage interesting groupings of cells.',
+        key: 'Data Management',
+        group: 'Tools',
+      },
+      {
+        description: 'Find, organize, and annotate genes in your data set.',
+        key: 'Gene list',
+        group: 'Tools',
+      },
+      {
+        description: 'Find and explore the most characteristic genes in a set of cells.',
+        key: 'Differential expression',
+        group: 'Tools',
+      },
+    ],
+    Plots: [
+      {
+        key: 'UMAP Embedding',
+        description: 'Visualize cells clustered by genetic expression using a UMAP embedding.',
+      },
+      {
+        key: 'Heatmap',
+        description: 'Gain a high-level understanding of expression levels across large groups of genes and cells.',
+      },
+    ],
+  };
 
-    const { status } = error.payload;
-    return <Error errorText={status} />;
-  }
+  const categoryInfo = {
+    Plots: <PictureOutlined />,
+    Tools: <ToolOutlined />,
+  };
 
-  if (!data || !experimentId) {
-    return <PreloadContent />;
-  }
+  const searchMenu = (
+    <SearchMenu
+      options={categoryItems}
+      categoryInfo={categoryInfo}
+      onSelect={(key, category, belongsToGroup) => {
+        if (belongsToGroup) {
+          dispatch(addToWindow(key, belongsToGroup));
+        } else {
+          dispatch(addWindow(key));
+        }
+        setAddMenuVisible(false);
+      }}
+    />
+  );
 
   return (
     <>
-      <Header experimentId={experimentId} />
+      <Header
+        experimentId={experimentId}
+        experimentData={experimentData}
+        route={route}
+        title='Data exploration'
+        extra={(
+          <Dropdown
+            trigger={['click']}
+            key='search-menu-dropdown'
+            overlay={searchMenu}
+            visible={addMenuVisible}
+            onVisibleChange={(visible) => setAddMenuVisible(visible)}
+          >
+            <Button type='primary' onClick={() => setAddMenuVisible(!addMenuVisible)}>
+              Add
+              {' '}
+              <DownOutlined />
+            </Button>
+          </Dropdown>
+        )}
+      />
       <div style={{ height: '100%', width: '100%', margin: 0 }}>
         <Mosaic
           renderTile={(id, path) => (
@@ -129,6 +194,12 @@ const ExplorationViewPage = () => {
       </div>
     </>
   );
+};
+
+ExplorationViewPage.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  experimentData: PropTypes.object.isRequired,
+  route: PropTypes.string.isRequired,
 };
 
 export default ExplorationViewPage;

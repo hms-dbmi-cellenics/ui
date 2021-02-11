@@ -11,7 +11,6 @@ import {
   Radio,
   Alert,
 } from 'antd';
-import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
@@ -38,25 +37,20 @@ const route = {
   breadcrumbName: 'Frequency plot',
 };
 
-const frequencyPlot = () => {
+const frequencyPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const {
     loading, error, hierarchy, properties,
   } = cellSets;
-  const router = useRouter();
-  const { experimentId } = router.query;
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (!experimentId || !isBrowser) {
-      return;
-    }
     dispatch(loadCellSets(experimentId));
-
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, [experimentId]);
+
   const getCellOptions = (type) => {
     const filteredOptions = hierarchy.filter((element) => (
       properties[element.key].type === type
@@ -66,8 +60,10 @@ const frequencyPlot = () => {
     }
     return filteredOptions;
   };
+
   const optionsMetadata = getCellOptions('metadataCategorical');
   const optionsCellSets = getCellOptions('cellSets');
+
   useEffect(() => {
     if (!loading && config?.chosenClusters === '') {
       updatePlotWithChanges({
@@ -176,7 +172,7 @@ const frequencyPlot = () => {
         />
       );
     }
-    if (!config || loading || !isBrowser) {
+    if (!config || loading) {
       return (
         <center>
           <Spin size='large' />
