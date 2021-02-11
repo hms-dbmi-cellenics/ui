@@ -7,11 +7,11 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { Vega } from 'react-vega';
 
-import CategoricalEmbeddingPlot from '../../../../../../../pages/experiments/[experimentId]/data-processing/configure-embedding/components/CategoricalEmbeddingPlot';
-import { initialEmbeddingState } from '../../../../../../../redux/reducers/embeddings/initialState';
-import initialCellSetsState from '../../../../../../../redux/reducers/cellSets/initialState';
-import initialExperimentState from '../../../../../../../redux/reducers/experimentSettings/initialState';
-import { initialPlotConfigStates } from '../../../../../../../redux/reducers/componentConfig/initialState';
+import CategoricalEmbeddingPlot from '../../../components/sharedPlots/CategoricalEmbeddingPlot';
+import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
+import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
+import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
+import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
