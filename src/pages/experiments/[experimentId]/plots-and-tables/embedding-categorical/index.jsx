@@ -12,7 +12,6 @@ import {
   Button,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
@@ -34,7 +33,6 @@ import PlatformError from '../../../../../components/PlatformError';
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import isBrowser from '../../../../../utils/environment';
 
 const { Panel } = Collapse;
 
@@ -49,23 +47,17 @@ const route = {
   breadcrumbName: 'Categorical Embedding',
 };
 
-const EmbeddingCategoricalPlot = () => {
+const EmbeddingCategoricalPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const processingSettings = useSelector((state) => state.experimentSettings.processing);
 
-  const router = useRouter();
-  const { experimentId } = router.query;
   const [plotSpec, setPlotSpec] = useState({});
 
   // First, load experiment ID data from the router.
   useEffect(() => {
-    if (!experimentId || !isBrowser) {
-      return;
-    }
-
     if (!processingSettings.configureEmbedding) {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
@@ -146,7 +138,7 @@ const EmbeddingCategoricalPlot = () => {
     onUpdate({ selectedCellSet: value });
   };
 
-  if (!config || !isBrowser) {
+  if (!config) {
     return <Skeleton />;
   }
 

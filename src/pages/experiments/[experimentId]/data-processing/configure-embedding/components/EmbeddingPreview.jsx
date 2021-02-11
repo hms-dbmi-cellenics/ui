@@ -20,7 +20,6 @@ import {
   loadPlotConfig,
 } from '../../../../../../redux/actions/componentConfig';
 
-import isBrowser from '../../../../../../utils/environment';
 import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
 import ColourbarDesign from '../../../plots-and-tables/components/ColourbarDesign';
 import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
@@ -75,7 +74,9 @@ const EmbeddingPreview = (props) => {
     },
   };
 
-  const config = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config);
+  const config = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
@@ -94,7 +95,6 @@ const EmbeddingPreview = (props) => {
   }, [config, cellSets]);
 
   useEffect(() => {
-    if (!isBrowser) return;
     const { plotUuid, plotType } = plots[selectedPlot];
 
     if (!config) {

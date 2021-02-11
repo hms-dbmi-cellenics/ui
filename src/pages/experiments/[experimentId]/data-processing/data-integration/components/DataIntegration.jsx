@@ -114,7 +114,11 @@ const DataIntegration = () => {
   const persistedConfigs = {
     samplePlot: _.cloneDeep(defaultElbowPlotStylingConfig),
     frequencyPlot: useSelector(
-      (state) => state.componentConfig[frequencyPlotConfigRedux.uuid]?.config,
+      (state) => {
+        console.log('state');
+        console.log(state);
+        return state.componentConfig[frequencyPlotConfigRedux.uuid]?.config;
+      },
     ),
     elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
   };
@@ -128,7 +132,7 @@ const DataIntegration = () => {
   } = cellSets;
 
   const renderIfAvailable = (renderFunc, loadingElement) => {
-    if (!loadingElement || !isBrowser) {
+    if (!loadingElement) {
       return (
         <Spin size='large' />
       );
@@ -155,10 +159,6 @@ const DataIntegration = () => {
   };
 
   useEffect(() => {
-    if (!experimentId || !isBrowser) {
-      return;
-    }
-
     if (!calculationConfig) {
       dispatch(loadProcessingSettings(experimentId));
     }

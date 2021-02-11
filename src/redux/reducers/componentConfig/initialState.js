@@ -297,7 +297,7 @@ const interactiveHeatmapInitialConfig = {
   legendIsVisible: true,
 };
 
-// PLOTS & TABLES - Frequency
+// DATA INTEGRATION - Frequency
 const dataIntegrationFrequencyInitialConfig = {
   spec: '1.0.0',
   frequencyType: 'proportional',

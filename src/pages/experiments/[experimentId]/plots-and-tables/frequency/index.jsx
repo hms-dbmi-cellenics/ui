@@ -11,7 +11,6 @@ import {
   Radio,
   Alert,
 } from 'antd';
-import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
 import TitleDesign from '../components/TitleDesign';
@@ -20,7 +19,6 @@ import FontDesign from '../components/FontDesign';
 import LegendEditor from '../components/LegendEditor';
 import SelectCellSets from './components/SelectCellSets';
 import Header from '../components/Header';
-import isBrowser from '../../../../../utils/environment';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -38,7 +36,7 @@ const route = {
   breadcrumbName: 'Frequency plot',
 };
 
-const frequencyPlot = () => {
+const frequencyPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
@@ -46,15 +44,9 @@ const frequencyPlot = () => {
   const {
     loading, error, hierarchy, properties,
   } = cellSets;
-  const router = useRouter();
-  const { experimentId } = router.query;
 
   useEffect(() => {
-    if (!experimentId || !isBrowser) {
-      return;
-    }
     dispatch(loadCellSets(experimentId));
-
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, [experimentId]);
 
@@ -96,7 +88,7 @@ const frequencyPlot = () => {
         />
       );
     }
-    if (!config || loading || !isBrowser) {
+    if (!config || loading) {
       return (
         <center>
           <Spin size='large' />

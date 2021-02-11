@@ -11,6 +11,10 @@ import DataIntegration from '../../../../../../../pages/experiments/[experimentI
 import CalculationConfig from '../../../../../../../pages/experiments/[experimentId]/data-processing/data-integration/components/CalculationConfig';
 import initialExperimentState from '../../../../../../../redux/reducers/experimentSettings/initialState';
 
+import { initialPlotConfigStates } from '../../../../../../../redux/reducers/componentConfig/initialState';
+
+const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
+
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
@@ -23,6 +27,19 @@ jest.mock('next/router', () => ({
 }));
 
 const store = mockStore({
+  componentConfig: {
+    dataIntegrationFrequency: {
+      config: dataIntegrationFrequencyConfig,
+    },
+  },
+  cellSets: {
+    loading: false,
+    error: false,
+    selected: [],
+    properties: {},
+    hierarchy: [],
+    hidden: [],
+  },
   experimentSettings: {
     ...initialExperimentState,
   },

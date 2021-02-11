@@ -3,8 +3,6 @@ import hash from 'object-hash';
 import cache from './cache';
 import sendWork from './sendWork';
 import isBrowser from './environment';
-import CustomError from './customError';
-
 import { calculateZScore } from './postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
@@ -16,17 +14,6 @@ const objectToSortedString = (object) => {
     sortedString = `${sortedString}${key}${object[key]}`;
   });
   return sortedString;
-};
-
-const getFromApiExpectOK = async (url) => {
-  const response = await fetch(url);
-
-  if (response.ok) {
-    const data = await response.json();
-    return data;
-  }
-
-  throw new CustomError('There has been an error fetching the data.', response);
 };
 
 const decomposeBody = async (body, experimentId) => {
@@ -88,6 +75,4 @@ const fetchCachedWork = async (experimentId, timeout, body) => {
   throw new Error('Disabling network interaction on server');
 };
 
-export {
-  getFromApiExpectOK, fetchCachedWork, fetchCachedGeneExpressionWork,
-};
+export { fetchCachedWork, fetchCachedGeneExpressionWork };

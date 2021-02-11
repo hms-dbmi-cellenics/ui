@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useRouter } from 'next/router';
-import useSWR from 'swr';
-
+import PropTypes from 'prop-types';
 import {
-  PageHeader, Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
+  Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
 } from 'antd';
 import {
   LeftOutlined,
@@ -14,11 +12,7 @@ import {
   EllipsisOutlined,
 } from '@ant-design/icons';
 
-import Error from '../../../_error';
-import getApiEndpoint from '../../../../utils/apiEndpoint';
-import { getFromApiExpectOK } from '../../../../utils/cacheRequest';
-import PreloadContent from '../../../../components/PreloadContent';
-import FeedbackButton from '../../../../components/FeedbackButton';
+import Header from '../../../../components/Header';
 import CellSizeDistribution from './filter-cells/components/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from './filter-cells/components/MitochondrialContent/MitochondrialContent';
 import Classifier from './filter-cells/components/Classifier/Classifier';
@@ -31,7 +25,7 @@ import { completeProcessingStep } from '../../../../redux/actions/experimentSett
 const { Text } = Typography;
 const { Option } = Select;
 
-const DataProcessingPage = () => {
+const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const steps = [
     {
       key: 'cellSizeDistribution',
@@ -70,10 +64,7 @@ const DataProcessingPage = () => {
     },
   ];
 
-  const router = useRouter();
   const dispatch = useDispatch();
-  const { experimentId } = router.query;
-  const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
   const [stepIdx, setStepIdx] = useState(0);
 
   const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
@@ -84,18 +75,6 @@ const DataProcessingPage = () => {
       carouselRef.current.goTo(stepIdx);
     }
   }, [stepIdx]);
-
-  if (error) {
-    if (error.payload === undefined) {
-      return <Error errorText='Cannot connect to API service.' />;
-    }
-    const { status } = error.payload;
-    return <Error errorText={status} />;
-  }
-
-  if (!data || !experimentId) {
-    return <PreloadContent />;
-  }
 
   const renderTitle = () => (
     <Row justify='space-between'>
@@ -207,11 +186,11 @@ const DataProcessingPage = () => {
         paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', minHeight: '100vh',
       }}
       >
-        <PageHeader
+        <Header
+          experimentId={experimentId}
+          experimentData={experimentData}
+          route={route}
           title='Data processing'
-          extra={(
-            <FeedbackButton />
-          )}
         />
 
         <Card
@@ -225,6 +204,12 @@ const DataProcessingPage = () => {
       </div>
     </>
   );
+};
+
+DataProcessingPage.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  experimentData: PropTypes.object.isRequired,
+  route: PropTypes.string.isRequired,
 };
 
 export default DataProcessingPage;
