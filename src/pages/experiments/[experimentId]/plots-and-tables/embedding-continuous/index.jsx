@@ -111,34 +111,42 @@ const EmbeddingContinuousPlot = () => {
 
   const plotStylingConfig = [
     {
-      panel: 'Main schema',
-      form: ['dimensions'],
+      panelTitle: 'Main schema',
+      controls: ['dimensions'],
       children: [
         {
-          panel: 'Title',
-          form: ['title'],
+          panelTitle: 'Title',
+          controls: ['title'],
         },
         {
-          panel: 'Font',
-          form: ['font'],
+          panelTitle: 'Font',
+          controls: ['font'],
         },
       ],
     },
     {
-      panel: 'Axes and Margins',
-      form: ['axes'],
+      panelTitle: 'Axes and Margins',
+      controls: ['axes'],
     },
     {
-      panel: 'Colours',
-      form: ['colourbar', 'colourInversion'],
+      panelTitle: 'Colours',
+      controls: ['colourbar', 'colourInversion'],
     },
     {
-      panel: 'Marker',
-      form: ['marker'],
+      panelTitle: 'Marker',
+      controls: ['marker'],
     },
     {
-      panel: 'Legend',
-      form: ['legend'],
+      panelTitle: 'Legend',
+      controls: [
+        {
+          name: 'legend',
+          props: {
+            option: {
+              positions: 'top-bottom',
+            },
+          },
+        }],
     },
   ];
 
