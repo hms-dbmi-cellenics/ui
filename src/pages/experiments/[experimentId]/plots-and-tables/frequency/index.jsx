@@ -13,15 +13,15 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import TitleDesign from '../components/TitleDesign';
-import AxesDesign from '../components/AxesDesign';
-import FontDesign from '../components/FontDesign';
-import LegendEditor from '../components/LegendEditor';
-import SelectCellSets from './components/SelectCellSets';
+import PropTypes from 'prop-types';
+import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
+import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
+import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
+import FontDesign from '../../../../../components/plot-styling/FontDesign';
+import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
+import SelectCellSets from '../../../../../components/plot-styling/frequency/SelectCellSets';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateFrequencySpec';
-import Header from '../components/Header';
-import isBrowser from '../../../../../utils/environment';
+import Header from '../../../../../components/plot-styling/Header';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -37,7 +37,7 @@ const route = {
   breadcrumbName: 'Frequency plot',
 };
 
-const frequencyPlot = ({ experimentId }) => {
+const FrequencyPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
@@ -277,4 +277,8 @@ const frequencyPlot = ({ experimentId }) => {
   );
 };
 
-export default frequencyPlot;
+FrequencyPlot.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+};
+
+export default FrequencyPlot;
