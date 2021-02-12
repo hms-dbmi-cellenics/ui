@@ -19,7 +19,7 @@ import plot1Pic from '../../../../../../../../static/media/plot1.png';
 import plot2Pic from '../../../../../../../../static/media/plot2.png';
 import plotData2 from './cellRank_sorted.json';
 import plotData from './new_data.json';
-import PlotStyling from '../../../../../../../components/plots/styling/PlotStyling';
+import OldPlotStyling from '../../../../../../../components/plots/styling/OldPlotStyling';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;
@@ -530,7 +530,7 @@ class CellSizeDistribution extends React.Component {
                   max={400}
                 />
               </Panel>
-              <PlotStyling
+              <OldPlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}
                 updatePlotWithChanges={this.updatePlotWithChanges}
