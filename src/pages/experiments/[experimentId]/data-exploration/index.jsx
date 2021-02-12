@@ -8,12 +8,12 @@ import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import Header from '../../../../components/Header';
-import CellSetsTool from './components/cell-sets-tool/CellSetsTool';
-import GeneListTool from './components/gene-list-tool/GeneListTool';
-import DiffExprManager from './components/differential-expression-tool/DiffExprManager';
-import Embedding from './components/embedding/Embedding';
-import { COMPONENT_TYPE, HeatmapPlot } from './components/heatmap/HeatmapPlot';
-import HeatmapSettings from './components/heatmap/HeatmapSettings';
+import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
+import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
+import DiffExprManager from '../../../../components/data-exploration/differential-expression-tool/DiffExprManager';
+import Embedding from '../../../../components/data-exploration/embedding/Embedding';
+import { COMPONENT_TYPE, HeatmapPlot } from '../../../../components/data-exploration/heatmap/HeatmapPlot';
+import HeatmapSettings from '../../../../components/data-exploration/heatmap/HeatmapSettings';
 import { updateLayout, addWindow, addToWindow } from '../../../../redux/actions/layout';
 import SearchMenu from '../../../../components/SearchMenu';
 
