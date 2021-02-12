@@ -12,14 +12,14 @@ import CalculationConfig from './CalculationConfig';
 import generateElbowSpec from '../../../../../../utils/plotSpecs/generateElbowSpec';
 import fakeData from './fake_new_data.json';
 
-import DimensionsRangeEditor from '../../../../../../components/plotStyling/DimensionsRangeEditor';
-import AxesDesign from '../../../../../../components/plotStyling/AxesDesign';
-import PointDesign from '../../../../../../components/plotStyling/PointDesign';
-import TitleDesign from '../../../../../../components/plotStyling/TitleDesign';
-import FontDesign from '../../../../../../components/plotStyling/FontDesign';
-import LegendEditor from '../../../../../../components/plotStyling/LegendEditor';
-import LabelsDesign from '../../../../../../components/plotStyling/LabelsDesign';
-import ColourInversion from '../../../../../../components/plotStyling/ColourInversion';
+import DimensionsRangeEditor from '../../../../../../components/plots/styling/DimensionsRangeEditor';
+import AxesDesign from '../../../../../../components/plots/styling/AxesDesign';
+import PointDesign from '../../../../../../components/plots/styling/PointDesign';
+import TitleDesign from '../../../../../../components/plots/styling/TitleDesign';
+import FontDesign from '../../../../../../components/plots/styling/FontDesign';
+import LegendEditor from '../../../../../../components/plots/styling/LegendEditor';
+import LabelsDesign from '../../../../../../components/plots/styling/LabelsDesign';
+import ColourInversion from '../../../../../../components/plots/styling/ColourInversion';
 
 const defaultPlotStylingConfig = {
   legendEnabled: 'true',
