@@ -20,6 +20,7 @@ import FontDesign from '../../../../../../components/plots/styling/FontDesign';
 import LegendEditor from '../../../../../../components/plots/styling/LegendEditor';
 import LabelsDesign from '../../../../../../components/plots/styling/LabelsDesign';
 import ColourInversion from '../../../../../../components/plots/styling/ColourInversion';
+import PlotStyling from '../../../../../../components/plots/styling/PlotStyling';
 
 const defaultPlotStylingConfig = {
   legendEnabled: 'true',
@@ -94,68 +95,71 @@ const DataIntegration = () => {
   };
 
   const plotSpecificStyling = {
-    samplePlot: () => (
-      <>
-        <Panel header='Colours' key='colors'>
-          <ColourInversion
-            config={config}
-            onUpdate={updatePlotWithChanges}
-          />
-          <Alert
-            message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
-            type='info'
-          />
-        </Panel>
-
-        <Panel header='Legend' key='legend'>
-          <LegendEditor
-            onUpdate={updatePlotWithChanges}
-            legendEnabled={config.legendEnabled}
-            legendPosition={config.legendPosition}
-            legendOptions='top-bot'
-          />
-        </Panel>
-        <Panel header='Markers' key='marker'>
-          <PointDesign config={config} onUpdate={updatePlotWithChanges} />
-        </Panel>
-        <Panel header='Labels' key='labels'>
-          <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
-        </Panel>
-      </>
-    ),
-    frequencyPlot: () => (
-      <>
-        <Panel header='Colours' key='colors'>
-          <ColourInversion
-            config={config}
-            onUpdate={updatePlotWithChanges}
-          />
-          <Alert
-            message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
-            type='info'
-          />
-        </Panel>
-        <Panel header='Legend' key='legend'>
-          <LegendEditor
-            onUpdate={updatePlotWithChanges}
-            legendEnabled={config.legendEnabled}
-            legendPosition={config.legendPosition}
-            legendOptions='top-bot'
-          />
-        </Panel>
-      </>
-    ),
-    elbowPlot: () => (
-      <>
-        <Panel header='Colours' key='colors'>
-          <ColourInversion
-            config={config}
-            onUpdate={updatePlotWithChanges}
-          />
-        </Panel>
-      </>
-    ),
+    samplePlot: [
+      {
+        panelTitle: 'Colours',
+        controls: ['colourInversion'],
+        footer: <Alert
+          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          type='info'
+        />,
+      },
+      {
+        panelTitle: 'Legends',
+        controls: ['legend'],
+      },
+      {
+        panelTitle: 'Markers',
+        controls: ['markers'],
+      },
+      {
+        panelTitle: 'Labels',
+        controls: ['labels'],
+      },
+    ],
+    frequencyPlot: [
+      {
+        panelTitle: 'Colours',
+        controls: ['colourInversion'],
+        footer: <Alert
+          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          type='info'
+        />,
+      },
+      {
+        panelTitle: 'Legends',
+        controls: ['legend'],
+      },
+    ],
+    elbowPlot: [
+      {
+        panelTitle: 'Colours',
+        controls: ['colourInversion'],
+      },
+    ],
   };
+
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Main schema',
+      controls: ['dimensions'],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Axes and Margins',
+      controls: ['axes'],
+    },
+    ...plotSpecificStyling[activePlotKey],
+  ];
 
   useEffect(() => {
     setCurrentConfig(persistedConfigs[activePlotKey]);
@@ -216,39 +220,17 @@ const DataIntegration = () => {
       {miniaturesColumn}
       <Col span={1} />
       <Col span={5}>
-        <Collapse defaultActiveKey={['data-integration']}>
-          <Panel header='Data Integration' key='data-integration'>
-            <CalculationConfig experimentId={experimentId} />
-          </Panel>
-          <Panel header='Plot Styling' key='styling'>
-            <Collapse accordion>
-              <Panel header='Main Schema' key='main-schema'>
-                <DimensionsRangeEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                />
-                <Collapse accordion>
-                  <Panel header='Define and Edit Title' key='title'>
-                    <TitleDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                  <Panel header='Font' key='font'>
-                    <FontDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                </Collapse>
-              </Panel>
-              <Panel header='Axes and Margins' key='axes'>
-                <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
-              </Panel>
-              {plotSpecificStyling[activePlotKey]()}
-            </Collapse>
-          </Panel>
-        </Collapse>
+        <Space direction='vertical' style={{ width: '100%' }}>
+          <Collapse defaultActiveKey={['data-integration']}>
+            <Panel header='Data Integration' key='data-integration'>
+              <CalculationConfig experimentId={experimentId} />
+            </Panel>
+            <Panel header='Plot Styling' key='styling'>
+              <div style={{ height: 8 }} />
+              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+            </Panel>
+          </Collapse>
+        </Space>
       </Col>
     </Row>
   );
