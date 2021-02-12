@@ -13,7 +13,7 @@ import { fetchCachedWork } from '../../../../utils/cacheRequest';
 import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
-jest.mock('../../../../../../../utils/cacheRequest', () => ({
+jest.mock('../../../../utils/cacheRequest', () => ({
   fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
     A: {
       min: 0,

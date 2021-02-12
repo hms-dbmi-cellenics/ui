@@ -16,7 +16,7 @@ import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../
 
 jest.mock('localforage');
 
-jest.mock('../../../../../../../utils/cacheRequest', () => ({
+jest.mock('../../../../utils/cacheRequest', () => ({
   fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [{
       gene_names: 'R3ALG3N3',

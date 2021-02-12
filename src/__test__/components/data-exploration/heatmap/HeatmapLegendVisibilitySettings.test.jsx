@@ -79,8 +79,7 @@ const mockStore = configureMockStore([thunk]);
 configure({ adapter: new Adapter() });
 
 describe('HeatmapLegendVisibilitySettings', () => {
-  let component; let store; let
-    buttons;
+  let component; let store;
 
   afterEach(() => {
     component.unmount();
@@ -99,6 +98,8 @@ describe('HeatmapLegendVisibilitySettings', () => {
   });
 
   it('renders correctly', () => {
+    const buttons = component.find('Radio');
+
     // Should be rendered.
     expect(component.find('HeatmapLegendVisibilitySettings').length).toEqual(1);
 
