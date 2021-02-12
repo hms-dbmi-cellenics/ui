@@ -11,15 +11,6 @@ import CalculationConfig from './CalculationConfig';
 
 import generateElbowSpec from '../../../../../../utils/plotSpecs/generateElbowSpec';
 import fakeData from './fake_new_data.json';
-
-import DimensionsRangeEditor from '../../../../../../components/plots/styling/DimensionsRangeEditor';
-import AxesDesign from '../../../../../../components/plots/styling/AxesDesign';
-import PointDesign from '../../../../../../components/plots/styling/PointDesign';
-import TitleDesign from '../../../../../../components/plots/styling/TitleDesign';
-import FontDesign from '../../../../../../components/plots/styling/FontDesign';
-import LegendEditor from '../../../../../../components/plots/styling/LegendEditor';
-import LabelsDesign from '../../../../../../components/plots/styling/LabelsDesign';
-import ColourInversion from '../../../../../../components/plots/styling/ColourInversion';
 import PlotStyling from '../../../../../../components/plots/styling/PlotStyling';
 
 const defaultPlotStylingConfig = {

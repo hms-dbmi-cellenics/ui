@@ -10,6 +10,7 @@ import _ from 'lodash';
 import TitleDesign from './TitleDesign';
 import FontDesign from './FontDesign';
 import LegendEditor from './LegendEditor';
+import LabelsDesign from './LabelsDesign';
 import DimensionsRangeEditor from './DimensionsRangeEditor';
 import AxesDesign from './AxesDesign';
 import PointDesign from './PointDesign';
@@ -32,10 +33,11 @@ const PlotStyling = (props) => {
     title: (attr) => <TitleDesign key='title' config={config} onUpdate={onUpdate} {...attr} />,
     font: (attr) => <FontDesign key='font' config={config} onUpdate={onUpdate} {...attr} />,
     axes: (attr) => <AxesDesign key='axes' config={config} onUpdate={onUpdate} {...attr} />,
-    colourbar: (attr) => <ColourbarDesign key='colourbar' config={config} onUpdate={onUpdate} {...attr} />,
+    colourScheme: (attr) => <ColourbarDesign key='colourScheme' config={config} onUpdate={onUpdate} {...attr} />,
     colourInversion: (attr) => <ColourInversion key='colourInversion' config={config} onUpdate={onUpdate} {...attr} />,
     markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
     legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
+    labels: (attr) => <LabelsDesign key='legend' onUpdate={onUpdate} config={config} {...attr} />,
     volcanoDimensions: (attr) => <VolcanoDimensionsRangeEditor key='volcanoDimensions' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoThresholds: (attr) => <VolcanoThresholdsGuidesEditor key='volcanoThresholds' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoMarkers: (attr) => <VolcanoMarkersEditor key='volcanoMarkers' config={config} onUpdate={onUpdate} {...attr} />,

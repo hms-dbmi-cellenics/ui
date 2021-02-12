@@ -30,7 +30,7 @@ const LegendEditor = (props) => {
   };
 
   return (
-    <Form size='small' labelCol={{ span: 12 }} wrapperCol={{ span: 12 }}>
+    <Form>
 
       <p><strong>Toggle Legend</strong></p>
       <Form.Item>

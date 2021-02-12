@@ -150,7 +150,7 @@ const HeatmapPlot = () => {
     },
     {
       panelTitle: 'Colours',
-      controls: ['colourbar'],
+      controls: ['colourScheme'],
     },
     {
       panelTitle: 'Legend',

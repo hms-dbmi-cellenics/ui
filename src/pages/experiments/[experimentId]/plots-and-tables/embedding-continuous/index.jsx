@@ -130,7 +130,7 @@ const EmbeddingContinuousPlot = () => {
     },
     {
       panelTitle: 'Colours',
-      controls: ['colourbar', 'colourInversion'],
+      controls: ['colourScheme', 'colourInversion'],
     },
     {
       panelTitle: 'Markers',

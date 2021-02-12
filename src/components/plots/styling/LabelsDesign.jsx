@@ -14,11 +14,15 @@ const LabelsDesign = (props) => {
   const maxLabelSize = 50;
 
   return (
-    <>
-      <Radio.Group onChange={(e) => onUpdate({ label: { enabled: e.target.value } })} value={config.label.enabled}>
-        <Radio value>Show</Radio>
-        <Radio value={false}>Hide</Radio>
-      </Radio.Group>
+    <Form>
+
+      <p><strong>Toggle Legend</strong></p>
+      <Form.Item>
+        <Radio.Group onChange={(e) => onUpdate({ label: { enabled: e.target.value } })} value={config.label.enabled}>
+          <Radio value>Show</Radio>
+          <Radio value={false}>Hide</Radio>
+        </Radio.Group>
+      </Form.Item>
 
       <p><strong>Label Options</strong></p>
       <Form.Item
@@ -35,7 +39,7 @@ const LabelsDesign = (props) => {
           marks={{ 0: minLabelSize, 50: maxLabelSize }}
         />
       </Form.Item>
-    </>
+    </Form>
   );
 };
 
