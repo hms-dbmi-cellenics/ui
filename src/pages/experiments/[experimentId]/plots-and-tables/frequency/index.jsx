@@ -70,15 +70,12 @@ const frequencyPlot = () => {
   const optionsCellSets = getCellOptions('cellSets');
   useEffect(() => {
     if (!loading && config && !config.chosenClusters) {
-      console.log('updating chosenclusters and metadata');
       updatePlotWithChanges({
         metadata: optionsMetadata[0]?.key,
         chosenClusters: optionsCellSets[0].key,
       });
     }
   });
-  // console.log('frequency config stuff', config.metadata, config.ChosenClusters);
-  // console.log('frequency config stuff2', optionsMetadata[0]?.key, optionsCellSets[0].key);
 
   useEffect(() => {
     if (!config || loading) {

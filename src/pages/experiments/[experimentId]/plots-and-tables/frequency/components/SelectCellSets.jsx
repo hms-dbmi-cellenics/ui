@@ -29,8 +29,6 @@ const SelectCellSets = (props) => {
       return;
     }
     Array.from(options).forEach((option) => {
-      console.log('option key is ', option.key);
-
       selectOptions.push({
         value: firstLetterUppercase(option.key),
       });
@@ -39,7 +37,6 @@ const SelectCellSets = (props) => {
   };
   const metadataMenu = getSelectOptions(optionsMetadata);
   const cellSetMenu = getSelectOptions(optionsCellSets);
-  console.log('menus', metadataMenu, cellSetMenu);
   let menuValue;
   if (!metadataMenu) {
     menuValue = 'Sample';

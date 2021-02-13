@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import useSWR from 'swr';
 import {
   PageHeader, Row, Col, Button, Skeleton, Space,
@@ -14,7 +14,6 @@ import { savePlotConfig } from '../../../../../redux/actions/componentConfig/ind
 import itemRender from '../../../../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../../../../utils/apiEndpoint';
 import { getFromApiExpectOK } from '../../../../../utils/cacheRequest';
-import FeedbackButton from '../../../../../components/FeedbackButton';
 import { LOAD_CONFIG } from '../../../../../redux/actionTypes/componentConfig';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
@@ -33,7 +32,7 @@ const Header = (props) => {
   const type = useSelector((state) => state.componentConfig[plotUuid].type);
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const reset = useRef(true);
-  const debounceSave = useRef(_.debounce(savePlotConfig(experimentId, plotUuid), 3000)).current;
+  const debounceSave = useCallback(_.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
 
   if (!_.isEqual(config, initialPlotConfigStates[type])) {
     reset.current = false;
@@ -48,14 +47,9 @@ const Header = (props) => {
   useEffect(() => {
     if (!saved && config) {
       debounceSave();
-      console.log('****************saved', config);
     }
   }, [config]);
-  // useEffect(() => {
-  //   if (!saved) {
-  //     dispatch(savePlotConfig(experimentId, plotUuid));
-  //   }
-  // }, [router.asPath, router.events, saved]);
+
   useEffect(() => {
     const showPopupWhenUnsaved = (url) => {
       // Only handle if we are navigating away.
@@ -77,7 +71,8 @@ const Header = (props) => {
         // eslint-disable-next-line no-throw-literal
         throw `Route change to "${url}" was aborted (this error can be safely ignored). See https://github.com/zeit/next.js/issues/2476.`;
       } else {
-        savePlotConfig(experimentId, plotUuid);
+        // if we click 'ok' the config is changed
+        dispatch(savePlotConfig(experimentId, plotUuid));
       }
     };
 

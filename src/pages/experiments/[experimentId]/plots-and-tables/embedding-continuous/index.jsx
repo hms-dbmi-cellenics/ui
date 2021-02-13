@@ -128,7 +128,7 @@ const EmbeddingContinuousPlot = () => {
     if (expressionError || !expressionLoading.length) {
       return (
         <PlatformError
-          description={expressionError}
+          description='Expression could not load. You may be able to try again.'
           onClick={() => dispatch(loadGeneExpression(experimentId, [config.shownGene]))}
         />
       );
@@ -202,7 +202,7 @@ const EmbeddingContinuousPlot = () => {
               <Search
                 style={{ width: '100%' }}
                 enterButton='Search'
-                defaultValue={config.shownGene}
+                value={config.shownGene}
                 onSearch={(val) => changeDislayedGene(val)}
               />
             </Panel>
