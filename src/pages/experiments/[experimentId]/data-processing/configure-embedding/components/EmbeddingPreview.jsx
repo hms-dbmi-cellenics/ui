@@ -108,13 +108,49 @@ const EmbeddingPreview = (props) => {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
   }, [selectedPlot]);
-
-  useEffect(() => {
+  const saveIfUnsaved = () => {
     Object.keys(plots).forEach((key) => {
       if (key.notSaved) {
         dispatch(savePlotConfig(experimentId, key.plotUuid));
       }
     });
+  };
+
+  useEffect(() => {
+    saveIfUnsaved();
+  }, [config]);
+
+  useEffect(() => {
+    const showPopupWhenUnsaved = (url) => {
+      // Only handle if we are navigating away.
+      if (router.asPath === url) {
+        return;
+      }
+
+      // Show a confirmation dialog. Prevent moving away if the user decides not to.
+      // eslint-disable-next-line no-alert
+      if (
+        !window.confirm(
+          'You have unsaved changes. Do you wish to save?',
+        )
+      ) {
+        router.events.emit('routeChangeError');
+        // Following is a hack-ish solution to abort a Next.js route change
+        // as there's currently no official API to do so
+        // See https://github.com/zeit/next.js/issues/2476#issuecomment-573460710
+        // eslint-disable-next-line no-throw-literal
+        throw `Route change to "${url}" was aborted (this error can be safely ignored). See https://github.com/zeit/next.js/issues/2476.`;
+      } else {
+        // if we click 'ok' the config is changed
+        saveIfUnsaved();
+      }
+    };
+
+    router.events.on('routeChangeStart', showPopupWhenUnsaved);
+
+    return () => {
+      router.events.off('routeChangeStart', showPopupWhenUnsaved);
+    };
   }, [router.asPath, router.events]);
 
   const updatePlotWithChanges = (obj) => {
