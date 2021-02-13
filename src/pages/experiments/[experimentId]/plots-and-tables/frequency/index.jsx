@@ -11,18 +11,17 @@ import {
   Radio,
   Alert,
 } from 'antd';
-import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import TitleDesign from '../components/TitleDesign';
-import AxesDesign from '../components/AxesDesign';
-import FontDesign from '../components/FontDesign';
-import LegendEditor from '../components/LegendEditor';
-import SelectCellSets from './components/SelectCellSets';
+import PropTypes from 'prop-types';
+import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
+import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
+import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
+import FontDesign from '../../../../../components/plot-styling/FontDesign';
+import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
+import SelectCellSets from '../../../../../components/plot-styling/frequency/SelectCellSets';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateFrequencySpec';
-import Header from '../components/Header';
-import isBrowser from '../../../../../utils/environment';
+import Header from '../../../../../components/plot-styling/Header';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -38,25 +37,20 @@ const route = {
   breadcrumbName: 'Frequency plot',
 };
 
-const frequencyPlot = () => {
+const FrequencyPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const {
     loading, error, hierarchy, properties,
   } = cellSets;
-  const router = useRouter();
-  const { experimentId } = router.query;
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (!experimentId || !isBrowser) {
-      return;
-    }
     dispatch(loadCellSets(experimentId));
-
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, [experimentId]);
+
   const getCellOptions = (type) => {
     const filteredOptions = hierarchy.filter((element) => (
       properties[element.key].type === type
@@ -66,8 +60,10 @@ const frequencyPlot = () => {
     }
     return filteredOptions;
   };
+
   const optionsMetadata = getCellOptions('metadataCategorical');
   const optionsCellSets = getCellOptions('cellSets');
+
   useEffect(() => {
     if (!loading && config && !config.chosenClusters) {
       updatePlotWithChanges({
@@ -176,7 +172,7 @@ const frequencyPlot = () => {
         />
       );
     }
-    if (!config || loading || !isBrowser) {
+    if (!config || loading) {
       return (
         <center>
           <Spin size='large' />
@@ -282,4 +278,8 @@ const frequencyPlot = () => {
   );
 };
 
-export default frequencyPlot;
+FrequencyPlot.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+};
+
+export default FrequencyPlot;

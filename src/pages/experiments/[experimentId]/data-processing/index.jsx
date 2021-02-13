@@ -1,118 +1,132 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
-  PageHeader, Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
+  Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
 } from 'antd';
-
 import {
   LeftOutlined,
   RightOutlined,
+  CheckOutlined,
+  CaretRightOutlined,
+  EllipsisOutlined,
 } from '@ant-design/icons';
-import useSWR from 'swr';
-import { useRouter } from 'next/router';
-import Error from '../../../_error';
-import FeedbackButton from '../../../../components/FeedbackButton';
-import getApiEndpoint from '../../../../utils/apiEndpoint';
-import { getFromApiExpectOK } from '../../../../utils/cacheRequest';
-import PreloadContent from '../../../../components/PreloadContent';
 
-import CellSizeDistribution from './filter-cells/components/CellSizeDistribution/CellSizeDistribution';
-import MitochondrialContent from './filter-cells/components/MitochondrialContent/MitochondrialContent';
-import Classifier from './filter-cells/components/Classifier/Classifier';
-import GenesVsUMIs from './filter-cells/components/GenesVsUMIs/GenesVsUMIs';
-import DoubletScores from './filter-cells/components/DoubletScores/DoubletScores';
-import DataIntegration from './data-integration/components/DataIntegration';
-import EmbeddingPreview from './configure-embedding/components/EmbeddingPreview';
+import Header from '../../../../components/Header';
+import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
+import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
+import Classifier from '../../../../components/data-processing/Classifier/Classifier';
+import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/GenesVsUMIs';
+import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
+import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
+import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
+import { completeProcessingStep } from '../../../../redux/actions/experimentSettings';
 
 const { Text } = Typography;
 const { Option } = Select;
 
-const DataProcessingPage = () => {
-  const router = useRouter();
-  const { experimentId } = router.query;
-
+const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const steps = [
     {
-      id: 'cellSizeDistribution',
+      key: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
-      render: () => <CellSizeDistribution filtering />,
+      render: (key) => <CellSizeDistribution filtering key={key} />,
     },
     {
-      id: 'mitoContentFilter',
+      key: 'mitoContentFilter',
       name: 'Mitochondrial content filter',
-      render: () => <MitochondrialContent filtering />,
+      render: (key) => <MitochondrialContent filtering key={key} />,
     },
     {
-      id: 'classifierFilter',
+      key: 'classifierFilter',
       name: 'Classifier filter',
-      render: () => <Classifier filtering />,
+      render: (key) => <Classifier filtering key={key} />,
     },
     {
-      id: 'genesVsUMIFilter',
+      key: 'genesVsUMIFilter',
       name: 'Number of genes vs UMIs filter',
-      render: () => <GenesVsUMIs filtering />,
+      render: (key) => <GenesVsUMIs filtering key={key} />,
     },
     {
-      id: 'doubletFilter',
+      key: 'doubletFilter',
       name: 'Doublet filter',
-      render: () => <DoubletScores filtering />,
+      render: (key) => <DoubletScores filtering key={key} />,
     },
     {
-      id: 'dataIntegration',
+      key: 'dataIntegration',
       name: 'Data integration',
-      render: () => <DataIntegration filtering />,
+      render: (key) => <DataIntegration filtering key={key} />,
     },
     {
-      id: 'comptueEmbeddingFilter',
+      key: 'comptueEmbeddingFilter',
       name: 'Compute embedding',
-      render: (expId) => <EmbeddingPreview experimentId={expId} />,
+      render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} />,
     },
   ];
 
-  const { data, error } = useSWR(`${getApiEndpoint()}/v1/experiments/${experimentId}`, getFromApiExpectOK);
+  const dispatch = useDispatch();
+  const [stepIdx, setStepIdx] = useState(0);
 
-  const [stepId, setStepId] = useState(0);
-
-  const [completedSteps, setCompletedSteps] = useState(new Set());
-
+  const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    setCompletedSteps(new Set([...completedSteps]).add(steps[stepId].id));
-
     if (carouselRef.current) {
-      carouselRef.current.goTo(stepId);
+      carouselRef.current.goTo(stepIdx);
     }
-  }, [stepId]);
-
-  if (!data || !experimentId) {
-    return <PreloadContent />;
-  }
-
-  if (error) {
-    if (error.payload === undefined) {
-      return <Error errorText='Cannot connect to API service.' />;
-    }
-    const { status } = error.payload;
-    return <Error errorText={status} />;
-  }
+  }, [stepIdx]);
 
   const renderTitle = () => (
     <Row justify='space-between'>
       <Col span='8'>
         <Select
-          value={stepId}
-          onChange={(id) => setStepId(id)}
+          value={stepIdx}
+          onChange={(idx) => {
+            setStepIdx(idx);
+            dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
+          }}
           style={{ width: 360, fontWeight: 'bold' }}
           placeholder='Jump to a step...'
         >
           {
             steps.map(
-              ({ name, id }, i) => (
+              ({ name, key }, i) => (
                 <Option
                   value={i}
-                  disabled={!completedSteps.has(id)}
+                  key={key}
+                  disabled={!completedSteps.has(key) && i !== stepIdx + 1}
                 >
-                  {name}
+
+                  {completedSteps.has(key) && (
+                    <>
+                      <Text
+                        type='success'
+                      >
+                        <CheckOutlined />
+                      </Text>
+                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                    </>
+                  )}
+
+                  {!completedSteps.has(key) && stepIdx === i && (
+                    <Text
+                      type='default'
+                    >
+                      <CaretRightOutlined />
+                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                    </Text>
+                  )}
+
+                  {!completedSteps.has(key) && stepIdx !== i && (
+                    <>
+                      <Text
+                        disabled
+                      >
+                        <EllipsisOutlined />
+                      </Text>
+                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                    </>
+                  )}
                 </Option>
               ),
             )
@@ -129,9 +143,9 @@ const DataProcessingPage = () => {
             />
             <Text type='primary'>{`${completedSteps.size} of ${steps.length} steps complete`}</Text>
             <Button
-              disabled={stepId === 0}
+              disabled={stepIdx === 0}
               icon={<LeftOutlined />}
-              onClick={() => setStepId(Math.max(stepId - 1, 0))}
+              onClick={() => setStepIdx(Math.max(stepIdx - 1, 0))}
             >
               Previous
             </Button>
@@ -139,13 +153,26 @@ const DataProcessingPage = () => {
               type='primary'
               onClick={
                 () => {
-                  const newId = Math.min(stepId + 1, steps.length - 1);
-                  setStepId(newId);
+                  const newId = Math.min(stepIdx + 1, steps.length - 1);
+                  setStepIdx(newId);
+
+                  dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
                 }
               }
             >
-              Next
-              <RightOutlined />
+              {stepIdx !== steps.length - 1
+                ? (
+                  <>
+                    Next
+                    <RightOutlined />
+                  </>
+                )
+                : (
+                  <>
+                    <span style={{ marginRight: '0.25rem' }}>Finish</span>
+                    <CheckOutlined />
+                  </>
+                )}
             </Button>
           </Space>
         </div>
@@ -159,11 +186,11 @@ const DataProcessingPage = () => {
         paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', minHeight: '100vh',
       }}
       >
-        <PageHeader
+        <Header
+          experimentId={experimentId}
+          experimentData={experimentData}
+          route={route}
           title='Data processing'
-          extra={(
-            <FeedbackButton />
-          )}
         />
 
         <Card
@@ -171,12 +198,18 @@ const DataProcessingPage = () => {
           style={{ flex: 1 }}
         >
           <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
-            {steps.map((step) => step.render(experimentId))}
+            {steps.map(({ render, key }) => render(key, experimentId))}
           </Carousel>
         </Card>
       </div>
     </>
   );
+};
+
+DataProcessingPage.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  experimentData: PropTypes.object.isRequired,
+  route: PropTypes.string.isRequired,
 };
 
 export default DataProcessingPage;
