@@ -47,7 +47,6 @@ const ConfigureEmbedding = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
-  const outstandingChanges = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges);
 
   const plots = {
     sample: {
@@ -80,6 +79,7 @@ const ConfigureEmbedding = (props) => {
       plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewDoubletScore' />),
     },
   };
+  const outstandingChanges = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges);
 
   const config = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
