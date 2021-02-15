@@ -300,8 +300,7 @@ const interactiveHeatmapInitialConfig = {
 
 // DATA INTEGRATION - Frequency
 const dataIntegrationFrequencyInitialConfig = {
-  spec: '1.0.0',
-  frequencyType: 'proportional',
+  ...frequencyInitialConfig,
   xAxisGrouping: 'louvain',
   proportionGrouping: 'sample',
   legend: {
@@ -310,20 +309,12 @@ const dataIntegrationFrequencyInitialConfig = {
     position: 'top',
     offset: 10,
   },
-  label: labelBaseState,
-  dimensions: dimensionsBaseState,
-  marker: markerBaseState,
-  colour: colourBaseState,
-  title: titleBaseState,
   axes: {
     ...axesBaseState,
     xAxisText: 'Louvain clusters',
     yAxisText: 'Proportion',
     offset: 10,
   },
-  fontStyle: fontStyleBaseState,
-  axisTitlesize: 13,
-  geneexpLegendloc: '',
 };
 
 const initialPlotConfigStates = {
