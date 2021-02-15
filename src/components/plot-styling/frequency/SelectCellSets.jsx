@@ -14,13 +14,13 @@ const SelectCellSets = (props) => {
   const firstLetterUppercase = (word) => word?.charAt(0).toUpperCase() + word?.slice(1);
   const changeClusters = (val) => {
     const newValue = val.key.toLowerCase();
-    onUpdate({ chosenClusters: newValue });
+    onUpdate({ proportionGrouping: newValue });
   };
   let disabled = false;
   let toolTipText;
   const changeMetadata = (val) => {
     const newValue = val.key.toLowerCase();
-    onUpdate({ metadata: newValue });
+    onUpdate({ xAxisGrouping: newValue });
   };
 
   const getSelectOptions = (options) => {
@@ -43,7 +43,7 @@ const SelectCellSets = (props) => {
     disabled = true;
     toolTipText = 'The x-axis cannot be changed as this dataset has only a single sample.';
   } else {
-    menuValue = firstLetterUppercase(config.metadata);
+    menuValue = firstLetterUppercase(config.xAxisGrouping);
   }
   return (
     <>
@@ -73,7 +73,7 @@ const SelectCellSets = (props) => {
       <Form.Item>
         <Select
           value={{
-            key: firstLetterUppercase(config.chosenClusters),
+            key: firstLetterUppercase(config.proportionGrouping),
           }}
           onChange={changeClusters}
           labelInValue

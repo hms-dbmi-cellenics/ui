@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
 import {
-  Row, Col, Space, Collapse, Alert,
+  Row, Col, Space, Collapse, Alert, Spin,
 } from 'antd';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
 
-import { Vega } from 'react-vega';
 import CalculationConfig from './CalculationConfig';
 
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
-
-import generateElbowSpec from '../../../utils/plotSpecs/generateElbowSpec';
-import fakeData from './fake_new_data.json';
 
 import DimensionsRangeEditor from '../../plot-styling/DimensionsRangeEditor';
 import AxesDesign from '../../plot-styling/AxesDesign';
@@ -24,31 +20,59 @@ import LegendEditor from '../../plot-styling/LegendEditor';
 import LabelsDesign from '../../plot-styling/LabelsDesign';
 import ColourInversion from '../../plot-styling/ColourInversion';
 
-const defaultPlotStylingConfig = {
-  legendEnabled: 'true',
-  legendPosition: 'top',
-  labelsEnabled: true,
-  labelSize: 28,
-  xAxisText: 'Principal Components',
-  yAxisText: 'Proportion of Variance Explained',
-  xDefaultTitle: 'Principal Components',
-  yDefaultTitle: 'Proportion of Variance Explained',
-  titleSize: 12,
-  titleText: 'Scree plot',
-  titleDx: 10,
-  titleAnchor: 'start',
-  masterFont: 'sans-serif',
-  masterSize: 13,
-  xaxisText: 'Principal Components',
-  yaxisText: 'Proportion of Variance Explained',
-  axisTitlesize: 13,
-  axisTicks: 13,
-  axisOffset: 0,
-  transGrid: 10,
-  width: 530,
-  height: 400,
-  maxWidth: 720,
-  maxHeight: 530,
+import loadCellSets from '../../../redux/actions/cellSets/loadCellSets';
+
+import PlatformError from '../../PlatformError';
+
+import {
+  loadPlotConfig,
+} from '../../../redux/actions/componentConfig/index';
+
+import fakeData from './fake_new_data.json';
+
+import FrequencyPlot from '../../plots/FrequencyPlot';
+import ElbowPlot from '../../plots/ElbowPlot';
+
+const defaultElbowPlotStylingConfig = {
+  legend: {
+    enabled: 'true',
+    position: 'top',
+  },
+  label: {
+    enabled: true,
+    size: 28,
+  },
+  dimensions: {
+    width: 530,
+    height: 400,
+    maxWidth: 720,
+    maxHeight: 530,
+  },
+  marker: {
+    shape: 'circle',
+    opacity: 5,
+    size: 5,
+  },
+  axes: {
+    xAxisText: 'Principal Components',
+    yAxisText: 'Proportion of Variance Explained',
+    titleFont: 'sans-serif',
+    labelFont: 'sans-serif',
+    titleFontSize: 13,
+    labelFontSize: 13,
+    offset: 0,
+    gridOpacity: 10,
+  },
+  colour: {
+    toggleInvert: '#FFFFFF',
+  },
+  title: {
+    text: '',
+    anchor: 'start',
+    font: 'sans-serif',
+    fontSize: 12,
+    dx: 10,
+  },
   signals: [
     {
       name: 'interpolate',
@@ -69,50 +93,110 @@ const defaultPlotStylingConfig = {
       },
     },
   ],
-  pointSize: 5,
-  pointOpa: 5,
-  pointStyle: 'circle',
-  toggleInvert: '#FFFFFF',
 };
 
-// This will be taken with a useSelector eventually
-const persistedConfigs = {
-  samplePlot: _.cloneDeep(defaultPlotStylingConfig),
-  frequencyPlot: _.cloneDeep(defaultPlotStylingConfig),
-  elbowPlot: _.cloneDeep(defaultPlotStylingConfig),
+const frequencyPlotConfigRedux = {
+  uuid: 'dataIntegrationFrequency',
+  type: 'dataIntegrationFrequency',
 };
 
 const DataIntegration = () => {
   const { Panel } = Collapse;
+
+  const dispatch = useDispatch();
   const router = useRouter();
   const { experimentId } = router.query;
-  const dispatch = useDispatch();
+
+  const [activePlotKey, setActivePlotKey] = useState('frequencyPlot');
+
+  const cellSets = useSelector((state) => state.cellSets);
+  const {
+    loading, error, hierarchy, properties,
+  } = cellSets;
 
   const calculationConfig = useSelector(
     (state) => state.experimentSettings.processing.dataIntegration,
   );
 
-  const [activePlotKey, setActivePlotKey] = useState('elbowPlot');
-  const [config, setCurrentConfig] = useState(persistedConfigs.elbowPlot);
+  const updatedForCurrentEnvironment = (originalConfig) => {
+    if (!originalConfig) { return originalConfig; }
+
+    if (properties.sample) {
+      return originalConfig;
+    }
+
+    // We are in local environment, so display the other cluster we can show, which is 'condition'
+    const newConfig = _.cloneDeep(originalConfig);
+
+    return newConfig;
+  };
+
+  // This will be taken with a useSelector eventually
+  const persistedConfigs = {
+    samplePlot: _.cloneDeep(defaultElbowPlotStylingConfig),
+    frequencyPlot: useSelector(
+      (state) => (
+        updatedForCurrentEnvironment(state.componentConfig[frequencyPlotConfigRedux.uuid]?.config)
+      ),
+    ),
+    elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
+  };
+
+  const renderIfAvailable = (renderFunc, loadingElement) => {
+    if (!loadingElement || loading) {
+      return (
+        <Spin size='large' />
+      );
+    }
+
+    if (error) {
+      return (
+        <PlatformError
+          description={error}
+          onClick={() => loadCellSets(experimentId)}
+        />
+      );
+    }
+
+    return renderFunc(loadingElement);
+  };
+
+  const activeConfig = persistedConfigs[activePlotKey];
+
+  const plots = {
+    samplePlot: (configInput, actions) => (
+      <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />
+    ),
+    frequencyPlot: (configInput, actions) => (
+      <FrequencyPlot
+        config={configInput}
+        hierarchy={hierarchy}
+        properties={properties}
+        actions={actions}
+      />
+    ),
+    elbowPlot: (configInput, actions) => (
+      <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />
+    ),
+  };
 
   useEffect(() => {
-    if (experimentId && !calculationConfig) {
+    if (!calculationConfig) {
       dispatch(loadProcessingSettings(experimentId));
     }
-  }, [experimentId]);
 
-  const plotElements = {
-    samplePlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
-    frequencyPlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
-    elbowPlot: (configInput, actions) => <Vega data={{ plotData: fakeData }} spec={generateElbowSpec(configInput)} renderer='canvas' actions={actions} />,
-  };
+    dispatch(loadCellSets(experimentId));
+    dispatch(
+      loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
+    );
+  }, [experimentId]);
 
   const plotSpecificStyling = {
     samplePlot: () => (
       <>
         <Panel header='Colours' key='colors'>
           <ColourInversion
-            config={config}
+            config={activeConfig}
             onUpdate={updatePlotWithChanges}
           />
           <Alert
@@ -124,16 +208,15 @@ const DataIntegration = () => {
         <Panel header='Legend' key='legend'>
           <LegendEditor
             onUpdate={updatePlotWithChanges}
-            legendEnabled={config.legendEnabled}
-            legendPosition={config.legendPosition}
-            legendOptions='top-bot'
+            config={activeConfig}
+            option='top-bottom'
           />
         </Panel>
         <Panel header='Markers' key='marker'>
-          <PointDesign config={config} onUpdate={updatePlotWithChanges} />
+          <PointDesign config={activeConfig} onUpdate={updatePlotWithChanges} />
         </Panel>
         <Panel header='Labels' key='labels'>
-          <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
+          <LabelsDesign config={activeConfig} onUpdate={updatePlotWithChanges} />
         </Panel>
       </>
     ),
@@ -141,7 +224,7 @@ const DataIntegration = () => {
       <>
         <Panel header='Colours' key='colors'>
           <ColourInversion
-            config={config}
+            config={activeConfig}
             onUpdate={updatePlotWithChanges}
           />
           <Alert
@@ -152,9 +235,8 @@ const DataIntegration = () => {
         <Panel header='Legend' key='legend'>
           <LegendEditor
             onUpdate={updatePlotWithChanges}
-            legendEnabled={config.legendEnabled}
-            legendPosition={config.legendPosition}
-            legendOptions='top-bot'
+            config={activeConfig}
+            option='top-bottom'
           />
         </Panel>
       </>
@@ -163,7 +245,7 @@ const DataIntegration = () => {
       <>
         <Panel header='Colours' key='colors'>
           <ColourInversion
-            config={config}
+            config={activeConfig}
             onUpdate={updatePlotWithChanges}
           />
         </Panel>
@@ -171,15 +253,9 @@ const DataIntegration = () => {
     ),
   };
 
-  useEffect(() => {
-    setCurrentConfig(persistedConfigs[activePlotKey]);
-  }, [activePlotKey]);
-
   const updatePlotWithChanges = (configUpdates) => {
-    const newPlotConfig = _.cloneDeep(config);
+    const newPlotConfig = _.cloneDeep(activeConfig);
     _.merge(newPlotConfig, configUpdates);
-
-    setCurrentConfig(newPlotConfig);
   };
 
   const getMiniaturizedConfig = (miniaturesConfig, updatedWidth) => {
@@ -189,12 +265,15 @@ const DataIntegration = () => {
 
     const miniPlotConfig = _.cloneDeep(configWithoutSize);
 
-    miniPlotConfig.axisTitlesize = 5;
-    miniPlotConfig.axisTicks = 5;
+    miniPlotConfig.axes.titleFontSize = 5;
+    miniPlotConfig.axes.labelFontSize = 5;
 
-    miniPlotConfig.width = updatedWidth;
-    miniPlotConfig.height = updatedWidth * 0.8;
-    miniPlotConfig.signals[0].bind = undefined;
+    miniPlotConfig.dimensions.width = updatedWidth;
+    miniPlotConfig.dimensions.height = updatedWidth * 0.8;
+
+    miniPlotConfig.legend.enabled = false;
+
+    if (miniPlotConfig.signals) { miniPlotConfig.signals[0].bind = undefined; }
 
     return miniPlotConfig;
   };
@@ -213,7 +292,14 @@ const DataIntegration = () => {
                   padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
                 }}
               >
-                {plotElements[key](getMiniaturizedConfig(persistedConfig, updatedWidth), false)}
+                {
+                  renderIfAvailable(
+                    (loadedConfig) => (
+                      plots[key](getMiniaturizedConfig(loadedConfig, updatedWidth), false)
+                    ),
+                    persistedConfig,
+                  )
+                }
               </button>
             ))}
           </Space>
@@ -225,7 +311,9 @@ const DataIntegration = () => {
   return (
     <Row>
       <Col span={14}>
-        {plotElements[activePlotKey](config, true)}
+        {renderIfAvailable(
+          (loadedConfig) => plots[activePlotKey](loadedConfig, true), activeConfig,
+        )}
       </Col>
       {miniaturesColumn}
       <Col span={1} />
@@ -238,26 +326,26 @@ const DataIntegration = () => {
             <Collapse accordion>
               <Panel header='Main Schema' key='main-schema'>
                 <DimensionsRangeEditor
-                  config={config}
+                  config={activeConfig}
                   onUpdate={updatePlotWithChanges}
                 />
                 <Collapse accordion>
                   <Panel header='Define and Edit Title' key='title'>
                     <TitleDesign
-                      config={config}
+                      config={activeConfig}
                       onUpdate={updatePlotWithChanges}
                     />
                   </Panel>
                   <Panel header='Font' key='font'>
                     <FontDesign
-                      config={config}
+                      config={activeConfig}
                       onUpdate={updatePlotWithChanges}
                     />
                   </Panel>
                 </Collapse>
               </Panel>
               <Panel header='Axes and Margins' key='axes'>
-                <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
+                <AxesDesign config={activeConfig} onUpdate={updatePlotWithChanges} />
               </Panel>
               {plotSpecificStyling[activePlotKey]()}
             </Collapse>

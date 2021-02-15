@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useCallback, useRef,
+  useState, useEffect, useCallback,
 } from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';

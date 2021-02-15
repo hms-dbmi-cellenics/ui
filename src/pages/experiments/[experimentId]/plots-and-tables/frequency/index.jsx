@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Row,
   Col,
@@ -12,7 +12,6 @@ import {
   Alert,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
 import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
@@ -20,7 +19,6 @@ import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
 import FontDesign from '../../../../../components/plot-styling/FontDesign';
 import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
 import SelectCellSets from '../../../../../components/plot-styling/frequency/SelectCellSets';
-import { generateSpec } from '../../../../../utils/plotSpecs/generateFrequencySpec';
 import Header from '../../../../../components/plot-styling/Header';
 import {
   updatePlotConfig,
@@ -28,6 +26,8 @@ import {
 } from '../../../../../redux/actions/componentConfig/index';
 import PlatformError from '../../../../../components/PlatformError';
 import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
+
+import FrequencyPlot from '../../../../../components/plots/FrequencyPlot';
 
 const { Panel } = Collapse;
 const plotUuid = 'frequencyPlotMain';
@@ -37,14 +37,14 @@ const route = {
   breadcrumbName: 'Frequency plot',
 };
 
-const FrequencyPlot = ({ experimentId }) => {
+const frequencyPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
+
   const {
     loading, error, hierarchy, properties,
   } = cellSets;
-  const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
@@ -65,96 +65,13 @@ const FrequencyPlot = ({ experimentId }) => {
   const optionsCellSets = getCellOptions('cellSets');
 
   useEffect(() => {
-    if (!loading && config && !config.chosenClusters) {
+    if (!loading && config?.proportionGrouping === '') {
       updatePlotWithChanges({
-        metadata: optionsMetadata[0]?.key,
-        chosenClusters: optionsCellSets[0].key,
+        xAxisGrouping: optionsMetadata[0]?.key,
+        proportionGrouping: optionsCellSets[0].key,
       });
     }
   });
-
-  useEffect(() => {
-    if (!config || loading) {
-      return;
-    }
-    const spec = generateSpec(config);
-    generateData(spec);
-    setPlotSpec(spec);
-  }, [config, properties]);
-
-  const calculateSum = (chosenClusters, metadataIds) => {
-    let sum = 0;
-    if (!metadataIds.length) {
-      chosenClusters.forEach((cellSetCluster) => {
-        sum += properties[cellSetCluster.key].cellIds.size;
-      });
-      return sum;
-    }
-    chosenClusters.forEach((cellSetCluster) => {
-      const cellSetIds = Array.from(properties[cellSetCluster.key].cellIds);
-      sum += metadataIds.filter((id) => cellSetIds.includes(id)).length;
-    });
-    return sum;
-  };
-  const getMetadataClusters = (name) => (
-    hierarchy.filter((cluster) => (
-      cluster.key === name))[0]?.children
-  );
-
-  const generateData = (spec) => {
-    let data = [];
-    const chosenClusters = hierarchy.filter((cluster) => (
-      cluster.key === config.chosenClusters))[0]?.children;
-    if (!chosenClusters) {
-      return [];
-    }
-    const metadataClusters = getMetadataClusters(config.metadata);
-    // if no metadata clusters are available
-    // a plot is made with the cellset clusters
-    if (!metadataClusters) {
-      const sum = calculateSum(chosenClusters, []);
-      chosenClusters.forEach((clusterName) => {
-        const x = 1;
-        const y = properties[clusterName.key].cellIds.size;
-        const cluster = properties[clusterName.key];
-        data = populateData(x, y, cluster, sum, data);
-      });
-    } else {
-      metadataClusters.forEach((metadataCluster) => {
-        const metadataIds = Array.from(properties[metadataCluster.key].cellIds);
-        const sum = calculateSum(chosenClusters, metadataIds);
-
-        chosenClusters.forEach((clusterName) => {
-          const x = properties[metadataCluster.key].name;
-          const cellSetIds = Array.from(properties[clusterName.key].cellIds);
-          const y = metadataIds.filter((id) => cellSetIds.includes(id)).length;
-          const cluster = properties[clusterName.key];
-
-          if (y !== 0) {
-            data = populateData(x, y, cluster, sum, data);
-          }
-        });
-      });
-    }
-    spec.data.forEach((datum) => {
-      datum.values = data;
-    });
-    return data;
-  };
-
-  const populateData = (x, y, cluster, sum, data) => {
-    let value = y;
-    if (config.frequencyType === 'proportional') {
-      value = (y / sum) * 100;
-    }
-    data.push({
-      x,
-      y: value,
-      c: cluster.name,
-      color: cluster.color,
-    });
-    return data;
-  };
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -179,12 +96,10 @@ const FrequencyPlot = ({ experimentId }) => {
         </center>
       );
     }
+
     return (
       <center>
-        <Vega
-          spec={plotSpec}
-          renderer='canvas'
-        />
+        <FrequencyPlot hierarchy={hierarchy} properties={properties} config={config} />
       </center>
     );
   };
@@ -282,4 +197,4 @@ FrequencyPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default FrequencyPlot;
+export default frequencyPlot;
