@@ -18,7 +18,7 @@ import MitochondrialContent from './filter-cells/components/MitochondrialContent
 import Classifier from './filter-cells/components/Classifier/Classifier';
 import GenesVsUMIs from './filter-cells/components/GenesVsUMIs/GenesVsUMIs';
 import DoubletScores from './filter-cells/components/DoubletScores/DoubletScores';
-import DataIntegration from './data-integration/components/DataIntegration';
+import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import EmbeddingPreview from './configure-embedding/components/EmbeddingPreview';
 import { completeProcessingStep } from '../../../../redux/actions/experimentSettings';
 

@@ -22,7 +22,7 @@ import {
 
 import SeuratV4Options from './SeuratV4Options';
 
-import { updateProcessingSettings, saveProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+import { updateProcessingSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
 
 const { Option } = Select;
 const { Text } = Typography;

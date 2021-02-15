@@ -7,30 +7,30 @@ import {
 import _ from 'lodash';
 import { useRouter } from 'next/router';
 
-import DimensionsRangeEditor from '../../../plots-and-tables/components/DimensionsRangeEditor';
-import AxesDesign from '../../../plots-and-tables/components/AxesDesign';
-import PointDesign from '../../../plots-and-tables/components/PointDesign';
-import TitleDesign from '../../../plots-and-tables/components/TitleDesign';
-import FontDesign from '../../../plots-and-tables/components/FontDesign';
-import LegendEditor from '../../../plots-and-tables/components/LegendEditor';
-import LabelsDesign from '../../../plots-and-tables/components/LabelsDesign';
-import ColourInversion from '../../../plots-and-tables/components/ColourInversion';
+import DimensionsRangeEditor from '../../../pages/experiments/[experimentId]/plots-and-tables/components/DimensionsRangeEditor';
+import AxesDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/AxesDesign';
+import PointDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/PointDesign';
+import TitleDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/TitleDesign';
+import FontDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/FontDesign';
+import LegendEditor from '../../../pages/experiments/[experimentId]/plots-and-tables/components/LegendEditor';
+import LabelsDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/LabelsDesign';
+import ColourInversion from '../../../pages/experiments/[experimentId]/plots-and-tables/components/ColourInversion';
 
-import loadCellSets from '../../../../../../redux/actions/cellSets/loadCellSets';
+import loadCellSets from '../../../redux/actions/cellSets/loadCellSets';
 
-import CategoricalEmbeddingPlot from '../../../../../../components/plots/CategoricalEmbeddingPlot';
-import PlatformError from '../../../../../../components/PlatformError';
+import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
+import PlatformError from '../../PlatformError';
 
-import { loadProcessingSettings } from '../../../../../../redux/actions/experimentSettings';
+import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
 
 import {
   loadPlotConfig,
-} from '../../../../../../redux/actions/componentConfig/index';
+} from '../../../redux/actions/componentConfig/index';
 
 import CalculationConfig from './CalculationConfig';
 import fakeData from './fake_new_data.json';
 
-import FrequencyPlot from '../../../../../../components/plots/FrequencyPlot';
+import FrequencyPlot from '../../plots/FrequencyPlot';
 import ElbowPlot from './plots/ElbowPlot';
 
 const defaultElbowPlotStylingConfig = {
