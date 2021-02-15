@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount, configure } from 'enzyme';
+import preloadAll from 'jest-next-dynamic';
 import Adapter from 'enzyme-adapter-react-16';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -45,7 +46,9 @@ const store = mockStore({
 });
 
 describe('DataIntegration', () => {
-  configure({ adapter: new Adapter() });
+  beforeAll(async () => {
+    await preloadAll();
+  });
 
   beforeEach(async () => {
     Object.defineProperty(window, 'matchMedia', {
@@ -62,6 +65,8 @@ describe('DataIntegration', () => {
       })),
     });
   });
+
+  configure({ adapter: new Adapter() });
 
   it('renders correctly', () => {
     const component = mount(
