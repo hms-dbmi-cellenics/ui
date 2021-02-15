@@ -1,0 +1,196 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`populateFrequencyData displays data with count when the frequencyType is count 1`] = `
+Array [
+  Object {
+    "values": Array [
+      Object {
+        "c": "1",
+        "color": "sample1",
+        "x": "1",
+        "y": 2,
+      },
+      Object {
+        "c": "2",
+        "color": "sample2",
+        "x": "1",
+        "y": 1,
+      },
+      Object {
+        "c": "3",
+        "color": "sample3",
+        "x": "1",
+        "y": 2,
+      },
+      Object {
+        "c": "1",
+        "color": "sample1",
+        "x": "2",
+        "y": 2,
+      },
+      Object {
+        "c": "2",
+        "color": "sample2",
+        "x": "2",
+        "y": 2,
+      },
+      Object {
+        "c": "3",
+        "color": "sample3",
+        "x": "2",
+        "y": 1,
+      },
+    ],
+  },
+]
+`;
+
+exports[`populateFrequencyData with empty proportion 1`] = `
+Array [
+  Object {},
+]
+`;
+
+exports[`populateFrequencyData with empty xAxis and nonempty proportion we only get data for sample 1`] = `
+Array [
+  Object {
+    "values": Array [
+      Object {
+        "c": "1",
+        "color": "sample1",
+        "x": 1,
+        "y": 40,
+      },
+      Object {
+        "c": "2",
+        "color": "sample2",
+        "x": 1,
+        "y": 30,
+      },
+      Object {
+        "c": "3",
+        "color": "sample3",
+        "x": 1,
+        "y": 30,
+      },
+    ],
+  },
+]
+`;
+
+exports[`populateFrequencyData with empty xAxis and sample as proportion we only get data for sample 1`] = `
+Array [
+  Object {
+    "values": Array [
+      Object {
+        "c": "1",
+        "color": "sample1",
+        "x": 1,
+        "y": 40,
+      },
+      Object {
+        "c": "2",
+        "color": "sample2",
+        "x": 1,
+        "y": 30,
+      },
+      Object {
+        "c": "3",
+        "color": "sample3",
+        "x": 1,
+        "y": 30,
+      },
+    ],
+  },
+]
+`;
+
+exports[`populateFrequencyData with louvain as xAxis and sample as proportion 1`] = `
+Array [
+  Object {
+    "values": Array [
+      Object {
+        "c": "1",
+        "color": "sample1",
+        "x": "1",
+        "y": 40,
+      },
+      Object {
+        "c": "2",
+        "color": "sample2",
+        "x": "1",
+        "y": 20,
+      },
+      Object {
+        "c": "3",
+        "color": "sample3",
+        "x": "1",
+        "y": 40,
+      },
+      Object {
+        "c": "1",
+        "color": "sample1",
+        "x": "2",
+        "y": 40,
+      },
+      Object {
+        "c": "2",
+        "color": "sample2",
+        "x": "2",
+        "y": 40,
+      },
+      Object {
+        "c": "3",
+        "color": "sample3",
+        "x": "2",
+        "y": 20,
+      },
+    ],
+  },
+]
+`;
+
+exports[`populateFrequencyData with sample as xAxis and louvain as proportion 1`] = `
+Array [
+  Object {
+    "values": Array [
+      Object {
+        "c": "1",
+        "color": "louvain1",
+        "x": "1",
+        "y": 50,
+      },
+      Object {
+        "c": "2",
+        "color": "louvain2",
+        "x": "1",
+        "y": 50,
+      },
+      Object {
+        "c": "1",
+        "color": "louvain1",
+        "x": "2",
+        "y": 33.33333333333333,
+      },
+      Object {
+        "c": "2",
+        "color": "louvain2",
+        "x": "2",
+        "y": 66.66666666666666,
+      },
+      Object {
+        "c": "1",
+        "color": "louvain1",
+        "x": "3",
+        "y": 66.66666666666666,
+      },
+      Object {
+        "c": "2",
+        "color": "louvain2",
+        "x": "3",
+        "y": 33.33333333333333,
+      },
+    ],
+  },
+]
+`;

@@ -2,7 +2,7 @@ import React from 'react';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 
-import { Space } from 'antd';
+import populateFrequencyData from './helpers/populateFrequencyData';
 
 const FrequencyPlot = (props) => {
   const {
@@ -161,87 +161,8 @@ const FrequencyPlot = (props) => {
     };
   };
 
-  const calculateSum = (proportionClusters, xAxisClustersIds) => {
-    let sum = 0;
-
-    if (!xAxisClustersIds.length) {
-      proportionClusters.forEach((cellSetCluster) => {
-        sum += properties[cellSetCluster.key].cellIds.size;
-      });
-      return sum;
-    }
-    proportionClusters.forEach((cellSetCluster) => {
-      const cellSetIds = Array.from(properties[cellSetCluster.key].cellIds);
-      sum += xAxisClustersIds.filter((id) => cellSetIds.includes(id)).length;
-    });
-    return sum;
-  };
-
-  const getClustersInXAxis = (name) => hierarchy.filter((cluster) => (
-    cluster.key === name))[0]?.children;
-
-  const generateData = (spec) => {
-    let data = [];
-
-    const proportionClusters = hierarchy.filter((cluster) => (
-      cluster.key === config.proportionGrouping))[0]?.children;
-
-    if (!proportionClusters) {
-      return [];
-    }
-
-    const clustersInXAxis = getClustersInXAxis(config.xAxisGrouping);
-    if (!clustersInXAxis) {
-      const sum = calculateSum(proportionClusters, []);
-      proportionClusters.forEach((clusterName) => {
-        const x = 1;
-        const y = properties[clusterName.key].cellIds.size;
-        const cluster = properties[clusterName.key];
-        data = populateData(x, y, cluster, sum, data);
-      });
-    } else {
-      clustersInXAxis.forEach((clusterInXAxis) => {
-        const clusterInXAxisIds = Array.from(properties[clusterInXAxis.key].cellIds);
-
-        const sum = calculateSum(proportionClusters, clusterInXAxisIds);
-
-        proportionClusters.forEach((clusterName) => {
-          const x = properties[clusterInXAxis.key].name;
-          const cellSetIds = Array.from(properties[clusterName.key].cellIds);
-          const y = clusterInXAxisIds.filter((id) => cellSetIds.includes(id)).length;
-          const cluster = properties[clusterName.key];
-
-          if (y !== 0) {
-            data = populateData(x, y, cluster, sum, data);
-          }
-        });
-      });
-    }
-
-    spec.data.forEach((datum) => {
-      datum.values = data;
-    });
-    return data;
-  };
-
-  const populateData = (x, y, cluster, sum, data) => {
-    let value = y;
-    if (config.frequencyType === 'proportional') {
-      value = (y / sum) * 100;
-    }
-
-    data.push({
-      x,
-      y: value,
-      c: cluster.name,
-      color: cluster.color,
-    });
-
-    return data;
-  };
-
   const spec = generateSpec();
-  generateData(spec);
+  populateFrequencyData(spec, hierarchy, properties, config);
 
   return (
     <Vega spec={spec} renderer='canvas' actions={actions} />
