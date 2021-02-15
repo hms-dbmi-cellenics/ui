@@ -1,5 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`populateFrequencyData displays data with count instead of percentages when the frequencyType is count 1`] = `
+Array [
+  Object {
+    "values": Array [
+      Object {
+        "c": "1",
+        "color": "sample1",
+        "x": "1",
+        "y": 2,
+      },
+      Object {
+        "c": "2",
+        "color": "sample2",
+        "x": "1",
+        "y": 1,
+      },
+      Object {
+        "c": "3",
+        "color": "sample3",
+        "x": "1",
+        "y": 2,
+      },
+      Object {
+        "c": "1",
+        "color": "sample1",
+        "x": "2",
+        "y": 2,
+      },
+      Object {
+        "c": "2",
+        "color": "sample2",
+        "x": "2",
+        "y": 2,
+      },
+      Object {
+        "c": "3",
+        "color": "sample3",
+        "x": "2",
+        "y": 1,
+      },
+    ],
+  },
+]
+`;
+
 exports[`populateFrequencyData displays data with count when the frequencyType is count 1`] = `
 Array [
   Object {

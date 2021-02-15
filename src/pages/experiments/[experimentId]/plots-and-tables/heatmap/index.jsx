@@ -5,17 +5,17 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourbarDesign from '../components/ColourbarDesign';
-import LegendEditor from '../components/LegendEditor';
-import TitleDesign from '../components/TitleDesign';
-import FontDesign from '../components/FontDesign';
+import PropTypes from 'prop-types';
+import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
+import ColourbarDesign from '../../../../../components/plot-styling/ColourbarDesign';
+import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
+import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
+import FontDesign from '../../../../../components/plot-styling/FontDesign';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
-import Header from '../components/Header';
+import Header from '../../../../../components/plot-styling/Header';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression } from '../../../../../redux/actions/genes';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import isBrowser from '../../../../../utils/environment';
 import PlatformError from '../../../../../components/PlatformError';
 
 const { Text } = Typography;
@@ -232,6 +232,10 @@ const HeatmapPlot = ({ experimentId }) => {
       </Row>
     </div>
   );
+};
+
+HeatmapPlot.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default HeatmapPlot;
