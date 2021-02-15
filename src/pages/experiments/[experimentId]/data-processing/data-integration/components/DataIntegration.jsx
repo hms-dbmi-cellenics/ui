@@ -43,8 +43,8 @@ const defaultElbowPlotStylingConfig = {
     size: 28,
   },
   dimensions: {
-    width: 530,
-    height: 400,
+    width: 700,
+    height: 550,
     maxWidth: 720,
     maxHeight: 530,
   },
@@ -124,7 +124,6 @@ const DataIntegration = () => {
     (state) => state.experimentSettings.processing.dataIntegration,
   );
 
-  // This will be taken with a useSelector eventually
   const persistedConfigs = {
     samplePlot: useSelector((state) => state.componentConfig[samplePlotConfigRedux.uuid]?.config),
     frequencyPlot: useSelector(
@@ -272,6 +271,14 @@ const DataIntegration = () => {
     miniPlotConfig.dimensions.height = updatedWidth * 0.8;
 
     miniPlotConfig.legend.enabled = false;
+
+    if (miniPlotConfig.label) {
+      miniPlotConfig.label.enabled = false;
+    }
+
+    if (miniPlotConfig.marker.size) {
+      miniPlotConfig.marker.size = 1;
+    }
 
     if (miniPlotConfig.signals) { miniPlotConfig.signals[0].bind = undefined; }
 

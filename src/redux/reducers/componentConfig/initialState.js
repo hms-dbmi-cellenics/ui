@@ -339,7 +339,11 @@ const dataIntegrationFrequencyInitialConfig = {
     offset: 10,
   },
   label: labelBaseState,
-  dimensions: dimensionsBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
   marker: markerBaseState,
   colour: colourBaseState,
   title: titleBaseState,

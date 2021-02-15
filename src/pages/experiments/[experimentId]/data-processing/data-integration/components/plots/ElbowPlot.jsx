@@ -118,7 +118,11 @@ const ElbowPlot = (props) => {
     },
   });
 
-  return <Vega data={{ plotData }} spec={generateSpec()} renderer='canvas' actions={actions} />;
+  return (
+    <center>
+      <Vega data={{ plotData }} spec={generateSpec()} renderer='canvas' actions={actions} />
+    </center>
+  );
 };
 
 ElbowPlot.defaultProps = {
