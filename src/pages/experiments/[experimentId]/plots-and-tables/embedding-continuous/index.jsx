@@ -6,17 +6,17 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
-import { useRouter } from 'next/router';
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourbarDesign from '../components/ColourbarDesign';
-import ColourInversion from '../components/ColourInversion';
-import LogExpression from './components/LogExpression';
-import AxesDesign from '../components/AxesDesign';
-import PointDesign from '../components/PointDesign';
-import TitleDesign from '../components/TitleDesign';
-import FontDesign from '../components/FontDesign';
-import LegendEditor from '../components/LegendEditor';
-import SelectData from './components/SelectData';
+import PropTypes from 'prop-types';
+import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
+import ColourbarDesign from '../../../../../components/plot-styling/ColourbarDesign';
+import ColourInversion from '../../../../../components/plot-styling/ColourInversion';
+import LogExpression from '../../../../../components/plot-styling/embedding-continuous/LogExpression';
+import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
+import PointDesign from '../../../../../components/plot-styling/PointDesign';
+import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
+import FontDesign from '../../../../../components/plot-styling/FontDesign';
+import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
+import SelectData from '../../../../../components/plot-styling/embedding-continuous/SelectData';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -24,8 +24,7 @@ import {
 import { loadGeneExpression, loadPaginatedGeneProperties } from '../../../../../redux/actions/genes';
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import Header from '../components/Header';
-import isBrowser from '../../../../../utils/environment';
+import Header from '../../../../../components/plot-styling/Header';
 import PlatformError from '../../../../../components/PlatformError';
 import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
 import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';
@@ -44,7 +43,7 @@ const plotUuid = 'embeddingContinuousMain';
 const plotType = 'embeddingContinuous';
 const embeddingType = 'umap';
 
-const EmbeddingContinuousPlot = () => {
+const EmbeddingContinuousPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expressionLoading = useSelector(
@@ -58,8 +57,6 @@ const EmbeddingContinuousPlot = () => {
   const cellSets = useSelector((state) => state.cellSets);
   const processingSettings = useSelector((state) => state.experimentSettings.processing);
   const { properties } = cellSets;
-  const router = useRouter();
-  const { experimentId } = router.query;
   const PROPERTIES = ['dispersions'];
   const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]?.data[0]);
   // temporary solution for selecting the default gene until they are displayed with a table
@@ -70,8 +67,7 @@ const EmbeddingContinuousPlot = () => {
     geneNamesFilter: null,
     sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
   };
-  if (config?.shownGene === 'notSelected' && experimentId && isBrowser) {
-    console.log(experimentId, PROPERTIES, plotUuid, tableState);
+  if (config?.shownGene === 'notSelected') {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 
@@ -81,10 +77,6 @@ const EmbeddingContinuousPlot = () => {
   };
 
   useEffect(() => {
-    if (!experimentId || !isBrowser) {
-      return;
-    }
-
     if (!processingSettings.configureEmbedding) {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
@@ -161,7 +153,6 @@ const EmbeddingContinuousPlot = () => {
       !config
       || !data
       || loading
-      || !isBrowser
       || expressionLoading.includes(config.shownGene)
       || cellSets.loading
     ) {
@@ -272,6 +263,10 @@ const EmbeddingContinuousPlot = () => {
       </Row>
     </div>
   );
+};
+
+EmbeddingContinuousPlot.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default EmbeddingContinuousPlot;

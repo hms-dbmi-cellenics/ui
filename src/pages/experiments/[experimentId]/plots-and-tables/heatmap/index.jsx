@@ -2,21 +2,20 @@ import React, { useEffect } from 'react';
 import {
   Row, Col, Space, Collapse, Select, Button, Skeleton, Spin, Empty, Typography,
 } from 'antd';
-import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourbarDesign from '../components/ColourbarDesign';
-import LegendEditor from '../components/LegendEditor';
-import TitleDesign from '../components/TitleDesign';
-import FontDesign from '../components/FontDesign';
+import PropTypes from 'prop-types';
+import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
+import ColourbarDesign from '../../../../../components/plot-styling/ColourbarDesign';
+import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
+import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
+import FontDesign from '../../../../../components/plot-styling/FontDesign';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
-import Header from '../components/Header';
+import Header from '../../../../../components/plot-styling/Header';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression } from '../../../../../redux/actions/genes';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import isBrowser from '../../../../../utils/environment';
 import PlatformError from '../../../../../components/PlatformError';
 
 const { Text } = Typography;
@@ -32,18 +31,13 @@ const route = {
 const plotUuid = 'heatmapPlotMain';
 const plotType = 'heatmap';
 
-const HeatmapPlot = () => {
+const HeatmapPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const { loading, error, data: expressionData } = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
 
-  const router = useRouter();
-  const { experimentId } = router.query;
-
   useEffect(() => {
-    if (!isBrowser || !experimentId) return;
-
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
@@ -238,6 +232,10 @@ const HeatmapPlot = () => {
       </Row>
     </div>
   );
+};
+
+HeatmapPlot.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default HeatmapPlot;

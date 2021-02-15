@@ -12,29 +12,28 @@ import {
   Button,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import ColourInversion from '../components/ColourInversion';
-import AxesDesign from '../components/AxesDesign';
-import PointDesign from '../components/PointDesign';
-import TitleDesign from '../components/TitleDesign';
-import FontDesign from '../components/FontDesign';
-import LegendEditor from '../components/LegendEditor';
-import LabelsDesign from '../components/LabelsDesign';
+import PropTypes from 'prop-types';
+import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
+import ColourInversion from '../../../../../components/plot-styling/ColourInversion';
+import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
+import PointDesign from '../../../../../components/plot-styling/PointDesign';
+import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
+import FontDesign from '../../../../../components/plot-styling/FontDesign';
+import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
+import LabelsDesign from '../../../../../components/plot-styling/LabelsDesign';
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from '../../../../../redux/actions/componentConfig/index';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import Header from '../components/Header';
+import Header from '../../../../../components/plot-styling/Header';
 import PlatformError from '../../../../../components/PlatformError';
 
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import isBrowser from '../../../../../utils/environment';
 
 const { Panel } = Collapse;
 
@@ -49,23 +48,17 @@ const route = {
   breadcrumbName: 'Categorical Embedding',
 };
 
-const EmbeddingCategoricalPlot = () => {
+const EmbeddingCategoricalPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const processingSettings = useSelector((state) => state.experimentSettings.processing);
 
-  const router = useRouter();
-  const { experimentId } = router.query;
   const [plotSpec, setPlotSpec] = useState({});
 
   // First, load experiment ID data from the router.
   useEffect(() => {
-    if (!experimentId || !isBrowser) {
-      return;
-    }
-
     if (!processingSettings.configureEmbedding) {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
@@ -146,7 +139,7 @@ const EmbeddingCategoricalPlot = () => {
     onUpdate({ selectedCellSet: value });
   };
 
-  if (!config || !isBrowser) {
+  if (!config) {
     return <Skeleton />;
   }
 
@@ -253,6 +246,10 @@ const EmbeddingCategoricalPlot = () => {
       </Row>
     </div>
   );
+};
+
+EmbeddingCategoricalPlot.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default EmbeddingCategoricalPlot;

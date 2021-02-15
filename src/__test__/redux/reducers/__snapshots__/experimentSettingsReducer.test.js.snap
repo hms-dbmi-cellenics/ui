@@ -30,6 +30,23 @@ Object {
         },
       },
     },
+    "dataIntegration": Object {
+      "dataIntegration": Object {
+        "method": "seuratv4",
+        "methodSettings": Object {
+          "seuratv4": Object {
+            "normalisation": "logNormalise",
+            "numGenes": 2000,
+          },
+        },
+      },
+      "dimensionalityReduction": Object {
+        "excludeGeneCategories": Array [],
+        "method": "rpca",
+        "numPCs": 30,
+        "variationExplained": 91,
+      },
+    },
     "meta": Object {
       "complete": false,
       "stepsDone": Set {},
@@ -65,6 +82,23 @@ Object {
         "newProperty": "property",
       },
     },
+    "dataIntegration": Object {
+      "dataIntegration": Object {
+        "method": "seuratv4",
+        "methodSettings": Object {
+          "seuratv4": Object {
+            "normalisation": "logNormalise",
+            "numGenes": 2000,
+          },
+        },
+      },
+      "dimensionalityReduction": Object {
+        "excludeGeneCategories": Array [],
+        "method": "rpca",
+        "numPCs": 30,
+        "variationExplained": 91,
+      },
+    },
     "meta": Object {
       "complete": false,
       "stepsDone": Set {},
@@ -97,6 +131,23 @@ Object {
             "minimumDistance": 0.1,
           },
         },
+      },
+    },
+    "dataIntegration": Object {
+      "dataIntegration": Object {
+        "method": "seuratv4",
+        "methodSettings": Object {
+          "seuratv4": Object {
+            "normalisation": "logNormalise",
+            "numGenes": 2000,
+          },
+        },
+      },
+      "dimensionalityReduction": Object {
+        "excludeGeneCategories": Array [],
+        "method": "rpca",
+        "numPCs": 30,
+        "variationExplained": 91,
       },
     },
     "meta": Object {
