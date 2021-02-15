@@ -7,31 +7,32 @@ import {
 import _ from 'lodash';
 import { useRouter } from 'next/router';
 
-import DimensionsRangeEditor from '../../../pages/experiments/[experimentId]/plots-and-tables/components/DimensionsRangeEditor';
-import AxesDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/AxesDesign';
-import PointDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/PointDesign';
-import TitleDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/TitleDesign';
-import FontDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/FontDesign';
-import LegendEditor from '../../../pages/experiments/[experimentId]/plots-and-tables/components/LegendEditor';
-import LabelsDesign from '../../../pages/experiments/[experimentId]/plots-and-tables/components/LabelsDesign';
-import ColourInversion from '../../../pages/experiments/[experimentId]/plots-and-tables/components/ColourInversion';
+import CalculationConfig from './CalculationConfig';
+
+import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
+
+import DimensionsRangeEditor from '../../plot-styling/DimensionsRangeEditor';
+import AxesDesign from '../../plot-styling/AxesDesign';
+import PointDesign from '../../plot-styling/PointDesign';
+import TitleDesign from '../../plot-styling/TitleDesign';
+import FontDesign from '../../plot-styling/FontDesign';
+import LegendEditor from '../../plot-styling/LegendEditor';
+import LabelsDesign from '../../plot-styling/LabelsDesign';
+import ColourInversion from '../../plot-styling/ColourInversion';
 
 import loadCellSets from '../../../redux/actions/cellSets/loadCellSets';
 
-import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import PlatformError from '../../PlatformError';
-
-import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
 
 import {
   loadPlotConfig,
 } from '../../../redux/actions/componentConfig/index';
 
-import CalculationConfig from './CalculationConfig';
 import fakeData from './fake_new_data.json';
 
+import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from '../../plots/FrequencyPlot';
-import ElbowPlot from './plots/ElbowPlot';
+import ElbowPlot from '../../plots/ElbowPlot';
 
 const defaultElbowPlotStylingConfig = {
   legend: {
@@ -113,7 +114,6 @@ const DataIntegration = () => {
   const { experimentId } = router.query;
 
   const [activePlotKey, setActivePlotKey] = useState('samplePlot');
-
   const cellSets = useSelector((state) => state.cellSets);
 
   const {
@@ -125,7 +125,7 @@ const DataIntegration = () => {
   );
 
   const persistedConfigs = {
-    samplePlot: useSelector((state) => state.componentConfig[samplePlotConfigRedux.uuid]?.config),
+    samplePlot: useSelector((state) => state.componentConfig[samplePlotConfigRedux.uuid].config),
     frequencyPlot: useSelector(
       (state) => (state.componentConfig[frequencyPlotConfigRedux.uuid]?.config),
     ),
@@ -319,16 +319,7 @@ const DataIntegration = () => {
     <Row>
       <Col span={14}>
         {renderIfAvailable(
-          (loadedConfig) => {
-            console.log('RENDERING');
-
-            console.log('loadedConfig');
-            console.log(loadedConfig);
-
-            console.log('activePlotKey');
-            console.log(activePlotKey);
-            return plots[activePlotKey](loadedConfig, true);
-          }, activeConfig,
+          (loadedConfig) => plots[activePlotKey](loadedConfig, true), activeConfig,
         )}
       </Col>
       {miniaturesColumn}

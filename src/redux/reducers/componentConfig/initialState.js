@@ -149,9 +149,10 @@ const volcanoInitialConfig = {
 const frequencyInitialConfig = {
   spec: '1.0.0',
   frequencyType: 'proportional',
-  metadata: '',
+  proportionGrouping: '',
   legend: {
     ...legendBaseState,
+    title: 'Cell Set',
     position: 'top',
     offset: 40,
   },
@@ -167,7 +168,7 @@ const frequencyInitialConfig = {
     offset: 10,
   },
   fontStyle: fontStyleBaseState,
-  chosenClusters: '',
+  xAxisGrouping: '',
   axisTitlesize: 13,
   geneexpLegendloc: '',
 };
@@ -329,33 +330,26 @@ const dataIntegrationEmbeddingInitialConfig = {
 
 // DATA INTEGRATION - Frequency
 const dataIntegrationFrequencyInitialConfig = {
-  spec: '1.0.0',
-  frequencyType: 'proportional',
-  metadata: 'louvain',
-  chosenClusters: 'sample',
+  ...frequencyInitialConfig,
+  xAxisGrouping: 'louvain',
+  proportionGrouping: 'sample',
   legend: {
     ...legendBaseState,
-    position: 'right',
+    title: 'Sample',
+    position: 'top',
     offset: 10,
   },
-  label: labelBaseState,
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
     height: 550,
   },
-  marker: markerBaseState,
-  colour: colourBaseState,
-  title: titleBaseState,
   axes: {
     ...axesBaseState,
-    xAxisText: 'Sample',
+    xAxisText: 'Louvain clusters',
     yAxisText: 'Proportion',
     offset: 10,
   },
-  fontStyle: fontStyleBaseState,
-  axisTitlesize: 13,
-  geneexpLegendloc: '',
 };
 
 const initialPlotConfigStates = {

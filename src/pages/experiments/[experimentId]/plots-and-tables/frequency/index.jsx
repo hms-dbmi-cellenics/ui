@@ -12,13 +12,15 @@ import {
   Alert,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import DimensionsRangeEditor from '../components/DimensionsRangeEditor';
-import TitleDesign from '../components/TitleDesign';
-import AxesDesign from '../components/AxesDesign';
-import FontDesign from '../components/FontDesign';
-import LegendEditor from '../components/LegendEditor';
-import SelectCellSets from './components/SelectCellSets';
-import Header from '../components/Header';
+import PropTypes from 'prop-types';
+
+import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
+import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
+import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
+import FontDesign from '../../../../../components/plot-styling/FontDesign';
+import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
+import SelectCellSets from '../../../../../components/plot-styling/frequency/SelectCellSets';
+import Header from '../../../../../components/plot-styling/Header';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -64,10 +66,10 @@ const frequencyPlot = ({ experimentId }) => {
   const optionsCellSets = getCellOptions('cellSets');
 
   useEffect(() => {
-    if (!loading && config?.chosenClusters === '') {
+    if (!loading && config?.proportionGrouping === '') {
       updatePlotWithChanges({
-        metadata: optionsMetadata[0]?.key,
-        chosenClusters: optionsCellSets[0].key,
+        xAxisGrouping: optionsMetadata[0]?.key,
+        proportionGrouping: optionsCellSets[0].key,
       });
     }
   });
@@ -189,6 +191,10 @@ const frequencyPlot = ({ experimentId }) => {
       </Row>
     </div>
   );
+};
+
+FrequencyPlot.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default frequencyPlot;

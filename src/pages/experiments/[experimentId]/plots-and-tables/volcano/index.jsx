@@ -14,19 +14,19 @@ import moment from 'moment';
 import { CSVLink } from 'react-csv';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-import ThresholdsGuidesEditor from './components/ThresholdsGuidesEditor';
-import MarkersEditor from './components/MarkersEditor';
-import PointDesign from '../components/PointDesign';
-import TitleDesign from '../components/TitleDesign';
-import DimensionsRangeEditorVolcano from './components/DimensionsRangeEditorVolcano';
-import AxesDesign from '../components/AxesDesign';
-import FontDesign from '../components/FontDesign';
-import ColourInversion from '../components/ColourInversion';
-import LegendEditor from '../components/LegendEditor';
+import PropTypes from 'prop-types';
+import ThresholdsGuidesEditor from '../../../../../components/plot-styling/volcano/ThresholdsGuidesEditor';
+import MarkersEditor from '../../../../../components/plot-styling/volcano/MarkersEditor';
+import PointDesign from '../../../../../components/plot-styling/PointDesign';
+import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
+import DimensionsRangeEditorVolcano from '../../../../../components/plot-styling/volcano/DimensionsRangeEditorVolcano';
+import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
+import FontDesign from '../../../../../components/plot-styling/FontDesign';
+import ColourInversion from '../../../../../components/plot-styling/ColourInversion';
+import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateVolcanoSpec';
-import Header from '../components/Header';
-import DiffExprCompute from '../../data-exploration/components/differential-expression-tool/DiffExprCompute';
-import isBrowser from '../../../../../utils/environment';
+import Header from '../../../../../components/plot-styling/Header';
+import DiffExprCompute from '../../../../../components/data-exploration/differential-expression-tool/DiffExprCompute';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -354,6 +354,10 @@ const VolcanoPlot = ({ experimentId }) => {
       </Row>
     </div>
   );
+};
+
+VolcanoPlot.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default VolcanoPlot;
