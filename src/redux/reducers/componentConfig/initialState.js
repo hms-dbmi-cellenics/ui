@@ -149,10 +149,12 @@ const volcanoInitialConfig = {
 const frequencyInitialConfig = {
   spec: '1.0.0',
   frequencyType: 'proportional',
-  metadata: '',
+  proportionGrouping: '',
   legend: {
     ...legendBaseState,
+    title: 'Cell Set',
     position: 'top',
+    offset: 40,
   },
   label: labelBaseState,
   dimensions: dimensionsBaseState,
@@ -166,7 +168,7 @@ const frequencyInitialConfig = {
     offset: 10,
   },
   fontStyle: fontStyleBaseState,
-  chosenClusters: '',
+  xAxisGrouping: '',
   axisTitlesize: 13,
   geneexpLegendloc: '',
 };
@@ -296,6 +298,25 @@ const interactiveHeatmapInitialConfig = {
   legendIsVisible: true,
 };
 
+// DATA INTEGRATION - Frequency
+const dataIntegrationFrequencyInitialConfig = {
+  ...frequencyInitialConfig,
+  xAxisGrouping: 'louvain',
+  proportionGrouping: 'sample',
+  legend: {
+    ...legendBaseState,
+    title: 'Sample',
+    position: 'top',
+    offset: 10,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Louvain clusters',
+    yAxisText: 'Proportion',
+    offset: 10,
+  },
+};
+
 const initialPlotConfigStates = {
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
@@ -306,6 +327,7 @@ const initialPlotConfigStates = {
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
   embeddingPreviewMitochondrialReads: embeddingPreviewMitochondrialReadsInitialConfig,
   embeddingPreviewDoubletScore: embeddingPreviewDoubletScoreInitialConfig,
+  dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
 };
 
 const initialComponentConfigStates = {
