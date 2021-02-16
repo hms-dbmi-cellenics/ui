@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useRef, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,
@@ -19,41 +19,45 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
+  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 1000), []);
+  const [newConfig, setNewConfig] = useState(config);
+  const handleChange = (object) => {
+    const change = _.cloneDeep(newConfig);
+    _.merge(change, object);
+    setNewConfig(change);
+    onUpdateThrottled(object);
+  };
+
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       Dimensions
-      <Form
-        size='small'
-        labelCol={{ span: 12 }}
-        wrapperCol={{ span: 12 }}
+
+      <Form.Item
+        label='Width'
       >
-        <Form.Item
-          label='Width'
-        >
-          <Slider
-            value={config.dimensions.width}
-            min={minWidth}
-            max={maxWidth}
-            onChange={(value) => {
-              onUpdate({ dimensions: { width: value } });
-            }}
-            marks={widthMarks}
-          />
-        </Form.Item>
-        <Form.Item
-          label='Height'
-        >
-          <Slider
-            value={config.dimensions.height}
-            min={minHeight}
-            max={maxHeight}
-            onChange={(value) => {
-              onUpdate({ dimensions: { height: value } });
-            }}
-            marks={heighthMarks}
-          />
-        </Form.Item>
-      </Form>
+        <Slider
+          value={newConfig.dimensions.width}
+          min={minWidth}
+          max={maxWidth}
+          onChange={(value) => {
+            handleChange({ dimensions: { width: value } });
+          }}
+          marks={widthMarks}
+        />
+      </Form.Item>
+      <Form.Item
+        label='Height'
+      >
+        <Slider
+          value={newConfig.dimensions.height}
+          min={minHeight}
+          max={maxHeight}
+          onChange={(value) => {
+            handleChange({ dimensions: { height: value } });
+          }}
+          marks={heighthMarks}
+        />
+      </Form.Item>
     </Space>
   );
 };

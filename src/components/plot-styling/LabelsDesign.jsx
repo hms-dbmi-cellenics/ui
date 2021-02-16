@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useRef } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Radio, Form, Slider,
@@ -8,8 +8,14 @@ import {
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;
 
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
-
+  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 100), []);
+  const [newConfig, setNewConfig] = useState(config);
+  const handleChange = (object) => {
+    const change = _.cloneDeep(newConfig);
+    _.merge(change, object);
+    setNewConfig(change);
+    onUpdateThrottled(object);
+  };
   const minLabelSize = 0;
   const maxLabelSize = 50;
 
@@ -29,7 +35,7 @@ const LabelsDesign = (props) => {
           max={maxLabelSize}
           disabled={!config.label.enabled}
           onChange={(value) => {
-            onUpdateThrottled.current({ label: { size: value } });
+            handleChange({ label: { size: value } });
           }}
           marks={{ 0: minLabelSize, 50: maxLabelSize }}
         />

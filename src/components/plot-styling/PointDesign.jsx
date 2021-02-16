@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useRef } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form,
@@ -9,8 +9,14 @@ import {
 const PointDesign = (props) => {
   const { onUpdate, config } = props;
 
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
-
+  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 100), []);
+  const [newConfig, setNewConfig] = useState(config);
+  const handleChange = (object) => {
+    const change = _.cloneDeep(newConfig);
+    _.merge(change, object);
+    setNewConfig(change);
+    onUpdateThrottled(object);
+  };
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <Form
@@ -27,7 +33,7 @@ const PointDesign = (props) => {
             min={1}
             max={100}
             onChange={(value) => {
-              onUpdateThrottled.current({ marker: { size: value } });
+              handleChange({ marker: { size: value } });
             }}
             marks={{ 1: 1, 100: 100 }}
           />
@@ -40,7 +46,7 @@ const PointDesign = (props) => {
             min={1}
             max={10}
             onChange={(value) => {
-              onUpdateThrottled.current({ marker: { opacity: value } });
+              handleChange({ marker: { opacity: value } });
             }}
             marks={{ 1: 1, 10: 10 }}
           />

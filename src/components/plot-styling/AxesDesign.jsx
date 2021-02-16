@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useRef } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Input,
@@ -7,8 +7,14 @@ import {
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
-
+  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 70), []);
+  const [newConfig, setNewConfig] = useState(config);
+  const handleChange = (object) => {
+    const change = _.cloneDeep(newConfig);
+    _.merge(change, object);
+    setNewConfig(change);
+    onUpdateThrottled(object);
+  };
   return (
     <Form
       size='small'
@@ -21,7 +27,7 @@ const AxesDesign = (props) => {
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { titleFontSize: value } });
+            handleChange({ axes: { titleFontSize: value } });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -33,7 +39,7 @@ const AxesDesign = (props) => {
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { labelFontSize: value } });
+            handleChange({ axes: { labelFontSize: value } });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -45,7 +51,7 @@ const AxesDesign = (props) => {
           min={0}
           max={20}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { offset: value } });
+            handleChange({ axes: { offset: value } });
           }}
           marks={{ 0: 0, 20: 20 }}
         />
@@ -57,7 +63,7 @@ const AxesDesign = (props) => {
           min={0}
           max={10}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { gridOpacity: value } });
+            handleChange({ axes: { gridOpacity: value } });
           }}
           marks={{ 0: 0, 10: 10 }}
         />
@@ -67,7 +73,7 @@ const AxesDesign = (props) => {
         <Input
           value={config.axes.xAxisText}
           onChange={(e) => {
-            onUpdateThrottled.current({ axes: { xAxisText: e.target.value } });
+            handleChange({ axes: { xAxisText: e.target.value } });
           }}
         />
       </Form.Item>
@@ -76,7 +82,7 @@ const AxesDesign = (props) => {
         <Input
           value={config.axes.yAxisText}
           onChange={(e) => {
-            onUpdateThrottled.current({ axes: { yAxisText: e.target.value } });
+            handleChange({ axes: { yAxisText: e.target.value } });
           }}
         />
       </Form.Item>
