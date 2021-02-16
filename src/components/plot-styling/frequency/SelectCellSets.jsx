@@ -10,7 +10,8 @@ const SelectCellSets = (props) => {
   const {
     onUpdate, config, optionsMetadata, optionsCellSets,
   } = props;
-  const firstLetterUppercase = (word) => word.charAt(0).toUpperCase() + word.slice(1);
+
+  const firstLetterUppercase = (word) => word?.charAt(0).toUpperCase() + word?.slice(1);
   const changeClusters = (val) => {
     const newValue = val.key.toLowerCase();
     onUpdate({ proportionGrouping: newValue });

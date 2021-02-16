@@ -1,6 +1,9 @@
+/* eslint-disable dot-notation */
 /* eslint-disable no-param-reassign */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
   Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse, Empty,
@@ -18,6 +21,7 @@ import ContinuousEmbeddingPlot from '../../plots/ContinuousEmbeddingPlot';
 import {
   updatePlotConfig,
   loadPlotConfig,
+  savePlotConfig,
 } from '../../../redux/actions/componentConfig';
 
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
@@ -40,8 +44,9 @@ const ConfigureEmbedding = (props) => {
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(false);
   const cellSets = useSelector((state) => state.cellSets);
-
+  const router = useRouter();
   const dispatch = useDispatch();
+  const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
 
   const plots = {
     sample: {
@@ -74,6 +79,7 @@ const ConfigureEmbedding = (props) => {
       plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewDoubletScore' />),
     },
   };
+  const outstandingChanges = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges);
 
   const config = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
@@ -82,7 +88,12 @@ const ConfigureEmbedding = (props) => {
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
-
+  useEffect(() => {
+    // if we change a plot and the config is not saved yet
+    if (outstandingChanges) {
+      dispatch(savePlotConfig(experimentId, plots[selectedPlot].plotUuid));
+    }
+  }, [selectedPlot]);
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
@@ -103,8 +114,42 @@ const ConfigureEmbedding = (props) => {
     }
   }, [selectedPlot]);
 
+  useEffect(() => {
+    const showPopupWhenUnsaved = (url) => {
+      // Only handle if we are navigating away.z
+      const { plotUuid } = plots[selectedPlot];
+      if (router.asPath === url || !outstandingChanges) {
+        return;
+      }
+      // Show a confirmation dialog. Prevent moving away if the user decides not to.
+      // eslint-disable-next-line no-alert
+      if (
+        !window.confirm(
+          'You have unsaved changes. Do you wish to save?',
+        )
+      ) {
+        router.events.emit('routeChangeError');
+        // Following is a hack-ish solution to abort a Next.js route change
+        // as there's currently no official API to do so
+        // See https://github.com/zeit/next.js/issues/2476#issuecomment-573460710
+        // eslint-disable-next-line no-throw-literal
+        throw `Route change to "${url}" was aborted (this error can be safely ignored). See https://github.com/zeit/next.js/issues/2476.`;
+      } else {
+        // if we click 'ok' the config is changed
+        dispatch(savePlotConfig(experimentId, plotUuid));
+      }
+    };
+
+    router.events.on('routeChangeStart', showPopupWhenUnsaved);
+
+    return () => {
+      router.events.off('routeChangeStart', showPopupWhenUnsaved);
+    };
+  }, [router.asPath, router.events]);
+
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
+    debounceSave(plots[selectedPlot].plotUuid);
   };
 
   const renderPlot = () => {
