@@ -9,7 +9,7 @@ import {
 import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
-import PlotStyling from '../../plot-styling/PlotStyling';
+import OldPlotStyling from '../../plots/styling/OldPlotStyling';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;
@@ -297,7 +297,7 @@ class DoubletScores extends React.Component {
                   type='bin step'
                 />
               </Panel>
-              <PlotStyling
+              <OldPlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}
                 updatePlotWithChanges={this.updatePlotWithChanges}

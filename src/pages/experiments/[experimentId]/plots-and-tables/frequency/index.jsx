@@ -13,13 +13,10 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
-import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
-import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
-import FontDesign from '../../../../../components/plot-styling/FontDesign';
-import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
-import SelectCellSets from '../../../../../components/plot-styling/frequency/SelectCellSets';
-import Header from '../../../../../components/plot-styling/Header';
+import SelectCellSets from '../../../../../components/plots/styling/frequency/SelectCellSets';
+import Header from '../../../../../components/plots/Header';
+
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -76,6 +73,46 @@ const frequencyPlot = ({ experimentId }) => {
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
+
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Main schema',
+      controls: ['dimensions'],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Axes and Margins',
+      controls: ['axes'],
+    },
+    {
+      panelTitle: 'Legend',
+      footer: <Alert
+        message='Changing cell set colours is not currently available here.
+              Use the Data Management tool in Data Exploration to customise cell set colours.'
+        type='info'
+      />,
+      controls: [
+        {
+          name: 'legend',
+          props: {
+            option: {
+              positions: 'top-bottom',
+            },
+          },
+        },
+      ],
+    },
+  ];
+
   if (!config) {
     return <Skeleton />;
   }
@@ -132,61 +169,28 @@ const frequencyPlot = ({ experimentId }) => {
           </Space>
         </Col>
         <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }} />
-          <Collapse accordion>
-            <Panel header='Select Data' key='20'>
-              <SelectCellSets
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                optionsMetadata={optionsMetadata}
-                optionsCellSets={optionsCellSets}
-              />
-            </Panel>
-            <Panel header='Plot Type' key='1'>
-              <Radio.Group
-                onChange={(value) => changePlotType(value)}
-                value={config.frequencyType}
-              >
-                <Radio value='proportional'>Proportional</Radio>
-                <Radio value='count'>Count</Radio>
-              </Radio.Group>
-            </Panel>
-            <Panel header='Main Schema' key='2'>
-              <DimensionsRangeEditor
-                config={config}
-                onUpdate={updatePlotWithChanges}
-              />
-              <Collapse accordion>
-                <Panel header='Define and Edit Title' key='6'>
-                  <TitleDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-                <Panel header='Font' key='9'>
-                  <FontDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
-            </Panel>
-            <Panel header='Axes and Margins' key='3'>
-              <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
-            </Panel>
-            <Panel header='Legend' key='12'>
-              <LegendEditor
-                onUpdate={updatePlotWithChanges}
-                config={config}
-                option={{ positions: 'top-bottom' }}
-              />
-              <Alert
-                message='Changing cell set colours is not currently available here.
-              Use the Data Management tool in Data Exploration to customise cell set colours.'
-                type='info'
-              />
-            </Panel>
-          </Collapse>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse accordion>
+              <Panel header='Select Data' key='20'>
+                <SelectCellSets
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                  optionsMetadata={optionsMetadata}
+                  optionsCellSets={optionsCellSets}
+                />
+              </Panel>
+              <Panel header='Plot Type' key='1'>
+                <Radio.Group
+                  onChange={(value) => changePlotType(value)}
+                  value={config.frequencyType}
+                >
+                  <Radio value='proportional'>Proportional</Radio>
+                  <Radio value='count'>Count</Radio>
+                </Radio.Group>
+              </Panel>
+            </Collapse>
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+          </Space>
         </Col>
       </Row>
     </div>
