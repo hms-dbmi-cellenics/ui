@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
 } from 'antd';
@@ -66,6 +67,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const dispatch = useDispatch();
   const [stepIdx, setStepIdx] = useState(0);
+
+  const completedPath = '/experiments/[experimentId]/data-exploration';
 
   const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
   const carouselRef = useRef(null);
@@ -149,31 +152,30 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             >
               Previous
             </Button>
-            <Button
-              type='primary'
-              onClick={
-                () => {
-                  const newId = Math.min(stepIdx + 1, steps.length - 1);
-                  setStepIdx(newId);
+            {stepIdx !== steps.length - 1 ? (
+              <Button
+                type='primary'
+                onClick={
+                  () => {
+                    const newId = Math.min(stepIdx + 1, steps.length - 1);
+                    setStepIdx(newId);
 
-                  dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
+                    dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
+                  }
                 }
-              }
-            >
-              {stepIdx !== steps.length - 1
-                ? (
-                  <>
-                    Next
-                    <RightOutlined />
-                  </>
-                )
-                : (
-                  <>
+              >
+                Next
+                <RightOutlined />
+              </Button>
+            )
+              : (
+                <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
+                  <Button type='primary'>
                     <span style={{ marginRight: '0.25rem' }}>Finish</span>
                     <CheckOutlined />
-                  </>
-                )}
-            </Button>
+                  </Button>
+                </Link>
+              )}
           </Space>
         </div>
       </Col>
