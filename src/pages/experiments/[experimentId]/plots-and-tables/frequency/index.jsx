@@ -113,6 +113,7 @@ const frequencyPlot = ({ experimentId }) => {
       updatePlotWithChanges({ yaxisText: 'Count' });
     }
   };
+
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header

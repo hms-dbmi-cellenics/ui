@@ -51,14 +51,15 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
   );
   const selectedExpression = useSelector(
     (state) => state.genes.expression.data[config?.shownGene],
-  );
+  ) || false;
   const expressionError = useSelector((state) => state.genes.expression.error);
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
   const cellSets = useSelector((state) => state.cellSets);
   const processingSettings = useSelector((state) => state.experimentSettings.processing);
+  const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]?.data[0]);
+  const { fetching } = useSelector((state) => state.genes.properties.views[plotUuid]) || false;
   const { properties } = cellSets;
   const PROPERTIES = ['dispersions'];
-  const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]?.data[0]);
   // temporary solution for selecting the default gene until they are displayed with a table
   const tableState = {
     pagination: {
@@ -67,10 +68,9 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
     geneNamesFilter: null,
     sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
   };
-  if (config?.shownGene === 'notSelected') {
+  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
-
   // updateField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updateField) => {
     dispatch(updatePlotConfig(plotUuid, updateField));
@@ -85,14 +85,15 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
 
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
-
   if (config && config.shownGene === 'notSelected' && highestDispersionGene) {
-    dispatch(loadGeneExpression(experimentId, [highestDispersionGene]));
     updatePlotWithChanges({ shownGene: highestDispersionGene });
+  }
+  if (config && !selectedExpression && config.shownGene !== 'notSelected') {
+    dispatch(loadGeneExpression(experimentId, [config.shownGene]));
   }
 
   useEffect(() => {
-    if (!data && processingSettings.configureEmbedding && experimentId) {
+    if (!data && processingSettings.configureEmbedding) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
   }, [processingSettings, experimentId]);
@@ -125,7 +126,7 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
     if (expressionError) {
       return (
         <PlatformError
-          description={expressionError}
+          description='Expression could not load. You may be able to try again.'
           onClick={() => dispatch(loadGeneExpression(experimentId, [config.shownGene]))}
         />
       );
@@ -146,9 +147,7 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
         />
       );
     }
-    if (!highestDispersionGene) {
-      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-    }
+
     if (
       !config
       || !data
@@ -198,7 +197,7 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
               <Search
                 style={{ width: '100%' }}
                 enterButton='Search'
-                defaultValue={config.shownGene}
+                value={config.shownGene}
                 onSearch={(val) => changeDislayedGene(val)}
               />
             </Panel>
