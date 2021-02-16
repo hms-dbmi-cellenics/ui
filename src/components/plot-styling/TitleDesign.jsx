@@ -1,4 +1,5 @@
-import React from 'react';
+import _ from 'lodash';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form,
@@ -7,7 +8,14 @@ import {
 
 const TitleDesign = (props) => {
   const { onUpdate, config } = props;
-
+  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 500), []);
+  const [newConfig, setNewConfig] = useState(config);
+  const handleChange = (object) => {
+    const change = _.cloneDeep(newConfig);
+    _.merge(change, object);
+    setNewConfig(change);
+    onUpdateThrottled(object);
+  };
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <Form
@@ -21,9 +29,9 @@ const TitleDesign = (props) => {
         >
           <Input
             placeholder='Enter title'
-            value={config.title.text}
+            value={newConfig.title.text}
             onChange={(e) => {
-              onUpdate({ title: { text: e.target.value } });
+              handleChange({ title: { text: e.target.value } });
             }}
           />
         </Form.Item>
@@ -31,11 +39,11 @@ const TitleDesign = (props) => {
           label='Title Font Size'
         >
           <Slider
-            value={config.title.fontSize}
+            value={newConfig.title.fontSize}
             min={15}
             max={40}
             onChange={(value) => {
-              onUpdate({ title: { fontSize: value } });
+              handleChange({ title: { fontSize: value } });
             }}
             marks={{ 15: 15, 40: 40 }}
           />
