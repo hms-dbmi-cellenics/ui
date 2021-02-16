@@ -13,9 +13,10 @@ import moment from 'moment';
 import { CSVLink } from 'react-csv';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
+import PropTypes from 'prop-types';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateVolcanoSpec';
-import Header from '../../../../../components/plot-styling/Header';
+import Header from '../../../../../components/plots/Header';
 import DiffExprCompute from '../../../../../components/data-exploration/differential-expression-tool/DiffExprCompute';
 import {
   updatePlotConfig,

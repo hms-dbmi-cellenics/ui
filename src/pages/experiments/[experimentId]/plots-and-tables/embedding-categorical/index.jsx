@@ -14,13 +14,14 @@ import {
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
+import PropTypes from 'prop-types';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from '../../../../../redux/actions/componentConfig/index';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import Header from '../../../../../components/plot-styling/Header';
+import Header from '../../../../../components/plots/Header';
 import PlatformError from '../../../../../components/PlatformError';
 
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
@@ -226,13 +227,12 @@ const EmbeddingCategoricalPlot = ({ experimentId }) => {
           </Space>
         </Col>
         <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }} />
-          <Collapse accordion defaultActiveKey={['1']}>
-            <Panel header='Group by' key='6'>
-              <p>
-                Select the cell set category you would like to group cells by.
-              </p>
-              <Space direction='vertical' style={{ width: '100%' }}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse accordion defaultActiveKey={['1']}>
+              <Panel header='Group by' key='1'>
+                <p>
+                  Select the cell set category you would like to group cells by.
+                </p>
                 <Select
                   labelInValue
                   style={{ width: '100%' }}
@@ -241,10 +241,10 @@ const EmbeddingCategoricalPlot = ({ experimentId }) => {
                   options={generateCellSetOptions()}
                   onChange={onCellSetSelect}
                 />
-              </Space>
-            </Panel>
-          </Collapse>
-          <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+              </Panel>
+            </Collapse>
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+          </Space>
         </Col>
       </Row>
     </div>

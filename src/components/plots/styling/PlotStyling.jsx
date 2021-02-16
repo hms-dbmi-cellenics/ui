@@ -17,10 +17,10 @@ import PointDesign from './PointDesign';
 import ColourbarDesign from './ColourbarDesign';
 import ColourInversion from './ColourInversion';
 
-import VolcanoDimensionsRangeEditor from './VolcanoDimensionsRangeEditor';
-import VolcanoThresholdsGuidesEditor from './VolcanoThresholdsGuidesEditor';
-import VolcanoMarkersEditor from './VolcanoMarkersEditor';
-import VolcanoDisplayLabels from './VolcanoDisplayLabels';
+import VolcanoDimensionsRangeEditor from './volcano/DimensionsRangeEditor';
+import VolcanoThresholdsGuidesEditor from './volcano/ThresholdsGuidesEditor';
+import VolcanoMarkersEditor from './volcano/MarkersEditor';
+import VolcanoDisplayLabels from './volcano/DisplayLabels';
 
 const { Panel } = Collapse;
 const PlotStyling = (props) => {

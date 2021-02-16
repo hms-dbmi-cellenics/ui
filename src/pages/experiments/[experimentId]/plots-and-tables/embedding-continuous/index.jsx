@@ -6,9 +6,9 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
-import { useRouter } from 'next/router';
+import PropTypes from 'prop-types';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
-import SelectData from './components/SelectData';
+import SelectData from '../../../../../components/plots/styling/embedding-continuous/SelectData';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -16,7 +16,7 @@ import {
 import { loadGeneExpression, loadPaginatedGeneProperties } from '../../../../../redux/actions/genes';
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import Header from '../../../../../components/plot-styling/Header';
+import Header from '../../../../../components/plots/Header';
 import PlatformError from '../../../../../components/PlatformError';
 import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
 import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';

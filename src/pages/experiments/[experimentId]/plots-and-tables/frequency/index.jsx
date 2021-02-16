@@ -13,8 +13,8 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import SelectCellSets from '../../../../../components/plot-styling/frequency/SelectCellSets';
-import Header from '../../../../../components/plot-styling/Header';
+import SelectCellSets from '../../../../../components/plots/styling/frequency/SelectCellSets';
+import Header from '../../../../../components/plots/Header';
 
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {

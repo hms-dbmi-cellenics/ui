@@ -1,15 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'antd';
-<<<<<<< HEAD:src/components/plot-styling/volcano/MarkersEditor.jsx
 import ColorBrowser from '../ColorBrowser';
 
-const MarkersEditor = (props) => {
-=======
-import ColorBrowser from './ColorBrowser';
-
 const VolcanoMarkersEditor = (props) => {
->>>>>>> refactor-plot-styling-old:src/components/plots/styling/VolcanoMarkersEditor.jsx
   const { onUpdate, config } = props;
 
   const colorPickerOptions = [
