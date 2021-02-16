@@ -109,15 +109,18 @@ const CalculationConfig = (props) => {
   const newChanges = changes;
 
   const setMinimumDistance = (value) => {
-    newChanges.embeddingSettings.methodSettings.umap.minimumDistance = value;
+    newChanges.embeddingSettings.methodSettings.umap.minimumDistance = parseFloat(value);
     setChanges({ ...newChanges });
   };
   const setDistanceMetric = (value) => {
-    newChanges.embeddingSettings.methodSettings.umap.distanceMetric = value;
+    newChanges.embeddingSettings.methodSettings.umap.distanceMetric = parseFloat(value);
     setChanges({ ...newChanges });
   };
   if (!changesOutstanding && !_.isEqual(changes, initialValues)) {
     setChangesOutstanding(true);
+  }
+  if (changesOutstanding && _.isEqual(changes, initialValues)) {
+    setChangesOutstanding(false);
   }
   const renderUMAPSettings = () => {
     const { umap } = changes.embeddingSettings.methodSettings;
@@ -147,13 +150,15 @@ const CalculationConfig = (props) => {
           />
         </Form.Item>
         <Form.Item label='Distance metric:'>
-          <Select
-            value={umap.distanceMetric}
-            onChange={(value) => setDistanceMetric(value)}
-          >
-            <Option value='euclidean'>Euclidean</Option>
-            <Option value='cosine' disabled>Cosine</Option>
-          </Select>
+          <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
+            <Select
+              value={umap.distanceMetric}
+              onChange={(value) => setDistanceMetric(value)}
+            >
+              <Option value='euclidean'>Euclidean</Option>
+              <Option value='cosine' disabled>Cosine</Option>
+            </Select>
+          </Tooltip>
         </Form.Item>
       </>
     );
@@ -205,7 +210,7 @@ const CalculationConfig = (props) => {
 
   return (
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
-      <Panel header='Embedding settings' key='embedding-settings' collapsible={changesOutstanding ? 'disabled' : 'header'}>
+      <Panel header='Embedding settings' key='embedding-settings'>
         <Form size='small'>
           {changesOutstanding && (
             <Form.Item>
@@ -238,16 +243,18 @@ const CalculationConfig = (props) => {
       <Panel header='Clustering settings' key='clustering-settings'>
         <Form size='small'>
           <Form.Item label='Clustering method:'>
-            <Select
-              value={clusteringMethod}
-              onChange={(value) => updateSettings(
-                { clusteringSettings: { method: value } },
-              )}
-            >
-              <Option value='louvain'>Louvain</Option>
-              <Option value='leiden' disabled>Leiden</Option>
-              <Option value='slm' disabled>SLM</Option>
-            </Select>
+            <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
+              <Select
+                value={clusteringMethod}
+                onChange={(value) => updateSettings(
+                  { clusteringSettings: { method: value } },
+                )}
+              >
+                <Option value='louvain'>Louvain</Option>
+                <Option value='leiden' disabled>Leiden</Option>
+                <Option value='slm' disabled>SLM</Option>
+              </Select>
+            </Tooltip>
           </Form.Item>
           <Form.Item label='Resolution'>
             <Slider
