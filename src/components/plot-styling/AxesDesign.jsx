@@ -7,7 +7,7 @@ import {
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
-  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 70), []);
+  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 1000), []);
   const [newConfig, setNewConfig] = useState(config);
   const handleChange = (object) => {
     const change = _.cloneDeep(newConfig);
@@ -23,7 +23,7 @@ const AxesDesign = (props) => {
     >
       <Form.Item label='Axes Label Size'>
         <Slider
-          value={config.axes.titleFontSize}
+          value={newConfig.axes.titleFontSize}
           min={5}
           max={21}
           onChange={(value) => {
@@ -35,7 +35,7 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Axes Ticks Size'>
         <Slider
-          value={config.axes.labelFontSize}
+          value={newConfig.axes.labelFontSize}
           min={5}
           max={21}
           onChange={(value) => {
@@ -47,7 +47,7 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Offset Margins'>
         <Slider
-          value={config.axes.offset}
+          value={newConfig.axes.offset}
           min={0}
           max={20}
           onChange={(value) => {
@@ -59,7 +59,7 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Grid-line weight'>
         <Slider
-          value={config.axes.gridOpacity}
+          value={newConfig.axes.gridOpacity}
           min={0}
           max={10}
           onChange={(value) => {
@@ -71,7 +71,7 @@ const AxesDesign = (props) => {
 
       <Form.Item label='X axis Title'>
         <Input
-          value={config.axes.xAxisText}
+          value={newConfig.axes.xAxisText}
           onChange={(e) => {
             handleChange({ axes: { xAxisText: e.target.value } });
           }}
@@ -80,7 +80,7 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Y Axis Title'>
         <Input
-          value={config.axes.yAxisText}
+          value={newConfig.axes.yAxisText}
           onChange={(e) => {
             handleChange({ axes: { yAxisText: e.target.value } });
           }}

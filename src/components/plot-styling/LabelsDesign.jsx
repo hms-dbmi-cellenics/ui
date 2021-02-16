@@ -8,7 +8,7 @@ import {
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;
 
-  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 100), []);
+  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 500), []);
   const [newConfig, setNewConfig] = useState(config);
   const handleChange = (object) => {
     const change = _.cloneDeep(newConfig);
@@ -30,7 +30,7 @@ const LabelsDesign = (props) => {
         label='Size'
       >
         <Slider
-          value={config.label.size}
+          value={newConfig.label.size}
           min={minLabelSize}
           max={maxLabelSize}
           disabled={!config.label.enabled}

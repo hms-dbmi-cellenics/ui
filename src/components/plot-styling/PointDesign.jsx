@@ -9,7 +9,7 @@ import {
 const PointDesign = (props) => {
   const { onUpdate, config } = props;
 
-  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 100), []);
+  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 500), []);
   const [newConfig, setNewConfig] = useState(config);
   const handleChange = (object) => {
     const change = _.cloneDeep(newConfig);
@@ -29,7 +29,7 @@ const PointDesign = (props) => {
           label='Point Size'
         >
           <Slider
-            value={config.marker.size}
+            value={newConfig.marker.size}
             min={1}
             max={100}
             onChange={(value) => {
@@ -42,7 +42,7 @@ const PointDesign = (props) => {
           label='Point Fill Opacity'
         >
           <Slider
-            value={config.marker.opacity}
+            value={newConfig.marker.opacity}
             min={1}
             max={10}
             onChange={(value) => {
