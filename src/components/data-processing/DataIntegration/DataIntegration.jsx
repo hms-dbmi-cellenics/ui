@@ -125,7 +125,7 @@ const DataIntegration = () => {
   );
 
   const persistedConfigs = {
-    samplePlot: useSelector((state) => state.componentConfig[samplePlotConfigRedux.uuid].config),
+    samplePlot: useSelector((state) => state.componentConfig[samplePlotConfigRedux.uuid]?.config),
     frequencyPlot: useSelector(
       (state) => (state.componentConfig[frequencyPlotConfigRedux.uuid]?.config),
     ),
