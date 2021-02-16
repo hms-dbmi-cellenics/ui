@@ -1,7 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Space } from 'antd';
+<<<<<<< HEAD:src/components/plot-styling/ColorPickerOption.jsx
 import ColorPicker from '../ColorPicker';
+=======
+import ColorPicker from '../../ColorPicker';
+>>>>>>> refactor-plot-styling-old:src/components/plots/styling/ColorPickerOption.jsx
 
 const ColorPickerOption = (props) => {
   // See the z index here:

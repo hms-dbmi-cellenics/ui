@@ -6,17 +6,9 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import _ from 'lodash';
-import PropTypes from 'prop-types';
-import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
-import ColourbarDesign from '../../../../../components/plot-styling/ColourbarDesign';
-import ColourInversion from '../../../../../components/plot-styling/ColourInversion';
-import LogExpression from '../../../../../components/plot-styling/embedding-continuous/LogExpression';
-import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
-import PointDesign from '../../../../../components/plot-styling/PointDesign';
-import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
-import FontDesign from '../../../../../components/plot-styling/FontDesign';
-import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
-import SelectData from '../../../../../components/plot-styling/embedding-continuous/SelectData';
+import { useRouter } from 'next/router';
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
+import SelectData from './components/SelectData';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -110,6 +102,39 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
     embedding: _.cloneDeep(filterSamples()),
   });
 
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Main schema',
+      controls: ['dimensions'],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Axes and Margins',
+      controls: ['axes'],
+    },
+    {
+      panelTitle: 'Colours',
+      controls: ['colourScheme', 'colourInversion'],
+    },
+    {
+      panelTitle: 'Markers',
+      controls: ['markers'],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: ['legend'],
+    },
+  ];
+
   if (!config) {
     return <Skeleton />;
   }
@@ -192,73 +217,26 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
           </Space>
         </Col>
         <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }} />
-          <Collapse accordion>
-            <Panel header='Gene Selection' key='666'>
-              <Search
-                style={{ width: '100%' }}
-                enterButton='Search'
-                defaultValue={config.shownGene}
-                onSearch={(val) => changeDislayedGene(val)}
-              />
-            </Panel>
-            <Panel header='Select Data' key='15'>
-              <SelectData
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                cellSets={cellSets}
-              />
-            </Panel>
-          </Collapse>
-          <Collapse accordion>
-            <Panel header='Log Transformation' key='5'>
-              <LogExpression config={config} onUpdate={updatePlotWithChanges} />
-            </Panel>
-          </Collapse>
-          <Collapse accordion>
-            <Panel header='Main Schema' key='2'>
-              <DimensionsRangeEditor
-                config={config}
-                onUpdate={updatePlotWithChanges}
-              />
-              <Collapse accordion>
-                <Panel header='Define and Edit Title' key='6'>
-                  <TitleDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-                <Panel header='Font' key='9'>
-                  <FontDesign
-                    config={config}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
-            </Panel>
-            <Panel header='Axes and Margins' key='3'>
-              <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
-            </Panel>
-            <Panel header='Colours' key='10'>
-              <ColourbarDesign
-                config={config}
-                onUpdate={updatePlotWithChanges}
-              />
-              <ColourInversion
-                config={config}
-                onUpdate={updatePlotWithChanges}
-              />
-            </Panel>
-            <Panel header='Markers' key='11'>
-              <PointDesign config={config} onUpdate={updatePlotWithChanges} />
-            </Panel>
-            <Panel header='Legend' key='12'>
-              <LegendEditor
-                onUpdate={updatePlotWithChanges}
-                config={config}
-              />
-            </Panel>
-          </Collapse>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse accordion>
+              <Panel header='Gene Selection' key='666'>
+                <Search
+                  style={{ width: '100%' }}
+                  enterButton='Search'
+                  defaultValue={config.shownGene}
+                  onSearch={(val) => changeDislayedGene(val)}
+                />
+              </Panel>
+              <Panel header='Select Data' key='15'>
+                <SelectData
+                  config={config}
+                  onUpdate={updatePlotWithChanges}
+                  cellSets={cellSets}
+                />
+              </Panel>
+            </Collapse>
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+          </Space>
         </Col>
       </Row>
     </div>

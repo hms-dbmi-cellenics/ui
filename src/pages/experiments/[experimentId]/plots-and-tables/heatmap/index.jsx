@@ -4,13 +4,7 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
-
-import PropTypes from 'prop-types';
-import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
-import ColourbarDesign from '../../../../../components/plot-styling/ColourbarDesign';
-import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
-import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
-import FontDesign from '../../../../../components/plot-styling/FontDesign';
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
 import Header from '../../../../../components/plot-styling/Header';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
@@ -110,11 +104,7 @@ const HeatmapPlot = ({ experimentId }) => {
     if (config.selectedGenes.length === 0) {
       return (
         <Empty description={(
-          <>
-            <p>
-              <Text>Add some genes to this heatmap to get started.</Text>
-            </p>
-          </>
+          <Text>Add some genes to this heatmap to get started.</Text>
         )}
         />
       );
@@ -135,6 +125,40 @@ const HeatmapPlot = ({ experimentId }) => {
       label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
     }));
   };
+
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Main Schema',
+      controls: ['dimensions'],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Colours',
+      controls: ['colourScheme'],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: [
+        {
+          name: 'legend',
+          props: {
+            option: {
+              positions: 'horizontal-vertical',
+            },
+          },
+        },
+      ],
+    },
+  ];
 
   if (!config || cellSets.loading) {
     return (<Skeleton />);
@@ -192,41 +216,8 @@ const HeatmapPlot = ({ experimentId }) => {
                   />
                 </Space>
               </Panel>
-
-              <Panel header='Main Schema' key='1'>
-                <DimensionsRangeEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                />
-                <Collapse defaultActiveKey={['1']} accordion>
-                  <Panel header='Define and Edit Title' key='6'>
-                    <TitleDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                  <Panel header='Font' key='9'>
-                    <FontDesign
-                      config={config}
-                      onUpdate={updatePlotWithChanges}
-                    />
-                  </Panel>
-                </Collapse>
-              </Panel>
-              <Panel header='Colours' key='10'>
-                <ColourbarDesign
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                />
-              </Panel>
-              <Panel header='Legend' key='11'>
-                <LegendEditor
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                  option={{ positions: 'heatmap' }}
-                />
-              </Panel>
             </Collapse>
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
           </Space>
         </Col>
       </Row>

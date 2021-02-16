@@ -16,7 +16,7 @@ import plot2Pic from '../../../../static/media/plot4.png';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 import plotData from './data2.json';
 
-import PlotStyling from '../../plot-styling/PlotStyling';
+import OldPlotStyling from '../../plots/styling/OldPlotStyling';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -538,7 +538,7 @@ class MitochondrialContent extends React.Component {
                   type='bin step'
                 />
               </Panel>
-              <PlotStyling
+              <OldPlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}
                 updatePlotWithChanges={this.updatePlotWithChanges}

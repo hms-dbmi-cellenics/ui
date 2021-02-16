@@ -146,7 +146,7 @@ const Header = (props) => {
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
           extra={[
-            <Space>
+            <Space key='feedback-button'>
               <FeedbackButton />
               <Button
                 key='save'
@@ -157,7 +157,7 @@ const Header = (props) => {
                 Save
               </Button>
             </Space>,
-            <Space>
+            <Space key='reset-button'>
               <Button
                 key='reset'
                 type='primary'

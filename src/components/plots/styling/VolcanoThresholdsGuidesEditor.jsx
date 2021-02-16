@@ -43,7 +43,7 @@ ColorPickerOption.propTypes = {
   text: PropTypes.string.isRequired,
 };
 
-const ThresholdsGuidesEditor = (props) => {
+const VolcanoThresholdsGuidesEditor = (props) => {
   const { onUpdate, config } = props;
 
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
@@ -66,7 +66,7 @@ const ThresholdsGuidesEditor = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Significance thresholds</div>
+        <p><strong>Significance Thresholds</strong></p>
         <Form.Item
           label={(
             <span>
@@ -131,7 +131,7 @@ const ThresholdsGuidesEditor = (props) => {
           </Space>
         </Form.Item>
 
-        <div>Guideline Design</div>
+        <p><strong>Guideline Design</strong></p>
         <Form.Item
           label='Width'
         >
@@ -171,9 +171,9 @@ const ThresholdsGuidesEditor = (props) => {
   );
 };
 
-ThresholdsGuidesEditor.propTypes = {
+VolcanoThresholdsGuidesEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
 };
 
-export default ThresholdsGuidesEditor;
+export default VolcanoThresholdsGuidesEditor;

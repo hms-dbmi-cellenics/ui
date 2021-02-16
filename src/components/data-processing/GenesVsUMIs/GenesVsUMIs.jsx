@@ -14,7 +14,7 @@ import { Vega } from 'react-vega';
 import plot1Pic from '../../../../static/media/plot7.png';
 import plot2Pic from '../../../../static/media/plot8.png';
 import plotData from './new_data.json';
-import PlotStyling from '../../plot-styling/PlotStyling';
+import OldPlotStyling from '../../plots/styling/OldPlotStyling';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;
@@ -474,7 +474,7 @@ class GenesVsUMIs extends React.Component {
                   type={config.type}
                 />
               </Panel>
-              <PlotStyling
+              <OldPlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}
                 updatePlotWithChanges={this.updatePlotWithChanges}
