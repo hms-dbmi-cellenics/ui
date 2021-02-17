@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 
 import Header from '../../../../components/Header';
+
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
 import Classifier from '../../../../components/data-processing/Classifier/Classifier';
@@ -21,6 +22,7 @@ import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/Gene
 import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
+
 import { completeProcessingStep } from '../../../../redux/actions/experimentSettings';
 
 const { Text } = Typography;

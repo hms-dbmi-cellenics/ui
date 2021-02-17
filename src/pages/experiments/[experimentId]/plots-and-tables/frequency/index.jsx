@@ -13,6 +13,7 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+
 import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
 import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
 import AxesDesign from '../../../../../components/plot-styling/AxesDesign';

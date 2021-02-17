@@ -10,10 +10,13 @@ import { Vega } from 'react-vega';
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
+import initialCellSetsState from '../../../../redux/reducers/cellSets/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
+const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -27,21 +30,59 @@ jest.mock('next/router', () => ({
 }));
 
 const store = mockStore({
+  cellSets: {
+    ...initialCellSetsState,
+    properties: {
+      test: {
+        name: 'Test',
+        cellIds: 'Set()',
+      },
+      'test-1': {
+        name: 'Test-1',
+        cellIds: 'Set(1, 2, 3)',
+      },
+      'test-2': {
+        name: 'Test-1',
+        cellIds: 'Set(4, 5, 6)',
+      },
+    },
+    hierarchy: [
+      {
+        key: 'test',
+        children: [
+          { key: 'test-1' },
+          { key: 'test-2' },
+        ],
+      },
+    ],
+    loading: false,
+    error: false,
+  },
+  embeddings: {
+    ...initialEmbeddingState,
+    umap: {
+      data: [
+        [1, 2],
+        [3, 4],
+        [5, 6],
+        [7, 8],
+        [9, 10],
+        [11, 12],
+      ],
+      loading: false,
+      error: false,
+    },
+  },
+  experimentSettings: {
+    ...initialExperimentState,
+  },
   componentConfig: {
     dataIntegrationFrequency: {
       config: dataIntegrationFrequencyConfig,
     },
-  },
-  cellSets: {
-    loading: false,
-    error: false,
-    selected: [],
-    properties: {},
-    hierarchy: [],
-    hidden: [],
-  },
-  experimentSettings: {
-    ...initialExperimentState,
+    dataIntegrationEmbedding: {
+      config: dataIntegrationEmbeddingConfig,
+    },
   },
 });
 
@@ -87,9 +128,7 @@ describe('DataIntegration', () => {
 
     const plots = dataIntegration.find(Vega);
 
-    // There are 4 plots, the miniature versions and the actually shown one
+    // There are 4 plots (1 main and 3 miniatures)
     expect(plots.length).toEqual(4);
-
-    expect(1).toEqual(1);
   });
 });
