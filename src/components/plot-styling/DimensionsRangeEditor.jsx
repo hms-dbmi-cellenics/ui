@@ -1,9 +1,9 @@
-import _ from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,
 } from 'antd';
+import useUpdateThrottled from '../../utils/useUpdateThrottled';
 
 const DimensionsRangeEditor = (props) => {
   const {
@@ -19,14 +19,7 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
-  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 1000), []);
-  const [newConfig, setNewConfig] = useState(config);
-  const handleChange = (object) => {
-    const change = _.cloneDeep(newConfig);
-    _.merge(change, object);
-    setNewConfig(change);
-    onUpdateThrottled(object);
-  };
+  const { newConfig, handleChange } = useUpdateThrottled(onUpdate, config);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
