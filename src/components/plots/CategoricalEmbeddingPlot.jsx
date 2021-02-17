@@ -11,7 +11,9 @@ import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const CategoricalEmbeddingPlot = (props) => {
-  const { experimentId, config, plotUuid } = props;
+  const {
+    experimentId, config, actions,
+  } = props;
   const dispatch = useDispatch();
 
   const defaultEmbeddingType = 'umap';
@@ -63,7 +65,7 @@ const CategoricalEmbeddingPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -75,10 +77,14 @@ const CategoricalEmbeddingPlot = (props) => {
   );
 };
 
+CategoricalEmbeddingPlot.defaultProps = {
+  actions: true,
+};
+
 CategoricalEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
-  plotUuid: PropTypes.object.isRequired,
+  actions: PropTypes.object,
 };
 
 export default CategoricalEmbeddingPlot;
