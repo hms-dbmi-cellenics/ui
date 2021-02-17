@@ -1,21 +1,13 @@
-import _ from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Radio, Form, Slider,
 } from 'antd';
+import useUpdateThrottled from '../../utils/useUpdateThrottled';
 
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;
-
-  const onUpdateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 500), []);
-  const [newConfig, setNewConfig] = useState(config);
-  const handleChange = (object) => {
-    const change = _.cloneDeep(newConfig);
-    _.merge(change, object);
-    setNewConfig(change);
-    onUpdateThrottled(object);
-  };
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
   const minLabelSize = 0;
   const maxLabelSize = 50;
 
