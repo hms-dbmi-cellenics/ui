@@ -1,6 +1,35 @@
 import { EXPERIMENT_SETTINGS_PROCESSING_COMPLETE_STEP } from '../../actionTypes/experimentSettings';
 
-const completeProcessingStep = (experimentId, settingName, numSteps) => (dispatch) => {
+import getApiEndpoint from '../../../utils/apiEndpoint';
+
+const completeProcessingStep = (
+  experimentId,
+  settingName,
+  numSteps,
+) => async (dispatch, getState) => {
+  const { stepsDone } = getState().experimentSettings.processing.meta;
+
+  const arrayStepsDone = Array.from(stepsDone);
+
+  arrayStepsDone.push(settingName);
+
+  const body = {
+    complete: arrayStepsDone.size === numSteps,
+    stepsDone: arrayStepsDone,
+  };
+
+  await fetch(
+    `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([{
+        name: 'processing-config',
+        body,
+      }]),
+    },
+  );
+
   dispatch({
     type: EXPERIMENT_SETTINGS_PROCESSING_COMPLETE_STEP,
     payload:

@@ -74,10 +74,32 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    if (carouselRef.current) {
-      carouselRef.current.goTo(stepIdx);
-    }
+    const goToStepIdx = () => {
+      if (carouselRef.current) {
+        carouselRef.current.goTo(stepIdx);
+      }
+    };
+
+    const completeProcessingStepIfAdvanced = () => {
+      console.log('stepIdx');
+      console.log(stepIdx);
+
+      console.log('completedSteps.size');
+      console.log(completedSteps.size);
+
+      if (stepIdx > completedSteps.size) {
+        dispatch(completeProcessingStep(experimentId, steps[stepIdx - 1].key, steps.length));
+      }
+    };
+
+    goToStepIdx();
+    completeProcessingStepIfAdvanced();
   }, [stepIdx]);
+
+  useEffect(() => {
+    console.log('completedSteps');
+    console.log(completedSteps);
+  }, [completedSteps]);
 
   const renderTitle = () => (
     <Row justify='space-between'>
@@ -86,7 +108,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           value={stepIdx}
           onChange={(idx) => {
             setStepIdx(idx);
-            dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
           }}
           style={{ width: 360, fontWeight: 'bold' }}
           placeholder='Jump to a step...'
@@ -159,8 +180,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   () => {
                     const newId = Math.min(stepIdx + 1, steps.length - 1);
                     setStepIdx(newId);
-
-                    dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
                   }
                 }
               >
@@ -170,7 +189,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             )
               : (
                 <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
-                  <Button type='primary'>
+                  <Button
+                    type='primary'
+                    onClick={
+                      () => {
+                        dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
+                      }
+                    }
+                  >
                     <span style={{ marginRight: '0.25rem' }}>Finish</span>
                     <CheckOutlined />
                   </Button>
