@@ -47,7 +47,7 @@ Object {
         "variationExplained": 91,
       },
     },
-    "processingConfig": Object {
+    "meta": Object {
       "complete": false,
       "stepsDone": Set {},
     },
@@ -99,7 +99,7 @@ Object {
         "variationExplained": 91,
       },
     },
-    "processingConfig": Object {
+    "meta": Object {
       "complete": false,
       "stepsDone": Set {},
     },
@@ -150,7 +150,7 @@ Object {
         "variationExplained": 91,
       },
     },
-    "processingConfig": Object {
+    "meta": Object {
       "complete": false,
       "stepsDone": Set {},
     },

@@ -68,8 +68,8 @@ describe('experimentSettingsReducer', () => {
         },
       });
 
-    expect(newState.processing.processingConfig.stepsDone).toEqual(new Set(['configureEmbedding']));
-    expect(newState.processing.processingConfig.complete).toEqual(false);
+    expect(newState.processing.meta.stepsDone).toEqual(new Set(['configureEmbedding']));
+    expect(newState.processing.meta.complete).toEqual(false);
   });
 
   it("Previously complete step doesn't change status of completion.", () => {
@@ -93,8 +93,8 @@ describe('experimentSettingsReducer', () => {
         },
       });
 
-    expect(newState.processing.processingConfig.stepsDone).toEqual(new Set(['configureEmbedding']));
-    expect(newState.processing.processingConfig.complete).toEqual(false);
+    expect(newState.processing.meta.stepsDone).toEqual(new Set(['configureEmbedding']));
+    expect(newState.processing.meta.complete).toEqual(false);
   });
 
   it('Steps are set to complete when set size equals number of steps to do.', () => {
@@ -118,7 +118,7 @@ describe('experimentSettingsReducer', () => {
         },
       });
 
-    expect(newState.processing.processingConfig.stepsDone).toEqual(new Set(['configureEmbedding', 'dataIntegration']));
-    expect(newState.processing.processingConfig.complete).toEqual(true);
+    expect(newState.processing.meta.stepsDone).toEqual(new Set(['configureEmbedding', 'dataIntegration']));
+    expect(newState.processing.meta.complete).toEqual(true);
   });
 });

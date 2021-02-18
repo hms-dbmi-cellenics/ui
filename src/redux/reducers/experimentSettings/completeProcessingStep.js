@@ -4,7 +4,7 @@ import initialState from './initialState';
 const completeProcessingStep = (state, action) => {
   const { settingName, numSteps } = action.payload;
 
-  const newStepsDone = new Set([...state.processing.processingConfig.stepsDone, settingName]);
+  const newStepsDone = new Set([...state.processing.meta.stepsDone, settingName]);
 
   return {
     ...initialState,
@@ -12,9 +12,9 @@ const completeProcessingStep = (state, action) => {
     processing: {
       ...initialState.processing,
       ...state.processing,
-      processingConfig: {
-        ...initialState.processing.processingConfig,
-        ...state.processing.processingConfig,
+      meta: {
+        ...initialState.processing.meta,
+        ...state.processing.meta,
         complete: newStepsDone.size === numSteps,
         stepsDone: newStepsDone,
       },

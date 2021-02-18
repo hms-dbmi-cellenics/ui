@@ -7,10 +7,9 @@ const completeProcessingStep = (
   settingName,
   numSteps,
 ) => async (dispatch, getState) => {
-  const { stepsDone } = getState().experimentSettings.processing.processingConfig;
+  const { stepsDone } = getState().experimentSettings.processing.meta;
 
   const arrayStepsDone = Array.from(stepsDone);
-
   arrayStepsDone.push(settingName);
 
   const body = {
@@ -24,7 +23,7 @@ const completeProcessingStep = (
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify([{
-        name: 'processingConfig',
+        name: 'meta',
         body,
       }]),
     },

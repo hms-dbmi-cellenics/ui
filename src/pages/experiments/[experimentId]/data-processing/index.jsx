@@ -70,11 +70,16 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const completedSteps = useSelector((state) => state.experimentSettings.processing.processingConfig.stepsDone);
+  const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
+  const initialState = useSelector((state) => state.experimentSettings.processing.initialState);
 
-  const [stepIdx, setStepIdx] = useState((completedSteps?.size ?? 0) % steps.length);
+  const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
 
   const carouselRef = useRef(null);
+
+  useEffect(() => {
+    setStepIdx(completedSteps.size % steps.length);
+  }, [initialState]);
 
   useEffect(() => {
     dispatch(loadProcessingSettings(experimentId));
