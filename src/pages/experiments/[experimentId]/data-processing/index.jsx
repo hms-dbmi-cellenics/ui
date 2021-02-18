@@ -81,12 +81,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     };
 
     const completeProcessingStepIfAdvanced = () => {
-      console.log('stepIdx');
-      console.log(stepIdx);
-
-      console.log('completedSteps.size');
-      console.log(completedSteps.size);
-
       if (stepIdx > completedSteps.size) {
         dispatch(completeProcessingStep(experimentId, steps[stepIdx - 1].key, steps.length));
       }
@@ -95,11 +89,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     goToStepIdx();
     completeProcessingStepIfAdvanced();
   }, [stepIdx]);
-
-  useEffect(() => {
-    console.log('completedSteps');
-    console.log(completedSteps);
-  }, [completedSteps]);
 
   const renderTitle = () => (
     <Row justify='space-between'>
@@ -132,7 +121,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     </>
                   )}
 
-                  {!completedSteps.has(key) && stepIdx === i && (
+                  {!completedSteps.has(key) && completedSteps.size === i && (
                     <Text
                       type='default'
                     >
@@ -193,7 +182,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     type='primary'
                     onClick={
                       () => {
-                        dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
+                        dispatch(
+                          completeProcessingStep(experimentId, steps[stepIdx].key, steps.length),
+                        );
                       }
                     }
                   >
