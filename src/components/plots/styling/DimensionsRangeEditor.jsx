@@ -21,7 +21,7 @@ const DimensionsRangeEditor = (props) => {
   heighthMarks[maxHeight] = maxHeight;
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
-      Dimensions
+      <p><strong>Dimensions</strong></p>
       <Form
         size='small'
         labelCol={{ span: 12 }}

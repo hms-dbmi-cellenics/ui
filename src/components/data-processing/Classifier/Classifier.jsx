@@ -9,7 +9,7 @@ import {
 import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
-import PlotStyling from '../../plot-styling/PlotStyling';
+import OldPlotStyling from '../../plots/styling/OldPlotStyling';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const { Panel } = Collapse;
@@ -253,7 +253,9 @@ class Classifier extends React.Component {
                   type='bandwidth'
                 />
               </Panel>
-              <PlotStyling
+
+              {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
+              <OldPlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}
                 updatePlotWithChanges={this.updatePlotWithChanges}
