@@ -297,6 +297,8 @@ class DoubletScores extends React.Component {
                   type='bin step'
                 />
               </Panel>
+
+              {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
               <OldPlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}

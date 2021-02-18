@@ -532,6 +532,8 @@ class CellSizeDistribution extends React.Component {
                   max={400}
                 />
               </Panel>
+
+              {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
               <OldPlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}

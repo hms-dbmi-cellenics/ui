@@ -449,6 +449,8 @@ class ReadAlignment extends React.Component {
                   type={config.type}
                 />
               </Panel>
+
+              {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
               <OldPlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}
