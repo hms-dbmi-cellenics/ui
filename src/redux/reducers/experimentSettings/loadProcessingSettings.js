@@ -13,6 +13,10 @@ const loadProcessingSettings = (state, action) => {
     ...state,
     processing: {
       ...newConfig,
+      processingConfig: {
+        ...newConfig.processingConfig,
+        stepsDone: new Set(newConfig.processingConfig.stepsDone),
+      },
     },
   };
 };

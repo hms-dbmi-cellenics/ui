@@ -21,7 +21,7 @@ import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/Gene
 import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
-import { completeProcessingStep } from '../../../../redux/actions/experimentSettings';
+import { completeProcessingStep, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -66,12 +66,18 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   ];
 
   const dispatch = useDispatch();
-  const [stepIdx, setStepIdx] = useState(0);
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
+  const completedSteps = useSelector((state) => state.experimentSettings.processing.processingConfig.stepsDone);
+
+  const [stepIdx, setStepIdx] = useState((completedSteps?.size ?? 0) % steps.length);
+
   const carouselRef = useRef(null);
+
+  useEffect(() => {
+    dispatch(loadProcessingSettings(experimentId));
+  }, [experimentId]);
 
   useEffect(() => {
     const goToStepIdx = () => {
@@ -107,7 +113,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                 <Option
                   value={i}
                   key={key}
-                  disabled={!completedSteps.has(key) && i !== stepIdx + 1}
+                  disabled={
+                    !completedSteps.has(key)
+                    && i !== completedSteps.size
+                    && i !== stepIdx + 1
+                  }
                 >
 
                   {completedSteps.has(key) && (
@@ -130,7 +140,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     </Text>
                   )}
 
-                  {!completedSteps.has(key) && stepIdx !== i && (
+                  {!completedSteps.has(key) && completedSteps.size < i && (
                     <>
                       <Text
                         disabled

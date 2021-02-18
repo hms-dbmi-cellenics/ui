@@ -1,6 +1,6 @@
 export default {
   processing: {
-    meta: {
+    processingConfig: {
       complete: false,
       stepsDone: new Set([]),
     },
