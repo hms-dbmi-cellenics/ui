@@ -15,7 +15,7 @@ import { Vega } from 'react-vega';
 import plot1Pic from '../../../../../../../../static/media/plot5.png';
 import plot2Pic from '../../../../../../../../static/media/plot6.png';
 import plotData from './new_data.json';
-import PlotStyling from '../PlotStyling';
+import OldPlotStyling from '../../../../../../../components/plots/styling/OldPlotStyling';
 import BandwidthOrBinstep from './PlotStyleMisc';
 
 const { Panel } = Collapse;
@@ -449,7 +449,9 @@ class ReadAlignment extends React.Component {
                   type={config.type}
                 />
               </Panel>
-              <PlotStyling
+
+              {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
+              <OldPlotStyling
                 config={config}
                 onUpdate={this.updatePlotWithChanges}
                 updatePlotWithChanges={this.updatePlotWithChanges}
