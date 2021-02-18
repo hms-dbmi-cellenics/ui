@@ -15,7 +15,7 @@ const ColourbarDesign = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Styles</div>
+        <p><strong>Colour Schemes</strong></p>
         <Form.Item>
           <Radio.Group onChange={(e) => onUpdate({ colour: { gradient: e.target.value } })} value={config.colour.gradient}>
             <Radio value='viridis'>Viridis</Radio>

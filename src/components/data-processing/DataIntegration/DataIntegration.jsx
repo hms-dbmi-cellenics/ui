@@ -11,14 +11,14 @@ import CalculationConfig from './CalculationConfig';
 
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
 
-import DimensionsRangeEditor from '../../plot-styling/DimensionsRangeEditor';
-import AxesDesign from '../../plot-styling/AxesDesign';
-import PointDesign from '../../plot-styling/PointDesign';
-import TitleDesign from '../../plot-styling/TitleDesign';
-import FontDesign from '../../plot-styling/FontDesign';
-import LegendEditor from '../../plot-styling/LegendEditor';
-import LabelsDesign from '../../plot-styling/LabelsDesign';
-import ColourInversion from '../../plot-styling/ColourInversion';
+import DimensionsRangeEditor from '../../plots/styling/DimensionsRangeEditor';
+import AxesDesign from '../../plots/styling/AxesDesign';
+import PointDesign from '../../plots/styling/PointDesign';
+import TitleDesign from '../../plots/styling/TitleDesign';
+import FontDesign from '../../plots/styling/FontDesign';
+import LegendEditor from '../../plots/styling/LegendEditor';
+import LabelsDesign from '../../plots/styling/LabelsDesign';
+import ColourInversion from '../../plots/styling/ColourInversion';
 
 import loadCellSets from '../../../redux/actions/cellSets/loadCellSets';
 
@@ -30,6 +30,7 @@ import {
 
 import fakeData from './fake_new_data.json';
 
+import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from '../../plots/FrequencyPlot';
 import ElbowPlot from '../../plots/ElbowPlot';
 
@@ -43,8 +44,8 @@ const defaultElbowPlotStylingConfig = {
     size: 28,
   },
   dimensions: {
-    width: 530,
-    height: 400,
+    width: 700,
+    height: 550,
     maxWidth: 720,
     maxHeight: 530,
   },
@@ -100,6 +101,11 @@ const frequencyPlotConfigRedux = {
   type: 'dataIntegrationFrequency',
 };
 
+const samplePlotConfigRedux = {
+  uuid: 'dataIntegrationEmbedding',
+  type: 'dataIntegrationEmbedding',
+};
+
 const DataIntegration = () => {
   const { Panel } = Collapse;
 
@@ -107,9 +113,9 @@ const DataIntegration = () => {
   const router = useRouter();
   const { experimentId } = router.query;
 
-  const [activePlotKey, setActivePlotKey] = useState('frequencyPlot');
-
+  const [activePlotKey, setActivePlotKey] = useState('samplePlot');
   const cellSets = useSelector((state) => state.cellSets);
+
   const {
     loading, error, hierarchy, properties,
   } = cellSets;
@@ -118,32 +124,16 @@ const DataIntegration = () => {
     (state) => state.experimentSettings.processing.dataIntegration,
   );
 
-  const updatedForCurrentEnvironment = (originalConfig) => {
-    if (!originalConfig) { return originalConfig; }
-
-    if (properties.sample) {
-      return originalConfig;
-    }
-
-    // We are in local environment, so display the other cluster we can show, which is 'condition'
-    const newConfig = _.cloneDeep(originalConfig);
-
-    return newConfig;
-  };
-
-  // This will be taken with a useSelector eventually
   const persistedConfigs = {
-    samplePlot: _.cloneDeep(defaultElbowPlotStylingConfig),
+    samplePlot: useSelector((state) => state.componentConfig[samplePlotConfigRedux.uuid]?.config),
     frequencyPlot: useSelector(
-      (state) => (
-        updatedForCurrentEnvironment(state.componentConfig[frequencyPlotConfigRedux.uuid]?.config)
-      ),
+      (state) => (state.componentConfig[frequencyPlotConfigRedux.uuid]?.config),
     ),
     elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
   };
 
-  const renderIfAvailable = (renderFunc, loadingElement) => {
-    if (!loadingElement || loading) {
+  const renderIfAvailable = (renderFunc, elementToRender) => {
+    if (!elementToRender || loading) {
       return (
         <Spin size='large' />
       );
@@ -158,14 +148,18 @@ const DataIntegration = () => {
       );
     }
 
-    return renderFunc(loadingElement);
+    return renderFunc(elementToRender);
   };
 
   const activeConfig = persistedConfigs[activePlotKey];
 
   const plots = {
     samplePlot: (configInput, actions) => (
-      <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />
+      <CategoricalEmbeddingPlot
+        experimentId={experimentId}
+        config={configInput}
+        actions={actions}
+      />
     ),
     frequencyPlot: (configInput, actions) => (
       <FrequencyPlot
@@ -186,6 +180,11 @@ const DataIntegration = () => {
     }
 
     dispatch(loadCellSets(experimentId));
+
+    dispatch(
+      loadPlotConfig(experimentId, samplePlotConfigRedux.uuid, samplePlotConfigRedux.type),
+    );
+
     dispatch(
       loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
     );
@@ -272,6 +271,14 @@ const DataIntegration = () => {
     miniPlotConfig.dimensions.height = updatedWidth * 0.8;
 
     miniPlotConfig.legend.enabled = false;
+
+    if (miniPlotConfig.label) {
+      miniPlotConfig.label.enabled = false;
+    }
+
+    if (miniPlotConfig.marker.size) {
+      miniPlotConfig.marker.size = 1;
+    }
 
     if (miniPlotConfig.signals) { miniPlotConfig.signals[0].bind = undefined; }
 

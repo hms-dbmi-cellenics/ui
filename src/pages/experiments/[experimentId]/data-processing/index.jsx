@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 
 import Header from '../../../../components/Header';
+
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
 import Classifier from '../../../../components/data-processing/Classifier/Classifier';
