@@ -298,6 +298,36 @@ const interactiveHeatmapInitialConfig = {
   legendIsVisible: true,
 };
 
+// DATA INTEGRATION - Embedding by Samples
+const dataIntegrationEmbeddingInitialConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'UMAP 1',
+    yAxisText: 'UMAP 2',
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  selectedCellSet: 'louvain',
+  selectedSample: 'All',
+};
+
 // DATA INTEGRATION - Frequency
 const dataIntegrationFrequencyInitialConfig = {
   ...frequencyInitialConfig,
@@ -308,6 +338,11 @@ const dataIntegrationFrequencyInitialConfig = {
     title: 'Sample',
     position: 'top',
     offset: 10,
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
   },
   axes: {
     ...axesBaseState,
@@ -327,6 +362,7 @@ const initialPlotConfigStates = {
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
   embeddingPreviewMitochondrialReads: embeddingPreviewMitochondrialReadsInitialConfig,
   embeddingPreviewDoubletScore: embeddingPreviewDoubletScoreInitialConfig,
+  dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
 };
 
