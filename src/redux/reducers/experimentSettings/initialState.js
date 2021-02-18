@@ -17,7 +17,6 @@ export default {
       dimensionalityReduction: {
         method: 'rpca',
         numPCs: 30,
-        variationExplained: 91,
         excludeGeneCategories: [],
       },
     },

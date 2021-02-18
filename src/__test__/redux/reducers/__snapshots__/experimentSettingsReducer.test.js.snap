@@ -44,7 +44,6 @@ Object {
         "excludeGeneCategories": Array [],
         "method": "rpca",
         "numPCs": 30,
-        "variationExplained": 91,
       },
     },
     "meta": Object {
@@ -96,7 +95,6 @@ Object {
         "excludeGeneCategories": Array [],
         "method": "rpca",
         "numPCs": 30,
-        "variationExplained": 91,
       },
     },
     "meta": Object {
@@ -147,7 +145,6 @@ Object {
         "excludeGeneCategories": Array [],
         "method": "rpca",
         "numPCs": 30,
-        "variationExplained": 91,
       },
     },
     "meta": Object {
