@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import { useBeforeunload } from 'react-beforeunload';
+import FeedbackButton from '../FeedbackButton';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import itemRender from '../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../utils/apiEndpoint';
@@ -152,7 +153,18 @@ const Header = (props) => {
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
           extra={[
-            <Space>
+            <Space key='feedback-button'>
+              <FeedbackButton />
+              <Button
+                key='save'
+                type='primary'
+                disabled={saved}
+                onClick={onClickSave}
+              >
+                Save
+              </Button>
+            </Space>,
+            <Space key='reset-button'>
               <Button
                 key='reset'
                 type='primary'

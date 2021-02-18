@@ -23,14 +23,16 @@ const LegendEditor = (props) => {
       top: 'Top',
       bottom: 'Bottom',
     },
-    heatmap: {
+    'horizontal-vertical': {
       horizontal: 'Horizontal',
       vertical: 'Vertical',
     },
   };
 
   return (
-    <Form size='small' labelCol={{ span: 12 }} wrapperCol={{ span: 12 }}>
+    <Form>
+
+      <p><strong>Toggle Legend</strong></p>
       <Form.Item>
         <Radio.Group onChange={(e) => onUpdate({ legend: { enabled: e.target.value } })} value={config.legend.enabled}>
           <Radio value>Show</Radio>
@@ -41,7 +43,7 @@ const LegendEditor = (props) => {
       {
         config.legend.enabled && (
           <>
-            <div>Position</div>
+            <p><strong>Position</strong></p>
             <Form.Item>
               <Radio.Group
                 onChange={(e) => onUpdate({ legend: { position: e.target.value } })}
