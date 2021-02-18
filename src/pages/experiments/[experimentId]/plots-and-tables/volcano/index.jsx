@@ -129,7 +129,6 @@ const VolcanoPlot = ({ experimentId }) => {
     setDataPointStatus();
     const generatedSpec = generateSpec(config, plotData);
     setSpec(generatedSpec);
-    console.log(plotStylingConfig);
   }, [config]);
 
   useEffect(() => {

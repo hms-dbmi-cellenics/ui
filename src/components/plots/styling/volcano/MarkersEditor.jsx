@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form } from 'antd';
 import ColorBrowser from '../ColorBrowser';
 
-const VolcanoMarkersEditor = (props) => {
+const MarkersEditor = (props) => {
   const { onUpdate, config } = props;
 
   const colorPickerOptions = [
@@ -49,9 +49,9 @@ const VolcanoMarkersEditor = (props) => {
   );
 };
 
-VolcanoMarkersEditor.propTypes = {
+MarkersEditor.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
 
-export default VolcanoMarkersEditor;
+export default MarkersEditor;

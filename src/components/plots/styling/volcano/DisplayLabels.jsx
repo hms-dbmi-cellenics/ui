@@ -5,7 +5,7 @@ import {
   Slider, Form, Space,
 } from 'antd';
 
-const VolcanoDimensionsRangeEditor = (props) => {
+const DisplayLabels = (props) => {
   const {
     config, onUpdate, min, max,
   } = props;
@@ -38,11 +38,11 @@ const VolcanoDimensionsRangeEditor = (props) => {
   );
 };
 
-VolcanoDimensionsRangeEditor.propTypes = {
+DisplayLabels.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
   min: PropTypes.number.isRequired,
   max: PropTypes.number.isRequired,
 };
 
-export default VolcanoDimensionsRangeEditor;
+export default DisplayLabels;

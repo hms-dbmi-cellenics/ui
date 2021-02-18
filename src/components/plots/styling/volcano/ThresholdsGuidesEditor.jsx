@@ -43,7 +43,7 @@ ColorPickerOption.propTypes = {
   text: PropTypes.string.isRequired,
 };
 
-const VolcanoThresholdsGuidesEditor = (props) => {
+const ThresholdsGuidesEditor = (props) => {
   const { onUpdate, config } = props;
 
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
@@ -171,9 +171,9 @@ const VolcanoThresholdsGuidesEditor = (props) => {
   );
 };
 
-VolcanoThresholdsGuidesEditor.propTypes = {
+ThresholdsGuidesEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
 };
 
-export default VolcanoThresholdsGuidesEditor;
+export default ThresholdsGuidesEditor;
