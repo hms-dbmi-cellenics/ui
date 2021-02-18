@@ -3,6 +3,8 @@ export default {
     meta: {
       complete: false,
       stepsDone: new Set([]),
+      loading: true,
+      error: false,
     },
     dataIntegration: {
       dataIntegration: {

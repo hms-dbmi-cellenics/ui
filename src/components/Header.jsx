@@ -55,7 +55,7 @@ const Header = (props) => {
         extra={(
           <Space>
             <FeedbackButton />
-            {extra}
+            {extra || ''}
           </Space>
         )}
       />
@@ -68,7 +68,11 @@ Header.propTypes = {
   experimentData: PropTypes.object.isRequired,
   route: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  extra: PropTypes.object.isRequired,
+  extra: PropTypes.array,
+};
+
+Header.defaultProps = {
+  extra: [],
 };
 
 export default Header;

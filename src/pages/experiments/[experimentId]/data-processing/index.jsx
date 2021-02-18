@@ -21,7 +21,7 @@ import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/Gene
 import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
-import { completeProcessingStep } from '../../../../redux/actions/experimentSettings';
+import { completeProcessingStep, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -70,8 +70,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
+  const { loading, error, stepsDone: completedSteps } = useSelector((state) => state.experimentSettings.processing.meta);
   const carouselRef = useRef(null);
+
+  useEffect(() => {
+    if (loading && !error) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, [experimentId]);
 
   useEffect(() => {
     if (carouselRef.current) {
