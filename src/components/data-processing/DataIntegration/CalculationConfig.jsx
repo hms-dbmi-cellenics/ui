@@ -91,9 +91,12 @@ const CalculationConfig = (props) => {
     seuratv4: () => <SeuratV4Options config={dataIntegration.methodSettings.seuratv4} onUpdate={updateSettings} onChange={() => setChangesOutstanding(true)} />,
   };
 
-  const variationExplained = data.slice(0, dimensionalityReduction.numPCs).reduce((acum, current) => acum + current.percentVariance, 0);
-  const roundingPrecision = 6;
-  const roundedVariationExplained = _.round(variationExplained * 100, roundingPrecision);
+  const roundedVariationExplained = () => {
+    const variationExplained = data.slice(0, dimensionalityReduction.numPCs).reduce((acum, current) => acum + current.percentVariance, 0);
+    const roundingPrecision = 6;
+
+    return _.round(variationExplained * 100, roundingPrecision);
+  };
 
   return (
     <>
@@ -161,7 +164,7 @@ const CalculationConfig = (props) => {
           </Form.Item>
           <Form.Item label='% variation explained'>
             <InputNumber
-              value={roundedVariationExplained}
+              value={roundedVariationExplained()}
               readOnly
             />
           </Form.Item>
