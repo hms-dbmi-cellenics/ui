@@ -93,7 +93,7 @@ const CalculationConfig = (props) => {
 
   const roundedVariationExplained = () => {
     const variationExplained = data.slice(0, dimensionalityReduction.numPCs).reduce((acum, current) => acum + current.percentVariance, 0);
-    const roundingPrecision = 6;
+    const roundingPrecision = 2;
 
     return _.round(variationExplained * 100, roundingPrecision);
   };
@@ -153,6 +153,8 @@ const CalculationConfig = (props) => {
           <Form.Item label='Number of Principal Components'>
             <InputNumber
               value={numPCs}
+              max={data.length}
+              min={0}
               onChange={(value) => {
                 setChangesOutstanding(true);
                 setNumPCs(value);
@@ -165,6 +167,7 @@ const CalculationConfig = (props) => {
           <Form.Item label='% variation explained'>
             <InputNumber
               value={roundedVariationExplained()}
+              disabled
               readOnly
             />
           </Form.Item>
