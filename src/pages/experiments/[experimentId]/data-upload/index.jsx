@@ -8,7 +8,7 @@ import Header from '../../../../components/Header';
 import 'react-mosaic-component/react-mosaic-component.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const DataUploadPage = ({ experimentId, experimentData, route }) => {
+const DataManagementPage = ({ experimentId, experimentData, route }) => {
   const renderWindow = (tile, width, height) => {
     if (tile) {
       return (
@@ -50,7 +50,7 @@ const DataUploadPage = ({ experimentId, experimentData, route }) => {
         experimentId={experimentId}
         experimentData={experimentData}
         route={route}
-        title='Data Upload'
+        title='Data Management'
       />
       <div style={{ height: '100%', width: '100%', margin: 0 }}>
         <Mosaic
@@ -79,10 +79,10 @@ const DataUploadPage = ({ experimentId, experimentData, route }) => {
   );
 };
 
-DataUploadPage.propTypes = {
+DataManagementPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
   experimentData: PropTypes.object.isRequired,
   route: PropTypes.string.isRequired,
 };
 
-export default DataUploadPage;
+export default DataManagementPage;

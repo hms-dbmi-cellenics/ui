@@ -39,8 +39,8 @@ describe('ContentWrapper', () => {
     const menus = wrapper.find(Menu).children().find(Item);
     expect(menus.length).toEqual(4);
 
-    const dataUploadLink = menus.at(0).find('Link');
-    expect(dataUploadLink.props().as).toEqual('/experiments/1234/data-upload');
+    const dataManagementLink = menus.at(0).find('Link');
+    expect(dataManagementLink.props().as).toEqual('/experiments/1234/data-management');
 
     const dataProcessingLink = menus.at(1).find('Link');
     expect(dataProcessingLink.props().as).toEqual('/experiments/1234/data-processing');

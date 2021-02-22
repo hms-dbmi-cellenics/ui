@@ -13,8 +13,8 @@ const Header = (props) => {
   } = props;
 
   const pathInformation = {
-    'data-upload': {
-      breadcrumbName: 'Data Upload',
+    'data-management': {
+      breadcrumbName: 'Data Management',
     },
     'data-processing': {
       breadcrumbName: 'Data Processing',
