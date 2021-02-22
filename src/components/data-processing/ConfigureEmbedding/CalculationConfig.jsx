@@ -47,12 +47,12 @@ const CalculationConfig = (props) => {
       method: embeddingMethod,
       methodSettings: {
         umap: {
-          minimumDistance: umapSettings.minimumDistance,
-          distanceMetric: umapSettings.distanceMetric,
+          minimumDistance: umapSettings?.minimumDistance,
+          distanceMetric: umapSettings?.distanceMetric,
         },
         tsne: {
-          perplexity: tsneSettings.perplexity,
-          learningRate: tsneSettings.learningRate,
+          perplexity: tsneSettings?.perplexity,
+          learningRate: tsneSettings?.learningRate,
         },
 
       },

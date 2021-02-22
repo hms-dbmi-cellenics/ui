@@ -7,6 +7,16 @@ Array [
       "configChange": Object {
         "embeddingSettings": Object {
           "method": "tsne",
+          "methodSettings": Object {
+            "tsne": Object {
+              "learningRate": 200,
+              "perplexity": 30,
+            },
+            "umap": Object {
+              "distanceMetric": "euclidean",
+              "minimumDistance": 0.1,
+            },
+          },
         },
       },
       "experimentId": "1234",
