@@ -13,6 +13,12 @@ const Header = (props) => {
   } = props;
 
   const pathInformation = {
+    'data-management': {
+      breadcrumbName: 'Data Management',
+    },
+    'data-processing': {
+      breadcrumbName: 'Data Processing',
+    },
     experiments: {
       breadcrumbName: 'Analyses',
     },
@@ -21,13 +27,10 @@ const Header = (props) => {
       params: experimentId,
     },
     'data-exploration': {
-      breadcrumbName: 'Data exploration',
+      breadcrumbName: 'Data Exploration',
     },
     'plots-and-tables': {
-      breadcrumbName: 'Plots and tables',
-    },
-    'data-processing': {
-      breadcrumbName: 'Data processing',
+      breadcrumbName: 'Plots and Tables',
     },
   };
 
