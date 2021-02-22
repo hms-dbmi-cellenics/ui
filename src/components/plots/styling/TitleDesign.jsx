@@ -15,7 +15,7 @@ const TitleDesign = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Title Styles</div>
+        <p><strong>Title Styles</strong></p>
         <Form.Item
           label='Define Title'
         >

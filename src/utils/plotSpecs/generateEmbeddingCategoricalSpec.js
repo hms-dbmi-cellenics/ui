@@ -188,7 +188,7 @@ const generateSpec = (config) => {
     {
       text: { value: config?.title.text },
       color: { value: config?.colour.masterColour },
-      anchor: { value: config?.anchor },
+      anchor: { value: config?.title.anchor },
       font: { value: config?.fontStyle.font },
       dx: 10,
       fontSize: { value: config?.title.fontSize },

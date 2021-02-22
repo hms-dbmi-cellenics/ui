@@ -22,8 +22,7 @@ import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/Gene
 import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
-
-import { completeProcessingStep } from '../../../../redux/actions/experimentSettings';
+import { completeProcessingStep, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -68,17 +67,39 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   ];
 
   const dispatch = useDispatch();
-  const [stepIdx, setStepIdx] = useState(0);
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
   const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
+  const initialState = useSelector((state) => state.experimentSettings.processing.initialState);
+
+  const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
+
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    if (carouselRef.current) {
-      carouselRef.current.goTo(stepIdx);
-    }
+    setStepIdx(completedSteps.size % steps.length);
+  }, [initialState]);
+
+  useEffect(() => {
+    dispatch(loadProcessingSettings(experimentId));
+  }, [experimentId]);
+
+  useEffect(() => {
+    const goToStepIdx = () => {
+      if (carouselRef.current) {
+        carouselRef.current.goTo(stepIdx);
+      }
+    };
+
+    const completeProcessingStepIfAdvanced = () => {
+      if (stepIdx > completedSteps.size) {
+        dispatch(completeProcessingStep(experimentId, steps[stepIdx - 1].key, steps.length));
+      }
+    };
+
+    goToStepIdx();
+    completeProcessingStepIfAdvanced();
   }, [stepIdx]);
 
   const renderTitle = () => (
@@ -88,7 +109,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           value={stepIdx}
           onChange={(idx) => {
             setStepIdx(idx);
-            dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
           }}
           style={{ width: 360, fontWeight: 'bold' }}
           placeholder='Jump to a step...'
@@ -99,7 +119,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                 <Option
                   value={i}
                   key={key}
-                  disabled={!completedSteps.has(key) && i !== stepIdx + 1}
+                  disabled={
+                    !completedSteps.has(key)
+                    && i !== completedSteps.size
+                    && i !== stepIdx + 1
+                  }
                 >
 
                   {completedSteps.has(key) && (
@@ -113,7 +137,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     </>
                   )}
 
-                  {!completedSteps.has(key) && stepIdx === i && (
+                  {!completedSteps.has(key) && completedSteps.size === i && (
                     <Text
                       type='default'
                     >
@@ -122,7 +146,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     </Text>
                   )}
 
-                  {!completedSteps.has(key) && stepIdx !== i && (
+                  {!completedSteps.has(key) && completedSteps.size < i && (
                     <>
                       <Text
                         disabled
@@ -161,8 +185,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   () => {
                     const newId = Math.min(stepIdx + 1, steps.length - 1);
                     setStepIdx(newId);
-
-                    dispatch(completeProcessingStep(experimentId, steps[stepIdx].key, steps.length));
                   }
                 }
               >
@@ -172,7 +194,16 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             )
               : (
                 <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
-                  <Button type='primary'>
+                  <Button
+                    type='primary'
+                    onClick={
+                      () => {
+                        dispatch(
+                          completeProcessingStep(experimentId, steps[stepIdx].key, steps.length),
+                        );
+                      }
+                    }
+                  >
                     <span style={{ marginRight: '0.25rem' }}>Finish</span>
                     <CheckOutlined />
                   </Button>

@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse, Empty,
+  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse, Empty, Alert,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -24,18 +24,9 @@ import {
   savePlotConfig,
 } from '../../../redux/actions/componentConfig';
 
+import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { loadCellSets } from '../../../redux/actions/cellSets';
-
-import DimensionsRangeEditor from '../../plot-styling/DimensionsRangeEditor';
-import ColourbarDesign from '../../plot-styling/ColourbarDesign';
-import ColourInversion from '../../plot-styling/ColourInversion';
-import AxesDesign from '../../plot-styling/AxesDesign';
-import PointDesign from '../../plot-styling/PointDesign';
-import TitleDesign from '../../plot-styling/TitleDesign';
-import FontDesign from '../../plot-styling/FontDesign';
-import LegendEditor from '../../plot-styling/LegendEditor';
-import LabelsDesign from '../../plot-styling/LabelsDesign';
 
 const { Panel } = Collapse;
 
@@ -176,6 +167,117 @@ const ConfigureEmbedding = (props) => {
     }
   };
 
+  const plotSpecificStyling = {
+    sample: [
+      {
+        panelTitle: 'Colour Inversion',
+        controls: ['colourInversion'],
+        footer: <Alert
+          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          type='info'
+        />,
+      },
+      {
+        panelTitle: 'Markers',
+        controls: ['markers'],
+      },
+      {
+        panelTitle: 'Legend',
+        controls: [{
+          name: 'legend',
+          props: {
+            option: {
+              positions: 'top-bottom',
+            },
+          },
+        }],
+      },
+      {
+        panelTitle: 'Labels',
+        controls: ['labels'],
+      },
+    ],
+    cellCluster: [
+      {
+        panelTitle: 'Colours',
+        controls: ['colourInversion'],
+        footer: <Alert
+          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          type='info'
+        />,
+      },
+      {
+        panelTitle: 'Markers',
+        controls: ['markers'],
+      },
+      {
+        panelTitle: 'Legend',
+        controls: [{
+          name: 'legend',
+          props: {
+            option: {
+              positions: 'top-bottom',
+            },
+          },
+        }],
+      },
+      {
+        panelTitle: 'Labels',
+        controls: ['labels'],
+      },
+    ],
+    mitochondrialFraction: [
+      {
+        panelTitle: 'Colours',
+        controls: ['colourScheme', 'colourInversion'],
+      },
+      {
+        panelTitle: 'Markers',
+        controls: ['markers'],
+      },
+      {
+        panelTitle: 'Legend',
+        controls: ['legend'],
+      },
+    ],
+    doubletScore: [
+      {
+        panelTitle: 'Colours',
+        controls: ['colourScheme', 'colourInversion'],
+      },
+      {
+        panelTitle: 'Markers',
+        controls: ['markers'],
+      },
+      {
+        panelTitle: 'Legend',
+        controls: ['legend'],
+      },
+    ],
+  };
+
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Main schema',
+      controls: ['dimensions'],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Axes and Margins',
+      controls: ['axes'],
+    },
+    ...plotSpecificStyling[selectedPlot],
+  ];
+
   return (
     <>
       <PageHeader
@@ -223,50 +325,8 @@ const ConfigureEmbedding = (props) => {
           <CalculationConfig experimentId={experimentId} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
-              <Collapse accordion>
-                <Panel header='Main Schema' key='main-schema'>
-                  <DimensionsRangeEditor config={config} onUpdate={updatePlotWithChanges} />
-                  <Collapse accordion>
-                    <Panel header='Define and Edit Title' key='title'>
-                      <TitleDesign config={config} onUpdate={updatePlotWithChanges} />
-                    </Panel>
-                    <Panel header='Font' key='font'>
-                      <FontDesign config={config} onUpdate={updatePlotWithChanges} />
-                    </Panel>
-                  </Collapse>
-                </Panel>
-                <Panel header='Axes and Margins' key='axes'>
-                  <AxesDesign config={config} onUpdate={updatePlotWithChanges} />
-                </Panel>
-                {plots[selectedPlot].plotType === 'embeddingContinuous' && (
-                  <Panel header='Colours' key='colors'>
-                    <ColourbarDesign config={config} onUpdate={updatePlotWithChanges} />
-                    <ColourInversion config={config} onUpdate={updatePlotWithChanges} />
-                  </Panel>
-                )}
-                {plots[selectedPlot].plotType === 'embeddingCategorical' && (
-                  <Panel header='Colour inversion'>
-                    <ColourInversion config={config} onUpdate={updatePlotWithChanges} />
-                  </Panel>
-                )}
-                <Panel header='Markers' key='marker'>
-                  <PointDesign config={config} onUpdate={updatePlotWithChanges} />
-                </Panel>
-                {plots[selectedPlot].plotType === 'embeddingContinuous' && (
-                  <Panel header='Legend' key='legend'>
-                    <LegendEditor config={config} onUpdate={updatePlotWithChanges} />
-                  </Panel>
-                )}
-                {plots[selectedPlot].plotType === 'embeddingCategorical' && (
-                  <Panel header='Legend' key='legend'>
-                    <LegendEditor config={config} onUpdate={updatePlotWithChanges} option={{ position: 'top-bottom' }} />
-                  </Panel>
-                )}
-
-                <Panel header='Labels' key='labels'>
-                  <LabelsDesign config={config} onUpdate={updatePlotWithChanges} />
-                </Panel>
-              </Collapse>
+              <div style={{ height: 8 }} />
+              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
             </Panel>
           </Collapse>
         </Col>

@@ -1,5 +1,6 @@
 export default {
   processing: {
+    initialState: true,
     meta: {
       complete: false,
       stepsDone: new Set([]),
