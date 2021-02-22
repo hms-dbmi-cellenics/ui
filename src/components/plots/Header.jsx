@@ -15,6 +15,7 @@ import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import itemRender from '../../utils/renderBreadcrumbLinks';
 import getApiEndpoint from '../../utils/apiEndpoint';
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
+
 import { LOAD_CONFIG } from '../../redux/actionTypes/componentConfig';
 import { initialPlotConfigStates } from '../../redux/reducers/componentConfig/initialState';
 
