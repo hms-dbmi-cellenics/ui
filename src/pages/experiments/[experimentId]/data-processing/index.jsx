@@ -194,7 +194,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           experimentId={experimentId}
           experimentData={experimentData}
           route={route}
-          title='Data processing'
+          title='Data Processing'
         />
 
         <Card

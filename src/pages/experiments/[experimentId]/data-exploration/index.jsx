@@ -149,7 +149,7 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
         experimentId={experimentId}
         experimentData={experimentData}
         route={route}
-        title='Data exploration'
+        title='Data Exploration'
         extra={(
           <Dropdown
             trigger={['click']}
