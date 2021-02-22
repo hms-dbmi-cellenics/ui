@@ -22,7 +22,7 @@ const ColourInversion = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Background</div>
+        <p><strong>Background Color</strong></p>
         <Form.Item>
           <Radio.Group onChange={onChange} value={config.colour.toggleInvert}>
             <Radio value='#FFFFFF'>Standard</Radio>

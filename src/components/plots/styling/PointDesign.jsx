@@ -4,7 +4,7 @@ import {
   Slider, Form,
   Radio, Space,
 } from 'antd';
-import useUpdateThrottled from '../../utils/useUpdateThrottled';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const PointDesign = (props) => {
   const { onUpdate, config } = props;
@@ -17,7 +17,7 @@ const PointDesign = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Point Style</div>
+        <p><strong>Point Style</strong></p>
         <Form.Item
           label='Point Size'
         >
@@ -44,7 +44,8 @@ const PointDesign = (props) => {
             marks={{ 1: 1, 10: 10 }}
           />
         </Form.Item>
-        <div>Point Shape</div>
+
+        <p><strong>Point Shape</strong></p>
         <Form.Item>
           <Radio.Group onChange={(e) => onUpdate({ marker: { shape: e.target.value } })} value={config.marker.shape}>
             <Radio value='circle'>Circle</Radio>

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Slider, Form, Input,
 } from 'antd';
-import useUpdateThrottled from '../../utils/useUpdateThrottled';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
@@ -15,6 +15,24 @@ const AxesDesign = (props) => {
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 12 }}
     >
+      <p><strong>Axes Settings</strong></p>
+      <Form.Item label='X-Axis Title'>
+        <Input
+          value={config.axes.xAxisText}
+          onChange={(e) => {
+            handleChange({ axes: { xAxisText: e.target.value } });
+          }}
+        />
+      </Form.Item>
+
+      <Form.Item label='Y-Axis Title'>
+        <Input
+          value={config.axes.yAxisText}
+          onChange={(e) => {
+            handleChange({ axes: { yAxisText: e.target.value } });
+          }}
+        />
+      </Form.Item>
       <Form.Item label='Axes Label Size'>
         <Slider
           value={newConfig.axes.titleFontSize}
@@ -60,24 +78,6 @@ const AxesDesign = (props) => {
             handleChange({ axes: { gridOpacity: value } });
           }}
           marks={{ 0: 0, 10: 10 }}
-        />
-      </Form.Item>
-
-      <Form.Item label='X axis Title'>
-        <Input
-          value={newConfig.axes.xAxisText}
-          onChange={(e) => {
-            handleChange({ axes: { xAxisText: e.target.value } });
-          }}
-        />
-      </Form.Item>
-
-      <Form.Item label='Y Axis Title'>
-        <Input
-          value={newConfig.axes.yAxisText}
-          onChange={(e) => {
-            handleChange({ axes: { yAxisText: e.target.value } });
-          }}
         />
       </Form.Item>
     </Form>

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,
 } from 'antd';
-import useUpdateThrottled from '../../utils/useUpdateThrottled';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const DimensionsRangeEditor = (props) => {
   const {
@@ -23,34 +23,39 @@ const DimensionsRangeEditor = (props) => {
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
-      Dimensions
-
-      <Form.Item
-        label='Width'
+      <p><strong>Dimensions</strong></p>
+      <Form
+        size='small'
+        labelCol={{ span: 12 }}
+        wrapperCol={{ span: 12 }}
       >
-        <Slider
-          value={newConfig.dimensions.width}
-          min={minWidth}
-          max={maxWidth}
-          onChange={(value) => {
-            handleChange({ dimensions: { width: value } });
-          }}
-          marks={widthMarks}
-        />
-      </Form.Item>
-      <Form.Item
-        label='Height'
-      >
-        <Slider
-          value={newConfig.dimensions.height}
-          min={minHeight}
-          max={maxHeight}
-          onChange={(value) => {
-            handleChange({ dimensions: { height: value } });
-          }}
-          marks={heighthMarks}
-        />
-      </Form.Item>
+        <Form.Item
+          label='Width'
+        >
+          <Slider
+            value={newConfig.dimensions.width}
+            min={minWidth}
+            max={maxWidth}
+            onChange={(value) => {
+              handleChange({ dimensions: { width: value } });
+            }}
+            marks={widthMarks}
+          />
+        </Form.Item>
+        <Form.Item
+          label='Height'
+        >
+          <Slider
+            value={newConfig.dimensions.height}
+            min={minHeight}
+            max={maxHeight}
+            onChange={(value) => {
+              handleChange({ dimensions: { height: value } });
+            }}
+            marks={heighthMarks}
+          />
+        </Form.Item>
+      </Form>
     </Space>
   );
 };

@@ -39,7 +39,7 @@ const MarkersEditor = (props) => {
       labelCol={{ span: 6 }}
       wrapperCol={{ span: 18 }}
     >
-      <div>Markers</div>
+      <p><strong>Markers</strong></p>
       <Form.Item
         label='Colors'
       >

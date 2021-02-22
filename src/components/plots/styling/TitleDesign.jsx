@@ -4,7 +4,7 @@ import {
   Slider, Form,
   Radio, Input, Space,
 } from 'antd';
-import useUpdateThrottled from '../../utils/useUpdateThrottled';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const TitleDesign = (props) => {
   const { onUpdate, config } = props;
@@ -16,7 +16,7 @@ const TitleDesign = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Title Styles</div>
+        <p><strong>Title Styles</strong></p>
         <Form.Item
           label='Define Title'
         >

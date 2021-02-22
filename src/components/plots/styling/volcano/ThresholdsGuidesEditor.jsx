@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Form, InputNumber, Checkbox, Space, Select, Typography,
 } from 'antd';
-import ColorPicker from '../../ColorPicker';
+import ColorPicker from '../../../ColorPicker';
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -66,7 +66,7 @@ const ThresholdsGuidesEditor = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Significance thresholds</div>
+        <p><strong>Significance Thresholds</strong></p>
         <Form.Item
           label={(
             <span>
@@ -131,7 +131,7 @@ const ThresholdsGuidesEditor = (props) => {
           </Space>
         </Form.Item>
 
-        <div>Guideline Design</div>
+        <p><strong>Guideline Design</strong></p>
         <Form.Item
           label='Width'
         >

@@ -15,20 +15,13 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
-import DimensionsRangeEditor from '../../../../../components/plot-styling/DimensionsRangeEditor';
-import ColourInversion from '../../../../../components/plot-styling/ColourInversion';
-import AxesDesign from '../../../../../components/plot-styling/AxesDesign';
-import PointDesign from '../../../../../components/plot-styling/PointDesign';
-import TitleDesign from '../../../../../components/plot-styling/TitleDesign';
-import FontDesign from '../../../../../components/plot-styling/FontDesign';
-import LegendEditor from '../../../../../components/plot-styling/LegendEditor';
-import LabelsDesign from '../../../../../components/plot-styling/LabelsDesign';
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from '../../../../../redux/actions/componentConfig/index';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import Header from '../../../../../components/plot-styling/Header';
+import Header from '../../../../../components/plots/Header';
 import PlatformError from '../../../../../components/PlatformError';
 
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
@@ -131,13 +124,53 @@ const EmbeddingCategoricalPlot = ({ experimentId }) => {
     });
   };
 
-  const onUpdate = (obj) => {
+  const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
   const onCellSetSelect = ({ value }) => {
-    onUpdate({ selectedCellSet: value });
+    updatePlotWithChanges({ selectedCellSet: value });
   };
+
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Main schema',
+      controls: ['dimensions'],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Axes and Margins',
+      controls: ['axes'],
+    },
+    {
+      panelTitle: 'Colour Inversion',
+      controls: ['colourInversion'],
+    },
+    {
+      panelTitle: 'Markers',
+      controls: ['markers'],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+        },
+      }],
+    },
+  ];
 
   if (!config) {
     return <Skeleton />;
@@ -194,13 +227,12 @@ const EmbeddingCategoricalPlot = ({ experimentId }) => {
           </Space>
         </Col>
         <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }} />
-          <Collapse accordion defaultActiveKey={['1']}>
-            <Panel header='Group by' key='6'>
-              <p>
-                Select the cell set category you would like to group cells by.
-              </p>
-              <Space direction='vertical' style={{ width: '100%' }}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Collapse accordion defaultActiveKey={['1']}>
+              <Panel header='Group by' key='1'>
+                <p>
+                  Select the cell set category you would like to group cells by.
+                </p>
                 <Select
                   labelInValue
                   style={{ width: '100%' }}
@@ -209,39 +241,10 @@ const EmbeddingCategoricalPlot = ({ experimentId }) => {
                   options={generateCellSetOptions()}
                   onChange={onCellSetSelect}
                 />
-              </Space>
-            </Panel>
-            <Panel header='Main Schema' key='2'>
-              <DimensionsRangeEditor config={config} onUpdate={onUpdate} />
-              <Collapse accordion defaultActiveKey={['1']}>
-                <Panel header='Define and Edit Title' key='6'>
-                  <TitleDesign config={config} onUpdate={onUpdate} />
-                </Panel>
-                <Panel header='Font' key='9'>
-                  <FontDesign config={config} onUpdate={onUpdate} />
-                </Panel>
-              </Collapse>
-            </Panel>
-            <Panel header='Axes and Margins' key='3'>
-              <AxesDesign config={config} onUpdate={onUpdate} />
-            </Panel>
-            <Panel header='Colour Inversion' key='4'>
-              <ColourInversion config={config} onUpdate={onUpdate} />
-            </Panel>
-            <Panel header='Markers' key='5'>
-              <PointDesign config={config} onUpdate={onUpdate} />
-            </Panel>
-            <Panel header='Legend' key='10'>
-              <LegendEditor
-                onUpdate={onUpdate}
-                config={config}
-                option={{ positions: 'top-bottom' }}
-              />
-            </Panel>
-            <Panel header='Labels' key='11'>
-              <LabelsDesign config={config} onUpdate={onUpdate} />
-            </Panel>
-          </Collapse>
+              </Panel>
+            </Collapse>
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+          </Space>
         </Col>
       </Row>
     </div>

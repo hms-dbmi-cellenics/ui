@@ -11,14 +11,14 @@ import CalculationConfig from './CalculationConfig';
 
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
 
-import DimensionsRangeEditor from '../../plot-styling/DimensionsRangeEditor';
-import AxesDesign from '../../plot-styling/AxesDesign';
-import PointDesign from '../../plot-styling/PointDesign';
-import TitleDesign from '../../plot-styling/TitleDesign';
-import FontDesign from '../../plot-styling/FontDesign';
-import LegendEditor from '../../plot-styling/LegendEditor';
-import LabelsDesign from '../../plot-styling/LabelsDesign';
-import ColourInversion from '../../plot-styling/ColourInversion';
+import DimensionsRangeEditor from '../../plots/styling/DimensionsRangeEditor';
+import AxesDesign from '../../plots/styling/AxesDesign';
+import PointDesign from '../../plots/styling/PointDesign';
+import TitleDesign from '../../plots/styling/TitleDesign';
+import FontDesign from '../../plots/styling/FontDesign';
+import LegendEditor from '../../plots/styling/LegendEditor';
+import LabelsDesign from '../../plots/styling/LabelsDesign';
+import ColourInversion from '../../plots/styling/ColourInversion';
 
 import loadCellSets from '../../../redux/actions/cellSets/loadCellSets';
 
