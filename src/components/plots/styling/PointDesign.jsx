@@ -1,15 +1,14 @@
-import _ from 'lodash';
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form,
   Radio, Space,
 } from 'antd';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const PointDesign = (props) => {
   const { onUpdate, config } = props;
-
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -23,11 +22,11 @@ const PointDesign = (props) => {
           label='Point Size'
         >
           <Slider
-            value={config.marker.size}
+            value={newConfig.marker.size}
             min={1}
             max={100}
             onChange={(value) => {
-              onUpdateThrottled.current({ marker: { size: value } });
+              handleChange({ marker: { size: value } });
             }}
             marks={{ 1: 1, 100: 100 }}
           />
@@ -36,11 +35,11 @@ const PointDesign = (props) => {
           label='Point Fill Opacity'
         >
           <Slider
-            value={config.marker.opacity}
+            value={newConfig.marker.opacity}
             min={1}
             max={10}
             onChange={(value) => {
-              onUpdateThrottled.current({ marker: { opacity: value } });
+              handleChange({ marker: { opacity: value } });
             }}
             marks={{ 1: 1, 10: 10 }}
           />

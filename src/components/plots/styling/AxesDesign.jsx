@@ -1,13 +1,13 @@
-import _ from 'lodash';
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Input,
 } from 'antd';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
   return (
     <Form
@@ -20,7 +20,7 @@ const AxesDesign = (props) => {
         <Input
           value={config.axes.xAxisText}
           onChange={(e) => {
-            onUpdateThrottled.current({ axes: { xAxisText: e.target.value } });
+            handleChange({ axes: { xAxisText: e.target.value } });
           }}
         />
       </Form.Item>
@@ -29,17 +29,17 @@ const AxesDesign = (props) => {
         <Input
           value={config.axes.yAxisText}
           onChange={(e) => {
-            onUpdateThrottled.current({ axes: { yAxisText: e.target.value } });
+            handleChange({ axes: { yAxisText: e.target.value } });
           }}
         />
       </Form.Item>
       <Form.Item label='Axes Label Size'>
         <Slider
-          value={config.axes.titleFontSize}
+          value={newConfig.axes.titleFontSize}
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { titleFontSize: value } });
+            handleChange({ axes: { titleFontSize: value } });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -47,11 +47,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Axes Ticks Size'>
         <Slider
-          value={config.axes.labelFontSize}
+          value={newConfig.axes.labelFontSize}
           min={5}
           max={21}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { labelFontSize: value } });
+            handleChange({ axes: { labelFontSize: value } });
           }}
           marks={{ 5: 5, 21: 21 }}
         />
@@ -59,11 +59,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Offset Margins'>
         <Slider
-          value={config.axes.offset}
+          value={newConfig.axes.offset}
           min={0}
           max={20}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { offset: value } });
+            handleChange({ axes: { offset: value } });
           }}
           marks={{ 0: 0, 20: 20 }}
         />
@@ -71,11 +71,11 @@ const AxesDesign = (props) => {
 
       <Form.Item label='Grid-line weight'>
         <Slider
-          value={config.axes.gridOpacity}
+          value={newConfig.axes.gridOpacity}
           min={0}
           max={10}
           onChange={(value) => {
-            onUpdateThrottled.current({ axes: { gridOpacity: value } });
+            handleChange({ axes: { gridOpacity: value } });
           }}
           marks={{ 0: 0, 10: 10 }}
         />

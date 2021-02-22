@@ -1,5 +1,6 @@
 export default {
   processing: {
+    initialState: true,
     meta: {
       complete: false,
       stepsDone: new Set([]),
@@ -19,7 +20,6 @@ export default {
       dimensionalityReduction: {
         method: 'rpca',
         numPCs: 30,
-        variationExplained: 91,
         excludeGeneCategories: [],
       },
     },

@@ -30,10 +30,15 @@ describe('Data Integration Calculation Config', () => {
     },
   };
 
+  let data = null;
+
   configure({ adapter: new Adapter() });
 
   beforeEach(async () => {
     await preloadAll();
+
+    const PCObject = () => ({ PC: 1, percent: 0.02, percentVariance: 0.02 });
+    data = Array(50).fill(PCObject());
 
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -76,7 +81,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} />
       </Provider>,
     );
 
@@ -91,7 +96,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} />
       </Provider>,
     );
 
@@ -109,7 +114,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} />
       </Provider>,
     );
 
@@ -124,7 +129,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} />
       </Provider>,
     );
 
@@ -142,7 +147,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} />
       </Provider>,
     );
 
@@ -155,7 +160,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} />
       </Provider>,
     );
 
@@ -177,5 +182,19 @@ describe('Data Integration Calculation Config', () => {
         EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
         EXPERIMENT_SETTINGS_PROCESSING_SAVE,
       ]);
+  });
+
+  it('displays the correct proportion of variation explained value', async () => {
+    const store = mockStore(storeState);
+
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig experimentId={experimentId} config={config} data={data} />
+      </Provider>,
+    );
+
+    const variationExplainedComponent = component.find('InputNumber');
+
+    expect(variationExplainedComponent.at(2).props().value).toEqual(60);
   });
 });

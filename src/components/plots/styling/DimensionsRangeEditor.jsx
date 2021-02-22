@@ -1,9 +1,9 @@
-import _ from 'lodash';
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,
 } from 'antd';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const DimensionsRangeEditor = (props) => {
   const {
@@ -19,6 +19,8 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
+
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <p><strong>Dimensions</strong></p>
@@ -31,11 +33,11 @@ const DimensionsRangeEditor = (props) => {
           label='Width'
         >
           <Slider
-            value={config.dimensions.width}
+            value={newConfig.dimensions.width}
             min={minWidth}
             max={maxWidth}
             onChange={(value) => {
-              onUpdate({ dimensions: { width: value } });
+              handleChange({ dimensions: { width: value } });
             }}
             marks={widthMarks}
           />
@@ -44,11 +46,11 @@ const DimensionsRangeEditor = (props) => {
           label='Height'
         >
           <Slider
-            value={config.dimensions.height}
+            value={newConfig.dimensions.height}
             min={minHeight}
             max={maxHeight}
             onChange={(value) => {
-              onUpdate({ dimensions: { height: value } });
+              handleChange({ dimensions: { height: value } });
             }}
             marks={heighthMarks}
           />

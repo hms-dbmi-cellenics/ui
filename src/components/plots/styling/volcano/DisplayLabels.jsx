@@ -1,15 +1,15 @@
-import _ from 'lodash';
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,
 } from 'antd';
+import useUpdateThrottled from '../../../../utils/customHooks/useUpdateThrottled';
 
 const DisplayLabels = (props) => {
   const {
     config, onUpdate, min, max,
   } = props;
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -25,11 +25,11 @@ const DisplayLabels = (props) => {
         >
           <>  </>
           <Slider
-            value={config.textThresholdValue}
+            value={newConfig.textThresholdValue}
             min={min}
             max={max}
             onChange={(value) => {
-              onUpdateThrottled.current({ textThresholdValue: value });
+              handleChange({ textThresholdValue: value });
             }}
           />
         </Form.Item>

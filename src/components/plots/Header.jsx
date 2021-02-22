@@ -105,7 +105,7 @@ const Header = (props) => {
     },
     {
       path: 'plots-and-tables',
-      breadcrumbName: 'Plots and tables',
+      breadcrumbName: 'Plots and Tables',
     },
     finalRoute,
   ];

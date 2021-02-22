@@ -159,7 +159,7 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
             experimentId={experimentId}
             experimentData={experimentData}
             route={route}
-            title='Plots and tables'
+            title='Plots and Tables'
             extra={(
               <Space>
                 <Dropdown

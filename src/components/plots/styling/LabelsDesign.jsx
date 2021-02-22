@@ -1,15 +1,13 @@
-import _ from 'lodash';
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Radio, Form, Slider,
 } from 'antd';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;
-
-  const onUpdateThrottled = useRef(_.throttle((obj) => onUpdate(obj), 10));
-
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
   const minLabelSize = 0;
   const maxLabelSize = 50;
 
@@ -29,12 +27,12 @@ const LabelsDesign = (props) => {
         label='Size'
       >
         <Slider
-          value={config.label.size}
+          value={newConfig.label.size}
           min={minLabelSize}
           max={maxLabelSize}
           disabled={!config.label.enabled}
           onChange={(value) => {
-            onUpdateThrottled.current({ label: { size: value } });
+            handleChange({ label: { size: value } });
           }}
           marks={{ 0: minLabelSize, 50: maxLabelSize }}
         />

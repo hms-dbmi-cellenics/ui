@@ -4,10 +4,11 @@ import {
   Slider, Form,
   Radio, Input, Space,
 } from 'antd';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const TitleDesign = (props) => {
   const { onUpdate, config } = props;
-
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <Form
@@ -21,9 +22,9 @@ const TitleDesign = (props) => {
         >
           <Input
             placeholder='Enter title'
-            value={config.title.text}
+            value={newConfig.title.text}
             onChange={(e) => {
-              onUpdate({ title: { text: e.target.value } });
+              handleChange({ title: { text: e.target.value } });
             }}
           />
         </Form.Item>
@@ -31,11 +32,11 @@ const TitleDesign = (props) => {
           label='Title Font Size'
         >
           <Slider
-            value={config.title.fontSize}
+            value={newConfig.title.fontSize}
             min={15}
             max={40}
             onChange={(value) => {
-              onUpdate({ title: { fontSize: value } });
+              handleChange({ title: { fontSize: value } });
             }}
             marks={{ 15: 15, 40: 40 }}
           />
