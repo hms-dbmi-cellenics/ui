@@ -5,7 +5,7 @@ import {
   Slider, Form, Space,
 } from 'antd';
 
-const DimensionsRangeEditorVolcano = (props) => {
+const VolcanoDimensionsRangeEditor = (props) => {
   const {
     config, onUpdate, yMax, xMax,
   } = props;
@@ -18,7 +18,7 @@ const DimensionsRangeEditorVolcano = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <div>Dimensions</div>
+        <p><strong>Dimensions</strong></p>
 
         <Form.Item
           label='Width'
@@ -74,11 +74,11 @@ const DimensionsRangeEditorVolcano = (props) => {
   );
 };
 
-DimensionsRangeEditorVolcano.propTypes = {
+VolcanoDimensionsRangeEditor.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
   yMax: PropTypes.number.isRequired,
   xMax: PropTypes.number.isRequired,
 };
 
-export default DimensionsRangeEditorVolcano;
+export default VolcanoDimensionsRangeEditor;

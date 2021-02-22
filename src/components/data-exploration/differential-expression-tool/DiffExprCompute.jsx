@@ -47,7 +47,7 @@ const DiffExprCompute = (props) => {
   }, []);
 
   useEffect(() => {
-    if (hierarchy.length === 0) return;
+    if (hierarchy && hierarchy.length === 0) return;
 
     // Make sure we are not rendering metadata-related options if there is no metadata in the data set.
     const numMetadata = Object.values(properties).filter((o) => o.type === 'metadataCategorical').length;
