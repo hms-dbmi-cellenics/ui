@@ -129,7 +129,7 @@ const CalculationConfig = (props) => {
             { embeddingSettings: { methodSettings: { umap: { distanceMetric: value } } } },
           )}
         >
-          <Option value='euclidean'>Euclidean</Option>
+          <Option value='euclidean'><Tooltip style={{ width: '100%' }} title='que tal'>Euclidean</Tooltip></Option>
           <Option value='cosine' disabled>Cosine</Option>
         </Select>
       </Form.Item>

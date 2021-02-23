@@ -344,12 +344,69 @@ const dataIntegrationFrequencyInitialConfig = {
     width: 700,
     height: 550,
   },
+
   axes: {
     ...axesBaseState,
     xAxisText: 'Louvain clusters',
     yAxisText: 'Proportion',
     offset: 10,
   },
+  fontStyle: fontStyleBaseState,
+};
+
+// DATA INTEGRATION - Elbow
+const dataIntegrationElbowPlotInitialConfig = {
+  legend: {
+    ...legendBaseState,
+    position: 'top',
+  },
+  label: { ...labelBaseState },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  marker: { ...markerBaseState },
+  fontStyle: fontStyleBaseState,
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Principal Components',
+    yAxisText: 'Proportion of Variance Explained',
+    titleFont: 'sans-serif',
+    labelFont: 'sans-serif',
+    labelFontSize: 13,
+    offset: 0,
+    gridOpacity: 10,
+  },
+  colour: {
+    toggleInvert: '#FFFFFF',
+  },
+  title: {
+    ...titleBaseState,
+    font: 'sans-serif',
+    fontSize: 12,
+    dx: 10,
+  },
+  signals: [
+    {
+      name: 'interpolate',
+      value: 'linear',
+      bind: {
+        input: 'select',
+        options: [
+          'basis',
+          'cardinal',
+          'catmull-rom',
+          'linear',
+          'monotone',
+          'natural',
+          'step',
+          'step-after',
+          'step-before',
+        ],
+      },
+    },
+  ],
 };
 
 const initialPlotConfigStates = {
@@ -364,6 +421,7 @@ const initialPlotConfigStates = {
   embeddingPreviewDoubletScore: embeddingPreviewDoubletScoreInitialConfig,
   dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
+  dataIntegrationElbow: dataIntegrationElbowPlotInitialConfig,
 };
 
 const initialComponentConfigStates = {

@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useCallback, useRef,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
 import {
@@ -25,7 +27,7 @@ import loadCellSets from '../../../redux/actions/cellSets/loadCellSets';
 import PlatformError from '../../PlatformError';
 
 import {
-  loadPlotConfig,
+  loadPlotConfig, updatePlotConfig, savePlotConfig,
 } from '../../../redux/actions/componentConfig/index';
 
 import fakeData from './fake_new_data.json';
@@ -34,66 +36,9 @@ import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from '../../plots/FrequencyPlot';
 import ElbowPlot from '../../plots/ElbowPlot';
 
-const defaultElbowPlotStylingConfig = {
-  legend: {
-    enabled: 'true',
-    position: 'top',
-  },
-  label: {
-    enabled: true,
-    size: 28,
-  },
-  dimensions: {
-    width: 700,
-    height: 550,
-    maxWidth: 720,
-    maxHeight: 530,
-  },
-  marker: {
-    shape: 'circle',
-    opacity: 5,
-    size: 5,
-  },
-  axes: {
-    xAxisText: 'Principal Components',
-    yAxisText: 'Proportion of Variance Explained',
-    titleFont: 'sans-serif',
-    labelFont: 'sans-serif',
-    titleFontSize: 13,
-    labelFontSize: 13,
-    offset: 0,
-    gridOpacity: 10,
-  },
-  colour: {
-    toggleInvert: '#FFFFFF',
-  },
-  title: {
-    text: '',
-    anchor: 'start',
-    font: 'sans-serif',
-    fontSize: 12,
-    dx: 10,
-  },
-  signals: [
-    {
-      name: 'interpolate',
-      value: 'linear',
-      bind: {
-        input: 'select',
-        options: [
-          'basis',
-          'cardinal',
-          'catmull-rom',
-          'linear',
-          'monotone',
-          'natural',
-          'step',
-          'step-after',
-          'step-before',
-        ],
-      },
-    },
-  ],
+const samplePlotConfigRedux = {
+  uuid: 'dataIntegrationEmbedding',
+  type: 'dataIntegrationEmbedding',
 };
 
 const frequencyPlotConfigRedux = {
@@ -101,9 +46,9 @@ const frequencyPlotConfigRedux = {
   type: 'dataIntegrationFrequency',
 };
 
-const samplePlotConfigRedux = {
-  uuid: 'dataIntegrationEmbedding',
-  type: 'dataIntegrationEmbedding',
+const elbowPlotConfigRedux = {
+  uuid: 'dataIntegrationElbow',
+  type: 'dataIntegrationElbow',
 };
 
 const DataIntegration = () => {
@@ -114,6 +59,9 @@ const DataIntegration = () => {
   const { experimentId } = router.query;
 
   const [activePlotKey, setActivePlotKey] = useState('samplePlot');
+  const activePlotKeyRef = useRef();
+  activePlotKeyRef.current = activePlotKey;
+
   const cellSets = useSelector((state) => state.cellSets);
 
   const {
@@ -124,13 +72,136 @@ const DataIntegration = () => {
     (state) => state.experimentSettings.processing.dataIntegration,
   );
 
-  const persistedConfigs = {
-    samplePlot: useSelector((state) => state.componentConfig[samplePlotConfigRedux.uuid]?.config),
-    frequencyPlot: useSelector(
-      (state) => (state.componentConfig[frequencyPlotConfigRedux.uuid]?.config),
-    ),
-    elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
+  const samplePlotPersistedConfig = useSelector(
+    (state) => state.componentConfig[samplePlotConfigRedux.uuid]?.config,
+  );
+  const frequencyPlotPersistedConfig = useSelector(
+    (state) => (state.componentConfig[frequencyPlotConfigRedux.uuid]?.config),
+  );
+  const elbowPlotPersistedConfig = useSelector(
+    (state) => (state.componentConfig[elbowPlotConfigRedux.uuid]?.config),
+  );
+
+  const plots = {
+    samplePlot: {
+      plotUuid: samplePlotConfigRedux.uuid,
+      renderPlot: (configInput, actions) => (
+        <CategoricalEmbeddingPlot
+          experimentId={experimentId}
+          config={configInput}
+          actions={actions}
+        />
+      ),
+      persistedConfig: samplePlotPersistedConfig,
+      specificStylingOptions: () => (
+        <>
+          <Panel header='Colours' key='colors'>
+            <ColourInversion
+              config={samplePlotPersistedConfig}
+              onUpdate={updatePlotWithChanges}
+            />
+            <Alert
+              message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+              type='info'
+            />
+          </Panel>
+
+          <Panel header='Legend' key='legend'>
+            <LegendEditor
+              onUpdate={updatePlotWithChanges}
+              config={samplePlotPersistedConfig}
+              option={{ positions: 'top-bottom' }}
+            />
+          </Panel>
+          <Panel header='Markers' key='marker'>
+            <PointDesign config={samplePlotPersistedConfig} onUpdate={updatePlotWithChanges} />
+          </Panel>
+          <Panel header='Labels' key='labels'>
+            <LabelsDesign config={samplePlotPersistedConfig} onUpdate={updatePlotWithChanges} />
+          </Panel>
+        </>
+      ),
+    },
+    frequencyPlot: {
+      plotUuid: frequencyPlotConfigRedux.uuid,
+      renderPlot: (configInput, actions) => (
+        <FrequencyPlot
+          config={configInput}
+          hierarchy={hierarchy}
+          properties={properties}
+          actions={actions}
+        />
+      ),
+      persistedConfig: frequencyPlotPersistedConfig,
+      specificStylingOptions: () => (
+        <>
+          <Panel header='Colours' key='colors'>
+            <ColourInversion
+              config={frequencyPlotPersistedConfig}
+              onUpdate={updatePlotWithChanges}
+            />
+            <Alert
+              message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+              type='info'
+            />
+          </Panel>
+          <Panel header='Legend' key='legend'>
+            <LegendEditor
+              onUpdate={updatePlotWithChanges}
+              config={frequencyPlotPersistedConfig}
+              option={{ positions: 'top-bottom' }}
+            />
+          </Panel>
+        </>
+      ),
+    },
+    elbowPlot: {
+      plotUuid: elbowPlotConfigRedux.uuid,
+      renderPlot: (stylingConfig, actions) => (
+        <ElbowPlot
+          stylingConfig={stylingConfig}
+          calculationConfig={calculationConfig}
+          plotData={fakeData}
+          actions={actions}
+        />
+      ),
+      persistedConfig: elbowPlotPersistedConfig,
+      specificStylingOptions: () => (
+        <>
+          <Panel header='Colours' key='colors'>
+            <ColourInversion
+              config={elbowPlotPersistedConfig}
+              onUpdate={updatePlotWithChanges}
+            />
+          </Panel>
+        </>
+      ),
+    },
   };
+
+  const activeConfig = plots[activePlotKey].persistedConfig;
+
+  useEffect(() => {
+    if (!calculationConfig) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+
+    dispatch(loadCellSets(experimentId));
+
+    dispatch(
+      loadPlotConfig(experimentId, samplePlotConfigRedux.uuid, samplePlotConfigRedux.type),
+    );
+    dispatch(
+      loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
+    );
+    dispatch(
+      loadPlotConfig(experimentId, elbowPlotConfigRedux.uuid, elbowPlotConfigRedux.type),
+    );
+  }, [experimentId]);
+
+  const debounceSave = useCallback(
+    _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
 
   const renderIfAvailable = (renderFunc, elementToRender) => {
     if (!elementToRender || loading) {
@@ -151,115 +222,11 @@ const DataIntegration = () => {
     return renderFunc(elementToRender);
   };
 
-  const activeConfig = persistedConfigs[activePlotKey];
-
-  const plots = {
-    samplePlot: (configInput, actions) => (
-      <CategoricalEmbeddingPlot
-        experimentId={experimentId}
-        config={configInput}
-        actions={actions}
-      />
-    ),
-    frequencyPlot: (configInput, actions) => (
-      <FrequencyPlot
-        config={configInput}
-        hierarchy={hierarchy}
-        properties={properties}
-        actions={actions}
-      />
-    ),
-    elbowPlot: (stylingConfig, actions) => (
-      <ElbowPlot
-        stylingConfig={stylingConfig}
-        calculationConfig={calculationConfig}
-        plotData={fakeData}
-        actions={actions}
-      />
-    ),
-  };
-
-  useEffect(() => {
-    if (!calculationConfig) {
-      dispatch(loadProcessingSettings(experimentId));
-    }
-
-    dispatch(loadCellSets(experimentId));
-
-    dispatch(
-      loadPlotConfig(experimentId, samplePlotConfigRedux.uuid, samplePlotConfigRedux.type),
-    );
-
-    dispatch(
-      loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
-    );
-  }, [experimentId]);
-
-  const plotSpecificStyling = {
-    samplePlot: () => (
-      <>
-        <Panel header='Colours' key='colors'>
-          <ColourInversion
-            config={activeConfig}
-            onUpdate={updatePlotWithChanges}
-          />
-          <Alert
-            message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
-            type='info'
-          />
-        </Panel>
-
-        <Panel header='Legend' key='legend'>
-          <LegendEditor
-            onUpdate={updatePlotWithChanges}
-            config={activeConfig}
-            option='top-bottom'
-          />
-        </Panel>
-        <Panel header='Markers' key='marker'>
-          <PointDesign config={activeConfig} onUpdate={updatePlotWithChanges} />
-        </Panel>
-        <Panel header='Labels' key='labels'>
-          <LabelsDesign config={activeConfig} onUpdate={updatePlotWithChanges} />
-        </Panel>
-      </>
-    ),
-    frequencyPlot: () => (
-      <>
-        <Panel header='Colours' key='colors'>
-          <ColourInversion
-            config={activeConfig}
-            onUpdate={updatePlotWithChanges}
-          />
-          <Alert
-            message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
-            type='info'
-          />
-        </Panel>
-        <Panel header='Legend' key='legend'>
-          <LegendEditor
-            onUpdate={updatePlotWithChanges}
-            config={activeConfig}
-            option='top-bottom'
-          />
-        </Panel>
-      </>
-    ),
-    elbowPlot: () => (
-      <>
-        <Panel header='Colours' key='colors'>
-          <ColourInversion
-            config={activeConfig}
-            onUpdate={updatePlotWithChanges}
-          />
-        </Panel>
-      </>
-    ),
-  };
-
   const updatePlotWithChanges = (configUpdates) => {
-    const newPlotConfig = _.cloneDeep(activeConfig);
-    _.merge(newPlotConfig, configUpdates);
+    const { plotUuid } = plots[activePlotKeyRef.current];
+
+    dispatch(updatePlotConfig(plotUuid, configUpdates));
+    debounceSave(plotUuid);
   };
 
   const getMiniaturizedConfig = (miniaturesConfig, updatedWidth) => {
@@ -276,6 +243,8 @@ const DataIntegration = () => {
     miniPlotConfig.dimensions.height = updatedWidth * 0.8;
 
     miniPlotConfig.legend.enabled = false;
+
+    miniPlotConfig.title.fontSize = 5;
 
     if (miniPlotConfig.label) {
       miniPlotConfig.label.enabled = false;
@@ -295,7 +264,7 @@ const DataIntegration = () => {
       {({ width: updatedWidth }) => (
         <Col span={4}>
           <Space direction='vertical' align='center' style={{ marginLeft: '0px', marginRight: '0px' }}>
-            {Object.entries(persistedConfigs).map(([key, persistedConfig]) => (
+            {Object.entries(plots).map(([key, value]) => (
               <button
                 type='button'
                 key={key}
@@ -307,9 +276,12 @@ const DataIntegration = () => {
                 {
                   renderIfAvailable(
                     (loadedConfig) => (
-                      plots[key](getMiniaturizedConfig(loadedConfig, updatedWidth), false)
+                      plots[key].renderPlot(
+                        getMiniaturizedConfig(loadedConfig, updatedWidth),
+                        false,
+                      )
                     ),
-                    persistedConfig,
+                    value.persistedConfig,
                   )
                 }
               </button>
@@ -324,7 +296,7 @@ const DataIntegration = () => {
     <Row>
       <Col span={14}>
         {renderIfAvailable(
-          (loadedConfig) => plots[activePlotKey](loadedConfig, true), activeConfig,
+          (loadedConfig) => plots[activePlotKey].renderPlot(loadedConfig, true), activeConfig,
         )}
       </Col>
       {miniaturesColumn}
@@ -332,7 +304,11 @@ const DataIntegration = () => {
       <Col span={5}>
         <Collapse defaultActiveKey={['data-integration']}>
           <Panel header='Data Integration' key='data-integration'>
-            <CalculationConfig experimentId={experimentId} config={calculationConfig} data={fakeData} />
+            <CalculationConfig
+              experimentId={experimentId}
+              config={calculationConfig}
+              data={fakeData}
+            />
           </Panel>
           <Panel header='Plot Styling' key='styling'>
             <Collapse accordion>
@@ -359,7 +335,7 @@ const DataIntegration = () => {
               <Panel header='Axes and Margins' key='axes'>
                 <AxesDesign config={activeConfig} onUpdate={updatePlotWithChanges} />
               </Panel>
-              {plotSpecificStyling[activePlotKey]()}
+              {plots[activePlotKey].specificStylingOptions()}
             </Collapse>
           </Panel>
         </Collapse>
