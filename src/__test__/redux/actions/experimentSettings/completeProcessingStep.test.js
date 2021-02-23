@@ -24,7 +24,7 @@ describe('completeProcessingStep', () => {
 
   it('Dispatches action on completing a step', async () => {
     const store = mockStore({ experimentSettings: { ...initialState } });
-    store.dispatch(completeProcessingStep(experimentId, settingName, numSteps));
+    await store.dispatch(completeProcessingStep(experimentId, settingName, numSteps));
     expect(store.getActions().length).toEqual(1);
   });
 });
