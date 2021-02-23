@@ -57,7 +57,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'dataIntegration',
       name: 'Data integration',
-      render: (key) => <DataIntegration filtering key={key} />,
+      render: (key) => <DataIntegration key={key} />,
     },
     {
       key: 'comptueEmbeddingFilter',
@@ -76,8 +76,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
 
   const carouselRef = useRef(null);
-  
-    useEffect(() => {
+
+  useEffect(() => {
     if (loading && !error) {
       dispatch(loadProcessingSettings(experimentId));
     }

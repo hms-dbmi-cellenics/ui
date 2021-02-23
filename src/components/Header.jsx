@@ -58,7 +58,7 @@ const Header = (props) => {
         extra={(
           <Space>
             <FeedbackButton />
-            {extra || ''}
+            {extra}
           </Space>
         )}
       />
