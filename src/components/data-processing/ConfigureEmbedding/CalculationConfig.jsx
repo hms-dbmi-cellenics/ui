@@ -150,15 +150,18 @@ const CalculationConfig = (props) => {
           />
         </Form.Item>
         <Form.Item label='Distance metric:'>
-          <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
-            <Select
-              value={umap.distanceMetric}
-              onChange={(value) => setDistanceMetric(value)}
-            >
-              <Option value='euclidean'>Euclidean</Option>
-              <Option value='cosine' disabled>Cosine</Option>
-            </Select>
-          </Tooltip>
+          <Select
+            value={umap.distanceMetric}
+            onChange={(value) => setDistanceMetric(value)}
+          >
+            <Option value='euclidean'>Euclidean</Option>
+            <Option value='cosine' disabled>
+              {' '}
+              <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
+                Cosine
+              </Tooltip>
+            </Option>
+          </Select>
         </Form.Item>
       </>
     );
@@ -243,18 +246,28 @@ const CalculationConfig = (props) => {
       <Panel header='Clustering settings' key='clustering-settings'>
         <Form size='small'>
           <Form.Item label='Clustering method:'>
-            <Tooltip title='Leiden and SLM metrics are going to be supported on a future version of the platform.'>
-              <Select
-                value={clusteringMethod}
-                onChange={(value) => updateSettings(
-                  { clusteringSettings: { method: value } },
-                )}
-              >
-                <Option value='louvain'>Louvain</Option>
-                <Option value='leiden' disabled>Leiden</Option>
-                <Option value='slm' disabled>SLM</Option>
-              </Select>
-            </Tooltip>
+            <Select
+              value={clusteringMethod}
+              onChange={(value) => updateSettings(
+                { clusteringSettings: { method: value } },
+              )}
+            >
+              <Option value='louvain'>Louvain</Option>
+              <Option value='leiden' disabled>
+                {' '}
+                <Tooltip title='Leiden metric is going to be supported on a future version of the platform.'>
+                  Leiden
+                </Tooltip>
+
+              </Option>
+              <Option value='slm' disabled>
+                {' '}
+                <Tooltip title='SLM metric is going to be supported on a future version of the platform.'>
+                  SLM
+                </Tooltip>
+
+              </Option>
+            </Select>
           </Form.Item>
           <Form.Item label='Resolution'>
             <Slider
