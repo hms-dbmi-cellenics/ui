@@ -132,6 +132,32 @@ const DataIntegration = () => {
     elbowPlot: _.cloneDeep(defaultElbowPlotStylingConfig),
   };
 
+  useEffect(() => {
+    if (!calculationConfig) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+
+    dispatch(loadCellSets(experimentId));
+
+    if (!persistedConfigs.samplePlot) {
+      dispatch(
+        loadPlotConfig(experimentId, samplePlotConfigRedux.uuid, samplePlotConfigRedux.type),
+      );
+    }
+
+    if (!persistedConfigs.frequencyPlot) {
+      dispatch(
+        loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
+      );
+    }
+  }, [experimentId]);
+
+  if (!calculationConfig || !persistedConfigs.samplePlot || !persistedConfigs.frequencyPlot || !persistedConfigs.elbowPlot) {
+    return (
+      <Spin size='large' />
+    );
+  }
+
   const renderIfAvailable = (renderFunc, elementToRender) => {
     if (!elementToRender || loading) {
       return (
@@ -179,22 +205,6 @@ const DataIntegration = () => {
     ),
   };
 
-  useEffect(() => {
-    if (!calculationConfig) {
-      dispatch(loadProcessingSettings(experimentId));
-    }
-
-    dispatch(loadCellSets(experimentId));
-
-    dispatch(
-      loadPlotConfig(experimentId, samplePlotConfigRedux.uuid, samplePlotConfigRedux.type),
-    );
-
-    dispatch(
-      loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
-    );
-  }, [experimentId]);
-
   const plotSpecificStyling = {
     samplePlot: () => (
       <>
@@ -213,7 +223,7 @@ const DataIntegration = () => {
           <LegendEditor
             onUpdate={updatePlotWithChanges}
             config={activeConfig}
-            option='top-bottom'
+            option={{ positions: 'top-bottom' }}
           />
         </Panel>
         <Panel header='Markers' key='marker'>
@@ -240,7 +250,7 @@ const DataIntegration = () => {
           <LegendEditor
             onUpdate={updatePlotWithChanges}
             config={activeConfig}
-            option='top-bottom'
+            option={{ positions: 'top-bottom' }}
           />
         </Panel>
       </>
