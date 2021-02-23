@@ -46,13 +46,13 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
         data,
       },
     });
-  } catch (e) {
+  } catch (error) {
     return dispatch({
       type: EMBEDDINGS_ERROR,
       payload: {
         experimentId,
         embeddingType,
-        error: "We're sorry, we were unable to load your embedding.",
+        error,
       },
     });
   }

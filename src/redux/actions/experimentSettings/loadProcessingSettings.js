@@ -23,10 +23,10 @@ const loadProcessingSettings = (experimentId) => async (dispatch) => {
     }
 
     throw new Error('HTTP status code was not 200.');
-  } catch (e) {
+  } catch (error) {
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
-      payload: {},
+      payload: { error },
     });
   }
 };

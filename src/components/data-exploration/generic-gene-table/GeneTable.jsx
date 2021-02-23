@@ -13,6 +13,7 @@ import FocusButton from '../../FocusButton';
 import PlatformError from '../../PlatformError';
 import useLazyEffect from '../../../utils/useLazyEffect';
 import GeneSelectionMenu from './GeneSelectionMenu';
+import Loader from '../../Loader';
 
 const GeneTable = (props) => {
   const {
@@ -165,7 +166,7 @@ const GeneTable = (props) => {
   if (error) {
     return (
       <PlatformError
-        description={error}
+        error={error}
         onClick={() => onUpdate(tableState, geneTableUpdateReason.retry)}
       />
     );
@@ -189,7 +190,7 @@ const GeneTable = (props) => {
       <Table
         columns={renderColumns(columns)}
         dataSource={renderRows(data)}
-        loading={loading}
+        loading={{ indicator: <Loader experimentId={experimentId} /> }}
         size='small'
         pagination={{ ...tableState?.pagination, total }}
         sorter={tableState?.sorter}

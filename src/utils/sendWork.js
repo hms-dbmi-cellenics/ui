@@ -1,11 +1,25 @@
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import connectionPromise from './socketConnection';
+import WorkResponseError from './WorkResponseError';
+import WorkTimeoutError from './WorkTimeoutError';
+import getApiEndpoint from './apiEndpoint';
 
 const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();
-  const timeoutDate = moment().add(timeout, 's').toISOString();
   const io = await connectionPromise();
+
+  // Check if we need to have a bigger timeout because the worker being down.
+  const statusResponse = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`);
+  const jsonResponse = await statusResponse.json();
+
+  console.log(jsonResponse);
+
+  const { worker: { started, ready } } = jsonResponse;
+
+  const timeoutDate = moment().add((started && ready) ? timeout : timeout + 60, 's').toISOString();
+
+  console.log(timeoutDate);
 
   const request = {
     uuid: requestUuid,
@@ -20,9 +34,12 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
 
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${requestUuid}`, (res) => {
-      if (res.response.error) {
-        return reject(Error('The backend returned an error'));
+      const { response: { error } } = res;
+
+      if (error) {
+        return reject(new WorkResponseError(error, request));
       }
+
       return resolve(res);
     });
   });
@@ -30,7 +47,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const timeoutPromise = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
       clearTimeout(id);
-      reject(new Error(`Timeout of ${timeout} seconds has expired.`));
+      reject(new WorkTimeoutError(timeoutDate, request));
     }, timeout * 1000);
   });
 

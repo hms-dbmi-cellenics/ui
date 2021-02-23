@@ -27,6 +27,7 @@ import {
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { loadCellSets } from '../../../redux/actions/cellSets';
+import Loader from '../../Loader';
 
 const { Panel } = Collapse;
 
@@ -148,7 +149,7 @@ const ConfigureEmbedding = (props) => {
     if (!config) {
       return (
         <center>
-          <Spin size='large' />
+          <Loader experimentId={experimentId} />
         </center>
       );
     }

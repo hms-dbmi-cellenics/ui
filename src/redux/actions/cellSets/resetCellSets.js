@@ -57,7 +57,7 @@ const resetCellSets = (experimentId) => async (dispatch, getState) => {
       type: CELL_SETS_ERROR,
       payload: {
         experimentId,
-        error: "Couldn't reset cell sets to default.",
+        error: e,
       },
     });
   }

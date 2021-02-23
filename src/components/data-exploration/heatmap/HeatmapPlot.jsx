@@ -4,7 +4,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Empty, Spin, Typography,
+  Empty, Typography,
 } from 'antd';
 import _ from 'lodash';
 import spec from '../../../utils/heatmapSpec';
@@ -17,6 +17,7 @@ import { loadComponentConfig } from '../../../redux/actions/componentConfig';
 
 import { union } from '../../../utils/cellSetOperations';
 import SetOperations from '../../../utils/setOperations';
+import Loader from '../../Loader';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
@@ -371,7 +372,7 @@ const HeatmapPlot = (props) => {
   if (!vegaData) {
     return (
       <center style={{ marginTop: height / 2 }}>
-        <Spin size='large' />
+        <Loader experimentId={experimentId} />
       </center>
     );
   }
@@ -379,7 +380,7 @@ const HeatmapPlot = (props) => {
   if (error || viewError) {
     return (
       <PlatformError
-        description={error}
+        error={error}
         onClick={() => {
           dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
         }}

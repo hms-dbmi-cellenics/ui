@@ -5,7 +5,6 @@ import {
   Space,
   Collapse,
   Skeleton,
-  Spin,
   Button, Empty, Typography,
 } from 'antd';
 import _ from 'lodash';
@@ -25,6 +24,7 @@ import {
 import loadDifferentialExpression from '../../../../../redux/actions/differentialExpression/loadDifferentialExpression';
 import PlatformError from '../../../../../components/PlatformError';
 import { setComparisonGroup } from '../../../../../redux/actions/differentialExpression';
+import Loader from '../../../../../components/Loader';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -297,7 +297,7 @@ const VolcanoPlot = ({ experimentId }) => {
     }
 
     if (plotData.length === 0 || loading || _.isEmpty(spec.spec)) {
-      return <Spin />;
+      return <Loader experimentId={experimentId} />;
     }
 
     return (
