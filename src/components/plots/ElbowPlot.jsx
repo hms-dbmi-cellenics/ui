@@ -132,7 +132,10 @@ ElbowPlot.propTypes = {
   stylingConfig: PropTypes.object.isRequired,
   calculationConfig: PropTypes.object.isRequired,
   plotData: PropTypes.array.isRequired,
-  actions: PropTypes.bool.isRequired,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]).isRequired,
 };
 
 export default ElbowPlot;
