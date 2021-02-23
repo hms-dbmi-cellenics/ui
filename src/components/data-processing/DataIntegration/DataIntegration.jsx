@@ -82,6 +82,13 @@ const DataIntegration = () => {
     (state) => (state.componentConfig[elbowPlotConfigRedux.uuid]?.config),
   );
 
+  const updatePlotWithChanges = (configUpdates) => {
+    const { plotUuid } = plots[activePlotKeyRef.current];
+
+    dispatch(updatePlotConfig(plotUuid, configUpdates));
+    debounceSave(plotUuid);
+  };
+
   const plots = {
     samplePlot: {
       plotUuid: samplePlotConfigRedux.uuid,
@@ -188,15 +195,23 @@ const DataIntegration = () => {
 
     dispatch(loadCellSets(experimentId));
 
-    dispatch(
-      loadPlotConfig(experimentId, samplePlotConfigRedux.uuid, samplePlotConfigRedux.type),
-    );
-    dispatch(
-      loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
-    );
-    dispatch(
-      loadPlotConfig(experimentId, elbowPlotConfigRedux.uuid, elbowPlotConfigRedux.type),
-    );
+    if (!samplePlotPersistedConfig) {
+      dispatch(
+        loadPlotConfig(experimentId, samplePlotConfigRedux.uuid, samplePlotConfigRedux.type),
+      );
+    }
+
+    if (!frequencyPlotPersistedConfig) {
+      dispatch(
+        loadPlotConfig(experimentId, frequencyPlotConfigRedux.uuid, frequencyPlotConfigRedux.type),
+      );
+    }
+
+    if (!elbowPlotPersistedConfig) {
+      dispatch(
+        loadPlotConfig(experimentId, elbowPlotConfigRedux.uuid, elbowPlotConfigRedux.type),
+      );
+    }
   }, [experimentId]);
 
   const debounceSave = useCallback(
@@ -220,13 +235,6 @@ const DataIntegration = () => {
     }
 
     return renderFunc(elementToRender);
-  };
-
-  const updatePlotWithChanges = (configUpdates) => {
-    const { plotUuid } = plots[activePlotKeyRef.current];
-
-    dispatch(updatePlotConfig(plotUuid, configUpdates));
-    debounceSave(plotUuid);
   };
 
   const getMiniaturizedConfig = (miniaturesConfig, updatedWidth) => {

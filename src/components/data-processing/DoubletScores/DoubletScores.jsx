@@ -232,7 +232,7 @@ class DoubletScores extends React.Component {
           from: { data: 'plotData' },
           encode: {
             enter: {
-              x: { scale: 'xscale', field: 'datum.fracMito' },
+              x: { scale: 'xscale', field: 'fracMito' },
               width: { value: 1 },
               y: { value: 25, offset: { signal: 'height' } },
               height: { value: 5 },

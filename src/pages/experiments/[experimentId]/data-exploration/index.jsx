@@ -46,10 +46,11 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
 
   const TILE_MAP = {
     'UMAP Embedding': {
-      toolbarControls: [<RemoveButton />],
+      toolbarControls: [<RemoveButton key='remove-button-embedding' />],
       component: (width, height) => (
         <Embedding
           experimentId={experimentId}
+          embeddingType='umap'
           width={width}
           height={height}
         />
@@ -57,15 +58,15 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
     },
     Heatmap: {
       toolbarControls: [
-        <HeatmapSettings componentType={COMPONENT_TYPE} />,
-        <RemoveButton />,
+        <HeatmapSettings componentType={COMPONENT_TYPE} key='heatmap-settings' />,
+        <RemoveButton key='remove-button-heatmap' />,
       ],
       component: (width, height) => (
         <HeatmapPlot experimentId={experimentId} width={width} height={height} />
       ),
     },
     Tools: {
-      toolbarControls: [<RemoveButton />],
+      toolbarControls: [<RemoveButton key='remove-button-genes' />],
       component: (width, height) => (
         <Tabs
           size='small'
@@ -76,13 +77,18 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
             <GeneListTool experimentId={experimentId} width={width} height={height} />
           </TabPane>
           <TabPane tab='Differential expression' key='Differential expression'>
-            <DiffExprManager experimentId={experimentId} view='compute' width={width} height={height} />
+            <DiffExprManager
+              experimentId={experimentId}
+              view='compute'
+              width={width}
+              height={height}
+            />
           </TabPane>
         </Tabs>
       ),
     },
     'Data Management': {
-      toolbarControls: [<RemoveButton />],
+      toolbarControls: [<RemoveButton key='remove-button-data-management' />],
       component: (width, height) => (
         <CellSetsTool
           experimentId={experimentId}
@@ -149,8 +155,8 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
         experimentId={experimentId}
         experimentData={experimentData}
         route={route}
-        title='Data exploration'
-        extra={(
+        title='Data Exploration'
+        extra={[(
           <Dropdown
             trigger={['click']}
             key='search-menu-dropdown'
@@ -164,7 +170,7 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
               <DownOutlined />
             </Button>
           </Dropdown>
-        )}
+        )]}
       />
       <div style={{ height: '100%', width: '100%', margin: 0 }}>
         <Mosaic
@@ -180,6 +186,7 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
                   path={path}
                   title={id}
                   toolbarControls={TILE_MAP[id].toolbarControls}
+                  key={id}
                 >
                   {renderWindow(TILE_MAP[id].component, width, height)}
                 </MosaicWindow>

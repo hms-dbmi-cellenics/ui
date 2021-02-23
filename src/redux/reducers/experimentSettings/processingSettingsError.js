@@ -7,8 +7,12 @@ const processingSettingsError = (state, action) => {
     ...initialState,
     ...state,
     processing: {
-      ...initialState.meta,
-      error,
+      ...state.processing,
+      meta: {
+        ...state.processing.meta,
+        loading: false,
+        error,
+      },
     },
   };
 };

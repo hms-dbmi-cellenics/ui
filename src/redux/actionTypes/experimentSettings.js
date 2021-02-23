@@ -6,6 +6,11 @@ const EXPERIMENT_SETTINGS = 'experimentSettings';
 const EXPERIMENT_SETTINGS_PROCESSING_LOAD = `${EXPERIMENT_SETTINGS}/loadProcessing`;
 
 /**
+ * Sets error value in store if there is error in loading
+ */
+const EXPERIMENT_SETTINGS_PROCESSING_ERROR = `${EXPERIMENT_SETTINGS}/errorProcessing`;
+
+/**
  * Updates the processing component's configuration.
  */
 const EXPERIMENT_SETTINGS_PROCESSING_UPDATE = `${EXPERIMENT_SETTINGS}/updateProcessing`;
@@ -14,8 +19,6 @@ const EXPERIMENT_SETTINGS_PROCESSING_UPDATE = `${EXPERIMENT_SETTINGS}/updateProc
  * Saves the current state of the configuration to DynamoDB.
  */
 const EXPERIMENT_SETTINGS_PROCESSING_SAVE = `${EXPERIMENT_SETTINGS}/saveProcessing`;
-
-const EXPERIMENT_SETTINGS_PROCESSING_ERROR = `${EXPERIMENT_SETTINGS}/errorProcessing`;
 
 /**
  * Marks a given step/filter as complete.

@@ -57,7 +57,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'dataIntegration',
       name: 'Data integration',
-      render: (key) => <DataIntegration filtering key={key} />,
+      render: (key) => <DataIntegration key={key} />,
     },
     {
       key: 'comptueEmbeddingFilter',
@@ -70,7 +70,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
+  const { loading, error, stepsDone: completedSteps } = useSelector((state) => state.experimentSettings.processing.meta);
   const initialState = useSelector((state) => state.experimentSettings.processing.initialState);
 
   const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
@@ -78,12 +78,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    setStepIdx(completedSteps.size % steps.length);
-  }, [initialState]);
+    if (loading && !error) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, [experimentId]);
 
   useEffect(() => {
-    dispatch(loadProcessingSettings(experimentId));
-  }, [experimentId]);
+    setStepIdx(completedSteps.size % steps.length);
+  }, [initialState]);
 
   useEffect(() => {
     const goToStepIdx = () => {
@@ -225,7 +227,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           experimentId={experimentId}
           experimentData={experimentData}
           route={route}
-          title='Data processing'
+          title='Data Processing'
         />
 
         <Card

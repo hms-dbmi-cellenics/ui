@@ -25,10 +25,13 @@ FrequencyPlot.defaultProps = {
 };
 
 FrequencyPlot.propTypes = {
-  hierarchy: PropTypes.object.isRequired,
+  hierarchy: PropTypes.array.isRequired,
   properties: PropTypes.object.isRequired,
   config: PropTypes.object.isRequired,
-  actions: PropTypes.object,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 export default FrequencyPlot;
