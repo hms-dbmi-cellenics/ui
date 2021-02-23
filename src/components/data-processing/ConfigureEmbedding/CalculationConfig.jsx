@@ -254,18 +254,14 @@ const CalculationConfig = (props) => {
             >
               <Option value='louvain'>Louvain</Option>
               <Option value='leiden' disabled>
-                {' '}
                 <Tooltip title='Leiden metric is going to be supported on a future version of the platform.'>
                   Leiden
                 </Tooltip>
-
               </Option>
               <Option value='slm' disabled>
-                {' '}
                 <Tooltip title='SLM metric is going to be supported on a future version of the platform.'>
                   SLM
                 </Tooltip>
-
               </Option>
             </Select>
           </Form.Item>
