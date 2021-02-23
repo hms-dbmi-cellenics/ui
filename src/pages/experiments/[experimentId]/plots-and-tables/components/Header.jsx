@@ -10,14 +10,12 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import { useBeforeunload } from 'react-beforeunload';
-import FeedbackButton from '../FeedbackButton';
-import { savePlotConfig } from '../../redux/actions/componentConfig/index';
-import itemRender from '../../utils/renderBreadcrumbLinks';
-import getApiEndpoint from '../../utils/apiEndpoint';
-import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
-
-import { LOAD_CONFIG } from '../../redux/actionTypes/componentConfig';
-import { initialPlotConfigStates } from '../../redux/reducers/componentConfig/initialState';
+import { savePlotConfig } from '../../../../../redux/actions/componentConfig/index';
+import itemRender from '../../../../../utils/renderBreadcrumbLinks';
+import getApiEndpoint from '../../../../../utils/apiEndpoint';
+import getFromApiExpectOK from '../../../../../utils/getFromApiExpectOK';
+import { LOAD_CONFIG } from '../../../../../redux/actionTypes/componentConfig';
+import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
 const KeyboardEventHandler = dynamic(
   () => import('react-keyboard-event-handler'),
@@ -62,7 +60,6 @@ const Header = (props) => {
       // Show a confirmation dialog. Prevent moving away if the user decides not to.
       // eslint-disable-next-line no-alert
       if (
-        // eslint-disable-next-line no-alert
         !window.confirm(
           'You have unsaved changes. Do you wish to save?',
         )
@@ -106,7 +103,7 @@ const Header = (props) => {
     },
     {
       path: 'plots-and-tables',
-      breadcrumbName: 'Plots and Tables',
+      breadcrumbName: 'Plots and tables',
     },
     finalRoute,
   ];
@@ -154,18 +151,7 @@ const Header = (props) => {
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
           extra={[
-            <Space key='feedback-button'>
-              <FeedbackButton />
-              <Button
-                key='save'
-                type='primary'
-                disabled={saved}
-                onClick={onClickSave}
-              >
-                Save
-              </Button>
-            </Space>,
-            <Space key='reset-button'>
+            <Space>
               <Button
                 key='reset'
                 type='primary'

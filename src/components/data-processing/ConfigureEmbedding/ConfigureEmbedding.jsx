@@ -40,6 +40,7 @@ const ConfigureEmbedding = (props) => {
   const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
 
   const plots = {
+
     sample: {
       title: 'Colored by Samples',
       imgSrc: plot1Pic,
