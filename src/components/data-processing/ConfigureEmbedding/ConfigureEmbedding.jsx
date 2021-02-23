@@ -40,6 +40,7 @@ const ConfigureEmbedding = (props) => {
   const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
 
   const plots = {
+
     sample: {
       title: 'Colored by Samples',
       imgSrc: plot1Pic,
@@ -290,7 +291,7 @@ const ConfigureEmbedding = (props) => {
 
         <Col span={3}>
           <Space direction='vertical'>
-            <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘data exploration’ page.'>
+            <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.'>
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
 

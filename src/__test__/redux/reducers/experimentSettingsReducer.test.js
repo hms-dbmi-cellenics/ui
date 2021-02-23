@@ -1,7 +1,10 @@
 import experimentSettingsReducer from '../../../redux/reducers/experimentSettings';
 import initialState from '../../../redux/reducers/experimentSettings/initialState';
 import {
-  EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EXPERIMENT_SETTINGS_PROCESSING_COMPLETE_STEP,
+  EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+  EXPERIMENT_SETTINGS_PROCESSING_COMPLETE_STEP,
+  EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+  EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../../redux/actionTypes/experimentSettings';
 
 describe('experimentSettingsReducer', () => {
@@ -11,6 +14,32 @@ describe('experimentSettingsReducer', () => {
       payload: {},
     }),
   ).toEqual(initialState));
+
+  it('Sets up loading state on loading action', () => {
+    const testData = 'test data';
+    const newData = {
+      test: testData,
+    };
+
+    const newState = experimentSettingsReducer({ ...initialState }, {
+      payload: { data: newData },
+      type: EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+    });
+
+    expect(newState.processing.meta.loading).toEqual(false);
+    expect(newState.processing.test).toEqual(testData);
+  });
+
+  it('Properly sets error on state', () => {
+    const errorMessage = 'ERROR : Failed to load state';
+    const newState = experimentSettingsReducer({ ...initialState }, {
+      payload: { error: errorMessage },
+      type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
+    });
+
+    expect(newState.processing.meta.loading).toEqual(false);
+    expect(newState.processing.meta.error).toEqual(errorMessage);
+  });
 
   it('Updates existing value properly', () => {
     const newState = experimentSettingsReducer(initialState,

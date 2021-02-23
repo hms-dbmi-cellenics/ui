@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState, useEffect, useCallback,
+} from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -39,6 +41,24 @@ const CalculationConfig = (props) => {
 
   const [resolution, setResolution] = useState(null);
   const [minDistance, setMinDistance] = useState(null);
+
+  const initialValues = {
+    embeddingSettings: {
+      method: embeddingMethod,
+      methodSettings: {
+        umap: {
+          minimumDistance: umapSettings?.minimumDistance,
+          distanceMetric: umapSettings?.distanceMetric,
+        },
+        tsne: {
+          perplexity: tsneSettings?.perplexity,
+          learningRate: tsneSettings?.learningRate,
+        },
+
+      },
+    },
+  };
+  const [changes, setChanges] = useState(initialValues);
 
   useEffect(() => {
     if (!resolution && louvainSettings) {
@@ -81,107 +101,111 @@ const CalculationConfig = (props) => {
 
   // When the Apply button is pressed, remove the warning and save to DynamoDB.
   const applyEmbeddingSettings = () => {
+    updateSettings(changes);
     setChangesOutstanding(false);
     dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
     dispatch(loadEmbedding(experimentId, embeddingMethod));
   };
+  const newChanges = changes;
 
-  const renderUMAPSettings = () => (
-    <>
-      <Form.Item>
-        <Text strong>Settings for UMAP:</Text>
-      </Form.Item>
-      <Form.Item label={(
-        <span>
-          Minimum distance&nbsp;
-          <Tooltip title={MIN_DIST_TEXT}>
-            <QuestionCircleOutlined />
-          </Tooltip>
-        </span>
-      )}
-      >
-        <InputNumber
-          value={minDistance}
-          min={0}
-          step={0.1}
-          onChange={(value) => setMinDistance(value)}
-          onStep={(value) => updateSettings(
-            {
-              embeddingSettings:
-                { methodSettings: { umap: { minimumDistance: parseFloat(value) } } },
-            },
-          )}
-          onPressEnter={(e) => e.preventDefault()}
-          onBlur={(e) => {
-            updateSettings(
-              {
-                embeddingSettings:
-                  { methodSettings: { umap: { minimumDistance: parseFloat(e.target.value) } } },
-              },
-            );
-          }}
-        />
-      </Form.Item>
-      <Form.Item label='Distance metric:'>
-        <Select
-          value={umapSettings.distanceMetric}
-          onChange={(value) => updateSettings(
-            { embeddingSettings: { methodSettings: { umap: { distanceMetric: value } } } },
-          )}
+  const setMinimumDistance = (value) => {
+    newChanges.embeddingSettings.methodSettings.umap.minimumDistance = parseFloat(value);
+    setChanges({ ...newChanges });
+  };
+  const setDistanceMetric = (value) => {
+    newChanges.embeddingSettings.methodSettings.umap.distanceMetric = parseFloat(value);
+    setChanges({ ...newChanges });
+  };
+  if (!changesOutstanding && !_.isEqual(changes, initialValues)) {
+    setChangesOutstanding(true);
+  }
+  if (changesOutstanding && _.isEqual(changes, initialValues)) {
+    setChangesOutstanding(false);
+  }
+  const renderUMAPSettings = () => {
+    const { umap } = changes.embeddingSettings.methodSettings;
+    return (
+      <>
+        <Form.Item>
+          <Text strong>Settings for UMAP:</Text>
+        </Form.Item>
+        <Form.Item label={(
+          <span>
+            Minimum distance&nbsp;
+            <Tooltip title={MIN_DIST_TEXT}>
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </span>
+        )}
         >
-          <Option value='euclidean'>Euclidean</Option>
-          <Option value='cosine' disabled>Cosine</Option>
-        </Select>
-      </Form.Item>
-    </>
-  );
+          <InputNumber
+            value={umap.minimumDistance}
+            min={0}
+            step={0.1}
+            onChange={(value) => setMinimumDistance(value)}
+            onStep={(value) => setMinimumDistance(value)}
+            onPressEnter={(e) => e.preventDefault()}
 
-  const renderTSNESettings = () => (
-    <>
-      <Form.Item>
-        <Text strong>Settings for t-SNE:</Text>
-      </Form.Item>
-      <Form.Item label='Perplexity:'>
-        <InputNumber
-          value={tsneSettings.perplexity}
-          min={5}
-          onInput={(e) => updateSettings(
-            {
-              embeddingSettings:
-                { methodSettings: { tsne: { perplexity: parseFloat(e.target.value) } } },
-            },
-          )}
-          onStep={(value) => updateSettings(
-            {
-              embeddingSettings:
-                { methodSettings: { tsne: { perplexity: parseFloat(value) } } },
-            },
-          )}
-        />
-      </Form.Item>
-      <Form.Item label='Learning rate:'>
-        <InputNumber
-          value={tsneSettings.learningRate}
-          min={10}
-          max={1000}
-          step={10}
-          onInput={(e) => updateSettings(
-            {
-              embeddingSettings:
-                { methodSettings: { tsne: { learningRate: parseFloat(e.target.value) } } },
-            },
-          )}
-          onStep={(value) => updateSettings(
-            {
-              embeddingSettings:
-                { methodSettings: { tsne: { learningRate: parseFloat(value) } } },
-            },
-          )}
-
-        />
-      </Form.Item>
-    </>
-  );
+            onBlur={(e) => setMinimumDistance(e.target.value)}
+          />
+        </Form.Item>
+        <Form.Item label='Distance metric:'>
+          <Select
+            value={umap.distanceMetric}
+            onChange={(value) => setDistanceMetric(value)}
+          >
+            <Option value='euclidean'>Euclidean</Option>
+            <Option value='cosine' disabled>
+              {' '}
+              <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
+                Cosine
+              </Tooltip>
+            </Option>
+          </Select>
+        </Form.Item>
+      </>
+    );
+  };
+  const setLearningRate = (value) => {
+    newChanges.embeddingSettings.methodSettings.tsne.learningRate = parseFloat(value);
+    setChanges({ ...newChanges });
+  };
+  const setPerplexity = (value) => {
+    newChanges.embeddingSettings.methodSettings.tsne.perplexity = parseFloat(value);
+    setChanges({ ...newChanges });
+  };
+  const renderTSNESettings = () => {
+    const { tsne } = changes.embeddingSettings.methodSettings;
+    return (
+      <>
+        <Form.Item>
+          <Text strong>Settings for t-SNE:</Text>
+        </Form.Item>
+        <Form.Item label='Perplexity:'>
+          <InputNumber
+            value={tsne.perplexity}
+            min={5}
+            onChange={(value) => setPerplexity(value)}
+            onStep={(value) => setPerplexity(value)}
+            onPressEnter={(e) => e.preventDefault()}
+            onBlur={(e) => setPerplexity(e.target.value)}
+          />
+        </Form.Item>
+        <Form.Item label='Learning rate:'>
+          <InputNumber
+            value={tsne.learningRate}
+            min={10}
+            max={1000}
+            step={10}
+            onChange={(value) => setLearningRate(value)}
+            onStep={(value) => setLearningRate(value)}
+            onPressEnter={(e) => e.preventDefault()}
+            onBlur={(e) => setLearningRate(e.target.value)}
+          />
+        </Form.Item>
+      </>
+    );
+  };
 
   if (!data) {
     return <PreloadContent />;
@@ -189,7 +213,7 @@ const CalculationConfig = (props) => {
 
   return (
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
-      <Panel header='Embedding settings' key='embedding-settings' collapsible={changesOutstanding ? 'disabled' : 'header'}>
+      <Panel header='Embedding settings' key='embedding-settings'>
         <Form size='small'>
           {changesOutstanding && (
             <Form.Item>
@@ -198,17 +222,20 @@ const CalculationConfig = (props) => {
           )}
           <Form.Item label='Method:'>
             <Select
-              value={embeddingMethod}
-              onChange={(value) => updateSettings(
-                { embeddingSettings: { method: value } },
-              )}
+              value={changes.embeddingSettings.method}
+              // changes.({ embeddingSettings: { method: value } })
+              onChange={(value) => {
+                newChanges.embeddingSettings.method = value;
+                setChanges({ ...newChanges });
+              }}
             >
               <Option value='umap'>UMAP</Option>
               <Option value='tsne'>t-SNE</Option>
             </Select>
           </Form.Item>
-          {embeddingMethod === 'umap' && renderUMAPSettings()}
-          {embeddingMethod === 'tsne' && renderTSNESettings()}
+          {changes.embeddingSettings.method === 'umap' && renderUMAPSettings()}
+          {changes.embeddingSettings.method === 'tsne' && renderTSNESettings()}
+
           <Form.Item>
             <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
               <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={applyEmbeddingSettings}>Apply</Button>
@@ -226,8 +253,16 @@ const CalculationConfig = (props) => {
               )}
             >
               <Option value='louvain'>Louvain</Option>
-              <Option value='leiden' disabled>Leiden</Option>
-              <Option value='slm' disabled>SLM</Option>
+              <Option value='leiden' disabled>
+                <Tooltip title='Leiden metric is going to be supported on a future version of the platform.'>
+                  Leiden
+                </Tooltip>
+              </Option>
+              <Option value='slm' disabled>
+                <Tooltip title='SLM metric is going to be supported on a future version of the platform.'>
+                  SLM
+                </Tooltip>
+              </Option>
             </Select>
           </Form.Item>
           <Form.Item label='Resolution'>

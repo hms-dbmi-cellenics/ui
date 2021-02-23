@@ -4,6 +4,8 @@ export default {
     meta: {
       complete: false,
       stepsDone: new Set([]),
+      loading: true,
+      error: false,
     },
     dataIntegration: {
       dataIntegration: {
@@ -18,7 +20,6 @@ export default {
       dimensionalityReduction: {
         method: 'rpca',
         numPCs: 30,
-        variationExplained: 91,
         excludeGeneCategories: [],
       },
     },

@@ -44,14 +44,16 @@ Object {
         "excludeGeneCategories": Array [],
         "method": "rpca",
         "numPCs": 30,
-        "variationExplained": 91,
       },
     },
     "initialState": true,
     "meta": Object {
       "complete": false,
+      "error": false,
+      "loading": true,
       "stepsDone": Set {},
     },
+    "test": "test data",
   },
 }
 `;
@@ -97,14 +99,16 @@ Object {
         "excludeGeneCategories": Array [],
         "method": "rpca",
         "numPCs": 30,
-        "variationExplained": 91,
       },
     },
     "initialState": true,
     "meta": Object {
       "complete": false,
+      "error": false,
+      "loading": true,
       "stepsDone": Set {},
     },
+    "test": "test data",
   },
 }
 `;
@@ -149,14 +153,16 @@ Object {
         "excludeGeneCategories": Array [],
         "method": "rpca",
         "numPCs": 30,
-        "variationExplained": 91,
       },
     },
     "initialState": true,
     "meta": Object {
       "complete": false,
+      "error": false,
+      "loading": true,
       "stepsDone": Set {},
     },
+    "test": "test data",
   },
 }
 `;

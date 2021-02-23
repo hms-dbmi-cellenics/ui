@@ -70,20 +70,22 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const completedSteps = useSelector((state) => state.experimentSettings.processing.meta.stepsDone);
+  const { loading, error, stepsDone: completedSteps } = useSelector((state) => state.experimentSettings.processing.meta);
   const initialState = useSelector((state) => state.experimentSettings.processing.initialState);
 
   const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
 
   const carouselRef = useRef(null);
+  
+    useEffect(() => {
+    if (loading && !error) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, [experimentId]);
 
   useEffect(() => {
     setStepIdx(completedSteps.size % steps.length);
   }, [initialState]);
-
-  useEffect(() => {
-    dispatch(loadProcessingSettings(experimentId));
-  }, [experimentId]);
 
   useEffect(() => {
     const goToStepIdx = () => {
@@ -225,7 +227,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           experimentId={experimentId}
           experimentData={experimentData}
           route={route}
-          title='Data processing'
+          title='Data Processing'
         />
 
         <Card

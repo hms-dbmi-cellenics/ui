@@ -20,6 +20,8 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
+import _ from 'lodash';
+
 import SeuratV4Options from './SeuratV4Options';
 
 import { updateProcessingSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
@@ -28,7 +30,7 @@ const { Option } = Select;
 const { Text } = Typography;
 
 const CalculationConfig = (props) => {
-  const { experimentId, config } = props;
+  const { experimentId, config, data } = props;
   const FILTER_UUID = 'dataIntegration';
 
   const dispatch = useDispatch();
@@ -89,6 +91,13 @@ const CalculationConfig = (props) => {
     seuratv4: () => <SeuratV4Options config={dataIntegration.methodSettings.seuratv4} onUpdate={updateSettings} onChange={() => setChangesOutstanding(true)} />,
   };
 
+  const roundedVariationExplained = () => {
+    const variationExplained = data.slice(0, dimensionalityReduction.numPCs).reduce((acum, current) => acum + current.percentVariance, 0);
+    const roundingPrecision = 2;
+
+    return _.round(variationExplained * 100, roundingPrecision);
+  };
+
   return (
     <>
       <Space direction='vertical' style={{ width: '100%' }} />
@@ -144,6 +153,8 @@ const CalculationConfig = (props) => {
           <Form.Item label='Number of Principal Components'>
             <InputNumber
               value={numPCs}
+              max={data.length}
+              min={0}
               onChange={(value) => {
                 setChangesOutstanding(true);
                 setNumPCs(value);
@@ -155,7 +166,8 @@ const CalculationConfig = (props) => {
           </Form.Item>
           <Form.Item label='% variation explained'>
             <InputNumber
-              value={dimensionalityReduction.variationExplained}
+              value={roundedVariationExplained()}
+              disabled
               readOnly
             />
           </Form.Item>
@@ -206,6 +218,7 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
 };
 
 export default CalculationConfig;

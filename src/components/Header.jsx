@@ -13,6 +13,12 @@ const Header = (props) => {
   } = props;
 
   const pathInformation = {
+    'data-management': {
+      breadcrumbName: 'Data Management',
+    },
+    'data-processing': {
+      breadcrumbName: 'Data Processing',
+    },
     experiments: {
       breadcrumbName: 'Analyses',
     },
@@ -21,13 +27,10 @@ const Header = (props) => {
       params: experimentId,
     },
     'data-exploration': {
-      breadcrumbName: 'Data exploration',
+      breadcrumbName: 'Data Exploration',
     },
     'plots-and-tables': {
-      breadcrumbName: 'Plots and tables',
-    },
-    'data-processing': {
-      breadcrumbName: 'Data processing',
+      breadcrumbName: 'Plots and Tables',
     },
   };
 
@@ -55,7 +58,7 @@ const Header = (props) => {
         extra={(
           <Space>
             <FeedbackButton />
-            {extra}
+            {extra || ''}
           </Space>
         )}
       />
@@ -68,7 +71,11 @@ Header.propTypes = {
   experimentData: PropTypes.object.isRequired,
   route: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  extra: PropTypes.object.isRequired,
+  extra: PropTypes.array,
+};
+
+Header.defaultProps = {
+  extra: [],
 };
 
 export default Header;

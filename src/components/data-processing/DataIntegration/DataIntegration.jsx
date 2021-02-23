@@ -169,8 +169,13 @@ const DataIntegration = () => {
         actions={actions}
       />
     ),
-    elbowPlot: (configInput, actions) => (
-      <ElbowPlot config={configInput} plotData={fakeData} actions={actions} />
+    elbowPlot: (stylingConfig, actions) => (
+      <ElbowPlot
+        stylingConfig={stylingConfig}
+        calculationConfig={calculationConfig}
+        plotData={fakeData}
+        actions={actions}
+      />
     ),
   };
 
@@ -327,7 +332,7 @@ const DataIntegration = () => {
       <Col span={5}>
         <Collapse defaultActiveKey={['data-integration']}>
           <Panel header='Data Integration' key='data-integration'>
-            <CalculationConfig experimentId={experimentId} config={calculationConfig} />
+            <CalculationConfig experimentId={experimentId} config={calculationConfig} data={fakeData} />
           </Panel>
           <Panel header='Plot Styling' key='styling'>
             <Collapse accordion>

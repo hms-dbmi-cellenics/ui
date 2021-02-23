@@ -12,6 +12,7 @@ import {
   DatabaseOutlined,
   FundViewOutlined,
   BuildOutlined,
+  FolderOpenOutlined,
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 
@@ -124,19 +125,24 @@ const ContentWrapper = (props) => {
 
   const menuLinks = [
     {
+      path: '/experiments/[experimentId]/data-management',
+      icon: <FolderOpenOutlined />,
+      name: 'Data Management',
+    },
+    {
       path: '/experiments/[experimentId]/data-processing',
       icon: <BuildOutlined />,
-      name: 'Data processing',
+      name: 'Data Processing',
     },
     {
       path: '/experiments/[experimentId]/data-exploration',
       icon: <FundViewOutlined />,
-      name: 'Data exploration',
+      name: 'Data Exploration',
     },
     {
       path: '/experiments/[experimentId]/plots-and-tables',
       icon: <DatabaseOutlined />,
-      name: 'Plots and tables',
+      name: 'Plots and Tables',
     },
   ];
 
