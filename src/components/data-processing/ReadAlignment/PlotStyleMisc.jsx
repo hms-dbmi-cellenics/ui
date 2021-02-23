@@ -36,7 +36,7 @@ const BandwidthOrBinstep = (props) => {
       <Slider
         defaultValue={config.bandwidth}
         min={-1}
-        max={100}
+        max={max}
         onAfterChange={(value) => onUpdate({ bandwidth: value })}
         step={1}
       />
@@ -44,11 +44,15 @@ const BandwidthOrBinstep = (props) => {
   );
 };
 
+BandwidthOrBinstep.defaultProps = {
+  max: 100,
+};
+
 BandwidthOrBinstep.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   type: PropTypes.string.isRequired,
-  max: PropTypes.number.isRequired,
+  max: PropTypes.number,
 };
 
 export default BandwidthOrBinstep;

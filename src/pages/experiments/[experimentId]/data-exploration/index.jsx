@@ -150,7 +150,7 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
         experimentData={experimentData}
         route={route}
         title='Data Exploration'
-        extra={(
+        extra={[(
           <Dropdown
             trigger={['click']}
             key='search-menu-dropdown'
@@ -164,7 +164,7 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
               <DownOutlined />
             </Button>
           </Dropdown>
-        )}
+        )]}
       />
       <div style={{ height: '100%', width: '100%', margin: 0 }}>
         <Mosaic
@@ -180,6 +180,7 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
                   path={path}
                   title={id}
                   toolbarControls={TILE_MAP[id].toolbarControls}
+                  key={id}
                 >
                   {renderWindow(TILE_MAP[id].component, width, height)}
                 </MosaicWindow>

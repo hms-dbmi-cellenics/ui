@@ -10,6 +10,7 @@ const FrequencyPlot = (props) => {
     hierarchy, properties, config, actions,
   } = props;
 
+  console.log('***** ', hierarchy);
   const spec = generateSpec(config);
   populateFrequencyData(spec, hierarchy, properties, config);
 
@@ -23,10 +24,10 @@ FrequencyPlot.defaultProps = {
 };
 
 FrequencyPlot.propTypes = {
-  hierarchy: PropTypes.object.isRequired,
+  hierarchy: PropTypes.array.isRequired,
   properties: PropTypes.object.isRequired,
   config: PropTypes.object.isRequired,
-  actions: PropTypes.object,
+  actions: PropTypes.bool,
 };
 
 export default FrequencyPlot;
