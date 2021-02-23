@@ -243,7 +243,7 @@ const CalculationConfig = (props) => {
       <Panel header='Clustering settings' key='clustering-settings'>
         <Form size='small'>
           <Form.Item label='Clustering method:'>
-            <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
+            <Tooltip title='Leiden and SLM metrics are going to be supported on a future version of the platform.'>
               <Select
                 value={clusteringMethod}
                 onChange={(value) => updateSettings(
