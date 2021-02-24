@@ -356,9 +356,11 @@ const HeatmapPlot = (props) => {
 
   if (!selectedGenes || selectedGenes.length === 0) {
     return (
-      <Empty description={(
-        <Text>Add some genes to this heatmap to get started.</Text>
-      )}
+      <Empty
+        title='No expression data to show'
+        description={(
+          <Text>Add some genes to this heatmap to get started.</Text>
+        )}
       />
     );
   }

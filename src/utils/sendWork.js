@@ -13,8 +13,10 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const statusResponse = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`);
   const jsonResponse = await statusResponse.json();
 
+  const adjustedTimeout = (started && ready) ? timeout : timeout + 60;
+
   const { worker: { started, ready } } = jsonResponse;
-  const timeoutDate = moment().add((started && ready) ? timeout : timeout + 60, 's').toISOString();
+  const timeoutDate = moment().add(adjustedTimeout, 's').toISOString();
 
   const request = {
     uuid: requestUuid,
@@ -43,7 +45,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
     const id = setTimeout(() => {
       clearTimeout(id);
       reject(new WorkTimeoutError(timeoutDate, request));
-    }, timeout * 1000);
+    }, adjustedTimeout * 1000);
   });
 
   return Promise.race([responsePromise, timeoutPromise]);
