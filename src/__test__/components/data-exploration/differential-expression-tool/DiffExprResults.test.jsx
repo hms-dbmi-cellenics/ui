@@ -122,7 +122,7 @@ describe('DiffExprResults', () => {
     );
 
     const table = component.find('Table Table');
-    const spin = component.find('Table Spin');
+    const spin = component.find('Table Loader');
     expect(spin.length).toEqual(1);
     expect(table.length).toEqual(1);
     expect(table.getElement().props.columns.length).toEqual(5);

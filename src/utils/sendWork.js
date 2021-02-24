@@ -13,13 +13,8 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const statusResponse = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`);
   const jsonResponse = await statusResponse.json();
 
-  console.log(jsonResponse);
-
   const { worker: { started, ready } } = jsonResponse;
-
   const timeoutDate = moment().add((started && ready) ? timeout : timeout + 60, 's').toISOString();
-
-  console.log(timeoutDate);
 
   const request = {
     uuid: requestUuid,

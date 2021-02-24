@@ -8,7 +8,7 @@ import getApiEndpoint from '../utils/apiEndpoint';
 
 const { Text } = Typography;
 
-const SlowLoader = ({ experimentId }) => {
+const Loader = ({ experimentId }) => {
   const { data: workerStatus, error } = useSWR(
     () => (experimentId ? `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines` : null),
     getFromApiExpectOK,
@@ -63,4 +63,4 @@ const SlowLoader = ({ experimentId }) => {
   return slowLoad();
 };
 
-export default SlowLoader;
+export default Loader;

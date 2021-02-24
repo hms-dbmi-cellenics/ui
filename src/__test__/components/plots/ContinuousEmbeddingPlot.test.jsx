@@ -1,5 +1,4 @@
 import React from 'react';
-import { Spin } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import configureStore from 'redux-mock-store';
@@ -120,7 +119,7 @@ describe('Continuous embedding plot', () => {
       </Provider>,
     );
 
-    const spin = component.find(Spin);
+    const spin = component.find('Loader');
 
     // There should be a spinner for loading state.
     expect(spin.length).toEqual(1);
@@ -143,7 +142,7 @@ describe('Continuous embedding plot', () => {
     );
 
     // There should no spinner anymore.
-    const spin = component.find(Spin);
+    const spin = component.find('Loader');
     expect(spin.length).toEqual(0);
 
     // There should be a form loaded.

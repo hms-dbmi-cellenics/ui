@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Spin, Form, Select, Alert, Button,
+  Form, Select, Alert, Button,
 } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -101,7 +101,7 @@ describe('Data Integration Calculation Config', () => {
     );
 
     // There should no spinner anymore.
-    const spin = component.find(Spin);
+    const spin = component.find('Loader');
     expect(spin.length).toEqual(0);
 
     // There should be a form loaded.

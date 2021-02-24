@@ -154,7 +154,7 @@ describe('HeatmapPlot', () => {
     );
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find('Spin').length).toEqual(1);
+    expect(component.find('Loader').length).toEqual(1);
   });
 
   it('renders Vega heatmap when genes loaded', () => {

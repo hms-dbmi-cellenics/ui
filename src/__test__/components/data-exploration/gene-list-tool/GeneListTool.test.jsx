@@ -107,7 +107,7 @@ describe('GeneListTool', () => {
   configure({ adapter: new Adapter() });
   it('renders correctly', () => {
     const table = component.find('Table Table');
-    const spin = component.find('Table Spin');
+    const spin = component.find('Table Loader');
     const genesFilter = component.find('FilterGenes');
     expect(spin.length).toEqual(1);
     expect(table.length).toEqual(1);
