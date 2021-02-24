@@ -29,7 +29,6 @@ const ContinuousEmbeddingPlot = (props) => {
   const [plotSpec, setPlotSpec] = useState({});
   const PROPERTIES = ['dispersions'];
   const { fetching } = useSelector((state) => state.genes.properties.views[plotUuid]) || false;
-  console.log('plot spec is', plotSpec);
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
   );
