@@ -9,19 +9,17 @@ import { fetchCachedWork } from '../../../utils/cacheRequest';
 const loadCellMeta = (
   experimentId, metaName,
 ) => async (dispatch, getState) => {
-  const { loading } = getState().cellMeta[metaName];
+  const { loading, error } = getState().cellMeta[metaName];
+
+  if (!loading && !error) {
+    return null;
+  }
 
   // Mapping between metaName : workName
   const plotWorkName = {
     mitochondrialContent: 'GetMitochondrialContent',
   };
 
-  // If other data of the same plot is being loaded, don't dispatch.
-  if (loading.length > 0) {
-    return null;
-  }
-
-  // Dispatch loading state.
   dispatch({
     type: CELL_META_LOADING,
     payload: {

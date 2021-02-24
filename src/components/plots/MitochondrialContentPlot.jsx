@@ -40,7 +40,7 @@ const MitochondrialContentPlot = (props) => {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
 
-    if (mitochondrialContent) {
+    if (mitochondrialContent.loading && !mitochondrialContent.error) {
       dispatch(loadCellMeta(experimentId, plotName));
     }
   }, [experimentId, embeddingSettings.method]);

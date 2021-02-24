@@ -1,5 +1,5 @@
 const mitochondrialContent = {
-  loading: false,
+  loading: true,
   error: false,
   data: [],
 };
