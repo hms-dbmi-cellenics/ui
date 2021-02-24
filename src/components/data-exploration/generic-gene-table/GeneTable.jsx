@@ -190,7 +190,7 @@ const GeneTable = (props) => {
       <Table
         columns={renderColumns(columns)}
         dataSource={renderRows(data)}
-        loading={{ indicator: <Loader experimentId={experimentId} /> }}
+        loading={loading ? { indicator: <Loader experimentId={experimentId} /> } : loading}
         size='small'
         pagination={{ ...tableState?.pagination, total }}
         sorter={tableState?.sorter}
