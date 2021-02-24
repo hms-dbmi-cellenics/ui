@@ -9,8 +9,12 @@ const defaultOption = {
 
 const LegendEditor = (props) => {
   const {
-    onUpdate, config, option,
+    onUpdate, config,
   } = props;
+
+  let { option } = props;
+
+  option = option ?? defaultOption;
 
   const positions = {
     corners: {
