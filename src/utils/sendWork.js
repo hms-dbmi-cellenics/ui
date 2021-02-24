@@ -13,9 +13,9 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const statusResponse = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`);
   const jsonResponse = await statusResponse.json();
 
+  const { worker: { started, ready } } = jsonResponse;
   const adjustedTimeout = (started && ready) ? timeout : timeout + 60;
 
-  const { worker: { started, ready } } = jsonResponse;
   const timeoutDate = moment().add(adjustedTimeout, 's').toISOString();
 
   const request = {

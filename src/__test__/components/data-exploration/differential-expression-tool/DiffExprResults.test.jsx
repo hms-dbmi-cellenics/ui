@@ -125,7 +125,7 @@ describe('DiffExprResults', () => {
 
     const table = component.find('Table Table');
     const spin = component.find('Table').find(Loader);
-    expect(spin.length).toEqual(1);
+    expect(spin.length).toEqual(0);
     expect(table.length).toEqual(1);
     expect(table.getElement().props.columns.length).toEqual(5);
     expect(table.getElement().props.columns[0].key).toEqual('lookup');
