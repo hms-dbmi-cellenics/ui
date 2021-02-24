@@ -103,8 +103,8 @@ const WrappedApp = ({ Component, pageProps }) => {
 };
 
 WrappedApp.propTypes = {
-  Component: PropTypes.object.isRequired,
-  pageProps: PropTypes.string.isRequired,
+  Component: PropTypes.element.isRequired,
+  pageProps: PropTypes.object.isRequired,
 };
 
 export default wrapper.withRedux(WrappedApp);

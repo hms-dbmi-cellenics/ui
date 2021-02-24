@@ -49,8 +49,11 @@ Object {
     "initialState": true,
     "meta": Object {
       "complete": false,
+      "error": false,
+      "loading": true,
       "stepsDone": Set {},
     },
+    "test": "test data",
   },
 }
 `;
@@ -101,8 +104,11 @@ Object {
     "initialState": true,
     "meta": Object {
       "complete": false,
+      "error": false,
+      "loading": true,
       "stepsDone": Set {},
     },
+    "test": "test data",
   },
 }
 `;
@@ -152,8 +158,11 @@ Object {
     "initialState": true,
     "meta": Object {
       "complete": false,
+      "error": false,
+      "loading": true,
       "stepsDone": Set {},
     },
+    "test": "test data",
   },
 }
 `;
