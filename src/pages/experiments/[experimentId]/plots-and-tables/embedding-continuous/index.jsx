@@ -1,11 +1,9 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import {
-  Row, Col, Space, Collapse, Spin, Skeleton, Input,
+  Row, Col, Space, Collapse, Input, Spin,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { Vega } from 'react-vega';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import SelectData from '../../../../../components/plots/styling/embedding-continuous/SelectData';
@@ -13,13 +11,9 @@ import {
   updatePlotConfig,
   loadPlotConfig,
 } from '../../../../../redux/actions/componentConfig/index';
-import { loadGeneExpression, loadPaginatedGeneProperties } from '../../../../../redux/actions/genes';
-import { loadEmbedding } from '../../../../../redux/actions/embedding';
-import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
+import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import Header from '../../../../../components/plots/Header';
-import PlatformError from '../../../../../components/PlatformError';
-import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
-import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';
+import ContinuousEmbeddingPlot from '../../../../../components/plots/ContinuousEmbeddingPlot';
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -33,75 +27,20 @@ const route = {
 // we will need to change this to proper Uuid
 const plotUuid = 'embeddingContinuousMain';
 const plotType = 'embeddingContinuous';
-const embeddingType = 'umap';
 
-const EmbeddingContinuousPlot = ({ experimentId }) => {
+const EmbeddingContinuousIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const expressionLoading = useSelector(
-    (state) => state.genes.expression.loading,
-  );
-  const selectedExpression = useSelector(
-    (state) => state.genes.expression.data[config?.shownGene],
-  ) || false;
-  const expressionError = useSelector((state) => state.genes.expression.error);
-  const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
-  const cellSets = useSelector((state) => state.cellSets);
-  const processingSettings = useSelector((state) => state.experimentSettings.processing);
-  const highestDispersionGene = useSelector((state) => state.genes.properties.views[plotUuid]?.data[0]);
-  const { fetching } = useSelector((state) => state.genes.properties.views[plotUuid]) || false;
-  const { properties } = cellSets;
-  const PROPERTIES = ['dispersions'];
-  // temporary solution for selecting the default gene until they are displayed with a table
-  const tableState = {
-    pagination: {
-      current: 1, pageSize: 1, showSizeChanger: true, total: 0,
-    },
-    geneNamesFilter: null,
-    sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
-  };
-  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-  }
+  const cellSets = useSelector((state) => state?.cellSets);
+  useEffect(() => {
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    dispatch(loadCellSets(experimentId));
+  }, [experimentId]);
+
   // updateField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updateField) => {
     dispatch(updatePlotConfig(plotUuid, updateField));
   };
-
-  useEffect(() => {
-    if (!processingSettings.configureEmbedding) {
-      dispatch(loadProcessingSettings(experimentId, embeddingType));
-    }
-
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-
-    dispatch(loadCellSets(experimentId));
-  }, [experimentId]);
-  if (config && config.shownGene === 'notSelected' && highestDispersionGene) {
-    updatePlotWithChanges({ shownGene: highestDispersionGene });
-  }
-  if (config && !selectedExpression && config.shownGene !== 'notSelected') {
-    dispatch(loadGeneExpression(experimentId, [config.shownGene]));
-  }
-
-  useEffect(() => {
-    if (!data && processingSettings.configureEmbedding) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
-    }
-  }, [processingSettings, experimentId]);
-
-  const filterSamples = () => {
-    if (config.selectedSample === 'All') {
-      return data;
-    }
-    const cellIds = Array.from(properties[config.selectedSample].cellIds);
-    const filteredData = data.filter((id) => cellIds.includes(data.indexOf(id)));
-    return filteredData;
-  };
-  const generateVegaData = () => ({
-    expression: selectedExpression,
-    embedding: _.cloneDeep(filterSamples()),
-  });
 
   const plotStylingConfig = [
     {
@@ -136,67 +75,17 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
     },
   ];
 
-  if (!config) {
-    return <Skeleton />;
-  }
-
   const changeDislayedGene = (geneName) => {
     updatePlotWithChanges({ shownGene: geneName });
-    config.shownGene = geneName;
-    dispatch(loadGeneExpression(experimentId, [geneName]));
   };
 
-  const renderPlot = () => {
-    // The embedding couldn't load. Display an error condition.
-    if (expressionError) {
-      return (
-        <PlatformError
-          description='Expression could not load. You may be able to try again.'
-          onClick={() => dispatch(loadGeneExpression(experimentId, [config.shownGene]))}
-        />
-      );
-    }
-
-    if (error) {
-      return (
-        <PlatformError
-          description={error}
-        />
-      );
-    }
-    if (cellSets.error) {
-      return (
-        <PlatformError
-          description={cellSets.error}
-          onClick={() => dispatch(loadCellSets(experimentId))}
-        />
-      );
-    }
-
-    if (
-      !config
-      || !data
-      || loading
-      || expressionLoading.includes(config.shownGene)
-      || cellSets.loading
-    ) {
-      return (
-        <center>
-          <Spin size='large' />
-        </center>
-      );
-    }
-
+  if (!config || cellSets.loading) {
     return (
       <center>
-        <Vega
-          spec={generateSpec(config, config.shownGene)}
-          data={generateVegaData()}
-          renderer='canvas'
-        />
+        <Spin size='large' />
       </center>
     );
-  };
+  }
 
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
@@ -204,13 +93,18 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
         plotUuid={plotUuid}
         experimentId={experimentId}
         finalRoute={route}
+        onUpdate={updatePlotWithChanges}
       />
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
-                {renderPlot()}
+                <ContinuousEmbeddingPlot
+                  experimentId={experimentId}
+                  config={config}
+                  plotUuid={plotUuid}
+                />
               </Panel>
             </Collapse>
           </Space>
@@ -242,8 +136,8 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
   );
 };
 
-EmbeddingContinuousPlot.propTypes = {
+EmbeddingContinuousIndex.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default EmbeddingContinuousPlot;
+export default EmbeddingContinuousIndex;
