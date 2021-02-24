@@ -19,7 +19,7 @@ import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig/index';
+} from '../../../../../redux/actions/componentConfig';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import Header from '../../../../../components/plots/Header';
 import PlatformError from '../../../../../components/PlatformError';

@@ -26,7 +26,7 @@ import PlatformError from '../../PlatformError';
 
 import {
   loadPlotConfig,
-} from '../../../redux/actions/componentConfig/index';
+} from '../../../redux/actions/componentConfig';
 
 import fakeData from './fake_new_data.json';
 
