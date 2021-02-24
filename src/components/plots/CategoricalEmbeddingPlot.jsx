@@ -72,7 +72,7 @@ const CategoricalEmbeddingPlot = (props) => {
 
   return (
     <>
-      { render()}
+      {render()}
     </>
   );
 };
@@ -84,7 +84,7 @@ CategoricalEmbeddingPlot.defaultProps = {
 CategoricalEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
-  actions: PropTypes.object,
+  actions: PropTypes.bool,
 };
 
 export default CategoricalEmbeddingPlot;
