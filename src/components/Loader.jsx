@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ClipLoader, BounceLoader } from 'react-spinners';
 import { Typography } from 'antd';
 import useSWR from 'swr';
@@ -76,6 +77,10 @@ const Loader = ({ experimentId }) => {
       {slowLoad()}
     </div>
   );
+};
+
+Loader.propTypes = {
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default Loader;
