@@ -12,6 +12,8 @@ import VegaHeatmap from '../../../../components/data-exploration/heatmap/VegaHea
 
 import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
 
+import Loader from '../../../../components/Loader';
+
 jest.mock('localforage');
 jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
@@ -154,7 +156,7 @@ describe('HeatmapPlot', () => {
     );
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find('Loader').length).toEqual(1);
+    expect(component.find(Loader).length).toEqual(1);
   });
 
   it('renders Vega heatmap when genes loaded', () => {

@@ -54,13 +54,28 @@ const Loader = ({ experimentId }) => {
     </>
   );
 
-  if (!workerStatus || error) return fastLoad();
+  if (!workerStatus || error) {
+    return (
+      <div>
+        {fastLoad()}
+      </div>
+    );
+  }
 
   const { worker: { started, ready } } = workerStatus;
+  if (started && ready) {
+    return (
+      <div>
+        {fastLoad()}
+      </div>
+    );
+  }
 
-  if (started && ready) return fastLoad();
-
-  return slowLoad();
+  return (
+    <div>
+      {slowLoad()}
+    </div>
+  );
 };
 
 export default Loader;

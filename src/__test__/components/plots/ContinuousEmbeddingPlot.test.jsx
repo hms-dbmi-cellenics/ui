@@ -13,6 +13,8 @@ import initialGeneExpressionState, { initialExpressionState } from '../../../red
 import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 
+import Loader from '../../../components/Loader';
+
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
@@ -119,7 +121,7 @@ describe('Continuous embedding plot', () => {
       </Provider>,
     );
 
-    const spin = component.find('Loader');
+    const spin = component.find(Loader);
 
     // There should be a spinner for loading state.
     expect(spin.length).toEqual(1);
@@ -142,7 +144,7 @@ describe('Continuous embedding plot', () => {
     );
 
     // There should no spinner anymore.
-    const spin = component.find('Loader');
+    const spin = component.find(Loader);
     expect(spin.length).toEqual(0);
 
     // There should be a form loaded.
