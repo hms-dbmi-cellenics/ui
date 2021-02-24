@@ -68,7 +68,7 @@ const completeProcessingStep = (
 
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
-      payload: { error: true, errorType: errorTypes.COMPLETING_PROCESSING_STEP },
+      payload: { error: 'Error persisting state of currently completed steps', errorType: errorTypes.COMPLETING_PROCESSING_STEP },
     });
   }
 };
