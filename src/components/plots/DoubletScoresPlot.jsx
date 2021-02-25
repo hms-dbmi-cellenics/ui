@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import PlatformError from '../PlatformError';
-import { generateSpec, generateData } from '../../utils/plotSpecs/generateMitochondrialContentSpec';
+import { generateSpec, generateData } from '../../utils/plotSpecs/generateDoubletScoresSpec';
 import { loadEmbedding } from '../../redux/actions/embedding';
 import loadCellMeta from '../../redux/actions/cellMeta';
 import { loadCellSets } from '../../redux/actions/cellSets';
@@ -12,19 +12,19 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 import Loader from '../Loader';
 
-const MitochondrialContentPlot = (props) => {
+const DoubletScoresPlot = (props) => {
   const { experimentId, config } = props;
   const defaultEmbeddingType = 'umap';
-  const plotName = 'mitochondrialContent';
+  const plotName = 'doubletScores';
 
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
   );
-  const embedding = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
+  const embedding = useSelector((state) => state.embeddings[embeddingSettings.method]);
 
-  const mitochondrialContent = useSelector((state) => state.cellMeta?.mitochondrialContent) || {};
+  const doubletScores = useSelector((state) => state.cellMeta?.doubletScores);
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
 
@@ -41,7 +41,7 @@ const MitochondrialContentPlot = (props) => {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
 
-    if (mitochondrialContent.loading && !mitochondrialContent.error) {
+    if (doubletScores.loading && !doubletScores.error) {
       dispatch(loadCellMeta(experimentId, plotName));
     }
   }, [experimentId, embeddingSettings.method]);
@@ -51,9 +51,9 @@ const MitochondrialContentPlot = (props) => {
       && !embedding.error
       && !cellSets.loading
       && !cellSets.error) {
-      setPlotSpec(generateData(generateSpec(config), mitochondrialContent, embedding.data));
+      setPlotSpec(generateData(generateSpec(config), doubletScores, embedding.data));
     }
-  }, [embedding.data, mitochondrialContent]);
+  }, [embedding.data, doubletScores]);
 
   const render = () => {
     if (embedding.error) {
@@ -65,17 +65,20 @@ const MitochondrialContentPlot = (props) => {
       );
     }
 
-    if (mitochondrialContent.error) {
+    console.log('doubletScores');
+    console.log(doubletScores);
+
+    if (doubletScores.error) {
       return (
         <PlatformError
-          description={mitochondrialContent.error}
+          description={doubletScores.error}
           onClick={() => { dispatch(loadCellMeta(experimentId, plotName)); }}
         />
       );
     }
 
     if (!embedding.data
-      || mitochondrialContent.loading
+      || doubletScores.loading
       || embedding.loading
       || cellSets.loading) {
       return (
@@ -99,9 +102,9 @@ const MitochondrialContentPlot = (props) => {
   );
 };
 
-MitochondrialContentPlot.propTypes = {
+DoubletScoresPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
 };
 
-export default MitochondrialContentPlot;
+export default DoubletScoresPlot;

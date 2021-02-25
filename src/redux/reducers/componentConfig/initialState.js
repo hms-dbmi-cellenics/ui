@@ -261,7 +261,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
 };
 
 // EMBEDDING PREVIEW - Config for doublet score
-const embeddingPreviewDoubletScoreInitialConfig = {
+const embeddingPreviewDoubletScoresInitialConfig = {
   spec: '1.0.0',
   legend: legendBaseState,
   dimensions: {
@@ -284,8 +284,6 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   label: labelBaseState,
-  logEquation: 'datum.expression*1',
-  shownGene: 'notSelected',
   selectedSample: 'All',
 };
 
@@ -416,7 +414,7 @@ const initialPlotConfigStates = {
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
   embeddingPreviewMitochondrialContent: embeddingPreviewMitochondrialContentInitialConfig,
-  embeddingPreviewDoubletScore: embeddingPreviewDoubletScoreInitialConfig,
+  embeddingPreviewDoubletScores: embeddingPreviewDoubletScoresInitialConfig,
   dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
   dataIntegrationElbow: dataIntegrationElbowPlotInitialConfig,
