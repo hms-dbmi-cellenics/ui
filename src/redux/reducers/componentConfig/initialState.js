@@ -234,7 +234,7 @@ const embeddingPreviewByCellSetsInitialConfig = {
 };
 
 // EMBEDDING PREVIEW - Config for fraction of mitochondrial reads
-const embeddingPreviewMitochondrialReadsInitialConfig = {
+const embeddingPreviewMitochondrialContentInitialConfig = {
   spec: '1.0.0',
   legend: legendBaseState,
   dimensions: {
@@ -257,8 +257,6 @@ const embeddingPreviewMitochondrialReadsInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   label: labelBaseState,
-  logEquation: 'datum.expression*1',
-  shownGene: 'notSelected',
   selectedSample: 'All',
 };
 
@@ -417,7 +415,7 @@ const initialPlotConfigStates = {
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
-  embeddingPreviewMitochondrialReads: embeddingPreviewMitochondrialReadsInitialConfig,
+  embeddingPreviewMitochondrialContent: embeddingPreviewMitochondrialContentInitialConfig,
   embeddingPreviewDoubletScore: embeddingPreviewDoubletScoreInitialConfig,
   dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
