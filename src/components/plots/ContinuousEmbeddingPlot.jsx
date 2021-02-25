@@ -90,7 +90,7 @@ const ContinuousEmbeddingPlot = (props) => {
       return (
         <PlatformError
           error={error}
-          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingType)); }}
+          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings.method)); }}
         />
       );
     }

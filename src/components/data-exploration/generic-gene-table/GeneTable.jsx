@@ -67,11 +67,11 @@ const GeneTable = (props) => {
 
     let searchPattern;
     if (filterOption === 'Starts with') {
-      searchPattern = text.concat('%');
+      searchPattern = '^'.concat(text);
     } else if (filterOption === 'Ends with') {
-      searchPattern = '%'.concat(text);
+      searchPattern = text.concat('$');
     } else if (filterOption === 'Contains') {
-      searchPattern = '%'.concat(text, '%');
+      searchPattern = text;
     }
 
     const newTableState = {

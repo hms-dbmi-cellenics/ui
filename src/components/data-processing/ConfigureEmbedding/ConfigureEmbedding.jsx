@@ -17,6 +17,7 @@ import CalculationConfig from './CalculationConfig';
 
 import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import ContinuousEmbeddingPlot from '../../plots/ContinuousEmbeddingPlot';
+import MitochondrialContentPlot from '../../plots/MitochondrialContentPlot';
 
 import {
   updatePlotConfig,
@@ -57,12 +58,12 @@ const ConfigureEmbedding = (props) => {
       plotType: 'embeddingPreviewByCellSets',
       plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewByCellSets' />),
     },
-    mitochondrialFraction: {
+    mitochondrialContent: {
       title: 'Mitochondrial fraction reads',
       imgSrc: plot2Pic,
-      plotUuid: 'embeddingPreviewMitochondrialReads',
-      plotType: 'embeddingPreviewMitochondrialReads',
-      plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewMitochondrialReads' />),
+      plotUuid: 'embeddingPreviewMitochondrialContent',
+      plotType: 'embeddingPreviewMitochondrialContent',
+      plot: (config) => (<MitochondrialContentPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewMitochondrialContent' />),
     },
     doubletScore: {
       title: 'Cell doublet score',
@@ -227,7 +228,7 @@ const ConfigureEmbedding = (props) => {
         controls: ['labels'],
       },
     ],
-    mitochondrialFraction: [
+    mitochondrialContent: [
       {
         panelTitle: 'Colours',
         controls: ['colourScheme', 'colourInversion'],

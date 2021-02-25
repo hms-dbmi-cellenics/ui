@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cellMeta Sets error state on expression error action 1`] = `
+Object {
+  "mitochondrialContent": Object {
+    "data": Array [],
+    "error": "error",
+    "loading": false,
+  },
+}
+`;
+
+exports[`cellMeta Sets loaded state on expression loading action 1`] = `
+Object {
+  "mitochondrialContent": Object {
+    "data": Array [
+      1,
+      2,
+      3,
+    ],
+    "error": false,
+    "loading": false,
+  },
+}
+`;
+
+exports[`cellMeta Sets loading state on expression loading action 1`] = `
+Object {
+  "mitochondrialContent": Object {
+    "data": Array [],
+    "error": false,
+    "loading": true,
+  },
+}
+`;

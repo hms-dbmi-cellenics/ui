@@ -7,7 +7,7 @@ import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const AxesDesign = (props) => {
   const { onUpdate, config } = props;
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config, 200);
 
   return (
     <Form
