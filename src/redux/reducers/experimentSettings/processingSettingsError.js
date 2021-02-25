@@ -1,7 +1,7 @@
 import initialState from './initialState';
 
 const processingSettingsError = (state, action) => {
-  const { error } = action.payload;
+  const { error, errorType } = action.payload;
 
   return {
     ...initialState,
@@ -11,7 +11,7 @@ const processingSettingsError = (state, action) => {
       meta: {
         ...state.processing.meta,
         loading: false,
-        error,
+        [errorType]: error,
       },
     },
   };

@@ -9,6 +9,10 @@ import {
 import loadProcessingSettings from '../../../../redux/actions/experimentSettings/loadProcessingSettings';
 import initialState from '../../../../redux/reducers/experimentSettings/initialState';
 
+import {
+  NOTIFICATIONS_PUSH_MESSAGE,
+} from '../../../../redux/actionTypes/notifications';
+
 jest.mock('localforage');
 
 enableFetchMocks();
@@ -77,8 +81,11 @@ describe('loadProcessingSettings action', () => {
     await store.dispatch(loadProcessingSettings(experimentId));
 
     const actions = store.getActions();
-    expect(actions.length).toEqual(1);
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_ERROR);
+
+    expect(actions.length).toEqual(2);
+
+    expect(actions[0].type).toEqual(NOTIFICATIONS_PUSH_MESSAGE);
+    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_ERROR);
   });
 
   it('Redispatches if called on error', async () => {
@@ -87,7 +94,7 @@ describe('loadProcessingSettings action', () => {
         processing: {
           meta: {
             loading: false,
-            error: true,
+            loadingSettingsError: true,
           },
         },
       },
