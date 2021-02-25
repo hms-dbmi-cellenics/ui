@@ -4,7 +4,7 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
 import {
-  Row, Col, Space, Collapse, Alert, Spin,
+  Row, Col, Space, Collapse, Alert,
 } from 'antd';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
@@ -33,6 +33,7 @@ import fakeData from './fake_new_data.json';
 import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from '../../plots/FrequencyPlot';
 import ElbowPlot from '../../plots/ElbowPlot';
+import Loader from '../../Loader';
 
 const samplePlotConfigRedux = {
   uuid: 'dataIntegrationEmbedding',
@@ -219,7 +220,7 @@ const DataIntegration = () => {
   const renderIfAvailable = (renderFunc, elementToRender) => {
     if (!elementToRender || loading) {
       return (
-        <Spin size='large' />
+        <Loader experimentId={experimentId} />
       );
     }
 

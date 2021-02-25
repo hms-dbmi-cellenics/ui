@@ -70,8 +70,7 @@ const loadPaginatedGeneProperties = (
         experimentId,
         componentUuid,
         properties,
-        error: 'Couldn\'t load the gene list.',
-        debug: error,
+        error,
       },
     });
   }

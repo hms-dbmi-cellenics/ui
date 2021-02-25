@@ -19,7 +19,7 @@ exports[`loadGeneExpression action Dispatches appropriately on failure 2`] = `
 Object {
   "payload": Object {
     "componentUuid": "asd",
-    "error": "Couldn't fetch expression data.",
+    "error": [Error: random error!],
     "experimentId": "1234",
     "genes": Array [
       "a",

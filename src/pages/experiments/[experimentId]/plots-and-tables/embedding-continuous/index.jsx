@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import {
-  Row, Col, Space, Collapse, Spin, Skeleton, Input,
+  Row, Col, Space, Collapse, Skeleton, Input,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -20,6 +20,7 @@ import Header from '../../../../../components/plots/Header';
 import PlatformError from '../../../../../components/PlatformError';
 import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
 import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';
+import Loader from '../../../../../components/Loader';
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -167,7 +168,7 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
     if (cellSets.error) {
       return (
         <PlatformError
-          description={cellSets.error}
+          error={cellSets.error}
           onClick={() => dispatch(loadCellSets(experimentId))}
         />
       );
@@ -182,7 +183,7 @@ const EmbeddingContinuousPlot = ({ experimentId }) => {
     ) {
       return (
         <center>
-          <Spin size='large' />
+          <Loader experimentId={experimentId} />
         </center>
       );
     }

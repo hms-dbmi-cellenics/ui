@@ -36,9 +36,7 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
   } catch (e) {
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
-      payload: {
-        error: "Couldn't fetch experiment data.",
-      },
+      payload: { error: e },
     });
   }
 };
