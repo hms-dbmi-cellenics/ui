@@ -61,7 +61,7 @@ const completeProcessingStep = (
     dispatch(
       pushNotificationMessage(
         'error',
-        'We couldn\'t connect to the server to save the current progress, please try again',
+        'We couldn\'t save your processing settings. Please check your internet connection and try again.',
         3,
       ),
     );
