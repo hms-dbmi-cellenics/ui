@@ -55,7 +55,7 @@ const Loader = ({ experimentId }) => {
     </>
   );
 
-  if (!workerStatus || error) {
+  if (!workerStatus) {
     return (
       <div>
         {fastLoad()}
