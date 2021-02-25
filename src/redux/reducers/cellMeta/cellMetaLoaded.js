@@ -6,6 +6,7 @@ const cellMetaLoaded = (state, action) => {
     [metaName]: {
       ...state[metaName],
       loading: false,
+      error: false,
       data,
     },
   };
