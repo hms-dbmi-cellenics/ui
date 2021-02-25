@@ -28,12 +28,12 @@ const Loader = ({ experimentId }) => {
       </div>
       <p>
         <Text>
-          This will take a bit longer...
+          This will take a few minutes...
         </Text>
       </p>
       <p>
         <Text type='secondary'>
-          We&apos;re setting up your analysis after a period of inactivity.
+          We&apos;re setting up your analysis after a period of inactivity. Please wait.
         </Text>
       </p>
     </>

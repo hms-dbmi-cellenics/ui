@@ -1,7 +1,7 @@
 import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../../actionTypes/embeddings';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
-const TIMEOUT_SECONDS = 50;
+const TIMEOUT_SECONDS = 90;
 
 const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState) => {
   // If a previous load was initiated, hold off on it until that one is executed.

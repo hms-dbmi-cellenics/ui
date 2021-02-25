@@ -14,7 +14,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const jsonResponse = await statusResponse.json();
 
   const { worker: { started, ready } } = jsonResponse;
-  const adjustedTimeout = (started && ready) ? timeout : timeout + 60;
+  const adjustedTimeout = (started && ready) ? timeout : timeout + 120;
 
   const timeoutDate = moment().add(adjustedTimeout, 's').toISOString();
 
