@@ -27,7 +27,6 @@ const ContinuousEmbeddingPlot = (props) => {
   const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
-  const PROPERTIES = ['dispersions'];
   const { fetching } = useSelector((state) => state.genes.properties.views[plotUuid]) || false;
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
@@ -46,7 +45,7 @@ const ContinuousEmbeddingPlot = (props) => {
   }, [config]);
 
   if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], plotUuid, tableState));
   }
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
@@ -72,12 +71,6 @@ const ContinuousEmbeddingPlot = (props) => {
       dispatch(loadGeneExpression(experimentId, [config.shownGene]));
     }
   }, [highestDispersionGene, config.shownGene]);
-
-  useEffect(() => {
-    if (config.shownGene !== 'notSelected' && !geneExpression.error) {
-      dispatch(loadGeneExpression(experimentId, [config.shownGene]));
-    }
-  }, [experimentId, config]);
 
   useEffect(() => {
     if (!loading
