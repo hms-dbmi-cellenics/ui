@@ -12,7 +12,7 @@ Object {
 exports[`loadDifferentialExpression action Dispatches appropriately on failure 2`] = `
 Object {
   "payload": Object {
-    "error": "Couldn't fetch differential expression results data.",
+    "error": [Error: random error!],
     "experimentId": "1234",
   },
   "type": "diffExpr/error",

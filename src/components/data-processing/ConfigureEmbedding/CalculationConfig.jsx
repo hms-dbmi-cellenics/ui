@@ -145,7 +145,6 @@ const CalculationConfig = (props) => {
             onChange={(value) => setMinimumDistance(value)}
             onStep={(value) => setMinimumDistance(value)}
             onPressEnter={(e) => e.preventDefault()}
-
             onBlur={(e) => setMinimumDistance(e.target.value)}
           />
         </Form.Item>

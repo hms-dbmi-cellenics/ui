@@ -75,7 +75,7 @@ const loadDifferentialExpression = (
       type: DIFF_EXPR_ERROR,
       payload: {
         experimentId,
-        error: "Couldn't fetch differential expression results data.",
+        error,
       },
     });
   }

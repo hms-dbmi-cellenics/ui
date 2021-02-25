@@ -7,7 +7,6 @@ import {
   Collapse,
   Skeleton,
   Select,
-  Spin,
   Tooltip,
   Button,
 } from 'antd';
@@ -19,7 +18,7 @@ import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig/index';
+} from '../../../../../redux/actions/componentConfig';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import Header from '../../../../../components/plots/Header';
 import PlatformError from '../../../../../components/PlatformError';
@@ -27,6 +26,8 @@ import PlatformError from '../../../../../components/PlatformError';
 import { loadEmbedding } from '../../../../../redux/actions/embedding';
 import { loadProcessingSettings } from '../../../../../redux/actions/experimentSettings';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
+
+import Loader from '../../../../../components/Loader';
 
 const { Panel } = Collapse;
 
@@ -180,7 +181,7 @@ const EmbeddingCategoricalPlot = ({ experimentId }) => {
     if (error) {
       return (
         <PlatformError
-          description={error}
+          error={error}
           onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
         />
       );
@@ -189,7 +190,7 @@ const EmbeddingCategoricalPlot = ({ experimentId }) => {
     if (!config || !data || loading) {
       return (
         <center>
-          <Spin size='large' />
+          <Loader experimentId={experimentId} />
         </center>
       );
     }

@@ -5,9 +5,7 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  Spin,
-} from 'antd';
+import Loader from '../../Loader';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
 import CrossHair from './CrossHair';
@@ -174,20 +172,20 @@ const Embedding = (props) => {
 
   // Embedding data is loading.
   if (!data || loading) {
-    return (<center><Spin size='large' /></center>);
+    return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
 
   // We are focused on a gene and its expression is loading.
   if (focusData.store === 'genes'
     && expressionLoading.includes(focusData.key)) {
-    return (<center><Spin size='large' /></center>);
+    return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
 
   // The embedding couldn't load. Display an error condition.
   if (error) {
     return (
       <PlatformError
-        description={error}
+        error={error}
         onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
       />
     );

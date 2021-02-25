@@ -1,9 +1,68 @@
-import React from 'react';
-import { Button, Empty } from 'antd';
+import React, { useState, useEffect } from 'react';
+import {
+  Button, Empty, Typography,
+} from 'antd';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+
+import WorkResponseError from '../utils/WorkResponseError';
+import WorkTimeoutError from '../utils/WorkTimeoutError';
+
+const { Text } = Typography;
 
 const PlatformError = (props) => {
-  const { description, onClick } = props;
+  const { description, error, onClick } = props;
+
+  const [relativeTime, setRelativeTime] = useState('just now');
+
+  useEffect(() => {
+    if (!error?.timeout) {
+      return;
+    }
+
+    const interval = setInterval(() => setRelativeTime(moment(error.timeout).fromNow()), 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const renderMessage = () => {
+    let reason = 'That\'s all we know';
+
+    if (error instanceof WorkResponseError) {
+      reason = 'We had an error on our side while we were completing your request.';
+    }
+
+    if (error instanceof WorkTimeoutError) {
+      reason = (
+        <>
+          We were expecting your request to arrive
+          {' '}
+          {relativeTime}
+          , but we were too slow.
+          <br />
+          We stopped waiting so you can try again.
+        </>
+      );
+    }
+
+    return (
+      <>
+        <p>
+          <Text type='primary'>
+            {description || 'We\'re sorry, we couldn\'t load this.'}
+          </Text>
+        </p>
+        <p>
+          <Text type='secondary'>
+            {reason}
+          </Text>
+        </p>
+      </>
+    );
+  };
+
   return (
     <Empty
       image={(
@@ -13,9 +72,9 @@ const PlatformError = (props) => {
         />
       )}
       imageStyle={{
-        height: 80,
+        height: 120,
       }}
-      description={description || 'We\'re sorry, an error occurred. You may be able to try again.'}
+      description={renderMessage(error)}
     >
       <Button
         type='primary'
@@ -29,11 +88,14 @@ const PlatformError = (props) => {
 };
 
 PlatformError.defaultProps = {
+  description: null,
+  error: null,
   onClick: null,
 };
 
 PlatformError.propTypes = {
-  description: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  error: PropTypes.string,
   onClick: PropTypes.func,
 };
 

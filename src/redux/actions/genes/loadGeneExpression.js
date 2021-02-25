@@ -66,14 +66,14 @@ const loadGeneExpression = (
         data,
       },
     });
-  } catch (e) {
+  } catch (error) {
     dispatch({
       type: GENES_EXPRESSION_ERROR,
       payload: {
         experimentId,
         componentUuid,
         genes,
-        error: "Couldn't fetch expression data.",
+        error,
       },
     });
   }

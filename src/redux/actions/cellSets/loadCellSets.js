@@ -36,7 +36,7 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
       type: CELL_SETS_ERROR,
       payload: {
         experimentId,
-        error: "We're sorry, we were unable to load your data set information.",
+        error: e,
       },
     });
   }

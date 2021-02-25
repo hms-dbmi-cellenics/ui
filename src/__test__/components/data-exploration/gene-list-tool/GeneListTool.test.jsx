@@ -12,6 +12,8 @@ import waitForActions from 'redux-mock-store-await-actions';
 import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
 import { fetchCachedWork } from '../../../../utils/cacheRequest';
 
+import Loader from '../../../../components/Loader';
+
 import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
@@ -107,9 +109,9 @@ describe('GeneListTool', () => {
   configure({ adapter: new Adapter() });
   it('renders correctly', () => {
     const table = component.find('Table Table');
-    const spin = component.find('Table Spin');
+    const spin = component.find('Table').find(Loader);
     const genesFilter = component.find('FilterGenes');
-    expect(spin.length).toEqual(1);
+    expect(spin.length).toEqual(0);
     expect(table.length).toEqual(1);
     expect(genesFilter.length).toEqual(1);
     expect(table.getElement().props.columns.length).toEqual(3);
