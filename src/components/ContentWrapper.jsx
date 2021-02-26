@@ -15,7 +15,7 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
-import initUpdateSocket from '../utils/initUpdatesSocket';
+import initUpdateSocket from '../utils/initUpdateSocket';
 
 const { Sider, Footer } = Layout;
 const { Paragraph } = Typography;
