@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -15,6 +15,7 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
+import initUpdateSocket from '../utils/initUpdatesSocket';
 
 const { Sider, Footer } = Layout;
 const { Paragraph } = Typography;
@@ -25,6 +26,14 @@ const ContentWrapper = (props) => {
   const router = useRouter();
   const { experimentId } = router.query;
   const route = router.route || '';
+
+  const updateSocket = useRef(null);
+
+  useEffect(() => {
+    if (experimentId) {
+      updateSocket.current = initUpdateSocket(experimentId, (res) => { console.log(res); });
+    }
+  }, [experimentId]);
 
   const BigLogo = () => (
     <div
