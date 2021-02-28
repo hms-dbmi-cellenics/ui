@@ -15,14 +15,14 @@ import Loader from '../Loader';
 const DoubletScoresPlot = (props) => {
   const { experimentId, config } = props;
   const defaultEmbeddingType = 'umap';
-  const plotName = 'doubletScores';
+  const dataName = 'doubletScores';
 
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
   );
-  const embedding = useSelector((state) => state.embeddings[embeddingSettings.method]);
+  const embedding = useSelector((state) => state.embeddings[embeddingSettings?.method]);
 
   const doubletScores = useSelector((state) => state.cellMeta?.doubletScores);
   const cellSets = useSelector((state) => state.cellSets);
@@ -37,49 +37,46 @@ const DoubletScoresPlot = (props) => {
       dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
     }
 
-    if (!embedding.data && embeddingSettings.method) {
-      dispatch(loadEmbedding(experimentId, embeddingSettings.method));
+    if (!embedding?.data && embeddingSettings?.method) {
+      dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
     }
 
-    if (doubletScores.loading && !doubletScores.error) {
-      dispatch(loadCellMeta(experimentId, plotName));
+    if (doubletScores?.loading && !doubletScores?.error) {
+      dispatch(loadCellMeta(experimentId, dataName));
     }
-  }, [experimentId, embeddingSettings.method]);
+  }, [experimentId, embeddingSettings?.method]);
 
   useEffect(() => {
-    if (!embedding.loading
-      && !embedding.error
+    if (!embedding?.loading
+      && !embedding?.error
       && !cellSets.loading
       && !cellSets.error) {
-      setPlotSpec(generateData(generateSpec(config), doubletScores, embedding.data));
+      setPlotSpec(generateData(generateSpec(config), doubletScores, embedding?.data));
     }
-  }, [embedding.data, doubletScores]);
+  }, [embedding?.data, doubletScores]);
 
   const render = () => {
-    if (embedding.error) {
+    if (embedding?.error) {
       return (
         <PlatformError
-          description={embedding.error}
+          description={embedding?.error}
           onClick={() => { dispatch(loadEmbedding(experimentId, defaultEmbeddingType)); }}
         />
       );
     }
 
-    console.log('doubletScores');
-    console.log(doubletScores);
-
-    if (doubletScores.error) {
+    if (doubletScores?.error) {
       return (
         <PlatformError
-          description={doubletScores.error}
-          onClick={() => { dispatch(loadCellMeta(experimentId, plotName)); }}
+          description={doubletScores?.error}
+          onClick={() => { dispatch(loadCellMeta(experimentId, dataName)); }}
         />
       );
     }
 
-    if (!embedding.data
-      || doubletScores.loading
-      || embedding.loading
+    if (!embedding?.data
+      || doubletScores?.loading
+      || embedding?.loading
       || cellSets.loading) {
       return (
         <center>

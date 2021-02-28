@@ -15,9 +15,6 @@ const loadCellMeta = (
     return null;
   }
 
-  console.log('metaName');
-  console.log(metaName);
-
   // Mapping between metaName : workName
   const plotWorkName = {
     mitochondrialContent: 'GetMitochondrialContent',

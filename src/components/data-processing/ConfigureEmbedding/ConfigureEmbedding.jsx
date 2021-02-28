@@ -47,7 +47,7 @@ const ConfigureEmbedding = (props) => {
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
       plotType: 'embeddingPreviewBySample',
-      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewBySample' />),
+      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} />),
     },
 
     cellCluster: {
@@ -55,21 +55,21 @@ const ConfigureEmbedding = (props) => {
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
       plotType: 'embeddingPreviewByCellSets',
-      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewByCellSets' />),
+      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} />),
     },
     mitochondrialContent: {
       title: 'Mitochondrial fraction reads',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialContent',
       plotType: 'embeddingPreviewMitochondrialContent',
-      plot: (config) => (<MitochondrialContentPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewMitochondrialContent' />),
+      plot: (config) => (<MitochondrialContentPlot experimentId={experimentId} config={config} />),
     },
     doubletScores: {
       title: 'Cell doublet score',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewDoubletScores',
       plotType: 'embeddingPreviewDoubletScores',
-      plot: (config) => (<DoubletScoresPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewDoubletScores' />),
+      plot: (config) => (<DoubletScoresPlot experimentId={experimentId} config={config} />),
     },
   };
 

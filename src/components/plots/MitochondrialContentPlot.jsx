@@ -15,14 +15,14 @@ import Loader from '../Loader';
 const MitochondrialContentPlot = (props) => {
   const { experimentId, config } = props;
   const defaultEmbeddingType = 'umap';
-  const plotName = 'mitochondrialContent';
+  const dataName = 'mitochondrialContent';
 
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
   );
-  const embedding = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
+  const embedding = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
 
   const mitochondrialContent = useSelector((state) => state.cellMeta?.mitochondrialContent) || {};
   const cellSets = useSelector((state) => state.cellSets);
@@ -37,46 +37,46 @@ const MitochondrialContentPlot = (props) => {
       dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
     }
 
-    if (!embedding.data && embeddingSettings.method) {
-      dispatch(loadEmbedding(experimentId, embeddingSettings.method));
+    if (!embedding?.data && embeddingSettings?.method) {
+      dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
     }
 
-    if (mitochondrialContent.loading && !mitochondrialContent.error) {
-      dispatch(loadCellMeta(experimentId, plotName));
+    if (mitochondrialContent?.loading && !mitochondrialContent?.error) {
+      dispatch(loadCellMeta(experimentId, dataName));
     }
-  }, [experimentId, embeddingSettings.method]);
+  }, [experimentId, embeddingSettings?.method]);
 
   useEffect(() => {
-    if (!embedding.loading
-      && !embedding.error
+    if (!embedding?.loading
+      && !embedding?.error
       && !cellSets.loading
       && !cellSets.error) {
-      setPlotSpec(generateData(generateSpec(config), mitochondrialContent, embedding.data));
+      setPlotSpec(generateData(generateSpec(config), mitochondrialContent, embedding?.data));
     }
-  }, [embedding.data, mitochondrialContent]);
+  }, [embedding?.data, mitochondrialContent]);
 
   const render = () => {
-    if (embedding.error) {
+    if (embedding?.error) {
       return (
         <PlatformError
-          description={embedding.error}
+          description={embedding?.error}
           onClick={() => { dispatch(loadEmbedding(experimentId, defaultEmbeddingType)); }}
         />
       );
     }
 
-    if (mitochondrialContent.error) {
+    if (mitochondrialContent?.error) {
       return (
         <PlatformError
-          description={mitochondrialContent.error}
-          onClick={() => { dispatch(loadCellMeta(experimentId, plotName)); }}
+          description={mitochondrialContent?.error}
+          onClick={() => { dispatch(loadCellMeta(experimentId, dataName)); }}
         />
       );
     }
 
-    if (!embedding.data
-      || mitochondrialContent.loading
-      || embedding.loading
+    if (!embedding?.data
+      || mitochondrialContent?.loading
+      || embedding?.loading
       || cellSets.loading) {
       return (
         <center>
