@@ -1,6 +1,5 @@
 export default {
   processing: {
-    experimentId: null,
     meta: {
       complete: false,
       stepsDone: new Set([]),
