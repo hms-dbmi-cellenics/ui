@@ -23,8 +23,8 @@ const Header = (props) => {
       breadcrumbName: 'Analyses',
     },
     '[experimentId]': {
-      breadcrumbName: experimentData?.experimentName || '',
-      params: experimentId || '',
+      breadcrumbName: experimentData?.experimentName,
+      params: experimentId,
     },
     'data-exploration': {
       breadcrumbName: 'Data Exploration',
