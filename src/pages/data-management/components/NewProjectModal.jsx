@@ -11,7 +11,10 @@ const NewProjectModal = (props) => {
 
   const [projectName, setProjectName] = useState('');
   const [isInvalid, setIsInvalid] = useState(false);
-  const validateProjectName = (input) => input.match(/^[a-zA-Z\s\d-_]{8,}$/gm);
+
+  const validateProjectName = (input) => input.length >= 8
+    && input.match(/([a-zA-Z\d]{2,}){1,}/gm)
+    && input.match(/^[a-zA-Z\s\d-_]{8,}$/gm);
 
   return (
     <Modal
@@ -32,7 +35,12 @@ const NewProjectModal = (props) => {
     >
       <Space align='center'>
         <Space direction='vertical' style={{ margin: '2rem 0 1rem 0' }}>
-          <Title level={3}>Create a project to start analyzing your data with CellScope</Title>
+          <Title level={3}>
+            Create a project to start analyzing
+            <br />
+            {' '}
+            your data in CellScope
+          </Title>
           <Text type='secondary'>
             Project name can only contain alphabets (a-z, A-Z), space ( ), numbers (0-9), underscore (_) and dash (-) with a minimum of 8 characters
           </Text>
