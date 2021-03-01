@@ -28,7 +28,7 @@ const ContinuousEmbeddingPlot = (props) => {
   const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
-  const { fetching } = useSelector((state) => state.genes.properties.views[plotUuid]) || false;
+  const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
   );
@@ -38,7 +38,7 @@ const ContinuousEmbeddingPlot = (props) => {
       current: 1, pageSize: 1, showSizeChanger: true, total: 0,
     },
     geneNamesFilter: null,
-    sorter: { field: PROPERTIES.toString(), columnKey: PROPERTIES.toString(), order: 'descend' },
+    sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
   };
   useEffect(() => {
     const spec = generateSpec(config);
