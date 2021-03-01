@@ -125,7 +125,7 @@ const ContentWrapper = (props) => {
 
   const menuLinks = [
     {
-      path: '/experiments/[experimentId]/data-management',
+      path: '/data-management',
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
     },
