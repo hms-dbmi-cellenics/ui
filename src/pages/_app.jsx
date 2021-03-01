@@ -95,7 +95,7 @@ const WrappedApp = ({ Component, pageProps }) => {
     <>
       <Head>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <title>CellScope</title>
+        <title>Cellscope</title>
       </Head>
       {mainContent(Component, pageProps)}
     </>

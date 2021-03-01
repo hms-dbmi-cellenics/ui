@@ -39,7 +39,7 @@ const NewProjectModal = (props) => {
             Create a project to start analyzing
             <br />
             {' '}
-            your data in CellScope
+            your data in Cellscope
           </Title>
           <Text type='secondary'>
             Project name can only contain alphabets (a-z, A-Z), space ( ), numbers (0-9), underscore (_) and dash (-) with a minimum of 8 characters
