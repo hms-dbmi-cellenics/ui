@@ -1,6 +1,6 @@
 UI
 ======
-The user interface of Cellscope (the Biomage single cell analysis platform).
+The user interface of CellScope (the Biomage single cell analysis platform).
 
 Development
 -----------------------

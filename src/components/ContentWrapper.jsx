@@ -53,7 +53,7 @@ const ContentWrapper = (props) => {
             fontSize='25.00px'
             textAnchor='start'
           >
-            Cellscope
+            CellScope
           </text>
           <text
             stroke='none'
