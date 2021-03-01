@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Modal, Button, Input, Space,
+  Modal, Button, Input, Space, Typography,
 } from 'antd';
+
+const { Text, Title } = Typography;
 
 const NewProjectModal = (props) => {
   const { visible, onCreate, onCancel } = props;
+
+  const [projectName, setProjectName] = useState('');
+  const [isInvalid, setIsInvalid] = useState(false);
+  const validateProjectName = (input) => input.match(/^[a-zA-Z\s\d-_]{8,}$/gm);
 
   return (
     <Modal
@@ -16,7 +22,7 @@ const NewProjectModal = (props) => {
           type='primary'
           key='create'
           block
-          onClick={onCreate}
+          onClick={() => { if (!isInvalid) onCreate(projectName); }}
         >
           Create Project
         </Button>
@@ -26,8 +32,19 @@ const NewProjectModal = (props) => {
     >
       <Space align='center'>
         <Space direction='vertical' style={{ margin: '2rem 0 1rem 0' }}>
-          <h3 style={{ textAlign: 'center' }}>Create a project to start analyzing your data with CellScope</h3>
-          <Input />
+          <Title level={3}>Create a project to start analyzing your data with CellScope</Title>
+          <Text type='secondary'>
+            Project name can only contain alphabets (a-z, A-Z), space ( ), numbers (0-9), underscore (_) and dash (-) with a minimum of 8 characters
+          </Text>
+          <br />
+          <Input
+            onChange={(e) => {
+              setProjectName(e.target.value);
+              setIsInvalid(validateProjectName(e.target.value) === null);
+            }}
+            value={projectName}
+          />
+          {projectName.length >= 8 && isInvalid ? <Text type='danger'>Invalid project name</Text> : ''}
         </Space>
       </Space>
     </Modal>
