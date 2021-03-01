@@ -31,13 +31,13 @@ const ContinuousEmbeddingPlot = (props) => {
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
   );
-
+  const PROPERTIES = 'dispersions';
   const tableState = {
     pagination: {
       current: 1, pageSize: 1, showSizeChanger: true, total: 0,
     },
     geneNamesFilter: null,
-    sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
+    sorter: { field: PROPERTIES, columnKey: PROPERTIES, order: 'descend' },
   };
   useEffect(() => {
     const spec = generateSpec(config);
@@ -45,7 +45,7 @@ const ContinuousEmbeddingPlot = (props) => {
   }, [config]);
 
   if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
-    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], plotUuid, tableState));
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
