@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Spin } from 'antd';
 import { Vega } from 'react-vega';
 
 import PlatformError from '../PlatformError';
@@ -9,6 +8,7 @@ import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbedd
 import { loadEmbedding } from '../../redux/actions/embedding';
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
+import Loader from '../Loader';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
@@ -49,7 +49,7 @@ const CategoricalEmbeddingPlot = (props) => {
     if (error) {
       return (
         <PlatformError
-          description={error}
+          error={error}
           onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings.method)); }}
         />
       );
@@ -58,7 +58,7 @@ const CategoricalEmbeddingPlot = (props) => {
     if (cellSets.loading || !embeddingData || loading) {
       return (
         <center>
-          <Spin size='large' />
+          <Loader experimentId={experimentId} />
         </center>
       );
     }

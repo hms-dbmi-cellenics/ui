@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import connectionPromise from '../../utils/socketConnection';
 import sendWork from '../../utils/sendWork';
 
+enableFetchMocks();
 jest.mock('../../utils/socketConnection');
 jest.mock('uuid');
 jest.mock('moment', () => () => jest.requireActual('moment')('4022-01-01T00:00:00.000Z'));
@@ -29,24 +31,30 @@ connectionPromise.mockImplementation(() => new Promise((resolve) => {
 
 uuidv4.mockImplementation(() => 'my-random-uuid');
 
-const experimentId = '1234';
-const timeout = 30;
-const body = {
-  name: 'ImportantTask',
-  type: 'fake task',
-};
-
 describe('sendWork unit tests', () => {
+  const experimentId = '1234';
+  const timeout = 30;
+  const body = {
+    name: 'ImportantTask',
+    type: 'fake task',
+  };
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('Sends work to the backend when called and returns valid response.', async (done) => {
-    const flushPromises = () => new Promise(setImmediate);
+  beforeEach(() => {
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ worker: { started: true, ready: true } })),
+    );
+  });
+
+  it('Sends work to the backend when called and returns valid response.', async () => {
     const response = await sendWork(
       experimentId, timeout, body,
     );
-    await flushPromises();
 
     expect(mockEmit).toHaveBeenCalledWith('WorkRequest', {
       uuid: 'my-random-uuid',
@@ -60,10 +68,11 @@ describe('sendWork unit tests', () => {
       results: [{ body: '{"hello":"world"}' }],
       response: { error: false },
     });
-    done();
   });
 
   it('Returns an error if there is error in the response.', async (done) => {
+    const flushPromises = () => new Promise(setImmediate);
+
     result = {
       results: [
         {
@@ -72,12 +81,10 @@ describe('sendWork unit tests', () => {
           }),
         },
       ],
-      response: { error: true },
+      response: { error: 'The backend returned an error' },
     };
-    const flushPromises = () => new Promise(setImmediate);
 
-    expect(sendWork(experimentId, timeout, body)).rejects.toEqual(Error('The backend returned an error'));
-
+    expect(sendWork(experimentId, timeout, body)).rejects.toEqual(new Error('The backend returned an error'));
     await flushPromises();
 
     expect(mockEmit).toHaveBeenCalledWith('WorkRequest', {

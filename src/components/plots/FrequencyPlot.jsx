@@ -14,7 +14,9 @@ const FrequencyPlot = (props) => {
   populateFrequencyData(spec, hierarchy, properties, config);
 
   return (
-    <Vega spec={spec} renderer='canvas' actions={actions} />
+    <center>
+      <Vega spec={spec} renderer='canvas' actions={actions} />
+    </center>
   );
 };
 

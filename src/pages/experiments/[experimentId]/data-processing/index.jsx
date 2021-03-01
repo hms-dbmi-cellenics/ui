@@ -70,27 +70,31 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const { loading, error, stepsDone: completedSteps } = useSelector((state) => state.experimentSettings.processing.meta);
-  const initialState = useSelector((state) => state.experimentSettings.processing.initialState);
+  const {
+    loading,
+    stepsDone: completedSteps,
+    loadingSettingsError,
+    completingStepError,
+  } = useSelector((state) => state.experimentSettings.processing.meta);
 
   const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
 
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    if (loading && !error) {
+    if (loading && !loadingSettingsError) {
       dispatch(loadProcessingSettings(experimentId));
     }
   }, [experimentId]);
 
   useEffect(() => {
     setStepIdx(completedSteps.size % steps.length);
-  }, [initialState]);
+  }, [loading]);
 
   useEffect(() => {
     const goToStepIdx = () => {
       if (carouselRef.current) {
-        carouselRef.current.goTo(stepIdx);
+        carouselRef.current.goTo(stepIdx, true);
       }
     };
 
@@ -103,6 +107,16 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     goToStepIdx();
     completeProcessingStepIfAdvanced();
   }, [stepIdx]);
+
+  useEffect(() => {
+    if (!completingStepError) {
+      return;
+    }
+
+    if (stepIdx > completedSteps.size) {
+      setStepIdx(completedSteps.size);
+    }
+  }, [completingStepError, stepIdx]);
 
   const renderTitle = () => (
     <Row justify='space-between'>

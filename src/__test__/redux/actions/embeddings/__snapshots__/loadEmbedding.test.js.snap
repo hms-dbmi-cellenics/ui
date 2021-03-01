@@ -14,7 +14,7 @@ exports[`loadEmbedding action Dispatches error action on unsuccessful loading 2`
 Object {
   "payload": Object {
     "embeddingType": "umap",
-    "error": "We're sorry, we were unable to load your embedding.",
+    "error": [Error: random error!],
     "experimentId": "1234",
   },
   "type": "embeddings/error",

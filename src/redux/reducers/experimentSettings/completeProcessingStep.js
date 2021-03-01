@@ -17,6 +17,7 @@ const completeProcessingStep = (state, action) => {
         ...state.processing.meta,
         complete: newStepsDone.size === numSteps,
         stepsDone: newStepsDone,
+        completingStepError: false,
       },
     },
   };

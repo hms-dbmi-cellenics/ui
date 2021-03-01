@@ -1,11 +1,11 @@
 export default {
   processing: {
-    initialState: true,
     meta: {
       complete: false,
       stepsDone: new Set([]),
       loading: true,
-      error: false,
+      completingStepError: false,
+      loadingSettingsError: false,
     },
     dataIntegration: {
       dataIntegration: {

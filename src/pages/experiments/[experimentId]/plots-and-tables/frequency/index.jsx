@@ -7,7 +7,6 @@ import {
   Space,
   Collapse,
   Skeleton,
-  Spin,
   Radio,
   Alert,
 } from 'antd';
@@ -20,11 +19,13 @@ import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig/index';
+} from '../../../../../redux/actions/componentConfig';
 import PlatformError from '../../../../../components/PlatformError';
 import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
 
 import FrequencyPlot from '../../../../../components/plots/FrequencyPlot';
+
+import Loader from '../../../../../components/Loader';
 
 const { Panel } = Collapse;
 const plotUuid = 'frequencyPlotMain';
@@ -129,7 +130,7 @@ const frequencyPlot = ({ experimentId }) => {
     if (!config || loading) {
       return (
         <center>
-          <Spin size='large' />
+          <Loader experimentId={experimentId} />
         </center>
       );
     }

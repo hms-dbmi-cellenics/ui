@@ -16,10 +16,9 @@ const loadProcessingSettings = (state, action) => {
       meta: {
         ...newConfig.meta,
         loading: false,
-        error: false,
+        loadingSettingsError: false,
         stepsDone: new Set(newConfig.meta.stepsDone),
       },
-      initialState: false,
     },
   };
 };

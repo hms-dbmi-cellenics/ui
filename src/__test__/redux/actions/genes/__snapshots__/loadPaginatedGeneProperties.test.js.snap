@@ -18,8 +18,7 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on error co
 Object {
   "payload": Object {
     "componentUuid": "asd",
-    "debug": [Error: random error!],
-    "error": "Couldn't load the gene list.",
+    "error": [Error: random error!],
     "experimentId": "1234",
     "properties": Array [
       "a",

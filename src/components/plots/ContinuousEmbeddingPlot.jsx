@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Spin } from 'antd';
 import { Vega } from 'react-vega';
 
 import PlatformError from '../PlatformError';
@@ -11,6 +10,8 @@ import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/act
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
+
+import Loader from '../Loader';
 
 const ContinuousEmbeddingPlot = (props) => {
   const { experimentId, config, plotUuid } = props;
@@ -88,8 +89,8 @@ const ContinuousEmbeddingPlot = (props) => {
     if (error) {
       return (
         <PlatformError
-          description={error}
-          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingType)); }}
+          error={error}
+          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings.method)); }}
         />
       );
     }
@@ -97,7 +98,7 @@ const ContinuousEmbeddingPlot = (props) => {
     if (geneExpression.error) {
       return (
         <PlatformError
-          description={geneExpression.error}
+          error={geneExpression.error}
           onClick={() => { dispatch(loadGeneExpression(experimentId, [config.shownGene])); }}
         />
       );
@@ -108,7 +109,7 @@ const ContinuousEmbeddingPlot = (props) => {
       || loading
       || cellSets.loading) {
       return (
-        <Spin size='large' />
+        <Loader experimentId={experimentId} />
       );
     }
 
