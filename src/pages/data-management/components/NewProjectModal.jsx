@@ -10,7 +10,7 @@ const NewProjectModal = (props) => {
   const { visible, onCreate, onCancel } = props;
 
   const [projectName, setProjectName] = useState('');
-  const [isInvalid, setIsInvalid] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(true);
 
   const validateProjectName = (input) => input.length >= 8
     && input.match(/([a-zA-Z\d]{2,}){1,}/gm)
@@ -25,7 +25,8 @@ const NewProjectModal = (props) => {
           type='primary'
           key='create'
           block
-          onClick={() => { if (!isInvalid) onCreate(projectName); }}
+          disabled={isInvalid}
+          onClick={() => { onCreate(projectName); }}
         >
           Create Project
         </Button>
@@ -34,7 +35,7 @@ const NewProjectModal = (props) => {
       onCancel={onCancel}
     >
       <Space align='center'>
-        <Space direction='vertical' style={{ margin: '2rem 0 1rem 0' }}>
+        <Space direction='vertical' style={{ marginTop: '2rem' }}>
           <Title level={3}>
             Create a project to start analyzing
             <br />
@@ -48,11 +49,13 @@ const NewProjectModal = (props) => {
           <Input
             onChange={(e) => {
               setProjectName(e.target.value);
-              setIsInvalid(validateProjectName(e.target.value) === null);
+              setIsInvalid(!validateProjectName(e.target.value));
             }}
             value={projectName}
           />
-          {projectName.length >= 8 && isInvalid ? <Text type='danger'>Invalid project name</Text> : ''}
+          <Text type='danger'>
+            {projectName.length >= 8 && isInvalid ? 'Invalid project name' : <br />}
+          </Text>
         </Space>
       </Space>
     </Modal>
