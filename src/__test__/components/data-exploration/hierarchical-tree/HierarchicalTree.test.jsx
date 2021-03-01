@@ -1,6 +1,7 @@
 import React from 'react';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import { act } from 'react-dom/test-utils';
 import HierarchicalTree from '../../../../components/data-exploration/hierarchical-tree/HierarchicalTree';
 
 jest.mock('localforage');
@@ -16,10 +17,9 @@ describe('HierarchicalTree', () => {
       color: '#000000',
     }];
 
-    const component = mount(
-      <HierarchicalTree treeData={treeData} experimentId='asd' />,
-    );
+    const component = mount(act(() => <HierarchicalTree treeData={treeData} experimentId='asd' />));
     const tree = component.find('HierarchicalTree Tree');
+
     expect(tree.length).toEqual(1);
   });
 

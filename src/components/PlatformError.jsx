@@ -49,16 +49,12 @@ const PlatformError = (props) => {
 
     return (
       <>
-        <p>
-          <Text type='primary'>
-            {description || 'We\'re sorry, we couldn\'t load this.'}
-          </Text>
-        </p>
-        <p>
-          <Text type='secondary'>
-            {reason}
-          </Text>
-        </p>
+        <Text type='primary'>
+          {description || 'We\'re sorry, we couldn\'t load this.'}
+        </Text>
+        <Text type='secondary'>
+          {reason}
+        </Text>
       </>
     );
   };
