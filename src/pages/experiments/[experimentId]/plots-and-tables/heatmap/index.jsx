@@ -6,12 +6,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
-import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig/index';
+import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
 import Header from '../../../../../components/plots/Header';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression } from '../../../../../redux/actions/genes';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import PlatformError from '../../../../../components/PlatformError';
+import Loader from '../../../../../components/Loader';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -90,13 +91,15 @@ const HeatmapPlot = ({ experimentId }) => {
 
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading) {
-      return (<Spin />);
+      return (<Loader experimentId={experimentId} />);
     }
 
     if (error) {
+      console.log('error');
       return (
         <PlatformError
           description='Could not load gene expression data.'
+          error={error}
           onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes))}
         />
       );

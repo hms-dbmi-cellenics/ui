@@ -92,7 +92,7 @@ const CellSetsTool = (props) => {
     if (error) {
       return (
         <PlatformError
-          description={error}
+          error={error}
           onClick={() => dispatch(loadCellSets(experimentId))}
         />
       );

@@ -5,8 +5,8 @@ import {
 
 // A custom hook for the sliders in plot styling for throttling the dispatching of updates to redux
 
-const useUpdateThrottled = (onUpdate, config) => {
-  const updateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), 1000), []);
+const useUpdateThrottled = (onUpdate, config, throttleTime = 1000) => {
+  const updateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), throttleTime), []);
   const [newConfig, setNewConfig] = useState(config);
 
   // if the plot is reset - update the newConfig too

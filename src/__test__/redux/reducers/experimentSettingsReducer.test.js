@@ -7,6 +7,8 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../../redux/actionTypes/experimentSettings';
 
+import errorTypes from '../../../redux/actions/experimentSettings/errorTypes';
+
 describe('experimentSettingsReducer', () => {
   it('Reduces identical state on unknown action', () => expect(
     experimentSettingsReducer(undefined, {
@@ -33,12 +35,12 @@ describe('experimentSettingsReducer', () => {
   it('Properly sets error on state', () => {
     const errorMessage = 'ERROR : Failed to load state';
     const newState = experimentSettingsReducer({ ...initialState }, {
-      payload: { error: errorMessage },
+      payload: { error: errorMessage, errorType: errorTypes.LOADING_PROCESSING_SETTINGS },
       type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
     });
 
     expect(newState.processing.meta.loading).toEqual(false);
-    expect(newState.processing.meta.error).toEqual(errorMessage);
+    expect(newState.processing.meta.loadingSettingsError).toEqual(errorMessage);
   });
 
   it('Updates existing value properly', () => {

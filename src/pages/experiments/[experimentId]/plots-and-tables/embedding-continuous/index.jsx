@@ -14,6 +14,7 @@ import {
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import Header from '../../../../../components/plots/Header';
 import ContinuousEmbeddingPlot from '../../../../../components/plots/ContinuousEmbeddingPlot';
+import Loader from '../../../../../components/Loader';
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -79,10 +80,10 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     updatePlotWithChanges({ shownGene: geneName });
   };
 
-  if (!config || cellSets.loading) {
+  if (!config) {
     return (
       <center>
-        <Spin size='large' />
+        <Loader experimentId={experimentId} />
       </center>
     );
   }

@@ -6,7 +6,6 @@ import {
   Space,
   Collapse,
   Select,
-  Spin,
   Tooltip,
   Button,
 } from 'antd';
@@ -21,6 +20,8 @@ import {
 import Header from '../../../../../components/plots/Header';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import CategoricalEmbeddingPlot from '../../../../../components/plots/CategoricalEmbeddingPlot';
+
+import Loader from '../../../../../components/Loader';
 
 const { Panel } = Collapse;
 
@@ -106,10 +107,10 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
       }],
     },
   ];
-  if (!config || cellSets.loading) {
+  if (!config) {
     return (
       <center>
-        <Spin size='large' />
+        <Loader experimentId={experimentId} />
       </center>
     );
   }
