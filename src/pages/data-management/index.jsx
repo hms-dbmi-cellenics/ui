@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Mosaic, MosaicWindow, RemoveButton } from 'react-mosaic-component';
+import { Button } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 
 import Header from '../../components/Header';
 
 import NewProjectModal from './components/NewProjectModal';
-import ProjectsList from './components/ProjectsList';
 
 import 'react-mosaic-component/react-mosaic-component.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
@@ -32,7 +32,7 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
     }
   }, [projectsList]);
 
-  const onCreateNewProject = () => {
+  const createNewProject = () => {
     setNewProjectModalVisible(false);
   };
 
@@ -40,7 +40,11 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
     'Projects List': {
       toolbarControls: [<RemoveButton />],
       component: (width, height) => (
-        <ProjectsList width={width} height={height} onClick={() => setNewProjectModalVisible(true)} />
+        <div width={width} height={height}>
+          <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
+            Create New Project
+          </Button>
+        </div>
       ),
     },
     'Data Management': {
@@ -71,7 +75,7 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
       <NewProjectModal
         visible={newProjectModalVisible}
         onCancel={() => { setNewProjectModalVisible(false); }}
-        onCreate={onCreateNewProject}
+        onCreate={createNewProject}
       />
       <div style={{ height: '100%', width: '100%', margin: 0 }}>
         <Mosaic

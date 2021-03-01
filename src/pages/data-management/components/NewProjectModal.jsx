@@ -36,9 +36,15 @@ const NewProjectModal = (props) => {
 };
 
 NewProjectModal.propTypes = {
-  visible: PropTypes.bool.isRequired,
-  onCreate: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
+  visible: PropTypes.bool,
+  onCreate: PropTypes.func,
+  onCancel: PropTypes.func,
+};
+
+NewProjectModal.defaultProps = {
+  visible: true,
+  onCreate: null,
+  onCancel: null,
 };
 
 export default NewProjectModal;
