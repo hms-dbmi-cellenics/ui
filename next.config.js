@@ -200,7 +200,7 @@ module.exports = withCSS(
       return [
         {
           source: '/',
-          destination: '/experiments/5928a56c7cbff9de78974ab50765ed20/data-exploration', // pragma: allowlist secret
+          destination: '/experiments/e52b39624588791a7889e39c617f669e/data-exploration', // pragma: allowlist secret
           permanent: false,
         },
       ];

@@ -18,6 +18,7 @@ const loadCellMeta = (
   // Mapping between metaName : workName
   const plotWorkName = {
     mitochondrialContent: 'GetMitochondrialContent',
+    doubletScores: 'GetDoubletScore',
   };
 
   dispatch({
