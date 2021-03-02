@@ -134,24 +134,28 @@ const ContentWrapper = (props) => {
 
   const menuLinks = [
     {
-      path: '/experiments/[experimentId]/data-management',
+      path: '/data-management',
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
+      disableIfNoExperiment: false,
     },
     {
       path: '/experiments/[experimentId]/data-processing',
       icon: <BuildOutlined />,
       name: 'Data Processing',
+      disableIfNoExperiment: true,
     },
     {
       path: '/experiments/[experimentId]/data-exploration',
       icon: <FundViewOutlined />,
       name: 'Data Exploration',
+      disableIfNoExperiment: true,
     },
     {
       path: '/experiments/[experimentId]/plots-and-tables',
       icon: <DatabaseOutlined />,
       name: 'Plots and Tables',
+      disableIfNoExperiment: true,
     },
   ];
 
@@ -177,8 +181,10 @@ const ContentWrapper = (props) => {
             }
             mode='inline'
           >
-            {menuLinks.map(({ path, icon, name }) => (
-              <Menu.Item key={path} icon={icon}>
+            {menuLinks.map(({
+              path, icon, name, disableIfNoExperiment,
+            }) => (
+              <Menu.Item disabled={!experimentId ? disableIfNoExperiment : false} key={path} icon={icon}>
                 <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
                   <a>{name}</a>
                 </Link>
