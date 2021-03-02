@@ -9,8 +9,12 @@ import {
   Row,
   Col,
   Empty,
+  Divider,
+  List,
 } from 'antd';
+import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import { useDropzone } from 'react-dropzone';
+import _ from 'lodash';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -21,20 +25,36 @@ const NewProjectModal = (props) => {
   const initialSelected = '10X Chromium';
   const [selectedTech, useSelectedTech] = useState(initialSelected);
   const [canUpload, setCanUpload] = useState(false);
+  const [filesList, setFilesList] = useState([]);
 
   // Handle on Drop
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = (acceptedFiles) => {
+    const newList = [];
     acceptedFiles.forEach((file) => {
       // First character of file.path === '/' means a directory is uploaded
       // Remove initial slash so that it does not create an empty directory in S3
-      const filePath = file.path[0] === '/' ? file.path.slice(1) : file.path;
 
+      let filePath = null;
+
+      if (file.path[0] === '/') {
+        const paths = file.path.split('/');
+        filePath = paths[paths.length - 2];
+      } else {
+        filePath = file.path;
+      }
+
+      newList.push({
+        name: filePath,
+        valid: true,
+      });
       // Upload to AWS Amplify
-      Storage.put(filePath, file)
-        .then((result) => console.log(result))
-        .catch((err) => console.log(err));
+      // Storage.put(filePath, file)
+      //   .then((result) => console.log(result))
+      //   .catch((err) => console.log(err));
     });
-  }, []);
+
+    setFilesList([...filesList, ...newList]);
+  };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
@@ -86,21 +106,27 @@ const NewProjectModal = (props) => {
           </Select>
           <Text type='secondary'><i>Only 10x Chromium datasets is currently supported</i></Text>
         </Space>
-        <Row style={{ margin: '1em 0' }}>
-          <Col span={24} style={{ textAlign: 'center' }}>
-            <Paragraph>For each sample, provide the following 3 files using the following filename format:</Paragraph>
-          </Col>
-          <Col span={12} style={{ textAlign: 'right', paddingRight: '0.5em' }}>
-            {
-              techOptions[selectedTech].map((s) => <Paragraph>{s.filename}</Paragraph>)
-            }
-          </Col>
-          <Col span={12} style={{ textAlign: 'left', paddingLeft: '0.5em' }}>
-            {
-              techOptions[selectedTech].map((s) => <Paragraph>{s.format}</Paragraph>)
-            }
-          </Col>
-        </Row>
+        {
+          selectedTech ? (
+
+            <Row style={{ margin: '1em 0' }}>
+              <Col span={24} style={{ textAlign: 'center' }}>
+                <Paragraph>For each sample, provide the following 3 files using the following filename format:</Paragraph>
+              </Col>
+              <Col span={12} style={{ textAlign: 'right', paddingRight: '0.5em' }}>
+                {
+                  techOptions[selectedTech].map((s, idx) => <Paragraph key={`filename-${idx}`}>{s.filename}</Paragraph>)
+                }
+              </Col>
+              <Col span={12} style={{ textAlign: 'left', paddingLeft: '0.5em' }}>
+                {
+                  techOptions[selectedTech].map((s, idx) => <Paragraph key={`format-${idx}`}>{s.format}</Paragraph>)
+                }
+              </Col>
+            </Row>
+
+          ) : ''
+        }
         <Row>
           <Col span={24}>
             <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
@@ -109,9 +135,35 @@ const NewProjectModal = (props) => {
             </div>
           </Col>
         </Row>
-        <Row>
-          <Col />
-        </Row>
+
+        {filesList.length ? (
+          <>
+            <Divider orientation='center'>Uploaded file</Divider>
+            <Row>
+              <Col span={6}>
+                <List
+                  size='small'
+                  dataSource={filesList}
+                  renderItem={(file) => (
+                    <List.Item key={`files-${file}`}>
+                      <Text>
+                        <Space>
+                          {file.valid
+                            ? (
+                              <CheckCircleTwoTone twoToneColor='#52c41a' />
+                            ) : (
+                              <CloseCircleTwoTone twoToneColor='#f5222d' />
+                            )}
+                          {file.name}
+                        </Space>
+                      </Text>
+                    </List.Item>
+                  )}
+                />
+              </Col>
+            </Row>
+          </>
+        ) : ''}
       </Space>
     </Modal>
 
