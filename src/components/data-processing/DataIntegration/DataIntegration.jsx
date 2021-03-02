@@ -26,7 +26,7 @@ import loadCellSets from '../../../redux/actions/cellSets/loadCellSets';
 
 import PlatformError from '../../PlatformError';
 
-import { loadPlotConfig } from '../../../redux/actions/componentConfig';
+import { loadPlotConfig, updatePlotConfig, savePlotConfig } from '../../../redux/actions/componentConfig';
 
 import fakeData from './fake_new_data.json';
 
