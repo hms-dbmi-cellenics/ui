@@ -25,7 +25,7 @@ const DataManagementPage = ({ route }) => {
     return <></>;
   };
 
-  const [projectsList, setProjectsList] = useState([]);
+  const [projectsList, setProjectsList] = useState([1]);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
 
   useEffect(() => {
