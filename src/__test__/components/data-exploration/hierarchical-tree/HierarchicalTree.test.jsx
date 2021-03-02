@@ -9,7 +9,7 @@ jest.mock('localforage');
 configure({ adapter: new Adapter() });
 
 describe('HierarchicalTree', () => {
-  it('renders correctly', () => {
+  it('renders correctly', async () => {
     const treeData = [{
       key: '1',
       name: 'my element',
@@ -17,7 +17,8 @@ describe('HierarchicalTree', () => {
       color: '#000000',
     }];
 
-    const component = mount(act(() => <HierarchicalTree treeData={treeData} experimentId='asd' />));
+    const component = mount(<HierarchicalTree treeData={treeData} experimentId='asd' />);
+
     const tree = component.find('HierarchicalTree Tree');
 
     expect(tree.length).toEqual(1);
@@ -71,7 +72,7 @@ describe('HierarchicalTree', () => {
 
     const mockOnHierarchyUpdate = jest.fn();
     const component = mount(
-      <HierarchicalTree treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
+      <HierarchicalTree experimentId='asd' treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
     );
 
     const tree = component.find('HierarchicalTree Tree');
@@ -125,6 +126,7 @@ describe('HierarchicalTree', () => {
     };
 
     const mockOnHierarchyUpdate = jest.fn();
+
     const component = mount(
       <HierarchicalTree treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
     );
