@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Mosaic, MosaicWindow, RemoveButton } from 'react-mosaic-component';
-import { Button } from 'antd';
+import { Mosaic, MosaicWindow } from 'react-mosaic-component';
+import { Button, Space } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
+import _ from 'lodash';
 
 import Header from '../../components/Header';
 
 import NewProjectModal from './components/NewProjectModal';
+import ProjectsList from './components/ProjectsList';
 
 import 'react-mosaic-component/react-mosaic-component.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const DataManagementPage = ({ experimentId, experimentData, route }) => {
+const DataManagementPage = ({ route }) => {
   const renderWindow = (tile, width, height) => {
     if (tile) {
       return (
@@ -32,25 +34,25 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
     }
   }, [projectsList]);
 
-  const createNewProject = () => {
+  const createNewProject = (newProject) => {
+    setProjectsList([...projectsList, newProject]);
     setNewProjectModalVisible(false);
   };
 
   const TILE_MAP = {
     'Projects List': {
-      toolbarControls: [<RemoveButton />],
+      toolbarControls: [],
       component: (width, height) => (
-        <div width={width} height={height}>
+        <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
           <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
             Create New Project
           </Button>
-        </div>
+          <ProjectsList height={height} />
+        </Space>
       ),
     },
     'Data Management': {
-      toolbarControls: [
-        <RemoveButton />,
-      ],
+      toolbarControls: [],
       component: (width, height) => (
         <div width={width} height={height} />
       ),
@@ -67,8 +69,6 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
   return (
     <>
       <Header
-        experimentId={experimentId}
-        experimentData={experimentData}
         route={route}
         title='Data Management'
       />
@@ -105,8 +105,6 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
 };
 
 DataManagementPage.propTypes = {
-  experimentId: PropTypes.string.isRequired,
-  experimentData: PropTypes.object.isRequired,
   route: PropTypes.string.isRequired,
 };
 
