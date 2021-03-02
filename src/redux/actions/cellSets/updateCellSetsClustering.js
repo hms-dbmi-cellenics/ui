@@ -1,15 +1,12 @@
 import {
-  CELL_SETS_LOADING, CELL_SETS_LOADED, CELL_SETS_ERROR,
+  CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING, CELL_SETS_CLUSTERING_UPDATED,
 } from '../../actionTypes/cellSets';
 import sendWork from '../../../utils/sendWork';
 import saveCellSets from './saveCellSets';
 
 const REQUEST_TIMEOUT = 30;
 
-// Not currently used, was previously used for resetting clusters. This is still
-// a useful task though, we will probably use it for other things down the line
-// (e.g. custom clustering).
-const resetCellSets = (experimentId) => async (dispatch, getState) => {
+const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
     loading, error,
   } = getState().cellSets;
@@ -23,11 +20,13 @@ const resetCellSets = (experimentId) => async (dispatch, getState) => {
     cellSetName: 'Louvain clusters',
     type: 'louvain',
     cellSetKey: 'louvain',
-    params: {},
+    config: {
+      resolution,
+    },
   };
 
   dispatch({
-    type: CELL_SETS_LOADING,
+    type: CELL_SETS_CLUSTERING_UPDATING,
   });
 
   try {
@@ -36,6 +35,7 @@ const resetCellSets = (experimentId) => async (dispatch, getState) => {
     );
 
     const louvainSets = JSON.parse(response.results[0].body);
+
     const newCellSets = [
       louvainSets,
       {
@@ -44,8 +44,9 @@ const resetCellSets = (experimentId) => async (dispatch, getState) => {
         rootNode: true,
       },
     ];
+
     await dispatch({
-      type: CELL_SETS_LOADED,
+      type: CELL_SETS_CLUSTERING_UPDATED,
       payload: {
         experimentId,
         data: newCellSets,
@@ -63,4 +64,4 @@ const resetCellSets = (experimentId) => async (dispatch, getState) => {
   }
 };
 
-export default resetCellSets;
+export default updateCellSetsClustering;

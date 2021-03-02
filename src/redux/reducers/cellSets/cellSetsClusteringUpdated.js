@@ -1,14 +1,15 @@
 import { createHierarchyFromTree, createPropertiesFromTree } from './helpers';
 
-const cellSetsLoaded = (state, action) => {
+const cellSetsClusteringUpdated = (state, action) => {
   const { data } = action.payload;
 
   return {
     ...state,
     loading: false,
+    updatingClustering: false,
     hierarchy: createHierarchyFromTree(data),
     properties: createPropertiesFromTree(data),
   };
 };
 
-export default cellSetsLoaded;
+export default cellSetsClusteringUpdated;

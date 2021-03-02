@@ -95,7 +95,6 @@ const HeatmapPlot = ({ experimentId }) => {
     }
 
     if (error) {
-      console.log('error');
       return (
         <PlatformError
           description='Could not load gene expression data.'
