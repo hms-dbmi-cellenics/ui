@@ -38,7 +38,10 @@ const CategoricalEmbeddingPlot = (props) => {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
   }, [experimentId, embeddingSettings.method]);
-
+  useEffect(() => {
+    const spec = generateSpec(config);
+    setPlotSpec(spec);
+  }, [config]);
   useEffect(() => {
     if (!cellSets.loading && !cellSets.error && embeddingData) {
       setPlotSpec(generateData(generateSpec(config), cellSets, config.selectedCellSet, embeddingData));
@@ -55,7 +58,7 @@ const CategoricalEmbeddingPlot = (props) => {
       );
     }
 
-    if (cellSets.loading || !embeddingData || loading) {
+    if (cellSets.loading || !embeddingData || loading || !config) {
       return (
         <center>
           <Loader experimentId={experimentId} />

@@ -11,7 +11,6 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
   if (!loading && !error) {
     return null;
   }
-
   // There is only two way this action dispatcher does anything. Either
   // it is called after an error condition, or in a loading state. In the former
   // state, dispatching the loading action is unnecessary.
