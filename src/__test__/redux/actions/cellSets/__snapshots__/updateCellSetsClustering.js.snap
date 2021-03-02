@@ -1,46 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`updateCellSetsClustering action Dispatches all required actions to reset cell sets. 1`] = `
-Object {
-  "type": "cellSets/clusteringUpdating",
-}
-`;
-
-exports[`updateCellSetsClustering action Dispatches all required actions to reset cell sets. 2`] = `
-Object {
-  "payload": Object {
-    "data": Array [
-      Object {
-        "cellIds": Array [
-          "1",
-          "2",
-          "3",
-        ],
-        "color": "#ff0000",
-        "name": "one",
-      },
-      Object {
-        "key": "scratchpad",
-        "name": "Scratchpad",
-        "rootNode": true,
-      },
-    ],
-    "experimentId": "1234",
-  },
-  "type": "cellSets/clusteringUpdated",
-}
-`;
-
-exports[`updateCellSetsClustering action Dispatches all required actions to reset cell sets. 3`] = `
-Object {
-  "payload": Object {
-    "experimentId": "1234",
-    "saved": Object {},
-  },
-  "type": "cellSets/save",
-}
-`;
-
 exports[`updateCellSetsClustering action Dispatches all required actions to update cell sets clustering. 1`] = `
 Object {
   "type": "cellSets/clusteringUpdating",
