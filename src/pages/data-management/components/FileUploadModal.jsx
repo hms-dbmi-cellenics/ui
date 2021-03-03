@@ -93,7 +93,10 @@ const NewProjectModal = (props) => {
           key='create'
           block
           disabled={!canUpload}
-          onClick={onUpload}
+          onClick={() => {
+            onUpload();
+            setFilesList([]);
+          }}
         >
           Upload
         </Button>

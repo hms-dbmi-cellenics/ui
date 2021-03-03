@@ -26,7 +26,10 @@ const NewProjectModal = (props) => {
           key='create'
           block
           disabled={isInvalid}
-          onClick={() => { onCreate(projectName); }}
+          onClick={() => {
+            onCreate(projectName);
+            setProjectName('');
+          }}
         >
           Create Project
         </Button>
@@ -50,7 +53,12 @@ const NewProjectModal = (props) => {
               setProjectName(e.target.value);
               setIsInvalid(!validateProjectName(e.target.value));
             }}
-            onKeyDown={(e) => { if (e.key === 'Enter') onCreate(projectName); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onCreate(projectName);
+                setProjectName('');
+              }
+            }}
             value={projectName}
           />
           <Text type='danger'>
