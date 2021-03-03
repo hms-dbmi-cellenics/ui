@@ -57,25 +57,28 @@ const NewProjectModal = (props) => {
 
     acceptedFiles.forEach((file) => {
       let fileName = null;
-      let error = null;
+      const error = [];
 
       // First character of file.path === '/' means a directory is uploaded
       // Remove initial slash so that it does not create an empty directory in S3
       if (file.path[0] === '/') {
         const paths = file.path.split('/');
-        const acceptedExtensions = new RegExp(acceptedFilesRegexp, 'gi');
-        fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1].match(acceptedExtensions)}`;
+        fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
       } else {
         fileName = file.path;
       }
 
       const isValidMime = techOptions[selectedTech].validMimeTypes.includes(file.type);
+      if (!isValidMime) error.push('invalid file type');
 
-      if (!isValidMime) error = 'invalid file type';
+      const acceptedFilenames = new RegExp(acceptedFilesRegexp, 'gi');
+      const isValidFilename = fileName.match(acceptedFilenames) || false;
+      if (!isValidFilename) error.push('invalid file name');
+
       newList.push({
         name: fileName,
-        valid: isValidMime,
-        error,
+        valid: isValidMime && isValidFilename,
+        errors: error.join(', '),
       });
     });
 
@@ -146,7 +149,7 @@ const NewProjectModal = (props) => {
               {({ getRootProps, getInputProps }) => (
                 <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
                   <input {...getInputProps()} />
-                  <Empty description='Drag and drop files / folders here' image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  <Empty description='Drag and drop folders here' image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 </div>
               )}
             </Dropzone>
@@ -176,8 +179,8 @@ const NewProjectModal = (props) => {
                           ) : (
                             <>
                               <CloseCircleTwoTone twoToneColor='#f5222d' />
-                              <span color='red'>
-                                {`${file.name} - ${file.error}`}
+                              <span>
+                                {`${file.name} - ${file.errors}`}
                               </span>
                             </>
                           )}
