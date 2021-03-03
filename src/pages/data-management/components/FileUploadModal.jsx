@@ -37,6 +37,7 @@ const NewProjectModal = (props) => {
         'matrix.mtx',
         'matrix.mtx.gz',
       ],
+      validMimeTypes: ['text/tsv', 'application/gzip'],
       inputInfo: [
         'barcodes.tsv or barcodes.tsv.gz',
         'features.tsv or features.tsv.gz',
@@ -48,6 +49,9 @@ const NewProjectModal = (props) => {
   // Handle on Drop
   const onDrop = (acceptedFiles) => {
     const newList = [];
+
+    const acceptedFilesRegexp = `(${techOptions[selectedTech].acceptedFiles.join('|')})$`;
+
     acceptedFiles.forEach((file) => {
       let fileName = null;
 
@@ -55,16 +59,18 @@ const NewProjectModal = (props) => {
       // Remove initial slash so that it does not create an empty directory in S3
       if (file.path[0] === '/') {
         const paths = file.path.split('/');
-
-        const acceptedExtensions = new RegExp(`(${techOptions[selectedTech].acceptedFiles.join('|')})$`, 'gi');
+        const acceptedExtensions = new RegExp(acceptedFilesRegexp, 'gi');
         fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1].match(acceptedExtensions)}`;
       } else {
         fileName = file.path;
       }
 
+      console.log(file.type);
+      const isValidMime = techOptions[selectedTech].validMimeTypes.includes(file.type);
+
       newList.push({
         name: fileName,
-        valid: true,
+        valid: isValidMime,
       });
       // Upload to AWS Amplify
       // Storage.put(filePath, file)
