@@ -14,7 +14,7 @@ import {
   Divider,
   List,
 } from 'antd';
-import { CheckCircleTwoTone, CloseCircleTwoTone, CloseOutlined } from '@ant-design/icons';
+import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 
 const { Text, Title, Paragraph } = Typography;
@@ -203,7 +203,7 @@ const NewProjectModal = (props) => {
                           </span>
                         </>
                       )}
-                    <CloseOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(idx); }} />
+                    <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(idx); }} />
                   </Space>
                 </li>
               ))}
