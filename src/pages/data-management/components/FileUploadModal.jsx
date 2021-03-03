@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import Link from 'next/link';
 import {
   Modal,
   Button,
@@ -22,6 +23,8 @@ const NewProjectModal = (props) => {
   const { visible, onUpload, onCancel } = props;
 
   const initialSelected = '10X Chromium';
+  const guidanceFileLink = 'https://drive.google.com/file/d/1qX6no9od4pi-Wy87Q06hmjnLNECwItKJ/view?usp=sharing';
+
   const [selectedTech, useSelectedTech] = useState(initialSelected);
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
@@ -33,14 +36,16 @@ const NewProjectModal = (props) => {
         'barcodes.tsv.gz',
         'features.tsv',
         'features.tsv.gz',
+        'genes.tsv',
+        'genes.tsv.gz',
         'matrix.mtx',
         'matrix.mtx.gz',
       ],
       validMimeTypes: ['text/tsv', 'application/gzip'],
       inputInfo: [
-        'barcodes.tsv or barcodes.tsv.gz',
-        'features.tsv or features.tsv.gz',
-        'matrix.mtx or matrix.mtx.gz',
+        'features.tsv/features.tsv.gz or genes.tsv/genes.tsv.gz',
+        'barcodes.tsv/barcodes.tsv.gz',
+        'matrix.mtx/matrix.mtx.gz',
       ],
     },
   };
@@ -124,7 +129,9 @@ const NewProjectModal = (props) => {
 
             <Row style={{ margin: '1em 0' }}>
               <Col span={24} style={{ textAlign: 'center' }}>
-                <Paragraph>For each sample, drag and drop a folder containing the following the following files:</Paragraph>
+                <Paragraph>
+                  {`For each sample, the following ${techOptions[selectedTech].inputInfo.length} files are required:`}
+                </Paragraph>
               </Col>
               <Col span={24} style={{ textAlign: 'center' }}>
                 <List
@@ -138,7 +145,13 @@ const NewProjectModal = (props) => {
                 />
               </Col>
               <Col span={24} style={{ textAlign: 'center', marginTop: '1rem' }}>
-                <Paragraph>The sample will be named using the folder name</Paragraph>
+                <Paragraph>{`Drag and drop the folder containing these ${techOptions[selectedTech].inputInfo.length} files. The folder should be named with the sample ID.`}</Paragraph>
+                <Paragraph>
+                  Further guidance on supported file types and formats is available
+                  {' '}
+                  <Link href={guidanceFileLink}>here</Link>
+                  .
+                </Paragraph>
               </Col>
             </Row>
           ) : ''
@@ -165,7 +178,7 @@ const NewProjectModal = (props) => {
                 dataSource={filesList}
                 renderItem={(file) => (
                   <List.Item style={{
-                    padding: '2px 0', display: 'inline-block', width: '100%', borderBottom: 0,
+                    padding: '4px 0', display: 'inline-block', width: '100%', borderBottom: 0,
                   }}
                   >
                     <Text>
