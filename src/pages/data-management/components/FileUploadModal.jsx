@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
+import _ from 'lodash';
 import {
   Modal,
   Button,
@@ -13,7 +14,7 @@ import {
   Divider,
   List,
 } from 'antd';
-import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
+import { CheckCircleTwoTone, CloseCircleTwoTone, CloseOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 
 const { Text, Title, Paragraph } = Typography;
@@ -51,7 +52,7 @@ const NewProjectModal = (props) => {
   };
 
   useEffect(() => {
-    setCanUpload(filesList.length);
+    setCanUpload(filesList.length && filesList.every((file) => file.valid));
   }, [filesList]);
 
   // Handle on Drop
@@ -80,6 +81,8 @@ const NewProjectModal = (props) => {
       const isValidFilename = fileName.match(acceptedFilenames) || false;
       if (!isValidFilename) error.push('invalid file name');
 
+      console.log(fileName);
+
       newList.push({
         name: fileName,
         valid: isValidMime && isValidFilename,
@@ -88,6 +91,13 @@ const NewProjectModal = (props) => {
     });
 
     setFilesList([...filesList, ...newList]);
+  };
+
+  const removeFile = (fileIdx) => {
+    const newArray = _.cloneDeep(filesList);
+
+    newArray.splice(fileIdx, 1);
+    setFilesList(newArray);
   };
 
   return (
@@ -172,37 +182,32 @@ const NewProjectModal = (props) => {
         {filesList.length ? (
           <>
             <Divider orientation='center'>Uploaded files</Divider>
-            <div style={{ columnCount: 4 }}>
-              <List
-                size='small'
-                dataSource={filesList}
-                renderItem={(file) => (
-                  <List.Item style={{
-                    padding: '4px 0', display: 'inline-block', width: '100%', borderBottom: 0,
-                  }}
-                  >
-                    <Text>
-                      <Space>
-                        {file.valid
-                          ? (
-                            <>
-                              <CheckCircleTwoTone twoToneColor='#52c41a' />
-                              {file.name}
-                            </>
-                          ) : (
-                            <>
-                              <CloseCircleTwoTone twoToneColor='#f5222d' />
-                              <span>
-                                {`${file.name} - ${file.errors}`}
-                              </span>
-                            </>
-                          )}
-                      </Space>
-                    </Text>
-                  </List.Item>
-                )}
-              />
-            </div>
+            <ul style={{
+              columnCount: 4, listStyleType: 'none', padding: 0, margin: 0,
+            }}
+            >
+              {filesList.map((file, idx) => (
+                <li key={`file-${idx}`}>
+                  <Space>
+                    {file.valid
+                      ? (
+                        <>
+                          <CheckCircleTwoTone twoToneColor='#52c41a' />
+                          {file.name}
+                        </>
+                      ) : (
+                        <>
+                          <CloseCircleTwoTone twoToneColor='#f5222d' />
+                          <span>
+                            {`${file.name} - ${file.errors}`}
+                          </span>
+                        </>
+                      )}
+                    <CloseOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(idx); }} />
+                  </Space>
+                </li>
+              ))}
+            </ul>
           </>
         ) : ''}
       </Space>
