@@ -27,24 +27,43 @@ const NewProjectModal = (props) => {
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
+  const techOptions = {
+    '10X Chromium': {
+      acceptedFiles: [
+        'barcodes.tsv',
+        'barcodes.tsv.gz',
+        'features.tsv',
+        'features.tsv.gz',
+        'matrix.mtx',
+        'matrix.mtx.gz',
+      ],
+      inputInfo: [
+        'barcodes.tsv or barcodes.tsv.gz',
+        'features.tsv or features.tsv.gz',
+        'matrix.mtx or matrix.mtx.gz',
+      ],
+    },
+  };
+
   // Handle on Drop
   const onDrop = (acceptedFiles) => {
     const newList = [];
     acceptedFiles.forEach((file) => {
+      let fileName = null;
+
       // First character of file.path === '/' means a directory is uploaded
       // Remove initial slash so that it does not create an empty directory in S3
-
-      let filePath = null;
-
       if (file.path[0] === '/') {
         const paths = file.path.split('/');
-        filePath = paths[paths.length - 2];
+
+        const acceptedExtensions = new RegExp(`(${techOptions[selectedTech].acceptedFiles.join('|')})$`, 'gi');
+        fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1].match(acceptedExtensions)}`;
       } else {
-        filePath = file.path;
+        fileName = file.path;
       }
 
       newList.push({
-        name: filePath,
+        name: fileName,
         valid: true,
       });
       // Upload to AWS Amplify
@@ -57,23 +76,6 @@ const NewProjectModal = (props) => {
   };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
-  const techOptions = {
-    '10X Chromium': [
-      {
-        filename: 'barcodes.tsv or barcodes.tsv.gz',
-        format: 'Sample_ID.barcodes.tsv or Sample_ID.barcodes.tsv',
-      },
-      {
-        filename: 'features.tsv or features.tsv.gz',
-        format: 'Sample_ID.features.tsv or Sample_ID.features.tsv.gz',
-      },
-      {
-        filename: 'matrix.mtx or matrix.mtx.gz',
-        format: 'Sample_ID.matrix.mtx or Sample_ID.matrix.mtx.gz',
-      },
-    ],
-  };
 
   return (
     <Modal
@@ -111,27 +113,31 @@ const NewProjectModal = (props) => {
 
             <Row style={{ margin: '1em 0' }}>
               <Col span={24} style={{ textAlign: 'center' }}>
-                <Paragraph>For each sample, provide the following 3 files using the following filename format:</Paragraph>
+                <Paragraph>For each sample, drag and drop a folder containing the following the following files:</Paragraph>
               </Col>
-              <Col span={12} style={{ textAlign: 'right', paddingRight: '0.5em' }}>
-                {
-                  techOptions[selectedTech].map((s, idx) => <Paragraph key={`filename-${idx}`}>{s.filename}</Paragraph>)
-                }
+              <Col span={24} style={{ textAlign: 'center' }}>
+                <List
+                  dataSource={techOptions[selectedTech].inputInfo}
+                  renderItem={(item) => (
+                    <Paragraph style={{ margin: 0 }}>
+                      &bull;
+                      {' '}
+                      {item}
+                    </Paragraph>
+                  )}
+                />
               </Col>
-              <Col span={12} style={{ textAlign: 'left', paddingLeft: '0.5em' }}>
-                {
-                  techOptions[selectedTech].map((s, idx) => <Paragraph key={`format-${idx}`}>{s.format}</Paragraph>)
-                }
+              <Col span={24} style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <Paragraph>The sample will be named using the folder name</Paragraph>
               </Col>
             </Row>
-
           ) : ''
         }
         <Row>
           <Col span={24}>
             <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
               <input {...getInputProps()} />
-              <Empty description='Drag and drop some files here, or click to select files' image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <Empty description='Drag and drop files / folders here' image={Empty.PRESENTED_IMAGE_SIMPLE} />
             </div>
           </Col>
         </Row>
