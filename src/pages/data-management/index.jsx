@@ -38,8 +38,8 @@ const DataManagementPage = ({ route }) => {
   const createNewProject = (newProjectName) => {
     const newProject = {
       name: newProjectName,
-      createdDate: moment().format('DD MMM YYYY [GMT], HH:mm:ss'),
-      lastModified: moment().format('DD MMM YYYY [GMT], HH:mm:ss'),
+      createdDate: moment().local().format('DD MMM YYYY, HH:mm:ss [GMT]Z'),
+      lastModified: moment().local().format('DD MMM YYYY, HH:mm:ss [GMT]Z'),
       numSamples: 0,
       lastAnalyzed: '-',
     };
