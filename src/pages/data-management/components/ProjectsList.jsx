@@ -9,10 +9,10 @@ const ProjectsList = (props) => {
   const { height, projects } = props;
 
   const [activeProject, setActiveProject] = useState(0);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [uploadModalVisible, setUploadModalVisible] = useState(true);
 
   useEffect(() => {
-    setIsModalVisible(projects[activeProject].numSamples === 0);
+    setUploadModalVisible(projects[activeProject].numSamples === 0);
   }, [projects]);
 
   const activeProjectStyle = {
@@ -21,9 +21,17 @@ const ProjectsList = (props) => {
     border: `2px solid ${blue.primary}`,
   };
 
+  const uploadFiles = () => {
+    setUploadModalVisible(false);
+  };
+
   return (
     <>
-      <FileUploadModal visible={isModalVisible} />
+      <FileUploadModal
+        visible={uploadModalVisible}
+        onCancel={() => { setUploadModalVisible(false); }}
+        onUpload={uploadFiles}
+      />
       <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
         {
           projects.map((project, idx) => (
@@ -34,21 +42,13 @@ const ProjectsList = (props) => {
               onClick={() => setActiveProject(idx)}
             >
               <strong><p>{project.name}</p></strong>
-              Created :
-              {' '}
-              {project.createdDate}
+              {`Created : ${project.createdDate}`}
               <br />
-              Modified :
-              {' '}
-              {project.lastModified}
+              {`Modified : ${project.lastModified}`}
               <br />
-              No. Samples :
-              {' '}
-              {project.numSamples}
+              {`No. Samples : ${project.numSamples}`}
               <br />
-              Last Analyzed :
-              {' '}
-              {project.lastAnalyzed}
+              {`Last Analyzed : ${project.lastAnalyzed}`}
               <br />
             </Card>
           ))

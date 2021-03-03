@@ -63,7 +63,7 @@ const DataManagementPage = ({ route }) => {
     direction: 'row',
     first: 'Projects List',
     second: 'Data Management',
-    splitPercentage: 15,
+    splitPercentage: 20,
   };
 
   return (

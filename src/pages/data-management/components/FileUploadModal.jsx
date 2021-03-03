@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Modal,
@@ -14,13 +14,12 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import { useDropzone } from 'react-dropzone';
-import _ from 'lodash';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
 const NewProjectModal = (props) => {
-  const { visible, onCreate, onCancel } = props;
+  const { visible, onUpload, onCancel } = props;
 
   const initialSelected = '10X Chromium';
   const [selectedTech, useSelectedTech] = useState(initialSelected);
@@ -46,6 +45,10 @@ const NewProjectModal = (props) => {
     },
   };
 
+  useEffect(() => {
+    setCanUpload(filesList.length);
+  }, [filesList]);
+
   // Handle on Drop
   const onDrop = (acceptedFiles) => {
     const newList = [];
@@ -54,6 +57,7 @@ const NewProjectModal = (props) => {
 
     acceptedFiles.forEach((file) => {
       let fileName = null;
+      let error = null;
 
       // First character of file.path === '/' means a directory is uploaded
       // Remove initial slash so that it does not create an empty directory in S3
@@ -65,17 +69,14 @@ const NewProjectModal = (props) => {
         fileName = file.path;
       }
 
-      console.log(file.type);
       const isValidMime = techOptions[selectedTech].validMimeTypes.includes(file.type);
 
+      if (!isValidMime) error = 'invalid file type';
       newList.push({
         name: fileName,
         valid: isValidMime,
+        error,
       });
-      // Upload to AWS Amplify
-      // Storage.put(filePath, file)
-      //   .then((result) => console.log(result))
-      //   .catch((err) => console.log(err));
     });
 
     setFilesList([...filesList, ...newList]);
@@ -87,14 +88,14 @@ const NewProjectModal = (props) => {
     <Modal
       title=''
       visible={visible}
-      onCancel={() => { }}
+      onCancel={onCancel}
       footer={(
         <Button
           type='primary'
           key='create'
           block
           disabled={!canUpload}
-          onClick={() => { }}
+          onClick={onUpload}
         >
           Upload
         </Button>
@@ -107,7 +108,7 @@ const NewProjectModal = (props) => {
             Technology:
             <span style={{ color: 'red', marginRight: '2em' }}>*</span>
           </Title>
-          <Select style={{ width: 250 }}>
+          <Select style={{ width: 250 }} defaultValue={selectedTech}>
             {Object.keys(techOptions).map((val, idx) => (
               <Option key={idx} value={val}>{val}</Option>
             ))}
@@ -127,8 +128,7 @@ const NewProjectModal = (props) => {
                   renderItem={(item) => (
                     <Paragraph style={{ margin: 0 }}>
                       &bull;
-                      {' '}
-                      {item}
+                      {` ${item}`}
                     </Paragraph>
                   )}
                 />
@@ -150,30 +150,38 @@ const NewProjectModal = (props) => {
 
         {filesList.length ? (
           <>
-            <Divider orientation='center'>Uploaded file</Divider>
-            <Row>
-              <Col span={6}>
-                <List
-                  size='small'
-                  dataSource={filesList}
-                  renderItem={(file) => (
-                    <List.Item key={`files-${file}`}>
-                      <Text>
-                        <Space>
-                          {file.valid
-                            ? (
+            <Divider orientation='center'>Uploaded files</Divider>
+            <div style={{ columnCount: 4 }}>
+              <List
+                size='small'
+                dataSource={filesList}
+                renderItem={(file) => (
+                  <List.Item style={{
+                    padding: '2px 0', display: 'inline-block', width: '100%', borderBottom: 0,
+                  }}
+                  >
+                    <Text>
+                      <Space>
+                        {file.valid
+                          ? (
+                            <>
                               <CheckCircleTwoTone twoToneColor='#52c41a' />
-                            ) : (
+                              {file.name}
+                            </>
+                          ) : (
+                            <>
                               <CloseCircleTwoTone twoToneColor='#f5222d' />
-                            )}
-                          {file.name}
-                        </Space>
-                      </Text>
-                    </List.Item>
-                  )}
-                />
-              </Col>
-            </Row>
+                              <span color='red'>
+                                {`${file.name} - ${file.error}`}
+                              </span>
+                            </>
+                          )}
+                      </Space>
+                    </Text>
+                  </List.Item>
+                )}
+              />
+            </div>
           </>
         ) : ''}
       </Space>
