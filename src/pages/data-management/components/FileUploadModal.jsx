@@ -13,7 +13,7 @@ import {
   List,
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
-import { useDropzone } from 'react-dropzone';
+import Dropzone from 'react-dropzone';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -82,8 +82,6 @@ const NewProjectModal = (props) => {
     setFilesList([...filesList, ...newList]);
   };
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
   return (
     <Modal
       title=''
@@ -141,10 +139,14 @@ const NewProjectModal = (props) => {
         }
         <Row>
           <Col span={24}>
-            <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
-              <input {...getInputProps()} />
-              <Empty description='Drag and drop files / folders here' image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            </div>
+            <Dropzone onDrop={onDrop}>
+              {({ getRootProps, getInputProps }) => (
+                <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
+                  <input {...getInputProps()} />
+                  <Empty description='Drag and drop files / folders here' image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                </div>
+              )}
+            </Dropzone>
           </Col>
         </Row>
 
@@ -192,13 +194,13 @@ const NewProjectModal = (props) => {
 
 NewProjectModal.propTypes = {
   visible: PropTypes.bool,
-  onCreate: PropTypes.func,
+  onUpload: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
 NewProjectModal.defaultProps = {
   visible: true,
-  onCreate: null,
+  onUpload: null,
   onCancel: null,
 };
 

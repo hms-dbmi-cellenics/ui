@@ -6,14 +6,18 @@ import { blue } from '@ant-design/colors';
 import FileUploadModal from './FileUploadModal';
 
 const ProjectsList = (props) => {
-  const { height, projects } = props;
+  const { height, projects, activeProjectIdx } = props;
 
   const [activeProject, setActiveProject] = useState(0);
   const [uploadModalVisible, setUploadModalVisible] = useState(true);
 
   useEffect(() => {
-    setUploadModalVisible(projects[activeProject].numSamples === 0);
-  }, [projects]);
+    setActiveProject(activeProjectIdx);
+  }, [activeProjectIdx]);
+
+  useEffect(() => {
+    setUploadModalVisible(projects[activeProject]?.numSamples === 0);
+  }, [projects, activeProject]);
 
   const activeProjectStyle = {
     backgroundColor: blue[0],
@@ -69,56 +73,13 @@ const ProjectsObj = PropTypes.shape({
 ProjectsList.propTypes = {
   projects: PropTypes.arrayOf(ProjectsObj),
   height: PropTypes.number,
+  activeProjectIdx: PropTypes.number,
 };
 
-const testProjects = [
-  {
-    name: 'Project 1',
-    createdDate: '13-02-2021',
-    lastModified: '13-02-2021',
-    numSamples: 0,
-    lastAnalyzed: '13-02-2021',
-  },
-  {
-    name: 'Project 2',
-    createdDate: '13-02-2021',
-    lastModified: '13-02-2021',
-    numSamples: 0,
-    lastAnalyzed: '13-02-2021',
-  },
-  {
-    name: 'Project 3',
-    createdDate: '13-02-2021',
-    lastModified: '13-02-2021',
-    numSamples: 0,
-    lastAnalyzed: '13-02-2021',
-  },
-  {
-    name: 'Project 1',
-    createdDate: '13-02-2021',
-    lastModified: '13-02-2021',
-    numSamples: 0,
-    lastAnalyzed: '13-02-2021',
-  },
-  {
-    name: 'Project 2',
-    createdDate: '13-02-2021',
-    lastModified: '13-02-2021',
-    numSamples: 0,
-    lastAnalyzed: '13-02-2021',
-  },
-  {
-    name: 'Project 3',
-    createdDate: '13-02-2021',
-    lastModified: '13-02-2021',
-    numSamples: 0,
-    lastAnalyzed: '13-02-2021',
-  },
-];
-
 ProjectsList.defaultProps = {
-  projects: testProjects,
+  projects: [],
   height: 800,
+  activeProjectIdx: 0,
 };
 
 export default ProjectsList;

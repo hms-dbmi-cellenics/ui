@@ -39,7 +39,6 @@ const NewProjectModal = (props) => {
           <Title level={3}>
             Create a project to start analyzing
             <br />
-            {' '}
             your data in Cellscope
           </Title>
           <Text type='secondary'>
@@ -51,6 +50,7 @@ const NewProjectModal = (props) => {
               setProjectName(e.target.value);
               setIsInvalid(!validateProjectName(e.target.value));
             }}
+            onKeyDown={(e) => { if (e.key === 'Enter') onCreate(projectName); }}
             value={projectName}
           />
           <Text type='danger'>

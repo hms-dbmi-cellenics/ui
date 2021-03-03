@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import { Button, Space } from 'antd';
+import { Button, Space, Empty } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
-import _ from 'lodash';
+import moment from 'moment';
 
 import Header from '../../components/Header';
 
@@ -25,8 +25,9 @@ const DataManagementPage = ({ route }) => {
     return <></>;
   };
 
-  const [projectsList, setProjectsList] = useState([1]);
+  const [projectsList, setProjectsList] = useState([]);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
+  const [activeProjectIdx, setActiveProjectIdx] = useState(0);
 
   useEffect(() => {
     if (projectsList.length) {
@@ -34,8 +35,17 @@ const DataManagementPage = ({ route }) => {
     }
   }, [projectsList]);
 
-  const createNewProject = (newProject) => {
+  const createNewProject = (newProjectName) => {
+    const newProject = {
+      name: newProjectName,
+      createdDate: moment().format('DD MMM YYYY GMT, HH:mm:ss'),
+      lastModified: moment().format('DD MMM YYYY GMT, HH:mm:ss'),
+      numSamples: 0,
+      lastAnalyzed: '-',
+    };
+
     setProjectsList([...projectsList, newProject]);
+    setActiveProjectIdx(projectsList.length);
     setNewProjectModalVisible(false);
   };
 
@@ -47,14 +57,16 @@ const DataManagementPage = ({ route }) => {
           <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
             Create New Project
           </Button>
-          <ProjectsList height={height} />
+          <ProjectsList projects={projectsList} height={height} activeProjectIdx={activeProjectIdx} />
         </Space>
       ),
     },
     'Data Management': {
       toolbarControls: [],
       component: (width, height) => (
-        <div width={width} height={height} />
+        <div width={width} height={height} style={{ paddingTop: '10rem' }}>
+          <Empty description='Create a new project to get started' />
+        </div>
       ),
     },
   };
