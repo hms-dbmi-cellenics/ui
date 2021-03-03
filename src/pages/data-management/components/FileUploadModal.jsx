@@ -159,7 +159,7 @@ const NewProjectModal = (props) => {
                 <Paragraph>
                   Further guidance on supported file types and formats is available
                   {' '}
-                  <Link href={guidanceFileLink}>here</Link>
+                  <a rel='noreferrer' target='_blank' href={guidanceFileLink}>here</a>
                   .
                 </Paragraph>
               </Col>
