@@ -42,7 +42,7 @@ const CalculationConfig = (props) => {
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
   const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
+    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 1500),
     [],
   );
 

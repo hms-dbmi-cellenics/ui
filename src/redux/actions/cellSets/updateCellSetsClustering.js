@@ -38,11 +38,6 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
 
     const newCellSets = [
       louvainSets,
-      {
-        key: 'scratchpad',
-        name: 'Scratchpad',
-        rootNode: true,
-      },
     ];
 
     await dispatch({

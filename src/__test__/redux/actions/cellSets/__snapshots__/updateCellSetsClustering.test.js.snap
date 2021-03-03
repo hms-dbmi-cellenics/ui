@@ -19,11 +19,6 @@ Object {
         "color": "#ff0000",
         "name": "one",
       },
-      Object {
-        "key": "scratchpad",
-        "name": "Scratchpad",
-        "rootNode": true,
-      },
     ],
     "experimentId": "1234",
   },

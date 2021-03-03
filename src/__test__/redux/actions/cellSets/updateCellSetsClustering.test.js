@@ -40,7 +40,23 @@ describe('updateCellSetsClustering action', () => {
   });
 
   it('Dispatches all required actions to update cell sets clustering.', async (done) => {
-    const store = mockStore({ cellSets: { ...initialState, loading: false } });
+    const store = mockStore({
+      cellSets: {
+        ...initialState,
+        loading: false,
+        hierarchy: [{ children: [], key: 'scratchpad' }],
+        properties: {
+          scratchpad: {
+            cellIds: new Set(),
+            color: undefined,
+            name: 'Scratchpad',
+            rootNode: true,
+            type: 'cellSets',
+          },
+        },
+      },
+    });
+
     sendWork.mockImplementation(() => {
       const resolveWith = {
         results:
