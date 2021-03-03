@@ -32,11 +32,11 @@ const Header = (props) => {
   const lastUpdated = useSelector((state) => state.componentConfig[plotUuid].lastUpdated);
   const router = useRouter();
   const type = useSelector((state) => state.componentConfig[plotUuid].type);
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const { config, outstandingChanges } = useSelector((state) => state.componentConfig[plotUuid]);
   const reset = useRef(true);
   const debounceSave = useCallback(_.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
 
-  if (!_.isEqual(config, initialPlotConfigStates[type])) {
+  if (outstandingChanges) {
     reset.current = false;
   }
   // Add prompt to save if modified since last save if changes happened.
@@ -154,17 +154,6 @@ const Header = (props) => {
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
           extra={[
-            <Space key='feedback-button'>
-              <FeedbackButton />
-              <Button
-                key='save'
-                type='primary'
-                disabled={saved}
-                onClick={onClickSave}
-              >
-                Save
-              </Button>
-            </Space>,
             <Space key='reset-button'>
               <Button
                 key='reset'

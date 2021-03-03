@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import { Spin } from 'antd';
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { loadEmbedding } from '../../redux/actions/embedding';
@@ -10,13 +11,11 @@ import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/act
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
-
 import Loader from '../Loader';
 
 const ContinuousEmbeddingPlot = (props) => {
   const { experimentId, config, plotUuid } = props;
-  const defaultEmbeddingType = 'umap';
-
+  const embeddingType = 'umap';
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
@@ -27,52 +26,52 @@ const ContinuousEmbeddingPlot = (props) => {
     loading, error,
   } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
   const geneExpression = useSelector((state) => state.genes.expression);
-  const geneProperties = useSelector((state) => state.genes.propreties);
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
-  const PROPERTIES = ['dispersions'];
+  const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
   );
-
+  const PROPERTIES = ['dispersions'];
   const tableState = {
     pagination: {
       current: 1, pageSize: 1, showSizeChanger: true, total: 0,
     },
     geneNamesFilter: null,
-    sorter: { field: 'dispersions', columnKey: 'dispersions', order: 'descend' },
+    sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
   };
+  useEffect(() => {
+    const spec = generateSpec(config);
+    setPlotSpec(spec);
+  }, [config]);
 
+  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+  }
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
 
     if (!embeddingSettings) {
-      dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
-    }
-
-    if (config?.shownGene === 'notSelected') {
-      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+      dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
 
     if (!embeddingData && embeddingSettings.method) {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
   }, [experimentId, embeddingSettings.method]);
-
   useEffect(() => {
-    if (config.shownGene === 'notSelected' && highestDispersionGene) {
-      dispatch(loadGeneExpression(experimentId, [highestDispersionGene]));
+    if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
+      dispatch(loadGeneExpression(experimentId, [highestDispersionGene]));
     }
-  }, [geneProperties, highestDispersionGene]);
-
+  }, [highestDispersionGene, config]);
   useEffect(() => {
-    if (config.shownGene !== 'notSelected' && !geneExpression.error) {
+    if (config?.shownGene !== 'notSelected' && config) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene]));
     }
-  }, [experimentId, config]);
+  }, [highestDispersionGene, config.shownGene]);
 
   useEffect(() => {
     if (!loading
@@ -107,9 +106,12 @@ const ContinuousEmbeddingPlot = (props) => {
     if (!embeddingData
       || geneExpression.loading.length
       || loading
-      || cellSets.loading) {
+      || cellSets.loading
+      || fetching) {
       return (
-        <Loader experimentId={experimentId} />
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
       );
     }
 
