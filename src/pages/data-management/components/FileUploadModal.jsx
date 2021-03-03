@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Link from 'next/link';
 import _ from 'lodash';
+import mime from 'mime-types';
 import {
   Modal,
   Button,
@@ -74,14 +74,12 @@ const NewProjectModal = (props) => {
         fileName = file.path;
       }
 
-      const isValidMime = techOptions[selectedTech].validMimeTypes.includes(file.type);
-      if (!isValidMime) error.push('invalid file type');
+      const isValidMime = techOptions[selectedTech].validMimeTypes.includes(mime.lookup(file.path));
+      if (!isValidMime) error.push('invalid mime types');
 
       const acceptedFilenames = new RegExp(acceptedFilesRegexp, 'gi');
       const isValidFilename = fileName.match(acceptedFilenames) || false;
       if (!isValidFilename) error.push('invalid file name');
-
-      console.log(fileName);
 
       newList.push({
         name: fileName,
