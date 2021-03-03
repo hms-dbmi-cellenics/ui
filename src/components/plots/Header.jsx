@@ -148,6 +148,7 @@ const Header = (props) => {
             e.preventDefault();
           }}
         />
+
         <PageHeader
           style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
           title='Edit collection'
@@ -155,6 +156,7 @@ const Header = (props) => {
           subTitle={`Last saved: ${saveString}`}
           extra={[
             <Space key='reset-button'>
+              <FeedbackButton />
               <Button
                 key='reset'
                 type='primary'

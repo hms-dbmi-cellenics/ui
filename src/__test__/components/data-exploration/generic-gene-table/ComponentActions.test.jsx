@@ -83,7 +83,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -104,7 +104,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -122,7 +122,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -155,7 +155,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -185,7 +185,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 

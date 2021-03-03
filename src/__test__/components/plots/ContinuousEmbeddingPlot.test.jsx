@@ -20,7 +20,8 @@ const mockStore = configureStore([thunk]);
 
 describe('Continuous embedding plot', () => {
   const config = initialPlotConfigStates.embeddingContinuous;
-
+  const experimentId = 'asd';
+  const plotUuid = 'fakeUuid';
   const emptyStore = {
     cellSets: {
       ...initialCellSetsState,
@@ -116,7 +117,9 @@ describe('Continuous embedding plot', () => {
     const component = mount(
       <Provider store={store}>
         <ContinuousEmbeddingPlot
+          experimentId={experimentId}
           config={config}
+          plotUuid={plotUuid}
         />
       </Provider>,
     );
@@ -138,7 +141,9 @@ describe('Continuous embedding plot', () => {
     const component = mount(
       <Provider store={store}>
         <ContinuousEmbeddingPlot
+          experimentId={experimentId}
           config={chosenStore}
+          plotUuid={plotUuid}
         />
       </Provider>,
     );

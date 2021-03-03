@@ -87,6 +87,7 @@ describe('Categorical embedding', () => {
     const component = mount(
       <Provider store={store}>
         <CategoricalEmbeddingPlot
+          experimentId='asd'
           config={config}
         />
       </Provider>,
@@ -104,6 +105,7 @@ describe('Categorical embedding', () => {
     const component = mount(
       <Provider store={store}>
         <CategoricalEmbeddingPlot
+          experimentId='asd'
           config={config}
         />
       </Provider>,
