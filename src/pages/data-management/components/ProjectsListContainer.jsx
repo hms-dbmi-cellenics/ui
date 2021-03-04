@@ -16,7 +16,7 @@ const ProjectsListContainer = (props) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(true);
 
   useEffect(() => {
-    setUploadModalVisible(projects[activeProject].samples.length === 0);
+    setUploadModalVisible(projects[activeProject]?.samples.length === 0);
   }, [activeProject]);
 
   const activeProjectStyle = {

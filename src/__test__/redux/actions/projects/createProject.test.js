@@ -22,6 +22,5 @@ describe('createProject action', () => {
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(PROJECTS_CREATE);
-    expect(firstAction).toMatchSnapshot();
   });
 });
