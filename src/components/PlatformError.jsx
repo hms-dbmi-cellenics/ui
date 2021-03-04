@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Empty, Typography, Space,
+  Button, Empty, Typography,
 } from 'antd';
 import PropTypes from 'prop-types';
 import moment from 'moment';
