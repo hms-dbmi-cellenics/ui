@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import { Spin } from 'antd';
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { loadEmbedding } from '../../redux/actions/embedding';
@@ -124,7 +123,7 @@ const ContinuousEmbeddingPlot = (props) => {
 
   return (
     <>
-      { render()}
+      {render()}
     </>
   );
 };
@@ -132,7 +131,7 @@ const ContinuousEmbeddingPlot = (props) => {
 ContinuousEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
-  plotUuid: PropTypes.object.isRequired,
+  plotUuid: PropTypes.string.isRequired,
 };
 
 export default ContinuousEmbeddingPlot;
