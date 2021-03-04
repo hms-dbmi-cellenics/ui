@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Card, Space } from 'antd';
 import { blue } from '@ant-design/colors';
 
 import FileUploadModal from './FileUploadModal';
+import { setActiveProject } from '../../../redux/actions/projects';
 
 const ProjectsListContainer = (props) => {
-  const { height, projects, activeProjectIdx } = props;
+  const { height } = props;
+  const dispatch = useDispatch();
 
-  const [activeProject, setActiveProject] = useState(0);
+  const projects = useSelector((state) => state.projects);
+  const { activeProject } = projects.meta;
   const [uploadModalVisible, setUploadModalVisible] = useState(true);
 
   useEffect(() => {
-    setActiveProject(activeProjectIdx);
-  }, [activeProjectIdx]);
-
-  useEffect(() => {
-    setUploadModalVisible(projects[activeProject]?.numSamples === 0);
-  }, [projects, activeProject]);
+    setUploadModalVisible(projects[activeProject].samples.length === 0);
+  }, [activeProject]);
 
   const activeProjectStyle = {
     backgroundColor: blue[0],
@@ -38,21 +38,24 @@ const ProjectsListContainer = (props) => {
       />
       <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
         {
-          projects.map((project, idx) => (
+          projects.ids.map((uuid) => (
             <Card
-              key={idx}
+              key={uuid}
               type='primary'
-              style={activeProject === idx ? activeProjectStyle : { cursor: 'pointer' }}
-              onClick={() => setActiveProject(idx)}
+              style={activeProject === uuid ? activeProjectStyle : { cursor: 'pointer' }}
+              onClick={() => {
+                dispatch(setActiveProject(uuid));
+                setUploadModalVisible(projects[uuid].samples.length === 0);
+              }}
             >
-              <strong><p>{project.name}</p></strong>
-              {`Created : ${project.createdDate}`}
+              <strong><p>{projects[uuid].name}</p></strong>
+              {`Created : ${projects[uuid].createdDate}`}
               <br />
-              {`Modified : ${project.lastModified}`}
+              {`Modified : ${projects[uuid].lastModified}`}
               <br />
-              {`No. Samples : ${project.numSamples}`}
+              {`No. Samples : ${projects[uuid].samples.length}`}
               <br />
-              {`Last Analyzed : ${project.lastAnalyzed}`}
+              {`Last Analyzed : ${projects[uuid].lastAnalyzed || '-'}`}
               <br />
             </Card>
           ))
@@ -62,24 +65,12 @@ const ProjectsListContainer = (props) => {
   );
 };
 
-const ProjectsObj = PropTypes.shape({
-  name: PropTypes.string,
-  createdDate: PropTypes.string,
-  lastModified: PropTypes.string,
-  numSamples: PropTypes.number,
-  lastAnalyzed: PropTypes.string,
-});
-
 ProjectsListContainer.propTypes = {
-  projects: PropTypes.arrayOf(ProjectsObj),
   height: PropTypes.number,
-  activeProjectIdx: PropTypes.number,
 };
 
 ProjectsListContainer.defaultProps = {
-  projects: [],
   height: 800,
-  activeProjectIdx: 0,
 };
 
 export default ProjectsListContainer;
