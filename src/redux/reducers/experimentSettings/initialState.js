@@ -13,6 +13,17 @@ export default {
         binStep: 200,
       },
     },
+    mitochondrialContent: {
+      filterSettings: {
+        method: 'absolute_threshold',
+        methodSettings: {
+          absolute_threshold: {
+            maxFraction: 0.1,
+            binStep: 200,
+          },
+        },
+      },
+    },
     classifier: {
       filterSettings: {
         minProbability: 0.82,

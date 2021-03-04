@@ -68,7 +68,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
-          baseComponentRenderer={() => <MitochondrialContent filtering key={key} />}
+          baseComponentRenderer={(sample) => (
+            <MitochondrialContent
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
         />
       ),
     },
