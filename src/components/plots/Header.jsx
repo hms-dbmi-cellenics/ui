@@ -97,12 +97,12 @@ const Header = (props) => {
   const baseRoutes = [
     {
       path: 'experiments',
-      breadcrumbName: 'Experiments',
+      breadcrumbName: 'Analyses',
     },
     {
-      path: '[experimentId]/plots-and-tables',
-      params: [data.experimentId, 'plots-and-tables'].join('/'),
-      breadcrumbName: data.experimentName,
+      path: '[experimentId]',
+      params: data?.experimentId,
+      breadcrumbName: data?.experimentName,
     },
     {
       path: 'plots-and-tables',
@@ -153,8 +153,9 @@ const Header = (props) => {
           title='Edit collection'
           breadcrumb={{ routes: baseRoutes, itemRender }}
           subTitle={`Last saved: ${saveString}`}
-          extra={[
-            <Space key='reset-button'>
+          extra={(
+            <Space>
+              <FeedbackButton key='feedback' />
               <Button
                 key='reset'
                 type='primary'
@@ -163,8 +164,8 @@ const Header = (props) => {
               >
                 Reset
               </Button>
-            </Space>,
-          ]}
+            </Space>
+          )}
         />
       </Col>
     </Row>

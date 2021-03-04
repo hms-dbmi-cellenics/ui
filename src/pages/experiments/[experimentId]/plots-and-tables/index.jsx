@@ -15,26 +15,29 @@ import volcano from '../../../../../static/media/volcano.png';
 import frequency from '../../../../../static/media/frequency.png';
 import Header from '../../../../components/Header';
 
-const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
-  <Card.Grid
-    href={href}
-    ref={ref}
-    onClick={onClick}
-    hoverable={false}
-    style={{ textAlign: 'center', width: '100%', padding: '0' }}
-  >
-    <img
-      alt={item.name}
-      src={item.image}
-      style={{
-        height: '250px', width: '100%', align: 'center', padding: '8px',
-      }}
-    />
-    <div style={{ paddingBottom: '8px' }}>
-      {item.description}
-    </div>
-  </Card.Grid>
-));
+const CardItem = React.forwardRef(({ onClick, item, href }, ref) => {
+  console.log('IVAIVAIVAIVIAIVA ', href, ref, item, onClick);
+  return (
+    <Card.Grid
+      href={href}
+      ref={ref}
+      onClick={onClick}
+      hoverable={false}
+      style={{ textAlign: 'center', width: '100%', padding: '0' }}
+    >
+      <img
+        alt={item.name}
+        src={item.image}
+        style={{
+          height: '250px', width: '100%', align: 'center', padding: '8px',
+        }}
+      />
+      <div style={{ paddingBottom: '8px' }}>
+        {item.description}
+      </div>
+    </Card.Grid>
+  );
+});
 
 CardItem.defaultProps = {};
 
@@ -160,8 +163,8 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
             experimentData={experimentData}
             route={route}
             title='Plots and Tables'
-            extra={(
-              <Space>
+            extra={[
+              <Space key='extra-things'>
                 <Dropdown
                   trigger={['click']}
                   overlay={searchMenu}
@@ -182,8 +185,8 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
                     Create
                   </Button>
                 </Tooltip>
-              </Space>
-            )}
+              </Space>,
+            ]}
           />
           <Space direction='vertical' style={{ width: '100%' }}>
             <h1>Recommended</h1>
@@ -199,7 +202,11 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
                     extra={renderExtras(item)}
                     bodyStyle={{ padding: '0' }}
                   >
-                    <Link as={`/experiments/${experimentId}/plots-and-tables/${item.link}`} href={`/experiments/[experimentId]/plots-and-tables/${item.link}`} passHref>
+                    <Link
+                      as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
+                      href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
+                      passHref
+                    >
                       <CardItem item={item} />
                     </Link>
                   </Card>
