@@ -65,6 +65,7 @@ const fetchCachedWork = async (experimentId, timeout, body) => {
     }
     const key = createObjectHash({ experimentId, body });
     const data = await cache.get(key);
+
     if (data) return data;
     const response = await sendWork(experimentId, timeout, body);
     const responseData = JSON.parse(response.results[0].body);
