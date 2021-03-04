@@ -27,7 +27,7 @@ import {
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import { loadCellSets } from '../../../redux/actions/cellSets';
+import { loadCellSets, updateCellSetsClustering } from '../../../redux/actions/cellSets';
 import Loader from '../../Loader';
 
 const { Panel } = Collapse;
@@ -37,9 +37,15 @@ const ConfigureEmbedding = (props) => {
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(false);
   const cellSets = useSelector((state) => state.cellSets);
+
   const router = useRouter();
   const dispatch = useDispatch();
   const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+
+  const debouncedCellSetClustering = useCallback(
+    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
+    [],
+  );
 
   const plots = {
     sample: {
@@ -95,8 +101,16 @@ const ConfigureEmbedding = (props) => {
       return;
     }
 
-    if (!cellSets.loading && !cellSets.error && config) {
+    if (!cellSets.loading && !cellSets.error && !cellSets.updateCellSetsClustering && config) {
       setPlot(plots[selectedPlot].plot(config));
+      if (!config.selectedCellSet) { return; }
+
+      const propertiesArray = Object.keys(cellSets.properties);
+      const cellSetClusteringLength = propertiesArray.filter((cellSet) => cellSet === config.selectedCellSet).length;
+
+      if (!cellSetClusteringLength) {
+        debouncedCellSetClustering(0.5);
+      }
     }
   }, [config, cellSets]);
 
