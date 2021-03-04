@@ -125,7 +125,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
-          baseComponentRenderer={() => <DoubletScores filtering key={key} />}
+          baseComponentRenderer={(sample) => (
+            <DoubletScores
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
         />
       ),
     },

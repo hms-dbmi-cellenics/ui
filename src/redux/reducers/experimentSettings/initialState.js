@@ -24,6 +24,12 @@ export default {
         },
       },
     },
+    classifier: {
+      filterSettings: {
+        minProbability: 0.82,
+        bandwidth: -1,
+      },
+    },
     numGenesVsNumUmis: {
       filterSettings: {
         regressionType: 'gam',
@@ -34,10 +40,10 @@ export default {
         binStep: 0.05,
       },
     },
-    classifier: {
+    doubletScores: {
       filterSettings: {
-        minProbability: 0.82,
-        bandwidth: -1,
+        probabilityThreshold: 0.2,
+        binStep: 0.05,
       },
     },
     dataIntegration: {

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Collapse, Row, Col, Space,
   Slider, Form, Button, Tooltip,
@@ -11,6 +12,8 @@ import { Vega } from 'react-vega';
 import plotData from './new_data.json';
 import OldPlotStyling from '../../plots/styling/OldPlotStyling';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
+
+import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
 class DoubletScores extends React.Component {
@@ -261,10 +264,10 @@ class DoubletScores extends React.Component {
     const data = { plotData: this.generateData() };
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
-    const { filtering } = this.props;
-    const changeThreshold = (val) => {
-      this.updatePlotWithChanges({ probThreshold: val });
-    };
+    const {
+      experimentId, sampleId, filtering, sampleIds,
+    } = this.props;
+
     return (
       <>
         <Row>
@@ -281,21 +284,7 @@ class DoubletScores extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <Form.Item label='Probability threshold'>
-                  <Slider
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                    defaultValue={0.2}
-                    min={0}
-                    max={1}
-                    onAfterChange={(val) => changeThreshold(val)}
-                    step={0.05}
-                  />
-                </Form.Item>
-                <BandwidthOrBinstep
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  type='bin step'
-                />
+                <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
@@ -313,5 +302,15 @@ class DoubletScores extends React.Component {
     );
   }
 }
+
+DoubletScores.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  sampleIds: PropTypes.array.isRequired,
+  filtering: PropTypes.bool.isRequired,
+};
+
+DoubletScores.defaultProps = {
+};
 
 export default DoubletScores;
