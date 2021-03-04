@@ -1,114 +1,95 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Collapse,
   Row,
   Col,
   List,
   Space,
-  Form,
   Tooltip,
   Button,
-  InputNumber,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { Vega } from 'react-vega';
+
 import plot1Pic from '../../../../static/media/plot1.png';
 import plot2Pic from '../../../../static/media/plot2.png';
 import plotData2 from './cellRank_sorted.json';
 import plotData from './new_data.json';
 import OldPlotStyling from '../../plots/styling/OldPlotStyling';
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
+
+import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
 
-class CellSizeDistribution extends React.Component {
-  constructor(props) {
-    super(props);
+const defaultConfig = {
+  plotToDraw: true,
+  data: plotData,
+  legendEnabled: true,
+  minCellSize: 10800,
+  minCellSize2: 990,
+  xAxisText: '#UMIs in cell',
+  yAxisText: '#UMIs * #Cells',
+  xAxisText2: 'Cell rank',
+  yAxisText2: '#UMIs in cell',
+  xDefaultTitle: '#UMIs in cell',
+  yDefaultTitle: '#UMIs * #Cells',
+  legendPosition: 'top-left',
+  gridWeight: 0,
+  titleSize: 12,
+  titleText: '',
+  titleAnchor: 'start',
+  masterFont: 'sans-serif',
+  masterSize: 13,
+  axisTitlesize: 13,
+  axisTicks: 13,
+  axisOffset: 0,
+  transGrid: 0,
+  width: 530,
+  height: 400,
+  maxWidth: 650,
+  maxHeight: 540,
+  arrowStep: 1000,
+  placeholder: 10800,
+  sliderMax: 17000,
+  binStep: 200,
+  type: 'bin step',
+};
 
-    this.defaultConfig = {
-      plotToDraw: true,
-      data: plotData,
-      legendEnabled: true,
-      minCellSize: 10800,
-      minCellSize2: 990,
-      xAxisText: '#UMIs in cell',
-      yAxisText: '#UMIs * #Cells',
-      xAxisText2: 'Cell rank',
-      yAxisText2: '#UMIs in cell',
-      xDefaultTitle: '#UMIs in cell',
-      yDefaultTitle: '#UMIs * #Cells',
-      legendPosition: 'top-left',
-      gridWeight: 0,
-      titleSize: 12,
-      titleText: '',
-      titleAnchor: 'start',
-      masterFont: 'sans-serif',
-      masterSize: 13,
-      axisTitlesize: 13,
-      axisTicks: 13,
-      axisOffset: 0,
-      transGrid: 0,
-      width: 530,
-      height: 400,
-      maxWidth: 650,
-      maxHeight: 540,
-      arrowStep: 1000,
-      placeholder: 10800,
-      sliderMax: 17000,
-      binStep: 200,
-      type: 'bin step',
-    };
-    this.state = {
-      config: _.cloneDeep(this.defaultConfig),
-      data: plotData,
-      data2: plotData2,
-    };
-    this.updatePlotWithChanges = this.updatePlotWithChanges.bind(this);
-  }
+const CellSizeDistribution = (props) => {
+  const {
+    experimentId, sampleId, filtering, sampleIds,
+  } = props;
 
-  updatePlotWithChanges(obj) {
-    this.setState((prevState) => {
-      const newState = _.cloneDeep(prevState);
+  const [config, setConfig] = useState(_.cloneDeep(defaultConfig));
 
-      _.merge(newState.config, obj);
+  const updatePlotWithChanges = (obj) => {
+    const newState = _.cloneDeep(config);
+    _.merge(newState.config, obj);
+    setConfig(newState);
+  };
 
-      return newState;
-    });
-  }
+  const generateData = () => _.cloneDeep(plotData).map((datum) => {
+    let newStatus;
 
-  generateData() {
-    let { data } = this.state;
-    data = _.cloneDeep(data);
-    data = data.map((datum) => {
-      let newStatus;
+    if (datum.u <= 8800) {
+      newStatus = 'low';
+    } else if (datum.u >= 10800) {
+      newStatus = 'high';
+    } else {
+      newStatus = 'unknown';
+    }
 
-      if (datum.u <= 8800) {
-        newStatus = 'low';
-      } else if (datum.u >= 10800) {
-        newStatus = 'high';
-      } else {
-        newStatus = 'unknown';
-      }
+    // eslint-disable-next-line no-param-reassign
+    datum.status = newStatus;
 
-      // eslint-disable-next-line no-param-reassign
-      datum.status = newStatus;
+    return datum;
+  });
 
-      return datum;
-    });
-    return data;
-  }
-
-  generateData2() {
-    let { data2 } = this.state;
-    data2 = _.cloneDeep(data2);
-    return data2;
-  }
-
-  generateSpec() {
-    const { config } = this.state;
+  const generateSpec = () => {
     let legend = null;
     const minHigh = 2500;
     const minUnknown = 2300;
@@ -153,6 +134,7 @@ class CellSizeDistribution extends React.Component {
     } else {
       legend = null;
     }
+
     if (config.plotToDraw) {
       return {
         description: 'An interactive histogram',
@@ -296,6 +278,7 @@ class CellSizeDistribution extends React.Component {
         },
       };
     }
+
     return {
       $schema: 'https://vega.github.io/schema/vega/v5.json',
       width: config.width,
@@ -422,130 +405,112 @@ class CellSizeDistribution extends React.Component {
         fontSize: { value: config.titleSize },
       },
     };
-  }
+  };
 
-  render() {
-    const { config } = this.state;
-    // eslint-disable-next-line react/prop-types
-    const { filtering } = this.props;
-    let data = { plotData: this.generateData() };
-    if (!config.plotToDraw) {
-      data = { plotData2: this.generateData2() };
+  const listData = [
+    'Estimated number of cells 8672',
+    'Fraction reads in cells  93.1%',
+    'Mean reads per cell  93,551',
+    'Median genes per cell  1,297',
+    'Total genes detected   21,425',
+    'Median UMI counts per cell   4,064',
+  ];
+  const changePlot = (val) => {
+    updatePlotWithChanges({ plotToDraw: val });
+    if (val) {
+      updatePlotWithChanges({
+        xDefaultTitle: config.xAxisText,
+        yDefaultTitle: config.yAxisText,
+        placeholder: 10800,
+        sliderMax: 17000,
+        type: 'bin step',
+      });
+    } else {
+      updatePlotWithChanges({
+        xDefaultTitle: config.xAxisText2,
+        yDefaultTitle: config.yAxisText2,
+        placeholder: 990,
+        sliderMax: 6000,
+        type: 'blank',
+      });
     }
+  };
 
-    const listData = [
-      'Estimated number of cells 8672',
-      'Fraction reads in cells  93.1%',
-      'Mean reads per cell  93,551',
-      'Median genes per cell  1,297',
-      'Total genes detected   21,425',
-      'Median UMI counts per cell   4,064',
-    ];
-    const changePlot = (val) => {
-      this.updatePlotWithChanges({ plotToDraw: val });
-      if (val) {
-        this.updatePlotWithChanges({
-          xDefaultTitle: config.xAxisText,
-          yDefaultTitle: config.yAxisText,
-          placeholder: 10800,
-          sliderMax: 17000,
-          type: 'bin step',
-        });
-      } else {
-        this.updatePlotWithChanges({
-          xDefaultTitle: config.xAxisText2,
-          yDefaultTitle: config.yAxisText2,
-          placeholder: 990,
-          sliderMax: 6000,
-          type: 'blank',
-        });
-      }
-    };
+  const plotDataGenerated = generateData();
 
-    const changeCellSize = (val) => {
-      if (config.plotToDraw) {
-        this.updatePlotWithChanges({ minCellSize: val.target.value });
-      } else {
-        this.updatePlotWithChanges({ minCellSize2: val.target.value });
-      }
-    };
-    return (
-      <>
-        <Row>
-          <Col span={13}>
-            <Vega data={data} spec={this.generateSpec()} renderer='canvas' />
-          </Col>
+  return (
+    <>
+      <Row>
+        <Col span={13}>
+          <Vega data={{ plotData: plotDataGenerated, plotData2 }} spec={generateSpec()} renderer='canvas' />
+        </Col>
 
-          <Col span={5}>
-            <Space direction='vertical'>
-              <Tooltip title='The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). Look for bimodal distribution to set the cut-off.'>
-                <Button icon={<InfoCircleOutlined />} />
-              </Tooltip>
-              <img
-                alt=''
-                src={plot1Pic}
-                style={{
-                  height: '100px',
-                  width: '100px',
-                  align: 'center',
-                  padding: '8px',
-                  border: '1px solid #000',
-                }}
-                onClick={() => changePlot(true)}
-              />
-              <img
-                alt=''
-                src={plot2Pic}
-                style={{
-                  height: '100px',
-                  width: '100px',
-                  align: 'center',
-                  padding: '8px',
-                  border: '1px solid #000',
-                }}
-                onClick={() => changePlot(false)}
-              />
-            </Space>
-            <List
-              dataSource={listData}
-              size='small'
-              renderItem={(item) => <List.Item>{item}</List.Item>}
+        <Col span={5}>
+          <Space direction='vertical'>
+            <Tooltip title='The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). Look for bimodal distribution to set the cut-off.'>
+              <Button icon={<InfoCircleOutlined />} />
+            </Tooltip>
+            <img
+              alt=''
+              src={plot1Pic}
+              style={{
+                height: '100px',
+                width: '100px',
+                align: 'center',
+                padding: '8px',
+                border: '1px solid #000',
+              }}
+              onClick={() => changePlot(true)}
             />
-          </Col>
+            <img
+              alt=''
+              src={plot2Pic}
+              style={{
+                height: '100px',
+                width: '100px',
+                align: 'center',
+                padding: '8px',
+                border: '1px solid #000',
+              }}
+              onClick={() => changePlot(false)}
+            />
+          </Space>
+          <List
+            dataSource={listData}
+            size='small'
+            renderItem={(item) => <List.Item>{item}</List.Item>}
+          />
+        </Col>
 
-          <Col span={6}>
-            <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse defaultActiveKey={['filtering-settings']}>
-              <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <Form.Item label='Min cell size:'>
-                  <InputNumber
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                    onPressEnter={(val) => changeCellSize(val)}
-                    placeholder={config.placeholder}
-                    step={100}
-                  />
-                </Form.Item>
-                <BandwidthOrBinstep
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  type={config.type}
-                  max={400}
-                />
-              </Panel>
+        <Col span={6}>
+          <Space direction='vertical' style={{ width: '100%' }} />
+          <Collapse defaultActiveKey={['filtering-settings']}>
+            <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
+              <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} />
+            </Panel>
+            {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
+            <OldPlotStyling
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              updatePlotWithChanges={updatePlotWithChanges}
+              legendMenu
+            />
+          </Collapse>
+        </Col>
+      </Row>
+    </>
+  );
+};
 
-              {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
-              <OldPlotStyling
-                config={config}
-                onUpdate={this.updatePlotWithChanges}
-                updatePlotWithChanges={this.updatePlotWithChanges}
-                legendMenu
-              />
-            </Collapse>
-          </Col>
-        </Row>
-      </>
-    );
-  }
-}
+CellSizeDistribution.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  filtering: PropTypes.bool,
+  sampleIds: PropTypes.array.isRequired,
+};
+
+CellSizeDistribution.defaultProps = {
+  filtering: true,
+};
 
 export default CellSizeDistribution;

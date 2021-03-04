@@ -24,35 +24,78 @@ import DataIntegration from '../../../../components/data-processing/DataIntegrat
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
 import { completeProcessingStep, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 
+import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
+
 const { Text } = Typography;
 const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
+  const cellSetsProperties = useSelector((state) => state.cellSets.properties);
+  const cellSetsHierarchy = useSelector((state) => state.cellSets.hierarchy);
+
+  const sampleKeys = cellSetsHierarchy.find(
+    (rootNode) => (rootNode.key === 'sample'),
+  ).children.map(
+    (child) => child.key,
+  );
+
+  const inputsList = sampleKeys.map((key) => ({ key, headerName: `Sample ${cellSetsProperties[key].name}`, params: { ...cellSetsProperties[key], key } }));
+
   const steps = [
     {
       key: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
-      render: (key) => <CellSizeDistribution filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => <CellSizeDistribution experimentId={experimentId} filtering key={key} sampleId={sample.key} sampleIds={sampleKeys} />}
+        />
+      ),
     },
     {
       key: 'mitoContentFilter',
       name: 'Mitochondrial content filter',
-      render: (key) => <MitochondrialContent filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={() => <MitochondrialContent filtering key={key} />}
+        />
+      ),
     },
     {
       key: 'classifierFilter',
       name: 'Classifier filter',
-      render: (key) => <Classifier filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={() => <Classifier filtering key={key} />}
+        />
+      ),
     },
     {
       key: 'genesVsUMIFilter',
       name: 'Number of genes vs UMIs filter',
-      render: (key) => <GenesVsUMIs filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={() => <GenesVsUMIs filtering key={key} />}
+        />
+      ),
     },
     {
       key: 'doubletFilter',
       name: 'Doublet filter',
-      render: (key) => <DoubletScores filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={() => <DoubletScores filtering key={key} />}
+        />
+      ),
     },
     {
       key: 'dataIntegration',

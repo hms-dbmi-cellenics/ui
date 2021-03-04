@@ -7,6 +7,12 @@ export default {
       completingStepError: false,
       loadingSettingsError: false,
     },
+    cellSizeDistribution: {
+      filterSettings: {
+        minCellSize: 10800,
+        binStep: 200,
+      },
+    },
     dataIntegration: {
       dataIntegration: {
         method: 'seuratv4',
