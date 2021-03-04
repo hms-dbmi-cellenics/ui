@@ -5,7 +5,7 @@ import { blue } from '@ant-design/colors';
 
 import FileUploadModal from './FileUploadModal';
 
-const ProjectsList = (props) => {
+const ProjectsListContainer = (props) => {
   const { height, projects, activeProjectIdx } = props;
 
   const [activeProject, setActiveProject] = useState(0);
@@ -70,16 +70,16 @@ const ProjectsObj = PropTypes.shape({
   lastAnalyzed: PropTypes.string,
 });
 
-ProjectsList.propTypes = {
+ProjectsListContainer.propTypes = {
   projects: PropTypes.arrayOf(ProjectsObj),
   height: PropTypes.number,
   activeProjectIdx: PropTypes.number,
 };
 
-ProjectsList.defaultProps = {
+ProjectsListContainer.defaultProps = {
   projects: [],
   height: 800,
   activeProjectIdx: 0,
 };
 
-export default ProjectsList;
+export default ProjectsListContainer;

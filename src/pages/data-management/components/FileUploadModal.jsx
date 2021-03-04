@@ -23,10 +23,9 @@ const { Option } = Select;
 const NewProjectModal = (props) => {
   const { visible, onUpload, onCancel } = props;
 
-  const initialSelected = '10X Chromium';
   const guidanceFileLink = 'https://drive.google.com/file/d/1qX6no9od4pi-Wy87Q06hmjnLNECwItKJ/view?usp=sharing';
 
-  const [selectedTech, useSelectedTech] = useState(initialSelected);
+  const [selectedTech, useSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
@@ -130,7 +129,7 @@ const NewProjectModal = (props) => {
               <Option key={idx} value={val}>{val}</Option>
             ))}
           </Select>
-          <Text type='secondary'><i>Only 10x Chromium datasets is currently supported</i></Text>
+          <Text type='secondary'><i>Only 10x Chromium datasets are currently supported</i></Text>
         </Space>
         {
           selectedTech ? (

@@ -3,7 +3,7 @@ import { Card } from 'antd';
 import { configure, mount, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import '@testing-library/jest-dom';
-import ProjectsList from '../../../pages/data-management/components/ProjectsList';
+import ProjectsListContainer from '../../../pages/data-management/components/ProjectsListContainer';
 
 configure({ adapter: new Adapter() });
 
@@ -23,14 +23,14 @@ beforeEach(() => {
   });
 });
 
-describe('ProjectsList', () => {
+describe('ProjectsListContainer', () => {
   it('renders without options', () => {
-    const component = shallow(<ProjectsList />);
+    const component = shallow(<ProjectsListContainer />);
     expect(component.exists()).toEqual(true);
   });
 
   it('contains required components', () => {
-    const component = mount(<ProjectsList />);
+    const component = mount(<ProjectsListContainer />);
 
     // a button by default
     expect(component.find(Card).length).toEqual(0);
@@ -39,7 +39,7 @@ describe('ProjectsList', () => {
   it('has no project if there is no proejct', () => {
     const projects = [];
 
-    const component = mount(<ProjectsList projects={projects} />);
+    const component = mount(<ProjectsListContainer projects={projects} />);
 
     // expect the number of projects to be the same as the one in the list
     expect(component.find(Card).length).toEqual(projects.length);
@@ -70,7 +70,7 @@ describe('ProjectsList', () => {
       },
     ];
 
-    const component = mount(<ProjectsList projects={projects} />);
+    const component = mount(<ProjectsListContainer projects={projects} />);
 
     // expect the number of projects to be the same as the one in the list
     expect(component.find(Card).length).toEqual(projects.length);

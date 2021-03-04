@@ -8,7 +8,7 @@ import moment from 'moment';
 import Header from '../../components/Header';
 
 import NewProjectModal from './components/NewProjectModal';
-import ProjectsList from './components/ProjectsList';
+import ProjectsListContainer from './components/ProjectsListContainer';
 
 import 'react-mosaic-component/react-mosaic-component.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
@@ -57,7 +57,7 @@ const DataManagementPage = ({ route }) => {
           <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
             Create New Project
           </Button>
-          <ProjectsList projects={projectsList} height={height} activeProjectIdx={activeProjectIdx} />
+          <ProjectsListContainer projects={projectsList} height={height} activeProjectIdx={activeProjectIdx} />
         </Space>
       ),
     },
