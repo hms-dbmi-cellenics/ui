@@ -10,7 +10,7 @@ const NewProjectModal = (props) => {
   const { visible, onCreate, onCancel } = props;
 
   const [projectName, setProjectName] = useState('');
-  const [isInvalid, setIsInvalid] = useState(true);
+  const [isValid, setIsValid] = useState(false);
 
   const validateProjectName = (input) => input.length >= 8
     && input.match(/([a-zA-Z\d]{2,}){1,}/gm)
@@ -25,8 +25,12 @@ const NewProjectModal = (props) => {
           type='primary'
           key='create'
           block
-          disabled={isInvalid}
-          onClick={() => { onCreate(projectName); }}
+          disabled={!isValid}
+          onClick={() => {
+            onCreate(projectName);
+            setProjectName('');
+            setIsValid(false);
+          }}
         >
           Create Project
         </Button>
@@ -39,7 +43,6 @@ const NewProjectModal = (props) => {
           <Title level={3}>
             Create a project to start analyzing
             <br />
-            {' '}
             your data in Cellscope
           </Title>
           <Text type='secondary'>
@@ -49,12 +52,19 @@ const NewProjectModal = (props) => {
           <Input
             onChange={(e) => {
               setProjectName(e.target.value);
-              setIsInvalid(!validateProjectName(e.target.value));
+              setIsValid(validateProjectName(e.target.value));
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onCreate(projectName);
+                setProjectName('');
+                setIsValid(false);
+              }
             }}
             value={projectName}
           />
           <Text type='danger'>
-            {projectName.length >= 8 && isInvalid ? 'Invalid project name' : <br />}
+            {projectName.length >= 8 && !isValid ? 'Invalid project name' : <br />}
           </Text>
         </Space>
       </Space>

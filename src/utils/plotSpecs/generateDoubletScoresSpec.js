@@ -157,8 +157,6 @@ const generateData = (
   cellMetaData,
   embeddingData,
 ) => {
-  console.log('spec.data');
-  console.log(spec.data);
   spec.data.forEach((s) => {
     if (s.name === 'doublet_scores') {
       s.values = cellMetaData;
