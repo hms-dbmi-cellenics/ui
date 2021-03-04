@@ -106,7 +106,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
-          baseComponentRenderer={() => <GenesVsUMIs filtering key={key} />}
+          baseComponentRenderer={(sample) => (
+            <GenesVsUMIs
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
         />
       ),
     },

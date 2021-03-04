@@ -507,7 +507,7 @@ class MitochondrialContent extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} />
+                <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
