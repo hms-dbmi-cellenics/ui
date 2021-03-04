@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateProject action Dispatches event correctly 1`] = `
+Object {
+  "payload": Object {
+    "project": Object {
+      "createdDate": "01-01-2021",
+      "lastAnalyzed": null,
+      "lastModified": "02-01-2021",
+      "name": "updated name",
+      "samples": Array [],
+      "uuid": "12345",
+    },
+  },
+  "type": "projects/update",
+}
+`;

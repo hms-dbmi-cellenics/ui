@@ -14,7 +14,7 @@ const createProject = (
   const newProject = {
     ...projectTemplate,
     name: projectName,
-    uuid: hash(projectName + moment().format('DDMMYYY')).slice(0, 8),
+    uuid: hash(projectName + moment().format('DDMMYYY')).slice(0, 10),
     createdDate: createdAt,
     lastModified: createdAt,
   };

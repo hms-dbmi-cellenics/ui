@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createProject action Dispatches event correctly 1`] = `
+Object {
+  "payload": Object {
+    "project": Object {
+      "createdDate": "04 Mar 2021, 14:15:04 GMT+07:00",
+      "lastAnalyzed": null,
+      "lastModified": "04 Mar 2021, 14:15:04 GMT+07:00",
+      "name": Object {
+        "createdDate": "01-01-2021",
+        "lastModified": "01-01-2021",
+        "name": "test project",
+        "uuid": "12345",
+      },
+      "samples": Array [],
+      "uuid": "79dc6d98df",
+    },
+  },
+  "type": "projects/create",
+}
+`;

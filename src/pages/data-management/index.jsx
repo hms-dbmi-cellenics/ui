@@ -55,7 +55,7 @@ const DataManagementPage = ({ route }) => {
     direction: 'row',
     first: 'Projects List',
     second: 'Data Management',
-    splitPercentage: 20,
+    splitPercentage: 23,
   };
 
   const renderWindow = (tile, width, height) => {

@@ -9,7 +9,7 @@ const setActiveProject = (
     activeProject,
   } = getState().projects.meta;
 
-  if (activeProject === projectUuid) return;
+  if (activeProject === projectUuid) return null;
 
   dispatch({
     type: PROJECTS_SET_ACTIVE,
