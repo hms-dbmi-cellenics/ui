@@ -13,6 +13,12 @@ export default {
         binStep: 200,
       },
     },
+    classifier: {
+      filterSettings: {
+        minProbability: 0.82,
+        bandwidth: -1,
+      },
+    },
     dataIntegration: {
       dataIntegration: {
         method: 'seuratv4',

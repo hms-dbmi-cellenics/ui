@@ -49,7 +49,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
-          baseComponentRenderer={(sample) => <CellSizeDistribution experimentId={experimentId} filtering key={key} sampleId={sample.key} sampleIds={sampleKeys} />}
+          baseComponentRenderer={(sample) => (
+            <CellSizeDistribution
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
         />
       ),
     },
@@ -71,7 +79,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
-          baseComponentRenderer={() => <Classifier filtering key={key} />}
+          baseComponentRenderer={(sample) => (
+            <Classifier
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
         />
       ),
     },
