@@ -1,5 +1,4 @@
-import moment from 'moment';
-import hash from 'object-hash';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   SAMPLES_CREATE,
@@ -12,7 +11,7 @@ const createSample = (
   const newSample = {
     ...sampleTemplate,
     name: sampleName,
-    uuid: hash(sampleName + moment().format('DDMMYYY')),
+    uuid: uuidv4(),
   };
 
   dispatch({

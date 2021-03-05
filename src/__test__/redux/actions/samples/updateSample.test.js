@@ -33,7 +33,7 @@ describe('updateSample action', () => {
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(SAMPLES_UPDATE);
-    expect(firstAction).toMatchSnapshot();
+    expect(firstAction.payload.sample).toEqual(updatedSample);
   });
 
   it('Does not dispatch event if object contents are the same', async () => {
