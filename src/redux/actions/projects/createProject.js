@@ -1,5 +1,5 @@
 import moment from 'moment';
-import hash from 'object-hash';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   PROJECTS_CREATE,
@@ -9,12 +9,12 @@ import { projectTemplate } from '../../reducers/projects/initialState';
 const createProject = (
   projectName,
 ) => async (dispatch) => {
-  const createdAt = moment().local().format('DD MMM YYYY, HH:mm:ss [GMT]Z');
+  const createdAt = moment().toISOString();
 
   const newProject = {
     ...projectTemplate,
     name: projectName,
-    uuid: hash(projectName + moment().format('DDMMYYY')).slice(0, 10),
+    uuid: uuidv4(),
     createdDate: createdAt,
     lastModified: createdAt,
   };

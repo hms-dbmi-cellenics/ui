@@ -3,9 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Card, Space } from 'antd';
 import { blue } from '@ant-design/colors';
+import moment from 'moment';
 
 import FileUploadModal from './FileUploadModal';
 import { setActiveProject } from '../../../redux/actions/projects';
+import PrettyTime from '../../../components/PrettyTime';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
@@ -49,13 +51,21 @@ const ProjectsListContainer = (props) => {
               }}
             >
               <strong><p>{projects[uuid].name}</p></strong>
-              {`Created : ${projects[uuid].createdDate}`}
+              Created :
+              {' '}
+              <PrettyTime isoTime={projects[uuid].createdDate} />
               <br />
-              {`Modified : ${projects[uuid].lastModified}`}
+              Modified :
+              {' '}
+              <PrettyTime isoTime={projects[uuid].lastModified} />
               <br />
               {`No. Samples : ${projects[uuid].samples.length}`}
               <br />
-              {`Last Analyzed : ${projects[uuid].lastAnalyzed || '-'}`}
+              Last anayzed :
+              {' '}
+              { projects[uuid].lastAnalyzed ? (
+                <PrettyTime isoTime={projects[uuid].lastAnalyzed} />
+              ) : ('Never')}
               <br />
             </Card>
           ))

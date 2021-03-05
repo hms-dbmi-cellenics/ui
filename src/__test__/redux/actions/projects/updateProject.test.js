@@ -36,7 +36,6 @@ describe('updateProject action', () => {
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(PROJECTS_UPDATE);
-    expect(firstAction).toMatchSnapshot();
   });
 
   it('Does not dispatch event if object contents are the same', async () => {
