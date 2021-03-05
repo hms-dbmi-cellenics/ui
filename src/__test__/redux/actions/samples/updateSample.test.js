@@ -14,7 +14,7 @@ describe('updateSample action', () => {
     uuid: '12345',
   };
 
-  const updatedProject = {
+  const updatedSample = {
     ...mockSample,
     name: 'updated name',
   };
@@ -29,7 +29,7 @@ describe('updateSample action', () => {
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateSample(updatedProject));
+    await store.dispatch(updateSample(updatedSample));
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(SAMPLES_UPDATE);

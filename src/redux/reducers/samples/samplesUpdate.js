@@ -1,5 +1,5 @@
 const samplesUpdate = (state, action) => {
-  const { project: sample } = action.payload;
+  const { sample } = action.payload;
   return {
     ...state,
     [sample.uuid]: sample,

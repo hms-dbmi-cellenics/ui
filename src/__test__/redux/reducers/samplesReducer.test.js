@@ -79,7 +79,7 @@ describe('samplesReducer', () => {
     const newState = samplesReducer(oneSampleState, {
       type: SAMPLES_UPDATE,
       payload: {
-        project: updatedSample1,
+        sample: updatedSample1,
       },
     });
 
