@@ -9,15 +9,20 @@ const SingleComponentMultipleDataContainer = (props) => {
   const { defaultActiveKey, inputsList, baseComponentRenderer } = props;
 
   return (
-    <Collapse defaultActiveKey={defaultActiveKey}>
-      {
-        inputsList.map(({ key, headerName, params }) => (
-          <Panel header={headerName} key={key}>
-            {baseComponentRenderer(params)}
-          </Panel>
-        ))
-      }
-    </Collapse>
+    <div style={{
+      position: 'absolute', top: 0, bottom: 0, overflow: 'auto', width: window.innerWidth * 0.89,
+    }}
+    >
+      <Collapse defaultActiveKey={defaultActiveKey}>
+        {
+          inputsList.map(({ key, headerName, params }) => (
+            <Panel header={headerName} key={key}>
+              {baseComponentRenderer(params)}
+            </Panel>
+          ))
+        }
+      </Collapse>
+    </div>
   );
 };
 
