@@ -1,8 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef, useEffect } from 'react';
-
 import PropTypes from 'prop-types';
-
 import {
   Layout, Menu, Typography,
 } from 'antd';
@@ -17,12 +15,15 @@ import {
 import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
 
+import PipelineRunningEmptyState from './PipelineRunningEmptyState';
+
 const { Sider, Footer } = Layout;
 const { Paragraph } = Typography;
 
 const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(true);
-  const { children } = props;
+  const { children, backendStatus } = props;
+
   const router = useRouter();
   const { experimentId } = router.query;
   const route = router.route || '';
@@ -30,9 +31,11 @@ const ContentWrapper = (props) => {
   const updateSocket = useRef(null);
 
   useEffect(() => {
-    if (experimentId) {
-      updateSocket.current = initUpdateSocket(experimentId, (res) => { console.log(res); });
+    if (!experimentId) {
+      return;
     }
+
+    updateSocket.current = initUpdateSocket(experimentId, (res) => { console.log(res); });
   }, [experimentId]);
 
   const BigLogo = () => (
@@ -159,6 +162,14 @@ const ContentWrapper = (props) => {
     },
   ];
 
+  const renderContent = () => {
+    if (!backendStatus.pipeline?.running && !route.includes('data-processing')) {
+      return <PipelineRunningEmptyState experimentId={experimentId} />;
+    }
+
+    return children;
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <NotificationManager />
@@ -216,13 +227,18 @@ const ContentWrapper = (props) => {
 
       </Sider>
       <Layout>
-        {children}
+        {renderContent()}
       </Layout>
     </Layout>
   );
 };
 
+ContentWrapper.defaultProps = {
+  backendStatus: undefined,
+};
+
 ContentWrapper.propTypes = {
+  backendStatus: PropTypes.object,
   children: PropTypes.node.isRequired,
 };
 

@@ -40,6 +40,11 @@ const WrappedApp = ({ Component, pageProps }) => {
     getFromApiExpectOK,
   );
 
+  const { data: backendStatus, error: backendError } = useSWR(
+    () => (experimentId ? `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines` : null),
+    getFromApiExpectOK,
+  );
+
   const mainContent = () => {
     // If the page is statically rendered (on server), show a loading context.
     if (!isBrowser) {
@@ -63,6 +68,12 @@ const WrappedApp = ({ Component, pageProps }) => {
       return (<PreloadContent />);
     }
 
+    // If we found the experiment ID, but we haven't yet queried the API for
+    // the pipeline status, wait until that's also done.
+    if (experimentId && !backendStatus && !backendError) {
+      return (<PreloadContent />);
+    }
+
     // If there was an error querying the API, display an error state.
     if (experimentError) {
       if (experimentError.payload === undefined) {
@@ -80,7 +91,7 @@ const WrappedApp = ({ Component, pageProps }) => {
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <ContentWrapper>
+      <ContentWrapper backendStatus={backendStatus}>
         <Component
           experimentId={experimentId}
           experimentData={experimentData}
