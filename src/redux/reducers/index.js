@@ -10,16 +10,18 @@ import componentConfigReducer from './componentConfig/index';
 import cellInfoReducer from './cellInfo';
 import experimentSettingsReducer from './experimentSettings';
 import cellMetaReducer from './cellMeta';
+import sampleReducer from './samples';
 
 export default combineReducers({
-  cellSets: cellSetsReducer,
-  notifications: notificationsReducer,
-  embeddings: embeddingsReducer,
-  genes: genesReducer,
-  differentialExpression: differentialExpressionReducer,
   cellInfo: cellInfoReducer,
-  layout: layoutReducer,
-  componentConfig: componentConfigReducer,
-  experimentSettings: experimentSettingsReducer,
   cellMeta: cellMetaReducer,
+  cellSets: cellSetsReducer,
+  componentConfig: componentConfigReducer,
+  differentialExpression: differentialExpressionReducer,
+  embeddings: embeddingsReducer,
+  experimentSettings: experimentSettingsReducer,
+  genes: genesReducer,
+  layout: layoutReducer,
+  notifications: notificationsReducer,
+  samples: sampleReducer,
 });
