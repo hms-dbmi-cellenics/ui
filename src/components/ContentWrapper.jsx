@@ -163,7 +163,7 @@ const ContentWrapper = (props) => {
   ];
 
   const renderContent = () => {
-    if (!backendStatus.pipeline?.running && !route.includes('data-processing')) {
+    if (backendStatus.pipeline?.running && !route.includes('data-processing')) {
       return <PipelineRunningEmptyState experimentId={experimentId} />;
     }
 
