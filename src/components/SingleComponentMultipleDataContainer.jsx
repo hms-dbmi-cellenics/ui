@@ -8,8 +8,6 @@ const { Panel } = Collapse;
 const SingleComponentMultipleDataContainer = (props) => {
   const { defaultActiveKey, inputsList, baseComponentRenderer } = props;
 
-  // console.log(window.innerWidth)
-
   return (
     <Collapse defaultActiveKey={defaultActiveKey}>
       {

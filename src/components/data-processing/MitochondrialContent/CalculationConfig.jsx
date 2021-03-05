@@ -8,6 +8,7 @@ import {
   Form,
   Button,
   Alert,
+  Radio,
 } from 'antd';
 
 import _ from 'lodash';
@@ -24,7 +25,7 @@ const CalculationConfig = (props) => {
   } = props;
 
   const config = useSelector(
-    (state) => state.experimentSettings.processing.mitochondrialContent[sampleId]
+    (state) => state.experimentSettings.processing.mitochondrialContent[sampleId]?.filterSettings
       || state.experimentSettings.processing.mitochondrialContent.filterSettings,
   );
 
@@ -39,7 +40,7 @@ const CalculationConfig = (props) => {
 
     const newConfig = {};
     sampleIds.forEach((currentSampleId) => {
-      newConfig[currentSampleId] = config;
+      newConfig[currentSampleId] = { filterSettings: config };
     });
 
     dispatch(updateProcessingSettings(
@@ -55,8 +56,7 @@ const CalculationConfig = (props) => {
     const newConfig = _.cloneDeep(config);
     _.merge(newConfig, realDiff);
 
-    const sampleSpecificDiff = {};
-    sampleSpecificDiff[sampleId] = newConfig;
+    const sampleSpecificDiff = { [sampleId]: { filterSettings: newConfig } };
 
     setIndividualChangesWarningEnabled(true);
     dispatch(updateProcessingSettings(
@@ -70,12 +70,17 @@ const CalculationConfig = (props) => {
 
   const activeMethod = config.method;
 
-  console.log('configDebug');
-  console.log(config);
-
   return (
     <>
       <Space direction='vertical' style={{ width: '100%' }} />
+      <Radio.Group defaultValue={1} style={{ marginTop: '5px', marginBottom: '30px' }}>
+        <Radio value={1}>
+          Automatic
+        </Radio>
+        <Radio value={2}>
+          Manual
+        </Radio>
+      </Radio.Group>
       <Form.Item label='Method:'>
         <Select
           value={activeMethod}
