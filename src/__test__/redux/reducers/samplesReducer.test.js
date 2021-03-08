@@ -21,15 +21,19 @@ describe('samplesReducer', () => {
     ...sample1Files,
     name: 'test sample',
     uuid: '12345',
+    createdDate: '2021-01-01T14:48:00.000Z',
+    lastModified: '2021-01-01T14:48:00.000Z',
   };
 
   const sample2 = {
     ...sampleTemplate,
     name: 'test sample 2',
     uuid: '67890',
+    createdDate: '2021-01-02T14:48:00.000Z',
+    lastModified: '2021-01-02T14:48:00.000Z',
   };
 
-  const updatedSample1 = {
+  const updateActionResult = {
     ...sample1,
     ...sample1Files,
     name: 'updated name',
@@ -79,12 +83,11 @@ describe('samplesReducer', () => {
     const newState = samplesReducer(oneSampleState, {
       type: SAMPLES_UPDATE,
       payload: {
-        sample: updatedSample1,
+        sample: updateActionResult,
       },
     });
 
     expect(newState.ids).toEqual(oneSampleState.ids);
-    expect(newState[sample1.uuid]).toEqual(updatedSample1);
-    expect(newState).toMatchSnapshot();
+    expect(newState[sample1.uuid]).toEqual(updateActionResult);
   });
 });

@@ -3,6 +3,8 @@ const sampleTemplate = {
   uuid: null,
   type: null,
   species: null,
+  createdDate: null,
+  lastModified: null,
   complete: false,
   error: false,
   fileNames: [],
