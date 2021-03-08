@@ -1,9 +1,8 @@
 import React from 'react';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { act } from 'react-dom/test-utils';
 import HierarchicalTree from '../../../../components/data-exploration/hierarchical-tree/HierarchicalTree';
-import waitForComponentToPaint from '../../../../utils/waitForComponentToPaint';
+import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
 
 jest.mock('localforage');
 

@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import CellSetOperation from '../../../../components/data-exploration/cell-sets-tool/CellSetOperation';
-import waitForComponentToPaint from '../../../../utils/waitForComponentToPaint';
+import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
 
 const { TabPane } = Tabs;
 
