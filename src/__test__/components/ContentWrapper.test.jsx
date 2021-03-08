@@ -16,6 +16,11 @@ jest.mock('next/router', () => ({
         experimentId: '1234',
       },
     }))
+    .mockImplementationOnce(() => ({ // 1st test
+      query: {
+        experimentId: '1234',
+      },
+    }))
     .mockImplementationOnce(() => ({ // 2nd test
       query: {},
     })),
@@ -26,13 +31,36 @@ configure({ adapter: new Adapter() });
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({
   notifications: {},
+  experimentSettings: {
+    pipelineStatus: {
+      loading: false,
+      error: false,
+      status: {},
+    },
+  },
 });
 
 describe('ContentWrapper', () => {
+  beforeEach(() => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(), // deprecated
+        removeListener: jest.fn(), // deprecated
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
+  });
+
   it('renders correctly', () => {
     const wrapper = mount(
       <Provider store={store}>
-        <ContentWrapper backendStatus={{}}>
+        <ContentWrapper>
           <></>
         </ContentWrapper>
       </Provider>,

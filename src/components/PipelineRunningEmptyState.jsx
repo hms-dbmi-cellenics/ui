@@ -11,15 +11,8 @@ const PipelineRunningEmptyState = ({ experimentId }) => {
   return (
     <Result
       status='info'
-      title='We are working on your project...'
-      subTitle={(
-        <>
-          <span>This page will be unavaiable while we are processing your data.</span>
-          <br />
-          <span>You can check the progress we&apos;ve made in Data Processing or try again later.</span>
-        </>
-      )}
-
+      title='We&apos;re working on your project...'
+      subTitle='You can check the progress we&apos;ve made in Data Processing or try again later.'
       icon={(
         <img
           width={250}

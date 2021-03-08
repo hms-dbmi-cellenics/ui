@@ -5,6 +5,7 @@ import {
   Layout, Menu, Typography,
 } from 'antd';
 import { useRouter } from 'next/router';
+import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import {
   DatabaseOutlined,
@@ -14,29 +15,48 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
-
+import loadPipelineStatus from '../redux/actions/experimentSettings/loadPipelineStatus';
 import PipelineRunningEmptyState from './PipelineRunningEmptyState';
+import PreloadContent from './PreloadContent';
+import Error from '../pages/_error';
 
 const { Sider, Footer } = Layout;
 const { Paragraph } = Typography;
 
 const ContentWrapper = (props) => {
+  const dispatch = useDispatch();
+
   const [collapsed, setCollapsed] = useState(true);
-  const { children, backendStatus } = props;
+  const { children } = props;
 
   const router = useRouter();
   const { experimentId } = router?.query || {};
   const route = router?.route || '';
 
-  const updateSocket = useRef(null);
+  const {
+    loading: pipelineLoading,
+    error: pipelineError,
+    status: pipelineStatus,
+  } = useSelector((state) => state.experimentSettings.pipelineStatus);
+  const [pipelineStatusRequested, setPipelineStatusRequested] = useState(false);
 
+  const updateSocket = useRef(null);
   useEffect(() => {
     if (!experimentId) {
       return;
     }
 
+    dispatch(loadPipelineStatus(experimentId));
     updateSocket.current = initUpdateSocket(experimentId, (res) => { console.log(res); });
   }, [experimentId]);
+
+  useEffect(() => {
+    if (pipelineStatusRequested) {
+      return;
+    }
+
+    setPipelineStatusRequested(true);
+  }, [pipelineLoading]);
 
   const BigLogo = () => (
     <div
@@ -163,7 +183,15 @@ const ContentWrapper = (props) => {
   ];
 
   const renderContent = () => {
-    if (backendStatus.pipeline?.running && !route.includes('data-processing')) {
+    if (pipelineLoading || !pipelineStatusRequested) {
+      return <PreloadContent />;
+    }
+
+    if (pipelineError) {
+      return <Error errorText='Could not get current pipeline settings.' />;
+    }
+
+    if (pipelineStatus.pipeline?.running && !route.includes('data-processing')) {
       return <PipelineRunningEmptyState experimentId={experimentId} />;
     }
 
@@ -195,7 +223,11 @@ const ContentWrapper = (props) => {
             {menuLinks.map(({
               path, icon, name, disableIfNoExperiment,
             }) => (
-              <Menu.Item disabled={!experimentId ? disableIfNoExperiment : false} key={path} icon={icon}>
+              <Menu.Item
+                disabled={!experimentId ? disableIfNoExperiment : false}
+                key={path}
+                icon={icon}
+              >
                 <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
                   <a>{name}</a>
                 </Link>
@@ -233,12 +265,7 @@ const ContentWrapper = (props) => {
   );
 };
 
-ContentWrapper.defaultProps = {
-  backendStatus: undefined,
-};
-
 ContentWrapper.propTypes = {
-  backendStatus: PropTypes.object,
   children: PropTypes.node.isRequired,
 };
 

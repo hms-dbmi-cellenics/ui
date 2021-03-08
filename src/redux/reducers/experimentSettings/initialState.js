@@ -1,4 +1,9 @@
 export default {
+  pipelineStatus: {
+    loading: false,
+    error: false,
+    status: {},
+  },
   processing: {
     meta: {
       complete: false,
