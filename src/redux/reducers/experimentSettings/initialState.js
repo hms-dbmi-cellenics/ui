@@ -7,10 +7,6 @@ export default {
       completingStepError: false,
       loadingSettingsError: false,
     },
-    pipelineStatus: {
-      status: undefined,
-      error: false,
-    },
     dataIntegration: {
       dataIntegration: {
         method: 'seuratv4',
