@@ -25,8 +25,8 @@ const ContentWrapper = (props) => {
   const { children, backendStatus } = props;
 
   const router = useRouter();
-  const { experimentId } = router.query;
-  const route = router.route || '';
+  const { experimentId } = router?.query || {};
+  const route = router?.route || '';
 
   const updateSocket = useRef(null);
 

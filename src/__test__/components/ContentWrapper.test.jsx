@@ -32,7 +32,7 @@ describe('ContentWrapper', () => {
   it('renders correctly', () => {
     const wrapper = mount(
       <Provider store={store}>
-        <ContentWrapper>
+        <ContentWrapper backendStatus={{}}>
           <></>
         </ContentWrapper>
       </Provider>,
@@ -59,7 +59,7 @@ describe('ContentWrapper', () => {
   it('links are disabled if there is no experimentId', () => {
     const wrapper = mount(
       <Provider store={store}>
-        <ContentWrapper>
+        <ContentWrapper backendStatus={{}}>
           <></>
         </ContentWrapper>
       </Provider>,
