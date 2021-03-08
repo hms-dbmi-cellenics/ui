@@ -22,24 +22,48 @@ import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/Gene
 import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
-import { completeProcessingStep, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
+
+import PlatformError from '../../../../components/PlatformError';
+import Loader from '../../../../components/Loader';
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
+import { completeProcessingStep, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
+import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 
 const { Text } = Typography;
 const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
-  const cellSetsProperties = useSelector((state) => state.cellSets.properties);
-  const cellSetsHierarchy = useSelector((state) => state.cellSets.hierarchy);
+  const dispatch = useDispatch();
 
-  const sampleKeys = cellSetsHierarchy.find(
+  const completedPath = '/experiments/[experimentId]/data-exploration';
+
+  const {
+    loading,
+    stepsDone: completedSteps,
+    loadingSettingsError,
+    completingStepError,
+  } = useSelector((state) => state.experimentSettings.processing.meta);
+
+  const cellSets = useSelector((state) => state.cellSets);
+
+  useEffect(() => {
+    if (cellSets.loading && !cellSets.error) {
+      dispatch(loadCellSets(experimentId));
+    }
+
+    if (loading && !loadingSettingsError) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, [experimentId]);
+
+  const sampleKeys = cellSets.hierarchy?.find(
     (rootNode) => (rootNode.key === 'sample'),
-  ).children.map(
+  )?.children.map(
     (child) => child.key,
   );
 
-  const inputsList = sampleKeys.map((key) => ({ key, headerName: `Sample ${cellSetsProperties[key].name}`, params: { ...cellSetsProperties[key], key } }));
+  const inputsList = sampleKeys?.map((key) => ({ key, headerName: `Sample ${cellSets.properties?.[key].name}`, params: { ...cellSets.properties?.[key], key } }));
 
   const steps = [
     {
@@ -149,26 +173,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
   ];
 
-  const dispatch = useDispatch();
-
-  const completedPath = '/experiments/[experimentId]/data-exploration';
-
-  const {
-    loading,
-    stepsDone: completedSteps,
-    loadingSettingsError,
-    completingStepError,
-  } = useSelector((state) => state.experimentSettings.processing.meta);
-
   const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
 
   const carouselRef = useRef(null);
-
-  useEffect(() => {
-    if (loading && !loadingSettingsError) {
-      dispatch(loadProcessingSettings(experimentId));
-    }
-  }, [experimentId]);
 
   useEffect(() => {
     setStepIdx(completedSteps.size % steps.length);
@@ -313,6 +320,32 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       </Col>
     </Row>
   );
+
+  if (loading || cellSets.loading) {
+    return (
+      <center>
+        <Loader experimentId={experimentId} />
+      </center>
+    );
+  }
+
+  if (loadingSettingsError) {
+    return (
+      <PlatformError
+        error={loadingSettingsError}
+        onClick={() => { dispatch(loadProcessingSettings(experimentId)); }}
+      />
+    );
+  }
+
+  if (cellSets.error) {
+    return (
+      <PlatformError
+        error={cellSets.error}
+        onClick={() => { dispatch(loadCellSets(experimentId)); }}
+      />
+    );
+  }
 
   return (
     <div style={{
