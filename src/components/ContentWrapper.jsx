@@ -38,6 +38,11 @@ const ContentWrapper = (props) => {
     error: pipelineError,
     status: pipelineStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
+
+  // This is used to prevent a race condition where the page would start loading immediately
+  // when the pipeline status was previously loaded. In that case, `pipelineLoading` is `false`
+  // and would be set to true only in the `loadPipelineStatus` action, the time between the
+  // two events would allow pages to load.
   const [pipelineStatusRequested, setPipelineStatusRequested] = useState(false);
 
   const updateSocket = useRef(null);
