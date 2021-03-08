@@ -11,6 +11,7 @@ import GeneSelectionMenu from '../../../../components/data-exploration/generic-g
 import SelectionActions from '../../../../components/data-exploration/generic-gene-table/SelectionActions';
 
 const mockStore = configureMockStore([thunk]);
+jest.mock('localforage');
 configure({ adapter: new Adapter() });
 
 let component;

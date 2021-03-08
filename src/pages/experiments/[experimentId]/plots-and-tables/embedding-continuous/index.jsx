@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import {
-  Row, Col, Space, Collapse, Input, Spin,
+  Row, Col, Space, Collapse, Input,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
