@@ -160,8 +160,8 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
             experimentData={experimentData}
             route={route}
             title='Plots and Tables'
-            extra={(
-              <Space>
+            extra={[
+              <Space key='extra-things'>
                 <Dropdown
                   trigger={['click']}
                   overlay={searchMenu}
@@ -182,8 +182,8 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
                     Create
                   </Button>
                 </Tooltip>
-              </Space>
-            )}
+              </Space>,
+            ]}
           />
           <Space direction='vertical' style={{ width: '100%' }}>
             <h1>Recommended</h1>
@@ -199,7 +199,11 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
                     extra={renderExtras(item)}
                     bodyStyle={{ padding: '0' }}
                   >
-                    <Link as={`/experiments/${experimentId}/plots-and-tables/${item.link}`} href={`/experiments/[experimentId]/plots-and-tables/${item.link}`} passHref>
+                    <Link
+                      as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
+                      href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
+                      passHref
+                    >
                       <CardItem item={item} />
                     </Link>
                   </Card>

@@ -16,6 +16,8 @@ import {
 } from '../../../redux/actions/experimentSettings';
 import { loadEmbedding } from '../../../redux/actions/embedding';
 
+import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
+
 const { Option } = Select;
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -38,6 +40,11 @@ const CalculationConfig = (props) => {
   const { method: embeddingMethod } = data?.embeddingSettings || {};
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
+
+  const debouncedCellSetClustering = useCallback(
+    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 1500),
+    [],
+  );
 
   const [resolution, setResolution] = useState(null);
   const [minDistance, setMinDistance] = useState(null);
@@ -281,6 +288,8 @@ const CalculationConfig = (props) => {
                     },
                   },
                 });
+
+                debouncedCellSetClustering(value);
               }}
             />
           </Form.Item>

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Mosaic, MosaicWindow, RemoveButton } from 'react-mosaic-component';
-import { Button } from 'antd';
+import { Mosaic, MosaicWindow } from 'react-mosaic-component';
+import { Button, Space, Empty } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
+import moment from 'moment';
 
 import Header from '../../components/Header';
 
 import NewProjectModal from './components/NewProjectModal';
+import ProjectsListContainer from './components/ProjectsListContainer';
 
 import 'react-mosaic-component/react-mosaic-component.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const DataManagementPage = ({ experimentId, experimentData, route }) => {
+const DataManagementPage = ({ route }) => {
   const renderWindow = (tile, width, height) => {
     if (tile) {
       return (
@@ -25,6 +27,7 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
 
   const [projectsList, setProjectsList] = useState([]);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
+  const [activeProjectIdx, setActiveProjectIdx] = useState(0);
 
   useEffect(() => {
     if (projectsList.length) {
@@ -32,27 +35,38 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
     }
   }, [projectsList]);
 
-  const createNewProject = () => {
+  const createNewProject = (newProjectName) => {
+    const newProject = {
+      name: newProjectName,
+      createdDate: moment().local().format('DD MMM YYYY, HH:mm:ss [GMT]Z'),
+      lastModified: moment().local().format('DD MMM YYYY, HH:mm:ss [GMT]Z'),
+      numSamples: 0,
+      lastAnalyzed: '-',
+    };
+
+    setProjectsList([...projectsList, newProject]);
+    setActiveProjectIdx(projectsList.length);
     setNewProjectModalVisible(false);
   };
 
   const TILE_MAP = {
     'Projects List': {
-      toolbarControls: [<RemoveButton />],
+      toolbarControls: [],
       component: (width, height) => (
-        <div width={width} height={height}>
+        <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
           <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
             Create New Project
           </Button>
-        </div>
+          <ProjectsListContainer projects={projectsList} height={height} activeProjectIdx={activeProjectIdx} />
+        </Space>
       ),
     },
     'Data Management': {
-      toolbarControls: [
-        <RemoveButton />,
-      ],
+      toolbarControls: [],
       component: (width, height) => (
-        <div width={width} height={height} />
+        <div width={width} height={height} style={{ paddingTop: '10rem' }}>
+          <Empty description='Create a new project to get started' />
+        </div>
       ),
     },
   };
@@ -61,14 +75,12 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
     direction: 'row',
     first: 'Projects List',
     second: 'Data Management',
-    splitPercentage: 15,
+    splitPercentage: 20,
   };
 
   return (
     <>
       <Header
-        experimentId={experimentId}
-        experimentData={experimentData}
         route={route}
         title='Data Management'
       />
@@ -105,8 +117,6 @@ const DataManagementPage = ({ experimentId, experimentData, route }) => {
 };
 
 DataManagementPage.propTypes = {
-  experimentId: PropTypes.string.isRequired,
-  experimentData: PropTypes.object.isRequired,
   route: PropTypes.string.isRequired,
 };
 

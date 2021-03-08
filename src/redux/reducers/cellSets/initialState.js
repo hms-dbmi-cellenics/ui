@@ -4,6 +4,7 @@ const initialState = {
   selected: [],
   loading: true,
   error: false,
+  updatingClustering: false,
   hidden: new Set(),
 };
 

@@ -56,6 +56,16 @@ const CELL_SETS_UNHIDE = `${CELL_SETS}/unhide`;
  */
 const CELL_SETS_UNHIDE_ALL = `${CELL_SETS}/unhideAll`;
 
+// /**
+//  * Cell sets clustering being recalculated.
+//  */
+const CELL_SETS_CLUSTERING_UPDATING = `${CELL_SETS}/clusteringUpdating`;
+
+// /**
+//  * Cell sets clustering being recalculated.
+//  */
+const CELL_SETS_CLUSTERING_UPDATED = `${CELL_SETS}/clusteringUpdated`;
+
 /**
  * Creates an error condition in the cell set tool.
  */
@@ -68,5 +78,6 @@ export {
   CELL_SETS_DELETE,
   CELL_SETS_SAVE,
   CELL_SETS_HIDE, CELL_SETS_UNHIDE, CELL_SETS_UNHIDE_ALL,
+  CELL_SETS_CLUSTERING_UPDATING, CELL_SETS_CLUSTERING_UPDATED,
   CELL_SETS_ERROR,
 };
