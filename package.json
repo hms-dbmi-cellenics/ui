@@ -63,12 +63,12 @@
     "react-spinners": "^0.10.6",
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
-    "socket.io-client": "^2.3.0",
     "swr": "^0.3.2",
     "terser-webpack-plugin": "^1.1.0",
     "thread-loader": "^2.1.3",
     "webpack": "^4.43.0",
-    "webpack-bundle-analyzer": "^3.3.2"
+    "webpack-bundle-analyzer": "^3.3.2",
+    "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
     "@ant-design/icons": "^4.2.1",
