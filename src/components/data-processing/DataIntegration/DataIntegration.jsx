@@ -87,7 +87,6 @@ const DataIntegration = () => {
     dispatch(updatePlotConfig(plotUuid, configUpdates));
     debounceSave(plotUuid);
   };
-
   const plots = {
     samplePlot: {
       plotUuid: samplePlotConfigRedux.uuid,
