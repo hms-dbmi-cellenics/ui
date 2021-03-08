@@ -1,15 +1,16 @@
 /* eslint-disable no-param-reassign */
 import { combineReducers } from 'redux';
-import cellSetsReducer from './cellSets';
-import notificationsReducer from './notificationsReducer';
-import embeddingsReducer from './embeddings';
-import genesReducer from './genes';
-import differentialExpressionReducer from './differentialExpression';
-import layoutReducer from './layout/layout';
-import componentConfigReducer from './componentConfig/index';
 import cellInfoReducer from './cellInfo';
-import experimentSettingsReducer from './experimentSettings';
 import cellMetaReducer from './cellMeta';
+import cellSetsReducer from './cellSets';
+import componentConfigReducer from './componentConfig/index';
+import differentialExpressionReducer from './differentialExpression';
+import embeddingsReducer from './embeddings';
+import experimentSettingsReducer from './experimentSettings';
+import genesReducer from './genes';
+import layoutReducer from './layout/layout';
+import notificationsReducer from './notificationsReducer';
+import projectsReducer from './projects';
 import sampleReducer from './samples';
 
 export default combineReducers({
@@ -23,5 +24,6 @@ export default combineReducers({
   genes: genesReducer,
   layout: layoutReducer,
   notifications: notificationsReducer,
+  projects: projectsReducer,
   samples: sampleReducer,
 });
