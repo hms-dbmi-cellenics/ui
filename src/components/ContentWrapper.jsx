@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -15,6 +15,7 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
+import initUpdateSocket from '../utils/initUpdateSocket';
 
 const { Sider, Footer } = Layout;
 const { Paragraph } = Typography;
@@ -25,6 +26,14 @@ const ContentWrapper = (props) => {
   const router = useRouter();
   const { experimentId } = router.query;
   const route = router.route || '';
+
+  const updateSocket = useRef(null);
+
+  useEffect(() => {
+    if (experimentId) {
+      updateSocket.current = initUpdateSocket(experimentId, (res) => { console.log(res); });
+    }
+  }, [experimentId]);
 
   const BigLogo = () => (
     <div
@@ -125,24 +134,28 @@ const ContentWrapper = (props) => {
 
   const menuLinks = [
     {
-      path: '/experiments/[experimentId]/data-management',
+      path: '/data-management',
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
+      disableIfNoExperiment: false,
     },
     {
       path: '/experiments/[experimentId]/data-processing',
       icon: <BuildOutlined />,
       name: 'Data Processing',
+      disableIfNoExperiment: true,
     },
     {
       path: '/experiments/[experimentId]/data-exploration',
       icon: <FundViewOutlined />,
       name: 'Data Exploration',
+      disableIfNoExperiment: true,
     },
     {
       path: '/experiments/[experimentId]/plots-and-tables',
       icon: <DatabaseOutlined />,
       name: 'Plots and Tables',
+      disableIfNoExperiment: true,
     },
   ];
 
@@ -168,8 +181,10 @@ const ContentWrapper = (props) => {
             }
             mode='inline'
           >
-            {menuLinks.map(({ path, icon, name }) => (
-              <Menu.Item key={path} icon={icon}>
+            {menuLinks.map(({
+              path, icon, name, disableIfNoExperiment,
+            }) => (
+              <Menu.Item disabled={!experimentId ? disableIfNoExperiment : false} key={path} icon={icon}>
                 <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
                   <a>{name}</a>
                 </Link>

@@ -5,6 +5,7 @@ import {
   CELL_SETS_DELETE,
   CELL_SETS_HIDE, CELL_SETS_UNHIDE, CELL_SETS_UNHIDE_ALL,
   CELL_SETS_ERROR,
+  CELL_SETS_CLUSTERING_UPDATING, CELL_SETS_CLUSTERING_UPDATED,
 } from '../../actionTypes/cellSets';
 
 import initialState from './initialState';
@@ -18,6 +19,8 @@ import cellSetsCreate from './cellSetsCreate';
 import cellSetsSetSelected from './cellSetsSetSelected';
 import cellSetsError from './cellSetsError';
 import { cellSetsHide, cellSetsUnhide, cellSetsUnhideAll } from './cellSetsHideUnhide';
+import cellSetsClusteringUpdating from './cellSetsClusteringUpdating';
+import cellSetsClusteringUpdated from './cellSetsClusteringUpdated';
 
 const cellSetsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -59,6 +62,14 @@ const cellSetsReducer = (state = initialState, action) => {
 
     case CELL_SETS_UNHIDE_ALL: {
       return cellSetsUnhideAll(state, action);
+    }
+
+    case CELL_SETS_CLUSTERING_UPDATING: {
+      return cellSetsClusteringUpdating(state, action);
+    }
+
+    case CELL_SETS_CLUSTERING_UPDATED: {
+      return cellSetsClusteringUpdated(state, action);
     }
 
     case CELL_SETS_ERROR: {

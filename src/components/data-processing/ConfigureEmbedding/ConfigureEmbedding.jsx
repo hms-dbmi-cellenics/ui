@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Spin, Collapse, Empty, Alert,
+  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -16,7 +16,7 @@ import plot2Pic from '../../../../static/media/plot10.png';
 import CalculationConfig from './CalculationConfig';
 
 import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
-import ContinuousEmbeddingPlot from '../../plots/ContinuousEmbeddingPlot';
+import DoubletScoresPlot from '../../plots/DoubletScoresPlot';
 import MitochondrialContentPlot from '../../plots/MitochondrialContentPlot';
 
 import {
@@ -27,7 +27,7 @@ import {
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import { loadCellSets } from '../../../redux/actions/cellSets';
+import { loadCellSets, updateCellSetsClustering } from '../../../redux/actions/cellSets';
 import Loader from '../../Loader';
 
 const { Panel } = Collapse;
@@ -37,18 +37,23 @@ const ConfigureEmbedding = (props) => {
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(false);
   const cellSets = useSelector((state) => state.cellSets);
+
   const router = useRouter();
   const dispatch = useDispatch();
   const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
 
-  const plots = {
+  const debouncedCellSetClustering = useCallback(
+    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
+    [],
+  );
 
+  const plots = {
     sample: {
       title: 'Colored by Samples',
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
       plotType: 'embeddingPreviewBySample',
-      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewBySample' />),
+      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} />),
     },
 
     cellCluster: {
@@ -56,23 +61,24 @@ const ConfigureEmbedding = (props) => {
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
       plotType: 'embeddingPreviewByCellSets',
-      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewByCellSets' />),
+      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} />),
     },
     mitochondrialContent: {
       title: 'Mitochondrial fraction reads',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialContent',
       plotType: 'embeddingPreviewMitochondrialContent',
-      plot: (config) => (<MitochondrialContentPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewMitochondrialContent' />),
+      plot: (config) => (<MitochondrialContentPlot experimentId={experimentId} config={config} />),
     },
-    doubletScore: {
+    doubletScores: {
       title: 'Cell doublet score',
       imgSrc: plot2Pic,
-      plotUuid: 'embeddingPreviewDoubletScore',
-      plotType: 'embeddingPreviewDoubletScore',
-      plot: (config) => (<ContinuousEmbeddingPlot experimentId={experimentId} config={config} plotUuid='embeddingPreviewDoubletScore' />),
+      plotUuid: 'embeddingPreviewDoubletScores',
+      plotType: 'embeddingPreviewDoubletScores',
+      plot: (config) => (<DoubletScoresPlot experimentId={experimentId} config={config} />),
     },
   };
+
   const outstandingChanges = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges);
 
   const config = useSelector(
@@ -95,8 +101,16 @@ const ConfigureEmbedding = (props) => {
       return;
     }
 
-    if (!cellSets.loading && !cellSets.error && config) {
+    if (!cellSets.loading && !cellSets.error && !cellSets.updateCellSetsClustering && config) {
       setPlot(plots[selectedPlot].plot(config));
+      if (!config.selectedCellSet) { return; }
+
+      const propertiesArray = Object.keys(cellSets.properties);
+      const cellSetClusteringLength = propertiesArray.filter((cellSet) => cellSet === config.selectedCellSet).length;
+
+      if (!cellSetClusteringLength) {
+        debouncedCellSetClustering(0.5);
+      }
     }
   }, [config, cellSets]);
 
@@ -242,7 +256,7 @@ const ConfigureEmbedding = (props) => {
         controls: ['legend'],
       },
     ],
-    doubletScore: [
+    doubletScores: [
       {
         panelTitle: 'Colours',
         controls: ['colourScheme', 'colourInversion'],

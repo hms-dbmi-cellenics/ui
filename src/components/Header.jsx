@@ -23,7 +23,7 @@ const Header = (props) => {
       breadcrumbName: 'Analyses',
     },
     '[experimentId]': {
-      breadcrumbName: experimentData.experimentName,
+      breadcrumbName: experimentData?.experimentName,
       params: experimentId,
     },
     'data-exploration': {
@@ -67,14 +67,16 @@ const Header = (props) => {
 };
 
 Header.propTypes = {
-  experimentId: PropTypes.string.isRequired,
-  experimentData: PropTypes.object.isRequired,
+  experimentId: PropTypes.string,
+  experimentData: PropTypes.object,
   route: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   extra: PropTypes.object,
 };
 
 Header.defaultProps = {
+  experimentId: null,
+  experimentData: null,
   extra: [],
 };
 

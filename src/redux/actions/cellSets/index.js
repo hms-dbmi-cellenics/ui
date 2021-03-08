@@ -1,6 +1,6 @@
 import createCellSet from './createCellSet';
 import deleteCellSet from './deleteCellSet';
-import resetCellSets from './resetCellSets';
+import updateCellSetsClustering from './updateCellSetsClustering';
 
 import loadCellSets from './loadCellSets';
 import saveCellSets from './saveCellSets';
@@ -13,7 +13,7 @@ import unhideAllCellSets from './unhideAllCellSets';
 export {
   createCellSet,
   deleteCellSet,
-  resetCellSets,
+  updateCellSetsClustering,
   loadCellSets,
   saveCellSets,
   updateCellSetHierarchy,

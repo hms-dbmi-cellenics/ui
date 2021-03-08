@@ -50,7 +50,7 @@ const PlatformError = (props) => {
     return (
       <>
         <Text type='primary'>
-          {description || 'We\'re sorry, we couldn\'t load this.'}
+          {description || 'We\'re sorry, we couldn\'t load this. '}
         </Text>
         <Text type='secondary'>
           {reason}
@@ -91,7 +91,9 @@ PlatformError.defaultProps = {
 
 PlatformError.propTypes = {
   description: PropTypes.string,
-  error: PropTypes.string,
+  error: PropTypes.oneOfType([
+    PropTypes.string, PropTypes.object,
+  ]),
   onClick: PropTypes.func,
 };
 
