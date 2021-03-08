@@ -5,6 +5,7 @@ const projectTemplate = {
   lastModified: null,
   samples: [],
   lastAnalyzed: null,
+  experiments: [],
 };
 
 const initialState = {
