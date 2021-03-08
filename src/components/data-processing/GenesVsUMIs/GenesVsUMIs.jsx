@@ -6,6 +6,7 @@ import {
   Collapse, Row, Col, Space, Button, Tooltip,
   InputNumber, Select, Slider, Form,
 } from 'antd';
+import PropTypes from 'prop-types';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
@@ -16,6 +17,8 @@ import plot2Pic from '../../../../static/media/plot8.png';
 import plotData from './new_data.json';
 import OldPlotStyling from '../../plots/styling/OldPlotStyling';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
+
+import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -347,7 +350,10 @@ class GenesVsUMIs extends React.Component {
     const data = { plotData: this.generateData() };
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
-    const { filtering } = this.props;
+    const {
+      experimentId, sampleId, filtering, sampleIds,
+    } = this.props;
+
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
       if (val) {
@@ -412,67 +418,7 @@ class GenesVsUMIs extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <Form.Item
-                  label='Regression type:'
-                >
-                  <Select
-                    defaultValue='option1'
-                    style={{ width: 200 }}
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                  >
-                    <Option value='option1'>Gam</Option>
-                    <Option value='option2'>option2</Option>
-                    <Option value='option3'>option3</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  label='Smoothing:'
-                >
-                  <Slider
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                    defaultValue={13}
-                    min={5}
-                    max={21}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label='Upper cut-off:'
-                >
-                  <Slider
-                    defaultValue={4.8}
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                    min={2}
-                    max={config.sliderMax}
-                    onAfterChange={(val) => this.updatePlotWithChanges({ upCutoff: val })}
-                    step={0.1}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label='Lower cut-off:'
-                >
-                  <Slider
-                    defaultValue={2.1}
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                    min={2}
-                    max={config.sliderMax}
-                    onAfterChange={(val) => this.updatePlotWithChanges({ lowCutoff: val })}
-                    step={0.1}
-                  />
-                </Form.Item>
-                <Form.Item label='Stringency'>
-                  <InputNumber
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                    max={5}
-                    min={0}
-                    step={0.1}
-                    placeholder={2.1}
-                  />
-                </Form.Item>
-                <BandwidthOrBinstep
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  type={config.type}
-                />
+                <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}

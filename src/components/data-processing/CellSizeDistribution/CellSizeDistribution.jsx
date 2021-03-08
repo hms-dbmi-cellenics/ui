@@ -1,16 +1,15 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Collapse,
   Row,
   Col,
   List,
   Space,
-  Form,
   Tooltip,
   Button,
-  InputNumber,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -20,7 +19,8 @@ import plot2Pic from '../../../../static/media/plot2.png';
 import plotData2 from './cellRank_sorted.json';
 import plotData from './new_data.json';
 import OldPlotStyling from '../../plots/styling/OldPlotStyling';
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
+
+import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
 
@@ -427,7 +427,9 @@ class CellSizeDistribution extends React.Component {
   render() {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
-    const { filtering } = this.props;
+    const {
+      experimentId, sampleId, filtering, sampleIds,
+    } = this.props;
     let data = { plotData: this.generateData() };
     if (!config.plotToDraw) {
       data = { plotData2: this.generateData2() };
@@ -462,13 +464,6 @@ class CellSizeDistribution extends React.Component {
       }
     };
 
-    const changeCellSize = (val) => {
-      if (config.plotToDraw) {
-        this.updatePlotWithChanges({ minCellSize: val.target.value });
-      } else {
-        this.updatePlotWithChanges({ minCellSize2: val.target.value });
-      }
-    };
     return (
       <>
         <Row>
@@ -517,20 +512,7 @@ class CellSizeDistribution extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <Form.Item label='Min cell size:'>
-                  <InputNumber
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                    onPressEnter={(val) => changeCellSize(val)}
-                    placeholder={config.placeholder}
-                    step={100}
-                  />
-                </Form.Item>
-                <BandwidthOrBinstep
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  type={config.type}
-                  max={400}
-                />
+                <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
@@ -547,5 +529,16 @@ class CellSizeDistribution extends React.Component {
     );
   }
 }
+
+CellSizeDistribution.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  filtering: PropTypes.bool,
+  sampleIds: PropTypes.array.isRequired,
+};
+
+CellSizeDistribution.defaultProps = {
+  filtering: true,
+};
 
 export default CellSizeDistribution;

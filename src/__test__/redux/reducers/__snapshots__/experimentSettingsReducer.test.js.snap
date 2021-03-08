@@ -3,6 +3,18 @@
 exports[`experimentSettingsReducer Adds new object properly 1`] = `
 Object {
   "processing": Object {
+    "cellSizeDistribution": Object {
+      "filterSettings": Object {
+        "binStep": 200,
+        "minCellSize": 10800,
+      },
+    },
+    "classifier": Object {
+      "filterSettings": Object {
+        "bandwidth": -1,
+        "minProbability": 0.82,
+      },
+    },
     "configureEmbedding": Object {
       "clusteringSettings": Object {
         "method": "louvain",
@@ -46,12 +58,39 @@ Object {
         "numPCs": 30,
       },
     },
+    "doubletScores": Object {
+      "filterSettings": Object {
+        "binStep": 0.05,
+        "probabilityThreshold": 0.2,
+      },
+    },
     "meta": Object {
       "complete": false,
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
       "stepsDone": Set {},
+    },
+    "mitochondrialContent": Object {
+      "filterSettings": Object {
+        "method": "absolute_threshold",
+        "methodSettings": Object {
+          "absolute_threshold": Object {
+            "binStep": 200,
+            "maxFraction": 0.1,
+          },
+        },
+      },
+    },
+    "numGenesVsNumUmis": Object {
+      "filterSettings": Object {
+        "binStep": 0.05,
+        "lowerCutoff": 2.1,
+        "regressionType": "gam",
+        "smoothing": 13,
+        "stringency": 2.1,
+        "upperCutoff": 4.8,
+      },
     },
     "test": "test data",
   },
@@ -61,6 +100,18 @@ Object {
 exports[`experimentSettingsReducer Adds new value properly 1`] = `
 Object {
   "processing": Object {
+    "cellSizeDistribution": Object {
+      "filterSettings": Object {
+        "binStep": 200,
+        "minCellSize": 10800,
+      },
+    },
+    "classifier": Object {
+      "filterSettings": Object {
+        "bandwidth": -1,
+        "minProbability": 0.82,
+      },
+    },
     "configureEmbedding": Object {
       "clusteringSettings": Object {
         "method": "louvain",
@@ -101,12 +152,39 @@ Object {
         "numPCs": 30,
       },
     },
+    "doubletScores": Object {
+      "filterSettings": Object {
+        "binStep": 0.05,
+        "probabilityThreshold": 0.2,
+      },
+    },
     "meta": Object {
       "complete": false,
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
       "stepsDone": Set {},
+    },
+    "mitochondrialContent": Object {
+      "filterSettings": Object {
+        "method": "absolute_threshold",
+        "methodSettings": Object {
+          "absolute_threshold": Object {
+            "binStep": 200,
+            "maxFraction": 0.1,
+          },
+        },
+      },
+    },
+    "numGenesVsNumUmis": Object {
+      "filterSettings": Object {
+        "binStep": 0.05,
+        "lowerCutoff": 2.1,
+        "regressionType": "gam",
+        "smoothing": 13,
+        "stringency": 2.1,
+        "upperCutoff": 4.8,
+      },
     },
     "test": "test data",
   },
@@ -116,6 +194,18 @@ Object {
 exports[`experimentSettingsReducer Updates existing value properly 1`] = `
 Object {
   "processing": Object {
+    "cellSizeDistribution": Object {
+      "filterSettings": Object {
+        "binStep": 200,
+        "minCellSize": 10800,
+      },
+    },
+    "classifier": Object {
+      "filterSettings": Object {
+        "bandwidth": -1,
+        "minProbability": 0.82,
+      },
+    },
     "configureEmbedding": Object {
       "clusteringSettings": Object {
         "method": "louvain",
@@ -155,12 +245,39 @@ Object {
         "numPCs": 30,
       },
     },
+    "doubletScores": Object {
+      "filterSettings": Object {
+        "binStep": 0.05,
+        "probabilityThreshold": 0.2,
+      },
+    },
     "meta": Object {
       "complete": false,
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
       "stepsDone": Set {},
+    },
+    "mitochondrialContent": Object {
+      "filterSettings": Object {
+        "method": "absolute_threshold",
+        "methodSettings": Object {
+          "absolute_threshold": Object {
+            "binStep": 200,
+            "maxFraction": 0.1,
+          },
+        },
+      },
+    },
+    "numGenesVsNumUmis": Object {
+      "filterSettings": Object {
+        "binStep": 0.05,
+        "lowerCutoff": 2.1,
+        "regressionType": "gam",
+        "smoothing": 13,
+        "stringency": 2.1,
+        "upperCutoff": 4.8,
+      },
     },
     "test": "test data",
   },
