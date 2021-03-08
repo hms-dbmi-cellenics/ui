@@ -10,7 +10,7 @@ const SingleComponentMultipleDataContainer = (props) => {
 
   return (
     <div style={{
-      position: 'absolute', top: 0, bottom: 0, overflow: 'auto', width: window.innerWidth * 0.89,
+      position: 'relative', overflow: 'scroll', height: window.innerHeight * 0.8, width: window.innerWidth * 0.89,
     }}
     >
       <Collapse defaultActiveKey={defaultActiveKey}>

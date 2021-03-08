@@ -34,10 +34,10 @@ const CalculationConfig = (props) => {
 
   const dispatch = useDispatch();
 
-  const [individualChangesWarningEnabled, setIndividualChangesWarningEnabled] = useState(false);
+  const [displayIndividualChangesWarning, setDisplayIndividualChangesWarning] = useState(false);
 
   const updateAllSettings = () => {
-    setIndividualChangesWarningEnabled(false);
+    setDisplayIndividualChangesWarning(false);
 
     const newConfig = {};
     sampleIds.forEach((currentSampleId) => {
@@ -57,7 +57,7 @@ const CalculationConfig = (props) => {
 
     const sampleSpecificDiff = { [sampleId]: { filterSettings: newConfig } };
 
-    setIndividualChangesWarningEnabled(true);
+    setDisplayIndividualChangesWarning(true);
     dispatch(updateProcessingSettings(
       experimentId,
       FILTER_UUID,
@@ -142,7 +142,7 @@ const CalculationConfig = (props) => {
         type='bin step'
       />
       <Button onClick={updateAllSettings}>Apply settings to all samples</Button>
-      {individualChangesWarningEnabled && (
+      {displayIndividualChangesWarning && (
         <Form.Item>
           <Alert
             message='Your changes are only applied to this sample. To apply it to all other samples, click Apply settings to all samples.'

@@ -315,28 +315,26 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   );
 
   return (
-    <>
-      <div style={{
-        paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', minHeight: '100vh',
-      }}
-      >
-        <Header
-          experimentId={experimentId}
-          experimentData={experimentData}
-          route={route}
-          title='Data Processing'
-        />
+    <div style={{
+      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', minHeight: '100vh',
+    }}
+    >
+      <Header
+        experimentId={experimentId}
+        experimentData={experimentData}
+        route={route}
+        title='Data Processing'
+      />
 
-        <Card
-          title={renderTitle()}
-          style={{ flex: 1 }}
-        >
-          <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
-            {steps.map(({ render, key }) => render(key, experimentId))}
-          </Carousel>
-        </Card>
-      </div>
-    </>
+      <Card
+        title={renderTitle()}
+        style={{ flex: 1 }}
+      >
+        <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
+          {steps.map(({ render, key }) => render(key, experimentId))}
+        </Carousel>
+      </Card>
+    </div>
   );
 };
 
