@@ -10,8 +10,12 @@ import componentConfigReducer from './componentConfig/index';
 import cellInfoReducer from './cellInfo';
 import experimentSettingsReducer from './experimentSettings';
 import cellMetaReducer from './cellMeta';
+import projectsReducer from './projects';
 
 export default combineReducers({
+  projects: projectsReducer,
+  experimentSettings: experimentSettingsReducer,
+  componentConfig: componentConfigReducer,
   cellSets: cellSetsReducer,
   notifications: notificationsReducer,
   embeddings: embeddingsReducer,
@@ -19,7 +23,5 @@ export default combineReducers({
   differentialExpression: differentialExpressionReducer,
   cellInfo: cellInfoReducer,
   layout: layoutReducer,
-  componentConfig: componentConfigReducer,
-  experimentSettings: experimentSettingsReducer,
   cellMeta: cellMetaReducer,
 });
