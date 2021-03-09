@@ -126,7 +126,7 @@ const CellSetsTool = (props) => {
             }}
             helpTitle='Create new cell set from the complement of the selected sets'
           />
-          <Text type='primary'>
+          <Text type='primary' id='selectedCellSets'>
             {numSelected}
             {' '}
             cell
@@ -189,8 +189,8 @@ const CellSetsTool = (props) => {
               : (
                 <Empty description={(
                   <>
-                    <div><Text type='primary'>You don&apos;t have any metadata added yet.</Text></div>
-                    <div><Text type='secondary'>Metadata is an experimental feature for certain pre-processed or multi-sample data sets.</Text></div>
+                    <Text type='primary'>You don&apos;t have any metadata added yet.</Text>
+                    <Text type='secondary'>Metadata is an experimental feature for certain pre-processed or multi-sample data sets.</Text>
                   </>
                 )}
                 />
