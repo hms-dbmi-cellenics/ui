@@ -148,6 +148,7 @@ const Header = (props) => {
             e.preventDefault();
           }}
         />
+
         <PageHeader
           style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
           title='Edit collection'

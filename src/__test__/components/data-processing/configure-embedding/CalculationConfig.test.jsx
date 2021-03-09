@@ -8,6 +8,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
+import { act } from 'react-dom/test-utils';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
@@ -143,7 +144,7 @@ describe('Data Processing CalculationConfig', () => {
     expect(button.at(0).getElement().props.disabled).toEqual(true);
 
     // Switching the embedding type...
-    component.find(Select).at(0).getElement().props.onChange('tsne');
+    act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
     component.update();
 
     // The alert should appear.
@@ -169,7 +170,7 @@ describe('Data Processing CalculationConfig', () => {
     );
 
     // Switching the embedding type...
-    component.find(Select).at(0).getElement().props.onChange('tsne');
+    act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
     component.update();
 
     // ... and clicking the Apply button.

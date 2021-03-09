@@ -91,7 +91,7 @@ const HeatmapGroupBySettings = (props) => {
             const positionInCellSetOrder = indexOfCellSet(cellSet);
 
             return (
-              <Menu.Item size='small'>
+              <Menu.Item key={cellSet} size='small'>
                 <div onClick={stopPropagationEvent} onKeyDown={stopPropagationEvent}>
                   <Button
                     shape='square'

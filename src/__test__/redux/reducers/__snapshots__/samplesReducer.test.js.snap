@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`samplesReducer Adds a new sample correctly 1`] = `
+Object {
+  "12345": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [
+      "features.tsv",
+    ],
+    "files": Object {
+      "features.tsv": Object {
+        "error": false,
+        "mime": "",
+        "name": "features.tsv",
+        "objectKey": "",
+        "size": 0,
+        "success": false,
+      },
+    },
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "name": "test sample",
+    "species": null,
+    "type": null,
+    "uuid": "12345",
+  },
+  "67890": Object {
+    "complete": false,
+    "createdDate": "2021-01-02T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-02T14:48:00.000Z",
+    "name": "test sample 2",
+    "species": null,
+    "type": null,
+    "uuid": "67890",
+  },
+  "ids": Array [
+    "12345",
+    "67890",
+  ],
+}
+`;
+
+exports[`samplesReducer Inserts a new sample correctly 1`] = `
+Object {
+  "12345": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [
+      "features.tsv",
+    ],
+    "files": Object {
+      "features.tsv": Object {
+        "error": false,
+        "mime": "",
+        "name": "features.tsv",
+        "objectKey": "",
+        "size": 0,
+        "success": false,
+      },
+    },
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "name": "test sample",
+    "species": null,
+    "type": null,
+    "uuid": "12345",
+  },
+  "ids": Array [
+    "12345",
+  ],
+}
+`;

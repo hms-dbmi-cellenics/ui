@@ -71,7 +71,7 @@ Header.propTypes = {
   experimentData: PropTypes.object,
   route: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  extra: PropTypes.array,
+  extra: PropTypes.object,
 };
 
 Header.defaultProps = {
