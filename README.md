@@ -1,5 +1,6 @@
 UI
 ======
+
 The user interface of Cellscope (the Biomage single cell analysis platform).
 
 Development
@@ -11,6 +12,7 @@ We highly recommend using VSCode for development, if you don't have it, make sur
 `homebrew`, `docker`, `npm`.
 
 ### Running locally
+
 Make sure that you clone this repo and are in the `ui` folder. then simply do:
 
     npm install
@@ -24,7 +26,6 @@ To get it running end-to-end locally with mocked dataset, you will need to set u
 - worker: https://github.com/biomage-ltd/worker
 
 Just follow the README of each of them for instructions on how to get it to run.
-
 
 ### How to run tests in debug mode
 

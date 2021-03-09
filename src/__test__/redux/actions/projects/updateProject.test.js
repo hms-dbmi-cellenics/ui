@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateProject from '../../../../redux/actions/projects/updateProject';
@@ -36,6 +37,16 @@ describe('updateProject action', () => {
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(PROJECTS_UPDATE);
+  });
+
+  it('Updates the lastModified field', async () => {
+    const originalModifiedDate = updatedProject.lastModified;
+    const store = mockStore(mockState);
+    await store.dispatch(updateProject(updatedProject));
+
+    const { project } = store.getActions()[0].payload;
+    expect(project.lastModified).not.toEqual(originalModifiedDate);
+    expect(_.omit(project, 'lastModified')).toEqual(_.omit(updatedProject, 'lastModified'));
   });
 
   it('Does not dispatch event if object contents are the same', async () => {
