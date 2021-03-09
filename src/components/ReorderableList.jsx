@@ -8,9 +8,7 @@ const ReorderableList = (props) => {
   const {
     onChange, defaultList, leftItem, rightItem,
   } = props;
-
   const [reorderableList, setReorderableList] = useState(defaultList);
-
   useEffect(() => {
     setReorderableList(defaultList);
   }, [defaultList]);
@@ -78,7 +76,7 @@ const ReorderableList = (props) => {
   );
 
   const composeItem = (itemData, i) => (
-    <div>
+    <div key={i}>
       {leftItem(itemData, i)}
 
       {upButton(itemData.key, i)}
@@ -98,8 +96,8 @@ const ReorderableList = (props) => {
 };
 
 ReorderableList.propTypes = {
-  onChange: PropTypes.node.isRequired,
-  defaultList: PropTypes.node.isRequired,
+  onChange: PropTypes.func.isRequired,
+  defaultList: PropTypes.array.isRequired,
   leftItem: () => { },
   rightItem: () => { },
 };

@@ -9,6 +9,7 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import waitForActions from 'redux-mock-store-await-actions';
+import { act } from 'react-dom/test-utils';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
@@ -118,7 +119,7 @@ describe('Data Integration Calculation Config', () => {
       </Provider>,
     );
 
-    component.find(Select).at(0).getElement().props.onChange('seuratv3');
+    act(() => { component.find(Select).at(0).getElement().props.onChange('seuratv3'); });
     component.update();
 
     expect(component.find(Alert).length).toEqual(1);
@@ -133,7 +134,7 @@ describe('Data Integration Calculation Config', () => {
       </Provider>,
     );
 
-    component.find(Select).at(0).getElement().props.onChange('seuratv3');
+    act(() => { component.find(Select).at(0).getElement().props.onChange('seuratv3'); });
     component.update();
 
     const actions = store.getActions();
@@ -164,7 +165,7 @@ describe('Data Integration Calculation Config', () => {
       </Provider>,
     );
 
-    component.find(Select).at(0).getElement().props.onChange('seuratv3');
+    act(() => { component.find(Select).at(0).getElement().props.onChange('seuratv3'); });
     component.update();
 
     expect(component.find(Alert).length).toEqual(1);

@@ -6,10 +6,12 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import configureMockStore from 'redux-mock-store';
 import { Select } from 'antd';
+import { act } from 'react-dom/test-utils';
 import GeneSelectionMenu from '../../../../components/data-exploration/generic-gene-table/GeneSelectionMenu';
 import SelectionActions from '../../../../components/data-exploration/generic-gene-table/SelectionActions';
 
 const mockStore = configureMockStore([thunk]);
+jest.mock('localforage');
 configure({ adapter: new Adapter() });
 
 let component;
@@ -54,7 +56,7 @@ describe('ComponentActions', () => {
     expect(component.find(Select).length).toEqual(0);
 
     // click "List"
-    component.find(SelectionActions).props().onListSelected(true);
+    act(() => { component.find(SelectionActions).props().onListSelected(true); });
     component.update();
 
     expect(component.find(Select).length).toEqual(1);

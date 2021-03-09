@@ -257,7 +257,6 @@ const HierarchicalTree = (props) => {
   const renderTitlesRecursive = (source, parentKey = null) => {
     const toRender = source && source.map((d) => {
       const modified = d;
-
       modified.title = (
         <Space>
           {renderFocusButton(modified)}

@@ -2,12 +2,27 @@ import React from 'react';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import HierarchicalTree from '../../../../components/data-exploration/hierarchical-tree/HierarchicalTree';
+import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
 
 jest.mock('localforage');
 
 configure({ adapter: new Adapter() });
-
+const experimentId = 'asd';
 describe('HierarchicalTree', () => {
+  it('tree data can be checked by default by passing defaultCheckedKeys prop', () => {
+    const treeData = [
+      { key: 'louvain', children: [{ key: 'one' }, { key: 'two' }, { key: 'three' }] },
+      { key: 'another-set', children: [{ key: 'four' }, { key: 'five' }, { key: 'six' }] },
+    ];
+    const mockOnCheck = jest.fn();
+
+    waitForComponentToPaint(mount(
+      <HierarchicalTree treeData={treeData} experimentId={experimentId} defaultCheckedKeys={['louvain', 'one', 'two', 'three']} onCheck={mockOnCheck} />,
+    ));
+
+    expect(mockOnCheck).toHaveBeenCalledTimes(1);
+    expect(mockOnCheck).toHaveBeenCalledWith(['louvain', 'one', 'two', 'three']);
+  });
   it('renders correctly', () => {
     const treeData = [{
       key: '1',
@@ -17,8 +32,9 @@ describe('HierarchicalTree', () => {
     }];
 
     const component = mount(
-      <HierarchicalTree treeData={treeData} experimentId='asd' />,
+      <HierarchicalTree treeData={treeData} experimentId={experimentId} />,
     );
+    waitForComponentToPaint(component);
     const tree = component.find('HierarchicalTree Tree');
     expect(tree.length).toEqual(1);
   });
@@ -71,9 +87,9 @@ describe('HierarchicalTree', () => {
 
     const mockOnHierarchyUpdate = jest.fn();
     const component = mount(
-      <HierarchicalTree treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
+      <HierarchicalTree experimentId={experimentId} treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
     );
-
+    waitForComponentToPaint(component);
     const tree = component.find('HierarchicalTree Tree');
     tree.getElement().props.onDrop(dropInfo);
     component.update();
@@ -126,9 +142,9 @@ describe('HierarchicalTree', () => {
 
     const mockOnHierarchyUpdate = jest.fn();
     const component = mount(
-      <HierarchicalTree treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
+      <HierarchicalTree treeData={treeData} experimentId={experimentId} onHierarchyUpdate={mockOnHierarchyUpdate} />,
     );
-
+    waitForComponentToPaint(component);
     const tree = component.find('HierarchicalTree Tree');
     tree.getElement().props.onDrop(dropInfo);
     component.update();
@@ -175,10 +191,11 @@ describe('HierarchicalTree', () => {
     };
 
     const mockOnHierarchyUpdate = jest.fn();
-    const component = mount(
-      <HierarchicalTree treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
-    );
 
+    const component = mount(
+      <HierarchicalTree treeData={treeData} experimentId={experimentId} onHierarchyUpdate={mockOnHierarchyUpdate} />,
+    );
+    waitForComponentToPaint(component);
     let tree = component.find('HierarchicalTree Tree');
     tree.getElement().props.onDrop(dropInfo);
     component.update();
@@ -195,22 +212,9 @@ describe('HierarchicalTree', () => {
   it('tree data is not checked by default', () => {
     const treeData = [{ key: 'louvain' }];
     const mockOnCheck = jest.fn();
-    mount(
-      <HierarchicalTree treeData={treeData} onCheck={mockOnCheck} />,
-    );
+    waitForComponentToPaint(mount(
+      <HierarchicalTree treeData={treeData} experimentId={experimentId} onCheck={mockOnCheck} />,
+    ));
     expect(mockOnCheck).toHaveBeenCalledTimes(0);
-  });
-
-  it('tree data can be checked by default by passing defaultCheckedKeys prop', () => {
-    const treeData = [
-      { key: 'louvain', children: [{ key: 'one' }, { key: 'two' }, { key: 'three' }] },
-      { key: 'another-set', children: [{ key: 'four' }, { key: 'five' }, { key: 'six' }] },
-    ];
-    const mockOnCheck = jest.fn();
-    mount(
-      <HierarchicalTree treeData={treeData} defaultCheckedKeys={['louvain', 'one', 'two', 'three']} onCheck={mockOnCheck} />,
-    );
-    expect(mockOnCheck).toHaveBeenCalledTimes(1);
-    expect(mockOnCheck).toHaveBeenCalledWith(['louvain', 'one', 'two', 'three']);
   });
 });
