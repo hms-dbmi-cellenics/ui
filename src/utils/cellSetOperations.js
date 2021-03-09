@@ -2,7 +2,6 @@ const union = (listOfSets, properties) => {
   if (!listOfSets) {
     return new Set();
   }
-
   const sets = listOfSets.map((key) => properties[key]?.cellIds || []);
   const unionSet = new Set(
     [].concat(

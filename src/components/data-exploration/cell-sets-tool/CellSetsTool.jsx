@@ -43,9 +43,8 @@ const CellSetsTool = (props) => {
   const [activeTab, setActiveTab] = useState('cellSets');
 
   const {
-    loading, error, properties, hierarchy, selected, hidden,
+    loading, error, properties, hierarchy, selected: allSelected, hidden,
   } = cellSets;
-
   const FOCUS_TYPE = 'cellSets';
 
   useEffect(() => {
@@ -79,7 +78,7 @@ const CellSetsTool = (props) => {
   };
 
   const onCheck = (keys) => {
-    dispatch(updateCellSetSelected(experimentId, keys));
+    dispatch(updateCellSetSelected(experimentId, keys, activeTab));
   };
 
   /**
@@ -97,7 +96,7 @@ const CellSetsTool = (props) => {
         />
       );
     }
-
+    const selected = allSelected[activeTab];
     let operations = null;
     const numSelected = union(selected, properties).size;
 
