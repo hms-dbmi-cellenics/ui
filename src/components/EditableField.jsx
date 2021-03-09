@@ -112,13 +112,14 @@ EditableField.defaultProps = {
   onAfterCancel: () => null,
   onDelete: () => null,
   renderBold: false,
+  value: null,
   showEdit: true,
   deleteEnabled: true,
   defaultEditing: false,
 };
 
 EditableField.propTypes = {
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string,
   onAfterSubmit: PropTypes.func,
   onAfterCancel: PropTypes.func,
   onDelete: PropTypes.func,

@@ -22,37 +22,144 @@ import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/Gene
 import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
+
+import PlatformError from '../../../../components/PlatformError';
+import Loader from '../../../../components/Loader';
+
+import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 import { completeProcessingStep, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
+import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 
 const { Text } = Typography;
 const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
+  const dispatch = useDispatch();
+
+  const completedPath = '/experiments/[experimentId]/data-exploration';
+
+  const {
+    loading,
+    stepsDone: completedSteps,
+    loadingSettingsError,
+    completingStepError,
+  } = useSelector((state) => state.experimentSettings.processing.meta);
+
+  const cellSets = useSelector((state) => state.cellSets);
+
+  useEffect(() => {
+    if (cellSets.loading && !cellSets.error) {
+      dispatch(loadCellSets(experimentId));
+    }
+
+    if (loading && !loadingSettingsError) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, [experimentId]);
+
+  const sampleKeys = cellSets.hierarchy?.find(
+    (rootNode) => (rootNode.key === 'sample'),
+  )?.children.map(
+    (child) => child.key,
+  );
+
+  const inputsList = sampleKeys?.map((key) => ({ key, headerName: `Sample ${cellSets.properties?.[key].name}`, params: { ...cellSets.properties?.[key], key } }));
+
   const steps = [
     {
       key: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
-      render: (key) => <CellSizeDistribution filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
+            <CellSizeDistribution
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
+        />
+      ),
     },
     {
       key: 'mitoContentFilter',
       name: 'Mitochondrial content filter',
-      render: (key) => <MitochondrialContent filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
+            <MitochondrialContent
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
+        />
+      ),
     },
     {
       key: 'classifierFilter',
       name: 'Classifier filter',
-      render: (key) => <Classifier filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
+            <Classifier
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
+        />
+      ),
     },
     {
       key: 'genesVsUMIFilter',
       name: 'Number of genes vs UMIs filter',
-      render: (key) => <GenesVsUMIs filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
+            <GenesVsUMIs
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
+        />
+      ),
     },
     {
       key: 'doubletFilter',
       name: 'Doublet filter',
-      render: (key) => <DoubletScores filtering key={key} />,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
+            <DoubletScores
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+            />
+          )}
+        />
+      ),
     },
     {
       key: 'dataIntegration',
@@ -66,26 +173,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
   ];
 
-  const dispatch = useDispatch();
-
-  const completedPath = '/experiments/[experimentId]/data-exploration';
-
-  const {
-    loading,
-    stepsDone: completedSteps,
-    loadingSettingsError,
-    completingStepError,
-  } = useSelector((state) => state.experimentSettings.processing.meta);
-
   const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
 
   const carouselRef = useRef(null);
-
-  useEffect(() => {
-    if (loading && !loadingSettingsError) {
-      dispatch(loadProcessingSettings(experimentId));
-    }
-  }, [experimentId]);
 
   useEffect(() => {
     setStepIdx(completedSteps.size % steps.length);
@@ -231,29 +321,53 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     </Row>
   );
 
-  return (
-    <>
-      <div style={{
-        paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', minHeight: '100vh',
-      }}
-      >
-        <Header
-          experimentId={experimentId}
-          experimentData={experimentData}
-          route={route}
-          title='Data Processing'
-        />
+  if (loading || cellSets.loading) {
+    return (
+      <center>
+        <Loader experimentId={experimentId} />
+      </center>
+    );
+  }
 
-        <Card
-          title={renderTitle()}
-          style={{ flex: 1 }}
-        >
-          <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
-            {steps.map(({ render, key }) => render(key, experimentId))}
-          </Carousel>
-        </Card>
-      </div>
-    </>
+  if (loadingSettingsError) {
+    return (
+      <PlatformError
+        error={loadingSettingsError}
+        onClick={() => { dispatch(loadProcessingSettings(experimentId)); }}
+      />
+    );
+  }
+
+  if (cellSets.error) {
+    return (
+      <PlatformError
+        error={cellSets.error}
+        onClick={() => { dispatch(loadCellSets(experimentId)); }}
+      />
+    );
+  }
+
+  return (
+    <div style={{
+      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', minHeight: '100vh',
+    }}
+    >
+      <Header
+        experimentId={experimentId}
+        experimentData={experimentData}
+        route={route}
+        title='Data Processing'
+      />
+
+      <Card
+        title={renderTitle()}
+        style={{ flex: 1 }}
+      >
+        <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
+          {steps.map(({ render, key }) => render(key, experimentId))}
+        </Carousel>
+      </Card>
+    </div>
   );
 };
 

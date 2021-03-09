@@ -88,7 +88,9 @@ describe('cache set', () => {
     expect(localForage.setItem).toBeCalledWith('key2', { ttl: expect.any(Number), value: 'value2' });
   });
   it('Rejects invalid cache', async () => {
+    const consoleSpy = jest.spyOn(console, 'trace').mockImplementation(() => { });
     const result = await cache.set('invalid', 'value');
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(result).toBe(false);
     expect(cache.lru).toMatchSnapshot();
     expect(cache.size).toBe(0);

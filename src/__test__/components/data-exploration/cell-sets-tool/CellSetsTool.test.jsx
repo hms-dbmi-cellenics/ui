@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons';
 import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import CellSetOperation from '../../../../components/data-exploration/cell-sets-tool/CellSetOperation';
+import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
 
 const { TabPane } = Tabs;
 
@@ -99,7 +100,7 @@ describe('CellSetsTool', () => {
         />
       </Provider>,
     );
-
+    waitForComponentToPaint(component);
     const tabs = component.find(Tabs);
 
     // There should be one tab container.
@@ -124,7 +125,7 @@ describe('CellSetsTool', () => {
         />
       </Provider>,
     );
-
+    waitForComponentToPaint(component);
     const operations = component.find(CellSetOperation);
 
     // There should be no operations rendered
@@ -151,6 +152,7 @@ describe('CellSetsTool', () => {
         />
       </Provider>,
     );
+    waitForComponentToPaint(component);
 
     const operations = component.find(CellSetOperation);
 
@@ -180,6 +182,7 @@ describe('CellSetsTool', () => {
         />
       </Provider>,
     );
+    waitForComponentToPaint(component);
 
     component.find('CellSetOperation').forEach((node) => {
       const { helpTitle, onCreate } = node.props();
@@ -221,6 +224,7 @@ describe('CellSetsTool', () => {
         />
       </Provider>,
     );
+    waitForComponentToPaint(component);
 
     component.find('CellSetOperation').forEach((node) => {
       const { helpTitle, onCreate } = node.props();
@@ -262,6 +266,7 @@ describe('CellSetsTool', () => {
         />
       </Provider>,
     );
+    waitForComponentToPaint(component);
 
     component.find('CellSetOperation').forEach((node) => {
       const { helpTitle, onCreate } = node.props();

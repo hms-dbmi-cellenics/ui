@@ -53,7 +53,7 @@ describe('ReorderableList', () => {
   it('reorders correctly', () => {
     // when pressing button down on the first item
     const item1 = component.find('Item').at(0);
-    act(() => (item1.find('Button').at(1).simulate('click')));
+    act(() => { item1.find('Button').at(1).simulate('click'); });
 
     component.update();
 

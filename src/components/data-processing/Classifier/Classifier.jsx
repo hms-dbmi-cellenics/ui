@@ -1,7 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space,
-  Slider, Form, Button, Tooltip,
+  Collapse, Row, Col, Space, Button, Tooltip,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -10,7 +10,8 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
 import OldPlotStyling from '../../plots/styling/OldPlotStyling';
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
+
+import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
 
@@ -217,10 +218,10 @@ class Classifier extends React.Component {
     const data = { plotData: this.generateData() };
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
-    const { filtering } = this.props;
-    const minProbabilityChange = (val) => {
-      this.updatePlotWithChanges({ minProbability: val });
-    };
+    const {
+      experimentId, sampleId, filtering, sampleIds,
+    } = this.props;
+
     return (
       <>
         <Row>
@@ -238,20 +239,7 @@ class Classifier extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <Form.Item label='Min probability:'>
-                  <Slider
-                    defaultValue={0.82}
-                    min={0}
-                    max={1}
-                    onAfterChange={(val) => minProbabilityChange(val)}
-                    step={0.05}
-                  />
-                </Form.Item>
-                <BandwidthOrBinstep
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  type='bandwidth'
-                />
+                <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
@@ -268,5 +256,16 @@ class Classifier extends React.Component {
     );
   }
 }
+
+Classifier.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  filtering: PropTypes.bool,
+  sampleIds: PropTypes.array.isRequired,
+};
+
+Classifier.defaultProps = {
+  filtering: true,
+};
 
 export default Classifier;

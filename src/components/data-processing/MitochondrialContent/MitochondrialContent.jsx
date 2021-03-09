@@ -3,9 +3,9 @@
 
 import React from 'react';
 import {
-  Collapse, Row, Col, Space, Slider,
-  Select, Form, Tooltip, Button,
+  Collapse, Row, Col, Space, Tooltip, Button,
 } from 'antd';
+import PropTypes from 'prop-types';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
@@ -13,13 +13,13 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plot1Pic from '../../../../static/media/plot3.png';
 import plot2Pic from '../../../../static/media/plot4.png';
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 import plotData from './data2.json';
+
+import CalculationConfig from './CalculationConfig';
 
 import OldPlotStyling from '../../plots/styling/OldPlotStyling';
 
 const { Panel } = Collapse;
-const { Option } = Select;
 class MitochondrialContent extends React.Component {
   constructor(props) {
     super(props);
@@ -438,7 +438,9 @@ class MitochondrialContent extends React.Component {
     const data = { plotData: this.generateData() };
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
-    const { filtering } = this.props;
+    const {
+      experimentId, sampleId, filtering, sampleIds,
+    } = this.props;
 
     const changePlot = (val) => {
       this.updatePlotWithChanges({ plotToDraw: val });
@@ -460,13 +462,7 @@ class MitochondrialContent extends React.Component {
         });
       }
     };
-    const changeFraction = (val) => {
-      if (config.plotToDraw) {
-        this.updatePlotWithChanges({ maxFraction: val });
-      } else {
-        this.updatePlotWithChanges({ maxFraction2: val });
-      }
-    };
+
     return (
       <>
         <Row>
@@ -511,32 +507,7 @@ class MitochondrialContent extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <Form.Item label='Method:'>
-                  <Select
-                    defaultValue='option1'
-                    style={{ width: 200 }}
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                  >
-                    <Option value='option1'>Absolute threshold</Option>
-                    <Option value='option2'>option2</Option>
-                    <Option value='option3'>option3</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item label='Max fraction:'>
-                  <Slider
-                    defaultValue={config.placeholder}
-                    min={config.sliderMin}
-                    max={config.sliderMax}
-                    step={0.05}
-                    collapsible={!filtering ? 'disabled' : 'header'}
-                    onAfterChange={(val) => changeFraction(val)}
-                  />
-                </Form.Item>
-                <BandwidthOrBinstep
-                  config={config}
-                  onUpdate={this.updatePlotWithChanges}
-                  type='bin step'
-                />
+                <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
@@ -553,5 +524,16 @@ class MitochondrialContent extends React.Component {
     );
   }
 }
+
+MitochondrialContent.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  filtering: PropTypes.bool,
+  sampleIds: PropTypes.array.isRequired,
+};
+
+MitochondrialContent.defaultProps = {
+  filtering: true,
+};
 
 export default MitochondrialContent;

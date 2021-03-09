@@ -6,6 +6,8 @@ import { Provider } from 'react-redux';
 import waitForActions from 'redux-mock-store-await-actions';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
+import { act } from 'react-dom/test-utils';
+
 import configureMockStore from 'redux-mock-store';
 import {
   Button, Dropdown,
@@ -146,7 +148,7 @@ describe('HeatmapGroupBySettings', () => {
 
     // When the other group by is clicked...
     const buttons = subMenuItems.find(Button);
-    buttons.at(0).simulate('click');
+    act(() => { buttons.at(0).simulate('click'); });
     component.update();
 
     await waitForActions(store, [UPDATE_CONFIG]);
@@ -172,7 +174,7 @@ describe('HeatmapGroupBySettings', () => {
     expect(groupByItems.at(1).text()).toEqual('louvain clusters');
 
     // when the groupby is clicked again
-    buttons.at(0).simulate('click');
+    act(() => { buttons.at(0).simulate('click'); });
     component.update();
 
     await waitForActions(store, [UPDATE_CONFIG]);
@@ -211,7 +213,7 @@ describe('HeatmapGroupBySettings', () => {
 
     // Add a louvain group by
     const addButtons = subMenuItems.find(Button);
-    addButtons.at(0).simulate('click');
+    act(() => { addButtons.at(0).simulate('click'); });
 
     await waitForActions(store, [UPDATE_CONFIG]);
     component.update();

@@ -11,7 +11,6 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
   if ((!loading && !error) || updatingClustering) {
     return null;
   }
-
   if (getState().cellSets.error) {
     dispatch({
       type: CELL_SETS_LOADING,

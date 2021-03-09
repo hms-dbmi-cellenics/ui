@@ -20,7 +20,6 @@ const eventStub = {
 const mockStore = configureMockStore([thunk]);
 
 const HIDDEN_KEY = 'random-hidden-key';
-
 const store = mockStore({
   cellSets: {
     ...initialState,
@@ -37,7 +36,7 @@ describe('HideButton', () => {
     const component = mount(
       <Provider store={store}>
         <HideButton
-          key='not-hidden'
+          cellSetKey='not-hidden'
           experimentId='a'
         />
       </Provider>,

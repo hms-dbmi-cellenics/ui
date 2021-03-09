@@ -8,7 +8,7 @@ import thunk from 'redux-thunk';
 import _ from 'lodash';
 import { Vega } from 'react-vega';
 
-import { generateSpec } from '../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
+import { generateSpec, generateData } from '../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 
 const mockStore = configureMockStore([thunk]);
@@ -113,24 +113,14 @@ const initialState = {
 const store = mockStore(initialState);
 let component;
 
-const filterSamples = () => {
-  if (config.selectedSample === 'All') {
-    return data;
-  }
-  const cellIds = Array.from(properties[config.selectedSample].cellIds);
-  const filteredData = data.filter((id) => cellIds.includes(data.indexOf(id)));
-  return filteredData;
-};
-const generateVegaData = () => ({
-  expression,
-  embedding: _.cloneDeep(filterSamples()),
-});
+const spec = generateData(
+  generateSpec(config), expression, config.selectedSample, data, properties,
+);
 
 const testPlot = () => mount(
   <Provider store={store}>
     <Vega
-      spec={generateSpec(config)}
-      data={generateVegaData()}
+      spec={spec}
       renderer='canvas'
     />
   </Provider>,
