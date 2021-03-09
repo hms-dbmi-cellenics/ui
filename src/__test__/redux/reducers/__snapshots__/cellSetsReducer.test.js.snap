@@ -87,7 +87,7 @@ Array [
 
 exports[`cellSetsReducer Selected cells are maintained 1`] = `
 Object {
-  "undefined": Array [
+  "fakeTab": Array [
     "a",
     "b",
     "c",
@@ -97,7 +97,7 @@ Object {
 
 exports[`cellSetsReducer Selected cells are maintained 2`] = `
 Object {
-  "undefined": Array [
+  "fakeTab": Array [
     1,
     2,
     "c",
