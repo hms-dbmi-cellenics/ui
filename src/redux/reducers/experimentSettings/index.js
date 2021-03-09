@@ -4,11 +4,17 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_COMPLETE_STEP,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
+  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
+  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED,
+  EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
 } from '../../actionTypes/experimentSettings';
 import updateProcessingSettings from './updateProcessingSettings';
 import loadProcessingSettings from './loadProcessingSettings';
 import completeProcessingStep from './completeProcessingStep';
 import processingSettingsError from './processingSettingsError';
+import pipelineStatusLoading from './pipelineStatusLoading';
+import pipelineStatusLoaded from './pipelineStatusLoaded';
+import pipelineStatusError from './pipelineStatusError';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -23,6 +29,15 @@ const experimentSettingsReducer = (state = initialState, action) => {
     }
     case EXPERIMENT_SETTINGS_PROCESSING_ERROR: {
       return processingSettingsError(state, action);
+    }
+    case EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING: {
+      return pipelineStatusLoading(state, action);
+    }
+    case EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED: {
+      return pipelineStatusLoaded(state, action);
+    }
+    case EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR: {
+      return pipelineStatusError(state, action);
     }
     default: {
       return state;

@@ -2,6 +2,11 @@
 
 exports[`experimentSettingsReducer Adds new object properly 1`] = `
 Object {
+  "pipelineStatus": Object {
+    "error": false,
+    "loading": false,
+    "status": Object {},
+  },
   "processing": Object {
     "cellSizeDistribution": Object {
       "filterSettings": Object {
@@ -99,6 +104,11 @@ Object {
 
 exports[`experimentSettingsReducer Adds new value properly 1`] = `
 Object {
+  "pipelineStatus": Object {
+    "error": false,
+    "loading": false,
+    "status": Object {},
+  },
   "processing": Object {
     "cellSizeDistribution": Object {
       "filterSettings": Object {
@@ -193,6 +203,11 @@ Object {
 
 exports[`experimentSettingsReducer Updates existing value properly 1`] = `
 Object {
+  "pipelineStatus": Object {
+    "error": false,
+    "loading": false,
+    "status": Object {},
+  },
   "processing": Object {
     "cellSizeDistribution": Object {
       "filterSettings": Object {
