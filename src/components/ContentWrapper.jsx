@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
+import { useDispatch } from 'react-redux';
+
 import {
   Layout, Menu, Typography,
 } from 'antd';
@@ -16,6 +18,7 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
+import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
 const { Sider, Footer } = Layout;
 const { Paragraph } = Typography;
@@ -29,9 +32,11 @@ const ContentWrapper = (props) => {
 
   const updateSocket = useRef(null);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (experimentId) {
-      updateSocket.current = initUpdateSocket(experimentId, (res) => { console.log(res); });
+      updateSocket.current = initUpdateSocket(experimentId, experimentUpdatesHandler(dispatch));
     }
   }, [experimentId]);
 
