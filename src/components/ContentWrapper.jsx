@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+
 import {
   Layout, Menu, Typography,
 } from 'antd';
@@ -15,6 +16,9 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
+
+import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
+
 import loadPipelineStatus from '../redux/actions/experimentSettings/loadPipelineStatus';
 import PipelineRunningEmptyState from './PipelineRunningEmptyState';
 import PreloadContent from './PreloadContent';
@@ -52,7 +56,7 @@ const ContentWrapper = (props) => {
     }
 
     dispatch(loadPipelineStatus(experimentId));
-    updateSocket.current = initUpdateSocket(experimentId, (res) => { console.log(res); });
+    updateSocket.current = initUpdateSocket(experimentId, experimentUpdatesHandler(dispatch));
   }, [experimentId]);
 
   useEffect(() => {
