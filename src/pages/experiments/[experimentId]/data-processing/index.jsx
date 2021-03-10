@@ -13,6 +13,8 @@ import {
   EllipsisOutlined,
 } from '@ant-design/icons';
 
+import _ from 'lodash';
+
 import Header from '../../../../components/Header';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
@@ -45,6 +47,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     completingStepError,
   } = useSelector((state) => state.experimentSettings.processing.meta);
 
+  const {
+    status: pipelineStatus,
+  } = useSelector((state) => state.experimentSettings.pipelineStatus);
+  const pipelineRunning = pipelineStatus.pipeline?.running;
+  const pipelineProcessError = pipelineStatus.pipeline?.response.error;
+  const pipelineBlockingSteps = pipelineRunning || pipelineProcessError;
+
+  const pipelineRunningCompletedSteps = pipelineStatus.pipeline?.completedSteps;
+
   const cellSets = useSelector((state) => state.cellSets);
 
   useEffect(() => {
@@ -63,12 +74,23 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     (child) => child.key,
   );
 
+  const stepIsCompletedInPipeline = (stepName, splitBySample) => {
+    const lowerCaseStepName = stepName.toLowerCase();
+
+    const stepAppearances = _.filter(pipelineRunningCompletedSteps, (stepPipelineName) => {
+      return stepPipelineName.toLowerCase().includes(lowerCaseStepName);
+    });
+
+    return stepAppearances.length === (splitBySample ? sampleKeys.length : 1);
+  }
+
   const inputsList = sampleKeys?.map((key) => ({ key, headerName: `Sample ${cellSets.properties?.[key].name}`, params: { ...cellSets.properties?.[key], key } }));
 
   const steps = [
     {
       key: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
+      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -86,8 +108,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     {
-      key: 'mitoContentFilter',
+      key: 'mitochondrialContent',
       name: 'Mitochondrial content filter',
+      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -105,8 +128,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     {
-      key: 'classifierFilter',
+      key: 'classifier',
       name: 'Classifier filter',
+      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -124,8 +148,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     {
-      key: 'genesVsUMIFilter',
+      key: 'numGenesVsNumUmis',
       name: 'Number of genes vs UMIs filter',
+      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -143,8 +168,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     {
-      key: 'doubletFilter',
+      key: 'doubletScores',
       name: 'Doublet filter',
+      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -164,11 +190,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'dataIntegration',
       name: 'Data integration',
+      splitBySample: false,
       render: (key) => <DataIntegration key={key} />,
     },
     {
-      key: 'comptueEmbeddingFilter',
+      key: 'computeEmbedding',
       name: 'Compute embedding',
+      splitBySample: false,
       render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} />,
     },
   ];
@@ -199,14 +227,20 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [stepIdx]);
 
   useEffect(() => {
-    if (!completingStepError) {
+    if (completingStepError && stepIdx > completedSteps.size) {
+      setStepIdx(completedSteps.size);
       return;
     }
 
-    if (stepIdx > completedSteps.size) {
-      setStepIdx(completedSteps.size);
-    }
-  }, [completingStepError, stepIdx]);
+
+  }, [completingStepError, stepIdx,]);
+
+  let nextDisabledByPipeline = false;
+
+  if (steps[stepIdx + 1]) {
+    const { key: nextKey, splitBySample: nextSplitBySample } = steps[stepIdx + 1];
+    nextDisabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey, nextSplitBySample);
+  }
 
   const renderTitle = () => (
     <Row justify='space-between'>
@@ -221,49 +255,54 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         >
           {
             steps.map(
-              ({ name, key }, i) => (
-                <Option
-                  value={i}
-                  key={key}
-                  disabled={
-                    !completedSteps.has(key)
-                    && i !== completedSteps.size
-                    && i !== stepIdx + 1
-                  }
-                >
+              ({ name, key, splitBySample }, i) => {
+                const disabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(key, splitBySample);
 
-                  {completedSteps.has(key) && (
-                    <>
+                return (
+                  <Option
+                    value={i}
+                    key={key}
+                    disabled={
+                      disabledByPipeline
+                      || (!completedSteps.has(key)
+                        && i !== completedSteps.size
+                        && i !== stepIdx + 1)
+                    }
+                  >
+
+                    {!disabledByPipeline && completedSteps.has(key) && (
+                      <>
+                        <Text
+                          type='success'
+                        >
+                          <CheckOutlined />
+                        </Text>
+                        <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                      </>
+                    )}
+
+                    {!disabledByPipeline && !completedSteps.has(key) && completedSteps.size === i && (
                       <Text
-                        type='success'
+                        type='default'
                       >
-                        <CheckOutlined />
+                        <CaretRightOutlined />
+                        <span style={{ marginLeft: '0.25rem' }}>{name}</span>
                       </Text>
-                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                    </>
-                  )}
+                    )}
 
-                  {!completedSteps.has(key) && completedSteps.size === i && (
-                    <Text
-                      type='default'
-                    >
-                      <CaretRightOutlined />
-                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                    </Text>
-                  )}
-
-                  {!completedSteps.has(key) && completedSteps.size < i && (
-                    <>
-                      <Text
-                        disabled
-                      >
-                        <EllipsisOutlined />
-                      </Text>
-                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                    </>
-                  )}
-                </Option>
-              ),
+                    {(disabledByPipeline || (!completedSteps.has(key) && completedSteps.size < i)) && (
+                      <>
+                        <Text
+                          disabled
+                        >
+                          <EllipsisOutlined />
+                        </Text>
+                        <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                      </>
+                    )}
+                  </Option>
+                );
+              }
             )
           }
         </Select>
@@ -293,6 +332,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     setStepIdx(newId);
                   }
                 }
+                disabled={nextDisabledByPipeline}
               >
                 Next
                 <RightOutlined />
@@ -309,6 +349,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                         );
                       }
                     }
+                    disabled={nextDisabledByPipeline}
                   >
                     <span style={{ marginRight: '0.25rem' }}>Finish</span>
                     <CheckOutlined />
