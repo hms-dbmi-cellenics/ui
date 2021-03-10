@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
-import ProjectsListContainer from '../../../pages/data-management/components/ProjectsListContainer';
+import ProjectsListContainer from '../../../components/data-management/ProjectsListContainer';
 import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 
 jest.mock('localforage');
