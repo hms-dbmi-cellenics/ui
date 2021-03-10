@@ -45,7 +45,7 @@ const CategoricalEmbeddingPlot = (props) => {
       return;
     }
 
-    if (!cellSets.loading && !cellSets.error && embeddingData.length) {
+    if (!cellSets.loading && !cellSets.error && embeddingData?.length) {
       setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData)));
     }
   }, [config, data, cellSets, embeddingData, config]);

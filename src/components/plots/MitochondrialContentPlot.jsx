@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import PlatformError from '../PlatformError';
-import { generateSpec, generateData } from '../../utils/plotSpecs/generateMitochondrialContentSpec';
+import generateSpec from '../../utils/plotSpecs/generateMitochondrialContentSpec';
 import { loadEmbedding } from '../../redux/actions/embedding';
 import loadCellMeta from '../../redux/actions/cellMeta';
 import { loadCellSets } from '../../redux/actions/cellSets';
@@ -13,7 +13,7 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import Loader from '../Loader';
 
 const MitochondrialContentPlot = (props) => {
-  const { experimentId, config } = props;
+  const { experimentId, config, data } = props;
   const defaultEmbeddingType = 'umap';
   const dataName = 'mitochondrialContent';
 
@@ -47,13 +47,10 @@ const MitochondrialContentPlot = (props) => {
   }, [experimentId, embeddingSettings?.method]);
 
   useEffect(() => {
-    if (!embedding?.loading
-      && !embedding?.error
-      && !cellSets.loading
-      && !cellSets.error) {
-      setPlotSpec(generateData(generateSpec(config), mitochondrialContent, embedding?.data));
+    if (data) {
+      setPlotSpec(generateSpec(config, data));
     }
-  }, [embedding?.data, mitochondrialContent]);
+  }, [data]);
 
   const render = () => {
     if (embedding?.error) {
@@ -102,6 +99,11 @@ const MitochondrialContentPlot = (props) => {
 MitochondrialContentPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
+  data: PropTypes.array,
+};
+
+MitochondrialContentPlot.defaultProps = {
+  data: null,
 };
 
 export default MitochondrialContentPlot;

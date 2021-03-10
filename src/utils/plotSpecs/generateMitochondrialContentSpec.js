@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config) => {
+const generateSpec = (config, data) => {
   let legend = [];
 
   if (config.legend.enabled) {
@@ -33,20 +33,8 @@ const generateSpec = (config) => {
     padding: 5,
     data: [
       {
-        name: 'mitochondrial_content',
-        transform: [
-          { type: 'flatten', fields: ['data'], index: ['cellId'] },
-        ],
-      },
-      {
-        name: 'embedding',
-        transform: [
-          { type: 'window', ops: ['row_number'], as: ['cellId'] },
-          { type: 'formula', as: 'cellId', expr: 'datum.cellId - 1' },
-          {
-            type: 'lookup', from: 'mitochondrial_content', key: 'cellId', fields: ['cellId'], values: ['data'], as: ['mitochondrial_content'],
-          },
-        ],
+        name: 'plotData',
+        values: data,
       },
     ],
     scales: [
@@ -55,7 +43,7 @@ const generateSpec = (config) => {
         type: 'linear',
         round: true,
         nice: true,
-        domain: { data: 'embedding', field: '0' },
+        domain: { data: 'plotData', field: 'x' },
         range: 'width',
       },
       {
@@ -63,14 +51,14 @@ const generateSpec = (config) => {
         type: 'linear',
         round: true,
         nice: true,
-        domain: { data: 'embedding', field: '1' },
+        domain: { data: 'plotData', field: 'y' },
         range: 'height',
       },
       {
         name: 'color',
         type: 'linear',
         range: { scheme: config.colour.gradient },
-        domain: { data: 'embedding', field: 'mitochondrial_content' },
+        domain: { data: 'plotData', field: 'value' },
         reverse: config.colour.reverseCbar,
       },
     ],
@@ -118,19 +106,19 @@ const generateSpec = (config) => {
     marks: [
       {
         type: 'symbol',
-        from: { data: 'embedding' },
+        from: { data: 'plotData' },
         encode: {
           enter: {
-            x: { scale: 'x', field: '0' },
-            y: { scale: 'y', field: '1' },
+            x: { scale: 'x', field: 'x' },
+            y: { scale: 'y', field: 'y' },
             size: { value: config.marker.size },
             stroke: {
               scale: 'color',
-              field: 'mitochondrial_content',
+              field: 'value',
             },
             fill: {
               scale: 'color',
-              field: 'mitochondrial_content',
+              field: 'value',
             },
             shape: { value: config.marker.shape },
             fillOpacity: { value: config.marker.opacity / 10 },
@@ -152,23 +140,4 @@ const generateSpec = (config) => {
   };
 };
 
-const generateData = (
-  spec,
-  cellMetaData,
-  embeddingData,
-) => {
-  spec.data.forEach((s) => {
-    if (s.name === 'mitochondrial_content') {
-      s.values = cellMetaData;
-    } else if (s.name === 'embedding') {
-      s.values = embeddingData;
-    }
-  });
-
-  return spec;
-};
-
-export {
-  generateSpec,
-  generateData,
-};
+export default generateSpec;

@@ -73,8 +73,8 @@ const ConfigureEmbedding = (props) => {
     doubletScores: {
       title: 'Cell doublet score',
       imgSrc: plot2Pic,
-      plotUuid: 'embeddingPreviewDoubletScores',
-      type: 'embeddingPreviewDoubletScores',
+      plotUuid: 'embeddingPreviewDoubletScore',
+      type: 'embeddingPreviewDoubletScore',
       plot: (config, data) => (<DoubletScoresPlot experimentId={experimentId} config={config} data={data} />),
     },
   };
@@ -92,12 +92,20 @@ const ConfigureEmbedding = (props) => {
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
+
   useEffect(() => {
+    const { plotUuid, type } = plots[selectedPlot];
+
+    if (!config) {
+      dispatch(loadPlotConfig(experimentId, plotUuid, type));
+    }
+
     // if we change a plot and the config is not saved yet
     if (outstandingChanges) {
       dispatch(savePlotConfig(experimentId, plots[selectedPlot].plotUuid));
     }
   }, [selectedPlot]);
+
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
@@ -117,14 +125,6 @@ const ConfigureEmbedding = (props) => {
       }
     }
   }, [config, cellSets, data]);
-
-  useEffect(() => {
-    const { plotUuid, type } = plots[selectedPlot];
-
-    if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, type));
-    }
-  }, [selectedPlot]);
 
   useEffect(() => {
     const showPopupWhenUnsaved = (url) => {
