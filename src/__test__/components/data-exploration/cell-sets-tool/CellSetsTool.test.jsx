@@ -138,7 +138,7 @@ describe('CellSetsTool', () => {
         ...storeState,
         cellSets: {
           ...storeState.cellSets,
-          selected: [...storeState.cellSets.selected, 'cluster-a'],
+          selected: { ...storeState.cellSets.selected, cellSets: ['cluster-a'] },
         },
       },
     );
@@ -166,9 +166,9 @@ describe('CellSetsTool', () => {
         ...storeState,
         cellSets: {
           ...storeState.cellSets,
-          selected: [
-            ...storeState.cellSets.selected, 'cluster-a', 'cluster-b', 'cluster-c',
-          ],
+          selected: {
+            ...storeState.cellSets.selected, cellSets: ['cluster-a', 'cluster-b', 'cluster-c'],
+          },
         },
       },
     );
@@ -208,9 +208,9 @@ describe('CellSetsTool', () => {
         ...storeState,
         cellSets: {
           ...storeState.cellSets,
-          selected: [
-            ...storeState.cellSets.selected, 'cluster-a', 'cluster-b', 'cluster-c',
-          ],
+          selected: {
+            ...storeState.cellSets.selected, cellSets: ['cluster-a', 'cluster-b', 'cluster-c'],
+          },
         },
       },
     );
@@ -250,9 +250,9 @@ describe('CellSetsTool', () => {
         ...storeState,
         cellSets: {
           ...storeState.cellSets,
-          selected: [
-            ...storeState.cellSets.selected, 'scratchpad-a', 'cluster-c',
-          ],
+          selected: {
+            ...storeState.cellSets.selected, cellSets: ['scratchpad-a', 'cluster-c'],
+          },
         },
       },
     );
@@ -284,5 +284,36 @@ describe('CellSetsTool', () => {
 
     // We should have found the union operation.
     expect.hasAssertions();
+  });
+  it('selected cell sets show selected in both tabs', () => {
+    const store = mockStore(
+      {
+        ...storeState,
+        cellSets: {
+          ...storeState.cellSets,
+          selected: {
+            cellSets: ['scratchpad-a', 'cluster-c'],
+            metadataCategorical: ['cluster-b'],
+          },
+        },
+      },
+    );
+    const component = mount(
+      <Provider store={store}>
+        <CellSetsTool
+          experimentId='asd'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
+    waitForComponentToPaint(component);
+    const tabs = component.find(Tabs);
+    const text = component.find('#selectedCellSets').first();
+    expect(text.text()).toEqual('3 cells selected');
+    tabs.props().onChange('metadataCategorical');
+    expect(text.text()).toEqual('4 cells selected');
+    tabs.props().onChange('cellSets');
+    expect(text.text()).toEqual('3 cells selected');
   });
 });
