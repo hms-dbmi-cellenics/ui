@@ -45,9 +45,6 @@ const NewProjectModal = (props) => {
             <br />
             your data in Cellscope
           </Title>
-          <Text type='secondary'>
-            Project name can only contain alphabets (a-z, A-Z), space ( ), numbers (0-9), underscore (_) and dash (-) with a minimum of 8 characters
-          </Text>
           <br />
           <Input
             onChange={(e) => {
@@ -63,9 +60,10 @@ const NewProjectModal = (props) => {
             }}
             value={projectName}
           />
-          <Text type='danger'>
-            {projectName.length >= 8 && !isValid ? 'Invalid project name' : <br />}
-          </Text>
+
+          {projectName.length < 8 ? <Text type='secondary'>Your project name must be at least 8 characters.</Text> : <></>}
+          {projectName.length >= 8 && !isValid ? <Text type='danger'>Your project name can only contain letters, numbers, space, _, and -.</Text> : <></>}
+
         </Space>
       </Space>
     </Modal>

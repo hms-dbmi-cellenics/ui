@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Card, Space } from 'antd';
+import {
+  Card, Space, Descriptions,
+} from 'antd';
 import { blue } from '@ant-design/colors';
-import moment from 'moment';
 
 import FileUploadModal from './FileUploadModal';
-import { setActiveProject } from '../../../redux/actions/projects';
-import PrettyTime from '../../../components/PrettyTime';
+import { setActiveProject } from '../../redux/actions/projects';
+import PrettyTime from '../PrettyTime';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
@@ -45,28 +46,43 @@ const ProjectsListContainer = (props) => {
               key={uuid}
               type='primary'
               style={activeProject === uuid ? activeProjectStyle : { cursor: 'pointer' }}
+
               onClick={() => {
                 dispatch(setActiveProject(uuid));
                 setUploadModalVisible(projects[uuid].samples.length === 0);
               }}
             >
-              <strong><p>{projects[uuid].name}</p></strong>
-              Created :
-              {' '}
-              <PrettyTime isoTime={projects[uuid].createdDate} />
-              <br />
-              Modified :
-              {' '}
-              <PrettyTime isoTime={projects[uuid].lastModified} />
-              <br />
-              {`No. Samples : ${projects[uuid].samples.length}`}
-              <br />
-              Last anayzed :
-              {' '}
-              { projects[uuid].lastAnalyzed ? (
-                <PrettyTime isoTime={projects[uuid].lastAnalyzed} />
-              ) : ('Never')}
-              <br />
+              <Descriptions
+                layout='horizontal'
+                size='small'
+                column={1}
+                colon=''
+                title={`${projects[uuid].name} (${projects[uuid].samples.length} samples)`}
+
+              >
+                <Descriptions.Item
+                  labelStyle={{ fontWeight: 'bold' }}
+                  label='Created'
+                >
+                  <PrettyTime isoTime={projects[uuid].createdDate} />
+
+                </Descriptions.Item>
+                <Descriptions.Item
+                  labelStyle={{ fontWeight: 'bold' }}
+                  label='Modified'
+                >
+                  <PrettyTime isoTime={projects[uuid].lastModified} />
+
+                </Descriptions.Item>
+                <Descriptions.Item
+                  labelStyle={{ fontWeight: 'bold' }}
+                  label='Last analyzed'
+                >
+                  {projects[uuid].lastAnalyzed ? (
+                    <PrettyTime isoTime={projects[uuid].lastAnalyzed} />
+                  ) : ('never')}
+                </Descriptions.Item>
+              </Descriptions>
             </Card>
           ))
         }
