@@ -3,7 +3,7 @@ import { Input, Button } from 'antd';
 import { configure, mount, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import '@testing-library/jest-dom';
-import NewProjectModal from '../../../pages/data-management/components/NewProjectModal';
+import NewProjectModal from '../../../components/data-management/NewProjectModal';
 
 configure({ adapter: new Adapter() });
 
