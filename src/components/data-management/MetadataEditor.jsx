@@ -18,7 +18,7 @@ const MetadataEditor = (props) => {
       {massEdit
         ? (
           <Space>
-            <Button type='primary' size='small'>Assign to empty</Button>
+            <Button type='primary' size='small'>Fill all missing</Button>
             <Button size='small'>Replace all</Button>
             <Button type='warning' size='small'>Clear all</Button>
           </Space>
