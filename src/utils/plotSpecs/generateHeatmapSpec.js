@@ -80,31 +80,32 @@ const generateSpec = (config, groupName) => {
 
     data: [
       {
-        name: 'cellSets',
-        transform: [
-          {
-            type: 'flatten',
-            fields: [
-              'cellIds',
-            ],
-            as: [
-              'cellId',
-            ],
-          },
-        ],
+        name: 'cellOrder',
+        values: [],
+        copy: true,
       },
       {
-        name: 'expression',
-        transform: [
-          {
-            type: 'flatten',
-            fields: [
-              'expression',
-            ],
-            index: 'cellId',
-          },
-        ],
+        name: 'geneOrder',
+        values: [],
+        copy: true,
       },
+      {
+        name: 'trackOrder',
+        values: [],
+      },
+      {
+        name: 'heatmapData',
+        values: [],
+      },
+      {
+        name: 'trackColorData',
+        values: [],
+      },
+      {
+        name: 'trackGroupData',
+        values: [],
+      },
+
     ],
 
     scales: [
@@ -112,8 +113,8 @@ const generateSpec = (config, groupName) => {
         name: 'x',
         type: 'band',
         domain: {
-          data: 'cellSets',
-          field: 'cellId',
+          data: 'cellOrder',
+          field: 'data',
         },
         range: 'width',
       },
@@ -121,10 +122,22 @@ const generateSpec = (config, groupName) => {
         name: 'y',
         type: 'band',
         domain: {
-          data: 'expression',
-          field: 'geneName',
+          data: 'geneOrder',
+          field: 'data',
         },
         range: 'height',
+      },
+      {
+        name: 'trackKeyToTrackName',
+        type: 'ordinal',
+        domain: {
+          data: 'trackGroupData',
+          field: 'track',
+        },
+        range: {
+          data: 'trackGroupData',
+          field: 'trackName',
+        },
       },
       {
         name: 'color',
@@ -133,7 +146,7 @@ const generateSpec = (config, groupName) => {
           scheme: config.colour.gradient,
         },
         domain: {
-          data: 'expression',
+          data: 'heatmapData',
           field: 'expression',
         },
         zero: false,
@@ -185,7 +198,40 @@ const generateSpec = (config, groupName) => {
       {
         type: 'rect',
         from: {
-          data: 'expression',
+          data: 'trackColorData',
+        },
+        encode: {
+          enter: {
+            x: {
+              scale: 'x',
+              field: 'cellId',
+            },
+            y: {
+              scale: 'yTrack',
+              field: 'track',
+            },
+            width: {
+              scale: 'x',
+              band: 1,
+            },
+            height: {
+              scale: 'yTrack',
+              band: 1,
+            },
+            opacity: {
+              value: 1,
+            },
+          },
+          update: {
+            fill: { field: 'color' },
+            stroke: { field: 'color' },
+          },
+        },
+      },
+      {
+        type: 'rect',
+        from: {
+          data: 'heatmapData',
         },
         encode: {
           enter: {
@@ -195,7 +241,7 @@ const generateSpec = (config, groupName) => {
             },
             y: {
               scale: 'y',
-              field: 'geneName',
+              field: 'gene',
             },
             width: {
               scale: 'x',
@@ -205,9 +251,16 @@ const generateSpec = (config, groupName) => {
               scale: 'y',
               band: 1,
             },
+            opacity: {
+              value: 1,
+            },
           },
           update: {
             fill: {
+              scale: 'color',
+              field: 'expression',
+            },
+            stroke: {
               scale: 'color',
               field: 'expression',
             },

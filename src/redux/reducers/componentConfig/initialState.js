@@ -93,6 +93,9 @@ const heatmapInitialConfig = {
   selectedGenes: [],
   selectedCellSet: 'louvain',
   labelColour: 'transparent',
+  selectedTracks: ['louvain'],
+  groupedTracks: ['sample', 'louvain'],
+  expressionValue: 'raw',
 };
 
 // PLOTS & TABLES - Volcano plot
