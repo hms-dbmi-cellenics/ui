@@ -12,7 +12,7 @@ import Loader from '../Loader';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
-    experimentId, config, actions, data,
+    experimentId, config, actions, plotData,
   } = props;
   const dispatch = useDispatch();
 
@@ -40,15 +40,15 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [experimentId, embeddingSettings.method]);
 
   useEffect(() => {
-    if (data) {
-      setPlotSpec(generateSpec(config, data));
+    if (plotData) {
+      setPlotSpec(generateSpec(config, plotData));
       return;
     }
 
     if (!cellSets.loading && !cellSets.error && embeddingData?.length) {
       setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData)));
     }
-  }, [config, data, cellSets, embeddingData, config]);
+  }, [config, plotData, cellSets, embeddingData, config]);
 
   const render = () => {
     if (error) {
@@ -84,14 +84,14 @@ const CategoricalEmbeddingPlot = (props) => {
 
 CategoricalEmbeddingPlot.defaultProps = {
   actions: true,
-  data: null,
+  plotData: null,
 };
 
 CategoricalEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   actions: PropTypes.bool,
-  data: PropTypes.array,
+  plotData: PropTypes.array,
 };
 
 export default CategoricalEmbeddingPlot;

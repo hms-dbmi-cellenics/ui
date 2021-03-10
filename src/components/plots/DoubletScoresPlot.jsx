@@ -2,23 +2,24 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import PlatformError from '../PlatformError';
 import generateSpec from '../../utils/plotSpecs/generateDoubletScoresSpec';
 
 import Loader from '../Loader';
 
 const DoubletScoresPlot = (props) => {
-  const { experimentId, config, data } = props;
+  const { experimentId, config, plotData } = props;
 
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (data) {
-      setPlotSpec(generateSpec(config, data));
+    if (plotData) {
+      setPlotSpec(generateSpec(config, plotData));
     }
-  }, [data]);
+  }, [plotData]);
 
   const render = () => {
-    if (!data) {
+    if (!plotData) {
       return (
         <center>
           <Loader experimentId={experimentId} size='large' />
@@ -43,11 +44,11 @@ const DoubletScoresPlot = (props) => {
 DoubletScoresPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
-  data: PropTypes.array,
+  plotData: PropTypes.array,
 };
 
 DoubletScoresPlot.defaultProps = {
-  data: null,
+  plotData: null,
 };
 
 export default DoubletScoresPlot;
