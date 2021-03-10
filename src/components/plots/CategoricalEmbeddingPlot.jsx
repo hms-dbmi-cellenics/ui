@@ -12,7 +12,7 @@ import Loader from '../Loader';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
-    experimentId, config, actions,
+    experimentId, config, actions, data,
   } = props;
   const dispatch = useDispatch();
 
@@ -38,15 +38,17 @@ const CategoricalEmbeddingPlot = (props) => {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
   }, [experimentId, embeddingSettings.method]);
+
   useEffect(() => {
-    const spec = generateSpec(config);
-    setPlotSpec(spec);
-  }, [config]);
-  useEffect(() => {
-    if (!cellSets.loading && !cellSets.error && embeddingData) {
-      setPlotSpec(generateData(generateSpec(config), cellSets, config.selectedCellSet, embeddingData));
+    if (data) {
+      setPlotSpec(generateSpec(config, data));
+      return;
     }
-  }, [cellSets, embeddingData, config]);
+
+    if (!cellSets.loading && !cellSets.error && embeddingData.length) {
+      setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData)));
+    }
+  }, [config, data, cellSets, embeddingData, config]);
 
   const render = () => {
     if (error) {
@@ -82,12 +84,14 @@ const CategoricalEmbeddingPlot = (props) => {
 
 CategoricalEmbeddingPlot.defaultProps = {
   actions: true,
+  data: null,
 };
 
 CategoricalEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   actions: PropTypes.bool,
+  data: PropTypes.array,
 };
 
 export default CategoricalEmbeddingPlot;

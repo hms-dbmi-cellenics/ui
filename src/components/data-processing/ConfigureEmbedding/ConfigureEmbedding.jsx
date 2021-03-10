@@ -52,30 +52,30 @@ const ConfigureEmbedding = (props) => {
       title: 'Colored by Samples',
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
-      plotType: 'embeddingPreviewBySample',
-      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} />),
+      type: 'embeddingPreviewBySample',
+      plot: (config, data) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} data={data} />),
     },
 
     cellCluster: {
       title: 'Colored by CellSets',
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
-      plotType: 'embeddingPreviewByCellSets',
-      plot: (config) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} />),
+      type: 'embeddingPreviewByCellSets',
+      plot: (config, data) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} data={data} />),
     },
     mitochondrialContent: {
       title: 'Mitochondrial fraction reads',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialContent',
-      plotType: 'embeddingPreviewMitochondrialContent',
-      plot: (config) => (<MitochondrialContentPlot experimentId={experimentId} config={config} />),
+      type: 'embeddingPreviewMitochondrialContent',
+      plot: (config, data) => (<MitochondrialContentPlot experimentId={experimentId} config={config} data={data} />),
     },
     doubletScores: {
       title: 'Cell doublet score',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewDoubletScores',
-      plotType: 'embeddingPreviewDoubletScores',
-      plot: (config) => (<DoubletScoresPlot experimentId={experimentId} config={config} />),
+      type: 'embeddingPreviewDoubletScores',
+      plot: (config, data) => (<DoubletScoresPlot experimentId={experimentId} config={config} data={data} />),
     },
   };
 
@@ -83,6 +83,10 @@ const ConfigureEmbedding = (props) => {
 
   const config = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
+
+  const data = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.data,
   );
 
   useEffect(() => {
@@ -97,12 +101,12 @@ const ConfigureEmbedding = (props) => {
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-    if (!config) {
+    if (!config || !data) {
       return;
     }
 
-    if (!cellSets.loading && !cellSets.error && !cellSets.updateCellSetsClustering && config) {
-      setPlot(plots[selectedPlot].plot(config));
+    if (!cellSets.loading && !cellSets.error && !cellSets.updateCellSetsClustering && config && data) {
+      setPlot(plots[selectedPlot].plot(config, data));
       if (!config.selectedCellSet) { return; }
 
       const propertiesArray = Object.keys(cellSets.properties);
@@ -112,13 +116,13 @@ const ConfigureEmbedding = (props) => {
         debouncedCellSetClustering(0.5);
       }
     }
-  }, [config, cellSets]);
+  }, [config, cellSets, data]);
 
   useEffect(() => {
-    const { plotUuid, plotType } = plots[selectedPlot];
+    const { plotUuid, type } = plots[selectedPlot];
 
     if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+      dispatch(loadPlotConfig(experimentId, plotUuid, type));
     }
   }, [selectedPlot]);
 

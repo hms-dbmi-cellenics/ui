@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config) => {
+const generateSpec = (config, data) => {
   let legend = [];
   if (config?.legend.enabled) {
     legend = [
@@ -39,38 +39,15 @@ const generateSpec = (config) => {
     padding: 5,
     data: [
       {
-        name: 'cellSets',
-        transform: [
-          { type: 'flatten', fields: ['cellIds'], as: ['cellId'] },
-        ],
+        name: 'values',
+        values: data,
       },
       {
-        name: 'embedding',
-        transform: [
-          { type: 'window', ops: ['row_number'], as: ['cellId'] },
-          { type: 'formula', as: 'cellId', expr: 'datum.cellId - 1' },
-          {
-            type: 'lookup',
-            from: 'cellSets',
-            key: 'cellId',
-            fields: [
-              'cellId',
-            ],
-            values: [
-              'cellSetId',
-            ],
-            as: [
-              'cellSetId',
-            ],
-          },
-        ],
-      },
-      {
-        name: 'labelPositions',
-        source: 'embedding',
+        name: 'labels',
+        source: 'values',
         transform: [
           {
-            type: 'aggregate', groupby: ['cellSetId'], fields: ['0', '1'], ops: ['mean', 'mean'], as: ['mean0', 'mean1'],
+            type: 'aggregate', groupby: ['cellSetId'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
           },
         ],
       },
@@ -81,7 +58,7 @@ const generateSpec = (config) => {
         type: 'linear',
         round: true,
         nice: true,
-        domain: { data: 'embedding', field: '0' },
+        domain: { data: 'values', field: 'x' },
         range: 'width',
       },
       {
@@ -90,20 +67,20 @@ const generateSpec = (config) => {
         round: true,
         nice: true,
         zero: true,
-        domain: { data: 'embedding', field: '1' },
+        domain: { data: 'values', field: 'y' },
         range: 'height',
       },
       {
         name: 'cellSetColors',
         type: 'ordinal',
-        range: { data: 'cellSets', field: 'color' },
-        domain: { data: 'cellSets', field: 'cellSetId', sort: true },
+        range: { data: 'values', field: 'color' },
+        domain: { data: 'values', field: 'cellSetId', sort: true },
       },
       {
         name: 'cellSetIDToName',
         type: 'ordinal',
-        range: { data: 'cellSets', field: 'name' },
-        domain: { data: 'cellSets', field: 'cellSetId' },
+        range: { data: 'values', field: 'name' },
+        domain: { data: 'values', field: 'cellSetId' },
       },
     ],
     axes: [
@@ -150,11 +127,11 @@ const generateSpec = (config) => {
     marks: [
       {
         type: 'symbol',
-        from: { data: 'embedding' },
+        from: { data: 'values' },
         encode: {
           enter: {
-            x: { scale: 'x', field: '0' },
-            y: { scale: 'y', field: '1' },
+            x: { scale: 'x', field: 'x' },
+            y: { scale: 'y', field: 'y' },
             size: { value: config?.marker.size },
             stroke: { scale: 'cellSetColors', field: 'cellSetId' },
             fill: { scale: 'cellSetColors', field: 'cellSetId' },
@@ -165,11 +142,11 @@ const generateSpec = (config) => {
       },
       {
         type: 'text',
-        from: { data: 'labelPositions' },
+        from: { data: 'labels' },
         encode: {
           enter: {
-            x: { scale: 'x', field: 'mean0' },
-            y: { scale: 'y', field: 'mean1' },
+            x: { scale: 'x', field: 'meanX' },
+            y: { scale: 'y', field: 'meanY' },
             text: { scale: 'cellSetIDToName', field: 'cellSetId' },
             fontSize: { value: config?.label.size },
             strokeWidth: { value: 1.2 },
@@ -204,27 +181,33 @@ const filterCells = (cellSets, selectedCellSet) => {
   // Build up the data source based on the properties. Note that the child nodes
   // in the hierarchy are /objects/ with a `key` property, hence the destructuring
   // in the function.
-  newCellSets = newCellSets.map(({ key }) => ({
-    cellSetId: key,
-    ...cellSets.properties[key],
-    cellIds: Array.from(cellSets.properties[key].cellIds),
-  }));
+  newCellSets = newCellSets.flatMap(({ key }) => {
+    const cells = Array.from(cellSets.properties[key].cellIds);
+
+    return cells.map((cellId) => ({
+      cellId,
+      cellSetId: key,
+      name: cellSets.properties[key].name,
+      color: cellSets.properties[key].color,
+    }));
+  });
 
   return newCellSets;
 };
 
-const generateData = (spec, cellSets, selectedCellSet, embeddingData) => {
+// Generate dynamic data from redux store
+const generateData = (cellSets, selectedCellSet, embeddingData) => {
   const newCellSets = filterCells(cellSets, selectedCellSet);
 
-  spec.data.forEach((s) => {
-    if (s.name === 'cellSets') {
-      s.values = newCellSets;
-    } else if (s.name === 'embedding') {
-      s.values = embeddingData;
+  const test = newCellSets.filter((d) => d.cellId < embeddingData.length).map((data) => (
+    {
+      ...data,
+      x: embeddingData[data.cellId][0],
+      y: embeddingData[data.cellId][1],
     }
-  });
+  ));
 
-  return spec;
+  return test;
 };
 
 export {
