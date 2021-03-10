@@ -114,6 +114,25 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
       </center>
     );
   }
+
+  const renderExtraPanels = () => (
+    <>
+      <Panel header='Group by' key='1'>
+        <p>
+          Select the cell set category you would like to group cells by.
+        </p>
+        <Select
+          labelInValue
+          style={{ width: '100%' }}
+          placeholder='Select cell set...'
+          value={{ key: config.selectedCellSet }}
+          options={generateCellSetOptions()}
+          onChange={onCellSetSelect}
+        />
+      </Panel>
+    </>
+  );
+
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header
@@ -145,22 +164,13 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse accordion defaultActiveKey={['1']}>
-              <Panel header='Group by' key='1'>
-                <p>
-                  Select the cell set category you would like to group cells by.
-                </p>
-                <Select
-                  labelInValue
-                  style={{ width: '100%' }}
-                  placeholder='Select cell set...'
-                  value={{ key: config.selectedCellSet }}
-                  options={generateCellSetOptions()}
-                  onChange={onCellSetSelect}
-                />
-              </Panel>
-            </Collapse>
-            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+            <PlotStyling
+              formConfig={plotStylingConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={renderExtraPanels}
+              defaultActiveKey='1'
+            />
           </Space>
         </Col>
       </Row>

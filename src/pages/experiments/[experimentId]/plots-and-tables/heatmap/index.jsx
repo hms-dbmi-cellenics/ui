@@ -89,6 +89,44 @@ const HeatmapPlot = ({ experimentId }) => {
     updatePlotWithChanges({ selectedCellSet: value });
   };
 
+  const renderExtraPanels = () => (
+    <>
+      <Panel header='Add genes' key='5'>
+        <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
+        <Space direction='vertical' style={{ width: '100%' }}>
+          <Select
+            mode='tags'
+            style={{ width: '100%' }}
+            placeholder='Select genes...'
+            onChange={onGeneEnter}
+            value={config.selectedGenes}
+            tokenSeparators={[' ']}
+            notFoundContent='No gene added yet.'
+          />
+          <Button
+            type='primary'
+            onClick={() => onGeneEnter([])}
+          >
+            Reset
+          </Button>
+        </Space>
+      </Panel>
+      <Panel header='Group by' key='6'>
+        <p>Select the cell set category you would like to group cells by.</p>
+        <Space direction='vertical' style={{ width: '100%' }}>
+          <Select
+            labelInValue
+            style={{ width: '100%' }}
+            placeholder='Select cell set...'
+            value={{ key: config.selectedCellSet }}
+            options={generateCellSetOptions()}
+            onChange={onCellSetSelect}
+          />
+        </Space>
+      </Panel>
+    </>
+  );
+
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading) {
       return (<Loader experimentId={experimentId} />);
@@ -185,42 +223,7 @@ const HeatmapPlot = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['5']} accordion>
-              <Panel header='Add genes' key='5'>
-                <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
-                <Space direction='vertical' style={{ width: '100%' }}>
-                  <Select
-                    mode='tags'
-                    style={{ width: '100%' }}
-                    placeholder='Select genes...'
-                    onChange={onGeneEnter}
-                    value={config.selectedGenes}
-                    tokenSeparators={[' ']}
-                    notFoundContent='No gene added yet.'
-                  />
-                  <Button
-                    type='primary'
-                    onClick={() => onGeneEnter([])}
-                  >
-                    Reset
-                  </Button>
-                </Space>
-              </Panel>
-              <Panel header='Group by' key='6'>
-                <p>Select the cell set category you would like to group cells by.</p>
-                <Space direction='vertical' style={{ width: '100%' }}>
-                  <Select
-                    labelInValue
-                    style={{ width: '100%' }}
-                    placeholder='Select cell set...'
-                    value={{ key: config.selectedCellSet }}
-                    options={generateCellSetOptions()}
-                    onChange={onCellSetSelect}
-                  />
-                </Space>
-              </Panel>
-            </Collapse>
-            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} renderExtraPanels={renderExtraPanels} defaultActiveKey={['5']} />
           </Space>
         </Col>
       </Row>
