@@ -31,6 +31,7 @@ import Loader from '../../../../components/Loader';
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 import { updateCompletedSteps, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
+import { runPipeline } from '../../../../redux/actions/pipeline';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -92,6 +93,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
+      multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -111,6 +113,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'mitochondrialContent',
       name: 'Mitochondrial content filter',
+      multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -130,6 +133,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'classifier',
       name: 'Classifier filter',
+      multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -149,6 +153,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'numGenesVsNumUmis',
       name: 'Number of genes vs UMIs filter',
+      multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -168,6 +173,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'doubletScores',
       name: 'Doublet filter',
+      multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -187,11 +193,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'dataIntegration',
       name: 'Data integration',
+      multiSample: false,
       render: (key) => <DataIntegration key={key} pipelineRunHandler={() => pipelineRunHandler(key)} />,
     },
     {
       key: 'computeEmbedding',
       name: 'Compute embedding',
+      multiSample: false,
       render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} pipelineRunHandler={() => pipelineRunHandler(key)} />,
     },
   ];
@@ -260,6 +268,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const pipelineRunHandler = (calledFromStepKey) => {
     setCompletedStepsFrom(calledFromStepKey);
+
+    dispatch((runPipeline(experimentId, calledFromStepKey)))
   }
 
   const renderTitle = () => (
@@ -325,6 +335,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             )
           }
         </Select>
+
+        {steps[stepIdx].multiSample && (
+          <Button type='primary'
+            onClick={() => { pipelineRunHandler(steps[stepIdx].key) }}
+            style={{ marginLeft: '20px' }}
+          >
+            Run filter
+          </Button>
+        )}
       </Col>
       <Col span='16'>
         <div style={{ float: 'right' }}>

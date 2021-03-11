@@ -243,7 +243,15 @@ const CalculationConfig = (props) => {
 
           <Form.Item>
             <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
-              <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={runWithCurrentEmbeddingSettings}>Run</Button>
+              <Button
+                type='primary'
+                htmlType='submit'
+                disabled={!changesOutstanding}
+                onClick={runWithCurrentEmbeddingSettings}
+                size='medium'
+              >
+                Run
+              </Button>
             </Tooltip>
           </Form.Item>
         </Form>

@@ -118,7 +118,7 @@ const CalculationConfig = (props) => {
         {changesOutstanding && (
           <Form.Item>
             <Alert
-              message='Your changes are not yet applied. To rerun data integration, click Apply.'
+              message='Your changes are not yet applied. To rerun data integration, click Run.'
               type='warning'
               showIcon
             />
@@ -214,13 +214,13 @@ const CalculationConfig = (props) => {
               <Col span={6}>
                 <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
                   <Button
-                    size='small'
+                    size='medium'
                     type='primary'
                     htmlType='submit'
                     disabled={!changesOutstanding}
                     onClick={runWithCurrentDataIntegrationSettings}
                   >
-                    Apply
+                    Run
                   </Button>
                 </Tooltip>
               </Col>
