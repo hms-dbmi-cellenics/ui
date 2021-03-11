@@ -152,6 +152,28 @@ const frequencyPlot = ({ experimentId }) => {
     }
   };
 
+  const renderExtraPanels = () => (
+    <>
+      <Panel header='Select Data' key='20'>
+        <SelectCellSets
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          optionsMetadata={optionsMetadata}
+          optionsCellSets={optionsCellSets}
+        />
+      </Panel>
+      <Panel header='Plot Type' key='1'>
+        <Radio.Group
+          onChange={(value) => changePlotType(value)}
+          value={config.frequencyType}
+        >
+          <Radio value='proportional'>Proportional</Radio>
+          <Radio value='count'>Count</Radio>
+        </Radio.Group>
+      </Panel>
+    </>
+  );
+
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header
@@ -171,26 +193,12 @@ const frequencyPlot = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse accordion>
-              <Panel header='Select Data' key='20'>
-                <SelectCellSets
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                  optionsMetadata={optionsMetadata}
-                  optionsCellSets={optionsCellSets}
-                />
-              </Panel>
-              <Panel header='Plot Type' key='1'>
-                <Radio.Group
-                  onChange={(value) => changePlotType(value)}
-                  value={config.frequencyType}
-                >
-                  <Radio value='proportional'>Proportional</Radio>
-                  <Radio value='count'>Count</Radio>
-                </Radio.Group>
-              </Panel>
-            </Collapse>
-            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+            <PlotStyling
+              formConfig={plotStylingConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={renderExtraPanels}
+            />
           </Space>
         </Col>
       </Row>

@@ -305,6 +305,17 @@ const VolcanoPlot = ({ experimentId }) => {
     );
   };
 
+  const renderExtraPanels = () => (
+    <>
+      <Panel header='Differential Expression' key='1'>
+        <DiffExprCompute
+          experimentId={experimentId}
+          onCompute={onComputeDiffExp}
+        />
+      </Panel>
+    </>
+  );
+
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header
@@ -324,15 +335,14 @@ const VolcanoPlot = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']} accordion>
-              <Panel header='Differential Expression' key='1'>
-                <DiffExprCompute
-                  experimentId={experimentId}
-                  onCompute={onComputeDiffExp}
-                />
-              </Panel>
-            </Collapse>
-            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+            <Collapse defaultActiveKey={['1']} accordion />
+            <PlotStyling
+              formConfig={plotStylingConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={renderExtraPanels}
+              defaultActiveKey={['1']}
+            />
           </Space>
         </Col>
       </Row>
