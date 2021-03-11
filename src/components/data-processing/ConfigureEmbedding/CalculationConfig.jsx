@@ -85,7 +85,7 @@ const CalculationConfig = (props) => {
   const updateSettings = (diff) => {
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
-      // applied until they hit Apply.
+      // applied until they hit Run.
 
       setChangesOutstanding(true);
       dispatch(updateProcessingSettings(
@@ -105,8 +105,9 @@ const CalculationConfig = (props) => {
     }
   };
 
-  // When the Apply button is pressed remove the warning, update the settings and trigger the pipeline run.
-  const applyEmbeddingSettings = () => {
+  // When the Run button is pressed
+  // remove the warning, update the settings and trigger the pipeline run.
+  const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
     pipelineRunHandler();
@@ -221,7 +222,7 @@ const CalculationConfig = (props) => {
         <Form size='small'>
           {changesOutstanding && (
             <Form.Item>
-              <Alert message='Your changes are not yet applied. To update the plots, click Apply.' type='warning' showIcon />
+              <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
             </Form.Item>
           )}
           <Form.Item label='Method:'>
@@ -242,7 +243,7 @@ const CalculationConfig = (props) => {
 
           <Form.Item>
             <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
-              <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={applyEmbeddingSettings}>Apply</Button>
+              <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={runWithCurrentEmbeddingSettings}>Run</Button>
             </Tooltip>
           </Form.Item>
         </Form>
