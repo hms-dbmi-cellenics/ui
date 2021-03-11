@@ -58,6 +58,7 @@ const NewProjectModal = (props) => {
                 setIsValid(false);
               }
             }}
+            placeholder='What is your project called?'
             value={projectName}
           />
 
