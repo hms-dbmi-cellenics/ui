@@ -14,7 +14,10 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
       const data = await response.json();
       dispatch({
         type: LOAD_CONFIG,
-        payload: data,
+        payload: {
+          ...data,
+          config: _.merge(initialPlotConfigStates[plotType], data.config),
+        },
       });
     } else if (response.status === 404) {
       dispatch({
@@ -22,7 +25,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
         payload: {
           experimentId,
           plotUuid,
-          type: plotType,
+          plotType,
           config: _.cloneDeep(initialPlotConfigStates[plotType]),
         },
       });
