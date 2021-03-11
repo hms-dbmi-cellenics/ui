@@ -141,9 +141,9 @@ const NewProjectModal = (props) => {
       </Col>
       <Col span={24} style={{ padding: '1rem' }}>
         <Paragraph>
-          Your folder&apos;s name will correspond to
-          the sample ID in your project. You can change this
-          later in Data Management.
+          We will name your sample after the folder
+          you&apos;ll upload. You can change this
+          Sample ID later in Data Management.
         </Paragraph>
         <Paragraph type='secondary'>
           More guidance on supported file types and formats is available
