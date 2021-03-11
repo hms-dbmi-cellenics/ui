@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config) => {
+const generateSpec = (config, plotData) => {
   let legend = [];
 
   if (config.legend.enabled) {
@@ -33,21 +33,8 @@ const generateSpec = (config) => {
     padding: 5,
     data: [
       {
-        name: 'expression',
-        transform: [
-          { type: 'flatten', fields: ['expression'], index: ['cellId'] },
-          { type: 'formula', as: 'expression', expr: config.logEquation },
-        ],
-      },
-      {
-        name: 'embedding',
-        transform: [
-          { type: 'window', ops: ['row_number'], as: ['cellId'] },
-          { type: 'formula', as: 'cellId', expr: 'datum.cellId - 1' },
-          {
-            type: 'lookup', from: 'expression', key: 'cellId', fields: ['cellId'], values: ['expression'], as: ['expression'],
-          },
-        ],
+        name: 'plotData',
+        values: plotData,
       },
     ],
     scales: [
@@ -56,7 +43,7 @@ const generateSpec = (config) => {
         type: 'linear',
         round: true,
         nice: true,
-        domain: { data: 'embedding', field: '0' },
+        domain: { data: 'plotData', field: 'x' },
         range: 'width',
       },
       {
@@ -64,14 +51,14 @@ const generateSpec = (config) => {
         type: 'linear',
         round: true,
         nice: true,
-        domain: { data: 'embedding', field: '1' },
+        domain: { data: 'plotData', field: 'y' },
         range: 'height',
       },
       {
         name: 'color',
         type: 'linear',
         range: { scheme: config.colour.gradient },
-        domain: { data: 'embedding', field: 'expression' },
+        domain: { data: 'plotData', field: 'value' },
         reverse: config.colour.reverseCbar,
       },
     ],
@@ -119,19 +106,19 @@ const generateSpec = (config) => {
     marks: [
       {
         type: 'symbol',
-        from: { data: 'embedding' },
+        from: { data: 'plotData' },
         encode: {
           enter: {
-            x: { scale: 'x', field: '0' },
-            y: { scale: 'y', field: '1' },
+            x: { scale: 'x', field: 'x' },
+            y: { scale: 'y', field: 'y' },
             size: { value: config.marker.size },
             stroke: {
               scale: 'color',
-              field: 'expression',
+              field: 'value',
             },
             fill: {
               scale: 'color',
-              field: 'expression',
+              field: 'value',
             },
             shape: { value: config.marker.shape },
             fillOpacity: { value: config.marker.opacity / 10 },
@@ -154,29 +141,23 @@ const generateSpec = (config) => {
 };
 
 const generateData = (
-  spec,
   selectedExpression,
   selectedSample,
   embeddingData,
   cellSetProperties,
 ) => {
-  let filteredData = [];
+  let filteredData = embeddingData.map((coord, cellId) => ({
+    x: coord[0],
+    y: coord[1],
+    value: selectedExpression[cellId],
+  }));
+
   if (selectedSample !== 'All') {
     const cellIds = Array.from(cellSetProperties[selectedSample].cellIds);
-    filteredData = embeddingData.filter((id) => cellIds.includes(embeddingData.indexOf(id)));
-  } else {
-    filteredData = embeddingData;
+    filteredData = filteredData.filter((val, idx) => cellIds.includes(idx));
   }
 
-  spec.data.forEach((s) => {
-    if (s.name === 'expression') {
-      s.values = selectedExpression;
-    } else if (s.name === 'embedding') {
-      s.values = filteredData;
-    }
-  });
-
-  return spec;
+  return filteredData;
 };
 
 export {

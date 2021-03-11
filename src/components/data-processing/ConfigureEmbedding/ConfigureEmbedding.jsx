@@ -18,6 +18,7 @@ import CalculationConfig from './CalculationConfig';
 import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import DoubletScoresPlot from '../../plots/DoubletScoresPlot';
 import MitochondrialContentPlot from '../../plots/MitochondrialContentPlot';
+import ContinuousEmbeddingPlot from '../../plots/ContinuousEmbeddingPlot';
 
 import {
   updatePlotConfig,

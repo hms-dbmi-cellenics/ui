@@ -13,7 +13,9 @@ import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
 import Loader from '../Loader';
 
 const ContinuousEmbeddingPlot = (props) => {
-  const { experimentId, config, plotUuid } = props;
+  const {
+    experimentId, config, plotUuid, plotData,
+  } = props;
   const embeddingType = 'umap';
   const dispatch = useDispatch();
 
@@ -73,15 +75,20 @@ const ContinuousEmbeddingPlot = (props) => {
   }, [highestDispersionGene, config.shownGene]);
 
   useEffect(() => {
+    if (plotData) {
+      setPlotSpec(generateSpec(config, plotData));
+      return;
+    }
+
     if (!loading
       && !error
       && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
       && !cellSets.loading
       && !cellSets.error) {
-      setPlotSpec(generateData(generateSpec(config), geneExpression.data[config.shownGene], config.selectedSample, embeddingData, cellSets.properties));
+      setPlotSpec(generateSpec(config, generateData(geneExpression.data[config.shownGene].expression, config.selectedSample, embeddingData, cellSets.properties)));
     }
-  }, [embeddingData, geneExpression, config]);
+  }, [config, plotData, embeddingData, geneExpression, cellSets, loading]);
 
   const render = () => {
     if (error) {
@@ -128,10 +135,15 @@ const ContinuousEmbeddingPlot = (props) => {
   );
 };
 
+ContinuousEmbeddingPlot.defaultProps = {
+  plotData: null,
+};
+
 ContinuousEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotUuid: PropTypes.string.isRequired,
+  plotData: PropTypes.array,
 };
 
 export default ContinuousEmbeddingPlot;

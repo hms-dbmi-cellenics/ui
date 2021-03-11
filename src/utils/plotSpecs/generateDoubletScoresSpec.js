@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config, data) => {
+const generateSpec = (config, plotData) => {
   let legend = [];
 
   if (config.legend.enabled) {
@@ -34,7 +34,7 @@ const generateSpec = (config, data) => {
     data: [
       {
         name: 'plotData',
-        values: data,
+        values: plotData,
       },
     ],
     scales: [
