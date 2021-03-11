@@ -52,7 +52,7 @@ const ConfigureEmbedding = (props) => {
       title: 'Colored by Samples',
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
-      type: 'embeddingPreviewBySample',
+      plotType: 'embeddingPreviewBySample',
       plot: (config, plotData) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} />),
     },
 
@@ -60,21 +60,21 @@ const ConfigureEmbedding = (props) => {
       title: 'Colored by CellSets',
       imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
-      type: 'embeddingPreviewByCellSets',
+      plotType: 'embeddingPreviewByCellSets',
       plot: (config, plotData) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} />),
     },
     mitochondrialContent: {
       title: 'Mitochondrial fraction reads',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialContent',
-      type: 'embeddingPreviewMitochondrialContent',
+      plotType: 'embeddingPreviewMitochondrialContent',
       plot: (config, plotData) => (<MitochondrialContentPlot experimentId={experimentId} config={config} plotData={plotData} />),
     },
     doubletScores: {
       title: 'Cell doublet score',
       imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewDoubletScore',
-      type: 'embeddingPreviewDoubletScore',
+      plotType: 'embeddingPreviewDoubletScore',
       plot: (config, plotData) => (<DoubletScoresPlot experimentId={experimentId} config={config} plotData={plotData} />),
     },
   };
@@ -94,10 +94,10 @@ const ConfigureEmbedding = (props) => {
   }, [experimentId]);
 
   useEffect(() => {
-    const { plotUuid, type } = plots[selectedPlot];
+    const { plotUuid, plotType } = plots[selectedPlot];
 
     if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, type));
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
 
     // if we change a plot and the config is not saved yet

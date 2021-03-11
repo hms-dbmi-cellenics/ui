@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import PlatformError from '../PlatformError';
 import generateSpec from '../../utils/plotSpecs/generateMitochondrialContentSpec';
+import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 import Loader from '../Loader';
 
 const MitochondrialContentPlot = (props) => {
   const { experimentId, config, plotData } = props;
+  const plotUuid = 'mitochondrialContentPlot';
+  const plotType = 'mitochondrialContentPlot';
+
+  const dispatch = useDispatch();
 
   const [plotSpec, setPlotSpec] = useState({});
+  const mitochondrialContent = useSelector((state) => state.componentConfig.embeddingPreviewMitochondrialContent);
 
   useEffect(() => {
     if (plotData) {
@@ -19,6 +26,15 @@ const MitochondrialContentPlot = (props) => {
   }, [plotData]);
 
   const render = () => {
+    if (!mitochondrialContent) {
+      return (
+        <PlatformError
+          description='Failed loading plot data'
+          onClick={() => { dispatch(loadPlotConfig(experimentId, plotUuid, plotType)); }}
+        />
+      );
+    }
+
     if (!plotData) {
       return (
         <center>
