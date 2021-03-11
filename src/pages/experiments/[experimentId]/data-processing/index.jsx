@@ -74,14 +74,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     (child) => child.key,
   );
 
-  const stepIsCompletedInPipeline = (stepName, splitBySample) => {
+  const stepIsCompletedInPipeline = (stepName) => {
     const lowerCaseStepName = stepName.toLowerCase();
 
     const stepAppearances = _.filter(pipelineRunningCompletedSteps, (stepPipelineName) => {
       return stepPipelineName.toLowerCase().includes(lowerCaseStepName);
     });
 
-    return stepAppearances.length === (splitBySample ? sampleKeys.length : 1);
+    return stepAppearances.length > 0;
   }
 
   const inputsList = sampleKeys?.map((key) => ({ key, headerName: `Sample ${cellSets.properties?.[key].name}`, params: { ...cellSets.properties?.[key], key } }));
@@ -90,7 +90,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
-      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -110,7 +109,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'mitochondrialContent',
       name: 'Mitochondrial content filter',
-      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -130,7 +128,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'classifier',
       name: 'Classifier filter',
-      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -150,7 +147,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'numGenesVsNumUmis',
       name: 'Number of genes vs UMIs filter',
-      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -170,7 +166,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'doubletScores',
       name: 'Doublet filter',
-      splitBySample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
@@ -190,13 +185,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'dataIntegration',
       name: 'Data integration',
-      splitBySample: false,
       render: (key) => <DataIntegration key={key} />,
     },
     {
       key: 'computeEmbedding',
       name: 'Compute embedding',
-      splitBySample: false,
       render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} />,
     },
   ];
@@ -238,8 +231,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   let nextDisabledByPipeline = false;
 
   if (steps[stepIdx + 1]) {
-    const { key: nextKey, splitBySample: nextSplitBySample } = steps[stepIdx + 1];
-    nextDisabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey, nextSplitBySample);
+    const { key: nextKey } = steps[stepIdx + 1];
+    nextDisabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey);
   }
 
   const renderTitle = () => (
@@ -255,8 +248,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         >
           {
             steps.map(
-              ({ name, key, splitBySample }, i) => {
-                const disabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(key, splitBySample);
+              ({ name, key }, i) => {
+                const disabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(key);
 
                 return (
                   <Option
@@ -269,7 +262,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                         && i !== stepIdx + 1)
                     }
                   >
-
                     {!disabledByPipeline && completedSteps.has(key) && (
                       <>
                         <Text
