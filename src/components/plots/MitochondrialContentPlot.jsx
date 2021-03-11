@@ -7,8 +7,6 @@ import PlatformError from '../PlatformError';
 import generateSpec from '../../utils/plotSpecs/generateMitochondrialContentSpec';
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
-import Loader from '../Loader';
-
 const MitochondrialContentPlot = (props) => {
   const { experimentId, config, plotData } = props;
   const plotUuid = 'embeddingPreviewMitochondrialContent';
@@ -35,10 +33,14 @@ const MitochondrialContentPlot = (props) => {
       );
     }
 
-    if (!plotData) {
+    if (!plotData.length) {
       return (
         <center>
-          <Loader experimentId={experimentId} size='large' />
+          <PlatformError
+            description='There is no data to show. Please run the pipeline again.'
+            // TODO : Run the pipeline again
+            onClick={() => { }}
+          />
         </center>
       );
     }
