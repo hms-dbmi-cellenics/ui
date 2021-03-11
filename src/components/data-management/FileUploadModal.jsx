@@ -141,8 +141,8 @@ const NewProjectModal = (props) => {
       </Col>
       <Col span={24} style={{ padding: '1rem' }}>
         <Paragraph>
-          We will name your sample after the folder
-          you&apos;ll upload. You can change this
+          We will name your samples after the folders
+          you&apos;re about to upload. You can change this
           Sample ID later in Data Management.
         </Paragraph>
         <Paragraph type='secondary'>
