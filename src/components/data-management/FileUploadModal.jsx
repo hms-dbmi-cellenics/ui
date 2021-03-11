@@ -142,7 +142,8 @@ const NewProjectModal = (props) => {
       <Col span={24} style={{ padding: '1rem' }}>
         <Paragraph>
           Your folder&apos;s name will correspond to
-          the sample ID in your analysis. You can edit this later.
+          the sample ID in your analysis.
+          Don&apos;t worry, you can change this later.
         </Paragraph>
         <Paragraph type='secondary'>
           More guidance on supported file types and formats is available
