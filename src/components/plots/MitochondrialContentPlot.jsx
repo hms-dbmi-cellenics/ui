@@ -11,8 +11,8 @@ import Loader from '../Loader';
 
 const MitochondrialContentPlot = (props) => {
   const { experimentId, config, plotData } = props;
-  const plotUuid = 'mitochondrialContentPlot';
-  const plotType = 'mitochondrialContentPlot';
+  const plotUuid = 'embeddingPreviewMitochondrialContent';
+  const plotType = 'embeddingPreviewMitochondrialContent';
 
   const dispatch = useDispatch();
 
