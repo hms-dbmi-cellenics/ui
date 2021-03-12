@@ -88,6 +88,26 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     );
   }
 
+  const renderExtraPanels = () => (
+    <>
+      <Panel header='Gene Selection' key='666'>
+        <Search
+          style={{ width: '100%' }}
+          enterButton='Search'
+          defaultValue={config.shownGene}
+          onSearch={(val) => changeDislayedGene(val)}
+        />
+      </Panel>
+      <Panel header='Select Data' key='15'>
+        <SelectData
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          cellSets={cellSets}
+        />
+      </Panel>
+    </>
+  );
+
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header
@@ -112,24 +132,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse accordion>
-              <Panel header='Gene Selection' key='666'>
-                <Search
-                  style={{ width: '100%' }}
-                  enterButton='Search'
-                  defaultValue={config.shownGene}
-                  onSearch={(val) => changeDislayedGene(val)}
-                />
-              </Panel>
-              <Panel header='Select Data' key='15'>
-                <SelectData
-                  config={config}
-                  onUpdate={updatePlotWithChanges}
-                  cellSets={cellSets}
-                />
-              </Panel>
-            </Collapse>
-            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} renderExtraPanels={renderExtraPanels} />
           </Space>
         </Col>
       </Row>

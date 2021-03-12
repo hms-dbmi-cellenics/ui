@@ -175,6 +175,7 @@ describe('cellSetsReducer', () => {
       type: CELL_SETS_SET_SELECTED,
       payload: {
         keys: ['a', 'b', 'c'],
+        tab: 'fakeTab',
       },
     });
 
@@ -184,6 +185,7 @@ describe('cellSetsReducer', () => {
       type: CELL_SETS_SET_SELECTED,
       payload: {
         keys: [1, 2, 'c', 3],
+        tab: 'fakeTab',
       },
     });
 

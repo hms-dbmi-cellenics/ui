@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
+
 import {
   Layout, Menu, Typography,
 } from 'antd';
@@ -16,8 +17,11 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
-import { loadPipelineStatus, updatePipelineStatus } from '../redux/actions/experimentSettings';
+import { loadPipelineStatus } from '../redux/actions/experimentSettings';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
+
+import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
+
 import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
 
@@ -40,6 +44,9 @@ const ContentWrapper = (props) => {
     status: pipelineStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
 
+  console.log('pipelineStatusDebug');
+  console.log(pipelineStatus);
+
   const pipelineStatusKey = pipelineStatus.pipeline?.status;
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 
@@ -60,10 +67,7 @@ const ContentWrapper = (props) => {
 
     dispatch(loadPipelineStatus(experimentId));
 
-    updateSocket.current = initUpdateSocket(experimentId, (res) => {
-      dispatch(updatePipelineStatus(experimentId, res.status));
-      console.log(res);
-    });
+    updateSocket.current = initUpdateSocket(experimentId, experimentUpdatesHandler(dispatch));
   }, [experimentId]);
 
   useEffect(() => {

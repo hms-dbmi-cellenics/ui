@@ -43,9 +43,8 @@ const CellSetsTool = (props) => {
   const [activeTab, setActiveTab] = useState('cellSets');
 
   const {
-    loading, error, properties, hierarchy, selected, hidden,
+    loading, error, properties, hierarchy, selected: allSelected, hidden,
   } = cellSets;
-
   const FOCUS_TYPE = 'cellSets';
 
   useEffect(() => {
@@ -79,7 +78,7 @@ const CellSetsTool = (props) => {
   };
 
   const onCheck = (keys) => {
-    dispatch(updateCellSetSelected(experimentId, keys));
+    dispatch(updateCellSetSelected(experimentId, keys, activeTab));
   };
 
   /**
@@ -97,7 +96,7 @@ const CellSetsTool = (props) => {
         />
       );
     }
-
+    const selected = allSelected[activeTab];
     let operations = null;
     const numSelected = union(selected, properties).size;
 
@@ -127,7 +126,7 @@ const CellSetsTool = (props) => {
             }}
             helpTitle='Create new cell set from the complement of the selected sets'
           />
-          <Text type='primary'>
+          <Text type='primary' id='selectedCellSets'>
             {numSelected}
             {' '}
             cell
@@ -190,8 +189,8 @@ const CellSetsTool = (props) => {
               : (
                 <Empty description={(
                   <>
-                    <div><Text type='primary'>You don&apos;t have any metadata added yet.</Text></div>
-                    <div><Text type='secondary'>Metadata is an experimental feature for certain pre-processed or multi-sample data sets.</Text></div>
+                    <Text type='primary'>You don&apos;t have any metadata added yet.</Text>
+                    <Text type='secondary'>Metadata is an experimental feature for certain pre-processed or multi-sample data sets.</Text>
                   </>
                 )}
                 />

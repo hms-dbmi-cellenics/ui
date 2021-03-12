@@ -261,7 +261,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
 };
 
 // EMBEDDING PREVIEW - Config for doublet score
-const embeddingPreviewDoubletScoresInitialConfig = {
+const embeddingPreviewDoubletScoreInitialConfig = {
   spec: '1.0.0',
   legend: legendBaseState,
   dimensions: {
@@ -414,7 +414,7 @@ const initialPlotConfigStates = {
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
   embeddingPreviewMitochondrialContent: embeddingPreviewMitochondrialContentInitialConfig,
-  embeddingPreviewDoubletScores: embeddingPreviewDoubletScoresInitialConfig,
+  embeddingPreviewDoubletScore: embeddingPreviewDoubletScoreInitialConfig,
   dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
   dataIntegrationElbow: dataIntegrationElbowPlotInitialConfig,
