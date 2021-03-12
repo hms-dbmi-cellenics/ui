@@ -44,9 +44,6 @@ const ContentWrapper = (props) => {
     status: pipelineStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
 
-  console.log('pipelineStatusDebug');
-  console.log(pipelineStatus);
-
   const pipelineStatusKey = pipelineStatus.pipeline?.status;
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 
