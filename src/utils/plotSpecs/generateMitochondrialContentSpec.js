@@ -140,4 +140,18 @@ const generateSpec = (config, plotData) => {
   };
 };
 
-export default generateSpec;
+const generateData = (
+  embeddingData,
+  cellMetaData,
+) => embeddingData.map((cell, idx) => ({
+
+  x: cell[0],
+  y: cell[1],
+  value: cellMetaData[idx],
+
+}));
+
+export {
+  generateSpec,
+  generateData,
+};
