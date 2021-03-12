@@ -161,6 +161,7 @@ const NewProjectModal = (props) => {
       title=''
       visible={visible}
       onCancel={onCancel}
+      width='50%'
       footer={(
         <Button
           type='primary'
@@ -213,7 +214,7 @@ const NewProjectModal = (props) => {
           <>
             <Divider orientation='center'>Uploaded files</Divider>
             <ul style={{
-              columnCount: 2, listStyleType: 'none', padding: 0, margin: 0,
+              columnCount: 4, listStyleType: 'none', padding: 0, margin: 0,
             }}
             >
               {filesList.map((file, idx) => (
