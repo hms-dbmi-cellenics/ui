@@ -129,7 +129,7 @@ const NewProjectModal = (props) => {
             <List.Item>
               {
                 item.map((fileName, i) => (
-                  <span>
+                  <span key={fileName}>
                     <Text code>{`${fileName}`}</Text>
                     {i !== item.length - 1 && ' or '}
                   </span>
