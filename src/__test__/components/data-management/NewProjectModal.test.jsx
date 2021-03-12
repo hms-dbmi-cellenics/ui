@@ -29,11 +29,24 @@ describe('NewProjectModal', () => {
     });
   });
 
-  it('contains required components', () => {
-    const component = mount(<NewProjectModal />);
+  it('contains required components for first time flow', () => {
+    const component = mount(<NewProjectModal firstTimeFlow />);
 
-    // It has a description
+    // It has a header
     expect(component.find('h3').length).toBeGreaterThan(0);
+
+    // It has an input
+    expect(component.find(Input).length).toEqual(1);
+
+    // It has a button
+    expect(component.find(Button).length).toEqual(1);
+  });
+
+  it('contains required components for later flows', () => {
+    const component = mount(<NewProjectModal firstTimeFlow={false} />);
+
+    // It has no header
+    expect(component.find('h3').length).toEqual(0);
 
     // It has an input
     expect(component.find(Input).length).toEqual(1);

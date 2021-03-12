@@ -116,8 +116,8 @@ NewProjectModal.propTypes = {
 
 NewProjectModal.defaultProps = {
   visible: true,
-  onCreate: null,
-  onCancel: null,
+  onCreate: () => null,
+  onCancel: () => null,
   firstTimeFlow: false,
 };
 
