@@ -5,7 +5,11 @@ import {
   Card, Space, Descriptions,
 } from 'antd';
 import { blue } from '@ant-design/colors';
+import EditableField from '../EditableField';
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+
+import ProjectDeleteModal from './ProjectDeleteModal';
 import FileUploadModal from './FileUploadModal';
 import { setActiveProject } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
@@ -16,6 +20,7 @@ const ProjectsListContainer = (props) => {
 
   const projects = useSelector((state) => state.projects);
   const { activeProject } = projects.meta;
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(true);
 
   useEffect(() => {
@@ -32,6 +37,10 @@ const ProjectsListContainer = (props) => {
     setUploadModalVisible(false);
   };
 
+  const deleteProject = () => {
+    setDeleteModalVisible(false);
+  };
+
   return (
     <>
       <FileUploadModal
@@ -39,6 +48,12 @@ const ProjectsListContainer = (props) => {
         onCancel={() => { setUploadModalVisible(false); }}
         onUpload={uploadFiles}
       />
+      <ProjectDeleteModal
+        visible={deleteModalVisible}
+        onCancel={() => { setDeleteModalVisible(false); }}
+        onDelete={deleteProject}
+      />
+
       <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
         {
           projects.ids.map((uuid) => (
@@ -57,9 +72,26 @@ const ProjectsListContainer = (props) => {
                 size='small'
                 column={1}
                 colon=''
-                title={`${projects[uuid].name} (${projects[uuid].samples.length} samples)`}
-
+                title={(
+                  <EditableField
+                    value={`${projects[uuid].name}`}
+                    onAfterSubmit={() => {
+                      console.log('name change');
+                    }}
+                    onDelete={(e) => {
+                      e.stopPropagation();
+                      setDeleteModalVisible(true);
+                    }}
+                  />
+                )}
               >
+                <Descriptions.Item
+                  labelStyle={{ fontWeight: 'bold' }}
+                  label='Samples'
+                >
+                  {projects[uuid].samples.length}
+
+                </Descriptions.Item>
                 <Descriptions.Item
                   labelStyle={{ fontWeight: 'bold' }}
                   label='Created'

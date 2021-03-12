@@ -20,7 +20,7 @@ const DataManagementPage = ({ route }) => {
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
 
   useEffect(() => {
-    if (projectsList.length) {
+    if (projectsList.ids.length) {
       setNewProjectModalVisible(false);
     }
   }, [projectsList]);
@@ -76,6 +76,7 @@ const DataManagementPage = ({ route }) => {
       />
       <NewProjectModal
         visible={newProjectModalVisible}
+        firstTimeFlow={projectsList.ids.length === 0}
         onCancel={() => { setNewProjectModalVisible(false); }}
         onCreate={createNewProject}
       />

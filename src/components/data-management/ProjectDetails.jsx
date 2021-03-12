@@ -1,5 +1,5 @@
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input,
+  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Descriptions,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
@@ -125,10 +125,10 @@ const ProjectDetails = ({ width, height }) => {
     return (
       <div style={{ whiteSpace: 'nowrap' }}>
         <Space>
-          <Text>{text}</Text>
-          <MetadataEditor size='small' shape='link' icon={<EditOutlined />}>
-            {_.find(columns, { dataIndex: columnId }).fillInBy}
-          </MetadataEditor>
+          <EditableField
+            deleteEnabled={false}
+            value={text}
+          />
         </Space>
       </div>
     );
@@ -242,19 +242,23 @@ const ProjectDetails = ({ width, height }) => {
       />
       <div width={width} height={height}>
         <PageHeader
-          title='Samples and metadata'
+          title='A sample project name'
           extra={[
             <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
             <Button>Add metadata</Button>,
             <Button type='primary'>Launch analysis</Button>,
           ]}
-        />
+        >
+          <Text strong>Description:</Text>
+          {' '}
+          <Text editable>Here is where the description of your project would go. Lorem ipsum.</Text>
+        </PageHeader>
 
         <Table
           size='small'
           scroll={{
             x: 'max-content',
-            y: height * 0.8,
+            y: height - 250,
           }}
           bordered
           columns={columns}

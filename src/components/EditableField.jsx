@@ -15,8 +15,8 @@ const EditableField = (props) => {
   const [editing, setEditing] = useState(defaultEditing);
   const [editedValue, setEditedValue] = useState(value);
 
-  const deleteEditableField = () => {
-    props.onDelete();
+  const deleteEditableField = (e) => {
+    props.onDelete(e);
   };
 
   const onKeyDown = (e) => {
