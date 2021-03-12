@@ -113,9 +113,7 @@ const initialState = {
 const store = mockStore(initialState);
 let component;
 
-const spec = generateData(
-  generateSpec(config), expression, config.selectedSample, data, properties,
-);
+const spec = generateSpec(config, generateData(expression, config.selectedSample, data, properties));
 
 const testPlot = () => mount(
   <Provider store={store}>
