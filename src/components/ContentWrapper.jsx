@@ -16,7 +16,7 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
-import loadPipelineStatus from '../redux/actions/experimentSettings/loadPipelineStatus';
+import { loadPipelineStatus, updatePipelineStatus } from '../redux/actions/experimentSettings';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
@@ -39,8 +39,12 @@ const ContentWrapper = (props) => {
     error: pipelineError,
     status: pipelineStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
-  const pipelineRunning = pipelineStatus.pipeline?.running ?? false;
-  const pipelineRunningError = pipelineStatus.pipeline?.response?.error ?? false;
+
+  const pipelineStatusKey = pipelineStatus.pipeline?.status;
+  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+
+  const pipelineRunning = pipelineStatusKey === 'RUNNING';
+  const pipelineRunningError = pipelineErrors.includes(pipelineStatusKey);
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the pipeline status was previously loaded. In that case, `pipelineLoading` is `false`
@@ -55,7 +59,11 @@ const ContentWrapper = (props) => {
     }
 
     dispatch(loadPipelineStatus(experimentId));
-    updateSocket.current = initUpdateSocket(experimentId, (res) => { console.log(res); });
+
+    updateSocket.current = initUpdateSocket(experimentId, (res) => {
+      dispatch(updatePipelineStatus(experimentId, res.status));
+      console.log(res);
+    });
   }, [experimentId]);
 
   useEffect(() => {
@@ -169,24 +177,28 @@ const ContentWrapper = (props) => {
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
       disableIfNoExperiment: false,
+      disabledByPipelineStatus: true,
     },
     {
       path: '/experiments/[experimentId]/data-processing',
       icon: <BuildOutlined />,
       name: 'Data Processing',
       disableIfNoExperiment: true,
+      disabledByPipelineStatus: false,
     },
     {
       path: '/experiments/[experimentId]/data-exploration',
       icon: <FundViewOutlined />,
       name: 'Data Exploration',
       disableIfNoExperiment: true,
+      disabledByPipelineStatus: true,
     },
     {
       path: '/experiments/[experimentId]/plots-and-tables',
       icon: <DatabaseOutlined />,
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
+      disabledByPipelineStatus: true,
     },
   ];
 
@@ -233,11 +245,12 @@ const ContentWrapper = (props) => {
             mode='inline'
           >
             {menuLinks.map(({
-              path, icon, name, disableIfNoExperiment,
+              path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
             }) => {
               const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
+              const pipelineStatusDisable = disabledByPipelineStatus && (pipelineError || pipelineRunning || pipelineRunningError);
 
-              const menuItemDisabled = noExperimentDisable || pipelineError || pipelineRunning || pipelineRunningError;
+              const menuItemDisabled = noExperimentDisable || pipelineStatusDisable;
 
               return (
                 <Menu.Item

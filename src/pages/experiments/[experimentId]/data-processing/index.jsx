@@ -50,9 +50,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const {
     status: pipelineStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
-  const pipelineRunning = pipelineStatus.pipeline?.running;
-  const pipelineProcessError = pipelineStatus.pipeline?.response.error;
-  const pipelineBlockingSteps = pipelineRunning || pipelineProcessError;
+
+  const pipelineStatusKey = pipelineStatus.pipeline?.status;
+  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+
+  const pipelineBlockingSteps = pipelineStatusKey === 'RUNNING' || pipelineErrors.includes(pipelineStatusKey);
 
   const pipelineRunningCompletedSteps = pipelineStatus.pipeline?.completedSteps;
 
