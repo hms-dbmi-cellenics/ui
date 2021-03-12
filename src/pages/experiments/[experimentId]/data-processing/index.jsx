@@ -29,7 +29,7 @@ import PlatformError from '../../../../components/PlatformError';
 import Loader from '../../../../components/Loader';
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
-import { completeProcessingStep, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
+import { updateCompletedSteps, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 
 const { Text } = Typography;
@@ -187,12 +187,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'dataIntegration',
       name: 'Data integration',
-      render: (key) => <DataIntegration key={key} />,
+      render: (key) => <DataIntegration key={key} pipelineRunHandler={() => pipelineRunHandler(key)} />,
     },
     {
       key: 'computeEmbedding',
       name: 'Compute embedding',
-      render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} />,
+      render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} pipelineRunHandler={() => pipelineRunHandler(key)} />,
     },
   ];
 
@@ -213,7 +213,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
     const completeProcessingStepIfAdvanced = () => {
       if (stepIdx > completedSteps.size) {
-        dispatch(completeProcessingStep(experimentId, steps[stepIdx - 1].key, steps.length));
+        completeStepAt(stepIdx - 1);
       }
     };
 
@@ -235,6 +235,31 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   if (steps[stepIdx + 1]) {
     const { key: nextKey } = steps[stepIdx + 1];
     nextDisabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey);
+  }
+
+  const completeStepAt = (stepIndex) => {
+    const newDoneStepKey = steps[stepIndex].key;
+
+    const newStepsDone = new Set([...completedSteps, newDoneStepKey]);
+
+    dispatch(updateCompletedSteps(experimentId, newStepsDone, steps.length));
+  }
+
+  const setCompletedStepsFrom = (calledFromStepKey) => {
+    let newStepsDone = [];
+
+    steps.forEach((step) => {
+      newStepsDone.push(step.key);
+
+      if (step.key === calledFromStepKey) {
+        dispatch(updateCompletedSteps(experimentId, newStepsDone, steps.length))
+        return;
+      }
+    });
+  }
+
+  const pipelineRunHandler = (calledFromStepKey) => {
+    setCompletedStepsFrom(calledFromStepKey);
   }
 
   const renderTitle = () => (
@@ -336,13 +361,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                 <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
                   <Button
                     type='primary'
-                    onClick={
-                      () => {
-                        dispatch(
-                          completeProcessingStep(experimentId, steps[stepIdx].key, steps.length),
-                        );
-                      }
-                    }
+                    onClick={() => { completeStepAt(stepIdx); }}
                     disabled={nextDisabledByPipeline}
                   >
                     <span style={{ marginRight: '0.25rem' }}>Finish</span>

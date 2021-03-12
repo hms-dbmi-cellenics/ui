@@ -30,7 +30,9 @@ const { Option } = Select;
 const { Text } = Typography;
 
 const CalculationConfig = (props) => {
-  const { experimentId, config, data } = props;
+  const {
+    experimentId, config, data, pipelineRunHandler,
+  } = props;
   const FILTER_UUID = 'dataIntegration';
 
   const dispatch = useDispatch();
@@ -84,7 +86,7 @@ const CalculationConfig = (props) => {
 
   const applyDataIntegrationSettings = () => {
     setChangesOutstanding(false);
-    dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
+    pipelineRunHandler();
   };
 
   const methodOptions = {
@@ -219,6 +221,7 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   data: PropTypes.array.isRequired,
+  pipelineRunHandler: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

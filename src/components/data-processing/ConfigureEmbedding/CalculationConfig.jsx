@@ -14,7 +14,6 @@ import {
   updateProcessingSettings,
   saveProcessingSettings,
 } from '../../../redux/actions/experimentSettings';
-import { loadEmbedding } from '../../../redux/actions/embedding';
 
 import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
 
@@ -28,7 +27,7 @@ const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to com
   + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
 
 const CalculationConfig = (props) => {
-  const { experimentId } = props;
+  const { experimentId, pipelineRunHandler } = props;
   const FILTER_UUID = 'configureEmbedding';
 
   const dispatch = useDispatch();
@@ -106,12 +105,11 @@ const CalculationConfig = (props) => {
     }
   };
 
-  // When the Apply button is pressed, remove the warning and save to DynamoDB.
+  // When the Apply button is pressed remove the warning, update the settings and trigger the pipeline run.
   const applyEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
-    dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
-    dispatch(loadEmbedding(experimentId, embeddingMethod));
+    pipelineRunHandler();
   };
   const newChanges = changes;
 
@@ -301,6 +299,7 @@ const CalculationConfig = (props) => {
 
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  pipelineRunHandler: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

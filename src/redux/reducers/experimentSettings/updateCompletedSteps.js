@@ -1,10 +1,10 @@
 /* eslint-disable import/no-named-as-default-member */
 import initialState from './initialState';
 
-const completeProcessingStep = (state, action) => {
-  const { settingName, numSteps } = action.payload;
+const updateCompletedSteps = (state, action) => {
+  const { completedSteps, numSteps } = action.payload;
 
-  const newStepsDone = new Set([...state.processing.meta.stepsDone, settingName]);
+  const newStepsDone = new Set(completedSteps);
 
   return {
     ...initialState,
@@ -23,4 +23,4 @@ const completeProcessingStep = (state, action) => {
   };
 };
 
-export default completeProcessingStep;
+export default updateCompletedSteps;

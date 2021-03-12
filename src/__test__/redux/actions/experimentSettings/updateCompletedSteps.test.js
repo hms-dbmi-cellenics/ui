@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import completeProcessingStep from '../../../../redux/actions/experimentSettings/completeProcessingStep';
+import updateCompletedSteps from '../../../../redux/actions/experimentSettings/updateCompletedSteps';
 import initialState from '../../../../redux/reducers/experimentSettings/initialState';
 
 jest.mock('localforage');
@@ -24,7 +24,7 @@ describe('completeProcessingStep', () => {
 
   it('Dispatches action on completing a step', async () => {
     const store = mockStore({ experimentSettings: { ...initialState } });
-    await store.dispatch(completeProcessingStep(experimentId, settingName, numSteps));
+    await store.dispatch(updateCompletedSteps(experimentId, [settingName], numSteps));
     expect(store.getActions().length).toEqual(1);
   });
 });

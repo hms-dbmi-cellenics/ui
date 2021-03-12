@@ -33,14 +33,16 @@ import Loader from '../../Loader';
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
-  const { experimentId } = props;
+  const { experimentId, pipelineRunHandler } = props;
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(false);
   const cellSets = useSelector((state) => state.cellSets);
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
 
   const debouncedCellSetClustering = useCallback(
     _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
@@ -79,7 +81,9 @@ const ConfigureEmbedding = (props) => {
     },
   };
 
-  const outstandingChanges = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges);
+  const outstandingChanges = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges,
+  );
 
   const config = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
@@ -118,7 +122,9 @@ const ConfigureEmbedding = (props) => {
       if (!config.selectedCellSet) { return; }
 
       const propertiesArray = Object.keys(cellSets.properties);
-      const cellSetClusteringLength = propertiesArray.filter((cellSet) => cellSet === config.selectedCellSet).length;
+      const cellSetClusteringLength = propertiesArray.filter(
+        (cellSet) => cellSet === config.selectedCellSet,
+      ).length;
 
       if (!cellSetClusteringLength) {
         debouncedCellSetClustering(0.5);
@@ -342,7 +348,7 @@ const ConfigureEmbedding = (props) => {
         </Col>
 
         <Col span={5}>
-          <CalculationConfig experimentId={experimentId} />
+          <CalculationConfig experimentId={experimentId} pipelineRunHandler={pipelineRunHandler} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
@@ -357,6 +363,7 @@ const ConfigureEmbedding = (props) => {
 
 ConfigureEmbedding.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  pipelineRunHandler: PropTypes.func.isRequired,
 };
 
 export default ConfigureEmbedding;

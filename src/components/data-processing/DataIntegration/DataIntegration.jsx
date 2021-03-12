@@ -7,6 +7,7 @@ import {
   Row, Col, Space, Collapse, Alert,
 } from 'antd';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 
 import CalculationConfig from './CalculationConfig';
@@ -50,7 +51,9 @@ const elbowPlotConfigRedux = {
   type: 'dataIntegrationElbow',
 };
 
-const DataIntegration = () => {
+const DataIntegration = (props) => {
+  const { pipelineRunHandler } = props;
+
   const { Panel } = Collapse;
 
   const dispatch = useDispatch();
@@ -314,6 +317,7 @@ const DataIntegration = () => {
               experimentId={experimentId}
               config={calculationConfig}
               data={fakeData}
+              pipelineRunHandler={pipelineRunHandler}
             />
           </Panel>
           <Panel header='Plot Styling' key='styling'>
@@ -348,6 +352,10 @@ const DataIntegration = () => {
       </Col>
     </Row>
   );
+};
+
+DataIntegration.propTypes = {
+  pipelineRunHandler: PropTypes.func.isRequired,
 };
 
 export default DataIntegration;
