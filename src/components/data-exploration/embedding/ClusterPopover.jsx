@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
 import EditableField from '../../EditableField';
@@ -9,13 +9,17 @@ const ClusterPopover = (props) => {
     popoverPosition, onCreate, onCancel, message, children, ...restOfProps
   } = props;
 
+  const [visible, setVisible] = useState(false);
+
   const getContent = () => (
     <EditableField
       onAfterSubmit={(e) => {
         onCreate(e, colorProvider.getColor());
+        setVisible(false);
       }}
       onAfterCancel={() => {
         onCancel();
+        setVisible(false);
       }}
       deleteEnabled={false}
       value='New Cluster'
@@ -41,7 +45,12 @@ const ClusterPopover = (props) => {
 
   return (
     <div style={style}>
-      <Popover title={message} content={content} {...restOfProps}>
+      <Popover
+        title={message}
+        content={content}
+        {...restOfProps}
+
+      >
         {children}
       </Popover>
     </div>
