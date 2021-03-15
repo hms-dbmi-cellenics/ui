@@ -31,6 +31,8 @@ describe('Data Processing CalculationConfig', () => {
     },
   };
 
+  const pipelineRunHandler = () => { };
+
   configure({ adapter: new Adapter() });
 
   beforeEach(async () => {
@@ -82,6 +84,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
+          pipelineRunHandler={pipelineRunHandler}
         />
       </Provider>,
     );
@@ -101,6 +104,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
+          pipelineRunHandler={pipelineRunHandler}
         />
       </Provider>,
     );
@@ -123,6 +127,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
+          pipelineRunHandler={pipelineRunHandler}
         />
       </Provider>,
     );
@@ -165,6 +170,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
+          pipelineRunHandler={pipelineRunHandler}
         />
       </Provider>,
     );
@@ -178,8 +184,8 @@ describe('Data Processing CalculationConfig', () => {
 
     button.simulate('click', {});
     // Should load the new embedding and save the config.
-    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
-    expect(store.getActions().length).toEqual(2);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE]);
+    expect(store.getActions().length).toEqual(1);
     expect(store.getActions()).toMatchSnapshot();
   });
 });
