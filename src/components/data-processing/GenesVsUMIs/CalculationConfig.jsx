@@ -22,7 +22,7 @@ const { Option } = Select;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, configChangedHandler,
   } = props;
 
   const config = useSelector(
@@ -49,6 +49,8 @@ const CalculationConfig = (props) => {
       FILTER_UUID,
       newConfig,
     ));
+
+    configChangedHandler();
   };
 
   const updateSettings = (diff) => {
@@ -63,6 +65,8 @@ const CalculationConfig = (props) => {
       FILTER_UUID,
       sampleSpecificDiff,
     ));
+
+    configChangedHandler();
   };
 
   const filtering = false;
@@ -159,6 +163,7 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  configChangedHandler: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

@@ -428,7 +428,7 @@ class CellSizeDistribution extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const {
-      experimentId, sampleId, filtering, sampleIds,
+      experimentId, sampleId, filtering, sampleIds, configChangedHandler,
     } = this.props;
     let data = { plotData: this.generateData() };
     if (!config.plotToDraw) {
@@ -512,7 +512,13 @@ class CellSizeDistribution extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} />
+                <CalculationConfig
+                  experimentId={experimentId}
+                  sampleId={sampleId}
+                  plotType='bin step'
+                  sampleIds={sampleIds}
+                  configChangedHandler={configChangedHandler}
+                />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
@@ -535,6 +541,7 @@ CellSizeDistribution.propTypes = {
   sampleId: PropTypes.string.isRequired,
   filtering: PropTypes.bool,
   sampleIds: PropTypes.array.isRequired,
+  configChangedHandler: PropTypes.func.isRequired,
 };
 
 CellSizeDistribution.defaultProps = {

@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import {
-  Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
+  Select, Space, Button, Typography, Alert,
+  Progress, Row, Col, Carousel, Card, Form
 } from 'antd';
 import {
   LeftOutlined,
@@ -61,6 +62,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const cellSets = useSelector((state) => state.cellSets);
 
+
+  const [changesOutstanding, setChangesOutstanding] = useState(false);
+  const configChangedHandler = () => {
+    setChangesOutstanding(true);
+  };
+
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
@@ -105,6 +112,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
+              configChangedHandler={configChangedHandler}
             />
           )}
         />
@@ -125,6 +133,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
+              configChangedHandler={configChangedHandler}
             />
           )}
         />
@@ -145,6 +154,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
+              configChangedHandler={configChangedHandler}
             />
           )}
         />
@@ -165,6 +175,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
+              configChangedHandler={configChangedHandler}
             />
           )}
         />
@@ -185,6 +196,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
+              configChangedHandler={configChangedHandler}
             />
           )}
         />
@@ -274,78 +286,91 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const renderTitle = () => (
     <Row justify='space-between'>
-      <Col span='8'>
-        <Select
-          value={stepIdx}
-          onChange={(idx) => {
-            setStepIdx(idx);
-          }}
-          style={{ width: 360, fontWeight: 'bold' }}
-          placeholder='Jump to a step...'
-        >
-          {
-            steps.map(
-              ({ name, key }, i) => {
-                const disabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(key);
-
-                return (
-                  <Option
-                    value={i}
-                    key={key}
-                    disabled={
-                      disabledByPipeline
-                      || (!completedSteps.has(key)
-                        && i !== completedSteps.size
-                        && i !== stepIdx + 1)
-                    }
-                  >
-                    {!disabledByPipeline && completedSteps.has(key) && (
-                      <>
-                        <Text
-                          type='success'
-                        >
-                          <CheckOutlined />
-                        </Text>
-                        <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                      </>
-                    )}
-
-                    {!disabledByPipeline && !completedSteps.has(key) && completedSteps.size === i && (
-                      <Text
-                        type='default'
-                      >
-                        <CaretRightOutlined />
-                        <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                      </Text>
-                    )}
-
-                    {(disabledByPipeline || (!completedSteps.has(key) && completedSteps.size < i)) && (
-                      <>
-                        <Text
-                          disabled
-                        >
-                          <EllipsisOutlined />
-                        </Text>
-                        <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                      </>
-                    )}
-                  </Option>
-                );
-              }
-            )
-          }
-        </Select>
-
-        {steps[stepIdx].multiSample && (
-          <Button type='primary'
-            onClick={() => { pipelineRunHandler(steps[stepIdx].key) }}
-            style={{ marginLeft: '20px' }}
+      <Col span='14' >
+        <Row>
+          <Select
+            value={stepIdx}
+            onChange={(idx) => {
+              setStepIdx(idx);
+            }}
+            style={{ width: 360, fontWeight: 'bold' }}
+            placeholder='Jump to a step...'
           >
-            Run filter
-          </Button>
-        )}
+            {
+              steps.map(
+                ({ name, key }, i) => {
+                  const disabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(key);
+
+                  return (
+                    <Option
+                      value={i}
+                      key={key}
+                      disabled={
+                        disabledByPipeline
+                        || (!completedSteps.has(key)
+                          && i !== completedSteps.size
+                          && i !== stepIdx + 1)
+                      }
+                    >
+                      {!disabledByPipeline && completedSteps.has(key) && (
+                        <>
+                          <Text
+                            type='success'
+                          >
+                            <CheckOutlined />
+                          </Text>
+                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                        </>
+                      )}
+
+                      {!disabledByPipeline && !completedSteps.has(key) && completedSteps.size === i && (
+                        <Text
+                          type='default'
+                        >
+                          <CaretRightOutlined />
+                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                        </Text>
+                      )}
+
+                      {(disabledByPipeline || (!completedSteps.has(key) && completedSteps.size < i)) && (
+                        <>
+                          <Text
+                            disabled
+                          >
+                            <EllipsisOutlined />
+                          </Text>
+                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                        </>
+                      )}
+                    </Option>
+                  );
+                }
+              )
+            }
+          </Select>
+
+          {steps[stepIdx].multiSample && (
+            <Button type='primary'
+              onClick={() => { pipelineRunHandler(steps[stepIdx].key) }}
+              disabled={changesOutstanding}
+              style={{ marginLeft: '20px' }}
+            >
+              Run filter
+            </Button>
+          )}
+
+          {changesOutstanding && (
+            <Alert
+              message='Your changes have not been applied. To rerun Click Run Filter.'
+              type='warning'
+              showIcon={false}
+              style={{ marginLeft: '20px', width: '440px' }}
+            />
+          )}
+
+        </Row>
       </Col>
-      <Col span='16'>
+      <Col span='10'>
         <div style={{ float: 'right' }}>
           <Space size='large'>
             <Progress

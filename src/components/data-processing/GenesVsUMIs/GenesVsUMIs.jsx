@@ -4,7 +4,6 @@
 import React from 'react';
 import {
   Collapse, Row, Col, Space, Button, Tooltip,
-  InputNumber, Select, Slider, Form,
 } from 'antd';
 import PropTypes from 'prop-types';
 import {
@@ -16,12 +15,10 @@ import plot1Pic from '../../../../static/media/plot7.png';
 import plot2Pic from '../../../../static/media/plot8.png';
 import plotData from './new_data.json';
 import OldPlotStyling from '../../plots/styling/OldPlotStyling';
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
-const { Option } = Select;
 
 class GenesVsUMIs extends React.Component {
   constructor(props) {
@@ -351,7 +348,7 @@ class GenesVsUMIs extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const {
-      experimentId, sampleId, filtering, sampleIds,
+      experimentId, sampleId, sampleIds, configChangedHandler, filtering,
     } = this.props;
 
     const changePlot = (val) => {
@@ -418,7 +415,12 @@ class GenesVsUMIs extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
+                <CalculationConfig
+                  experimentId={experimentId}
+                  sampleId={sampleId}
+                  sampleIds={sampleIds}
+                  configChangedHandler={configChangedHandler}
+                />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
@@ -434,5 +436,13 @@ class GenesVsUMIs extends React.Component {
     );
   }
 }
+
+GenesVsUMIs.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  sampleIds: PropTypes.array.isRequired,
+  filtering: PropTypes.bool.isRequired,
+  configChangedHandler: PropTypes.func.isRequired,
+};
 
 export default GenesVsUMIs;

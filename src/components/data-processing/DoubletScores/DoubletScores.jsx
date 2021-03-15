@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space,
-  Slider, Form, Button, Tooltip,
+  Collapse, Row, Col, Space, Button, Tooltip,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -11,7 +10,6 @@ import _ from 'lodash';
 import { Vega } from 'react-vega';
 import plotData from './new_data.json';
 import OldPlotStyling from '../../plots/styling/OldPlotStyling';
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 import CalculationConfig from './CalculationConfig';
 
@@ -265,7 +263,7 @@ class DoubletScores extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const {
-      experimentId, sampleId, filtering, sampleIds,
+      experimentId, sampleId, filtering, sampleIds, configChangedHandler,
     } = this.props;
 
     return (
@@ -284,7 +282,12 @@ class DoubletScores extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
+                <CalculationConfig
+                  experimentId={experimentId}
+                  sampleId={sampleId}
+                  sampleIds={sampleIds}
+                  configChangedHandler={configChangedHandler}
+                />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
@@ -308,6 +311,7 @@ DoubletScores.propTypes = {
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   filtering: PropTypes.bool.isRequired,
+  configChangedHandler: PropTypes.func.isRequired,
 };
 
 DoubletScores.defaultProps = {

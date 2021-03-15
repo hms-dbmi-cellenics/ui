@@ -439,7 +439,7 @@ class MitochondrialContent extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const {
-      experimentId, sampleId, filtering, sampleIds,
+      experimentId, sampleId, filtering, sampleIds, configChangedHandler,
     } = this.props;
 
     const changePlot = (val) => {
@@ -507,7 +507,12 @@ class MitochondrialContent extends React.Component {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Collapse defaultActiveKey={['filtering-settings']}>
               <Panel header='Filtering settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
-                <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
+                <CalculationConfig
+                  experimentId={experimentId}
+                  sampleId={sampleId}
+                  sampleIds={sampleIds}
+                  configChangedHandler={configChangedHandler}
+                />
               </Panel>
 
               {/* Temporary placeholder, replace with <PlotStyling> when working on this component */}
@@ -530,6 +535,7 @@ MitochondrialContent.propTypes = {
   sampleId: PropTypes.string.isRequired,
   filtering: PropTypes.bool,
   sampleIds: PropTypes.array.isRequired,
+  configChangedHandler: PropTypes.func.isRequired,
 };
 
 MitochondrialContent.defaultProps = {
