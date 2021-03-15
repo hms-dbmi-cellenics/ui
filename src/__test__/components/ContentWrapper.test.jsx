@@ -11,19 +11,20 @@ const { Item } = Menu;
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn()
-    .mockImplementationOnce(() => ({ // 1st test
+    .mockImplementationOnce(() => ({ // test 1
       query: {
         experimentId: '1234',
       },
     }))
-    .mockImplementationOnce(() => ({ // 1st test
+    .mockImplementationOnce(() => ({ // test 2
       query: {
         experimentId: '1234',
       },
     }))
-    .mockImplementationOnce(() => ({ // 2nd test
+    .mockImplementationOnce(() => ({ // test 3
       query: {},
     })),
+
 }));
 
 configure({ adapter: new Adapter() });
@@ -109,5 +110,32 @@ describe('ContentWrapper', () => {
 
     // Plots and Tables link is disabled
     expect(menus.at(3).props().disabled).toEqual(true);
+  });
+
+  test('links are disabled if there is a pipeline run underway', () => {
+    const testStore = mockStore({
+      notifications: {},
+      experimentSettings: {
+        pipelineStatus: {
+          loading: false,
+          error: false,
+          status: { pipeline: { running: true } },
+        },
+      },
+    });
+
+    const wrapper = mount(
+      <Provider store={testStore}>
+        <ContentWrapper backendStatus={{}}>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+
+    const sider = wrapper.find('Sider');
+    expect(sider.length).toEqual(1);
+
+    const menus = wrapper.find(Menu).children().find(Item);
+    expect(menus.length).toEqual(4);
   });
 });

@@ -1,6 +1,6 @@
 import initialState from './initialState';
 
-const pipelineStatusLoading = (state, action) => {
+const pipelineStatusLoaded = (state, action) => {
   const { status } = action.payload;
 
   return {
@@ -14,4 +14,4 @@ const pipelineStatusLoading = (state, action) => {
   };
 };
 
-export default pipelineStatusLoading;
+export default pipelineStatusLoaded;
