@@ -25,7 +25,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
           processingConfig: [
             {
               name: callerStepKey,
-              body: [processingConfig],
+              body: processingConfig,
             },
           ],
         }),

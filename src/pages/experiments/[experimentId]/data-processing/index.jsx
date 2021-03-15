@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
-  Progress, Row, Col, Carousel, Card, Form
+  Progress, Row, Col, Carousel, Card, Modal
 } from 'antd';
 import {
   LeftOutlined,
@@ -62,11 +62,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const cellSets = useSelector((state) => state.cellSets);
 
-
   const [changesOutstanding, setChangesOutstanding] = useState(false);
-  const configChangedHandler = () => {
-    setChangesOutstanding(true);
-  };
+  const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
+
+  const upcomingStepIdxRef = useRef(null);
 
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
@@ -84,6 +83,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     (child) => child.key,
   );
 
+  // Checks if the step is in the 'completed steps' list we get from the pipeline status
   const stepIsCompletedInPipeline = (stepName) => {
     const lowerCaseStepName = stepName.toLowerCase();
 
@@ -93,6 +93,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
     return stepAppearances.length > 0;
   }
+
+  const configChangedHandler = () => {
+    setChangesOutstanding(true);
+  };
 
   const inputsList = sampleKeys?.map((key) => ({ key, headerName: `Sample ${cellSets.properties?.[key].name}`, params: { ...cellSets.properties?.[key], key } }));
 
@@ -247,14 +251,25 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       return;
     }
 
+  }, [completingStepError, stepIdx]);
 
-  }, [completingStepError, stepIdx,]);
+  const manualStepIdxChange = (newStepIdx) => {
+    if (changesOutstanding) {
+      upcomingStepIdxRef.current = newStepIdx;
+
+      setShowChangesWillBeLost(true);
+    } else {
+      setStepIdx(newStepIdx);
+    }
+  }
 
   let nextDisabledByPipeline = false;
 
   if (steps[stepIdx + 1]) {
     const { key: nextKey } = steps[stepIdx + 1];
-    nextDisabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey);
+
+    // We disable the next 
+    nextDisabledByPipeline = (pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey)) && !completedSteps.has(nextKey);
   }
 
   const completeStepAt = (stepIndex) => {
@@ -280,143 +295,165 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const pipelineRunHandler = (calledFromStepKey) => {
     setCompletedStepsFrom(calledFromStepKey);
+    setChangesOutstanding(false);
 
     dispatch((runPipeline(experimentId, calledFromStepKey)))
   }
 
+  const ignoreLostChanges = () => {
+    setShowChangesWillBeLost(false)
+    setChangesOutstanding(false);
+    setStepIdx(upcomingStepIdxRef.current);
+  }
+
   const renderTitle = () => (
-    <Row justify='space-between'>
-      <Col span='14' >
-        <Row>
-          <Select
-            value={stepIdx}
-            onChange={(idx) => {
-              setStepIdx(idx);
-            }}
-            style={{ width: 360, fontWeight: 'bold' }}
-            placeholder='Jump to a step...'
-          >
-            {
-              steps.map(
-                ({ name, key }, i) => {
-                  const disabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(key);
-
-                  return (
-                    <Option
-                      value={i}
-                      key={key}
-                      disabled={
-                        disabledByPipeline
-                        || (!completedSteps.has(key)
-                          && i !== completedSteps.size
-                          && i !== stepIdx + 1)
-                      }
-                    >
-                      {!disabledByPipeline && completedSteps.has(key) && (
-                        <>
-                          <Text
-                            type='success'
-                          >
-                            <CheckOutlined />
-                          </Text>
-                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                        </>
-                      )}
-
-                      {!disabledByPipeline && !completedSteps.has(key) && completedSteps.size === i && (
-                        <Text
-                          type='default'
-                        >
-                          <CaretRightOutlined />
-                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                        </Text>
-                      )}
-
-                      {(disabledByPipeline || (!completedSteps.has(key) && completedSteps.size < i)) && (
-                        <>
-                          <Text
-                            disabled
-                          >
-                            <EllipsisOutlined />
-                          </Text>
-                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                        </>
-                      )}
-                    </Option>
-                  );
-                }
-              )
-            }
-          </Select>
-
-          {steps[stepIdx].multiSample && (
-            <Button type='primary'
-              onClick={() => { pipelineRunHandler(steps[stepIdx].key) }}
-              disabled={changesOutstanding}
-              style={{ marginLeft: '20px' }}
+    <>
+      <Modal
+        title="Basic Modal"
+        visible={showChangesWillBeLost}
+        onOk={ignoreLostChanges}
+        onCancel={() => setShowChangesWillBeLost(false)}
+        okText='Continue'
+        cancelText='Cancel'
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
+      <Row justify='space-between'>
+        <Col span='14' >
+          <Row>
+            <Select
+              value={stepIdx}
+              onChange={(idx) => {
+                manualStepIdxChange(idx);
+              }}
+              style={{ width: 360, fontWeight: 'bold' }}
+              placeholder='Jump to a step...'
             >
-              Run filter
-            </Button>
-          )}
+              {
+                steps.map(
+                  ({ name, key }, i) => {
+                    const disabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(key);
 
-          {changesOutstanding && (
-            <Alert
-              message='Your changes have not been applied. To rerun Click Run Filter.'
-              type='warning'
-              showIcon={false}
-              style={{ marginLeft: '20px', width: '440px' }}
-            />
-          )}
+                    return (
+                      <Option
+                        value={i}
+                        key={key}
+                        disabled={
+                          disabledByPipeline
+                          || (!completedSteps.has(key)
+                            && i !== completedSteps.size
+                            && i !== stepIdx + 1)
+                        }
+                      >
+                        {!disabledByPipeline && completedSteps.has(key) && (
+                          <>
+                            <Text
+                              type='success'
+                            >
+                              <CheckOutlined />
+                            </Text>
+                            <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                          </>
+                        )}
 
-        </Row>
-      </Col>
-      <Col span='10'>
-        <div style={{ float: 'right' }}>
-          <Space size='large'>
-            <Progress
-              percent={((completedSteps.size) / steps.length) * 100}
-              steps={steps.length}
-              showInfo={false}
-            />
-            <Text type='primary'>{`${completedSteps.size} of ${steps.length} steps complete`}</Text>
-            <Button
-              disabled={stepIdx === 0}
-              icon={<LeftOutlined />}
-              onClick={() => setStepIdx(Math.max(stepIdx - 1, 0))}
-            >
-              Previous
-            </Button>
-            {stepIdx !== steps.length - 1 ? (
-              <Button
-                type='primary'
-                onClick={
-                  () => {
-                    const newId = Math.min(stepIdx + 1, steps.length - 1);
-                    setStepIdx(newId);
+                        {!disabledByPipeline && !completedSteps.has(key) && completedSteps.size === i && (
+                          <Text
+                            type='default'
+                          >
+                            <CaretRightOutlined />
+                            <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                          </Text>
+                        )}
+
+                        {(disabledByPipeline || (!completedSteps.has(key) && completedSteps.size < i)) && (
+                          <>
+                            <Text
+                              disabled
+                            >
+                              <EllipsisOutlined />
+                            </Text>
+                            <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                          </>
+                        )}
+                      </Option>
+                    );
                   }
-                }
-                disabled={nextDisabledByPipeline}
+                )
+              }
+            </Select>
+
+            {steps[stepIdx].multiSample && (
+              <Button type='primary'
+                onClick={() => { pipelineRunHandler(steps[stepIdx].key) }}
+                disabled={!changesOutstanding || pipelineStatusKey === 'RUNNING'}
+                style={{ marginLeft: '20px' }}
               >
-                Next
-                <RightOutlined />
+                Run filter
               </Button>
-            )
-              : (
-                <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
-                  <Button
-                    type='primary'
-                    onClick={() => { completeStepAt(stepIdx); }}
-                    disabled={nextDisabledByPipeline}
-                  >
-                    <span style={{ marginRight: '0.25rem' }}>Finish</span>
-                    <CheckOutlined />
-                  </Button>
-                </Link>
-              )}
-          </Space>
-        </div>
-      </Col>
-    </Row>
+            )}
+
+            {changesOutstanding && (
+              <Alert
+                message='Your changes have not been applied. To rerun Click Run Filter.'
+                type='warning'
+                showIcon={false}
+                style={{ marginLeft: '20px', width: '440px' }}
+              />
+            )}
+
+          </Row>
+        </Col>
+        <Col span='10'>
+          <div style={{ float: 'right' }}>
+            <Space size='large'>
+              <Progress
+                percent={((completedSteps.size) / steps.length) * 100}
+                steps={steps.length}
+                showInfo={false}
+              />
+              <Text type='primary'>{`${completedSteps.size} of ${steps.length} steps complete`}</Text>
+              <Button
+                disabled={stepIdx === 0}
+                icon={<LeftOutlined />}
+                onClick={() => manualStepIdxChange(Math.max(stepIdx - 1, 0))}
+              >
+                Previous
+            </Button>
+              {stepIdx !== steps.length - 1 ? (
+                <Button
+                  type='primary'
+                  onClick={() => {
+                    const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
+
+                    manualStepIdxChange(newStepIdx);
+                  }}
+                  disabled={nextDisabledByPipeline}
+                >
+                  Next
+                  <RightOutlined />
+                </Button>
+              )
+                : (
+                  <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
+                    <Button
+                      type='primary'
+                      onClick={() => {
+                        manualStepIdxChange(stepIdx);
+                      }}
+                      disabled={nextDisabledByPipeline}
+                    >
+                      <span style={{ marginRight: '0.25rem' }}>Finish</span>
+                      <CheckOutlined />
+                    </Button>
+                  </Link>
+                )}
+            </Space>
+          </div>
+        </Col>
+      </Row >
+    </>
   );
 
   if (loading || cellSets.loading) {
