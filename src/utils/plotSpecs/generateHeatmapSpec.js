@@ -1,4 +1,4 @@
-const generateSpec = (config, groupName) => {
+const generateSpec = (config) => {
   let legend = [
     {
       fill: 'color',
@@ -14,7 +14,7 @@ const generateSpec = (config, groupName) => {
     },
     {
       fill: 'cellSetColors',
-      title: groupName,
+      title: 'Cluster ID',
       type: 'symbol',
       orient: 'right',
       direction: 'vertical',
@@ -39,6 +39,7 @@ const generateSpec = (config, groupName) => {
         fill: 'color',
         type: 'gradient',
         title: ['Intensity'],
+        orient: 'left',
         labelFont: { value: config.fontStyle.font },
         titleFont: { value: config.fontStyle.font },
         gradientLength: {

@@ -52,8 +52,7 @@ const HeatmapPlot = ({ experimentId }) => {
     if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes)) {
       return;
     }
-    const groupName = cellSets.properties[config.selectedCellSet].name;
-    const spec = generateSpec(config, groupName);
+    const spec = generateSpec(config);
     const data = populateHeatmapData(cellSets, config, expressionData, plotUuid);
 
     const newVegaSpec = {
