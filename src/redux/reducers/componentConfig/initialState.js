@@ -294,6 +294,63 @@ const interactiveHeatmapInitialConfig = {
   legendIsVisible: true,
 };
 
+// CELL SIZE DISTRIBUTION - Cell Size Distribution Histogram
+const cellSizeDistributionHistogram = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-left',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: '#UMIs in cell',
+    yAxisText: '#UMIs * #Cells',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  minCellSize: 10800,
+  binStep: 200,
+};
+
+// CELL SIZE DISTRIBUTION - Cell Size Distribution Knee Plot
+const cellSizeDistributionKneePlot = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-left',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Cell rank',
+    yAxisText: '#UMIs in cell',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  minCellSize: 990,
+};
+
 // DATA INTEGRATION - Embedding by Samples
 const dataIntegrationEmbeddingInitialConfig = {
   spec: '1.0.0',
@@ -406,6 +463,8 @@ const dataIntegrationElbowPlotInitialConfig = {
 };
 
 const initialPlotConfigStates = {
+  cellSizeDistributionHistogram,
+  cellSizeDistributionKneePlot,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,
