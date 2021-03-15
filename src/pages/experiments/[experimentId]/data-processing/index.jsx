@@ -56,7 +56,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const pipelineStatusKey = pipelineStatus.pipeline?.status;
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 
-  const pipelineBlockingSteps = pipelineStatusKey === 'RUNNING' || pipelineErrors.includes(pipelineStatusKey);
+  const pipelineRunning = pipelineStatusKey === 'RUNNING';
+
+  const pipelineBlockingSteps = pipelineRunning || pipelineErrors.includes(pipelineStatusKey);
 
   const pipelineRunningCompletedSteps = pipelineStatus.pipeline?.completedSteps;
 
@@ -220,12 +222,18 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
   ];
 
+  // If the pipeline is running we can't focus on the next step because it is showing outdated information
+  // If the pipeline isn't running we should show the next step to complete
+  const stepToFocus = () => {
+    return pipelineRunning ? Math.max(0, completedSteps.size - 1) : completedSteps.size % steps.length;
+  }
+
   const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
 
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    setStepIdx(completedSteps.size % steps.length);
+    setStepIdx(stepToFocus());
   }, [loading]);
 
   useEffect(() => {
@@ -269,7 +277,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     const { key: nextKey } = steps[stepIdx + 1];
 
     // We disable the next 
-    nextDisabledByPipeline = (pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey)) && !completedSteps.has(nextKey);
+    nextDisabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey) && !completedSteps.has(nextKey);
   }
 
   const completeStepAt = (stepIndex) => {
@@ -334,7 +342,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               {
                 steps.map(
                   ({ name, key }, i) => {
-                    const disabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(key);
+                    const disabledByPipeline = (pipelineBlockingSteps && !stepIsCompletedInPipeline(key)) && !completedSteps.has(key);
 
                     return (
                       <Option
@@ -387,7 +395,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             {steps[stepIdx].multiSample && (
               <Button type='primary'
                 onClick={() => { pipelineRunHandler(steps[stepIdx].key) }}
-                disabled={!changesOutstanding || pipelineStatusKey === 'RUNNING'}
+                disabled={!changesOutstanding || pipelineRunning}
                 style={{ marginLeft: '20px' }}
               >
                 Run filter
