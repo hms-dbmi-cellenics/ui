@@ -303,8 +303,8 @@ const cellSizeDistributionHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 700,
-    height: 550,
+    width: 530,
+    height: 400,
   },
   axes: {
     ...axesBaseState,
@@ -332,8 +332,8 @@ const cellSizeDistributionKneePlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 700,
-    height: 550,
+    width: 530,
+    height: 400,
   },
   axes: {
     ...axesBaseState,
@@ -349,6 +349,64 @@ const cellSizeDistributionKneePlot = {
   marker: markerBaseState,
   label: labelBaseState,
   minCellSize: 990,
+};
+
+// MITOCHONDRIAL CONTENT - Mitochondrial Fraction Histogram
+const mitochondrialFractionHistogram = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-right',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Fraction of mitochondrial reads',
+    yAxisText: 'Fraction of cells',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  binStep: 0.05,
+  maxFraction: 0.1,
+};
+
+// MITOCHONDRIAL CONTENT - Mitochondrial Fraction Log Histogram
+const mitochondrialFractionLogHistogram = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-right',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'log10(#UMIs in cell)',
+    yAxisText: 'Fraction of mitochondrial reads',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  binStep: 0.05,
+  maxFraction: 3.5,
 };
 
 // DATA INTEGRATION - Embedding by Samples
@@ -465,6 +523,8 @@ const dataIntegrationElbowPlotInitialConfig = {
 const initialPlotConfigStates = {
   cellSizeDistributionHistogram,
   cellSizeDistributionKneePlot,
+  mitochondrialFractionHistogram,
+  mitochondrialFractionLogHistogram,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,

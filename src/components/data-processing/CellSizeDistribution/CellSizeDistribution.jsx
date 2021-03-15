@@ -123,7 +123,6 @@ const CellSizeDistribution = (props) => {
     }
 
     if (plot) {
-      console.log(plot);
       return plot;
     }
   };
