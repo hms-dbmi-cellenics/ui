@@ -83,8 +83,6 @@ const DiffExprResults = (props) => {
   const optionName = (word) => {
     const [rootGroup, clusterName] = word.split('/');
 
-    console.log(rootGroup, clusterName);
-
     let printString = '';
 
     if (!clusterName) {

@@ -9,17 +9,13 @@ const ClusterPopover = (props) => {
     popoverPosition, onCreate, onCancel, message, children, ...restOfProps
   } = props;
 
-  const [visible, setVisible] = useState(false);
-
   const getContent = () => (
     <EditableField
       onAfterSubmit={(e) => {
         onCreate(e, colorProvider.getColor());
-        setVisible(false);
       }}
       onAfterCancel={() => {
         onCancel();
-        setVisible(false);
       }}
       deleteEnabled={false}
       value='New Cluster'
