@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Row, Col, Space, Collapse, Select, Button, Skeleton, Spin, Empty, Typography,
+  Row, Col, Space, Collapse, Skeleton, Empty, Typography,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -49,7 +49,6 @@ const HeatmapPlot = ({ experimentId }) => {
     }
   }, []);
   useEffect(() => {
-    console.log('in use effect expression data empty - ', _.isEmpty(expressionData), expressionData);
     if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes)) {
       return;
     }
@@ -59,38 +58,18 @@ const HeatmapPlot = ({ experimentId }) => {
 
     const newVegaSpec = {
       ...spec,
-      // axes: [...spec.axes, ...getAxes()],
       data: spec.data.map((datum) => ({
         ...datum,
         values: data[datum.name],
       })),
     };
     setVegaSpec(newVegaSpec);
-    console.log('vega spec is ', newVegaSpec);
   }, [expressionData, selectedGenes, config]);
 
-  // obj is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
+  // updatedField is a subset of what default config has and contains only the things we want change
+  const updatePlotWithChanges = (updatedField) => {
+    dispatch(updatePlotConfig(plotUuid, updatedField));
   };
-
-  // const generateVegaData = () => {
-  //   // First, find the child nodes in the hirerarchy.
-  //   let newCellSets = cellSets.hierarchy
-  //     .find((rootNode) => rootNode.key === config.selectedCellSet)
-  //     ?.children || [];
-
-  //   // Build up the data source based on the properties. Note that the child nodes
-  //   // in the hierarchy are /objects/ with a `key` property, hence the destructuring
-  //   // in the function.
-  //   newCellSets = newCellSets.map(({ key }) => ({ key, ...cellSets.properties[key] }));
-
-  //   const expression = selectedGenes.map(
-  //     (geneName) => ({ ...expressionData[geneName], geneName }),
-  //   );
-
-  //   return { cellSets: newCellSets, expression };
-  // };
 
   const onGeneEnter = (value) => {
     const updates = {};
@@ -106,7 +85,6 @@ const HeatmapPlot = ({ experimentId }) => {
     }
 
     updates.selectedGenes = value;
-    console.log('updates are ', updates);
     dispatch(loadGeneExpression(experimentId, updates.selectedGenes, plotUuid));
   };
 

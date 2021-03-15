@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { useState } from 'react';
 import SetOperations from '../../../utils/setOperations';
 import { union } from '../../../utils/cellSetOperations';
 
@@ -12,7 +11,6 @@ const populateHeatmapData = (cellSets, config, expression, componentType, downsa
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
   const selectedGenes = expression.views[componentType].data;
   const trackOrder = Array.from(selectedTracks).reverse();
-  console.log('populate heatmap data cellsets - ', cellSets, 'config - ', config, 'expression - ', expression, 'selected genes - ', selectedGenes);
   const generateTrackData = (cells, track) => {
     // Find the `groupBy` root node.
     const rootNodes = hierarchy.filter((clusters) => clusters.key === track);
@@ -35,6 +33,7 @@ const populateHeatmapData = (cellSets, config, expression, componentType, downsa
         key,
         track,
         name,
+        color,
         trackName: properties[track].name,
       });
 
@@ -160,7 +159,6 @@ const populateHeatmapData = (cellSets, config, expression, componentType, downsa
       cellIds.push(...bucket);
     });
 
-    console.log('buckets - ', buckets, ' size - ', size, 'group by root nodes - ', groupByRootNodes);
     return cellIds;
   };
   // For now, this is statically defined. In the future, these values are

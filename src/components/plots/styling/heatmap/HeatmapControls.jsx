@@ -11,9 +11,8 @@ const { Panel } = Collapse;
 
 const HeatmapControls = (props) => {
   const {
-    config, onGeneEnter, selectedGenes, plotUuid,
+    onGeneEnter, selectedGenes, plotUuid,
   } = props;
-  console.log('something');
   return (
     <Collapse defaultActiveKey={['5']} accordion>
       <Panel header='Gene selection' key='5'>
@@ -45,29 +44,13 @@ const HeatmapControls = (props) => {
       <Panel header='Group by' key='12'>
         <HeatmapGroupBySettings componentType={plotUuid} />
       </Panel>
-      {/* <Panel header='Group by' key='6'>
-        <p>Select the cell set category you would like to group cells by.</p>
-        <Space direction='vertical' style={{ width: '100%' }}>
-          <Select
-            labelInValue
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            value={{ key: config.selectedCellSet }}
-            options={generateCellSetOptions()}
-            onChange={onCellSetSelect}
-          />
-        </Space>
-      </Panel> */}
     </Collapse>
 
   );
 };
 
 HeatmapControls.propTypes = {
-  config: PropTypes.object.isRequired,
   onGeneEnter: PropTypes.func.isRequired,
-  // generateCellSetOptions: PropTypes.func.isRequired,
-  // onCellSetSelect: PropTypes.func.isRequired,
   selectedGenes: PropTypes.array.isRequired,
   plotUuid: PropTypes.string.isRequired,
 };

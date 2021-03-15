@@ -44,7 +44,6 @@ const VegaHeatmap = (props) => {
       values: data[datum.name],
     })),
   };
-  console.log('interactive heatmap spec is ', vegaSpec);
   return (
     <Element
       className='element'
