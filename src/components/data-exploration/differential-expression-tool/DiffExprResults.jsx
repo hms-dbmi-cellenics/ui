@@ -32,20 +32,24 @@ const DiffExprResults = (props) => {
 
   const columns = [
     {
-      title: 'Z-score',
-      key: 'zscore',
+      title: 'Avg log2FC',
+      key: 'avg_log2FC',
       sorter: true,
     },
     {
-      title: 'Absolute Z-score',
-      key: 'abszscore',
+      title: 'adj p-value',
+      key: 'p_val_adj',
       sorter: true,
-      render: (score, record) => <Tooltip title={`q-value: ${record.qval}`}>{score}</Tooltip>,
+      render: (score, record) => <Tooltip title={`adj p-value: ${record.qval}`}>{score}</Tooltip>,
     },
     {
-      title: 'log2 FC',
-      key: 'log2fc',
-      render: (num) => parseFloat(num.toFixed(1)),
+      title: 'Pct 1',
+      key: 'pct_1',
+      sorter: true,
+    },
+    {
+      title: 'Pct 2',
+      key: 'pct_2',
       sorter: true,
     },
   ];

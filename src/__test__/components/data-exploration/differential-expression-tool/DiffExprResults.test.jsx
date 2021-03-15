@@ -22,19 +22,19 @@ jest.mock('../../../../utils/sendWork', () => ({
         body: JSON.stringify({
           rows: [
             {
-              pval: 1.4969461240347763e-12, qval: 1.647289002209057e-11, log2fc: -1.4274754343649423, gene_names: 'A',
+              p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, avg_log2FC: -1.4274754343649423, gene_names: 'A',
             },
             {
-              pval: 2.4969461240347763e-12, qval: 2.647289002209057e-11, log2fc: -2.4274754343649423, gene_names: 'B',
+              p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, avg_log2FC: -2.4274754343649423, gene_names: 'B',
             },
             {
-              pval: 3.4969461240347763e-12, qval: 3.647289002209057e-11, log2fc: -3.4274754343649423, gene_names: 'C',
+              p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, avg_log2FC: -3.4274754343649423, gene_names: 'C',
             },
             {
-              pval: 4.4969461240347763e-12, qval: 4.647289002209057e-11, log2fc: -4.4274754343649423, gene_names: 'D',
+              p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, avg_log2FC: -4.4274754343649423, gene_names: 'D',
             },
             {
-              pval: 5.4969461240347763e-12, qval: 5.647289002209057e-11, log2fc: -5.4274754343649423, gene_names: 'E',
+              p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, avg_log2FC: -5.4274754343649423, gene_names: 'E',
             },
           ],
           total: 500,
@@ -60,19 +60,19 @@ const store = mockStore({
     properties: {
       data: [
         {
-          pval: 1.4969461240347763e-12, qval: 1.647289002209057e-11, log2fc: -1.4274754343649423, gene_names: 'A',
+          p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, avg_log2FC: -1.4274754343649423, gene_names: 'A',
         },
         {
-          pval: 2.4969461240347763e-12, qval: 2.647289002209057e-11, log2fc: -2.4274754343649423, gene_names: 'B',
+          p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, avg_log2FC: -2.4274754343649423, gene_names: 'B',
         },
         {
-          pval: 3.4969461240347763e-12, qval: 3.647289002209057e-11, log2fc: -3.4274754343649423, gene_names: 'C',
+          p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, avg_log2FC: -3.4274754343649423, gene_names: 'C',
         },
         {
-          pval: 4.4969461240347763e-12, qval: 4.647289002209057e-11, log2fc: -4.4274754343649423, gene_names: 'D',
+          p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, avg_log2FC: -4.4274754343649423, gene_names: 'D',
         },
         {
-          pval: 5.4969461240347763e-12, qval: 5.647289002209057e-11, log2fc: -5.4274754343649423, gene_names: 'E',
+          p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, avg_log2FC: -5.4274754343649423, gene_names: 'E',
         },
       ],
       loading: false,
@@ -130,7 +130,7 @@ describe('DiffExprResults', () => {
     expect(table.getElement().props.columns[1].title).toEqual('Gene');
     expect(table.getElement().props.columns[2].key).toEqual('zscore');
     expect(table.getElement().props.columns[3].key).toEqual('abszscore');
-    expect(table.getElement().props.columns[4].key).toEqual('log2fc');
+    expect(table.getElement().props.columns[4].key).toEqual('avg_log2FC');
 
     expect(table.getElement().props.dataSource.length).toEqual(5);
     expect(table.getElement().props.data.length).toEqual(5);
