@@ -409,6 +409,36 @@ const mitochondrialFractionLogHistogram = {
   maxFraction: 3.5,
 };
 
+// CLASSIFIER - Classifier Empty Drops
+const classifierEmptyDropsPlot = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    enabled: false,
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 630,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'log10[ cell size (UMIs) ]',
+    yAxisText: 'classifier prob',
+    gridOpacity: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  minProbability: 0.82,
+  bandwidth: -1,
+};
+
 // DATA INTEGRATION - Embedding by Samples
 const dataIntegrationEmbeddingInitialConfig = {
   spec: '1.0.0',
@@ -525,6 +555,7 @@ const initialPlotConfigStates = {
   cellSizeDistributionKneePlot,
   mitochondrialFractionHistogram,
   mitochondrialFractionLogHistogram,
+  classifierEmptyDropsPlot,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,
