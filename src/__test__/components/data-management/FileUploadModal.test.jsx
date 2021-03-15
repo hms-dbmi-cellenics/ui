@@ -3,7 +3,7 @@ import { Button, Select } from 'antd';
 import { configure, mount, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import Dropzone from 'react-dropzone';
-import FileUploadModal from '../../../pages/data-management/components/FileUploadModal';
+import FileUploadModal from '../../../components/data-management/FileUploadModal';
 
 configure({ adapter: new Adapter() });
 

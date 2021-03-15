@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import { Button, Space, Empty } from 'antd';
+import { Button, Space } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
@@ -10,8 +10,9 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 import { createProject } from '../../redux/actions/projects';
 
 import Header from '../../components/Header';
-import NewProjectModal from './components/NewProjectModal';
-import ProjectsListContainer from './components/ProjectsListContainer';
+import NewProjectModal from '../../components/data-management/NewProjectModal';
+import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
+import ProjectDetails from '../../components/data-management/ProjectDetails';
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
@@ -19,7 +20,7 @@ const DataManagementPage = ({ route }) => {
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
 
   useEffect(() => {
-    if (projectsList.length) {
+    if (projectsList.ids.length) {
       setNewProjectModalVisible(false);
     }
   }, [projectsList]);
@@ -44,9 +45,7 @@ const DataManagementPage = ({ route }) => {
     'Data Management': {
       toolbarControls: [],
       component: (width, height) => (
-        <div width={width} height={height} style={{ paddingTop: '10rem' }}>
-          <Empty description='Create a new project to get started' />
-        </div>
+        <ProjectDetails width={width} height={height} />
       ),
     },
   };
@@ -77,6 +76,7 @@ const DataManagementPage = ({ route }) => {
       />
       <NewProjectModal
         visible={newProjectModalVisible}
+        firstTimeFlow={projectsList.ids.length === 0}
         onCancel={() => { setNewProjectModalVisible(false); }}
         onCreate={createNewProject}
       />

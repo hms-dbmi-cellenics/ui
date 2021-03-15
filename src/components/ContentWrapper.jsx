@@ -1,12 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef, useEffect } from 'react';
-
 import PropTypes from 'prop-types';
 
 import {
   Layout, Menu, Typography,
 } from 'antd';
 import { useRouter } from 'next/router';
+import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import {
   DatabaseOutlined,
@@ -17,23 +17,55 @@ import {
 import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
 
+import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
+
+import loadPipelineStatus from '../redux/actions/experimentSettings/loadPipelineStatus';
+import PipelineRunningEmptyState from './PipelineRunningEmptyState';
+import PreloadContent from './PreloadContent';
+import Error from '../pages/_error';
+
 const { Sider, Footer } = Layout;
 const { Paragraph } = Typography;
 
 const ContentWrapper = (props) => {
+  const dispatch = useDispatch();
+
   const [collapsed, setCollapsed] = useState(true);
   const { children } = props;
+
   const router = useRouter();
-  const { experimentId } = router.query;
-  const route = router.route || '';
+  const { experimentId } = router?.query || {};
+  const route = router?.route || '';
+
+  const {
+    loading: pipelineLoading,
+    error: pipelineError,
+    status: pipelineStatus,
+  } = useSelector((state) => state.experimentSettings.pipelineStatus);
+
+  // This is used to prevent a race condition where the page would start loading immediately
+  // when the pipeline status was previously loaded. In that case, `pipelineLoading` is `false`
+  // and would be set to true only in the `loadPipelineStatus` action, the time between the
+  // two events would allow pages to load.
+  const [pipelineStatusRequested, setPipelineStatusRequested] = useState(false);
 
   const updateSocket = useRef(null);
+  useEffect(() => {
+    if (!experimentId) {
+      return;
+    }
+
+    dispatch(loadPipelineStatus(experimentId));
+    updateSocket.current = initUpdateSocket(experimentId, experimentUpdatesHandler(dispatch));
+  }, [experimentId]);
 
   useEffect(() => {
-    if (experimentId) {
-      updateSocket.current = initUpdateSocket(experimentId, (res) => { console.log(res); });
+    if (pipelineStatusRequested) {
+      return;
     }
-  }, [experimentId]);
+
+    setPipelineStatusRequested(true);
+  }, [pipelineLoading]);
 
   const BigLogo = () => (
     <div
@@ -159,6 +191,22 @@ const ContentWrapper = (props) => {
     },
   ];
 
+  const renderContent = () => {
+    if (pipelineLoading || !pipelineStatusRequested) {
+      return <PreloadContent />;
+    }
+
+    if (pipelineError) {
+      return <Error errorText='Could not get current pipeline settings.' />;
+    }
+
+    if (pipelineStatus.pipeline?.running && !route.includes('data-processing')) {
+      return <PipelineRunningEmptyState experimentId={experimentId} />;
+    }
+
+    return children;
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <NotificationManager />
@@ -184,7 +232,11 @@ const ContentWrapper = (props) => {
             {menuLinks.map(({
               path, icon, name, disableIfNoExperiment,
             }) => (
-              <Menu.Item disabled={!experimentId ? disableIfNoExperiment : false} key={path} icon={icon}>
+              <Menu.Item
+                disabled={!experimentId ? disableIfNoExperiment : false}
+                key={path}
+                icon={icon}
+              >
                 <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
                   <a>{name}</a>
                 </Link>
@@ -216,7 +268,7 @@ const ContentWrapper = (props) => {
 
       </Sider>
       <Layout>
-        {children}
+        {renderContent()}
       </Layout>
     </Layout>
   );

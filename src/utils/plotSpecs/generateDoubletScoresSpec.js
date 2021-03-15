@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config) => {
+const generateSpec = (config, plotData) => {
   let legend = [];
 
   if (config.legend.enabled) {
@@ -33,20 +33,8 @@ const generateSpec = (config) => {
     padding: 5,
     data: [
       {
-        name: 'doublet_scores',
-        transform: [
-          { type: 'flatten', fields: ['data'], index: ['cellId'] },
-        ],
-      },
-      {
-        name: 'embedding',
-        transform: [
-          { type: 'window', ops: ['row_number'], as: ['cellId'] },
-          { type: 'formula', as: 'cellId', expr: 'datum.cellId - 1' },
-          {
-            type: 'lookup', from: 'doublet_scores', key: 'cellId', fields: ['cellId'], values: ['data'], as: ['doublet_scores'],
-          },
-        ],
+        name: 'plotData',
+        values: plotData,
       },
     ],
     scales: [
@@ -55,7 +43,7 @@ const generateSpec = (config) => {
         type: 'linear',
         round: true,
         nice: true,
-        domain: { data: 'embedding', field: '0' },
+        domain: { data: 'plotData', field: 'x' },
         range: 'width',
       },
       {
@@ -63,14 +51,14 @@ const generateSpec = (config) => {
         type: 'linear',
         round: true,
         nice: true,
-        domain: { data: 'embedding', field: '1' },
+        domain: { data: 'plotData', field: 'y' },
         range: 'height',
       },
       {
         name: 'color',
         type: 'linear',
         range: { scheme: config.colour.gradient },
-        domain: { data: 'embedding', field: 'doublet_scores' },
+        domain: { data: 'plotData', field: 'value' },
         reverse: config.colour.reverseCbar,
       },
     ],
@@ -118,19 +106,19 @@ const generateSpec = (config) => {
     marks: [
       {
         type: 'symbol',
-        from: { data: 'embedding' },
+        from: { data: 'plotData' },
         encode: {
           enter: {
-            x: { scale: 'x', field: '0' },
-            y: { scale: 'y', field: '1' },
+            x: { scale: 'x', field: 'x' },
+            y: { scale: 'y', field: 'y' },
             size: { value: config.marker.size },
             stroke: {
               scale: 'color',
-              field: 'doublet_scores',
+              field: 'value',
             },
             fill: {
               scale: 'color',
-              field: 'doublet_scores',
+              field: 'value',
             },
             shape: { value: config.marker.shape },
             fillOpacity: { value: config.marker.opacity / 10 },
@@ -153,20 +141,15 @@ const generateSpec = (config) => {
 };
 
 const generateData = (
-  spec,
-  cellMetaData,
   embeddingData,
-) => {
-  spec.data.forEach((s) => {
-    if (s.name === 'doublet_scores') {
-      s.values = cellMetaData;
-    } else if (s.name === 'embedding') {
-      s.values = embeddingData;
-    }
-  });
+  cellMetaData,
+) => embeddingData.map((cell, idx) => ({
 
-  return spec;
-};
+  x: cell[0],
+  y: cell[1],
+  value: cellMetaData[idx],
+
+}));
 
 export {
   generateSpec,

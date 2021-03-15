@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Form,
@@ -9,6 +9,9 @@ const { Option, OptGroup } = Select;
 const SelectData = (props) => {
   const { onUpdate, config, cellSets } = props;
   const { hierarchy, properties } = cellSets;
+
+  const [selectOpen, setSelectOpen] = useState(false);
+
   const getMetadataOptions = (parent) => {
     const children = hierarchy.filter((cluster) => (
       cluster.key === parent))[0]?.children;
@@ -33,11 +36,18 @@ const SelectData = (props) => {
         Select the data to view on the embedding:
         {' '}
       </div>
-      <Form.Item>
+      <Form.Item
+        onFocus={() => setSelectOpen(true)}
+        onBlur={() => setSelectOpen(false)}
+      >
         <Select
           defaultValue={config.selectedSample}
           style={{ width: 200 }}
-          onChange={(value) => handleChange(value)}
+          onChange={(value) => {
+            handleChange(value);
+          }}
+          open={selectOpen}
+
         >
           <Option value='All'>All</Option>
           {parents.map((parent) => (

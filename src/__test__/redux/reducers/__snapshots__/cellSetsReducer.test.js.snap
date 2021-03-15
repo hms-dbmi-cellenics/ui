@@ -86,20 +86,24 @@ Array [
 `;
 
 exports[`cellSetsReducer Selected cells are maintained 1`] = `
-Array [
-  "a",
-  "b",
-  "c",
-]
+Object {
+  "fakeTab": Array [
+    "a",
+    "b",
+    "c",
+  ],
+}
 `;
 
 exports[`cellSetsReducer Selected cells are maintained 2`] = `
-Array [
-  1,
-  2,
-  "c",
-  3,
-]
+Object {
+  "fakeTab": Array [
+    1,
+    2,
+    "c",
+    3,
+  ],
+}
 `;
 
 exports[`cellSetsReducer Sets up store properly for loaded cell sets. 1`] = `
