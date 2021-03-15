@@ -1,73 +1,73 @@
 const generateSpec = (config, groupName) => {
-  let legend = [];
-  if (config.legend.position === 'horizontal') {
-    legend = [
-      {
-        fill: 'color',
-        type: 'gradient',
-        orient: 'bottom',
-        direction: 'horizontal',
-        title: ['Intensity'],
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
-        gradientLength: {
-          signal: 'width',
-        },
-      },
-      {
-        fill: 'cellSetColors',
-        title: groupName,
-        type: 'symbol',
-        orient: 'top',
-        offset: 40,
-        symbolType: 'square',
-        symbolSize: { value: 200 },
-        encode: {
-          labels: {
-            update: {
-              text: { scale: 'cellSetIDToName', field: 'label' },
-            },
-          },
-        },
-        direction: 'horizontal',
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
-      }];
-  }
-  if (config.legend.position === 'vertical') {
-    legend = [
-      {
-        fill: 'color',
-        type: 'gradient',
-        title: ['Intensity'],
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
-        gradientLength: {
-          signal: 'height / 3',
-        },
-      },
-      {
-        fill: 'cellSetColors',
-        title: 'Cluster ID',
-        type: 'symbol',
-        orient: 'right',
-        symbolType: 'square',
-        symbolSize: { value: 200 },
-        encode: {
-          labels: {
-            update: {
-              text: { scale: 'cellSetIDToName', field: 'label' },
-            },
-          },
-        },
-        direction: 'vertical',
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
-        labels: {
-          text: 'asdsa',
-        },
-      }];
-  }
+  let legend = null;
+  // if (config.legend.position === 'horizontal') {
+  //   legend = [
+  //     {
+  //       fill: 'color',
+  //       type: 'gradient',
+  //       orient: 'bottom',
+  //       direction: 'horizontal',
+  //       title: ['Intensity'],
+  //       labelFont: { value: config.fontStyle.font },
+  //       titleFont: { value: config.fontStyle.font },
+  //       gradientLength: {
+  //         signal: 'width',
+  //       },
+  //     },
+  //     {
+  //       fill: 'cellSetColors',
+  //       title: groupName,
+  //       type: 'symbol',
+  //       orient: 'top',
+  //       offset: 40,
+  //       symbolType: 'square',
+  //       symbolSize: { value: 200 },
+  //       encode: {
+  //         labels: {
+  //           update: {
+  //             text: { scale: 'cellSetIDToName', field: 'label' },
+  //           },
+  //         },
+  //       },
+  //       direction: 'horizontal',
+  //       labelFont: { value: config.fontStyle.font },
+  //       titleFont: { value: config.fontStyle.font },
+  //     }];
+  // }
+  // if (config.legend.position === 'vertical') {
+  //   legend = [
+  //     {
+  //       fill: 'color',
+  //       type: 'gradient',
+  //       title: ['Intensity'],
+  //       labelFont: { value: config.fontStyle.font },
+  //       titleFont: { value: config.fontStyle.font },
+  //       gradientLength: {
+  //         signal: 'height / 3',
+  //       },
+  //     },
+  //     {
+  //       fill: 'cellSetColors',
+  //       title: 'Cluster ID',
+  //       type: 'symbol',
+  //       orient: 'right',
+  //       symbolType: 'square',
+  //       symbolSize: { value: 200 },
+  //       encode: {
+  //         labels: {
+  //           update: {
+  //             text: { scale: 'cellSetIDToName', field: 'label' },
+  //           },
+  //         },
+  //       },
+  //       direction: 'vertical',
+  //       labelFont: { value: config.fontStyle.font },
+  //       titleFont: { value: config.fontStyle.font },
+  //       labels: {
+  //         text: 'asdsa',
+  //       },
+  //     }];
+  // }
   if (!config.legend.enabled) {
     legend = null;
   }
@@ -152,43 +152,65 @@ const generateSpec = (config, groupName) => {
         zero: false,
         nice: true,
       },
+      // {
+      //   name: 'cellSetColors',
+      //   type: 'ordinal',
+      //   range: {
+      //     data: 'cellSets',
+      //     field: 'color',
+      //   },
+      //   domain: {
+      //     data: 'cellSets',
+      //     field: 'key',
+      //     sort: true,
+      //   },
+      // },
+      // {
+      //   name: 'cellSetIDToName',
+      //   type: 'ordinal',
+      //   range: {
+      //     data: 'cellSets',
+      //     field: 'name',
+      //   },
+      //   domain: {
+      //     data: 'cellSets',
+      //     field: 'key',
+      //   },
+      // },
       {
-        name: 'cellSetColors',
-        type: 'ordinal',
-        range: {
-          data: 'cellSets',
-          field: 'color',
-        },
+        name: 'yTrack',
+        type: 'band',
         domain: {
-          data: 'cellSets',
-          field: 'key',
-          sort: true,
+          data: 'trackOrder',
+          field: 'data',
         },
-      },
-      {
-        name: 'cellSetIDToName',
-        type: 'ordinal',
+        paddingInner: 0.25,
+        paddingOuter: 0.5,
         range: {
-          data: 'cellSets',
-          field: 'name',
-        },
-        domain: {
-          data: 'cellSets',
-          field: 'key',
+          step: -20,
         },
       },
     ],
 
     axes: [
       {
-        from: { data: 'expression' },
+        domain: false,
         orient: 'left',
         scale: 'y',
-        labelColor: config.label.colour,
+      },
+      {
+        orient: 'left',
+        scale: 'yTrack',
         domain: false,
-        // title: 'Gene',
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
+        encode: {
+          labels: {
+            update: {
+              text: {
+                signal: 'scale("trackKeyToTrackName", datum.value)',
+              },
+            },
+          },
+        },
       },
     ],
 
@@ -267,40 +289,40 @@ const generateSpec = (config, groupName) => {
           },
         },
       },
-      {
-        type: 'rect',
-        from: {
-          data: 'cellSets',
-        },
-        encode: {
-          enter: {
-            x: {
-              scale: 'x',
-              field: 'cellId',
-            },
-            y: { value: -30 },
-            width: {
-              scale: 'x',
-              band: 1,
-            },
-            height: {
-              value: 20,
-            },
-          },
-          update: {
-            fill: {
-              scale: 'cellSetColors',
-              field: 'key',
-              opacity: { value: 1 },
-            },
-            stroke: {
-              scale: 'cellSetColors',
-              field: 'key',
-              opacity: { value: 1 },
-            },
-          },
-        },
-      },
+      // {
+      //   type: 'rect',
+      //   from: {
+      //     data: 'cellSets',
+      //   },
+      //   encode: {
+      //     enter: {
+      //       x: {
+      //         scale: 'x',
+      //         field: 'cellId',
+      //       },
+      //       y: { value: -30 },
+      //       width: {
+      //         scale: 'x',
+      //         band: 1,
+      //       },
+      //       height: {
+      //         value: 20,
+      //       },
+      //     },
+      //     update: {
+      //       fill: {
+      //         scale: 'cellSetColors',
+      //         field: 'key',
+      //         opacity: { value: 1 },
+      //       },
+      //       stroke: {
+      //         scale: 'cellSetColors',
+      //         field: 'key',
+      //         opacity: { value: 1 },
+      //       },
+      //     },
+      //   },
+      // },
     ],
     title:
     {

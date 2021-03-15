@@ -11,7 +11,7 @@ const { Panel } = Collapse;
 
 const HeatmapControls = (props) => {
   const {
-    config, onGeneEnter, generateCellSetOptions, onCellSetSelect, plotUuid,
+    config, onGeneEnter, selectedGenes, plotUuid,
   } = props;
   console.log('something');
   return (
@@ -24,7 +24,7 @@ const HeatmapControls = (props) => {
             style={{ width: '100%' }}
             placeholder='Select genes...'
             onChange={onGeneEnter}
-            value={config.selectedGenes}
+            value={selectedGenes}
             tokenSeparators={[' ']}
             notFoundContent='No gene added yet.'
           />
@@ -66,8 +66,9 @@ const HeatmapControls = (props) => {
 HeatmapControls.propTypes = {
   config: PropTypes.object.isRequired,
   onGeneEnter: PropTypes.func.isRequired,
-  generateCellSetOptions: PropTypes.func.isRequired,
-  onCellSetSelect: PropTypes.func.isRequired,
+  // generateCellSetOptions: PropTypes.func.isRequired,
+  // onCellSetSelect: PropTypes.func.isRequired,
+  selectedGenes: PropTypes.array.isRequired,
   plotUuid: PropTypes.string.isRequired,
 };
 export default HeatmapControls;

@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
+import { useState } from 'react';
+import SetOperations from '../../../utils/setOperations';
+import { union } from '../../../utils/cellSetOperations';
 
-const populateHeatmapData = (cellSets, config, expression, passedSelectedGenes = null) => {
-  const { hierarchy, properties } = cellSets;
+const populateHeatmapData = (cellSets, config, expression, componentType, downsampling = false) => {
+  const { hierarchy, properties, hidden } = cellSets;
   const {
     selectedTracks, groupedTracks, expressionValue,
   } = config;
-
-  const selectedGenes = passedSelectedGenes || config.selectedGenes;
-  const [trackOrder] = useState(Array.from(selectedTracks).reverse());
-
+  const maxCells = 1000;
+  const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
+  const selectedGenes = expression.views[componentType].data;
+  const trackOrder = Array.from(selectedTracks).reverse();
+  console.log('populate heatmap data cellsets - ', cellSets, 'config - ', config, 'expression - ', expression, 'selected genes - ', selectedGenes);
   const generateTrackData = (cells, track) => {
     // Find the `groupBy` root node.
     const rootNodes = hierarchy.filter((clusters) => clusters.key === track);
@@ -49,7 +53,91 @@ const populateHeatmapData = (cellSets, config, expression, passedSelectedGenes =
     return { trackColorData, groupData };
   };
 
-  const downsampleAndSort = (groupByTracks) => {
+  const downsampleWithProportions = (buckets, cellIdsLength) => {
+    const downsampledCellIds = [];
+
+    // If we collected less than `max` number of cells, let's go with that.
+    const finalSampleSize = Math.min(cellIdsLength, maxCells);
+
+    buckets.forEach((bucket) => {
+      const sampleSize = Math.floor(
+        (bucket.size / cellIdsLength) * finalSampleSize,
+      );
+
+      downsampledCellIds.push(..._.sampleSize(Array.from(bucket), sampleSize));
+    });
+
+    return downsampledCellIds;
+  };
+
+  const getCellSetIntersections = (cellSet, rootNode) => {
+    const cellSetsOfRootNode = rootNode.children.map(({ key }) => getCellsInSet(key));
+
+    const intersectionsSets = [];
+
+    cellSetsOfRootNode.forEach((cellSetOfRootNode) => {
+      const currentIntersection = new Set([...cellSet].filter((x) => cellSetOfRootNode.has(x)));
+
+      if (currentIntersection.size > 0) { intersectionsSets.push(currentIntersection); }
+    });
+
+    return intersectionsSets;
+  };
+
+  const cartesianProductIntersection = (buckets, rootNode) => {
+    const intersectedCellSets = [];
+
+    buckets.forEach((currentCellSet) => {
+      const currentCellSetIntersection = getCellSetIntersections(currentCellSet, rootNode);
+
+      // The cellIds that werent part of any intersection are also added at the end
+      const leftOverCellIds = currentCellSetIntersection
+        .reduce((acum, current) => SetOperations.difference(acum, current), currentCellSet);
+
+      currentCellSetIntersection.push(leftOverCellIds);
+
+      intersectedCellSets.push(...currentCellSetIntersection);
+    });
+
+    return intersectedCellSets;
+  };
+  const getAllEnabledCellIds = (groupByRootNodes) => {
+    let cellIdsInAnyGroupBy = new Set();
+
+    groupByRootNodes.forEach((rootNode) => {
+      rootNode.children.forEach(({ key }) => {
+        const cellSet = getCellsInSet(key);
+        // Union of allCellsInSets and cellSet
+        cellIdsInAnyGroupBy = new Set([...cellIdsInAnyGroupBy, ...cellSet]);
+      });
+    });
+
+    // Only work with non-hidden cells.
+    const hiddenCellIds = union(Array.from(hidden), properties);
+    const enabledCellIds = new Set([...cellIdsInAnyGroupBy].filter((x) => !hiddenCellIds.has(x)));
+
+    return enabledCellIds;
+  };
+  const splitByCartesianProductIntersections = (groupByRootNodes) => {
+    // Beginning with only one set of all the cells that we want to see
+    let buckets = [getAllEnabledCellIds(groupByRootNodes)];
+
+    // Perform successive cartesian product intersections across each groupby
+    groupByRootNodes.forEach((currentRootNode) => {
+      buckets = cartesianProductIntersection(
+        buckets,
+        currentRootNode,
+      );
+    });
+
+    // We need to calculate size at the end because we may have repeated cells
+    // (due to group bys having the same cell in different groups)
+    const size = buckets.reduce((acum, currentBucket) => acum + currentBucket.size, 0);
+
+    return { buckets, size };
+  };
+
+  const generateCellOrder = (groupByTracks) => {
     // Find the `groupBy` root nodes.
 
     // About the filtering: If we have failed to find some of the groupbys information,
@@ -61,7 +149,19 @@ const populateHeatmapData = (cellSets, config, expression, passedSelectedGenes =
     if (!groupByRootNodes.length) {
       return [];
     }
-    return groupByRootNodes;
+    const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
+
+    if (downsampling) {
+      return downsampleWithProportions(buckets, size);
+    }
+
+    const cellIds = [];
+    buckets.forEach((bucket) => {
+      cellIds.push(...bucket);
+    });
+
+    console.log('buckets - ', buckets, ' size - ', size, 'group by root nodes - ', groupByRootNodes);
+    return cellIds;
   };
   // For now, this is statically defined. In the future, these values are
   // controlled from the settings panel in the heatmap.
@@ -76,7 +176,7 @@ const populateHeatmapData = (cellSets, config, expression, passedSelectedGenes =
   };
 
   // Do downsampling and return cellIds with their order by groupings.
-  data.cellOrder = downsampleAndSort(groupedTracks);
+  data.cellOrder = generateCellOrder(groupedTracks);
 
   // eslint-disable-next-line no-shadow
   const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
