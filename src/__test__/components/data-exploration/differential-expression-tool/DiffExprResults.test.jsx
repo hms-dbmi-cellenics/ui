@@ -125,12 +125,13 @@ describe('DiffExprResults', () => {
     const spin = component.find('Table Spin');
     expect(spin.length).toEqual(1);
     expect(table.length).toEqual(1);
-    expect(table.getElement().props.columns.length).toEqual(5);
+    expect(table.getElement().props.columns.length).toEqual(6);
     expect(table.getElement().props.columns[0].key).toEqual('lookup');
-    expect(table.getElement().props.columns[1].title).toEqual('Gene');
-    expect(table.getElement().props.columns[2].key).toEqual('zscore');
-    expect(table.getElement().props.columns[3].key).toEqual('abszscore');
-    expect(table.getElement().props.columns[4].key).toEqual('avg_log2FC');
+    expect(table.getElement().props.columns[1].key).toEqual('gene_names');
+    expect(table.getElement().props.columns[2].key).toEqual('avg_log2FC');
+    expect(table.getElement().props.columns[3].key).toEqual('p_val_adj');
+    expect(table.getElement().props.columns[4].key).toEqual('pct_1');
+    expect(table.getElement().props.columns[5].key).toEqual('pct_2');
 
     expect(table.getElement().props.dataSource.length).toEqual(5);
     expect(table.getElement().props.data.length).toEqual(5);
