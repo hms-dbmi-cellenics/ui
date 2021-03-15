@@ -1,5 +1,6 @@
 import {
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
+  EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
 } from '../../actionTypes/experimentSettings';
 
 import getApiEndpoint from '../../../utils/apiEndpoint';
@@ -40,13 +41,13 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
 
     throw new Error('HTTP status code was not 200.');
   } catch (e) {
-    // dispatch({
-    //   type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
-    //   payload: {
-    //     error: 'Could not start the pipeline.',
-    //     errorType: e,
-    //   },
-    // });
+    dispatch({
+      type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+      payload: {
+        error: 'Could not start the pipeline.',
+        errorType: e,
+      },
+    });
   }
 };
 
