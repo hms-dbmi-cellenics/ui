@@ -24,6 +24,7 @@ const titleBaseState = {
   text: '',
   fontSize: 15,
   anchor: 'start',
+  dx: 10,
 };
 
 const fontStyleBaseState = {

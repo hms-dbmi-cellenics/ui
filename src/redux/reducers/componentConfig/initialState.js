@@ -439,6 +439,57 @@ const classifierEmptyDropsPlot = {
   bandwidth: -1,
 };
 
+// GENES VS UMIS - Features vs UMIs
+const featuresVsUMIsHistogram = {
+  spec: '1.0.0',
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 630,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'log10 [molecules]',
+    yAxisText: 'Frequency',
+    gridOpacity: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  label: labelBaseState,
+  lowCutoff: 4.8,
+  upCutoff: 2.1,
+  binStep: 0.05,
+};
+
+// GENES VS UMIS - Features vs UMIs
+const featuresVsUMIsScatterplot = {
+  spec: '1.0.0',
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 630,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'log10 [molecule counts]',
+    yAxisText: 'log10 [gene counts]',
+    gridOpacity: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  label: labelBaseState,
+  lowCutoff: 4.8,
+  upCutoff: 2.1,
+};
+
 // DATA INTEGRATION - Embedding by Samples
 const dataIntegrationEmbeddingInitialConfig = {
   spec: '1.0.0',
@@ -526,7 +577,6 @@ const dataIntegrationElbowPlotInitialConfig = {
     ...titleBaseState,
     font: 'sans-serif',
     fontSize: 12,
-    dx: 10,
   },
   signals: [
     {
@@ -556,6 +606,8 @@ const initialPlotConfigStates = {
   mitochondrialFractionHistogram,
   mitochondrialFractionLogHistogram,
   classifierEmptyDropsPlot,
+  featuresVsUMIsHistogram,
+  featuresVsUMIsScatterplot,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,
