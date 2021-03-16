@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
 import EditableField from '../../EditableField';
@@ -41,7 +41,12 @@ const ClusterPopover = (props) => {
 
   return (
     <div style={style}>
-      <Popover title={message} content={content} {...restOfProps}>
+      <Popover
+        title={message}
+        content={content}
+        {...restOfProps}
+
+      >
         {children}
       </Popover>
     </div>
