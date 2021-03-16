@@ -1,13 +1,11 @@
 const generateSpec = (config, plotData) => {
   let legend = null;
-  const deadOrAlive = '(datum.bin1 <= 2.5) ? \'Dead\' : (datum.bin1 >=3.5) ? \'Live\' : \'Unknown\'';
+  const generateStatus = `(datum.bin1 <= ${config.probThreshold}) ? 'high score' : 'low score'`;
 
   legend = !config.legend.enabled ? {} : [
     {
       fill: 'color',
       orient: config.legend.position,
-      labelFont: config.fontStyle.font,
-      titleFont: config.fontStyle.font,
       encode: {
         title: {
           update: {
@@ -40,7 +38,9 @@ const generateSpec = (config, plotData) => {
     width: config.dimensions.width,
     height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },
+
     padding: 5,
+
     data: [
       {
         name: 'plotData',
@@ -52,8 +52,8 @@ const generateSpec = (config, plotData) => {
         transform: [
           {
             type: 'bin',
-            field: 'cellSize',
-            extent: [0, 6],
+            field: 'doubletP',
+            extent: [0, 1],
             step: config.binStep,
             nice: false,
           },
@@ -61,14 +61,19 @@ const generateSpec = (config, plotData) => {
             type: 'aggregate',
             key: 'bin0',
             groupby: ['bin0', 'bin1'],
-            fields: ['fracMito'],
-            ops: ['average'],
-            as: ['averageFracMito'],
+            fields: ['bin0'],
+            ops: ['count'],
+            as: ['count'],
+          },
+          {
+            type: 'formula',
+            as: 'count',
+            expr: 'datum.count/1000',
           },
           {
             type: 'formula',
             as: 'status',
-            expr: deadOrAlive,
+            expr: generateStatus,
           },
         ],
       },
@@ -79,15 +84,14 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: [0, 10],
-        domainMin: 1,
+        domain: [0, 1],
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
         round: true,
-        domain: { data: 'binned', field: 'averageFracMito' },
+        domain: { data: 'binned', field: 'count' },
         zero: true,
         nice: true,
       },
@@ -96,7 +100,7 @@ const generateSpec = (config, plotData) => {
         type: 'ordinal',
         range:
           [
-            'blue', 'green', 'grey',
+            'green', 'blue',
           ],
         domain: {
           data: 'binned',
@@ -109,16 +113,15 @@ const generateSpec = (config, plotData) => {
       {
         orient: 'bottom',
         scale: 'xscale',
-        zindex: 1,
         grid: true,
+        zindex: 1,
         title: { value: config.axes.xAxisText },
         titleFont: { value: config.fontStyle.font },
         labelFont: { value: config.fontStyle.font },
         titleFontSize: { value: config.axes.titleFontSize },
         labelFontSize: { value: config.axes.labelFontSize },
         offset: { value: config.axes.offset },
-        gridOpacity: { value: (config.axes.gridOpacity / 20) },
-
+        gridOpacity: { value: config.axes.gridOpacity / 20 },
       },
       {
         orient: 'left',
@@ -132,7 +135,7 @@ const generateSpec = (config, plotData) => {
         titleFontSize: { value: config.axes.titleFontSize },
         labelFontSize: { value: config.axes.labelFontSize },
         offset: { value: config.axes.offset },
-        gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        gridOpacity: { value: config.axes.gridOpacity / 20 },
       },
     ],
     marks: [
@@ -140,13 +143,13 @@ const generateSpec = (config, plotData) => {
         type: 'rect',
         from: { data: 'binned' },
         encode: {
-          update: {
+          enter: {
             x: { scale: 'xscale', field: 'bin0' },
             x2: {
               scale: 'xscale',
               field: 'bin1',
             },
-            y: { scale: 'yscale', field: 'averageFracMito' },
+            y: { scale: 'yscale', field: 'count' },
             y2: { scale: 'yscale', value: 0 },
             fill: {
               scale: 'color',
@@ -156,22 +159,25 @@ const generateSpec = (config, plotData) => {
         },
       },
       {
-        type: 'rule',
+        type: 'rect',
+        from: { data: 'plotData' },
         encode: {
-          update: {
-            x: { scale: 'xscale', value: config.maxFraction },
-            y: { value: 0 },
-            y2: { field: { group: 'height' } },
-            strokeWidth: { value: 2 },
-            strokeDash: { value: [8, 4] },
-            stroke: { value: 'red' },
+          enter: {
+            x: { scale: 'xscale', field: 'fracMito' },
+            width: { value: 1 },
+            y: { value: 25, offset: { signal: 'height' } },
+            height: { value: 5 },
+            fillOpacity: { value: 0.4 },
+            fill: {
+              scale: 'color',
+              field: 'status',
+            },
           },
         },
       },
     ],
     legends: legend,
-    title:
-    {
+    title: {
       text: { value: config.title.text },
       anchor: { value: config.title.anchor },
       font: { value: config.fontStyle.font },

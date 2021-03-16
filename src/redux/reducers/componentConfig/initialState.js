@@ -490,6 +490,35 @@ const featuresVsUMIsScatterplot = {
   upCutoff: 2.1,
 };
 
+// DOUBLE FILTER - Doublet filter histogram
+const doubletScoreHistogram = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-right',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Probability of being a doublet',
+    yAxisText: 'Frequency',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  binStep: 0.05,
+  probThreshold: 0.2,
+};
+
 // DATA INTEGRATION - Embedding by Samples
 const dataIntegrationEmbeddingInitialConfig = {
   spec: '1.0.0',
@@ -608,6 +637,7 @@ const initialPlotConfigStates = {
   classifierEmptyDropsPlot,
   featuresVsUMIsHistogram,
   featuresVsUMIsScatterplot,
+  doubletScoreHistogram,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,

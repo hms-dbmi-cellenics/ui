@@ -20,14 +20,13 @@ import {
   savePlotConfig,
 } from '../../../redux/actions/componentConfig';
 
-import FeaturesVsUMIsHistogram from '../../plots/featuresVsUMIsHistogram';
-import FeaturesVsUMIsScatterplot from '../../plots/featuresVsUMIsScatterplot';
+import FeaturesVsUMIsHistogram from '../../plots/FeaturesVsUMIsHistogram';
+import FeaturesVsUMIsScatterplot from '../../plots/FeaturesVsUMIsScatterplot';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
-const { Option } = Select;
 
 const GenesVsUMIs = (props) => {
   const {

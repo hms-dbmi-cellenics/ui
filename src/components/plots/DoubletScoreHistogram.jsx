@@ -4,19 +4,19 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import PlatformError from '../PlatformError';
-import generateSpec from '../../utils/plotSpecs/generateMitochondrialFractionLogHistogram';
+import generateSpec from '../../utils/plotSpecs/generateDoubletScoreHistogram';
 
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
-const MitochondrialFractionLogHistogram = (props) => {
+const DoubletScoreHistogram = (props) => {
   const { experimentId, config, plotData } = props;
-  const plotUuid = 'mitochondrialFractionLogHistogram';
-  const plotType = 'mitochondrialFractionLogHistogram';
+  const plotUuid = 'doubletScoreHistogram';
+  const plotType = 'doubletScoreHistogram';
 
   const dispatch = useDispatch();
 
   const [plotSpec, setPlotSpec] = useState(config);
-  const plotComponent = useSelector((state) => state.componentConfig.mitochondrialFractionLogHistogram);
+  const plotComponent = useSelector((state) => state.componentConfig.doubletScoreHistogram);
 
   useEffect(() => {
     if (config && plotData) {
@@ -57,14 +57,14 @@ const MitochondrialFractionLogHistogram = (props) => {
   );
 };
 
-MitochondrialFractionLogHistogram.propTypes = {
+DoubletScoreHistogram.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
 };
 
-MitochondrialFractionLogHistogram.defaultProps = {
+DoubletScoreHistogram.defaultProps = {
   plotData: null,
 };
 
-export default MitochondrialFractionLogHistogram;
+export default DoubletScoreHistogram;

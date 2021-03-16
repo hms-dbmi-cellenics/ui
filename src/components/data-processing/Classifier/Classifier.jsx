@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {
@@ -41,9 +41,11 @@ const Classifier = (props) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const plotData = useSelector((state) => state.componentConfig[plotUuid]?.plotData);
 
-  if (!config) {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }
+  useEffect(() => {
+    if (!config) {
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    }
+  }, [config]);
 
   const plotStylingConfig = [
     {
