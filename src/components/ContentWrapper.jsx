@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef, useEffect } from 'react';
+
 import PropTypes from 'prop-types';
 
 import {
@@ -16,11 +17,11 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
+import { loadPipelineStatus } from '../redux/actions/experimentSettings';
+import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
-import loadPipelineStatus from '../redux/actions/experimentSettings/loadPipelineStatus';
-import PipelineRunningEmptyState from './PipelineRunningEmptyState';
 import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
 
@@ -43,6 +44,12 @@ const ContentWrapper = (props) => {
     status: pipelineStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
 
+  const pipelineStatusKey = pipelineStatus.pipeline?.status;
+  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+
+  const pipelineRunning = pipelineStatusKey === 'RUNNING';
+  const pipelineRunningError = pipelineErrors.includes(pipelineStatusKey);
+
   // This is used to prevent a race condition where the page would start loading immediately
   // when the pipeline status was previously loaded. In that case, `pipelineLoading` is `false`
   // and would be set to true only in the `loadPipelineStatus` action, the time between the
@@ -56,6 +63,7 @@ const ContentWrapper = (props) => {
     }
 
     dispatch(loadPipelineStatus(experimentId));
+
     updateSocket.current = initUpdateSocket(experimentId, experimentUpdatesHandler(dispatch));
   }, [experimentId]);
 
@@ -170,24 +178,28 @@ const ContentWrapper = (props) => {
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
       disableIfNoExperiment: false,
+      disabledByPipelineStatus: true,
     },
     {
       path: '/experiments/[experimentId]/data-processing',
       icon: <BuildOutlined />,
       name: 'Data Processing',
       disableIfNoExperiment: true,
+      disabledByPipelineStatus: false,
     },
     {
       path: '/experiments/[experimentId]/data-exploration',
       icon: <FundViewOutlined />,
       name: 'Data Exploration',
       disableIfNoExperiment: true,
+      disabledByPipelineStatus: true,
     },
     {
       path: '/experiments/[experimentId]/plots-and-tables',
       icon: <DatabaseOutlined />,
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
+      disabledByPipelineStatus: true,
     },
   ];
 
@@ -200,8 +212,12 @@ const ContentWrapper = (props) => {
       return <Error errorText='Could not get current pipeline settings.' />;
     }
 
-    if (pipelineStatus.pipeline?.running && !route.includes('data-processing')) {
-      return <PipelineRunningEmptyState experimentId={experimentId} />;
+    if (pipelineRunningError && !route.includes('data-processing')) {
+      return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='error' />;
+    }
+
+    if (pipelineRunning && !route.includes('data-processing')) {
+      return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='running' />;
     }
 
     return children;
@@ -230,18 +246,25 @@ const ContentWrapper = (props) => {
             mode='inline'
           >
             {menuLinks.map(({
-              path, icon, name, disableIfNoExperiment,
-            }) => (
-              <Menu.Item
-                disabled={!experimentId ? disableIfNoExperiment : false}
-                key={path}
-                icon={icon}
-              >
-                <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
-                  <a>{name}</a>
-                </Link>
-              </Menu.Item>
-            ))}
+              path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
+            }) => {
+              const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
+              const pipelineStatusDisable = disabledByPipelineStatus && (pipelineError || pipelineRunning || pipelineRunningError);
+
+              const menuItemDisabled = noExperimentDisable || pipelineStatusDisable;
+
+              return (
+                <Menu.Item
+                  disabled={menuItemDisabled}
+                  key={path}
+                  icon={icon}
+                >
+                  <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
+                    <a>{name}</a>
+                  </Link>
+                </Menu.Item>
+              );
+            })}
           </Menu>
           {!collapsed && (
             <Footer style={{

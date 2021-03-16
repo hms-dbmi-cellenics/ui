@@ -13,6 +13,8 @@ import {
   EllipsisOutlined,
 } from '@ant-design/icons';
 
+import _ from 'lodash';
+
 import Header from '../../../../components/Header';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
@@ -45,6 +47,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     completingStepError,
   } = useSelector((state) => state.experimentSettings.processing.meta);
 
+  const {
+    status: pipelineStatus,
+  } = useSelector((state) => state.experimentSettings.pipelineStatus);
+
+  const pipelineStatusKey = pipelineStatus.pipeline?.status;
+  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+
+  const pipelineBlockingSteps = pipelineStatusKey === 'RUNNING' || pipelineErrors.includes(pipelineStatusKey);
+
+  const pipelineRunningCompletedSteps = pipelineStatus.pipeline?.completedSteps;
+
   const cellSets = useSelector((state) => state.cellSets);
 
   useEffect(() => {
@@ -62,6 +75,16 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   )?.children.map(
     (child) => child.key,
   );
+
+  const stepIsCompletedInPipeline = (stepName) => {
+    const lowerCaseStepName = stepName.toLowerCase();
+
+    const stepAppearances = _.filter(pipelineRunningCompletedSteps, (stepPipelineName) => {
+      return stepPipelineName.toLowerCase().includes(lowerCaseStepName);
+    });
+
+    return stepAppearances.length > 0;
+  }
 
   const inputsList = sampleKeys?.map((key) => ({ key, headerName: `Sample ${cellSets.properties?.[key].name}`, params: { ...cellSets.properties?.[key], key } }));
 
@@ -86,7 +109,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     {
-      key: 'mitoContentFilter',
+      key: 'mitochondrialContent',
       name: 'Mitochondrial content filter',
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -105,7 +128,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     {
-      key: 'classifierFilter',
+      key: 'classifier',
       name: 'Classifier filter',
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -124,7 +147,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     {
-      key: 'genesVsUMIFilter',
+      key: 'numGenesVsNumUmis',
       name: 'Number of genes vs UMIs filter',
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -143,7 +166,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     {
-      key: 'doubletFilter',
+      key: 'doubletScores',
       name: 'Doublet filter',
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -167,7 +190,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       render: (key) => <DataIntegration key={key} />,
     },
     {
-      key: 'comptueEmbeddingFilter',
+      key: 'computeEmbedding',
       name: 'Compute embedding',
       render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} />,
     },
@@ -199,14 +222,20 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [stepIdx]);
 
   useEffect(() => {
-    if (!completingStepError) {
+    if (completingStepError && stepIdx > completedSteps.size) {
+      setStepIdx(completedSteps.size);
       return;
     }
 
-    if (stepIdx > completedSteps.size) {
-      setStepIdx(completedSteps.size);
-    }
-  }, [completingStepError, stepIdx]);
+
+  }, [completingStepError, stepIdx,]);
+
+  let nextDisabledByPipeline = false;
+
+  if (steps[stepIdx + 1]) {
+    const { key: nextKey } = steps[stepIdx + 1];
+    nextDisabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey);
+  }
 
   const renderTitle = () => (
     <Row justify='space-between'>
@@ -221,49 +250,53 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         >
           {
             steps.map(
-              ({ name, key }, i) => (
-                <Option
-                  value={i}
-                  key={key}
-                  disabled={
-                    !completedSteps.has(key)
-                    && i !== completedSteps.size
-                    && i !== stepIdx + 1
-                  }
-                >
+              ({ name, key }, i) => {
+                const disabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(key);
 
-                  {completedSteps.has(key) && (
-                    <>
+                return (
+                  <Option
+                    value={i}
+                    key={key}
+                    disabled={
+                      disabledByPipeline
+                      || (!completedSteps.has(key)
+                        && i !== completedSteps.size
+                        && i !== stepIdx + 1)
+                    }
+                  >
+                    {!disabledByPipeline && completedSteps.has(key) && (
+                      <>
+                        <Text
+                          type='success'
+                        >
+                          <CheckOutlined />
+                        </Text>
+                        <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                      </>
+                    )}
+
+                    {!disabledByPipeline && !completedSteps.has(key) && completedSteps.size === i && (
                       <Text
-                        type='success'
+                        type='default'
                       >
-                        <CheckOutlined />
+                        <CaretRightOutlined />
+                        <span style={{ marginLeft: '0.25rem' }}>{name}</span>
                       </Text>
-                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                    </>
-                  )}
+                    )}
 
-                  {!completedSteps.has(key) && completedSteps.size === i && (
-                    <Text
-                      type='default'
-                    >
-                      <CaretRightOutlined />
-                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                    </Text>
-                  )}
-
-                  {!completedSteps.has(key) && completedSteps.size < i && (
-                    <>
-                      <Text
-                        disabled
-                      >
-                        <EllipsisOutlined />
-                      </Text>
-                      <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                    </>
-                  )}
-                </Option>
-              ),
+                    {(disabledByPipeline || (!completedSteps.has(key) && completedSteps.size < i)) && (
+                      <>
+                        <Text
+                          disabled
+                        >
+                          <EllipsisOutlined />
+                        </Text>
+                        <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                      </>
+                    )}
+                  </Option>
+                );
+              }
             )
           }
         </Select>
@@ -293,6 +326,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     setStepIdx(newId);
                   }
                 }
+                disabled={nextDisabledByPipeline}
               >
                 Next
                 <RightOutlined />
@@ -309,6 +343,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                         );
                       }
                     }
+                    disabled={nextDisabledByPipeline}
                   >
                     <span style={{ marginRight: '0.25rem' }}>Finish</span>
                     <CheckOutlined />
