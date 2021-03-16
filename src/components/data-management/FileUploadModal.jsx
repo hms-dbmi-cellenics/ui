@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import mime from 'mime-types';
+import path from 'path';
+
 import {
   Modal,
   Button,
@@ -25,7 +27,7 @@ const NewProjectModal = (props) => {
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1qX6no9od4pi-Wy87Q06hmjnLNECwItKJ/view?usp=sharing';
 
-  const [selectedTech, useSelectedTech] = useState('10X Chromium');
+  const [selectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
@@ -41,11 +43,12 @@ const NewProjectModal = (props) => {
         'matrix.mtx',
         'matrix.mtx.gz',
       ],
-      validMimeTypes: ['text/tsv', 'application/gzip'],
+      validMimeTypes: ['text/tsv', 'application/gzip', 'text/tab-separated-values'],
+      validExtensionTypes: ['.mtx'],
       inputInfo: [
-        'features.tsv/features.tsv.gz or genes.tsv/genes.tsv.gz',
-        'barcodes.tsv/barcodes.tsv.gz',
-        'matrix.mtx/matrix.mtx.gz',
+        ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
+        ['barcodes.tsv', 'barcodes.tsv.gz'],
+        ['matrix.mtx', 'matrix.mtx.gz'],
       ],
     },
   };
@@ -73,16 +76,26 @@ const NewProjectModal = (props) => {
         fileName = file.path;
       }
 
-      const isValidMime = techOptions[selectedTech].validMimeTypes.includes(mime.lookup(file.path));
-      if (!isValidMime) error.push('invalid mime types');
+      const isValidType = (
+        techOptions[selectedTech].validMimeTypes
+          .includes(
+            mime.lookup(file.path),
+          )
+        || techOptions[selectedTech].validExtensionTypes
+          .includes(
+            path.extname(file.path),
+          )
+      );
+
+      if (!isValidType) error.push('Invalid file type.');
 
       const acceptedFilenames = new RegExp(acceptedFilesRegexp, 'gi');
       const isValidFilename = fileName.match(acceptedFilenames) || false;
-      if (!isValidFilename) error.push('invalid file name');
+      if (!isValidFilename) error.push('Invalid file name.');
 
       newList.push({
         name: fileName,
-        valid: isValidMime && isValidFilename,
+        valid: isValidType && isValidFilename,
         errors: error.join(', '),
       });
     });
@@ -97,11 +110,58 @@ const NewProjectModal = (props) => {
     setFilesList(newArray);
   };
 
+  const renderHelpText = () => (
+    <>
+      <Col span={24} style={{ padding: '1rem' }}>
+        <Paragraph>
+          For each sample, upload a folder containing the following
+          {' '}
+          <Text strong>{techOptions[selectedTech].inputInfo.length}</Text>
+          {' '}
+          files:
+        </Paragraph>
+        <List
+          dataSource={techOptions[selectedTech].inputInfo}
+          size='small'
+          itemLayout='vertical'
+          bordered
+          renderItem={(item) => (
+            <List.Item>
+              {
+                item.map((fileName, i) => (
+                  <span key={fileName}>
+                    <Text code>{`${fileName}`}</Text>
+                    {i !== item.length - 1 && ' or '}
+                  </span>
+                ))
+              }
+            </List.Item>
+          )}
+        />
+      </Col>
+      <Col span={24} style={{ padding: '1rem' }}>
+        <Paragraph>
+          The folder&apos;s name will be used to name
+          the sample in it. You can change this
+          name later in Data Management.
+        </Paragraph>
+        <Paragraph type='secondary'>
+          More guidance on supported file types and formats is available
+          {' '}
+          <a rel='noreferrer' target='_blank' href={guidanceFileLink}>here</a>
+          {' '}
+          (opens in new tab).
+        </Paragraph>
+      </Col>
+    </>
+  );
+
   return (
     <Modal
       title=''
       visible={visible}
       onCancel={onCancel}
+      width='50%'
       footer={(
         <Button
           type='primary'
@@ -116,65 +176,39 @@ const NewProjectModal = (props) => {
           Upload
         </Button>
       )}
-      width='80%'
     >
-      <Space direction='vertical' style={{ width: '100%' }}>
-        <Space align='baseline'>
-          <Title level={4} style={{ display: 'inline-block' }}>
-            Technology:
-            <span style={{ color: 'red', marginRight: '2em' }}>*</span>
-          </Title>
-          <Select style={{ width: 250 }} defaultValue={selectedTech}>
-            {Object.keys(techOptions).map((val, idx) => (
-              <Option key={idx} value={val}>{val}</Option>
-            ))}
-          </Select>
-          <Text type='secondary'><i>Only 10x Chromium datasets are currently supported</i></Text>
-        </Space>
-        {
-          selectedTech ? (
+      <Row>
+        <Col span={24}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Space align='baseline'>
+              <Title level={4} style={{ display: 'inline-block' }}>
+                Technology:
+                <span style={{ color: 'red', marginRight: '2em' }}>*</span>
+              </Title>
+              <Select style={{ width: 250 }} defaultValue={selectedTech}>
+                {Object.keys(techOptions).map((val, idx) => (
+                  <Option key={idx} value={val}>{val}</Option>
+                ))}
+              </Select>
+            </Space>
+            <Text type='secondary'><i>Only 10x Chromium datasets are currently supported</i></Text>
+          </Space>
+        </Col>
 
-            <Row style={{ margin: '1em 0' }}>
-              <Col span={24} style={{ textAlign: 'center' }}>
-                <Paragraph>
-                  {`For each sample, the following ${techOptions[selectedTech].inputInfo.length} files are required:`}
-                </Paragraph>
-              </Col>
-              <Col span={24} style={{ textAlign: 'center' }}>
-                <List
-                  dataSource={techOptions[selectedTech].inputInfo}
-                  renderItem={(item) => (
-                    <Paragraph style={{ margin: 0 }}>
-                      &bull;
-                      {` ${item}`}
-                    </Paragraph>
-                  )}
-                />
-              </Col>
-              <Col span={24} style={{ textAlign: 'center', marginTop: '1rem' }}>
-                <Paragraph>{`Drag and drop the folder containing these ${techOptions[selectedTech].inputInfo.length} files. The folder should be named with the sample ID.`}</Paragraph>
-                <Paragraph>
-                  Further guidance on supported file types and formats is available
-                  {' '}
-                  <a rel='noreferrer' target='_blank' href={guidanceFileLink}>here</a>
-                  .
-                </Paragraph>
-              </Col>
-            </Row>
-          ) : ''
-        }
-        <Row>
-          <Col span={24}>
-            <Dropzone onDrop={onDrop}>
-              {({ getRootProps, getInputProps }) => (
-                <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
-                  <input {...getInputProps()} />
-                  <Empty description='Drag and drop folders here' image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                </div>
-              )}
-            </Dropzone>
-          </Col>
-        </Row>
+        {selectedTech && renderHelpText()}
+
+        {/* eslint-disable react/jsx-props-no-spreading */}
+        <Col span={24}>
+          <Dropzone onDrop={onDrop}>
+            {({ getRootProps, getInputProps }) => (
+              <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
+                <input {...getInputProps()} />
+                <Empty description='Drag and drop folders here or click to browse.' image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              </div>
+            )}
+          </Dropzone>
+        </Col>
+        {/* eslint-enable react/jsx-props-no-spreading */}
 
         {filesList.length ? (
           <>
@@ -207,7 +241,7 @@ const NewProjectModal = (props) => {
             </ul>
           </>
         ) : ''}
-      </Space>
+      </Row>
     </Modal>
 
   );

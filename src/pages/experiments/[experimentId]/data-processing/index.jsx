@@ -259,8 +259,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       setStepIdx(completedSteps.size);
       return;
     }
-
-  }, [completingStepError, stepIdx]);
+  }, [completingStepError, stepIdx,]);
 
   const manualStepIdxChange = (newStepIdx) => {
     if (changesOutstanding) {
