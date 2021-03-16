@@ -1,10 +1,12 @@
-import updateProcessingSettings from '../redux/actions/experimentSettings/updateProcessingSettings';
+import { updateProcessingSettings, updatePipelineStatus } from '../redux/actions/experimentSettings';
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
-  const { taskName } = update.input;
-  const processingConfigUpdate = update.output.config;
+  const { input, output, status } = update;
 
-  dispatch(updateProcessingSettings(experimentId, taskName, processingConfigUpdate));
+  const processingConfigUpdate = output.config;
+
+  dispatch(updatePipelineStatus(experimentId, status));
+  dispatch(updateProcessingSettings(experimentId, input.taskName, processingConfigUpdate));
 };
 
 export default experimentUpdatesHandler;
