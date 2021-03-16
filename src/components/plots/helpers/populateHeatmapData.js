@@ -2,14 +2,14 @@ import _ from 'lodash';
 import SetOperations from '../../../utils/setOperations';
 import { union } from '../../../utils/cellSetOperations';
 
-const populateHeatmapData = (cellSets, config, expression, componentType, downsampling = false) => {
+const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsampling = false) => {
   const { hierarchy, properties, hidden } = cellSets;
   const {
     selectedTracks, groupedTracks, expressionValue,
   } = config;
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
-  const selectedGenes = expression.views[componentType].data;
+  // const selectedGenes = expression.views[componentType].data;
   const trackOrder = Array.from(selectedTracks).reverse();
   const generateTrackData = (cells, track) => {
     // Find the `groupBy` root node.

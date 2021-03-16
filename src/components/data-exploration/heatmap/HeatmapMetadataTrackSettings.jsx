@@ -70,7 +70,6 @@ const HeatmapMetadataTrackSettings = (props) => {
     if (trackData.length === 0) {
       return;
     }
-
     dispatch(
       updatePlotConfig(componentType, {
         selectedTracks: trackData.filter((o) => o.selected).map((o) => o.key),

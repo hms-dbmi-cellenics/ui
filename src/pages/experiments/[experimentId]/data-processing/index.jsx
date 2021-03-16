@@ -174,7 +174,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   ];
 
   const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
-
   const carouselRef = useRef(null);
 
   useEffect(() => {

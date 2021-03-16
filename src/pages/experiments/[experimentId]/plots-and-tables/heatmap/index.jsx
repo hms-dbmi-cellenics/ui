@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Skeleton, Empty, Typography,
 } from 'antd';
@@ -38,22 +38,33 @@ const HeatmapPlot = ({ experimentId }) => {
   const cellSets = useSelector((state) => state.cellSets);
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const [vegaSpec, setVegaSpec] = useState();
-
+  const displaySavedGenes = useRef(true);
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
-  useEffect(() => {
-    if (selectedGenes.length) {
-      onGeneEnter(selectedGenes);
+  if (config) {
+  }useEffect(() => {
+    if (!config || _.isEmpty(expressionData)) {
+      return;
     }
-  }, []);
+    if (!_.isEqual(selectedGenes, config.selectedGenes) && displaySavedGenes.current) {
+      onGeneEnter(config.selectedGenes);
+      displaySavedGenes.current = false;
+    }
+  }, [config]);
+  // useEffect(() => {
+  //   if (selectedGenes.length) {
+  //     onGeneEnter(selectedGenes);
+  //   }
+  // }, []);
   useEffect(() => {
     if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes)) {
       return;
     }
+
     const spec = generateSpec(config);
-    const data = populateHeatmapData(cellSets, config, expressionData, plotUuid);
+    const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
 
     const newVegaSpec = {
       ...spec,
@@ -63,7 +74,7 @@ const HeatmapPlot = ({ experimentId }) => {
       })),
     };
     setVegaSpec(newVegaSpec);
-  }, [expressionData, selectedGenes, config]);
+  }, [expressionData, selectedGenes, config, cellSets]);
 
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
@@ -73,24 +84,18 @@ const HeatmapPlot = ({ experimentId }) => {
   const onGeneEnter = (value) => {
     const updates = {};
 
-    if (selectedGenes.length >= 53) {
+    if (selectedGenes.length >= 53 || value.length === 0) {
       updates.labelColour = 'transparent';
     } else {
       updates.labelColour = 'black';
     }
 
-    if (value.length === 0) {
-      updates.labelColour = 'transparent';
-    }
+    updates.selectedGenes = [...value];
+    // updating the selected genes in the config too so they are saved in dynamodb
 
-    updates.selectedGenes = value;
+    updatePlotWithChanges(updates);
     dispatch(loadGeneExpression(experimentId, updates.selectedGenes, plotUuid));
   };
-
-  const onCellSetSelect = ({ value }) => {
-    updatePlotWithChanges({ selectedCellSet: value });
-  };
-
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading) {
       return (<Loader experimentId={experimentId} />);
@@ -117,17 +122,6 @@ const HeatmapPlot = ({ experimentId }) => {
     if (vegaSpec) {
       return <Vega spec={vegaSpec} renderer='canvas' />;
     }
-  };
-
-  const generateCellSetOptions = () => {
-    const hierarchy = cellSets.hierarchy.map(
-      (cellSet) => ({ key: cellSet.key, children: cellSet.children?.length || 0 }),
-    );
-
-    return hierarchy.map(({ key, children }) => ({
-      value: key,
-      label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
-    }));
   };
 
   const plotStylingConfig = [
@@ -187,12 +181,9 @@ const HeatmapPlot = ({ experimentId }) => {
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
             <HeatmapControls
-              config={config}
-              plotUuid={plotUuid}
               selectedGenes={selectedGenes}
+              plotUuid={plotUuid}
               onGeneEnter={onGeneEnter}
-              generateCellSetOptions={generateCellSetOptions}
-              onCellSetSelect={onCellSetSelect}
             />
             <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
           </Space>

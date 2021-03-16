@@ -11,7 +11,7 @@ const { Panel } = Collapse;
 
 const HeatmapControls = (props) => {
   const {
-    onGeneEnter, selectedGenes, plotUuid,
+    onGeneEnter, plotUuid, selectedGenes,
   } = props;
   return (
     <Collapse defaultActiveKey={['5']} accordion>
