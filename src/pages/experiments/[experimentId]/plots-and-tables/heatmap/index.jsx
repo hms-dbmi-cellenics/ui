@@ -43,8 +43,7 @@ const HeatmapPlot = ({ experimentId }) => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
-  if (config) {
-  }useEffect(() => {
+  useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
       return;
     }
@@ -53,11 +52,7 @@ const HeatmapPlot = ({ experimentId }) => {
       displaySavedGenes.current = false;
     }
   }, [config]);
-  // useEffect(() => {
-  //   if (selectedGenes.length) {
-  //     onGeneEnter(selectedGenes);
-  //   }
-  // }, []);
+
   useEffect(() => {
     if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes)) {
       return;
