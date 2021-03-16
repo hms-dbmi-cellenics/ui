@@ -31,7 +31,7 @@ const { Text } = Typography;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, config, data, pipelineRunHandler,
+    experimentId, config, data, onPipelineRun,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -86,7 +86,7 @@ const CalculationConfig = (props) => {
 
   const runWithCurrentDataIntegrationSettings = () => {
     setChangesOutstanding(false);
-    pipelineRunHandler();
+    onPipelineRun();
   };
 
   const methodOptions = {
@@ -236,7 +236,7 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   data: PropTypes.array.isRequired,
-  pipelineRunHandler: PropTypes.func.isRequired,
+  onPipelineRun: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

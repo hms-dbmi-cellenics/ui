@@ -31,7 +31,7 @@ describe('Data Processing CalculationConfig', () => {
     },
   };
 
-  const pipelineRunHandler = () => { };
+  const onPipelineRun = () => { };
 
   configure({ adapter: new Adapter() });
 
@@ -84,7 +84,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          pipelineRunHandler={pipelineRunHandler}
+          onPipelineRun={onPipelineRun}
         />
       </Provider>,
     );
@@ -104,7 +104,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          pipelineRunHandler={pipelineRunHandler}
+          onPipelineRun={onPipelineRun}
         />
       </Provider>,
     );
@@ -127,7 +127,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          pipelineRunHandler={pipelineRunHandler}
+          onPipelineRun={onPipelineRun}
         />
       </Provider>,
     );
@@ -170,7 +170,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          pipelineRunHandler={pipelineRunHandler}
+          onPipelineRun={onPipelineRun}
         />
       </Provider>,
     );

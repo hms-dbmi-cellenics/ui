@@ -214,13 +214,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       key: 'dataIntegration',
       name: 'Data integration',
       multiSample: false,
-      render: (key) => <DataIntegration key={key} pipelineRunHandler={() => pipelineRunHandler(key)} />,
+      render: (key) => <DataIntegration key={key} onPipelineRun={() => onPipelineRun(key)} />,
     },
     {
       key: 'computeEmbedding',
       name: 'Compute embedding',
       multiSample: false,
-      render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} pipelineRunHandler={() => pipelineRunHandler(key)} />,
+      render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} onPipelineRun={() => onPipelineRun(key)} />,
     },
   ];
 
@@ -302,7 +302,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     });
   }
 
-  const pipelineRunHandler = (calledFromStepKey) => {
+  const onPipelineRun = (calledFromStepKey) => {
     setCompletedStepsFrom(calledFromStepKey);
     setChangesOutstanding(false);
 
@@ -401,7 +401,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               <Button
                 id='runFilterButton'
                 type='primary'
-                onClick={() => { pipelineRunHandler(steps[stepIdx].key) }}
+                onClick={() => { onPipelineRun(steps[stepIdx].key) }}
                 disabled={!changesOutstanding || pipelineRunning}
                 style={{ marginLeft: '20px' }}
               >

@@ -27,7 +27,7 @@ const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to com
   + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
 
 const CalculationConfig = (props) => {
-  const { experimentId, pipelineRunHandler } = props;
+  const { experimentId, onPipelineRun } = props;
   const FILTER_UUID = 'configureEmbedding';
 
   const dispatch = useDispatch();
@@ -110,7 +110,7 @@ const CalculationConfig = (props) => {
   const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
-    pipelineRunHandler();
+    onPipelineRun();
   };
   const newChanges = changes;
 
@@ -308,7 +308,7 @@ const CalculationConfig = (props) => {
 
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  pipelineRunHandler: PropTypes.func.isRequired,
+  onPipelineRun: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

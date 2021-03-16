@@ -52,7 +52,7 @@ const elbowPlotConfigRedux = {
 };
 
 const DataIntegration = (props) => {
-  const { pipelineRunHandler } = props;
+  const { onPipelineRun } = props;
 
   const { Panel } = Collapse;
 
@@ -318,7 +318,7 @@ const DataIntegration = (props) => {
               experimentId={experimentId}
               config={calculationConfig}
               data={fakeData}
-              pipelineRunHandler={pipelineRunHandler}
+              onPipelineRun={onPipelineRun}
             />
           </Panel>
           <Panel header='Plot Styling' key='styling'>
@@ -356,7 +356,7 @@ const DataIntegration = (props) => {
 };
 
 DataIntegration.propTypes = {
-  pipelineRunHandler: PropTypes.func.isRequired,
+  onPipelineRun: PropTypes.func.isRequired,
 };
 
 export default DataIntegration;

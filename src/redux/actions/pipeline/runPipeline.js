@@ -17,6 +17,12 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
   const processingConfig = getState().experimentSettings.processing[callerStepKey];
 
   try {
+    // We are only sending the configuration that we know changed
+    // with respect to the one that is already persisted in dynamodb
+    // The api will then merge this with the full config saved in dynamodb to get an updated version
+
+    // We don't need to manually save any processing config because it is done by
+    // the api once the pipeline finishes successfully
     const response = await fetch(
       `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`,
       {
