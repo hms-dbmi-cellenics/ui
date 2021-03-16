@@ -13,9 +13,9 @@ exports[`DiffExprResults can sort the gene names in alphabetical order 2`] = `
 Object {
   "payload": Object {
     "cellSets": Object {
-      "basis": "condition/condition-control",
-      "cellSet": "louvain/louvain-0",
-      "compareWith": "louvain/louvain-1",
+      "basis": "scratchpad/scratchpad-a",
+      "cellSet": "louvain/cluster-a",
+      "compareWith": "louvain/cluster-b",
     },
     "comparisonType": "between",
     "data": Array [

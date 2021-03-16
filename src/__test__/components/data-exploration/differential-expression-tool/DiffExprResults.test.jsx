@@ -58,6 +58,55 @@ const store = mockStore({
       key: 'C',
     },
   },
+  cellSets: {
+    loading: false,
+    error: false,
+    selected: [],
+    properties: {
+      'cluster-a': {
+        name: 'Name of Cluster A',
+        key: 'cluster-a',
+        cellIds: new Set(['1', '2']),
+        color: '#00FF00',
+      },
+      'cluster-b': {
+        name: 'Name of Cluster B',
+        key: 'cluster-b',
+        cellIds: new Set(['2', '3', '4', '5']),
+        color: '#FF0000',
+      },
+      'scratchpad-a': {
+        cellIds: new Set(['3']),
+        key: 'scratchpad-a',
+        name: 'Name of Scratchpad A',
+        color: '#ff00ff',
+      },
+      louvain: {
+        cellIds: new Set(),
+        name: 'Louvain clusters',
+        key: 'louvain',
+        type: 'cellSets',
+        rootNode: true,
+      },
+      scratchpad: {
+        cellIds: new Set(),
+        name: 'Custom selections',
+        key: 'scratchpad',
+        type: 'cellSets',
+        rootNode: true,
+      },
+    },
+    hierarchy: [
+      {
+        key: 'louvain',
+        children: [{ key: 'cluster-a' }, { key: 'cluster-b' }],
+      },
+      {
+        key: 'scratchpad',
+        children: [{ key: 'scratchpad-a' }],
+      },
+    ],
+  },
   differentialExpression: {
     properties: {
       data: [
@@ -85,9 +134,9 @@ const store = mockStore({
       type: 'between',
       group: {
         between: {
-          cellSet: 'louvain/louvain-0',
-          compareWith: 'louvain/louvain-1',
-          basis: 'condition/condition-control',
+          cellSet: 'louvain/cluster-a',
+          compareWith: 'louvain/cluster-b',
+          basis: 'scratchpad/scratchpad-a',
         },
       },
     },
@@ -174,9 +223,9 @@ describe('DiffExprResults', () => {
 
     expect(sendWork).toHaveBeenCalledWith('1234', 60,
       {
-        cellSet: 'louvain-0',
-        compareWith: 'louvain-1',
-        basis: 'condition-control',
+        cellSet: 'cluster-a',
+        compareWith: 'cluster-b',
+        basis: 'scratchpad-a',
         experimentId: '1234',
         name: 'DifferentialExpression',
       },
@@ -230,7 +279,8 @@ describe('DiffExprResults', () => {
     expect(button.text()).toContain('Hide');
 
     const div = component.find('#settingsText');
-    expect(div.text()).toEqual('Louvain 0 vs. Louvain 1 in Condition control');
+    // Should display name of cluster instead of ID
+    expect(div.text()).toEqual('Name of Cluster A vs. Name of Cluster B in Name of Scratchpad A');
     button.simulate('click');
     expect(button.childAt(0).text()).toEqual('Show settings');
     expect(!div);
