@@ -1,4 +1,4 @@
-const populateFrequencyData = (spec, hierarchy, properties, config) => {
+const populateFrequencyData = (hierarchy, properties, config) => {
   const calculateSum = (proportionClusters, xAxisClustersIds) => {
     let sum = 0;
 
@@ -71,9 +71,6 @@ const populateFrequencyData = (spec, hierarchy, properties, config) => {
     });
   }
 
-  spec.data.forEach((datum) => {
-    datum.values = data; // eslint-disable-line no-param-reassign
-  });
   return data;
 };
 

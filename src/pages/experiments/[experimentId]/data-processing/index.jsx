@@ -187,7 +187,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'dataIntegration',
       name: 'Data integration',
-      render: (key) => <DataIntegration key={key} />,
+      render: (key, expId) => <DataIntegration experimentId={expId} key={key} />,
     },
     {
       key: 'computeEmbedding',
