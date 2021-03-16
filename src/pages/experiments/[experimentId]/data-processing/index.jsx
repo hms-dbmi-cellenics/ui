@@ -97,7 +97,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     return stepAppearances.length > 0;
   }
 
-  const configChangedHandler = () => {
+  const onConfigChange = () => {
     setChangesOutstanding(true);
   };
 
@@ -120,7 +120,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              configChangedHandler={configChangedHandler}
+              onConfigChange={onConfigChange}
             />
           )}
         />
@@ -141,7 +141,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              configChangedHandler={configChangedHandler}
+              onConfigChange={onConfigChange}
             />
           )}
         />
@@ -162,7 +162,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              configChangedHandler={configChangedHandler}
+              onConfigChange={onConfigChange}
             />
           )}
         />
@@ -183,7 +183,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              configChangedHandler={configChangedHandler}
+              onConfigChange={onConfigChange}
             />
           )}
         />
@@ -204,7 +204,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              configChangedHandler={configChangedHandler}
+              onConfigChange={onConfigChange}
             />
           )}
         />

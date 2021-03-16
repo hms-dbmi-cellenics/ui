@@ -18,7 +18,7 @@ import { updateProcessingSettings } from '../../../redux/actions/experimentSetti
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, sampleId, plotType, sampleIds, configChangedHandler,
+    experimentId, sampleId, plotType, sampleIds, onConfigChange,
   } = props;
 
   const config = useSelector(
@@ -46,7 +46,7 @@ const CalculationConfig = (props) => {
       newConfig,
     ));
 
-    configChangedHandler();
+    onConfigChange();
   };
 
   const updateSettings = (diff) => {
@@ -62,7 +62,7 @@ const CalculationConfig = (props) => {
       sampleSpecificDiff,
     ));
 
-    configChangedHandler();
+    onConfigChange();
   };
 
   const filtering = false;
@@ -115,7 +115,7 @@ CalculationConfig.propTypes = {
   sampleId: PropTypes.string.isRequired,
   plotType: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
-  configChangedHandler: PropTypes.func.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

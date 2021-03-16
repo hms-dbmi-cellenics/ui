@@ -348,7 +348,7 @@ class GenesVsUMIs extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const {
-      experimentId, sampleId, sampleIds, configChangedHandler, filtering,
+      experimentId, sampleId, sampleIds, onConfigChange, filtering,
     } = this.props;
 
     const changePlot = (val) => {
@@ -419,7 +419,7 @@ class GenesVsUMIs extends React.Component {
                   experimentId={experimentId}
                   sampleId={sampleId}
                   sampleIds={sampleIds}
-                  configChangedHandler={configChangedHandler}
+                  onConfigChange={onConfigChange}
                 />
               </Panel>
 
@@ -442,7 +442,7 @@ GenesVsUMIs.propTypes = {
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   filtering: PropTypes.bool.isRequired,
-  configChangedHandler: PropTypes.func.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default GenesVsUMIs;

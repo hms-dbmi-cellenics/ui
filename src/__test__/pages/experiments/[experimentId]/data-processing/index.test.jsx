@@ -147,7 +147,7 @@ describe('DataProcessingPage', () => {
     const filterComponent = page.find('#cellSizeDistribution');
 
     act(() => {
-      filterComponent.at(0).props().configChangedHandler();
+      filterComponent.at(0).props().onConfigChange();
     });
 
     page.update();

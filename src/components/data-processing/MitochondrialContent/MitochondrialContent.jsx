@@ -439,7 +439,7 @@ class MitochondrialContent extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const {
-      experimentId, sampleId, filtering, sampleIds, configChangedHandler,
+      experimentId, sampleId, filtering, sampleIds, onConfigChange,
     } = this.props;
 
     const changePlot = (val) => {
@@ -511,7 +511,7 @@ class MitochondrialContent extends React.Component {
                   experimentId={experimentId}
                   sampleId={sampleId}
                   sampleIds={sampleIds}
-                  configChangedHandler={configChangedHandler}
+                  onConfigChange={onConfigChange}
                 />
               </Panel>
 
@@ -535,7 +535,7 @@ MitochondrialContent.propTypes = {
   sampleId: PropTypes.string.isRequired,
   filtering: PropTypes.bool,
   sampleIds: PropTypes.array.isRequired,
-  configChangedHandler: PropTypes.func.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 MitochondrialContent.defaultProps = {

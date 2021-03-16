@@ -428,7 +428,7 @@ class CellSizeDistribution extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const {
-      experimentId, sampleId, filtering, sampleIds, configChangedHandler,
+      experimentId, sampleId, filtering, sampleIds, onConfigChange,
     } = this.props;
     let data = { plotData: this.generateData() };
     if (!config.plotToDraw) {
@@ -517,7 +517,7 @@ class CellSizeDistribution extends React.Component {
                   sampleId={sampleId}
                   plotType='bin step'
                   sampleIds={sampleIds}
-                  configChangedHandler={configChangedHandler}
+                  onConfigChange={onConfigChange}
                 />
               </Panel>
 
@@ -541,7 +541,7 @@ CellSizeDistribution.propTypes = {
   sampleId: PropTypes.string.isRequired,
   filtering: PropTypes.bool,
   sampleIds: PropTypes.array.isRequired,
-  configChangedHandler: PropTypes.func.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 CellSizeDistribution.defaultProps = {

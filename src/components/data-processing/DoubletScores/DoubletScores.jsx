@@ -263,7 +263,7 @@ class DoubletScores extends React.Component {
     const { config } = this.state;
     // eslint-disable-next-line react/prop-types
     const {
-      experimentId, sampleId, filtering, sampleIds, configChangedHandler,
+      experimentId, sampleId, filtering, sampleIds, onConfigChange,
     } = this.props;
 
     return (
@@ -286,7 +286,7 @@ class DoubletScores extends React.Component {
                   experimentId={experimentId}
                   sampleId={sampleId}
                   sampleIds={sampleIds}
-                  configChangedHandler={configChangedHandler}
+                  onConfigChange={onConfigChange}
                 />
               </Panel>
 
@@ -311,7 +311,7 @@ DoubletScores.propTypes = {
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   filtering: PropTypes.bool.isRequired,
-  configChangedHandler: PropTypes.func.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 DoubletScores.defaultProps = {
