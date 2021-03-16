@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 const ElbowPlot = (props) => {
   const {
-    experimentId, config, plotData,
+    config, plotData, actions,
   } = props;
 
   const generateSpec = () => ({
@@ -124,7 +124,7 @@ const ElbowPlot = (props) => {
 
   return (
     <center>
-      <Vega data={{ plotData }} spec={generateSpec()} renderer='canvas' />
+      <Vega data={{ plotData }} spec={generateSpec()} renderer='canvas' actions={actions} />
     </center>
   );
 };

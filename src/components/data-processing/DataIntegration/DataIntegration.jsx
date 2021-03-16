@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import Loader from '../../Loader';
 
 import CalculationConfig from './CalculationConfig';
+import MiniPlot from '../../plots/MiniPlot';
 
 import { loadCellSets, updateCellSetsClustering } from '../../../redux/actions/cellSets';
 
@@ -52,21 +53,21 @@ const DataIntegration = (props) => {
       imgSrc: plot1Pic,
       plotUuid: 'dataIntegrationEmbedding',
       plotType: 'dataIntegrationEmbedding',
-      plot: (config, plotData) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} />),
+      plot: (config, plotData, actions) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
     },
     frequency: {
       title: 'Frequency plot',
       imgSrc: plot1Pic,
       plotUuid: 'dataIntegrationFrequency',
       plotType: 'dataIntegrationFrequency',
-      plot: (config, plotData) => (<FrequencyPlot experimentId={experimentId} config={config} plotData={plotData} />),
+      plot: (config, plotData, actions) => (<FrequencyPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
     },
     elbow: {
       title: 'Elbow plot',
       imgSrc: plot2Pic,
       plotUuid: 'dataIntegrationElbow',
       plotType: 'dataIntegrationElbow',
-      plot: (config, plotData) => (<ElbowPlot experimentId={experimentId} config={config} plotData={plotData} />),
+      plot: (config, plotData, actions) => (<ElbowPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
     },
   };
 
@@ -186,7 +187,7 @@ const DataIntegration = (props) => {
     }
 
     if (!cellSets.loading && !cellSets.error && !cellSets.updateCellSetsClustering && config && plotData) {
-      setPlot(plots[selectedPlot].plot(config, plotData));
+      setPlot(plots[selectedPlot].plot(config, plotData, true));
       if (!config.selectedCellSet) { return; }
 
       const propertiesArray = Object.keys(cellSets.properties);
@@ -259,69 +260,6 @@ const DataIntegration = (props) => {
     }
   };
 
-  const getMiniaturizedConfig = (miniaturesConfig, updatedWidth) => {
-    const {
-      width, height, axisTicks, ...configWithoutSize
-    } = miniaturesConfig;
-
-    const miniPlotConfig = _.cloneDeep(configWithoutSize);
-
-    miniPlotConfig.axes.titleFontSize = 5;
-    miniPlotConfig.axes.labelFontSize = 5;
-
-    miniPlotConfig.dimensions.width = updatedWidth;
-    miniPlotConfig.dimensions.height = updatedWidth * 0.8;
-
-    miniPlotConfig.legend.enabled = false;
-
-    miniPlotConfig.title.fontSize = 5;
-
-    if (miniPlotConfig.label) {
-      miniPlotConfig.label.enabled = false;
-    }
-
-    if (miniPlotConfig.marker.size) {
-      miniPlotConfig.marker.size = 1;
-    }
-
-    if (miniPlotConfig.signals) { miniPlotConfig.signals[0].bind = undefined; }
-
-    return miniPlotConfig;
-  };
-
-  const miniaturesColumn = (
-    <ReactResizeDetector handleWidth handleHeight>
-      {({ width: updatedWidth }) => (
-        <Col span={4}>
-          <Space direction='vertical' align='center' style={{ marginLeft: '0px', marginRight: '0px' }}>
-            {Object.entries(plots).map(([key, value]) => (
-              <button
-                type='button'
-                key={key}
-                onClick={() => { setActivePlotKey(key); }}
-                style={{
-                  padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
-                }}
-              >
-                {
-                  renderIfAvailable(
-                    (loadedConfig) => (
-                      plots[key].renderPlot(
-                        getMiniaturizedConfig(loadedConfig, updatedWidth),
-                        false,
-                      )
-                    ),
-                    value.persistedConfig,
-                  )
-                }
-              </button>
-            ))}
-          </Space>
-        </Col>
-      )}
-    </ReactResizeDetector>
-  );
-
   return (
     <>
       <PageHeader
@@ -338,29 +276,22 @@ const DataIntegration = (props) => {
             <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.'>
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
-
-            {Object.entries(plots).map(([key, option]) => (
+            {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'
                 key={key}
                 onClick={() => setSelectedPlot(key)}
                 style={{
-                  padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
+                  margin: 0,
+                  backgroundColor: 'transparent',
+                  align: 'center',
+                  padding: '8px',
+                  border: '1px solid #000',
+                  cursor: 'pointer',
                 }}
               >
-                <img
-                  alt={option.title}
-                  src={option.imgSrc}
-                  style={{
-                    height: '100px',
-                    width: '100px',
-                    align: 'center',
-                    padding: '8px',
-                    border: '1px solid #000',
-                  }}
-                />
+                <MiniPlot experimentId={experimentId} plotUuid={plotObj.plotUuid} plotFn={plotObj.plot} actions={false} />
               </button>
-
             ))}
           </Space>
         </Col>

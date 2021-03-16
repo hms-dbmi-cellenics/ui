@@ -9,7 +9,7 @@ import { generateSpec, generateData } from '../../utils/plotSpecs/generateFreque
 
 const FrequencyPlot = (props) => {
   const {
-    experimentId, config,
+    experimentId, config, actions,
   } = props;
 
   const dispatch = useDispatch();
@@ -30,7 +30,7 @@ const FrequencyPlot = (props) => {
 
   return (
     <center>
-      <Vega spec={spec} renderer='canvas' />
+      <Vega spec={spec} renderer='canvas' actions={actions} />
     </center>
   );
 };

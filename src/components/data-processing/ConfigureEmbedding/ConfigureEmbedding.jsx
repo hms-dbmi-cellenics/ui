@@ -312,7 +312,6 @@ const ConfigureEmbedding = (props) => {
             <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.'>
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
-
             {Object.entries(plots).map(([key, option]) => (
               <button
                 type='button'
