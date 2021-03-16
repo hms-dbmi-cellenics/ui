@@ -1,7 +1,7 @@
 /* eslint-disable import/no-named-as-default-member */
 import initialState from './initialState';
 
-const updateCompletedSteps = (state, action) => {
+const setCompletedSteps = (state, action) => {
   const { completedSteps, numSteps } = action.payload;
 
   const newStepsDone = new Set(completedSteps);
@@ -23,4 +23,4 @@ const updateCompletedSteps = (state, action) => {
   };
 };
 
-export default updateCompletedSteps;
+export default setCompletedSteps;

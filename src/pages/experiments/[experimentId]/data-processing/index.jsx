@@ -12,6 +12,7 @@ import {
   CheckOutlined,
   CaretRightOutlined,
   EllipsisOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
 
 import _ from 'lodash';
@@ -30,7 +31,7 @@ import PlatformError from '../../../../components/PlatformError';
 import Loader from '../../../../components/Loader';
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
-import { updateCompletedSteps, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
+import { setCompletedSteps, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { runPipeline } from '../../../../redux/actions/pipeline';
 
@@ -285,7 +286,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
     const newStepsDone = new Set([...completedSteps, newDoneStepKey]);
 
-    dispatch(updateCompletedSteps(experimentId, newStepsDone, steps.length));
+    dispatch(setCompletedSteps(experimentId, newStepsDone, steps.length));
   }
 
   const setCompletedStepsFrom = (calledFromStepKey) => {
@@ -295,7 +296,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       newStepsDone.push(step.key);
 
       if (step.key === calledFromStepKey) {
-        dispatch(updateCompletedSteps(experimentId, newStepsDone, steps.length))
+        dispatch(setCompletedSteps(experimentId, newStepsDone, steps.length))
         return;
       }
     });
@@ -317,16 +318,20 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const renderTitle = () => (
     <>
       <Modal
-        title="Basic Modal"
         visible={showChangesWillBeLost}
         onOk={ignoreLostChanges}
         onCancel={() => setShowChangesWillBeLost(false)}
         okText='Continue'
         cancelText='Cancel'
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <Space style={{ margin: '15px' }}>
+          <div style={{ fontSize: '25px', color: 'rgb(233 178 83)', marginBottom: '25px', marginRight: '5px' }}>
+            <ExclamationCircleOutlined />
+          </div>
+          <p>
+            The latest settings have not been applied. Navigating away from this page will cause these changes to be lost.
+          </p>
+        </Space>
       </Modal>
       <Row justify='space-between'>
         <Col span='14' >

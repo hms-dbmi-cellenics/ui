@@ -2,7 +2,7 @@ import experimentSettingsReducer from '../../../redux/reducers/experimentSetting
 import initialState from '../../../redux/reducers/experimentSettings/initialState';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
-  EXPERIMENT_SETTINGS_UPDATE_COMPLETED_STEPS,
+  EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../../redux/actionTypes/experimentSettings';
@@ -91,7 +91,7 @@ describe('experimentSettingsReducer', () => {
   it('Updates completed steps correctly to the set when step is complete.', () => {
     const newState = experimentSettingsReducer(initialState,
       {
-        type: EXPERIMENT_SETTINGS_UPDATE_COMPLETED_STEPS,
+        type: EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
         payload:
         {
           completedSteps: ['configureEmbedding'],
@@ -106,7 +106,7 @@ describe('experimentSettingsReducer', () => {
   it('Steps are set to complete when set size equals number of steps to do.', () => {
     const state = experimentSettingsReducer(initialState,
       {
-        type: EXPERIMENT_SETTINGS_UPDATE_COMPLETED_STEPS,
+        type: EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
         payload:
         {
           completedSteps: ['configureEmbedding', 'dataIntegration'],

@@ -1,5 +1,5 @@
 import {
-  EXPERIMENT_SETTINGS_UPDATE_COMPLETED_STEPS,
+  EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../actionTypes/experimentSettings';
 
@@ -9,7 +9,7 @@ import errorTypes from './errorTypes';
 
 import pushNotificationMessage from '../pushNotificationMessage';
 
-const updateCompletedSteps = (
+const setCompletedSteps = (
   experimentId,
   stepsDone,
   numSteps,
@@ -52,7 +52,7 @@ const updateCompletedSteps = (
     }
 
     dispatch({
-      type: EXPERIMENT_SETTINGS_UPDATE_COMPLETED_STEPS,
+      type: EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
       payload:
         { experimentId, completedSteps: arrayStepsDone, numSteps },
     });
@@ -72,4 +72,4 @@ const updateCompletedSteps = (
   }
 };
 
-export default updateCompletedSteps;
+export default setCompletedSteps;
