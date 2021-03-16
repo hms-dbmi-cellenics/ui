@@ -112,14 +112,14 @@ describe('ContentWrapper', () => {
     expect(menus.at(3).props().disabled).toEqual(true);
   });
 
-  test('links are disabled if there is a pipeline run underway', () => {
+  test('View changes if there is a pipeline run underway', () => {
     const testStore = mockStore({
       notifications: {},
       experimentSettings: {
         pipelineStatus: {
           loading: false,
           error: false,
-          status: { pipeline: { running: true } },
+          status: { pipeline: { status: 'RUNNING' } },
         },
       },
     });
@@ -137,5 +137,8 @@ describe('ContentWrapper', () => {
 
     const menus = wrapper.find(Menu).children().find(Item);
     expect(menus.length).toEqual(4);
+
+    const pipelineRedirects = wrapper.find('PipelineRedirectToDataProcessing');
+    expect(pipelineRedirects.length).toEqual(1);
   });
 });

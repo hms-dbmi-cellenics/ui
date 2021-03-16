@@ -113,6 +113,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
             <CellSizeDistribution
+              id='cellSizeDistribution'
               experimentId={experimentId}
               filtering
               key={key}
@@ -393,7 +394,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             </Select>
 
             {steps[stepIdx].multiSample && (
-              <Button type='primary'
+              <Button
+                id='runFilterButton'
+                type='primary'
                 onClick={() => { pipelineRunHandler(steps[stepIdx].key) }}
                 disabled={!changesOutstanding || pipelineRunning}
                 style={{ marginLeft: '20px' }}
