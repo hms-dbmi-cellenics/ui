@@ -450,7 +450,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     <Button
                       type='primary'
                       onClick={() => {
-                        manualStepIdxChange(stepIdx);
+                        completeStepAt(steps.length - 1);
                       }}
                       disabled={nextDisabledByPipeline}
                     >
