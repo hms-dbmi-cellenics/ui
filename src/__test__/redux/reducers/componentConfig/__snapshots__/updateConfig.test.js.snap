@@ -48,6 +48,7 @@ Object {
       "spec": "1.0.0",
       "title": Object {
         "anchor": "start",
+        "dx": 10,
         "fontSize": 20,
         "text": "",
       },
@@ -126,6 +127,7 @@ Object {
       "thresholdGuideWidth": 1,
       "title": Object {
         "anchor": "start",
+        "dx": 10,
         "fontSize": 15,
         "text": "",
       },

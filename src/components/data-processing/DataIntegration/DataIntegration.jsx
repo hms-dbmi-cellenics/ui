@@ -14,7 +14,7 @@ import Loader from '../../Loader';
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
 
-import { loadCellSets, updateCellSetsClustering } from '../../../redux/actions/cellSets';
+import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
 
 import plot1Pic from '../../../../static/media/plot9.png';
 import plot2Pic from '../../../../static/media/plot10.png';
@@ -48,7 +48,7 @@ const DataIntegration = (props) => {
 
   const plots = {
     embedding: {
-      title: 'Sample plot',
+      title: 'Sample embedding',
       imgSrc: plot1Pic,
       plotUuid: 'dataIntegrationEmbedding',
       plotType: 'dataIntegrationEmbedding',
@@ -222,11 +222,13 @@ const DataIntegration = (props) => {
       }
     };
 
-    router.events.on('routeChangeStart', showPopupWhenUnsaved);
+    if (router.events) {
+      router.events.on('routeChangeStart', showPopupWhenUnsaved);
 
-    return () => {
-      router.events.off('routeChangeStart', showPopupWhenUnsaved);
-    };
+      return () => {
+        router.events.off('routeChangeStart', showPopupWhenUnsaved);
+      };
+    }
   }, [router.asPath, router.events]);
 
   const updatePlotWithChanges = (obj) => {
@@ -241,14 +243,6 @@ const DataIntegration = (props) => {
         <center>
           <Loader experimentId={experimentId} />
         </center>
-      );
-    }
-
-    if (selectedPlot === 'sample'
-      && !cellSets.loading
-      && filterCells(cellSets, config.selectedCellSet).length === 0) {
-      return (
-        <Empty description='Your project has only one sample.' />
       );
     }
 
@@ -294,7 +288,7 @@ const DataIntegration = (props) => {
         </Col>
 
         <Col span={5}>
-          <CalculationConfig experimentId={experimentId} />
+          <CalculationConfig experimentId={experimentId} data={plotData} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />

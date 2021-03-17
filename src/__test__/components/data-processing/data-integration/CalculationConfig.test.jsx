@@ -184,18 +184,4 @@ describe('Data Integration Calculation Config', () => {
         EXPERIMENT_SETTINGS_PROCESSING_SAVE,
       ]);
   });
-
-  it('displays the correct proportion of variation explained value', async () => {
-    const store = mockStore(storeState);
-
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} />
-      </Provider>,
-    );
-
-    const variationExplainedComponent = component.find('InputNumber');
-
-    expect(variationExplainedComponent.at(2).props().value).toEqual(60);
-  });
 });

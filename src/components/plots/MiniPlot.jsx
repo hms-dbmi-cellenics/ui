@@ -69,7 +69,7 @@ const MiniPlot = (props) => {
 MiniPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
-  plotFn: PropTypes.object.isRequired,
+  plotFn: PropTypes.func.isRequired,
   actions: PropTypes.bool.isRequired,
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -22,7 +22,6 @@ import {
 } from '@ant-design/icons';
 
 import _ from 'lodash';
-import data from './fake_new_data.json';
 
 import SeuratV4Options from './SeuratV4Options';
 
@@ -33,7 +32,7 @@ const { Text } = Typography;
 const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
-  const { experimentId } = props;
+  const { experimentId, data } = props;
   const FILTER_UUID = 'dataIntegration';
 
   const dispatch = useDispatch();
@@ -100,7 +99,7 @@ const CalculationConfig = (props) => {
   };
 
   const roundedVariationExplained = () => {
-    const variationExplained = data.slice(0, dimensionalityReduction.numPCs).reduce((acum, current) => acum + current.percentVariance, 0);
+    const variationExplained = data?.length ? data.slice(0, dimensionalityReduction.numPCs).reduce((acum, current) => acum + current.percentVariance, 0) : 0;
     const roundingPrecision = 2;
 
     return _.round(variationExplained * 100, roundingPrecision);
@@ -162,7 +161,7 @@ const CalculationConfig = (props) => {
             <Form.Item label='Number of Principal Components'>
               <InputNumber
                 value={numPCs}
-                max={data.length}
+                max={data?.length || 100}
                 min={0}
                 onChange={(value) => {
                   setChangesOutstanding(true);
@@ -227,8 +226,11 @@ const CalculationConfig = (props) => {
 
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  config: PropTypes.object.isRequired,
-  data: PropTypes.array.isRequired,
+  data: PropTypes.array,
+};
+
+CalculationConfig.defaultProps = {
+  data: [],
 };
 
 export default CalculationConfig;
