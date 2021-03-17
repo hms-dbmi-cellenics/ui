@@ -3,12 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import {
-<<<<<<< HEAD
   Select, Space, Button, Typography, Alert,
-  Progress, Row, Col, Carousel, Card, Modal
-=======
-  Select, Space, Button, Typography, Row, Col, Carousel, Card,
->>>>>>> master
+  Row, Col, Carousel, Card, Modal,
 } from 'antd';
 import {
   LeftOutlined,
