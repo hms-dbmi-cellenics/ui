@@ -3,18 +3,20 @@ import PropTypes from 'prop-types';
 
 const StepsIndicator = (props) => {
   const { allSteps, completedSteps, currentStep } = props;
-  let increment = 0;
-
+  const colors = {
+    notCompleted: '#d9d9d9', // gray
+    currentStep: '#cf1322', // red
+    completed: '#1890ff', // blue
+  };
   return (
     <>
-      {allSteps.map((step) => {
-        let color = '#1890ff';
-        if (increment === currentStep) {
-          color = '#cf1322';
-        } else if (increment > completedSteps - 1) {
-          color = '#d9d9d9';
+      {allSteps.map((step, index) => {
+        let color = colors.completed;
+        if (index === currentStep) {
+          color = colors.currentStep;
+        } else if (index > completedSteps - 1) {
+          color = colors.notCompleted;
         }
-        increment += 1;
         return (
           <svg width='18' height='8'>
             <rect width='15' height='8' style={{ fill: color }} />
