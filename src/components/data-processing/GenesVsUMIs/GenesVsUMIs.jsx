@@ -67,12 +67,12 @@ const GenesVsUMIs = (props) => {
   const plotData = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData);
 
   useEffect(() => {
-    const { plotUuid, plotType } = plots[selectedPlot];
-
-    if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    }
-  }, [selectedPlot]);
+    Object.values(plots).forEach((obj) => {
+      if (!config) {
+        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+      }
+    });
+  }, [experimentId]);
 
   useEffect(() => {
     if (config && plotData) {

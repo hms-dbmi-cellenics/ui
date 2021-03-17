@@ -195,16 +195,14 @@ const ConfigureEmbedding = (props) => {
   );
 
   useEffect(() => {
-    dispatch(loadCellSets(experimentId));
+    Object.values(plots).forEach((obj) => {
+      if (!config) {
+        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+      }
+    });
   }, [experimentId]);
 
   useEffect(() => {
-    const { plotUuid, plotType } = plots[selectedPlot];
-
-    if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    }
-
     // if we change a plot and the config is not saved yet
     if (outstandingChanges) {
       dispatch(savePlotConfig(experimentId, plots[selectedPlot].plotUuid));

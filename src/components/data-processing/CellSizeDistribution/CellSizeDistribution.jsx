@@ -13,8 +13,6 @@ import {
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import Loader from '../../Loader';
-import plot1Pic from '../../../../static/media/plot1.png';
-import plot2Pic from '../../../../static/media/plot2.png';
 
 import {
   updatePlotConfig,
@@ -75,12 +73,12 @@ const CellSizeDistribution = (props) => {
   const plotData = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData);
 
   useEffect(() => {
-    const { plotUuid, plotType } = plots[selectedPlot];
-
-    if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    }
-  }, [selectedPlot]);
+    Object.values(plots).forEach((obj) => {
+      if (!config) {
+        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+      }
+    });
+  }, [experimentId]);
 
   useEffect(() => {
     if (config && plotData) {

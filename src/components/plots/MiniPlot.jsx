@@ -48,8 +48,6 @@ const MiniPlot = (props) => {
     (state) => state.componentConfig[plotUuid]?.plotData,
   );
 
-  console.log(plotUuid);
-
   const renderPlot = () => {
     // Spinner for main window
     if (!config) {
