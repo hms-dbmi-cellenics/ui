@@ -9,7 +9,9 @@ import generateSpec from '../../utils/plotSpecs/generateCellSizeDistributionKnee
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 const CellSizeDistributionKneePlot = (props) => {
-  const { experimentId, config, plotData } = props;
+  const {
+    experimentId, config, plotData, actions,
+  } = props;
   const plotUuid = 'cellSizeDistributionKneePlot';
   const plotType = 'cellSizeDistributionKneePlot';
 
@@ -45,7 +47,7 @@ const CellSizeDistributionKneePlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -61,10 +63,15 @@ CellSizeDistributionKneePlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 CellSizeDistributionKneePlot.defaultProps = {
   plotData: null,
+  actions: true,
 };
 
 export default CellSizeDistributionKneePlot;

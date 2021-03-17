@@ -80,7 +80,7 @@ const generateSpec = (config, plotData) => ({
       orient: 'left',
       titlePadding: 5,
       zindex: 1,
-      title: { value: config.yAxisText },
+      title: { value: config.axes.yAxisText },
       titleFont: { value: config.fontStyle.font },
       labelFont: { value: config.fontStyle.font },
       titleFontSize: { value: config.axes.titleFontSize },

@@ -65,7 +65,7 @@ const generateSpec = (config, plotData) => ({
       titleFontSize: { value: config.axes.titleFontSize },
       labelFontSize: { value: config.axes.labelFontSize },
       offset: { value: config.axes.offset },
-      gridOpacity: { value: (config.transGrid / 20) },
+      gridOpacity: { value: (config.axes.gridOpacity / 20) },
     },
     {
       orient: 'left',

@@ -5,7 +5,7 @@ const generateSpec = (config, plotData) => {
   const generateStatus = `(datum.u < ${minUnknown}) ? 'low' : (datum.u >${minHigh}) ? 'high' : 'unknown'`;
   const coloringExpressionPlot = "(datum.bin1 < 8800) ? 'low' : (datum.bin1 >10800) ? 'high' : 'unknown'";
 
-  legend = !config.legend.enabled ? {} : [
+  legend = !config.legend.enabled ? null : [
     {
       fill: 'color',
       orient: config.legend.position,
@@ -183,7 +183,7 @@ const generateSpec = (config, plotData) => {
       text: { value: config.title.text },
       anchor: { value: config.title.anchor },
       font: { value: config.fontStyle.font },
-      dx: 10,
+      dx: { value: config.title.dx },
       fontSize: { value: config.title.fontSize },
     },
   };

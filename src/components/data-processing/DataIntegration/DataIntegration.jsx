@@ -2,7 +2,6 @@ import React, {
   useState, useEffect, useCallback,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import ReactResizeDetector from 'react-resize-detector';
 import {
   Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert,
 } from 'antd';

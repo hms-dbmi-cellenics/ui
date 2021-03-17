@@ -38,6 +38,14 @@ const FrequencyPlot = (props) => {
 FrequencyPlot.propTypes = {
   config: PropTypes.object.isRequired,
   experimentId: PropTypes.string.isRequired,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
+};
+
+FrequencyPlot.defaultProps = {
+  actions: true,
 };
 
 export default FrequencyPlot;

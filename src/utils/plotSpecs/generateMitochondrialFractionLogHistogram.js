@@ -2,7 +2,7 @@ const generateSpec = (config, plotData) => {
   let legend = null;
   const deadOrAlive = '(datum.bin1 <= 2.5) ? \'Dead\' : (datum.bin1 >=3.5) ? \'Live\' : \'Unknown\'';
 
-  legend = !config.legend.enabled ? {} : [
+  legend = !config.legend.enabled ? null : [
     {
       fill: 'color',
       orient: config.legend.position,

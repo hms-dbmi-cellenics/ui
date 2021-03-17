@@ -9,7 +9,9 @@ import generateSpec from '../../utils/plotSpecs/generateFeaturesVsUMIsHistogram'
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 const FeaturesVsUMIsHistogram = (props) => {
-  const { experimentId, config, plotData } = props;
+  const {
+    experimentId, config, plotData, actions,
+  } = props;
   const plotUuid = 'featuresVsUMIsHistogram';
   const plotType = 'featuresVsUMIsHistogram';
 
@@ -45,7 +47,7 @@ const FeaturesVsUMIsHistogram = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -61,10 +63,15 @@ FeaturesVsUMIsHistogram.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 FeaturesVsUMIsHistogram.defaultProps = {
   plotData: null,
+  actions: true,
 };
 
 export default FeaturesVsUMIsHistogram;

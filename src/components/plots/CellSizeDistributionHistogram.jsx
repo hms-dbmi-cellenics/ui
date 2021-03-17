@@ -9,7 +9,9 @@ import generateSpec from '../../utils/plotSpecs/generateCellSizeDistributionHist
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 const CellSizeDistributionHistogram = (props) => {
-  const { experimentId, config, plotData } = props;
+  const {
+    experimentId, config, plotData, actions,
+  } = props;
   const plotUuid = 'cellSizeDistributionHistogram';
   const plotType = 'cellSizeDistributionHistogram';
 
@@ -45,7 +47,7 @@ const CellSizeDistributionHistogram = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -61,10 +63,15 @@ CellSizeDistributionHistogram.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 CellSizeDistributionHistogram.defaultProps = {
   plotData: null,
+  actions: true,
 };
 
 export default CellSizeDistributionHistogram;

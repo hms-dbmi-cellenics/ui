@@ -9,7 +9,9 @@ import generateSpec from '../../utils/plotSpecs/generateFeaturesVsUMIsScatterplo
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 const FeaturesVsUMIsScatterplot = (props) => {
-  const { experimentId, config, plotData } = props;
+  const {
+    experimentId, config, plotData, actions,
+  } = props;
   const plotUuid = 'featuresVsUMIsScatterplot';
   const plotType = 'featuresVsUMIsScatterplot';
 
@@ -45,7 +47,7 @@ const FeaturesVsUMIsScatterplot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -61,10 +63,15 @@ FeaturesVsUMIsScatterplot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 FeaturesVsUMIsScatterplot.defaultProps = {
   plotData: null,
+  actions: true,
 };
 
 export default FeaturesVsUMIsScatterplot;

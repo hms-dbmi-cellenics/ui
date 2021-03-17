@@ -371,6 +371,7 @@ const mitochondrialFractionHistogram = {
   title: {
     ...titleBaseState,
     fontSize: 20,
+    dx: 0,
   },
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
@@ -400,6 +401,7 @@ const mitochondrialFractionLogHistogram = {
   title: {
     ...titleBaseState,
     fontSize: 20,
+    dx: 0,
   },
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,

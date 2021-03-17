@@ -26,6 +26,7 @@ import CellSizeDistributionHistogram from '../../plots/CellSizeDistributionHisto
 import CellSizeDistributionKneePlot from '../../plots/CellSizeDistributionKneePlot';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
+import MiniPlot from '../../plots/MiniPlot';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -58,17 +59,15 @@ const CellSizeDistribution = (props) => {
   const plots = {
     histogram: {
       title: 'Histogram',
-      imgSrc: plot1Pic,
       plotUuid: 'cellSizeDistributionHistogram',
       plotType: 'cellSizeDistributionHistogram',
-      plot: (config, plotData) => (<CellSizeDistributionHistogram experimentId={experimentId} config={config} plotData={plotData} />),
+      plot: (config, plotData, actions) => (<CellSizeDistributionHistogram experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
     },
     kneePlot: {
       title: 'Knee Plot',
-      imgSrc: plot2Pic,
       plotUuid: 'cellSizeDistributionKneePlot',
       plotType: 'cellSizeDistributionKneePlot',
-      plot: (config, plotData) => (<CellSizeDistributionKneePlot experimentId={experimentId} config={config} plotData={plotData} />),
+      plot: (config, plotData, actions) => (<CellSizeDistributionKneePlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
     },
   };
 
@@ -139,26 +138,21 @@ const CellSizeDistribution = (props) => {
             <Tooltip title='The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). Look for bimodal distribution to set the cut-off.'>
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
-            {Object.entries(plots).map(([key, option]) => (
+            {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'
                 key={key}
                 onClick={() => setSelectedPlot(key)}
                 style={{
-                  padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
+                  margin: 0,
+                  backgroundColor: 'transparent',
+                  align: 'center',
+                  padding: '8px',
+                  border: '1px solid #000',
+                  cursor: 'pointer',
                 }}
               >
-                <img
-                  alt={option.title}
-                  src={option.imgSrc}
-                  style={{
-                    height: '100px',
-                    width: '100px',
-                    align: 'center',
-                    padding: '8px',
-                    border: '1px solid #000',
-                  }}
-                />
+                <MiniPlot experimentId={experimentId} plotUuid={plotObj.plotUuid} plotFn={plotObj.plot} actions={false} />
               </button>
 
             ))}

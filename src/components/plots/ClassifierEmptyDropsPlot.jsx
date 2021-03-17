@@ -9,7 +9,9 @@ import generateSpec from '../../utils/plotSpecs/generateClassifierEmptyDropsPlot
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 const ClassifierEmptyDropsPlot = (props) => {
-  const { experimentId, config, plotData } = props;
+  const {
+    experimentId, config, plotData, actions,
+  } = props;
   const plotUuid = 'classifierEmptyDropsPlot';
   const plotType = 'classifierEmptyDropsPlot';
 
@@ -42,7 +44,7 @@ const ClassifierEmptyDropsPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -58,9 +60,14 @@ ClassifierEmptyDropsPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 ClassifierEmptyDropsPlot.defaultProps = {
+  actions: true,
   plotData: null,
 };
 

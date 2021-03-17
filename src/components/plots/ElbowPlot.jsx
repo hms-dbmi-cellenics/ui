@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 const ElbowPlot = (props) => {
   const {
-    config, plotData, actions,
+    experimentId, config, plotData, actions,
   } = props;
 
   const generateSpec = () => ({
@@ -133,6 +133,14 @@ ElbowPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array.isRequired,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
+};
+
+ElbowPlot.defaultProps = {
+  actions: true,
 };
 
 export default ElbowPlot;

@@ -11,16 +11,19 @@ const getMiniaturizedConfig = (config) => {
       enabled: false,
     },
     axes: {
-      titleFontSize: 5,
-      labelFontSize: 5,
+      titleFontSize: 1,
+      labelFontSize: 1,
     },
     dimensions: {
-      width: 120,
-      height: 120,
+      width: 92,
+      height: 92,
     },
     title: {},
     marker: {
       size: 1,
+    },
+    label: {
+      enabled: false,
     },
   };
 

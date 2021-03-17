@@ -82,16 +82,19 @@ const CategoricalEmbeddingPlot = (props) => {
   );
 };
 
-CategoricalEmbeddingPlot.defaultProps = {
-  actions: true,
-  plotData: null,
-};
-
 CategoricalEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
-  actions: PropTypes.bool,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
   plotData: PropTypes.array,
+};
+
+CategoricalEmbeddingPlot.defaultProps = {
+  actions: true,
+  plotData: null,
 };
 
 export default CategoricalEmbeddingPlot;
