@@ -29,6 +29,13 @@ const Classifier = (props) => {
   const plotUuid = 'classifierEmptyDropsPlot';
   const plotType = 'classifierEmptyDropsPlot';
 
+  const allowedPlotActions = {
+    export: true,
+    compiled: false,
+    source: false,
+    editor: false,
+  };
+
   const dispatch = useDispatch();
 
   const debounceSave = useCallback(_.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), []);
@@ -53,7 +60,7 @@ const Classifier = (props) => {
     }
   }, [config]);
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Plot Dimensions',
       controls: ['dimensions'],
@@ -83,7 +90,7 @@ const Classifier = (props) => {
     }
 
     if (config && plotData) {
-      return <ClassifierEmptyDropsPlot experimentId={experimentId} config={config} plotData={plotData} />;
+      return <ClassifierEmptyDropsPlot experimentId={experimentId} config={config} plotData={plotData} actions={allowedPlotActions} />;
     }
   };
 
@@ -108,7 +115,7 @@ const Classifier = (props) => {
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} />
             </Panel>
           </Collapse>
         </Col>

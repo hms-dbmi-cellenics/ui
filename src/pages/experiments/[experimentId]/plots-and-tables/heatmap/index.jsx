@@ -167,7 +167,7 @@ const HeatmapPlot = ({ experimentId }) => {
     }));
   };
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Main Schema',
       controls: ['dimensions'],
@@ -223,7 +223,7 @@ const HeatmapPlot = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} renderExtraPanels={renderExtraPanels} defaultActiveKey={['5']} />
+            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} renderExtraPanels={renderExtraPanels} defaultActiveKey={['5']} />
           </Space>
         </Col>
       </Row>

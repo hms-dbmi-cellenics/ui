@@ -31,10 +31,19 @@ const MitochondrialContent = (props) => {
 
   const dispatch = useDispatch();
 
-  const [selectedPlot, setSelectedPlot] = useState('histogram');
-  const [plot, setPlot] = useState(false);
+  const allowedPlotActions = {
+    export: true,
+    compiled: false,
+    source: false,
+    editor: false,
+  };
 
-  const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+  const [selectedPlot, setSelectedPlot] = useState('histogram');
+  const [plot, setPlot] = useState(null);
+
+  const debounceSave = useCallback(
+    _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
@@ -46,22 +55,40 @@ const MitochondrialContent = (props) => {
       title: 'Mitochondrial Fraction',
       plotUuid: 'mitochondrialFractionHistogram',
       plotType: 'mitochondrialFractionHistogram',
-      plot: (config, plotData, actions) => (<MitochondrialFractionHistogram experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <MitochondrialFractionHistogram
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
     logHistogram: {
       title: 'Mitochondrial Fraction (Log)',
       plotUuid: 'mitochondrialFractionLogHistogram',
       plotType: 'mitochondrialFractionLogHistogram',
-      plot: (config, plotData, actions) => (<MitochondrialFractionLogHistogram experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <MitochondrialFractionLogHistogram
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
   };
 
-  const config = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config);
+  const config = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
   const expConfig = useSelector(
     (state) => state.experimentSettings.processing.mitochondrialContent[sampleId]?.filterSettings
       || state.experimentSettings.processing.mitochondrialContent.filterSettings,
   );
-  const plotData = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData);
+  const plotData = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+  );
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
@@ -75,11 +102,11 @@ const MitochondrialContent = (props) => {
     if (config && plotData && expConfig) {
       const newConfig = _.clone(config);
       _.merge(newConfig, expConfig);
-      setPlot(plots[selectedPlot].plot(newConfig, plotData));
+      setPlot(plots[selectedPlot].plot(newConfig, plotData, allowedPlotActions));
     }
   }, [expConfig, config, plotData]);
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Legend',
       controls: ['legend'],
@@ -143,7 +170,12 @@ const MitochondrialContent = (props) => {
                   cursor: 'pointer',
                 }}
               >
-                <MiniPlot experimentId={experimentId} plotUuid={plotObj.plotUuid} plotFn={plotObj.plot} actions={false} />
+                <MiniPlot
+                  experimentId={experimentId}
+                  plotUuid={plotObj.plotUuid}
+                  plotFn={plotObj.plot}
+                  actions={false}
+                />
               </button>
 
             ))}
@@ -153,11 +185,19 @@ const MitochondrialContent = (props) => {
         <Col span={6}>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
+              <CalculationConfig
+                experimentId={experimentId}
+                sampleId={sampleId}
+                sampleIds={sampleIds}
+              />
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>

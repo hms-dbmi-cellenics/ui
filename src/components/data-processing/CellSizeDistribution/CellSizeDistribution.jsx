@@ -33,10 +33,17 @@ const CellSizeDistribution = (props) => {
     experimentId, sampleId, sampleIds,
   } = props;
 
+  const allowedPlotActions = {
+    export: true,
+    compiled: false,
+    source: false,
+    editor: false,
+  };
+
   const dispatch = useDispatch();
 
   const [selectedPlot, setSelectedPlot] = useState('histogram');
-  const [plot, setPlot] = useState(false);
+  const [plot, setPlot] = useState(null);
 
   const listData = [
     'Estimated number of cells 8672',
@@ -47,7 +54,9 @@ const CellSizeDistribution = (props) => {
     'Median UMI counts per cell   4,064',
   ];
 
-  const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
@@ -59,22 +68,40 @@ const CellSizeDistribution = (props) => {
       title: 'Histogram',
       plotUuid: 'cellSizeDistributionHistogram',
       plotType: 'cellSizeDistributionHistogram',
-      plot: (config, plotData, actions) => (<CellSizeDistributionHistogram experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <CellSizeDistributionHistogram
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
     kneePlot: {
       title: 'Knee Plot',
       plotUuid: 'cellSizeDistributionKneePlot',
       plotType: 'cellSizeDistributionKneePlot',
-      plot: (config, plotData, actions) => (<CellSizeDistributionKneePlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <CellSizeDistributionKneePlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
   };
 
-  const config = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config);
+  const config = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
   const expConfig = useSelector(
     (state) => state.experimentSettings.processing.cellSizeDistribution[sampleId]?.filterSettings
       || state.experimentSettings.processing.cellSizeDistribution.filterSettings,
   );
-  const plotData = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData);
+  const plotData = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+  );
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
@@ -88,11 +115,11 @@ const CellSizeDistribution = (props) => {
     if (config && plotData && expConfig) {
       const newConfig = _.clone(config);
       _.merge(newConfig, expConfig);
-      setPlot(plots[selectedPlot].plot(newConfig, plotData));
+      setPlot(plots[selectedPlot].plot(newConfig, plotData, allowedPlotActions));
     }
   }, [expConfig, config, plotData]);
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Legend',
       controls: ['legend'],
@@ -156,7 +183,12 @@ const CellSizeDistribution = (props) => {
                   cursor: 'pointer',
                 }}
               >
-                <MiniPlot experimentId={experimentId} plotUuid={plotObj.plotUuid} plotFn={plotObj.plot} actions={false} />
+                <MiniPlot
+                  experimentId={experimentId}
+                  plotUuid={plotObj.plotUuid}
+                  plotFn={plotObj.plot}
+                  actions={false}
+                />
               </button>
 
             ))}
@@ -171,11 +203,20 @@ const CellSizeDistribution = (props) => {
         <Col span={5}>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} />
+              <CalculationConfig
+                experimentId={experimentId}
+                sampleId={sampleId}
+                plotType='bin step'
+                sampleIds={sampleIds}
+              />
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>

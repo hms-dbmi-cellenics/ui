@@ -34,12 +34,14 @@ const { Panel } = Collapse;
 const DataIntegration = (props) => {
   const { experimentId } = props;
   const [selectedPlot, setSelectedPlot] = useState('embedding');
-  const [plot, setPlot] = useState(false);
+  const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
 
   const debouncedCellSetClustering = useCallback(
     _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
@@ -52,25 +54,46 @@ const DataIntegration = (props) => {
       imgSrc: plot1Pic,
       plotUuid: 'dataIntegrationEmbedding',
       plotType: 'dataIntegrationEmbedding',
-      plot: (config, plotData, actions) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <CategoricalEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
     frequency: {
       title: 'Frequency plot',
       imgSrc: plot1Pic,
       plotUuid: 'dataIntegrationFrequency',
       plotType: 'dataIntegrationFrequency',
-      plot: (config, plotData, actions) => (<FrequencyPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <FrequencyPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
     elbow: {
       title: 'Elbow plot',
       imgSrc: plot2Pic,
       plotUuid: 'dataIntegrationElbow',
       plotType: 'dataIntegrationElbow',
-      plot: (config, plotData, actions) => (<ElbowPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <ElbowPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
   };
 
-  const plotSpecificStyling = {
+  const plotSpecificStylingControl = {
     embedding: [
       {
         panelTitle: 'Colour Inversion',
@@ -129,7 +152,7 @@ const DataIntegration = (props) => {
     ],
   };
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -148,10 +171,12 @@ const DataIntegration = (props) => {
       panelTitle: 'Axes and Margins',
       controls: ['axes'],
     },
-    ...plotSpecificStyling[selectedPlot],
+    ...plotSpecificStylingControl[selectedPlot],
   ];
 
-  const outstandingChanges = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges);
+  const outstandingChanges = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges,
+  );
 
   const config = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
@@ -183,12 +208,18 @@ const DataIntegration = (props) => {
       return;
     }
 
-    if (!cellSets.loading && !cellSets.error && !cellSets.updateCellSetsClustering && config && plotData) {
+    if (!cellSets.loading
+      && !cellSets.error
+      && !cellSets.updateCellSetsClustering
+      && config
+      && plotData) {
       setPlot(plots[selectedPlot].plot(config, plotData, true));
       if (!config.selectedCellSet) { return; }
 
       const propertiesArray = Object.keys(cellSets.properties);
-      const cellSetClusteringLength = propertiesArray.filter((cellSet) => cellSet === config.selectedCellSet).length;
+      const cellSetClusteringLength = propertiesArray.filter(
+        (cellSet) => cellSet === config.selectedCellSet,
+      ).length;
 
       if (!cellSetClusteringLength) {
         debouncedCellSetClustering(0.5);
@@ -281,18 +312,27 @@ const DataIntegration = (props) => {
                   cursor: 'pointer',
                 }}
               >
-                <MiniPlot experimentId={experimentId} plotUuid={plotObj.plotUuid} plotFn={plotObj.plot} actions={false} />
+                <MiniPlot
+                  experimentId={experimentId}
+                  plotUuid={plotObj.plotUuid}
+                  plotFn={plotObj.plot}
+                  actions={false}
+                />
               </button>
             ))}
           </Space>
         </Col>
 
         <Col span={5}>
-          <CalculationConfig experimentId={experimentId} data={plotData} />
+          <CalculationConfig experimentId={experimentId} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>

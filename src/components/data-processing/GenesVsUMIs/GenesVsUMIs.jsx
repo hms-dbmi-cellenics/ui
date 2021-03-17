@@ -4,8 +4,6 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
   Collapse, Row, Col, Space, Button, Tooltip,
-  List,
-  InputNumber, Select, Slider, Form,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -36,10 +34,19 @@ const GenesVsUMIs = (props) => {
 
   const dispatch = useDispatch();
 
-  const [selectedPlot, setSelectedPlot] = useState('histogram');
-  const [plot, setPlot] = useState(false);
+  const allowedPlotActions = {
+    export: true,
+    compiled: false,
+    source: false,
+    editor: false,
+  };
 
-  const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+  const [selectedPlot, setSelectedPlot] = useState('histogram');
+  const [plot, setPlot] = useState(null);
+
+  const debounceSave = useCallback(
+    _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
@@ -52,23 +59,41 @@ const GenesVsUMIs = (props) => {
       imgSrc: plot1Pic,
       plotUuid: 'featuresVsUMIsHistogram',
       plotType: 'featuresVsUMIsHistogram',
-      plot: (config, plotData, actions) => (<FeaturesVsUMIsHistogram experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <FeaturesVsUMIsHistogram
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
     scatterplot: {
       title: 'Knee Plot',
       imgSrc: plot2Pic,
       plotUuid: 'featuresVsUMIsScatterplot',
       plotType: 'featuresVsUMIsScatterplot',
-      plot: (config, plotData, actions) => (<FeaturesVsUMIsScatterplot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <FeaturesVsUMIsScatterplot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
   };
 
-  const config = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config);
+  const config = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
   const expConfig = useSelector(
     (state) => state.experimentSettings.processing.numGenesVsNumUmis[sampleId]?.filterSettings
       || state.experimentSettings.processing.numGenesVsNumUmis.filterSettings,
   );
-  const plotData = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData);
+  const plotData = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+  );
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
@@ -82,11 +107,11 @@ const GenesVsUMIs = (props) => {
     if (config && plotData) {
       const newConfig = _.clone(config);
       _.merge(newConfig, expConfig);
-      setPlot(plots[selectedPlot].plot(config, plotData));
+      setPlot(plots[selectedPlot].plot(config, plotData, allowedPlotActions));
     }
   }, [config, plotData]);
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Plot Dimensions',
       controls: ['dimensions'],
@@ -146,7 +171,12 @@ const GenesVsUMIs = (props) => {
                   cursor: 'pointer',
                 }}
               >
-                <MiniPlot experimentId={experimentId} plotUuid={plotObj.plotUuid} plotFn={plotObj.plot} actions={false} />
+                <MiniPlot
+                  experimentId={experimentId}
+                  plotUuid={plotObj.plotUuid}
+                  plotFn={plotObj.plot}
+                  actions={false}
+                />
               </button>
             ))}
           </Space>
@@ -154,11 +184,19 @@ const GenesVsUMIs = (props) => {
         <Col span={5}>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
+              <CalculationConfig
+                experimentId={experimentId}
+                sampleId={sampleId}
+                sampleIds={sampleIds}
+              />
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>

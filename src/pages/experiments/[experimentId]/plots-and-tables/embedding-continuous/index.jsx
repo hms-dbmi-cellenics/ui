@@ -43,7 +43,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, updateField));
   };
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -132,7 +132,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} renderExtraPanels={renderExtraPanels} />
+            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} renderExtraPanels={renderExtraPanels} />
           </Space>
         </Col>
       </Row>

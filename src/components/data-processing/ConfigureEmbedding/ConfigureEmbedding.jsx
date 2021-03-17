@@ -25,7 +25,7 @@ import {
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import { loadCellSets, updateCellSetsClustering } from '../../../redux/actions/cellSets';
+import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
 import Loader from '../../Loader';
 
 const { Panel } = Collapse;
@@ -33,12 +33,14 @@ const { Panel } = Collapse;
 const ConfigureEmbedding = (props) => {
   const { experimentId } = props;
   const [selectedPlot, setSelectedPlot] = useState('sample');
-  const [plot, setPlot] = useState(false);
+  const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
 
   const debouncedCellSetClustering = useCallback(
     _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
@@ -50,30 +52,58 @@ const ConfigureEmbedding = (props) => {
       title: 'Colored by Samples',
       plotUuid: 'embeddingPreviewBySample',
       plotType: 'embeddingPreviewBySample',
-      plot: (config, plotData, actions) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <CategoricalEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
 
     cellCluster: {
       title: 'Colored by CellSets',
       plotUuid: 'embeddingPreviewByCellSets',
       plotType: 'embeddingPreviewByCellSets',
-      plot: (config, plotData, actions) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <CategoricalEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
     mitochondrialContent: {
       title: 'Mitochondrial fraction reads',
       plotUuid: 'embeddingPreviewMitochondrialContent',
       plotType: 'embeddingPreviewMitochondrialContent',
-      plot: (config, plotData, actions) => (<MitochondrialContentPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <MitochondrialContentPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
     doubletScores: {
       title: 'Cell doublet score',
       plotUuid: 'embeddingPreviewDoubletScore',
       plotType: 'embeddingPreviewDoubletScore',
-      plot: (config, plotData, actions) => (<DoubletScoresPlot experimentId={experimentId} config={config} plotData={plotData} actions={actions} />),
+      plot: (config, plotData, actions) => (
+        <DoubletScoresPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
   };
 
-  const plotSpecificStyling = {
+  const plotSpecificStylingControl = {
     sample: [
       {
         panelTitle: 'Colour Inversion',
@@ -162,7 +192,7 @@ const ConfigureEmbedding = (props) => {
     ],
   };
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -181,10 +211,12 @@ const ConfigureEmbedding = (props) => {
       panelTitle: 'Axes and Margins',
       controls: ['axes'],
     },
-    ...plotSpecificStyling[selectedPlot],
+    ...plotSpecificStylingControl[selectedPlot],
   ];
 
-  const outstandingChanges = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges);
+  const outstandingChanges = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges,
+  );
 
   const config = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
@@ -216,12 +248,18 @@ const ConfigureEmbedding = (props) => {
       return;
     }
 
-    if (!cellSets.loading && !cellSets.error && !cellSets.updateCellSetsClustering && config && plotData) {
+    if (!cellSets.loading
+      && !cellSets.error
+      && !cellSets.updateCellSetsClustering
+      && config
+      && plotData) {
       setPlot(plots[selectedPlot].plot(config, plotData));
       if (!config.selectedCellSet) { return; }
 
       const propertiesArray = Object.keys(cellSets.properties);
-      const cellSetClusteringLength = propertiesArray.filter((cellSet) => cellSet === config.selectedCellSet).length;
+      const cellSetClusteringLength = propertiesArray.filter(
+        (cellSet) => cellSet === config.selectedCellSet,
+      ).length;
 
       if (!cellSetClusteringLength) {
         debouncedCellSetClustering(0.5);
@@ -320,7 +358,12 @@ const ConfigureEmbedding = (props) => {
                   cursor: 'pointer',
                 }}
               >
-                <MiniPlot experimentId={experimentId} plotUuid={plotObj.plotUuid} plotFn={plotObj.plot} actions={false} />
+                <MiniPlot
+                  experimentId={experimentId}
+                  plotUuid={plotObj.plotUuid}
+                  plotFn={plotObj.plot}
+                  actions={false}
+                />
               </button>
 
             ))}
@@ -332,7 +375,11 @@ const ConfigureEmbedding = (props) => {
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>

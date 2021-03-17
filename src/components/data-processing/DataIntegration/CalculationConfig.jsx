@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -36,12 +36,8 @@ const CalculationConfig = (props) => {
   const FILTER_UUID = 'dataIntegration';
 
   const dispatch = useDispatch();
-  const dataIntegration = useSelector(
-    (state) => state.experimentSettings.processing.dataIntegration?.dataIntegration,
-  );
-
-  const dimensionalityReduction = useSelector(
-    (state) => state.experimentSettings.processing.dataIntegration?.dimensionalityReduction,
+  const { dataIntegration, dimensionalityReduction } = useSelector(
+    (state) => state.experimentSettings.processing.dataIntegration,
   );
 
   const methods = [

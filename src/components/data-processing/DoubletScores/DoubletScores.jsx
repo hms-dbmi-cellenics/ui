@@ -31,6 +31,13 @@ const DoubletScores = (props) => {
 
   const dispatch = useDispatch();
 
+  const allowedPlotActions = {
+    export: true,
+    compiled: false,
+    source: false,
+    editor: false,
+  };
+
   const debounceSave = useCallback(_.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), []);
 
   const updatePlotWithChanges = (obj) => {
@@ -53,7 +60,7 @@ const DoubletScores = (props) => {
     }
   }, [config]);
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Plot Dimensions',
       controls: ['dimensions'],
@@ -83,7 +90,7 @@ const DoubletScores = (props) => {
     }
 
     if (config && plotData) {
-      return <DoubletScoreHistogram experimentId={experimentId} config={config} plotData={plotData} />;
+      return <DoubletScoreHistogram experimentId={experimentId} config={config} plotData={plotData} actions={allowedPlotActions} />;
     }
   };
 
@@ -107,7 +114,7 @@ const DoubletScores = (props) => {
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} />
             </Panel>
           </Collapse>
         </Col>
