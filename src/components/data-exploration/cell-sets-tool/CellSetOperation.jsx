@@ -25,10 +25,11 @@ const CellSetOperation = (props) => {
       }}
       onCancel={() => {
         onCancel();
+        setPopoverKey(Math.random());
       }}
       key={popoverKey}
       message={helpTitle}
-      trigger='hover'
+      trigger='click'
     >
       <Button type='dashed' icon={icon} size='small' />
     </ClusterPopover>
