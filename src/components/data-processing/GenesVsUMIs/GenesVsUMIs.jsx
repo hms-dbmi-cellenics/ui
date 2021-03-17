@@ -9,8 +9,6 @@ import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
 import Loader from '../../Loader';
-import plot1Pic from '../../../../static/media/plot7.png';
-import plot2Pic from '../../../../static/media/plot8.png';
 
 import {
   updatePlotConfig,
@@ -56,7 +54,6 @@ const GenesVsUMIs = (props) => {
   const plots = {
     histogram: {
       title: 'Histogram',
-      imgSrc: plot1Pic,
       plotUuid: 'featuresVsUMIsHistogram',
       plotType: 'featuresVsUMIsHistogram',
       plot: (config, plotData, actions) => (
@@ -70,7 +67,6 @@ const GenesVsUMIs = (props) => {
     },
     scatterplot: {
       title: 'Knee Plot',
-      imgSrc: plot2Pic,
       plotUuid: 'featuresVsUMIsScatterplot',
       plotType: 'featuresVsUMIsScatterplot',
       plot: (config, plotData, actions) => (

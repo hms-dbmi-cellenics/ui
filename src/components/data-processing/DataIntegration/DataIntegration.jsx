@@ -16,8 +16,6 @@ import MiniPlot from '../../plots/MiniPlot';
 
 import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
 
-import plot1Pic from '../../../../static/media/plot9.png';
-import plot2Pic from '../../../../static/media/plot10.png';
 import PlotStyling from '../../plots/styling/PlotStyling';
 
 import {
@@ -51,7 +49,6 @@ const DataIntegration = (props) => {
   const plots = {
     embedding: {
       title: 'Sample embedding',
-      imgSrc: plot1Pic,
       plotUuid: 'dataIntegrationEmbedding',
       plotType: 'dataIntegrationEmbedding',
       plot: (config, plotData, actions) => (
@@ -65,7 +62,6 @@ const DataIntegration = (props) => {
     },
     frequency: {
       title: 'Frequency plot',
-      imgSrc: plot1Pic,
       plotUuid: 'dataIntegrationFrequency',
       plotType: 'dataIntegrationFrequency',
       plot: (config, plotData, actions) => (
@@ -79,7 +75,6 @@ const DataIntegration = (props) => {
     },
     elbow: {
       title: 'Elbow plot',
-      imgSrc: plot2Pic,
       plotUuid: 'dataIntegrationElbow',
       plotType: 'dataIntegrationElbow',
       plot: (config, plotData, actions) => (
