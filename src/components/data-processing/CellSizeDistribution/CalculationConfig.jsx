@@ -70,17 +70,29 @@ const CalculationConfig = (props) => {
   return (
     <>
       <Space direction='vertical' style={{ width: '100%' }} />
+      {displayIndividualChangesWarning && (
+        <Form.Item>
+          <Alert
+            message='Your changes are only applied to this sample. To apply it to all other samples, click Apply to all samples.'
+            type='warning'
+            showIcon
+          />
+        </Form.Item>
+      )}
 
-      <Radio.Group defaultValue={1} style={{ marginTop: '5px', marginBottom: '30px' }}>
-        <Radio value={1}>
+      <Radio.Group
+        defaultValue='automatic'
+        style={{ marginTop: '5px', marginBottom: '30px' }}
+      >
+        <Radio value='automatic'>
           Automatic
         </Radio>
-        <Radio value={2}>
+        <Radio value='manual'>
           Manual
         </Radio>
       </Radio.Group>
 
-      <Form.Item label='Min cell size:'>
+      <Form.Item disabled label='Min cell size:'>
         <InputNumber
           value={config.minCellSize}
           collapsible={!filtering ? 'disabled' : 'header'}
@@ -96,16 +108,7 @@ const CalculationConfig = (props) => {
         type={plotType}
         max={400}
       />
-      <Button onClick={updateAllSettings}>Apply settings to all samples</Button>
-      {displayIndividualChangesWarning && (
-        <Form.Item>
-          <Alert
-            message='Your changes are only applied to this sample. To apply it to all other samples, click Apply settings to all samples.'
-            type='warning'
-            showIcon
-          />
-        </Form.Item>
-      )}
+      <Button onClick={updateAllSettings}>Apply to all samples</Button>
     </>
   );
 };

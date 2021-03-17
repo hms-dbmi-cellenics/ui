@@ -22,7 +22,7 @@ const defaultTableState = {
   pagination: {
     current: 1, pageSize: 50, showSizeChanger: true, total: 0,
   },
-  sorter: { field: 'qval', columnKey: 'qval', order: 'ascend' },
+  sorter: { field: 'p_val_adj', columnKey: 'p_val_adj', order: 'ascend' },
 };
 
 describe('loadDifferentialExpression action', () => {
@@ -61,7 +61,7 @@ describe('loadDifferentialExpression action', () => {
       experimentId: '1234',
     }, {
       pagination: {
-        limit: 50, offset: 0, orderBy: 'qval', orderDirection: 'ASC', responseKey: 0,
+        limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
       },
     });
     expect(loadingAction).toMatchSnapshot();
@@ -86,22 +86,22 @@ describe('loadDifferentialExpression action', () => {
               body: JSON.stringify({
                 rows: [
                   {
-                    pval: 1.16, qval: 2.16, log2fc: 3.45, gene_names: 'A',
+                    p_val: 1.16, p_val_adj: 2.16, avg_log2FC: 3.45, gene_names: 'A',
                   },
                   {
-                    pval: 2.16, qval: 3.16, log2fc: 4.45, gene_names: 'B',
+                    p_val: 2.16, p_val_adj: 3.16, avg_log2FC: 4.45, gene_names: 'B',
                   },
                   {
-                    pval: 3.16, qval: 4.16, log2fc: 5.45, gene_names: 'C',
+                    p_val: 3.16, p_val_adj: 4.16, avg_log2FC: 5.45, gene_names: 'C',
                   },
                   {
-                    pval: 4.16, qval: 5.16, log2fc: 6.45, gene_names: 'D',
+                    p_val: 4.16, p_val_adj: 5.16, avg_log2FC: 6.45, gene_names: 'D',
                   },
                   {
-                    pval: 5.16, qval: 6.16, log2fc: 7.45, gene_names: 'E',
+                    p_val: 5.16, p_val_adj: 6.16, avg_log2FC: 7.45, gene_names: 'E',
                   },
                   {
-                    pval: 6.16, qval: 7.16, log2fc: 8.45, gene_names: 'F',
+                    p_val: 6.16, p_val_adj: 7.16, avg_log2FC: 8.45, gene_names: 'F',
                   },
                 ],
               }),
@@ -129,7 +129,7 @@ describe('loadDifferentialExpression action', () => {
       experimentId: '1234',
     }, {
       pagination: {
-        limit: 50, offset: 0, orderBy: 'qval', orderDirection: 'ASC', responseKey: 0,
+        limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
       },
     });
 
