@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Button,
+  Button, Tooltip,
 } from 'antd';
 
 import ClusterPopover from '../embedding/ClusterPopover';
@@ -30,8 +30,11 @@ const CellSetOperation = (props) => {
       key={popoverKey}
       message={helpTitle}
       trigger='click'
+
     >
-      <Button type='dashed' icon={icon} size='small' />
+      <Tooltip title={helpTitle} trigger='click hover'>
+        <Button type='dashed' icon={icon} size='small' />
+      </Tooltip>
     </ClusterPopover>
   );
 };
