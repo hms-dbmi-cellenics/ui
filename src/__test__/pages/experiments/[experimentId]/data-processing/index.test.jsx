@@ -16,6 +16,8 @@ import { EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING } from '../../../../../redu
 
 configure({ adapter: new Adapter() });
 
+jest.mock('localforage');
+
 const mockStore = configureMockStore([thunk]);
 
 const getStore = () => {
