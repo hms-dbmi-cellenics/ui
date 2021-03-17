@@ -2,7 +2,7 @@ const generateSpec = (config, plotData) => {
   let legend = null;
   const minHigh = 2500;
   const minUnknown = 2300;
-  const generateStatus = `(datum.u < ${minUnknown}) ? 'low' : (datum.u >${minHigh}) ? 'high' : 'unknown'`;
+  const generateStatus = `(datum.rank < ${minUnknown}) ? 'low' : (datum.rank >${minHigh}) ? 'high' : 'unknown'`;
 
   legend = !config.legend.enabled ? null : [
     {
@@ -61,8 +61,8 @@ const generateSpec = (config, plotData) => {
           },
           {
             type: 'formula',
-            as: 'logRankValue',
-            expr: '(log(datum.rank) / LN10)*2200',
+            as: 'logUValue',
+            expr: '(log(datum.u) / LN10)*2200',
           },
         ],
       },
@@ -73,14 +73,14 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'log',
         range: 'width',
-        domain: { data: 'plotData', field: 'u' },
+        domain: { data: 'plotData', field: 'rank' },
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
         nice: true,
-        domain: { data: 'plotData', field: 'logRankValue' },
+        domain: { data: 'plotData', field: 'logUValue' },
       },
       {
         name: 'color',
@@ -129,8 +129,8 @@ const generateSpec = (config, plotData) => {
         from: { data: 'plotData' },
         encode: {
           enter: {
-            x: { scale: 'xscale', field: 'u' },
-            y: { scale: 'yscale', field: 'logRankValue' },
+            x: { scale: 'xscale', field: 'rank' },
+            y: { scale: 'yscale', field: 'logUValue' },
             y2: { scale: 'yscale', value: 0 },
             fill: {
               scale: 'color',
