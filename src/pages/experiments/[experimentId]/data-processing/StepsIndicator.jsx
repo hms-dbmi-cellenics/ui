@@ -1,0 +1,35 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const StepsIndicator = (props) => {
+  const { allSteps, completedSteps, currentStep } = props;
+  const colors = {
+    notCompleted: '#d9d9d9', // gray
+    currentStep: '#cf1322', // red
+    completed: '#1890ff', // blue
+  };
+  return (
+    <>
+      {allSteps.map((step, index) => {
+        let color = colors.completed;
+        if (index === currentStep) {
+          color = colors.currentStep;
+        } else if (index > completedSteps - 1) {
+          color = colors.notCompleted;
+        }
+        return (
+          <svg width='18' height='8'>
+            <rect width='15' height='8' style={{ fill: color }} />
+          </svg>
+        );
+      })}
+    </>
+  );
+};
+
+StepsIndicator.propTypes = {
+  allSteps: PropTypes.array.isRequired,
+  completedSteps: PropTypes.number.isRequired,
+  currentStep: PropTypes.number.isRequired,
+};
+export default StepsIndicator;

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import {
-  Select, Space, Button, Typography, Progress, Row, Col, Carousel, Card,
+  Select, Space, Button, Typography, Row, Col, Carousel, Card,
 } from 'antd';
 import {
   LeftOutlined,
@@ -27,7 +27,7 @@ import ConfigureEmbedding from '../../../../components/data-processing/Configure
 
 import PlatformError from '../../../../components/PlatformError';
 import Loader from '../../../../components/Loader';
-
+import StepsIndicator from './StepsIndicator';
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 import { completeProcessingStep, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
@@ -304,10 +304,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       <Col span='16'>
         <div style={{ float: 'right' }}>
           <Space size='large'>
-            <Progress
-              percent={((completedSteps.size) / steps.length) * 100}
-              steps={steps.length}
-              showInfo={false}
+            <StepsIndicator
+              allSteps={steps}
+              currentStep={stepIdx}
+              completedSteps = {completedSteps.size}
             />
             <Text type='primary'>{`${completedSteps.size} of ${steps.length} steps complete`}</Text>
             <Button
