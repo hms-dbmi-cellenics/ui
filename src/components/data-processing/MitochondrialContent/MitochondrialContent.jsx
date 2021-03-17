@@ -9,8 +9,6 @@ import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
 import Loader from '../../Loader';
-import plot1Pic from '../../../../static/media/plot3.png';
-import plot2Pic from '../../../../static/media/plot4.png';
 
 import {
   updatePlotConfig,
@@ -18,8 +16,8 @@ import {
   savePlotConfig,
 } from '../../../redux/actions/componentConfig';
 
-import MitochondrialFractionHistogram from '../../plots/mitochondrialFractionHistogram';
-import MitochondrialFractionLogHistogram from '../../plots/mitochondrialFractionLogHistogram';
+import MitochondrialFractionHistogram from '../../plots/MitochondrialFractionHistogram';
+import MitochondrialFractionLogHistogram from '../../plots/MitochondrialFractionLogHistogram';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
@@ -28,7 +26,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const MitochondrialContent = (props) => {
   const {
-    experimentId,
+    experimentId, sampleId, sampleIds,
   } = props;
 
   const dispatch = useDispatch();
@@ -59,6 +57,10 @@ const MitochondrialContent = (props) => {
   };
 
   const config = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config);
+  const expConfig = useSelector(
+    (state) => state.experimentSettings.processing.mitochondrialContent[sampleId]?.filterSettings
+      || state.experimentSettings.processing.mitochondrialContent.filterSettings,
+  );
   const plotData = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData);
 
   useEffect(() => {
@@ -70,10 +72,12 @@ const MitochondrialContent = (props) => {
   }, [experimentId]);
 
   useEffect(() => {
-    if (config && plotData) {
-      setPlot(plots[selectedPlot].plot(config, plotData));
+    if (config && plotData && expConfig) {
+      const newConfig = _.clone(config);
+      _.merge(newConfig, expConfig);
+      setPlot(plots[selectedPlot].plot(newConfig, plotData));
     }
-  }, [config, plotData]);
+  }, [expConfig, config, plotData]);
 
   const plotStylingConfig = [
     {
@@ -149,7 +153,7 @@ const MitochondrialContent = (props) => {
         <Col span={6}>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} />
+              <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
@@ -164,6 +168,8 @@ const MitochondrialContent = (props) => {
 
 MitochondrialContent.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  sampleIds: PropTypes.array.isRequired,
 };
 
 export default MitochondrialContent;

@@ -23,7 +23,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const Classifier = (props) => {
   const {
-    experimentId,
+    experimentId, sampleId, sampleIds,
   } = props;
 
   const plotUuid = 'classifierEmptyDropsPlot';
@@ -39,10 +39,16 @@ const Classifier = (props) => {
   };
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const expConfig = useSelector(
+    (state) => state.experimentSettings.processing.classifier[sampleId]?.filterSettings
+      || state.experimentSettings.processing.classifier.filterSettings,
+  );
   const plotData = useSelector((state) => state.componentConfig[plotUuid]?.plotData);
 
   useEffect(() => {
     if (!config) {
+      const newConfig = _.clone(config);
+      _.merge(newConfig, expConfig);
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
   }, [config]);
@@ -98,7 +104,7 @@ const Classifier = (props) => {
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} />
+              <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} />
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
@@ -113,6 +119,8 @@ const Classifier = (props) => {
 
 Classifier.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  sampleIds: PropTypes.array.isRequired,
 };
 
 export default Classifier;
