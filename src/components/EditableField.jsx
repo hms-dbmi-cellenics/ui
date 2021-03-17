@@ -12,6 +12,7 @@ const EditableField = (props) => {
   const {
     value, deleteEnabled, showEdit, onAfterSubmit, onAfterCancel, renderBold, defaultEditing,
   } = props;
+
   const [editing, setEditing] = useState(defaultEditing);
   const [editedValue, setEditedValue] = useState(value);
 

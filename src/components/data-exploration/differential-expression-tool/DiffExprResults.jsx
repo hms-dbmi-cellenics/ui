@@ -4,14 +4,17 @@ import {
   useDispatch,
 } from 'react-redux';
 import {
-  Space, Button, Alert, Tooltip,
+  Space, Button, Alert, Tooltip, Typography,
 } from 'antd';
 import Link from 'next/link';
 import { LeftOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import GeneTable from '../generic-gene-table/GeneTable';
 import { geneTableUpdateReason } from '../../../utils/geneTable/geneTableUpdateReason';
 import loadDifferentialExpression from '../../../redux/actions/differentialExpression/loadDifferentialExpression';
+
+const { Text } = Typography;
 
 const DiffExprResults = (props) => {
   const {
@@ -26,35 +29,42 @@ const DiffExprResults = (props) => {
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
 
+  const properties = useSelector((state) => state.cellSets.properties);
+
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
   const [settingsListed, setSettingsListed] = useState(false);
 
   const columns = [
     {
-      title: 'Z-score',
-      key: 'zscore',
+      title: 'Avg log2FC',
+      key: 'avg_log2FC',
       sorter: true,
     },
     {
-      title: 'Absolute Z-score',
-      key: 'abszscore',
+      title: 'adj p-value',
+      key: 'p_val_adj',
       sorter: true,
-      render: (score, record) => <Tooltip title={`q-value: ${record.qval}`}>{score}</Tooltip>,
+      render: (score, record) => <Tooltip title={`adj p-value: ${record.qval}`}>{score}</Tooltip>,
     },
     {
-      title: 'log2 FC',
-      key: 'log2fc',
-      render: (num) => parseFloat(num.toFixed(1)),
+      title: 'Pct 1',
+      key: 'pct_1',
+      sorter: true,
+    },
+    {
+      title: 'Pct 2',
+      key: 'pct_2',
       sorter: true,
     },
   ];
+
   // When data changes, update rows.
   useEffect(() => {
-    if (data) {
+    if (data && properties) {
       setDataShown(data);
     }
-  }, [data]);
+  }, [data, properties]);
 
   const isTableLoading = () => data.length === 0 || loading;
 
@@ -73,12 +83,23 @@ const DiffExprResults = (props) => {
       ),
     );
   };
-  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
-  const optionName = (word) => (
-    <span style={{ color: 'red' }}>
-      {capitalize(word.split('/').pop().replace('-', ' '))}
-    </span>
-  );
+
+  const optionName = (word) => {
+    const [rootGroup, clusterName] = word.split('/');
+
+    let printString = '';
+
+    if (!clusterName) {
+      printString = _.capitalize(rootGroup);
+    } else if (clusterName === 'rest') {
+      printString = `Rest of ${properties[rootGroup].name}`;
+    } else {
+      printString = properties[clusterName]?.name || _.capitalize(clusterName);
+    }
+
+    return <Text strong>{printString}</Text>;
+  };
+
   const { basis, cellSet, compareWith } = comparisonGroup[comparisonType];
 
   const renderExportAlert = () => {
@@ -97,7 +118,7 @@ const DiffExprResults = (props) => {
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a target='_blank'>volcano plot</a>
             </Link>
-            &nbsp;in Plots and Tables to dump results (opens in new tab).
+            &nbsp;in Plots and Tables to export results (opens in new tab).
           </span>
         )}
         type='info'
@@ -157,7 +178,7 @@ const DiffExprResults = (props) => {
         onExportCSV={() => { setExportAlert(true); }}
         error={error}
         width={width}
-        height={height - 70 - (exportAlert ? 70 : 0)}
+        height={height - 70 - (exportAlert ? 70 : 0) - (settingsListed ? 70 : 0)}
         data={dataShown}
         total={total}
       />
