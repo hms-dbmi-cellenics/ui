@@ -239,21 +239,19 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [loading]);
 
   useEffect(() => {
-    const goToStepIdx = () => {
-      if (carouselRef.current) {
-        carouselRef.current.goTo(stepIdx, true);
-      }
-    };
-
     const completeProcessingStepIfAdvanced = () => {
       if (stepIdx > completedSteps.size) {
         completeStepAt(stepIdx - 1);
       }
     };
 
-    goToStepIdx();
-    completeProcessingStepIfAdvanced();
-  }, [stepIdx]);
+    if (carouselRef.current) {
+      carouselRef.current.goTo(stepIdx, true);
+      completeProcessingStepIfAdvanced();
+    }
+  }, [stepIdx, carouselRef.current]);
+
+
 
   useEffect(() => {
     if (completingStepError && stepIdx > completedSteps.size) {
