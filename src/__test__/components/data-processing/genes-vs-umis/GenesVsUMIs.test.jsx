@@ -17,6 +17,9 @@ jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
 const noData = {
+  experimentSettings: {
+    ...initialExperimentState,
+  },
   componentConfig: {
     featuresVsUMIsHistogram: {
       config: initialPlotConfigStates.featuresVsUMIsHistogram,
@@ -30,9 +33,11 @@ const noData = {
 };
 
 const withData = {
+  ...noData,
   componentConfig: {
+    ...noData.componentConfig,
     featuresVsUMIsHistogram: {
-      config: initialPlotConfigStates.featuresVsUMIsHistogram,
+      ...noData.componentConfig.featuresVsUMIsHistogram,
       plotData: [
         {
           genes: 2.41995574848976,
@@ -49,7 +54,7 @@ const withData = {
       ],
     },
     featuresVsUMIsScatterplot: {
-      config: initialPlotConfigStates.featuresVsUMIsScatterplot,
+      ...noData.componentConfig.featuresVsUMIsScatterplot,
       plotData: [
         {
           genes: 2.41995574848976,
@@ -96,12 +101,7 @@ describe('GenesVsUMIs', () => {
   configure({ adapter: new Adapter() });
 
   it('renders correctly with no data', () => {
-    const store = mockStore({
-      experimentSettings: {
-        ...initialExperimentState,
-      },
-      ...noData,
-    });
+    const store = mockStore(noData);
 
     const component = mount(
       <Provider store={store}>

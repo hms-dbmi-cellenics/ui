@@ -17,6 +17,9 @@ jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
 const noData = {
+  experimentSettings: {
+    ...initialExperimentState,
+  },
   componentConfig: {
     cellSizeDistributionHistogram: {
       config: initialPlotConfigStates.cellSizeDistributionHistogram,
@@ -30,9 +33,11 @@ const noData = {
 };
 
 const withData = {
+  ...noData,
   componentConfig: {
+    ...noData.componentConfig,
     cellSizeDistributionHistogram: {
-      config: initialPlotConfigStates.cellSizeDistributionHistogram,
+      ...noData.componentConfig.cellSizeDistributionHistogram,
       plotData: [{
         u: 8890.246597269077,
       },
@@ -44,21 +49,16 @@ const withData = {
       }],
     },
     cellSizeDistributionKneePlot: {
-      config: initialPlotConfigStates.cellSizeDistributionKneePlot,
-      plotData: [
-        {
-          u: 0,
-          rank: 17852,
-        },
-        {
-          u: 1,
-          rank: 17412,
-        },
-        {
-          u: 2,
-          rank: 12187,
-        },
-      ],
+      ...noData.componentConfig.cellSizeDistributionKneePlot,
+      plotData: [{
+        u: 8890.246597269077,
+      },
+      {
+        u: 7986.663750139649,
+      },
+      {
+        u: 9301.510440766624,
+      }],
     },
   },
 };
@@ -91,12 +91,7 @@ describe('CellSizeDistribution', () => {
   configure({ adapter: new Adapter() });
 
   it('renders correctly with no data', () => {
-    const store = mockStore({
-      experimentSettings: {
-        ...initialExperimentState,
-      },
-      ...noData,
-    });
+    const store = mockStore(noData);
 
     const component = mount(
       <Provider store={store}>
@@ -121,12 +116,7 @@ describe('CellSizeDistribution', () => {
   });
 
   it('Shows plot with data', () => {
-    const store = mockStore({
-      experimentSettings: {
-        ...initialExperimentState,
-      },
-      ...withData,
-    });
+    const store = mockStore(withData);
 
     const component = mount(
       <Provider store={store}>

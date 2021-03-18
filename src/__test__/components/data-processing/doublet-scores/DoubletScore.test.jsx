@@ -17,6 +17,9 @@ jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
 const noData = {
+  experimentSettings: {
+    ...initialExperimentState,
+  },
   componentConfig: {
     doubletScoreHistogram: {
       config: initialPlotConfigStates.doubletScoreHistogram,
@@ -26,9 +29,11 @@ const noData = {
 };
 
 const withData = {
+  ...noData,
   componentConfig: {
+    ...noData.componentConfig,
     doubletScoreHistogram: {
-      config: initialPlotConfigStates.doubletScoreHistogram,
+      ...noData.componentConfig.doubletScoreHistogram,
       plotData: [
         {
           doubletP: 0.174785100286533,
@@ -75,12 +80,7 @@ describe('DoubletScores', () => {
   configure({ adapter: new Adapter() });
 
   it('renders correctly with no data', () => {
-    const store = mockStore({
-      experimentSettings: {
-        ...initialExperimentState,
-      },
-      ...noData,
-    });
+    const store = mockStore(noData);
 
     const component = mount(
       <Provider store={store}>
@@ -105,12 +105,7 @@ describe('DoubletScores', () => {
   });
 
   it('Shows plot with data', () => {
-    const store = mockStore({
-      experimentSettings: {
-        ...initialExperimentState,
-      },
-      ...withData,
-    });
+    const store = mockStore(withData);
 
     const component = mount(
       <Provider store={store}>

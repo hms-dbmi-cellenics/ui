@@ -17,6 +17,9 @@ jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
 const noData = {
+  experimentSettings: {
+    ...initialExperimentState,
+  },
   componentConfig: {
     mitochondrialFractionHistogram: {
       config: initialPlotConfigStates.mitochondrialFractionHistogram,
@@ -30,14 +33,27 @@ const noData = {
 };
 
 const withData = {
+  ...noData,
   componentConfig: {
+    ...noData.componentConfig,
     mitochondrialFractionHistogram: {
-      config: initialPlotConfigStates.mitochondrialFractionHistogram,
-      plotData: [{ fracMito: 0.0321412215329531, cellSize: 3.11126251365907 }, { fracMito: 0.0303533272283272, cellSize: 3.43184604569873 }, { fracMito: 0, cellSize: 1.86923171973098 },
+      ...noData.componentConfig.mitochondrialFractionHistogram,
+      plotData: [
+        {
+          fracMito: 0.0321412215329531,
+          cellSize: 3.11126251365907,
+        }, {
+          fracMito: 0.0303533272283272,
+          cellSize: 3.43184604569873,
+        }, {
+          fracMito: 0,
+          cellSize:
+            1.86923171973098,
+        },
       ],
     },
     mitochondrialFractionLogHistogram: {
-      config: initialPlotConfigStates.mitochondrialFractionLogHistogram,
+      ...noData.componentConfig.mitochondrialFractionLogHistogram,
       plotData: [
         {
           fracMito: 0.0321412215329531,
@@ -84,12 +100,7 @@ describe('MitochondrialContent', () => {
   configure({ adapter: new Adapter() });
 
   it('renders correctly with no data', () => {
-    const store = mockStore({
-      experimentSettings: {
-        ...initialExperimentState,
-      },
-      ...noData,
-    });
+    const store = mockStore(noData);
 
     const component = mount(
       <Provider store={store}>
@@ -114,12 +125,7 @@ describe('MitochondrialContent', () => {
   });
 
   it('Shows plot with data', () => {
-    const store = mockStore({
-      experimentSettings: {
-        ...initialExperimentState,
-      },
-      ...withData,
-    });
+    const store = mockStore(withData);
 
     const component = mount(
       <Provider store={store}>
