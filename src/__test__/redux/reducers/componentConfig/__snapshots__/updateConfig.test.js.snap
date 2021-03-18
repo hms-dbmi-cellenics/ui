@@ -55,6 +55,7 @@ Object {
     },
     "experimentId": "1234",
     "outstandingChanges": true,
+    "plotData": Array [],
   },
 }
 `;
@@ -134,6 +135,7 @@ Object {
     },
     "experimentId": "1234",
     "outstandingChanges": true,
+    "plotData": Array [],
   },
 }
 `;
