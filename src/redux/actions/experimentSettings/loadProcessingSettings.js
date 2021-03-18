@@ -8,15 +8,7 @@ import pushNotificationMessage from '../pushNotificationMessage';
 import getApiEndpoint from '../../../utils/apiEndpoint';
 import errorTypes from './errorTypes';
 
-const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
-  const {
-    loading, loadingSettingsError,
-  } = getState().experimentSettings.processing.meta;
-
-  if (!loading && !loadingSettingsError) {
-    return null;
-  }
-
+const loadProcessingSettings = (experimentId) => async (dispatch) => {
   try {
     const response = await fetch(
       `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
