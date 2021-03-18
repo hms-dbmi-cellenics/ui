@@ -14,7 +14,9 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 const MitochondrialContentPlot = (props) => {
-  const { experimentId, config, plotData } = props;
+  const {
+    experimentId, config, plotData, actions,
+  } = props;
   const defaultEmbeddingType = 'umap';
   const dataName = 'mitochondrialContent';
   const plotUuid = 'embeddingPreviewMitochondrialContent';
@@ -112,7 +114,7 @@ const MitochondrialContentPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -128,10 +130,15 @@ MitochondrialContentPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 MitochondrialContentPlot.defaultProps = {
   plotData: null,
+  actions: true,
 };
 
 export default MitochondrialContentPlot;
