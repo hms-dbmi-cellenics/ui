@@ -205,21 +205,19 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [loading]);
 
   useEffect(() => {
-    const goToStepIdx = () => {
-      if (carouselRef.current) {
-        carouselRef.current.goTo(stepIdx, true);
-      }
-    };
-
     const completeProcessingStepIfAdvanced = () => {
       if (stepIdx > completedSteps.size) {
         dispatch(completeProcessingStep(experimentId, steps[stepIdx - 1].key, steps.length));
       }
     };
 
-    goToStepIdx();
-    completeProcessingStepIfAdvanced();
-  }, [stepIdx]);
+    if (carouselRef.current) {
+      carouselRef.current.goTo(stepIdx, true);
+      completeProcessingStepIfAdvanced();
+    }
+  }, [stepIdx, carouselRef.current]);
+
+
 
   useEffect(() => {
     if (completingStepError && stepIdx > completedSteps.size) {
@@ -307,7 +305,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <StepsIndicator
               allSteps={steps}
               currentStep={stepIdx}
-              completedSteps = {completedSteps.size}
+              completedSteps={completedSteps.size}
             />
             <Text type='primary'>{`${completedSteps.size} of ${steps.length} steps complete`}</Text>
             <Button

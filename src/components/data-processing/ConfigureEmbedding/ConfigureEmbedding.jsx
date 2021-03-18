@@ -55,7 +55,6 @@ const ConfigureEmbedding = (props) => {
       plotType: 'embeddingPreviewBySample',
       plot: (config, plotData) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} />),
     },
-
     cellCluster: {
       title: 'Colored by CellSets',
       imgSrc: plot1Pic,
