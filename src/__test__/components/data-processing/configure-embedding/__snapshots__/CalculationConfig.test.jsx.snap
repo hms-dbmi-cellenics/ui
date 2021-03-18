@@ -24,12 +24,5 @@ Array [
     },
     "type": "experimentSettings/updateProcessing",
   },
-  Object {
-    "payload": Object {
-      "embeddingType": "umap",
-      "experimentId": "1234",
-    },
-    "type": "embeddings/loading",
-  },
 ]
 `;

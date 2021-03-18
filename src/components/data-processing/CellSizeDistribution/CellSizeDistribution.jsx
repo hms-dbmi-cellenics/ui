@@ -30,7 +30,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const CellSizeDistribution = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const allowedPlotActions = {
@@ -208,6 +208,7 @@ const CellSizeDistribution = (props) => {
                 sampleId={sampleId}
                 plotType='bin step'
                 sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
               />
             </Panel>
             <Panel header='Plot styling' key='styling'>
@@ -229,6 +230,7 @@ CellSizeDistribution.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default CellSizeDistribution;

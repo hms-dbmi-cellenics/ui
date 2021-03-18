@@ -1,5 +1,5 @@
 import {
-  EXPERIMENT_SETTINGS_PROCESSING_COMPLETE_STEP,
+  EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../actionTypes/experimentSettings';
 
@@ -9,15 +9,14 @@ import errorTypes from './errorTypes';
 
 import pushNotificationMessage from '../pushNotificationMessage';
 
-const completeProcessingStep = (
+const setCompletedSteps = (
   experimentId,
-  settingName,
+  stepsDone,
   numSteps,
 ) => async (dispatch, getState) => {
-  const { stepsDone, completingStepError } = getState().experimentSettings.processing.meta;
+  const { completingStepError } = getState().experimentSettings.processing.meta;
 
   const arrayStepsDone = Array.from(stepsDone);
-  arrayStepsDone.push(settingName);
 
   const body = {
     complete: arrayStepsDone.size === numSteps,
@@ -53,9 +52,9 @@ const completeProcessingStep = (
     }
 
     dispatch({
-      type: EXPERIMENT_SETTINGS_PROCESSING_COMPLETE_STEP,
+      type: EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
       payload:
-        { experimentId, settingName, numSteps },
+        { experimentId, completedSteps: arrayStepsDone, numSteps },
     });
   } catch (e) {
     dispatch(
@@ -73,4 +72,4 @@ const completeProcessingStep = (
   }
 };
 
-export default completeProcessingStep;
+export default setCompletedSteps;

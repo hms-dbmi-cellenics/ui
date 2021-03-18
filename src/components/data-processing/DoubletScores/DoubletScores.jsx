@@ -23,7 +23,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const DoubletScores = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const plotUuid = 'doubletScoreHistogram';
@@ -110,11 +110,20 @@ const DoubletScores = (props) => {
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
+              <CalculationConfig
+                experimentId={experimentId}
+                sampleId={sampleId}
+                sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
+              />
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>
@@ -127,6 +136,10 @@ DoubletScores.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
+};
+
+DoubletScores.defaultProps = {
 };
 
 export default DoubletScores;

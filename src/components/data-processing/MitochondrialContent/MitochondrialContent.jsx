@@ -26,7 +26,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const MitochondrialContent = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const dispatch = useDispatch();
@@ -138,7 +138,6 @@ const MitochondrialContent = (props) => {
         </center>
       );
     }
-
     if (plot) {
       return plot;
     }
@@ -189,6 +188,7 @@ const MitochondrialContent = (props) => {
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
               />
             </Panel>
             <Panel header='Plot styling' key='styling'>
@@ -210,6 +210,7 @@ MitochondrialContent.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default MitochondrialContent;

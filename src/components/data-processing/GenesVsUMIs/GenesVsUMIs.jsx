@@ -8,7 +8,8 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import Loader from '../../Loader';
+
+import CalculationConfig from './CalculationConfig';
 
 import {
   updatePlotConfig,
@@ -21,13 +22,14 @@ import FeaturesVsUMIsScatterplot from '../../plots/FeaturesVsUMIsScatterplot';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
-import CalculationConfig from './CalculationConfig';
+
+import Loader from '../../Loader';
 
 const { Panel } = Collapse;
 
 const GenesVsUMIs = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange, filtering,
   } = props;
 
   const dispatch = useDispatch();
@@ -184,6 +186,7 @@ const GenesVsUMIs = (props) => {
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
               />
             </Panel>
             <Panel header='Plot styling' key='styling'>
@@ -205,6 +208,14 @@ GenesVsUMIs.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+};
+
+GenesVsUMIs.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  sampleIds: PropTypes.array.isRequired,
+  filtering: PropTypes.bool.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default GenesVsUMIs;

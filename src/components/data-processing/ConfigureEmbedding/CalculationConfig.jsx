@@ -14,7 +14,6 @@ import {
   updateProcessingSettings,
   saveProcessingSettings,
 } from '../../../redux/actions/experimentSettings';
-import { loadEmbedding } from '../../../redux/actions/embedding';
 
 import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
 
@@ -28,7 +27,7 @@ const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to com
   + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
 
 const CalculationConfig = (props) => {
-  const { experimentId } = props;
+  const { experimentId, onPipelineRun } = props;
   const FILTER_UUID = 'configureEmbedding';
 
   const dispatch = useDispatch();
@@ -86,7 +85,7 @@ const CalculationConfig = (props) => {
   const updateSettings = (diff) => {
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
-      // applied until they hit Apply.
+      // applied until they hit Run.
 
       setChangesOutstanding(true);
       dispatch(updateProcessingSettings(
@@ -106,12 +105,12 @@ const CalculationConfig = (props) => {
     }
   };
 
-  // When the Apply button is pressed, remove the warning and save to DynamoDB.
-  const applyEmbeddingSettings = () => {
+  // When the Run button is pressed
+  // remove the warning, update the settings and trigger the pipeline run.
+  const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
-    dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
-    dispatch(loadEmbedding(experimentId, embeddingMethod));
+    onPipelineRun();
   };
   const newChanges = changes;
 
@@ -223,7 +222,7 @@ const CalculationConfig = (props) => {
         <Form size='small'>
           {changesOutstanding && (
             <Form.Item>
-              <Alert message='Your changes are not yet applied. To update the plots, click Apply.' type='warning' showIcon />
+              <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
             </Form.Item>
           )}
           <Form.Item label='Method:'>
@@ -244,7 +243,15 @@ const CalculationConfig = (props) => {
 
           <Form.Item>
             <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
-              <Button type='primary' htmlType='submit' disabled={!changesOutstanding} onClick={applyEmbeddingSettings}>Apply</Button>
+              <Button
+                type='primary'
+                htmlType='submit'
+                disabled={!changesOutstanding}
+                onClick={runWithCurrentEmbeddingSettings}
+                size='medium'
+              >
+                Run
+              </Button>
             </Tooltip>
           </Form.Item>
         </Form>
@@ -301,6 +308,7 @@ const CalculationConfig = (props) => {
 
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  onPipelineRun: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

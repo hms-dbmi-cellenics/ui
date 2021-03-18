@@ -21,9 +21,10 @@ import PlotStyling from '../../plots/styling/PlotStyling';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
+
 const Classifier = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const plotUuid = 'classifierEmptyDropsPlot';
@@ -90,7 +91,14 @@ const Classifier = (props) => {
     }
 
     if (config && plotData) {
-      return <ClassifierEmptyDropsPlot experimentId={experimentId} config={config} plotData={plotData} actions={allowedPlotActions} />;
+      return (
+        <ClassifierEmptyDropsPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={allowedPlotActions}
+        />
+      );
     }
   };
 
@@ -111,11 +119,15 @@ const Classifier = (props) => {
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} />
+              <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} onConfigChange={onConfigChange} />
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>
@@ -128,6 +140,7 @@ Classifier.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default Classifier;
