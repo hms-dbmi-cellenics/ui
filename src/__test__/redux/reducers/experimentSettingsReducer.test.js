@@ -2,7 +2,6 @@ import experimentSettingsReducer from '../../../redux/reducers/experimentSetting
 import initialState from '../../../redux/reducers/experimentSettings/initialState';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
-  EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../../redux/actionTypes/experimentSettings';
@@ -86,35 +85,5 @@ describe('experimentSettingsReducer', () => {
 
     expect(newState.processing.configureEmbedding.embeddingSettings.newProperty).toEqual({ name: 'a', value: 'b' });
     expect(newState).toMatchSnapshot();
-  });
-
-  it('Updates completed steps correctly to the set when step is complete.', () => {
-    const newState = experimentSettingsReducer(initialState,
-      {
-        type: EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
-        payload:
-        {
-          completedSteps: ['configureEmbedding'],
-          numSteps: 5,
-        },
-      });
-
-    expect(newState.processing.meta.stepsDone).toEqual(new Set(['configureEmbedding']));
-    expect(newState.processing.meta.complete).toEqual(false);
-  });
-
-  it('Steps are set to complete when set size equals number of steps to do.', () => {
-    const state = experimentSettingsReducer(initialState,
-      {
-        type: EXPERIMENT_SETTINGS_SET_COMPLETED_STEPS,
-        payload:
-        {
-          completedSteps: ['configureEmbedding', 'dataIntegration'],
-          numSteps: 2,
-        },
-      });
-
-    expect(state.processing.meta.stepsDone).toEqual(new Set(['configureEmbedding', 'dataIntegration']));
-    expect(state.processing.meta.complete).toEqual(true);
   });
 });
