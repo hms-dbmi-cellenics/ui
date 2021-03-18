@@ -124,7 +124,6 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
-  plotType: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
 };
 

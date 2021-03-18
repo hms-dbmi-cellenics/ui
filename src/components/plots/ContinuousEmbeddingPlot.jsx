@@ -14,7 +14,7 @@ import Loader from '../Loader';
 
 const ContinuousEmbeddingPlot = (props) => {
   const {
-    experimentId, config, plotUuid, plotData,
+    experimentId, config, plotUuid, plotData, actions,
   } = props;
   const embeddingType = 'umap';
   const dispatch = useDispatch();
@@ -123,7 +123,7 @@ const ContinuousEmbeddingPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -137,6 +137,7 @@ const ContinuousEmbeddingPlot = (props) => {
 
 ContinuousEmbeddingPlot.defaultProps = {
   plotData: null,
+  actions: true,
 };
 
 ContinuousEmbeddingPlot.propTypes = {
@@ -144,6 +145,10 @@ ContinuousEmbeddingPlot.propTypes = {
   config: PropTypes.object.isRequired,
   plotUuid: PropTypes.string.isRequired,
   plotData: PropTypes.array,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 export default ContinuousEmbeddingPlot;

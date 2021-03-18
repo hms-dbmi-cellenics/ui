@@ -63,7 +63,6 @@ const CalculationConfig = (props) => {
 
   return (
     <>
-      <Space direction='vertical' style={{ width: '100%' }} />
       {displayIndividualChangesWarning && (
         <Form.Item>
           <Alert

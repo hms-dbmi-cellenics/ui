@@ -52,6 +52,7 @@ const PlatformError = (props) => {
         <Text type='primary'>
           {description || 'We\'re sorry, we couldn\'t load this. '}
         </Text>
+        <br />
         <Text type='secondary'>
           {reason}
         </Text>
