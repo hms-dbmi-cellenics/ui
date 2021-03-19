@@ -81,12 +81,13 @@ const WrappedApp = ({ Component, pageProps }) => {
     // Otherwise, load the page inside the content wrapper.
     return (
       <ContentWrapper>
-        <Component
+        <PreloadContent />
+        {/* <Component
           experimentId={experimentId}
           experimentData={experimentData}
           route={router.route}
           {...pageProps}
-        />
+        /> */}
       </ContentWrapper>
     );
   };
