@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
-  Row, Col, Carousel, Card, Modal,
+  Row, Col, Carousel, Card, Modal, Empty,
 } from 'antd';
 import {
   LeftOutlined,
@@ -12,7 +12,8 @@ import {
   CheckOutlined,
   CaretRightOutlined,
   EllipsisOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
+  WarningOutlined
 } from '@ant-design/icons';
 
 import _ from 'lodash';
@@ -37,6 +38,7 @@ import SingleComponentMultipleDataContainer from '../../../../components/SingleC
 import { loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { runPipeline } from '../../../../redux/actions/pipeline';
+import PreloadContent from '../../../../components/PreloadContent';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -85,8 +87,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   // Checks if the step is in the 'completed steps' list we get from the pipeline status
   const isStepComplete = (stepName) => {
-    console.log('step is', stepName);
-
     const lowerCaseStepName = stepName.toLowerCase();
 
     const stepAppearances = _.filter(completedSteps, (stepPipelineName) => {
@@ -307,12 +307,25 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                           </>
                         )}
 
-                        {disabledByPipeline && (
+                        {pipelineRunning && !isStepComplete(key) && (
                           <>
                             <Text
-                              disabled
+                              type='warning'
+                              strong
                             >
                               <EllipsisOutlined />
+                            </Text>
+                            <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                          </>
+                        )}
+
+                        {pipelineNotFinished && !pipelineRunning && !isStepComplete(key) && (
+                          <>
+                            <Text
+                              type='danger'
+                              strong
+                            >
+                              <WarningOutlined />
                             </Text>
                             <span style={{ marginLeft: '0.25rem' }}>{name}</span>
                           </>
@@ -325,15 +338,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             </Select>
 
             {steps[stepIdx].multiSample && (
-              <Button
-                id='runFilterButton'
-                type='primary'
-                onClick={() => { onPipelineRun(steps[stepIdx].key) }}
-                disabled={!changesOutstanding || pipelineRunning}
-                style={{ marginLeft: '20px' }}
-              >
-                Apply and run
-              </Button>
+              <Space>
+                <Button
+                  id='runFilterButton'
+                  type='primary'
+                  onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+                  disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
+                  style={{ marginLeft: '20px' }}
+                >
+                  {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}
+                </Button>
+              </Space>
             )}
           </Row>
         </Col>
@@ -419,10 +434,30 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         style={{ flex: 1 }}
       >
         <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
-          {steps.map(({ render, key }) => render(key, experimentId))}
+          {steps.map(({ render, key }) => {
+
+            if (pipelineRunning && !isStepComplete(key)) {
+              return <PreloadContent />;
+            }
+
+            if (pipelineNotFinished && !isStepComplete(key)) {
+              return (
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <PlatformError
+                      description={'Details about this filter or step are not available.'}
+                      onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+                    />
+                  </div>
+                </div>);
+            }
+
+            return render(key, experimentId);
+          })}
         </Carousel>
       </Card>
-    </div>
+    </div >
   );
 };
 
