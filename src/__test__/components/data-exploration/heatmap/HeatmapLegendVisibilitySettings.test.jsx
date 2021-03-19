@@ -126,14 +126,14 @@ describe('HeatmapLegendVisibilitySettings', () => {
     expect(storeActions.length).toEqual(1);
 
     const action = storeActions[0];
-    const { configChange } = action.payload;
+    const { configChanges } = action.payload;
 
     // Of the correct type
     expect(action.type).toBe(UPDATE_CONFIG);
 
     // With the correct property
-    expect(configChange).toHaveProperty('legendIsVisible', false);
-    expect(configChange).toMatchSnapshot();
+    expect(configChanges).toHaveProperty('legendIsVisible', false);
+    expect(configChanges).toMatchSnapshot();
   });
 
   it('responds correctly to clicking to show', () => {
@@ -148,13 +148,13 @@ describe('HeatmapLegendVisibilitySettings', () => {
     expect(storeActions.length).toEqual(1);
 
     const action = storeActions[0];
-    const { configChange } = action.payload;
+    const { configChanges } = action.payload;
 
     // Of the correct type
     expect(action.type).toBe(UPDATE_CONFIG);
 
     // With the correct property
-    expect(configChange).toHaveProperty('legendIsVisible', true);
-    expect(configChange).toMatchSnapshot();
+    expect(configChanges).toHaveProperty('legendIsVisible', true);
+    expect(configChanges).toMatchSnapshot();
   });
 });

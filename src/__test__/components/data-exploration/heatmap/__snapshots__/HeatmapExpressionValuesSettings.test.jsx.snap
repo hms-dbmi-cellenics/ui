@@ -3,7 +3,7 @@
 exports[`HeatmapExpressionValuesSettings choosing another setting will trigger the appropriate action 1`] = `
 Object {
   "payload": Object {
-    "configChange": Object {
+    "configChanges": Object {
       "expressionValue": "zScore",
     },
     "plotUuid": "interactiveHeatmap",

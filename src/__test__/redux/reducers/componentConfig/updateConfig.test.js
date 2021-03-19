@@ -18,7 +18,7 @@ describe('updateConfig', () => {
     const updateReturn = updateReducer(newState, {
       type: UPDATE_CONFIG,
       payload: {
-        configChange: { height: 2000 },
+        configChanges: { height: 2000 },
         plotUuid: 'volcanoPlotMain',
       },
     });
@@ -37,7 +37,7 @@ describe('updateConfig', () => {
     const updateReturn = updateReducer(newState, {
       type: UPDATE_CONFIG,
       payload: {
-        configChange: {},
+        configChanges: {},
         plotUuid: 'embeddingCategoricalMain',
       },
     });
