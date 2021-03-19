@@ -396,7 +396,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   if (cellSets.error) {
     return (
       <PlatformError
-        error={cellSets.error}
+        error={cellSets.error.toString()}
         onClick={() => { dispatch(loadCellSets(experimentId)); }}
       />
     );
