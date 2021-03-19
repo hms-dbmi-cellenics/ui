@@ -8,6 +8,7 @@ import {
   Select,
   Tooltip,
   Button,
+  Skeleton,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -124,7 +125,7 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
             options={generateCellSetOptions()}
             onChange={onCellSetSelect}
           />
-        ) : <Select loading />}
+        ) : <Skeleton.Input style={{ width: '100%' }} active />}
       </Panel>
     </>
   );
