@@ -371,7 +371,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
                     <Button
                       type='primary'
-                      disabled={nextDisabledByPipeline}
+                      disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
                     >
                       <span style={{ marginRight: '0.25rem' }}>Finish</span>
                       <CheckOutlined />
