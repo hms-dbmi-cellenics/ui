@@ -1,10 +1,10 @@
 import { UPDATE_CONFIG } from '../../actionTypes/componentConfig';
 
-const updatePlotConfig = (plotUuid, configChange) => (dispatch) => {
+const updatePlotConfig = (plotUuid, configChanges) => (dispatch) => {
   dispatch({
     type: UPDATE_CONFIG,
     payload:
-      { plotUuid, configChange },
+      { plotUuid, configChanges },
   });
 };
 
