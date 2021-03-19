@@ -13,7 +13,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   LoadingOutlined,
   DownOutlined,
-  QuestionCircleOutlined,
+  StopOutlined,
+  PauseCircleOutlined,
   WarningOutlined,
   CheckCircleOutlined,
 } from '@ant-design/icons';
@@ -31,7 +32,7 @@ const StatusIndicator = () => {
 
   const statusIndicators = {
     NotCreated: {
-      icon: <QuestionCircleOutlined />,
+      icon: <StopOutlined />,
       title: 'to be started',
       description: (
         <Text>You have never submitted your analysis to data processing.</Text>
@@ -60,6 +61,22 @@ const StatusIndicator = () => {
           <PrettyTime isoTime={startDate} />
           {' '}
           and failed
+          {' '}
+          <PrettyTime isoTime={stopDate} />
+          .
+        </Text>
+      ),
+    },
+    ABORTED: {
+      icon: <Text strong type='secondary'><PauseCircleOutlined /></Text>,
+      title: <Text strong type='secondary'>stopped</Text>,
+      description: (
+        <Text>
+          The analysis launched
+          {' '}
+          <PrettyTime isoTime={startDate} />
+          {' '}
+          and was stopped
           {' '}
           <PrettyTime isoTime={stopDate} />
           .
