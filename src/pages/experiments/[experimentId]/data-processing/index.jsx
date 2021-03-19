@@ -474,7 +474,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
             if (cellSets.loading) {
               return (
-                <PreloadContent />
+                <div className='preloadContextSkeleton' style={{ padding: '16px 0px' }}>
+                  <Skeleton.Input style={{ width: '100%', height: 400 }} active />
+                </div>
               );
             }
 
