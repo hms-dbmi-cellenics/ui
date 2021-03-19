@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space, Button, Tooltip,
+  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -22,8 +22,6 @@ import FeaturesVsUMIsScatterplot from '../../plots/FeaturesVsUMIsScatterplot';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
-
-import Loader from '../../Loader';
 
 const { Panel } = Collapse;
 
@@ -133,7 +131,7 @@ const GenesVsUMIs = (props) => {
     if (!config || !plotData) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }

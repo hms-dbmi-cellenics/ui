@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import Loader from '../Loader';
+import { Skeleton } from 'antd';
+
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateMitochondrialContentSpec';
 
@@ -98,7 +99,7 @@ const MitochondrialContentPlot = (props) => {
     )) {
       return (
         <center>
-          <Loader experimentId={experimentId} size='large' />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }

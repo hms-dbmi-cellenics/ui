@@ -2,13 +2,12 @@ import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {
-  Collapse, Row, Col, Space, Button, Tooltip,
+  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
 } from 'antd';
 import PropTypes from 'prop-types';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import Loader from '../../Loader';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -85,7 +84,7 @@ const Classifier = (props) => {
     if (!config || !plotData) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
