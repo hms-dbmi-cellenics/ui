@@ -73,8 +73,8 @@ const CalculationConfig = (props) => {
       {displayIndividualChangesWarning && (
         <Form.Item>
           <Alert
-            message='Your changes are only applied to this sample. To apply it to all other samples, click Apply to all samples.'
-            type='warning'
+            message='To copy these new settings to the rest of your samples, click Copy to all samples.'
+            type='info'
             showIcon
           />
         </Form.Item>
@@ -102,7 +102,7 @@ const CalculationConfig = (props) => {
         onUpdate={updateSettings}
         type='bin step'
       />
-      <Button onClick={updateAllSettings}>Apply to all samples</Button>
+      <Button onClick={updateAllSettings}>Copy to all samples</Button>
     </>
   );
 };

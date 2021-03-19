@@ -4,7 +4,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Empty, Typography,
+  Empty, Typography, Skeleton,
 } from 'antd';
 import _ from 'lodash';
 import spec from '../../../utils/heatmapSpec';
@@ -367,7 +367,7 @@ const HeatmapPlot = (props) => {
   if (!vegaData) {
     return (
       <center style={{ marginTop: height / 2 }}>
-        <Loader experimentId={experimentId} />
+        <Skeleton.Image />
       </center>
     );
   }

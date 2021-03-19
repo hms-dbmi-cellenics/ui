@@ -3,13 +3,12 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert,
+  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Skeleton, Alert,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
-import Loader from '../../Loader';
 
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
@@ -271,7 +270,7 @@ const DataIntegration = (props) => {
     if (!config) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }

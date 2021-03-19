@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-import Loader from '../Loader';
+import { Skeleton } from 'antd';
 
 const getMiniaturizedConfig = (config) => {
   const miniatureConfig = {
@@ -53,7 +53,7 @@ const MiniPlot = (props) => {
     if (!config) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image />
         </center>
       );
     }

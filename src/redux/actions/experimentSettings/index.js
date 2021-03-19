@@ -3,7 +3,6 @@ import saveProcessingSettings from './saveProcessingSettings';
 import loadProcessingSettings from './loadProcessingSettings';
 import loadPipelineStatus from './loadPipelineStatus';
 import updatePipelineStatus from './updatePipelineStatus';
-import setCompletedSteps from './setCompletedSteps';
 
 export {
   loadProcessingSettings,
@@ -11,5 +10,4 @@ export {
   saveProcessingSettings,
   loadPipelineStatus,
   updatePipelineStatus,
-  setCompletedSteps,
 };

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
-  Row, Col, Carousel, Card, Modal,
+  Row, Col, Carousel, Card, Modal, Empty,
 } from 'antd';
 import {
   LeftOutlined,
@@ -12,7 +12,8 @@ import {
   CheckOutlined,
   CaretRightOutlined,
   EllipsisOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
+  WarningOutlined
 } from '@ant-design/icons';
 
 import _ from 'lodash';
@@ -29,11 +30,15 @@ import ConfigureEmbedding from '../../../../components/data-processing/Configure
 
 import PlatformError from '../../../../components/PlatformError';
 import Loader from '../../../../components/Loader';
-import StepsIndicator from './StepsIndicator';
+
+import StepsIndicator from '../../../../components/data-processing/StepsIndicator';
+import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
+
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
-import { setCompletedSteps, loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
+import { loadProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { runPipeline } from '../../../../redux/actions/pipeline';
+import PreloadContent from '../../../../components/PreloadContent';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -44,24 +49,18 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
   const {
-    loading,
-    stepsDone: completedSteps,
-    loadingSettingsError,
-    completingStepError,
-  } = useSelector((state) => state.experimentSettings.processing.meta);
-
-  const {
     status: pipelineStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
 
   const pipelineStatusKey = pipelineStatus.pipeline?.status;
-  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
 
-  const pipelineBlockingSteps = pipelineRunning || pipelineErrors.includes(pipelineStatusKey);
+  // Pipeline is not loaded (either running or in an errored state)
+  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+  const pipelineNotFinished = pipelineRunning || pipelineErrors.includes(pipelineStatusKey);
 
-  const pipelineRunningCompletedSteps = pipelineStatus.pipeline?.completedSteps;
+  const completedSteps = pipelineStatus.pipeline?.completedSteps;
 
   const cellSets = useSelector((state) => state.cellSets);
 
@@ -75,7 +74,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       dispatch(loadCellSets(experimentId));
     }
 
-    if (loading && !loadingSettingsError) {
+    if (experimentId) {
       dispatch(loadProcessingSettings(experimentId));
     }
   }, [experimentId]);
@@ -87,10 +86,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   );
 
   // Checks if the step is in the 'completed steps' list we get from the pipeline status
-  const stepIsCompletedInPipeline = (stepName) => {
+  const isStepComplete = (stepName) => {
     const lowerCaseStepName = stepName.toLowerCase();
 
-    const stepAppearances = _.filter(pipelineRunningCompletedSteps, (stepPipelineName) => {
+    const stepAppearances = _.filter(completedSteps, (stepPipelineName) => {
       return stepPipelineName.toLowerCase().includes(lowerCaseStepName);
     });
 
@@ -224,43 +223,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
   ];
 
-  // If the pipeline is running we can't focus on the next step because it is showing outdated information
-  // If the pipeline isn't running we should show the next step to complete
-  const stepToFocus = () => {
-    return pipelineRunning ? Math.max(0, completedSteps.size - 1) : completedSteps.size % steps.length;
-  }
-
-  const [stepIdx, setStepIdx] = useState(completedSteps.size % steps.length);
+  const [stepIdx, setStepIdx] = useState(0);
 
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    setStepIdx(stepToFocus());
-  }, [loading]);
-
-  useEffect(() => {
-    const completeProcessingStepIfAdvanced = () => {
-      if (stepIdx > completedSteps.size) {
-        completeStepAt(stepIdx - 1);
-      }
-    };
-
     if (carouselRef.current) {
       carouselRef.current.goTo(stepIdx, true);
-      completeProcessingStepIfAdvanced();
     }
   }, [stepIdx, carouselRef.current]);
 
-
-
-  useEffect(() => {
-    if (completingStepError && stepIdx > completedSteps.size) {
-      setStepIdx(completedSteps.size);
-      return;
-    }
-  }, [completingStepError, stepIdx,]);
-
-  const manualStepIdxChange = (newStepIdx) => {
+  const changeStepId = (newStepIdx) => {
     if (changesOutstanding) {
       upcomingStepIdxRef.current = newStepIdx;
 
@@ -270,41 +243,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     }
   }
 
-  let nextDisabledByPipeline = false;
-
-  if (steps[stepIdx + 1]) {
-    const { key: nextKey } = steps[stepIdx + 1];
-
-    // We disable the next 
-    nextDisabledByPipeline = pipelineBlockingSteps && !stepIsCompletedInPipeline(nextKey) && !completedSteps.has(nextKey);
-  }
-
-  const completeStepAt = (stepIndex) => {
-    const newDoneStepKey = steps[stepIndex].key;
-
-    const newStepsDone = new Set([...completedSteps, newDoneStepKey]);
-
-    dispatch(setCompletedSteps(experimentId, newStepsDone, steps.length));
-  }
-
-  const setCompletedStepsFrom = (calledFromStepKey) => {
-    let newStepsDone = [];
-
-    steps.forEach((step) => {
-      newStepsDone.push(step.key);
-
-      if (step.key === calledFromStepKey) {
-        dispatch(setCompletedSteps(experimentId, newStepsDone, steps.length))
-        return;
-      }
-    });
-  }
-
-  const onPipelineRun = (calledFromStepKey) => {
-    setCompletedStepsFrom(calledFromStepKey);
+  // Called when the pipeline is triggered to be run by the user.
+  const onPipelineRun = (stepKey) => {
     setChangesOutstanding(false);
-
-    dispatch((runPipeline(experimentId, calledFromStepKey)))
+    dispatch((runPipeline(experimentId, stepKey)))
   }
 
   const ignoreLostChanges = () => {
@@ -319,15 +261,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         visible={showChangesWillBeLost}
         onOk={ignoreLostChanges}
         onCancel={() => setShowChangesWillBeLost(false)}
-        okText='Continue'
-        cancelText='Cancel'
+        okText='Leave this page'
+        cancelText='Stay on this page'
+        title='Unsaved changes'
       >
         <Space style={{ margin: '15px' }}>
-          <div style={{ fontSize: '25px', color: 'rgb(233 178 83)', marginBottom: '25px', marginRight: '5px' }}>
-            <ExclamationCircleOutlined />
-          </div>
           <p>
-            The latest settings have not been applied. Navigating away from this page will cause these changes to be lost.
+            You have unsaved settings changes. If you leave the page, these changes
+            will be lost.
           </p>
         </Space>
       </Modal>
@@ -337,7 +278,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <Select
               value={stepIdx}
               onChange={(idx) => {
-                manualStepIdxChange(idx);
+                changeStepId(idx);
               }}
               style={{ width: 360, fontWeight: 'bold' }}
               placeholder='Jump to a step...'
@@ -345,7 +286,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               {
                 steps.map(
                   ({ name, key }, i) => {
-                    const disabledByPipeline = (pipelineBlockingSteps && !stepIsCompletedInPipeline(key)) && !completedSteps.has(key);
+                    const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
 
                     return (
                       <Option
@@ -353,12 +294,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                         key={key}
                         disabled={
                           disabledByPipeline
-                          || (!completedSteps.has(key)
-                            && i !== completedSteps.size
-                            && i !== stepIdx + 1)
                         }
                       >
-                        {!disabledByPipeline && completedSteps.has(key) && (
+                        {!disabledByPipeline && (
                           <>
                             <Text
                               type='success'
@@ -369,21 +307,25 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                           </>
                         )}
 
-                        {!disabledByPipeline && !completedSteps.has(key) && completedSteps.size === i && (
-                          <Text
-                            type='default'
-                          >
-                            <CaretRightOutlined />
-                            <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                          </Text>
-                        )}
-
-                        {(disabledByPipeline || (!completedSteps.has(key) && completedSteps.size < i)) && (
+                        {pipelineRunning && !isStepComplete(key) && (
                           <>
                             <Text
-                              disabled
+                              type='warning'
+                              strong
                             >
                               <EllipsisOutlined />
+                            </Text>
+                            <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                          </>
+                        )}
+
+                        {pipelineNotFinished && !pipelineRunning && !isStepComplete(key) && (
+                          <>
+                            <Text
+                              type='danger'
+                              strong
+                            >
+                              <WarningOutlined />
                             </Text>
                             <span style={{ marginLeft: '0.25rem' }}>{name}</span>
                           </>
@@ -396,53 +338,45 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             </Select>
 
             {steps[stepIdx].multiSample && (
-              <Button
-                id='runFilterButton'
-                type='primary'
-                onClick={() => { onPipelineRun(steps[stepIdx].key) }}
-                disabled={!changesOutstanding || pipelineRunning}
-                style={{ marginLeft: '20px' }}
-              >
-                Run filter
-              </Button>
+              <Space>
+                <Button
+                  id='runFilterButton'
+                  type='primary'
+                  onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+                  disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
+                  style={{ marginLeft: '20px' }}
+                >
+                  {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}
+                </Button>
+              </Space>
             )}
-
-            {changesOutstanding && (
-              <Alert
-                message='Your changes have not been applied. To rerun Click Run Filter.'
-                type='warning'
-                showIcon={false}
-                style={{ marginLeft: '20px', width: '440px' }}
-              />
-            )}
-
           </Row>
         </Col>
         <Col span='10'>
           <div style={{ float: 'right' }}>
             <Space size='large'>
+
               <StepsIndicator
                 allSteps={steps}
                 currentStep={stepIdx}
-                completedSteps={completedSteps.size}
+                completedSteps={completedSteps.length}
               />
-              <Text type='primary'>{`${completedSteps.size} of ${steps.length} steps complete`}</Text>
+              <Text type='primary'>{`${completedSteps.length} of ${steps.length} steps complete`}</Text>
+              <StatusIndicator />
               <Button
                 disabled={stepIdx === 0}
                 icon={<LeftOutlined />}
-                onClick={() => manualStepIdxChange(Math.max(stepIdx - 1, 0))}
+                onClick={() => changeStepId(Math.max(stepIdx - 1, 0))}
               >
                 Previous
             </Button>
               {stepIdx !== steps.length - 1 ? (
                 <Button
-                  type='primary'
                   onClick={() => {
                     const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
-
-                    manualStepIdxChange(newStepIdx);
+                    changeStepId(newStepIdx);
                   }}
-                  disabled={nextDisabledByPipeline}
+                  disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
                 >
                   Next
                   <RightOutlined />
@@ -452,10 +386,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
                     <Button
                       type='primary'
-                      onClick={() => {
-                        completeStepAt(steps.length - 1);
-                      }}
-                      disabled={nextDisabledByPipeline}
+                      disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
                     >
                       <span style={{ marginRight: '0.25rem' }}>Finish</span>
                       <CheckOutlined />
@@ -469,7 +400,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     </>
   );
 
-  if (loading || cellSets.loading) {
+  if (cellSets.loading) {
     return (
       <center>
         <Loader experimentId={experimentId} />
@@ -477,19 +408,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     );
   }
 
-  if (loadingSettingsError) {
-    return (
-      <PlatformError
-        error={loadingSettingsError}
-        onClick={() => { dispatch(loadProcessingSettings(experimentId)); }}
-      />
-    );
-  }
-
   if (cellSets.error) {
     return (
       <PlatformError
-        error={cellSets.error}
+        error={cellSets.error.toString()}
         onClick={() => { dispatch(loadCellSets(experimentId)); }}
       />
     );
@@ -512,10 +434,30 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         style={{ flex: 1 }}
       >
         <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
-          {steps.map(({ render, key }) => render(key, experimentId))}
+          {steps.map(({ render, key }) => {
+
+            if (pipelineRunning && !isStepComplete(key)) {
+              return <PreloadContent />;
+            }
+
+            if (pipelineNotFinished && !isStepComplete(key)) {
+              return (
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <PlatformError
+                      description={'Details about this filter or step are not available.'}
+                      onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+                    />
+                  </div>
+                </div>);
+            }
+
+            return render(key, experimentId);
+          })}
         </Carousel>
       </Card>
-    </div>
+    </div >
   );
 };
 

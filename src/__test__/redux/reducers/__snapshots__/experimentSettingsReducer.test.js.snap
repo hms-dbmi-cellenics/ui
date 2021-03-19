@@ -70,11 +70,9 @@ Object {
       },
     },
     "meta": Object {
-      "complete": false,
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "stepsDone": Set {},
     },
     "mitochondrialContent": Object {
       "filterSettings": Object {
@@ -169,11 +167,9 @@ Object {
       },
     },
     "meta": Object {
-      "complete": false,
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "stepsDone": Set {},
     },
     "mitochondrialContent": Object {
       "filterSettings": Object {
@@ -267,11 +263,9 @@ Object {
       },
     },
     "meta": Object {
-      "complete": false,
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "stepsDone": Set {},
     },
     "mitochondrialContent": Object {
       "filterSettings": Object {

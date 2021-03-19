@@ -10,9 +10,9 @@ import {
   Space,
   Tooltip,
   Button,
+  Skeleton,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import Loader from '../../Loader';
 
 import {
   updatePlotConfig,
@@ -147,7 +147,7 @@ const CellSizeDistribution = (props) => {
     if (!config || !plotData) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }

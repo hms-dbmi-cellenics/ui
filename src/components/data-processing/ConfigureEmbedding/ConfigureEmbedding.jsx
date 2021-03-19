@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert,
+  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert, Skeleton,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -309,7 +309,7 @@ const ConfigureEmbedding = (props) => {
     if (!config) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }

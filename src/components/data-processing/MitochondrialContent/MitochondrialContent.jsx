@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {
-  Collapse, Row, Col, Space, Tooltip, Button,
+  Collapse, Row, Col, Space, Tooltip, Button, Skeleton,
 } from 'antd';
 import PropTypes from 'prop-types';
 import {
@@ -134,7 +134,7 @@ const MitochondrialContent = (props) => {
     if (!config || !plotData) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }

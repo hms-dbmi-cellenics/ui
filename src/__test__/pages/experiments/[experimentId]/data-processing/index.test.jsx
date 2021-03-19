@@ -38,7 +38,18 @@ const getStore = () => {
       pipelineStatus: {
         loading: false,
         error: false,
-        status: { pipeline: { status: 'SUCCEEDED' } },
+        status: {
+          pipeline: {
+            status: 'SUCCEEDED',
+            completedSteps: [
+              'CellSizeDistributionFilter',
+              'MitochondrialContentFilter',
+              'ClassifierFilter',
+              'NumGenesVsNumUmisFilter',
+              'DoubletScoresFilter',
+            ],
+          },
+        },
       },
     },
     cellSets: {
