@@ -6,14 +6,13 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { Vega } from 'react-vega';
 
+import { Skeleton } from 'antd';
 import ContinuousEmbeddingPlot from '../../../components/plots/ContinuousEmbeddingPlot';
 import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
 import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
 import initialGeneExpressionState, { initialExpressionState } from '../../../redux/reducers/genes/initialState';
 import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
-
-import Loader from '../../../components/Loader';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -124,7 +123,7 @@ describe('Continuous embedding plot', () => {
       </Provider>,
     );
 
-    const spin = component.find(Loader);
+    const spin = component.find(Skeleton.Image);
 
     // There should be a spinner for loading state.
     expect(spin.length).toEqual(1);
@@ -149,7 +148,7 @@ describe('Continuous embedding plot', () => {
     );
 
     // There should no spinner anymore.
-    const spin = component.find(Loader);
+    const spin = component.find(Skeleton.Image);
     expect(spin.length).toEqual(0);
 
     // There should be a form loaded.
