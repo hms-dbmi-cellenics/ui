@@ -437,23 +437,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     </>
   );
 
-  if (cellSets.loading) {
-    return (
-      <center>
-        <Loader experimentId={experimentId} />
-      </center>
-    );
-  }
-
-  if (cellSets.error) {
-    return (
-      <PlatformError
-        error={cellSets.error.toString()}
-        onClick={() => { dispatch(loadCellSets(experimentId)); }}
-      />
-    );
-  }
-
   return (
     <div style={{
       paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', minHeight: '100vh',
@@ -478,7 +461,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
             if (pipelineNotFinished && !isStepComplete(key)) {
               return (
-
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <PlatformError
@@ -486,7 +468,23 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                       onClick={() => { onPipelineRun(steps[stepIdx].key) }}
                     />
                   </div>
-                </div>);
+                </div>
+              );
+            }
+
+            if (cellSets.loading) {
+              return (
+                <PreloadContent />
+              );
+            }
+
+            if (cellSets.error) {
+              return (
+                <PlatformError
+                  error={cellSets.error.toString()}
+                  onClick={() => { dispatch(loadCellSets(experimentId)); }}
+                />
+              );
             }
 
             return (
