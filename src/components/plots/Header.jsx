@@ -91,7 +91,7 @@ const Header = (props) => {
   );
 
   if (!data || !config) {
-    return <Skeleton.Input style={{ width: 200 }} active />;
+    return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
   }
 
   const baseRoutes = [
