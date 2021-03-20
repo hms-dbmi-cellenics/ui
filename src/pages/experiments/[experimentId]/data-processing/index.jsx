@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
-  Row, Col, Carousel, Card, Modal, Empty,
+  Row, Col, Carousel, Card, Modal, Skeleton,
 } from 'antd';
 import {
   LeftOutlined,

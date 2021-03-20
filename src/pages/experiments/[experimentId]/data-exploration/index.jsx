@@ -18,7 +18,6 @@ import { updateLayout, addWindow, addToWindow } from '../../../../redux/actions/
 import SearchMenu from '../../../../components/SearchMenu';
 
 import 'react-mosaic-component/react-mosaic-component.css';
-import '@blueprintjs/core/lib/css/blueprint.css';
 
 const { TabPane } = Tabs;
 
