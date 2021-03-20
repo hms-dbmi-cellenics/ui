@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Tabs, Button, Dropdown,
 } from 'antd';
-import { Mosaic, MosaicWindow, RemoveButton } from 'react-mosaic-component';
+import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
@@ -14,6 +14,7 @@ import DiffExprManager from '../../../../components/data-exploration/differentia
 import Embedding from '../../../../components/data-exploration/embedding/Embedding';
 import { COMPONENT_TYPE, HeatmapPlot } from '../../../../components/data-exploration/heatmap/HeatmapPlot';
 import HeatmapSettings from '../../../../components/data-exploration/heatmap/HeatmapSettings';
+import MosaicCloseButton from '../../../../components/MosaicCloseButton';
 import { updateLayout, addWindow, addToWindow } from '../../../../redux/actions/layout';
 import SearchMenu from '../../../../components/SearchMenu';
 
@@ -45,7 +46,7 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
 
   const TILE_MAP = {
     'UMAP Embedding': {
-      toolbarControls: [<RemoveButton key='remove-button-embedding' />],
+      toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
       component: (width, height) => (
         <Embedding
           experimentId={experimentId}
@@ -56,16 +57,18 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     Heatmap: {
-      toolbarControls: [
-        <HeatmapSettings componentType={COMPONENT_TYPE} key='heatmap-settings' />,
-        <RemoveButton key='remove-button-heatmap' />,
-      ],
+      toolbarControls: (
+        <>
+          <HeatmapSettings componentType={COMPONENT_TYPE} key='heatmap-settings' />
+          <MosaicCloseButton key='remove-button-heatmap' />
+        </>
+      ),
       component: (width, height) => (
         <HeatmapPlot experimentId={experimentId} width={width} height={height} />
       ),
     },
     Tools: {
-      toolbarControls: [<RemoveButton key='remove-button-genes' />],
+      toolbarControls: <MosaicCloseButton key='remove-button-genes' />,
       component: (width, height) => (
         <Tabs
           size='small'
@@ -87,7 +90,7 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
       ),
     },
     'Data Management': {
-      toolbarControls: [<RemoveButton key='remove-button-data-management' />],
+      toolbarControls: <MosaicCloseButton key='remove-button-data-management' />,
       component: (width, height) => (
         <CellSetsTool
           experimentId={experimentId}
