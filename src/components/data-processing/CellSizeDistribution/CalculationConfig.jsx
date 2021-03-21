@@ -18,7 +18,7 @@ import { updateProcessingSettings } from '../../../redux/actions/experimentSetti
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, sampleId, plotType, sampleIds,
+    experimentId, sampleId, plotType, sampleIds, onConfigChange,
   } = props;
 
   const config = useSelector(
@@ -45,6 +45,8 @@ const CalculationConfig = (props) => {
       FILTER_UUID,
       newConfig,
     ));
+
+    onConfigChange();
   };
 
   const updateSettings = (diff) => {
@@ -59,6 +61,8 @@ const CalculationConfig = (props) => {
       FILTER_UUID,
       sampleSpecificDiff,
     ));
+
+    onConfigChange();
   };
 
   const filtering = false;
@@ -66,17 +70,29 @@ const CalculationConfig = (props) => {
   return (
     <>
       <Space direction='vertical' style={{ width: '100%' }} />
+      {displayIndividualChangesWarning && (
+        <Form.Item>
+          <Alert
+            message='To copy these new settings to the rest of your samples, click Copy to all samples.'
+            type='info'
+            showIcon
+          />
+        </Form.Item>
+      )}
 
-      <Radio.Group defaultValue={1} style={{ marginTop: '5px', marginBottom: '30px' }}>
-        <Radio value={1}>
+      <Radio.Group
+        defaultValue='automatic'
+        style={{ marginTop: '5px', marginBottom: '30px' }}
+      >
+        <Radio value='automatic'>
           Automatic
         </Radio>
-        <Radio value={2}>
+        <Radio value='manual'>
           Manual
         </Radio>
       </Radio.Group>
 
-      <Form.Item label='Min cell size:'>
+      <Form.Item disabled label='Min cell size:'>
         <InputNumber
           value={config.minCellSize}
           collapsible={!filtering ? 'disabled' : 'header'}
@@ -92,16 +108,7 @@ const CalculationConfig = (props) => {
         type={plotType}
         max={400}
       />
-      <Button onClick={updateAllSettings}>Apply settings to all samples</Button>
-      {displayIndividualChangesWarning && (
-        <Form.Item>
-          <Alert
-            message='Your changes are only applied to this sample. To apply it to all other samples, click Apply settings to all samples.'
-            type='warning'
-            showIcon
-          />
-        </Form.Item>
-      )}
+      <Button onClick={updateAllSettings}>Copy to all samples</Button>
     </>
   );
 };
@@ -111,6 +118,7 @@ CalculationConfig.propTypes = {
   sampleId: PropTypes.string.isRequired,
   plotType: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

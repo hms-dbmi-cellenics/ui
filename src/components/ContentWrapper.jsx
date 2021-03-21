@@ -41,10 +41,10 @@ const ContentWrapper = (props) => {
   const {
     loading: pipelineLoading,
     error: pipelineError,
-    status: pipelineStatus,
+    status: workerAndPipelineStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
 
-  const pipelineStatusKey = pipelineStatus.pipeline?.status;
+  const pipelineStatusKey = workerAndPipelineStatus.pipeline?.status;
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 
   // const pipelineRunning = pipelineStatusKey === 'RUNNING';

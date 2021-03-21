@@ -4,22 +4,21 @@ import PropTypes from 'prop-types';
 
 const ElbowPlot = (props) => {
   const {
-    stylingConfig, calculationConfig, plotData, actions,
+    experimentId, config, plotData, actions,
   } = props;
 
-  const redLineXValue = calculationConfig.dimensionalityReduction.numPCs;
-
   const generateSpec = () => ({
-    width: stylingConfig.dimensions.width,
-    height: stylingConfig.dimensions.height,
+    width: config.dimensions.width,
+    height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },
     padding: 5,
 
-    signals: stylingConfig.signals,
+    signals: config.signals,
 
     data: [
       {
         name: 'plotData',
+        values: plotData,
         transform: [
           {
             type: 'formula',
@@ -54,13 +53,13 @@ const ElbowPlot = (props) => {
         grid: true,
         tickCount: 15,
         zindex: 1,
-        title: { value: stylingConfig.axes.xAxisText },
-        titleFont: { value: stylingConfig.axes.titleFont },
-        labelFont: { value: stylingConfig.axes.labelFont },
-        titleFontSize: { value: stylingConfig.axes.titleFontSize },
-        labelFontSize: { value: stylingConfig.axes.labelFontSize },
-        offset: { value: stylingConfig.axes.offset },
-        gridOpacity: { value: (stylingConfig.axes.gridOpacity / 20) },
+        title: { value: config.axes.xAxisText },
+        titleFont: { value: config.axes.titleFont },
+        labelFont: { value: config.axes.labelFont },
+        titleFontSize: { value: config.axes.titleFontSize },
+        labelFontSize: { value: config.axes.labelFontSize },
+        offset: { value: config.axes.offset },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
       },
       {
         orient: 'left',
@@ -69,13 +68,13 @@ const ElbowPlot = (props) => {
         tickCount: 15,
         format: '%',
         zindex: 1,
-        title: { value: stylingConfig.axes.yAxisText },
-        titleFont: { value: stylingConfig.axes.titleFont },
-        labelFont: { value: stylingConfig.axes.labelFont },
-        titleFontSize: { value: stylingConfig.axes.titleFontSize },
-        labelFontSize: { value: stylingConfig.axes.labelFontSize },
-        offset: { value: stylingConfig.axes.offset },
-        gridOpacity: { value: (stylingConfig.axes.gridOpacity / 20) },
+        title: { value: config.axes.yAxisText },
+        titleFont: { value: config.axes.titleFont },
+        labelFont: { value: config.axes.labelFont },
+        titleFontSize: { value: config.axes.titleFontSize },
+        labelFontSize: { value: config.axes.labelFontSize },
+        offset: { value: config.axes.offset },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
       },
     ],
 
@@ -102,7 +101,8 @@ const ElbowPlot = (props) => {
         type: 'rule',
         encode: {
           update: {
-            x: { scale: 'x', value: redLineXValue, round: true },
+            // x: { scale: 'x', value: redLineXValue, round: true },
+            x: { scale: 'x', value: 30, round: true },
             y: { value: 0 },
             y2: { field: { group: 'height' } },
             strokeWidth: { value: 2 },
@@ -114,11 +114,11 @@ const ElbowPlot = (props) => {
     ],
     title:
     {
-      text: { value: stylingConfig.title.text },
-      anchor: { value: stylingConfig.title.anchor },
-      font: { value: stylingConfig.title.font },
-      fontSize: { value: stylingConfig.title.fontSize },
-      dx: { value: stylingConfig.title.dx },
+      text: { value: config.title.text },
+      anchor: { value: config.title.anchor },
+      font: { value: config.title.font },
+      fontSize: { value: config.title.fontSize },
+      dx: { value: config.title.dx },
     },
   });
 
@@ -129,17 +129,18 @@ const ElbowPlot = (props) => {
   );
 };
 
-ElbowPlot.defaultProps = {
-};
-
 ElbowPlot.propTypes = {
-  stylingConfig: PropTypes.object.isRequired,
-  calculationConfig: PropTypes.object.isRequired,
+  experimentId: PropTypes.string.isRequired,
+  config: PropTypes.object.isRequired,
   plotData: PropTypes.array.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
-  ]).isRequired,
+  ]),
+};
+
+ElbowPlot.defaultProps = {
+  actions: true,
 };
 
 export default ElbowPlot;

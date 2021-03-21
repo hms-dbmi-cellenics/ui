@@ -80,12 +80,15 @@ const store = mockStore({
   componentConfig: {
     dataIntegrationFrequency: {
       config: dataIntegrationFrequencyConfig,
+      plotData: [],
     },
     dataIntegrationEmbedding: {
       config: dataIntegrationEmbeddingConfig,
+      plotData: [],
     },
     dataIntegrationElbow: {
       config: dataIntegrationElbowConfig,
+      plotData: [],
     },
   },
 });

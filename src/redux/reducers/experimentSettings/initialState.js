@@ -6,8 +6,6 @@ export default {
   },
   processing: {
     meta: {
-      complete: false,
-      stepsDone: new Set([]),
       loading: true,
       completingStepError: false,
       loadingSettingsError: false,

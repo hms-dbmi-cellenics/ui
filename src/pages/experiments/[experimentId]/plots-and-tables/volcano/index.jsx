@@ -70,7 +70,7 @@ const VolcanoPlot = ({ experimentId }) => {
     setDataPointStatus();
   }, []);
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Main Schema',
       controls: [{
@@ -337,7 +337,7 @@ const VolcanoPlot = ({ experimentId }) => {
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']} accordion />
             <PlotStyling
-              formConfig={plotStylingConfig}
+              formConfig={plotStylingControlsConfig}
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}

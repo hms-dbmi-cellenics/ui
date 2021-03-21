@@ -21,7 +21,7 @@ const { Option } = Select;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const config = useSelector(
@@ -48,6 +48,8 @@ const CalculationConfig = (props) => {
       FILTER_UUID,
       newConfig,
     ));
+
+    onConfigChange();
   };
 
   const updateSettingsForActiveMethod = (diff) => {
@@ -64,6 +66,8 @@ const CalculationConfig = (props) => {
       FILTER_UUID,
       sampleSpecificDiff,
     ));
+
+    onConfigChange();
   };
 
   const filtering = false;
@@ -73,6 +77,15 @@ const CalculationConfig = (props) => {
   return (
     <>
       <Space direction='vertical' style={{ width: '100%' }} />
+      {displayIndividualChangesWarning && (
+        <Form.Item>
+          <Alert
+            message='To copy these new settings to the rest of your samples, click Copy to all samples.'
+            type='info'
+            showIcon
+          />
+        </Form.Item>
+      )}
       <Radio.Group defaultValue={1} style={{ marginTop: '5px', marginBottom: '30px' }}>
         <Radio value={1}>
           Automatic
@@ -107,16 +120,7 @@ const CalculationConfig = (props) => {
         onUpdate={updateSettingsForActiveMethod}
         type='bin step'
       />
-      <Button onClick={updateAllSettings}>Apply settings to all samples</Button>
-      {displayIndividualChangesWarning && (
-        <Form.Item>
-          <Alert
-            message='Your changes are only applied to this sample. To apply it to all other samples, click Apply settings to all samples.'
-            type='warning'
-            showIcon
-          />
-        </Form.Item>
-      )}
+      <Button onClick={updateAllSettings}>Copy to all samples</Button>
     </>
   );
 };
@@ -124,8 +128,8 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
-  plotType: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

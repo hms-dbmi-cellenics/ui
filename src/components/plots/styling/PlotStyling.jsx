@@ -57,6 +57,7 @@ const PlotStyling = (props) => {
             if (_.isString(control)) {
               return ComponentMapping[control]({});
             }
+
             return ComponentMapping[control.name](control.props || {});
           })}
 

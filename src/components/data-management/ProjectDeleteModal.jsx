@@ -29,7 +29,7 @@ const ProjectDeleteModal = (props) => {
               setIsValid(false);
             }}
           >
-            Cancel
+            Keep project
           </Button>
 
           <Button

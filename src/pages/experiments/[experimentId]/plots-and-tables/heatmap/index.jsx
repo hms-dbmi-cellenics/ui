@@ -119,7 +119,7 @@ const HeatmapPlot = ({ experimentId }) => {
     }
   };
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Main Schema',
       controls: ['dimensions'],
@@ -180,7 +180,7 @@ const HeatmapPlot = ({ experimentId }) => {
               plotUuid={plotUuid}
               onGeneEnter={onGeneEnter}
             />
-            <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} defaultActiveKey={['5']} />
           </Space>
         </Col>
       </Row>

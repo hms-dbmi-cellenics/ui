@@ -297,6 +297,233 @@ const interactiveHeatmapInitialConfig = {
   legendIsVisible: true,
 };
 
+// CELL SIZE DISTRIBUTION - Cell Size Distribution Histogram
+const cellSizeDistributionHistogram = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-left',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: '#UMIs in cell',
+    yAxisText: '#UMIs * #Cells',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  minCellSize: 10800,
+  binStep: 200,
+};
+
+// CELL SIZE DISTRIBUTION - Cell Size Distribution Knee Plot
+const cellSizeDistributionKneePlot = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-left',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Cell rank',
+    yAxisText: '#UMIs in cell',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  minCellSize: 990,
+};
+
+// MITOCHONDRIAL CONTENT - Mitochondrial Fraction Histogram
+const mitochondrialFractionHistogram = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-right',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Fraction of mitochondrial reads',
+    yAxisText: 'Fraction of cells',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+    dx: 0,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  binStep: 0.05,
+  maxFraction: 0.1,
+};
+
+// MITOCHONDRIAL CONTENT - Mitochondrial Fraction Log Histogram
+const mitochondrialFractionLogHistogram = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-right',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'log10(#UMIs in cell)',
+    yAxisText: 'Fraction of mitochondrial reads',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+    dx: 0,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  binStep: 0.05,
+  maxFraction: 3.5,
+};
+
+// CLASSIFIER - Classifier Empty Drops
+const classifierEmptyDropsPlot = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    enabled: false,
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 630,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'log10[ cell size (UMIs) ]',
+    yAxisText: 'classifier prob',
+    gridOpacity: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  minProbability: 0.82,
+  bandwidth: -1,
+};
+
+// GENES VS UMIS - Features vs UMIs
+const featuresVsUMIsHistogram = {
+  spec: '1.0.0',
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 630,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'log10 [molecules]',
+    yAxisText: 'Frequency',
+    gridOpacity: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  label: labelBaseState,
+  lowCutoff: 4.8,
+  upCutoff: 2.1,
+  binStep: 0.05,
+};
+
+// GENES VS UMIS - Features vs UMIs
+const featuresVsUMIsScatterplot = {
+  spec: '1.0.0',
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 630,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'log10 [molecule counts]',
+    yAxisText: 'log10 [gene counts]',
+    gridOpacity: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  label: labelBaseState,
+  lowCutoff: 4.8,
+  upCutoff: 2.1,
+};
+
+// DOUBLE FILTER - Doublet filter histogram
+const doubletScoreHistogram = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-right',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Probability of being a doublet',
+    yAxisText: 'Frequency',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  binStep: 0.05,
+  probThreshold: 0.2,
+};
+
 // DATA INTEGRATION - Embedding by Samples
 const dataIntegrationEmbeddingInitialConfig = {
   spec: '1.0.0',
@@ -384,7 +611,6 @@ const dataIntegrationElbowPlotInitialConfig = {
     ...titleBaseState,
     font: 'sans-serif',
     fontSize: 12,
-    dx: 10,
   },
   signals: [
     {
@@ -409,6 +635,14 @@ const dataIntegrationElbowPlotInitialConfig = {
 };
 
 const initialPlotConfigStates = {
+  cellSizeDistributionHistogram,
+  cellSizeDistributionKneePlot,
+  mitochondrialFractionHistogram,
+  mitochondrialFractionLogHistogram,
+  classifierEmptyDropsPlot,
+  featuresVsUMIsHistogram,
+  featuresVsUMIsScatterplot,
+  doubletScoreHistogram,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,

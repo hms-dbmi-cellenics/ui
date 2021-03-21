@@ -1,19 +1,17 @@
-/* eslint-disable dot-notation */
-/* eslint-disable no-param-reassign */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert,
+  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert, Skeleton,
 } from 'antd';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import plot1Pic from '../../../../static/media/plot9.png';
-import plot2Pic from '../../../../static/media/plot10.png';
+
 import CalculationConfig from './CalculationConfig';
+import MiniPlot from '../../plots/MiniPlot';
 
 import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import DoubletScoresPlot from '../../plots/DoubletScoresPlot';
@@ -27,20 +25,22 @@ import {
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import { loadCellSets, updateCellSetsClustering } from '../../../redux/actions/cellSets';
+import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
 import Loader from '../../Loader';
 
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
-  const { experimentId } = props;
+  const { experimentId, onPipelineRun } = props;
   const [selectedPlot, setSelectedPlot] = useState('sample');
-  const [plot, setPlot] = useState(false);
+  const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const debounceSave = useCallback(_.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
 
   const debouncedCellSetClustering = useCallback(
     _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
@@ -50,144 +50,59 @@ const ConfigureEmbedding = (props) => {
   const plots = {
     sample: {
       title: 'Colored by Samples',
-      imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewBySample',
       plotType: 'embeddingPreviewBySample',
-      plot: (config, plotData) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} />),
+      plot: (config, plotData, actions) => (
+        <CategoricalEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
-
     cellCluster: {
       title: 'Colored by CellSets',
-      imgSrc: plot1Pic,
       plotUuid: 'embeddingPreviewByCellSets',
       plotType: 'embeddingPreviewByCellSets',
-      plot: (config, plotData) => (<CategoricalEmbeddingPlot experimentId={experimentId} config={config} plotData={plotData} />),
+      plot: (config, plotData, actions) => (
+        <CategoricalEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
     mitochondrialContent: {
       title: 'Mitochondrial fraction reads',
-      imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewMitochondrialContent',
       plotType: 'embeddingPreviewMitochondrialContent',
-      plot: (config, plotData) => (<MitochondrialContentPlot experimentId={experimentId} config={config} plotData={plotData} />),
+      plot: (config, plotData, actions) => (
+        <MitochondrialContentPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
     doubletScores: {
       title: 'Cell doublet score',
-      imgSrc: plot2Pic,
       plotUuid: 'embeddingPreviewDoubletScore',
       plotType: 'embeddingPreviewDoubletScore',
-      plot: (config, plotData) => (<DoubletScoresPlot experimentId={experimentId} config={config} plotData={plotData} />),
+      plot: (config, plotData, actions) => (
+        <DoubletScoresPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
     },
   };
 
-  const outstandingChanges = useSelector((state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges);
-
-  const config = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
-  );
-
-  const plotData = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
-  );
-
-  useEffect(() => {
-    dispatch(loadCellSets(experimentId));
-  }, [experimentId]);
-
-  useEffect(() => {
-    const { plotUuid, plotType } = plots[selectedPlot];
-
-    if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    }
-
-    // if we change a plot and the config is not saved yet
-    if (outstandingChanges) {
-      dispatch(savePlotConfig(experimentId, plots[selectedPlot].plotUuid));
-    }
-  }, [selectedPlot]);
-
-  useEffect(() => {
-    // Do not update anything if the cell sets are stil loading or if
-    // the config does not exist yet.
-    if (!config || !plotData) {
-      return;
-    }
-
-    if (!cellSets.loading && !cellSets.error && !cellSets.updateCellSetsClustering && config && plotData) {
-      setPlot(plots[selectedPlot].plot(config, plotData));
-      if (!config.selectedCellSet) { return; }
-
-      const propertiesArray = Object.keys(cellSets.properties);
-      const cellSetClusteringLength = propertiesArray.filter((cellSet) => cellSet === config.selectedCellSet).length;
-
-      if (!cellSetClusteringLength) {
-        debouncedCellSetClustering(0.5);
-      }
-    }
-  }, [config, cellSets, plotData]);
-
-  useEffect(() => {
-    const showPopupWhenUnsaved = (url) => {
-      // Only handle if we are navigating away.z
-      const { plotUuid } = plots[selectedPlot];
-      if (router.asPath === url || !outstandingChanges) {
-        return;
-      }
-      // Show a confirmation dialog. Prevent moving away if the user decides not to.
-      // eslint-disable-next-line no-alert
-      if (
-        !window.confirm(
-          'You have unsaved changes. Do you wish to save?',
-        )
-      ) {
-        router.events.emit('routeChangeError');
-        // Following is a hack-ish solution to abort a Next.js route change
-        // as there's currently no official API to do so
-        // See https://github.com/zeit/next.js/issues/2476#issuecomment-573460710
-        // eslint-disable-next-line no-throw-literal
-        throw `Route change to "${url}" was aborted (this error can be safely ignored). See https://github.com/zeit/next.js/issues/2476.`;
-      } else {
-        // if we click 'ok' the config is changed
-        dispatch(savePlotConfig(experimentId, plotUuid));
-      }
-    };
-
-    router.events.on('routeChangeStart', showPopupWhenUnsaved);
-
-    return () => {
-      router.events.off('routeChangeStart', showPopupWhenUnsaved);
-    };
-  }, [router.asPath, router.events]);
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
-    debounceSave(plots[selectedPlot].plotUuid);
-  };
-
-  const renderPlot = () => {
-    // Spinner for main window
-    if (!config) {
-      return (
-        <center>
-          <Loader experimentId={experimentId} />
-        </center>
-      );
-    }
-
-    if (selectedPlot === 'sample'
-      && !cellSets.loading
-      && filterCells(cellSets, config.selectedCellSet).length === 0) {
-      return (
-        <Empty description='Your project has only one sample.' />
-      );
-    }
-
-    if (plot) {
-      return plot;
-    }
-  };
-
-  const plotSpecificStyling = {
+  const plotSpecificStylingControl = {
     sample: [
       {
         panelTitle: 'Colour Inversion',
@@ -276,7 +191,7 @@ const ConfigureEmbedding = (props) => {
     ],
   };
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -295,8 +210,122 @@ const ConfigureEmbedding = (props) => {
       panelTitle: 'Axes and Margins',
       controls: ['axes'],
     },
-    ...plotSpecificStyling[selectedPlot],
+    ...plotSpecificStylingControl[selectedPlot],
   ];
+
+  const outstandingChanges = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges,
+  );
+
+  const config = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
+
+  const plotData = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+  );
+
+  useEffect(() => {
+    Object.values(plots).forEach((obj) => {
+      if (!config) {
+        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+      }
+    });
+  }, [experimentId]);
+
+  useEffect(() => {
+    // if we change a plot and the config is not saved yet
+    if (outstandingChanges) {
+      dispatch(savePlotConfig(experimentId, plots[selectedPlot].plotUuid));
+    }
+  }, [selectedPlot]);
+
+  useEffect(() => {
+    // Do not update anything if the cell sets are stil loading or if
+    // the config does not exist yet.
+    if (!config || !plotData) {
+      return;
+    }
+
+    if (!cellSets.loading
+      && !cellSets.error
+      && !cellSets.updateCellSetsClustering
+      && config
+      && plotData) {
+      setPlot(plots[selectedPlot].plot(config, plotData));
+      if (!config.selectedCellSet) { return; }
+
+      const propertiesArray = Object.keys(cellSets.properties);
+      const cellSetClusteringLength = propertiesArray.filter(
+        (cellSet) => cellSet === config.selectedCellSet,
+      ).length;
+
+      if (!cellSetClusteringLength) {
+        debouncedCellSetClustering(0.5);
+      }
+    }
+  }, [config, cellSets, plotData]);
+
+  useEffect(() => {
+    const showPopupWhenUnsaved = (url) => {
+      // Only handle if we are navigating away.z
+      const { plotUuid } = plots[selectedPlot];
+      if (router.asPath === url || !outstandingChanges) {
+        return;
+      }
+      // Show a confirmation dialog. Prevent moving away if the user decides not to.
+      // eslint-disable-next-line no-alert
+      if (
+        !window.confirm(
+          'You have unsaved changes. Do you wish to save?',
+        )
+      ) {
+        router.events.emit('routeChangeError');
+        // Following is a hack-ish solution to abort a Next.js route change
+        // as there's currently no official API to do so
+        // See https://github.com/zeit/next.js/issues/2476#issuecomment-573460710
+        // eslint-disable-next-line no-throw-literal
+        throw `Route change to "${url}" was aborted (this error can be safely ignored). See https://github.com/zeit/next.js/issues/2476.`;
+      } else {
+        // if we click 'ok' the config is changed
+        dispatch(savePlotConfig(experimentId, plotUuid));
+      }
+    };
+
+    router.events.on('routeChangeStart', showPopupWhenUnsaved);
+
+    return () => {
+      router.events.off('routeChangeStart', showPopupWhenUnsaved);
+    };
+  }, [router.asPath, router.events]);
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
+    debounceSave(plots[selectedPlot].plotUuid);
+  };
+
+  const renderPlot = () => {
+    // Spinner for main window
+    if (!config) {
+      return (
+        <center>
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
+        </center>
+      );
+    }
+
+    if (selectedPlot === 'sample'
+      && !cellSets.loading
+      && filterCells(cellSets, config.selectedCellSet).length === 0) {
+      return (
+        <Empty description='Your project has only one sample.' />
+      );
+    }
+
+    if (plot) {
+      return plot;
+    }
+  };
 
   return (
     <>
@@ -314,26 +343,25 @@ const ConfigureEmbedding = (props) => {
             <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.'>
               <Button icon={<InfoCircleOutlined />} />
             </Tooltip>
-
-            {Object.entries(plots).map(([key, option]) => (
+            {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'
                 key={key}
                 onClick={() => setSelectedPlot(key)}
                 style={{
-                  padding: 0, margin: 0, border: 0, backgroundColor: 'transparent',
+                  margin: 0,
+                  backgroundColor: 'transparent',
+                  align: 'center',
+                  padding: '8px',
+                  border: '1px solid #000',
+                  cursor: 'pointer',
                 }}
               >
-                <img
-                  alt={option.title}
-                  src={option.imgSrc}
-                  style={{
-                    height: '100px',
-                    width: '100px',
-                    align: 'center',
-                    padding: '8px',
-                    border: '1px solid #000',
-                  }}
+                <MiniPlot
+                  experimentId={experimentId}
+                  plotUuid={plotObj.plotUuid}
+                  plotFn={plotObj.plot}
+                  actions={false}
                 />
               </button>
 
@@ -342,11 +370,15 @@ const ConfigureEmbedding = (props) => {
         </Col>
 
         <Col span={5}>
-          <CalculationConfig experimentId={experimentId} />
+          <CalculationConfig experimentId={experimentId} onPipelineRun={onPipelineRun} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>
@@ -357,6 +389,7 @@ const ConfigureEmbedding = (props) => {
 
 ConfigureEmbedding.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  onPipelineRun: PropTypes.func.isRequired,
 };
 
 export default ConfigureEmbedding;

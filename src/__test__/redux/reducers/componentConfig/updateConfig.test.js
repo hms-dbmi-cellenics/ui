@@ -12,12 +12,13 @@ describe('updateConfig', () => {
         experimentId: '1234',
         plotUuid: 'volcanoPlotMain',
         config: _.cloneDeep(initialPlotConfigStates.volcano),
+        plotData: [],
       },
     });
     const updateReturn = updateReducer(newState, {
       type: UPDATE_CONFIG,
       payload: {
-        configChange: { height: 2000 },
+        configChanges: { height: 2000 },
         plotUuid: 'volcanoPlotMain',
       },
     });
@@ -30,12 +31,13 @@ describe('updateConfig', () => {
         experimentId: '1234',
         plotUuid: 'embeddingCategoricalMain',
         config: _.cloneDeep(initialPlotConfigStates.embeddingCategorical),
+        plotData: [],
       },
     });
     const updateReturn = updateReducer(newState, {
       type: UPDATE_CONFIG,
       payload: {
-        configChange: {},
+        configChanges: {},
         plotUuid: 'embeddingCategoricalMain',
       },
     });

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import { Skeleton } from 'antd';
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { loadEmbedding } from '../../redux/actions/embedding';
@@ -10,11 +11,10 @@ import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/act
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
-import Loader from '../Loader';
 
 const ContinuousEmbeddingPlot = (props) => {
   const {
-    experimentId, config, plotUuid, plotData,
+    experimentId, config, plotUuid, plotData, actions,
   } = props;
   const embeddingType = 'umap';
   const dispatch = useDispatch();
@@ -116,14 +116,14 @@ const ContinuousEmbeddingPlot = (props) => {
       || fetching) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -137,6 +137,7 @@ const ContinuousEmbeddingPlot = (props) => {
 
 ContinuousEmbeddingPlot.defaultProps = {
   plotData: null,
+  actions: true,
 };
 
 ContinuousEmbeddingPlot.propTypes = {
@@ -144,6 +145,10 @@ ContinuousEmbeddingPlot.propTypes = {
   config: PropTypes.object.isRequired,
   plotUuid: PropTypes.string.isRequired,
   plotData: PropTypes.array,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 export default ContinuousEmbeddingPlot;

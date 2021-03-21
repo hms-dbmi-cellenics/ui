@@ -4,7 +4,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Empty, Typography,
+  Empty, Typography, Skeleton,
 } from 'antd';
 import _ from 'lodash';
 import spec from '../../../utils/heatmapSpec';
@@ -15,8 +15,6 @@ import { loadGeneExpression } from '../../../redux/actions/genes';
 import { loadCellSets } from '../../../redux/actions/cellSets';
 import { loadComponentConfig } from '../../../redux/actions/componentConfig';
 import populateHeatmapData from '../../plots/helpers/populateHeatmapData';
-import { union } from '../../../utils/cellSetOperations';
-import SetOperations from '../../../utils/setOperations';
 import Loader from '../../Loader';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
@@ -151,7 +149,7 @@ const HeatmapPlot = (props) => {
   if (!vegaData) {
     return (
       <center style={{ marginTop: height / 2 }}>
-        <Loader experimentId={experimentId} />
+        <Skeleton.Image />
       </center>
     );
   }

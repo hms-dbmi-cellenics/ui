@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import Loader from '../Loader';
+import { Skeleton } from 'antd';
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateDoubletScoresSpec';
 
@@ -14,7 +14,9 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 const DoubletScoresPlot = (props) => {
-  const { experimentId, config, plotData } = props;
+  const {
+    experimentId, config, plotData, actions,
+  } = props;
   const defaultEmbeddingType = 'umap';
   const dataName = 'doubletScores';
   const plotUuid = 'embeddingPreviewDoubletScore';
@@ -95,7 +97,7 @@ const DoubletScoresPlot = (props) => {
         || cellSets.loading)) {
       return (
         <center>
-          <Loader experimentId={experimentId} size='large' />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -111,7 +113,7 @@ const DoubletScoresPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );
   };
@@ -127,10 +129,15 @@ DoubletScoresPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
 };
 
 DoubletScoresPlot.defaultProps = {
   plotData: null,
+  actions: true,
 };
 
 export default DoubletScoresPlot;

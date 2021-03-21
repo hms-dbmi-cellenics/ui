@@ -75,7 +75,7 @@ const frequencyPlot = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const plotStylingConfig = [
+  const plotStylingControlsConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -194,7 +194,7 @@ const frequencyPlot = ({ experimentId }) => {
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
             <PlotStyling
-              formConfig={plotStylingConfig}
+              formConfig={plotStylingControlsConfig}
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}

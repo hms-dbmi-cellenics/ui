@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import { Skeleton } from 'antd';
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { loadEmbedding } from '../../redux/actions/embedding';
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
-import Loader from '../Loader';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
@@ -63,7 +63,7 @@ const CategoricalEmbeddingPlot = (props) => {
     if (cellSets.loading || !embeddingData || loading || !config) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -82,16 +82,19 @@ const CategoricalEmbeddingPlot = (props) => {
   );
 };
 
-CategoricalEmbeddingPlot.defaultProps = {
-  actions: true,
-  plotData: null,
-};
-
 CategoricalEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
-  actions: PropTypes.bool,
+  actions: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
   plotData: PropTypes.array,
+};
+
+CategoricalEmbeddingPlot.defaultProps = {
+  actions: true,
+  plotData: null,
 };
 
 export default CategoricalEmbeddingPlot;

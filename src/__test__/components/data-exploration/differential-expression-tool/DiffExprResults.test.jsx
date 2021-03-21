@@ -24,19 +24,19 @@ jest.mock('../../../../utils/sendWork', () => ({
         body: JSON.stringify({
           rows: [
             {
-              pval: 1.4969461240347763e-12, qval: 1.647289002209057e-11, log2fc: -1.4274754343649423, gene_names: 'A',
+              p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, avg_log2FC: -1.4274754343649423, gene_names: 'A',
             },
             {
-              pval: 2.4969461240347763e-12, qval: 2.647289002209057e-11, log2fc: -2.4274754343649423, gene_names: 'B',
+              p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, avg_log2FC: -2.4274754343649423, gene_names: 'B',
             },
             {
-              pval: 3.4969461240347763e-12, qval: 3.647289002209057e-11, log2fc: -3.4274754343649423, gene_names: 'C',
+              p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, avg_log2FC: -3.4274754343649423, gene_names: 'C',
             },
             {
-              pval: 4.4969461240347763e-12, qval: 4.647289002209057e-11, log2fc: -4.4274754343649423, gene_names: 'D',
+              p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, avg_log2FC: -4.4274754343649423, gene_names: 'D',
             },
             {
-              pval: 5.4969461240347763e-12, qval: 5.647289002209057e-11, log2fc: -5.4274754343649423, gene_names: 'E',
+              p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, avg_log2FC: -5.4274754343649423, gene_names: 'E',
             },
           ],
           total: 500,
@@ -58,23 +58,72 @@ const store = mockStore({
       key: 'C',
     },
   },
+  cellSets: {
+    loading: false,
+    error: false,
+    selected: [],
+    properties: {
+      'cluster-a': {
+        name: 'Name of Cluster A',
+        key: 'cluster-a',
+        cellIds: new Set(['1', '2']),
+        color: '#00FF00',
+      },
+      'cluster-b': {
+        name: 'Name of Cluster B',
+        key: 'cluster-b',
+        cellIds: new Set(['2', '3', '4', '5']),
+        color: '#FF0000',
+      },
+      'scratchpad-a': {
+        cellIds: new Set(['3']),
+        key: 'scratchpad-a',
+        name: 'Name of Scratchpad A',
+        color: '#ff00ff',
+      },
+      louvain: {
+        cellIds: new Set(),
+        name: 'Louvain clusters',
+        key: 'louvain',
+        type: 'cellSets',
+        rootNode: true,
+      },
+      scratchpad: {
+        cellIds: new Set(),
+        name: 'Custom selections',
+        key: 'scratchpad',
+        type: 'cellSets',
+        rootNode: true,
+      },
+    },
+    hierarchy: [
+      {
+        key: 'louvain',
+        children: [{ key: 'cluster-a' }, { key: 'cluster-b' }],
+      },
+      {
+        key: 'scratchpad',
+        children: [{ key: 'scratchpad-a' }],
+      },
+    ],
+  },
   differentialExpression: {
     properties: {
       data: [
         {
-          pval: 1.4969461240347763e-12, qval: 1.647289002209057e-11, log2fc: -1.4274754343649423, gene_names: 'A',
+          p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, avg_log2FC: -1.4274754343649423, gene_names: 'A',
         },
         {
-          pval: 2.4969461240347763e-12, qval: 2.647289002209057e-11, log2fc: -2.4274754343649423, gene_names: 'B',
+          p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, avg_log2FC: -2.4274754343649423, gene_names: 'B',
         },
         {
-          pval: 3.4969461240347763e-12, qval: 3.647289002209057e-11, log2fc: -3.4274754343649423, gene_names: 'C',
+          p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, avg_log2FC: -3.4274754343649423, gene_names: 'C',
         },
         {
-          pval: 4.4969461240347763e-12, qval: 4.647289002209057e-11, log2fc: -4.4274754343649423, gene_names: 'D',
+          p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, avg_log2FC: -4.4274754343649423, gene_names: 'D',
         },
         {
-          pval: 5.4969461240347763e-12, qval: 5.647289002209057e-11, log2fc: -5.4274754343649423, gene_names: 'E',
+          p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, avg_log2FC: -5.4274754343649423, gene_names: 'E',
         },
       ],
       loading: false,
@@ -85,9 +134,9 @@ const store = mockStore({
       type: 'between',
       group: {
         between: {
-          cellSet: 'louvain/louvain-0',
-          compareWith: 'louvain/louvain-1',
-          basis: 'condition/condition-control',
+          cellSet: 'louvain/cluster-a',
+          compareWith: 'louvain/cluster-b',
+          basis: 'scratchpad/scratchpad-a',
         },
       },
     },
@@ -127,12 +176,13 @@ describe('DiffExprResults', () => {
     const spin = component.find('Table').find(Loader);
     expect(spin.length).toEqual(0);
     expect(table.length).toEqual(1);
-    expect(table.getElement().props.columns.length).toEqual(5);
+    expect(table.getElement().props.columns.length).toEqual(6);
     expect(table.getElement().props.columns[0].key).toEqual('lookup');
-    expect(table.getElement().props.columns[1].title).toEqual('Gene');
-    expect(table.getElement().props.columns[2].key).toEqual('zscore');
-    expect(table.getElement().props.columns[3].key).toEqual('abszscore');
-    expect(table.getElement().props.columns[4].key).toEqual('log2fc');
+    expect(table.getElement().props.columns[1].key).toEqual('gene_names');
+    expect(table.getElement().props.columns[2].key).toEqual('avg_log2FC');
+    expect(table.getElement().props.columns[3].key).toEqual('p_val_adj');
+    expect(table.getElement().props.columns[4].key).toEqual('pct_1');
+    expect(table.getElement().props.columns[5].key).toEqual('pct_2');
 
     expect(table.getElement().props.dataSource.length).toEqual(5);
     expect(table.getElement().props.data.length).toEqual(5);
@@ -174,9 +224,9 @@ describe('DiffExprResults', () => {
 
     expect(sendWork).toHaveBeenCalledWith('1234', 60,
       {
-        cellSet: 'louvain-0',
-        compareWith: 'louvain-1',
-        basis: 'condition-control',
+        cellSet: 'cluster-a',
+        compareWith: 'cluster-b',
+        basis: 'scratchpad-a',
         experimentId: '1234',
         name: 'DifferentialExpression',
       },
@@ -230,7 +280,8 @@ describe('DiffExprResults', () => {
     expect(button.text()).toContain('Hide');
 
     const div = component.find('#settingsText');
-    expect(div.text()).toEqual('Louvain 0 vs. Louvain 1 in Condition control');
+    // Should display name of cluster instead of ID
+    expect(div.text()).toEqual('Name of Cluster A vs. Name of Cluster B in Name of Scratchpad A');
     button.simulate('click');
     expect(button.childAt(0).text()).toEqual('Show settings');
     expect(!div);
