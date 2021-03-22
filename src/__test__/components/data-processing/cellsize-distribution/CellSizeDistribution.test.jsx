@@ -17,21 +17,24 @@ import generatePlotUuid from '../../../../utils/generatePlotUuid';
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
-const sampleId = 'sample-WT';
+const sampleId = 'sample-KO';
 const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const experimentId = 'e1234';
 const filterName = 'cellSizeDistribution';
+
+const sample1 = generatePlotUuid(sampleId, filterName, 0);
+const sample2 = generatePlotUuid(sampleId, filterName, 1);
 
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    [generatePlotUuid(sampleId, filterName, 0)]: {
+    [sample1]: {
       config: initialPlotConfigStates.cellSizeDistributionHistogram,
       plotData: [],
     },
-    [generatePlotUuid(sampleId, filterName, 1)]: {
+    [sample2]: {
       config: initialPlotConfigStates.cellSizeDistributionKneePlot,
       plotData: [],
     },
@@ -42,28 +45,40 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    [generatePlotUuid(sampleId, filterName, 0)]: {
-      ...noData.componentConfig.cellSizeDistributionHistogram,
+    [sample1]: {
+      ...noData.componentConfig[sample1],
       plotData: [{
         u: 8890.246597269077,
+        status: 'low',
       },
       {
         u: 7986.663750139649,
+        status: 'low',
       },
       {
         u: 9301.510440766624,
+        status: 'low',
       }],
     },
-    [generatePlotUuid(sampleId, filterName, 1)]: {
-      ...noData.componentConfig.cellSizeDistributionKneePlot,
+    [sample2]: {
+      ...noData.componentConfig[sample2],
       plotData: [{
-        u: 8890.246597269077,
+        u: 864,
+        rank: 1365,
+        status: 'low',
+        logUValue: 6460.3302,
       },
       {
-        u: 7986.663750139649,
+        u: 4472,
+        rank: 1110,
+        status: 'low',
+        logUValue: 8031.1039,
       },
       {
-        u: 9301.510440766624,
+        u: 3065,
+        rank: 584,
+        status: 'low',
+        logUValue: 7670.1470,
       }],
     },
   },
@@ -118,7 +133,7 @@ describe('CellSizeDistribution', () => {
     expect(plots.length).toEqual(0);
   });
 
-  it('Shows plot with data', () => {
+  it('Shows plot with data', async () => {
     const store = mockStore(withData);
 
     const component = mount(

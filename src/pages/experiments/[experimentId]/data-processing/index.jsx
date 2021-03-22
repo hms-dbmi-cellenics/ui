@@ -113,6 +113,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
             <CellSizeDistribution
+              id={'cellSizeDistribution'}
               experimentId={experimentId}
               filtering
               key={key}

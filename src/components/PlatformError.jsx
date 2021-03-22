@@ -11,7 +11,11 @@ import WorkTimeoutError from '../utils/WorkTimeoutError';
 const { Text } = Typography;
 
 const PlatformError = (props) => {
-  const { description, error, onClick } = props;
+  const {
+    description, error, actionable, onClick,
+  } = props;
+
+  let { reason } = props;
 
   const [relativeTime, setRelativeTime] = useState('just now');
 
@@ -28,7 +32,7 @@ const PlatformError = (props) => {
   }, []);
 
   const renderMessage = () => {
-    let reason = 'That\'s all we know';
+    reason = reason || 'That\'s all we know';
 
     if (error instanceof WorkResponseError) {
       reason = 'We had an error on our side while we were completing your request.';
@@ -73,21 +77,20 @@ const PlatformError = (props) => {
       }}
       description={renderMessage(error)}
     >
-      <Button
-        type='primary'
-        onClick={onClick || window.location.reload()}
-      >
-        Try again
-      </Button>
+
+      { actionable ? (
+
+        <Button
+          type='primary'
+          onClick={onClick || window.location.reload()}
+        >
+          Try again
+        </Button>
+
+      ) : ''}
 
     </Empty>
   );
-};
-
-PlatformError.defaultProps = {
-  description: null,
-  error: null,
-  onClick: null,
 };
 
 PlatformError.propTypes = {
@@ -95,7 +98,17 @@ PlatformError.propTypes = {
   error: PropTypes.oneOfType([
     PropTypes.string, PropTypes.object,
   ]),
+  actionable: PropTypes.bool,
   onClick: PropTypes.func,
+  reason: PropTypes.string,
+};
+
+PlatformError.defaultProps = {
+  description: null,
+  error: null,
+  actionable: true,
+  onClick: null,
+  reason: null,
 };
 
 export default PlatformError;

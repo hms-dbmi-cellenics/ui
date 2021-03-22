@@ -192,6 +192,7 @@ const CellSizeDistribution = (props) => {
                   plotFn={plotObj.plot}
                   actions={false}
                 />
+
               </button>
 
             ))}

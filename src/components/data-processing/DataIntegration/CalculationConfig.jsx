@@ -26,6 +26,7 @@ import _ from 'lodash';
 import SeuratV4Options from './SeuratV4Options';
 
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
+import generatePlotUuid from '../../../utils/generatePlotUuid';
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -42,7 +43,7 @@ const CalculationConfig = (props) => {
     (state) => state.experimentSettings.processing.dataIntegration,
   );
 
-  const elbowPlotUuid = 'dataIntegrationElbow';
+  const elbowPlotUuid = generatePlotUuid(null, FILTER_UUID, 2);
   const data = useSelector((state) => state.componentConfig[elbowPlotUuid]?.plotData);
 
   const methods = [

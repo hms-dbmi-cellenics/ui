@@ -22,16 +22,19 @@ const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const experimentId = 'e1234';
 const filterName = 'numGenesVsNumUmis';
 
+const sample1 = generatePlotUuid(sampleId, filterName, 0);
+const sample2 = generatePlotUuid(sampleId, filterName, 1);
+
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    [generatePlotUuid(sampleId, filterName, 0)]: {
+    [sample1]: {
       config: initialPlotConfigStates.featuresVsUMIsHistogram,
       plotData: [],
     },
-    [generatePlotUuid(sampleId, filterName, 1)]: {
+    [sample1]: {
       config: initialPlotConfigStates.featuresVsUMIsScatterplot,
       plotData: [],
     },
@@ -42,8 +45,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    [generatePlotUuid(sampleId, filterName, 0)]: {
-      ...noData.componentConfig.featuresVsUMIsHistogram,
+    [sample1]: {
+      ...noData.componentConfig[sample1],
       plotData: [
         {
           genes: 2.41995574848976,
@@ -60,7 +63,7 @@ const withData = {
       ],
     },
     [generatePlotUuid(sampleId, filterName, 1)]: {
-      ...noData.componentConfig.featuresVsUMIsScatterplot,
+      ...noData.componentConfig[sample2],
       plotData: [
         {
           genes: 2.41995574848976,

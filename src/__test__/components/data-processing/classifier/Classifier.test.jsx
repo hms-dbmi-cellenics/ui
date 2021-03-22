@@ -22,12 +22,14 @@ const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const filterName = 'classifier';
 const experimentId = 'e1234';
 
+const sample1 = generatePlotUuid(sampleId, filterName, 0);
+
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    [generatePlotUuid(sampleId, filterName, 0)]: {
+    [sample1]: {
       config: initialPlotConfigStates.classifierEmptyDropsPlot,
       plotData: [],
     },
@@ -38,8 +40,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    [generatePlotUuid(sampleId, filterName, 0)]: {
-      ...noData.componentConfig.classifierEmptyDropsPlot,
+    [sample1]: {
+      ...noData.componentConfig[sample1],
       plotData: [
         {
           classifierP: 0.994553522823595,
