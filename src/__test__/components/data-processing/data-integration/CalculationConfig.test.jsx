@@ -72,6 +72,8 @@ describe('Data Integration Calculation Config', () => {
   const experimentId = '1234';
   const config = storeState.experimentSettings.processing.dataIntegration;
 
+  const onPipelineRun = () => { };
+
   it('renders correctly when nothing is loaded', () => {
     const store = mockStore({
       embeddings: {},
@@ -82,7 +84,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -97,7 +99,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -115,7 +117,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -130,7 +132,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -148,7 +150,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -156,12 +158,12 @@ describe('Data Integration Calculation Config', () => {
     expect(button.props.disabled).toBe(true);
   });
 
-  it('fires action to save config when run is pressed', async () => {
+  it('fires action to update config when run is pressed', async () => {
     const store = mockStore(storeState);
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -178,11 +180,7 @@ describe('Data Integration Calculation Config', () => {
     // Alert disappears
     expect(component.find(Alert).length).toEqual(0);
 
-    await waitForActions(store,
-      [
-        EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
-        EXPERIMENT_SETTINGS_PROCESSING_SAVE,
-      ]);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE]);
   });
 
   it('displays the correct proportion of variation explained value', async () => {
@@ -190,7 +188,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} />
+        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 

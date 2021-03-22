@@ -2,13 +2,12 @@ import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {
-  Collapse, Row, Col, Space, Button, Tooltip,
+  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
 } from 'antd';
 import PropTypes from 'prop-types';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import Loader from '../../Loader';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -22,9 +21,10 @@ import CalculationConfig from './CalculationConfig';
 import generatePlotUuid from '../../../utils/generatePlotUuid';
 
 const { Panel } = Collapse;
+
 const Classifier = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const filterName = 'classifier';
@@ -87,13 +87,20 @@ const Classifier = (props) => {
     if (!config || !plotData) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
 
     if (config && plotData) {
-      return <ClassifierEmptyDropsPlot experimentId={experimentId} config={config} plotData={plotData} actions={allowedPlotActions} />;
+      return (
+        <ClassifierEmptyDropsPlot
+          experimentId={experimentId}
+          config={config}
+          plotData={plotData}
+          actions={allowedPlotActions}
+        />
+      );
     }
   };
 
@@ -114,11 +121,15 @@ const Classifier = (props) => {
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} />
+              <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} onConfigChange={onConfigChange} />
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>
@@ -131,6 +142,7 @@ Classifier.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default Classifier;

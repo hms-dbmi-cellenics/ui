@@ -41,16 +41,16 @@ const ContentWrapper = (props) => {
   const {
     loading: pipelineLoading,
     error: pipelineError,
-    status: pipelineStatus,
+    status: workerAndPipelineStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
 
-  const pipelineStatusKey = pipelineStatus.pipeline?.status;
+  const pipelineStatusKey = workerAndPipelineStatus.pipeline?.status;
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 
-  // const pipelineRunning = pipelineStatusKey === 'RUNNING';
-  // const pipelineRunningError = pipelineErrors.includes(pipelineStatusKey);
-  const pipelineRunning = false;
-  const pipelineRunningError = false;
+  const pipelineRunning = pipelineStatusKey === 'RUNNING';
+  const pipelineRunningError = pipelineErrors.includes(pipelineStatusKey);
+  // const pipelineRunning = false;
+  // const pipelineRunningError = false;
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the pipeline status was previously loaded. In that case, `pipelineLoading` is `false`

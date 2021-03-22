@@ -4,15 +4,13 @@ import { Provider } from 'react-redux';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import { Empty } from 'antd';
+import { Empty, Skeleton } from 'antd';
 
 // eslint-disable-next-line import/no-named-as-default
 import HeatmapPlot from '../../../../components/data-exploration/heatmap/HeatmapPlot';
 import VegaHeatmap from '../../../../components/data-exploration/heatmap/VegaHeatmap';
 
 import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
-
-import Loader from '../../../../components/Loader';
 
 jest.mock('localforage');
 jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
@@ -156,7 +154,7 @@ describe('HeatmapPlot', () => {
     );
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find(Loader).length).toEqual(1);
+    expect(component.find(Skeleton.Image).length).toEqual(1);
   });
 
   it('renders Vega heatmap when genes loaded', () => {

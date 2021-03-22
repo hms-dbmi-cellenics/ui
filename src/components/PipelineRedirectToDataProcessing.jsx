@@ -12,12 +12,12 @@ const PipelineRedirectToDataProcessing = ({ experimentId, pipelineStatus }) => {
     error: {
       status: 'error',
       title: 'We\'ve had an issue while working on your project.',
-      subTitle: 'Please try again in Data Processing.',
+      subTitle: 'Please go to Data Processing and try again.',
     },
     running: {
       status: 'info',
       title: 'We\'re working on your project...',
-      subTitle: 'You can check the progress we\'ve made in Data Processing or try again later.',
+      subTitle: 'You can check the progress we\'ve made in Data Processing.',
     },
   };
 

@@ -2,13 +2,12 @@ import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {
-  Collapse, Row, Col, Space, Button, Tooltip,
+  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
 } from 'antd';
 import PropTypes from 'prop-types';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import Loader from '../../Loader';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -24,7 +23,7 @@ import generatePlotUuid from '../../../utils/generatePlotUuid';
 const { Panel } = Collapse;
 const DoubletScores = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const filterName = 'doubletScores';
@@ -87,7 +86,7 @@ const DoubletScores = (props) => {
     if (!config || !plotData) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -113,11 +112,20 @@ const DoubletScores = (props) => {
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} sampleId={sampleId} sampleIds={sampleIds} />
+              <CalculationConfig
+                experimentId={experimentId}
+                sampleId={sampleId}
+                sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
+              />
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
-              <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+              />
             </Panel>
           </Collapse>
         </Col>
@@ -130,6 +138,10 @@ DoubletScores.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
+};
+
+DoubletScores.defaultProps = {
 };
 
 export default DoubletScores;

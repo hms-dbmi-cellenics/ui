@@ -3,7 +3,7 @@
 exports[`HeatmapGroupBySettings interacting with the groupby add/remove options will trigger the appropriate actions 1`] = `
 Object {
   "payload": Object {
-    "configChange": Object {
+    "configChanges": Object {
       "groupedTracks": Array [
         "sample",
         "louvain",
@@ -18,7 +18,7 @@ Object {
 exports[`HeatmapGroupBySettings interacting with the groupby add/remove options will trigger the appropriate actions 2`] = `
 Object {
   "payload": Object {
-    "configChange": Object {
+    "configChanges": Object {
       "groupedTracks": Array [
         "sample",
         "louvain",
@@ -33,7 +33,7 @@ Object {
 exports[`HeatmapGroupBySettings interacting with the groupby reorder options will trigger the appropriate actions 1`] = `
 Object {
   "payload": Object {
-    "configChange": Object {
+    "configChanges": Object {
       "groupedTracks": Array [
         "louvain",
         "sample",

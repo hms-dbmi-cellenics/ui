@@ -25,14 +25,16 @@ import _ from 'lodash';
 
 import SeuratV4Options from './SeuratV4Options';
 
-import { updateProcessingSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
+import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
 
 const { Option } = Select;
 const { Text } = Typography;
 const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
-  const { experimentId } = props;
+  const {
+    experimentId, data, onPipelineRun
+  } = props;
   const FILTER_UUID = 'dataIntegration';
 
   const dispatch = useDispatch();
@@ -88,13 +90,19 @@ const CalculationConfig = (props) => {
     ));
   };
 
-  const applyDataIntegrationSettings = () => {
+  const runWithCurrentDataIntegrationSettings = () => {
     setChangesOutstanding(false);
-    dispatch(saveProcessingSettings(experimentId, FILTER_UUID));
+    onPipelineRun();
   };
 
   const methodOptions = {
-    seuratv4: () => <SeuratV4Options config={dataIntegration.methodSettings.seuratv4} onUpdate={updateSettings} onChange={() => setChangesOutstanding(true)} />,
+    seuratv4: () => (
+      <SeuratV4Options
+        config={dataIntegration.methodSettings.seuratv4}
+        onUpdate={updateSettings}
+        onChange={() => setChangesOutstanding(true)}
+      />
+    ),
   };
 
   const roundedVariationExplained = () => {
@@ -147,7 +155,6 @@ const CalculationConfig = (props) => {
             }
 
           </div>
-
           <Form.Item>
             <Text>
               <strong style={{ marginRight: '0.5rem' }}>Dimensionality reduction settings:</strong>
@@ -168,7 +175,9 @@ const CalculationConfig = (props) => {
                 }}
                 onPressEnter={(e) => e.preventDefault()}
                 onStep={(value) => updateSettings({ dimensionalityReduction: { numPCs: value } })}
-                onBlur={(e) => updateSettings({ dimensionalityReduction: { numPCs: parseInt(e.target.value, 0) } })}
+                onBlur={(e) => updateSettings(
+                  { dimensionalityReduction: { numPCs: parseInt(e.target.value, 0) } },
+                )}
               />
             </Form.Item>
             <Form.Item label='% variation explained'>
@@ -180,7 +189,9 @@ const CalculationConfig = (props) => {
             </Form.Item>
             <Form.Item label='Exclude genes categories:'>
               <Checkbox.Group
-                onChange={(val) => updateSettings({ dimensionalityReduction: { excludeGeneCategories: val } })}
+                onChange={(val) => updateSettings(
+                  { dimensionalityReduction: { excludeGeneCategories: val } },
+                )}
                 value={dimensionalityReduction.excludeGeneCategories}
               >
                 <Space direction='vertical'>
@@ -208,9 +219,9 @@ const CalculationConfig = (props) => {
                       type='primary'
                       htmlType='submit'
                       disabled={!changesOutstanding}
-                      onClick={applyDataIntegrationSettings}
+                      onClick={runWithCurrentDataIntegrationSettings}
                     >
-                      Apply
+                      Run
                     </Button>
                   </Tooltip>
                 </Col>
@@ -225,6 +236,15 @@ const CalculationConfig = (props) => {
 
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
+<<<<<<< HEAD
+=======
+  onPipelineRun: PropTypes.func.isRequired,
+  data: PropTypes.array,
+};
+
+CalculationConfig.defaultProps = {
+  data: [],
+>>>>>>> master
 };
 
 export default CalculationConfig;

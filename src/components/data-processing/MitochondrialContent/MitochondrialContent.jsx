@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {
-  Collapse, Row, Col, Space, Tooltip, Button,
+  Collapse, Row, Col, Space, Tooltip, Button, Skeleton,
 } from 'antd';
 import PropTypes from 'prop-types';
 import {
@@ -27,7 +27,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const MitochondrialContent = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const dispatch = useDispatch();
@@ -136,11 +136,10 @@ const MitochondrialContent = (props) => {
     if (!config || !plotData) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
-
     if (plot) {
       return plot;
     }
@@ -191,6 +190,7 @@ const MitochondrialContent = (props) => {
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
               />
             </Panel>
             <Panel header='Plot styling' key='styling'>
@@ -212,6 +212,7 @@ MitochondrialContent.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default MitochondrialContent;

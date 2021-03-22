@@ -10,9 +10,9 @@ import {
   Space,
   Tooltip,
   Button,
+  Skeleton,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import Loader from '../../Loader';
 
 import {
   updatePlotConfig,
@@ -31,7 +31,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const CellSizeDistribution = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const filterName = 'cellSizeDistribution';
@@ -150,7 +150,7 @@ const CellSizeDistribution = (props) => {
     if (!config || !plotData) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -211,6 +211,7 @@ const CellSizeDistribution = (props) => {
                 sampleId={sampleId}
                 plotType='bin step'
                 sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
               />
             </Panel>
             <Panel header='Plot styling' key='styling'>
@@ -232,6 +233,7 @@ CellSizeDistribution.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default CellSizeDistribution;

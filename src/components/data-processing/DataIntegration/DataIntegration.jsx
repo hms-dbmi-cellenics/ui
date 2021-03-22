@@ -3,13 +3,12 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert,
+  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Skeleton, Alert,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
-import Loader from '../../Loader';
 
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
@@ -31,7 +30,7 @@ import generatePlotUuid from '../../../utils/generatePlotUuid';
 
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
-  const { experimentId } = props;
+  const { experimentId, onPipelineRun } = props;
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
@@ -172,6 +171,10 @@ const DataIntegration = (props) => {
     ...plotSpecificStylingControl[selectedPlot],
   ];
 
+  const calculationConfig = useSelector(
+    (state) => state.experimentSettings.processing.dataIntegration,
+  );
+
   const outstandingChanges = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges,
   );
@@ -270,7 +273,7 @@ const DataIntegration = (props) => {
     if (!config) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -320,9 +323,12 @@ const DataIntegration = (props) => {
             ))}
           </Space>
         </Col>
-
         <Col span={5}>
-          <CalculationConfig experimentId={experimentId} />
+          <CalculationConfig
+            experimentId={experimentId}
+            config={calculationConfig}
+            onPipelineRun={onPipelineRun}
+          />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
@@ -340,6 +346,7 @@ const DataIntegration = (props) => {
 };
 
 DataIntegration.propTypes = {
+  onPipelineRun: PropTypes.func.isRequired,
   experimentId: PropTypes.string.isRequired,
 };
 

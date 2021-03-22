@@ -3,7 +3,7 @@
 exports[`HeatmapGroupBySettings order and shown tracks are changed when the switches and the buttons are pressed 1`] = `
 Object {
   "payload": Object {
-    "configChange": Object {
+    "configChanges": Object {
       "selectedTracks": Array [
         "louvain",
         "sample",
@@ -18,7 +18,7 @@ Object {
 exports[`HeatmapGroupBySettings order and shown tracks are changed when the switches and the buttons are pressed 2`] = `
 Object {
   "payload": Object {
-    "configChange": Object {
+    "configChanges": Object {
       "selectedTracks": Array [
         "sample",
         "louvain",

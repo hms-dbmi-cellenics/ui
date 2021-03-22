@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert,
+  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert, Skeleton,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -32,7 +32,7 @@ import generatePlotUuid from '../../../utils/generatePlotUuid';
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
-  const { experimentId } = props;
+  const { experimentId, onPipelineRun } = props;
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
@@ -311,7 +311,7 @@ const ConfigureEmbedding = (props) => {
     if (!config) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -372,7 +372,7 @@ const ConfigureEmbedding = (props) => {
         </Col>
 
         <Col span={5}>
-          <CalculationConfig experimentId={experimentId} />
+          <CalculationConfig experimentId={experimentId} onPipelineRun={onPipelineRun} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
@@ -391,6 +391,7 @@ const ConfigureEmbedding = (props) => {
 
 ConfigureEmbedding.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  onPipelineRun: PropTypes.func.isRequired,
 };
 
 export default ConfigureEmbedding;

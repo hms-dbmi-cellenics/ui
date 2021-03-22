@@ -13,7 +13,8 @@ const PrettyTime = (props) => {
   return (
 
     <span
-      onMouseEnter={() => setDisplayedTime(localIsoTime)}
+      style={{ textDecoration: 'underline dotted' }}
+      onMouseEnter={() => setDisplayedTime(`on ${localIsoTime}`)}
       onMouseLeave={() => setDisplayedTime(relativeTime)}
     >
       {displayedTime}

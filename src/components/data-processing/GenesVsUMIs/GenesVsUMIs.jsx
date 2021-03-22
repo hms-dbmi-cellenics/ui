@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import _, { filter } from 'lodash';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space, Button, Tooltip,
+  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
 } from 'antd';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import Loader from '../../Loader';
 
 import {
   updatePlotConfig,
@@ -28,7 +27,7 @@ const { Panel } = Collapse;
 
 const GenesVsUMIs = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const filterName = 'numGenesVsNumUmis';
@@ -134,7 +133,7 @@ const GenesVsUMIs = (props) => {
     if (!config || !plotData) {
       return (
         <center>
-          <Loader experimentId={experimentId} />
+          <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -187,6 +186,7 @@ const GenesVsUMIs = (props) => {
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
               />
             </Panel>
             <Panel header='Plot styling' key='styling'>
@@ -208,6 +208,14 @@ GenesVsUMIs.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+};
+
+GenesVsUMIs.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  sampleId: PropTypes.string.isRequired,
+  sampleIds: PropTypes.array.isRequired,
+  filtering: PropTypes.bool.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default GenesVsUMIs;

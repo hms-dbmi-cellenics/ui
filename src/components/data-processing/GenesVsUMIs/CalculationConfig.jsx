@@ -22,7 +22,7 @@ const { Option } = Select;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, sampleId, sampleIds,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const config = useSelector(
@@ -49,6 +49,8 @@ const CalculationConfig = (props) => {
       FILTER_UUID,
       newConfig,
     ));
+
+    onConfigChange();
   };
 
   const updateSettings = (diff) => {
@@ -63,6 +65,8 @@ const CalculationConfig = (props) => {
       FILTER_UUID,
       sampleSpecificDiff,
     ));
+
+    onConfigChange();
   };
 
   const filtering = false;
@@ -73,8 +77,8 @@ const CalculationConfig = (props) => {
       {displayIndividualChangesWarning && (
         <Form.Item>
           <Alert
-            message='Your changes are only applied to this sample. To apply it to all other samples, click Apply to all samples.'
-            type='warning'
+            message='To copy these new settings to the rest of your samples, click Copy to all samples.'
+            type='info'
             showIcon
           />
         </Form.Item>
@@ -150,7 +154,7 @@ const CalculationConfig = (props) => {
         onUpdate={updateSettings}
         type='bin step'
       />
-      <Button onClick={updateAllSettings}>Apply to all samples</Button>
+      <Button onClick={updateAllSettings}>Copy to all samples</Button>
     </>
   );
 };
@@ -159,6 +163,7 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;
