@@ -19,6 +19,7 @@ import DoubletScoreHistogram from '../../plots/DoubletScoreHistogram';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import CalculationConfig from './CalculationConfig';
+import generatePlotUuid from '../../../utils/generatePlotUuid';
 
 const { Panel } = Collapse;
 const DoubletScores = (props) => {
@@ -26,7 +27,9 @@ const DoubletScores = (props) => {
     experimentId, sampleId, sampleIds,
   } = props;
 
-  const plotUuid = 'doubletScoreHistogram';
+  const filterName = 'doubletScores';
+
+  const plotUuid = generatePlotUuid(sampleId, filterName, 0);
   const plotType = 'doubletScoreHistogram';
 
   const dispatch = useDispatch();

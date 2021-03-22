@@ -30,7 +30,7 @@ const DoubletScoreHistogram = (props) => {
     if (!plotData.length) {
       return (
         <PlatformError
-          description='No data to show. Please run the pipeline again.'
+          description='No data to show. Please run the filter again.'
           onClick={() => { dispatch(loadPlotConfig(experimentId, plotUuid, plotType)); }}
         />
       );

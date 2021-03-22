@@ -27,6 +27,7 @@ import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
 import Loader from '../../Loader';
+import generatePlotUuid from '../../../utils/generatePlotUuid';
 
 const { Panel } = Collapse;
 
@@ -35,6 +36,7 @@ const ConfigureEmbedding = (props) => {
   const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
+  const filterName = 'configureEmbedding';
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -50,7 +52,7 @@ const ConfigureEmbedding = (props) => {
   const plots = {
     sample: {
       title: 'Colored by Samples',
-      plotUuid: 'embeddingPreviewBySample',
+      plotUuid: generatePlotUuid(null, filterName, 0),
       plotType: 'embeddingPreviewBySample',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
@@ -63,7 +65,7 @@ const ConfigureEmbedding = (props) => {
     },
     cellCluster: {
       title: 'Colored by CellSets',
-      plotUuid: 'embeddingPreviewByCellSets',
+      plotUuid: generatePlotUuid(null, filterName, 1),
       plotType: 'embeddingPreviewByCellSets',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
@@ -76,7 +78,7 @@ const ConfigureEmbedding = (props) => {
     },
     mitochondrialContent: {
       title: 'Mitochondrial fraction reads',
-      plotUuid: 'embeddingPreviewMitochondrialContent',
+      plotUuid: generatePlotUuid(null, filterName, 2),
       plotType: 'embeddingPreviewMitochondrialContent',
       plot: (config, plotData, actions) => (
         <MitochondrialContentPlot
@@ -89,7 +91,7 @@ const ConfigureEmbedding = (props) => {
     },
     doubletScores: {
       title: 'Cell doublet score',
-      plotUuid: 'embeddingPreviewDoubletScore',
+      plotUuid: generatePlotUuid(null, filterName, 2),
       plotType: 'embeddingPreviewDoubletScore',
       plot: (config, plotData, actions) => (
         <DoubletScoresPlot

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
+import _, { filter } from 'lodash';
 import PropTypes from 'prop-types';
 import {
   Collapse, Row, Col, Space, Button, Tooltip,
@@ -22,6 +22,7 @@ import FeaturesVsUMIsScatterplot from '../../plots/FeaturesVsUMIsScatterplot';
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
 import CalculationConfig from './CalculationConfig';
+import generatePlotUuid from '../../../utils/generatePlotUuid';
 
 const { Panel } = Collapse;
 
@@ -29,6 +30,8 @@ const GenesVsUMIs = (props) => {
   const {
     experimentId, sampleId, sampleIds,
   } = props;
+
+  const filterName = 'numGenesVsNumUmis';
 
   const dispatch = useDispatch();
 
@@ -54,7 +57,7 @@ const GenesVsUMIs = (props) => {
   const plots = {
     histogram: {
       title: 'Histogram',
-      plotUuid: 'featuresVsUMIsHistogram',
+      plotUuid: generatePlotUuid(sampleId, filterName, 0),
       plotType: 'featuresVsUMIsHistogram',
       plot: (config, plotData, actions) => (
         <FeaturesVsUMIsHistogram
@@ -67,7 +70,7 @@ const GenesVsUMIs = (props) => {
     },
     scatterplot: {
       title: 'Knee Plot',
-      plotUuid: 'featuresVsUMIsScatterplot',
+      plotUuid: generatePlotUuid(sampleId, filterName, 0),
       plotType: 'featuresVsUMIsScatterplot',
       plot: (config, plotData, actions) => (
         <FeaturesVsUMIsScatterplot
