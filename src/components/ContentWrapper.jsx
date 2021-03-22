@@ -250,8 +250,9 @@ const ContentWrapper = (props) => {
               path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
             }) => {
               const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
-              const pipelineStatusDisable = disabledByPipelineStatus && (pipelineError || pipelineRunning || pipelineRunningError);
-
+              const pipelineStatusDisable = disabledByPipelineStatus && (
+                pipelineError || pipelineRunning || pipelineRunningError
+              );
               const menuItemDisabled = noExperimentDisable || pipelineStatusDisable;
 
               return (

@@ -8,6 +8,7 @@ import {
   Select,
   Tooltip,
   Button,
+  Skeleton,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -107,13 +108,6 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
       }],
     },
   ];
-  if (!config) {
-    return (
-      <center>
-        <Loader experimentId={experimentId} />
-      </center>
-    );
-  }
 
   const renderExtraPanels = () => (
     <>
@@ -121,14 +115,17 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
         <p>
           Select the cell set category you would like to group cells by.
         </p>
-        <Select
-          labelInValue
-          style={{ width: '100%' }}
-          placeholder='Select cell set...'
-          value={{ key: config.selectedCellSet }}
-          options={generateCellSetOptions()}
-          onChange={onCellSetSelect}
-        />
+        {config ? (
+          <Select
+            labelInValue
+            style={{ width: '100%' }}
+            placeholder='Select cell set...'
+            loading={config}
+            value={{ key: config.selectedCellSet }}
+            options={generateCellSetOptions()}
+            onChange={onCellSetSelect}
+          />
+        ) : <Skeleton.Input style={{ width: '100%' }} active />}
       </Panel>
     </>
   );

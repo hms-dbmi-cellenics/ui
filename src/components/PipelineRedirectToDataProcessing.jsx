@@ -19,6 +19,11 @@ const PipelineRedirectToDataProcessing = ({ experimentId, pipelineStatus }) => {
       title: 'We\'re working on your project...',
       subTitle: 'You can check the progress we\'ve made in Data Processing.',
     },
+    runningStep: {
+      status: 'info',
+      title: 'Your data is getting ready.',
+      subTitle: 'We\'re preparing the data for this step, please wait. This will take a few minutes.',
+    },
   };
 
   const { status, title, subTitle } = texts[pipelineStatus];
@@ -34,9 +39,12 @@ const PipelineRedirectToDataProcessing = ({ experimentId, pipelineStatus }) => {
           height={250}
           alt='A woman fitting an oversized clipboard next to other clipboards (illustration).'
           src='/undraw_Timeline_re_aw6g.svg'
+          style={{
+            display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%',
+          }}
         />
       )}
-      extra={(
+      extra={pipelineStatus !== 'runningStep' && (
         <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
           <Button type='primary' key='console'>
             Go to Data Processing
@@ -49,7 +57,7 @@ const PipelineRedirectToDataProcessing = ({ experimentId, pipelineStatus }) => {
 
 PipelineRedirectToDataProcessing.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  pipelineStatus: PropTypes.oneOf(['error', 'running']).isRequired,
+  pipelineStatus: PropTypes.oneOf(['error', 'running', 'runningStep']).isRequired,
 };
 
 export default PipelineRedirectToDataProcessing;

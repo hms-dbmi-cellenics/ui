@@ -71,13 +71,13 @@ Header.propTypes = {
   experimentData: PropTypes.object,
   route: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  extra: PropTypes.object,
+  extra: PropTypes.node,
 };
 
 Header.defaultProps = {
   experimentId: null,
   experimentData: null,
-  extra: [],
+  extra: <></>,
 };
 
 export default Header;

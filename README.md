@@ -1,10 +1,10 @@
-UI
-======
+ui
+==
 
 The user interface of Cellscope (the Biomage single cell analysis platform).
 
 Development
------------------------
+-----------
 
 ### Prerequisites
 
@@ -47,3 +47,14 @@ As per instructions in: https://jestjs.io/docs/en/troubleshooting
         node --inspect-brk node_modules/.bin/jest --runInBand
 
 3. Open your browser and go to chrome://inspect and click on "Open Dedicated DevTools for Node".
+
+### How to check bundle size
+
+You can check for the size of the bundles served to the user and loaded onto the server by typing:
+
+    npm run analyze
+
+Alternatively, you can use `npm run analyze:server` or `npm run analyze:client` to get information about
+bundle sizes for just server-side rendered and client-side scripts.
+
+The script will produce HTML artifacts that will open in your default browswer as a Voronoi treemap.

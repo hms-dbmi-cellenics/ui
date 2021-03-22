@@ -40,6 +40,10 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [experimentId, embeddingSettings.method]);
 
   useEffect(() => {
+    if (!config) {
+      return;
+    }
+
     if (plotData) {
       setPlotSpec(generateSpec(config, plotData));
       return;

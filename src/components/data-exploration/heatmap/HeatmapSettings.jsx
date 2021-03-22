@@ -37,7 +37,6 @@ const HeatmapSettings = (props) => {
     <Dropdown arrow type='link' size='small' overlay={renderMenu()} trigger={['click']}>
       <Tooltip title='Settings'>
         <Button
-          size='small'
           type='text'
           icon={<SettingOutlined />}
           // these classes are added so that the settings button
