@@ -35,9 +35,10 @@ const HeatmapPlot = (props) => {
   const expressionData = useSelector((state) => state.genes.expression);
   const hoverCoordinates = useRef({});
 
-  const cellSetsLoading = useSelector((state) => state.cellSets.loading);
   const cellSets = useSelector((state) => state.cellSets);
-  const { hierarchy, properties, hidden } = cellSets;
+  const {
+    hierarchy, properties, hidden, loading: cellSetsLoading,
+  } = cellSets;
 
   const heatmapSettings = useSelector(
     (state) => state.componentConfig[COMPONENT_TYPE]?.config,
@@ -146,6 +147,14 @@ const HeatmapPlot = (props) => {
     );
   }
 
+  if (cellSetsLoading || expressionData.loading.length) {
+    return (
+      <center>
+        <Loader experimentId={experimentId} />
+      </center>
+    );
+  }
+
   if (!vegaData) {
     return (
       <center style={{ marginTop: height / 2 }}>
@@ -164,7 +173,6 @@ const HeatmapPlot = (props) => {
       />
     );
   }
-
   return (
     <div>
       <VegaHeatmap
