@@ -33,7 +33,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, data, onPipelineRun
+    experimentId, onPipelineRun,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -236,15 +236,7 @@ const CalculationConfig = (props) => {
 
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
-<<<<<<< HEAD
-=======
   onPipelineRun: PropTypes.func.isRequired,
-  data: PropTypes.array,
-};
-
-CalculationConfig.defaultProps = {
-  data: [],
->>>>>>> master
 };
 
 export default CalculationConfig;

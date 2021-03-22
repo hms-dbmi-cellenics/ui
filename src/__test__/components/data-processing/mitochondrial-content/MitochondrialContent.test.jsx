@@ -12,20 +12,26 @@ import CalculationConfig from '../../../../components/data-processing/Mitochondr
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+import generatePlotUuid from '../../../../utils/generatePlotUuid';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
+
+const sampleId = 'sample-WT';
+const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
+const experimentId = 'e1234';
+const filterName = 'mitochondrialContent';
 
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    mitochondrialFractionHistogram: {
+    [generatePlotUuid(sampleId, filterName, 0)]: {
       config: initialPlotConfigStates.mitochondrialFractionHistogram,
       plotData: [],
     },
-    mitochondrialFractionLogHistogram: {
+    [generatePlotUuid(sampleId, filterName, 1)]: {
       config: initialPlotConfigStates.mitochondrialFractionLogHistogram,
       plotData: [],
     },
@@ -36,7 +42,7 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    mitochondrialFractionHistogram: {
+    [generatePlotUuid(sampleId, filterName, 0)]: {
       ...noData.componentConfig.mitochondrialFractionHistogram,
       plotData: [
         {
@@ -52,7 +58,7 @@ const withData = {
         },
       ],
     },
-    mitochondrialFractionLogHistogram: {
+    [generatePlotUuid(sampleId, filterName, 1)]: {
       ...noData.componentConfig.mitochondrialFractionLogHistogram,
       plotData: [
         {
@@ -71,10 +77,6 @@ const withData = {
     },
   },
 };
-
-const sampleId = 'WT';
-const sampleIds = ['WT', 'WT1', 'KO'];
-const experimentId = 'e1234';
 
 describe('MitochondrialContent', () => {
   beforeAll(async () => {

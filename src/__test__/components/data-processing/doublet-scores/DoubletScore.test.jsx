@@ -12,16 +12,22 @@ import CalculationConfig from '../../../../components/data-processing/DoubletSco
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+import generatePlotUuid from '../../../../utils/generatePlotUuid';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
+
+const sampleId = 'sample-WT';
+const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
+const filterName = 'doubletScores';
+const experimentId = 'e1234';
 
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    doubletScoreHistogram: {
+    [generatePlotUuid(sampleId, filterName, 0)]: {
       config: initialPlotConfigStates.doubletScoreHistogram,
       plotData: [],
     },
@@ -32,7 +38,7 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    doubletScoreHistogram: {
+    [generatePlotUuid(sampleId, filterName, 0)]: {
       ...noData.componentConfig.doubletScoreHistogram,
       plotData: [
         {
@@ -51,10 +57,6 @@ const withData = {
     },
   },
 };
-
-const sampleId = 'WT';
-const sampleIds = ['WT', 'WT1', 'KO'];
-const experimentId = 'e1234';
 
 describe('DoubletScores', () => {
   beforeAll(async () => {

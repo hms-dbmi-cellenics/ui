@@ -17,7 +17,6 @@ import CalculationConfig from '../../../../components/data-processing/DataIntegr
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
-  EXPERIMENT_SETTINGS_PROCESSING_SAVE,
 } from '../../../../redux/actionTypes/experimentSettings';
 
 jest.mock('localforage');
