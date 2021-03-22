@@ -1,45 +1,45 @@
 const generateSpec = (config, groupName) => {
-  let legend = [];
-  if (config.legend.position === 'horizontal') {
-    legend = [
-      {
-        fill: 'color',
-        type: 'gradient',
-        orient: 'bottom',
-        direction: 'horizontal',
-        title: ['Intensity'],
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
-        gradientLength: {
-          signal: 'width',
-        },
+  let legend = [
+    {
+      fill: 'color',
+      type: 'gradient',
+      orient: 'bottom',
+      direction: 'horizontal',
+      title: ['Intensity'],
+      labelFont: { value: config.fontStyle.font },
+      titleFont: { value: config.fontStyle.font },
+      gradientLength: {
+        signal: 'width',
       },
-      {
-        fill: 'cellSetColors',
-        title: groupName,
-        type: 'symbol',
-        orient: 'top',
-        offset: 40,
-        symbolType: 'square',
-        symbolSize: { value: 200 },
-        encode: {
-          labels: {
-            update: {
-              text: { scale: 'cellSetIDToName', field: 'label' },
-            },
+    },
+    {
+      fill: 'cellSetColors',
+      title: groupName,
+      type: 'symbol',
+      orient: 'right',
+      direction: 'vertical',
+      offset: 40,
+      symbolType: 'square',
+      symbolSize: { value: 200 },
+      encode: {
+        labels: {
+          update: {
+            text: { scale: 'cellSetIDToName', field: 'label' },
           },
         },
-        direction: 'horizontal',
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
-      }];
-  }
+      },
+      labelFont: { value: config.fontStyle.font },
+      titleFont: { value: config.fontStyle.font },
+    },
+  ];
+
   if (config.legend.position === 'vertical') {
     legend = [
       {
         fill: 'color',
         type: 'gradient',
         title: ['Intensity'],
+        orient: 'left',
         labelFont: { value: config.fontStyle.font },
         titleFont: { value: config.fontStyle.font },
         gradientLength: {
@@ -48,7 +48,7 @@ const generateSpec = (config, groupName) => {
       },
       {
         fill: 'cellSetColors',
-        title: 'Cluster ID',
+        title: groupName,
         type: 'symbol',
         orient: 'right',
         symbolType: 'square',
@@ -80,31 +80,32 @@ const generateSpec = (config, groupName) => {
 
     data: [
       {
-        name: 'cellSets',
-        transform: [
-          {
-            type: 'flatten',
-            fields: [
-              'cellIds',
-            ],
-            as: [
-              'cellId',
-            ],
-          },
-        ],
+        name: 'cellOrder',
+        values: [],
+        copy: true,
       },
       {
-        name: 'expression',
-        transform: [
-          {
-            type: 'flatten',
-            fields: [
-              'expression',
-            ],
-            index: 'cellId',
-          },
-        ],
+        name: 'geneOrder',
+        values: [],
+        copy: true,
       },
+      {
+        name: 'trackOrder',
+        values: [],
+      },
+      {
+        name: 'heatmapData',
+        values: [],
+      },
+      {
+        name: 'trackColorData',
+        values: [],
+      },
+      {
+        name: 'trackGroupData',
+        values: [],
+      },
+
     ],
 
     scales: [
@@ -112,8 +113,8 @@ const generateSpec = (config, groupName) => {
         name: 'x',
         type: 'band',
         domain: {
-          data: 'cellSets',
-          field: 'cellId',
+          data: 'cellOrder',
+          field: 'data',
         },
         range: 'width',
       },
@@ -121,10 +122,22 @@ const generateSpec = (config, groupName) => {
         name: 'y',
         type: 'band',
         domain: {
-          data: 'expression',
-          field: 'geneName',
+          data: 'geneOrder',
+          field: 'data',
         },
         range: 'height',
+      },
+      {
+        name: 'trackKeyToTrackName',
+        type: 'ordinal',
+        domain: {
+          data: 'trackGroupData',
+          field: 'track',
+        },
+        range: {
+          data: 'trackGroupData',
+          field: 'trackName',
+        },
       },
       {
         name: 'color',
@@ -133,7 +146,7 @@ const generateSpec = (config, groupName) => {
           scheme: config.colour.gradient,
         },
         domain: {
-          data: 'expression',
+          data: 'heatmapData',
           field: 'expression',
         },
         zero: false,
@@ -143,39 +156,60 @@ const generateSpec = (config, groupName) => {
         name: 'cellSetColors',
         type: 'ordinal',
         range: {
-          data: 'cellSets',
+          data: 'trackGroupData',
           field: 'color',
         },
         domain: {
-          data: 'cellSets',
+          data: 'trackGroupData',
           field: 'key',
-          sort: true,
         },
       },
       {
         name: 'cellSetIDToName',
         type: 'ordinal',
         range: {
-          data: 'cellSets',
+          data: 'trackGroupData',
           field: 'name',
         },
         domain: {
-          data: 'cellSets',
+          data: 'trackGroupData',
           field: 'key',
+        },
+      },
+      {
+        name: 'yTrack',
+        type: 'band',
+        domain: {
+          data: 'trackOrder',
+          field: 'data',
+        },
+        paddingInner: 0.25,
+        paddingOuter: 0.5,
+        range: {
+          step: -20,
         },
       },
     ],
 
     axes: [
       {
-        from: { data: 'expression' },
+        domain: false,
         orient: 'left',
         scale: 'y',
-        labelColor: config.label.colour,
+      },
+      {
+        orient: 'left',
+        scale: 'yTrack',
         domain: false,
-        // title: 'Gene',
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
+        encode: {
+          labels: {
+            update: {
+              text: {
+                signal: 'scale("trackKeyToTrackName", datum.value)',
+              },
+            },
+          },
+        },
       },
     ],
 
@@ -185,7 +219,40 @@ const generateSpec = (config, groupName) => {
       {
         type: 'rect',
         from: {
-          data: 'expression',
+          data: 'trackColorData',
+        },
+        encode: {
+          enter: {
+            x: {
+              scale: 'x',
+              field: 'cellId',
+            },
+            y: {
+              scale: 'yTrack',
+              field: 'track',
+            },
+            width: {
+              scale: 'x',
+              band: 1,
+            },
+            height: {
+              scale: 'yTrack',
+              band: 1,
+            },
+            opacity: {
+              value: 1,
+            },
+          },
+          update: {
+            fill: { field: 'color' },
+            stroke: { field: 'color' },
+          },
+        },
+      },
+      {
+        type: 'rect',
+        from: {
+          data: 'heatmapData',
         },
         encode: {
           enter: {
@@ -195,7 +262,7 @@ const generateSpec = (config, groupName) => {
             },
             y: {
               scale: 'y',
-              field: 'geneName',
+              field: 'gene',
             },
             width: {
               scale: 'x',
@@ -205,45 +272,18 @@ const generateSpec = (config, groupName) => {
               scale: 'y',
               band: 1,
             },
+            opacity: {
+              value: 1,
+            },
           },
           update: {
             fill: {
               scale: 'color',
               field: 'expression',
             },
-          },
-        },
-      },
-      {
-        type: 'rect',
-        from: {
-          data: 'cellSets',
-        },
-        encode: {
-          enter: {
-            x: {
-              scale: 'x',
-              field: 'cellId',
-            },
-            y: { value: -30 },
-            width: {
-              scale: 'x',
-              band: 1,
-            },
-            height: {
-              value: 20,
-            },
-          },
-          update: {
-            fill: {
-              scale: 'cellSetColors',
-              field: 'key',
-              opacity: { value: 1 },
-            },
             stroke: {
-              scale: 'cellSetColors',
-              field: 'key',
-              opacity: { value: 1 },
+              scale: 'color',
+              field: 'expression',
             },
           },
         },
