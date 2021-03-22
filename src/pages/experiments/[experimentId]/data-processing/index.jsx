@@ -38,6 +38,7 @@ import { loadProcessingSettings, updateProcessingSettings, saveProcessingSetting
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { runPipeline } from '../../../../redux/actions/pipeline';
 import PreloadContent from '../../../../components/PreloadContent';
+import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
 
 
 
@@ -456,7 +457,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
           {steps.map(({ render, key }) => {
             if (pipelineRunning && !isStepComplete(key)) {
-              return <PreloadContent />;
+              return <div><PipelineRedirectToDataProcessing pipelineStatus='runningStep' /></div>;
             }
 
             if (pipelineNotFinished && !isStepComplete(key)) {
@@ -464,7 +465,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <PlatformError
-                      description={'Details about this filter or step are not available.'}
+                      description={'Details about this step are not available.'}
                       onClick={() => { onPipelineRun(steps[stepIdx].key) }}
                     />
                   </div>

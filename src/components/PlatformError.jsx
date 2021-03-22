@@ -70,6 +70,10 @@ const PlatformError = (props) => {
       )}
       imageStyle={{
         height: 120,
+        display: 'block',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: '50%',
       }}
       description={renderMessage(error)}
     >
