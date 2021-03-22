@@ -9,7 +9,6 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
   } = config;
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
-  // const selectedGenes = expression.views[componentType].data;
   const trackOrder = Array.from(selectedTracks).reverse();
   const generateTrackData = (cells, track) => {
     // Find the `groupBy` root node.

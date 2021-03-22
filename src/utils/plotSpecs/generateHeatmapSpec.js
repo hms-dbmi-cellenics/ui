@@ -1,4 +1,4 @@
-const generateSpec = (config) => {
+const generateSpec = (config, groupName) => {
   let legend = [
     {
       fill: 'color',
@@ -14,7 +14,7 @@ const generateSpec = (config) => {
     },
     {
       fill: 'cellSetColors',
-      title: 'Cluster ID',
+      title: groupName,
       type: 'symbol',
       orient: 'right',
       direction: 'vertical',
@@ -48,7 +48,7 @@ const generateSpec = (config) => {
       },
       {
         fill: 'cellSetColors',
-        title: 'Cluster ID',
+        title: groupName,
         type: 'symbol',
         orient: 'right',
         symbolType: 'square',
@@ -162,7 +162,6 @@ const generateSpec = (config) => {
         domain: {
           data: 'trackGroupData',
           field: 'key',
-          sort: true,
         },
       },
       {
