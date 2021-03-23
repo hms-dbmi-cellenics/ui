@@ -54,7 +54,7 @@ const generateSpec = (config, plotData) => {
           {
             type: 'bin',
             field: 'fracMito',
-            extent: [0, 1],
+            extent: [0, 100],
             step: config.binStep,
             nice: false,
           },
@@ -85,7 +85,7 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: [0, 1],
+        domain: [0, 100],
       },
       {
         name: 'yscale',

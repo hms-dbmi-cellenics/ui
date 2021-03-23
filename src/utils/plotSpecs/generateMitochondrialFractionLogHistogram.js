@@ -79,7 +79,7 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: [0, 10],
+        domain: [0, 100],
         domainMin: 1,
       },
       {
