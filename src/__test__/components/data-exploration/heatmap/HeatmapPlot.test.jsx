@@ -5,7 +5,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { Empty, Skeleton } from 'antd';
-
+import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
 // eslint-disable-next-line import/no-named-as-default
 import HeatmapPlot from '../../../../components/data-exploration/heatmap/HeatmapPlot';
 import VegaHeatmap from '../../../../components/data-exploration/heatmap/VegaHeatmap';
@@ -24,7 +24,7 @@ const componentType = 'interactiveHeatmap';
 const initialState = {
   genes: {
     expression: {
-      loading: ['A'],
+      loading: [],
       data: {
         REALGENE: {
           min: 0,
@@ -152,14 +152,12 @@ describe('HeatmapPlot', () => {
         <HeatmapPlot experimentId='123' width={200} height={200} />
       </Provider>,
     );
-
     expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find(Skeleton.Image).length).toEqual(1);
+    expect(component.find('Loader').length).toEqual(2);
   });
 
   it('renders Vega heatmap when genes loaded', () => {
     const store = mockStore(initialState);
-
     component = mount(
       <Provider store={store}>
         <HeatmapPlot experimentId='123' width={200} height={200} />

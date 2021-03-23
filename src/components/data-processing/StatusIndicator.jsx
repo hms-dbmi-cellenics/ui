@@ -39,7 +39,7 @@ const StatusIndicator = () => {
       ),
     },
     RUNNING: {
-      icon: <Text strong type='warning'><LoadingOutlined /></Text>,
+      icon: <Text strong type='warning'>running</Text>,
       title: <Text strong type='warning'>running</Text>,
       description: (
         <Text>
@@ -47,12 +47,12 @@ const StatusIndicator = () => {
           {' '}
           <PrettyTime isoTime={startDate} />
           {' '}
-          and is now in progress.
+          and is now in progress. This will take a few minutes.
         </Text>
       ),
     },
     FAILED: {
-      icon: <Text strong type='danger'><WarningOutlined /></Text>,
+      icon: <Text strong type='danger'>failed</Text>,
       title: <Text strong type='danger'>failing</Text>,
       description: (
         <Text>
@@ -68,7 +68,7 @@ const StatusIndicator = () => {
       ),
     },
     ABORTED: {
-      icon: <Text strong type='secondary'><PauseCircleOutlined /></Text>,
+      icon: <Text strong type='secondary'>stopped</Text>,
       title: <Text strong type='secondary'>stopped</Text>,
       description: (
         <Text>

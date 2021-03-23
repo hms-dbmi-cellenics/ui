@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
-  Row, Col, Space, Collapse, Select, Button, Skeleton, Spin, Empty, Typography,
+  Row, Col, Space, Collapse, Skeleton, Empty, Typography,
 } from 'antd';
+import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
@@ -13,6 +14,8 @@ import { loadGeneExpression } from '../../../../../redux/actions/genes';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import PlatformError from '../../../../../components/PlatformError';
 import Loader from '../../../../../components/Loader';
+import populateHeatmapData from '../../../../../components/plots/helpers/populateHeatmapData';
+import HeatmapControls from '../../../../../components/plots/styling/heatmap/HeatmapControls';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -30,103 +33,64 @@ const plotType = 'heatmap';
 const HeatmapPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const { loading, error, data: expressionData } = useSelector((state) => state.genes.expression);
+  const { expression: expressionData } = useSelector((state) => state.genes);
+  const { error, loading } = expressionData;
   const cellSets = useSelector((state) => state.cellSets);
-
+  const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
+  const [vegaSpec, setVegaSpec] = useState();
+  const displaySavedGenes = useRef(true);
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
-
   useEffect(() => {
-    if (!config || config.selectedGenes?.length === 0) return;
-
-    dispatch(loadGeneExpression(experimentId, config.selectedGenes));
+    if (!config || _.isEmpty(expressionData)) {
+      return;
+    }
+    if (!_.isEqual(selectedGenes, config.selectedGenes) && displaySavedGenes.current) {
+      onGeneEnter(config.selectedGenes);
+      displaySavedGenes.current = false;
+    }
   }, [config]);
 
-  // obj is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
+  useEffect(() => {
+    if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes)) {
+      return;
+    }
 
-  const generateVegaData = () => {
-    // First, find the child nodes in the hirerarchy.
-    let newCellSets = cellSets.hierarchy
-      .find((rootNode) => rootNode.key === config.selectedCellSet)
-      ?.children || [];
+    const spec = generateSpec(config, 'Cluster ID');
+    const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
 
-    // Build up the data source based on the properties. Note that the child nodes
-    // in the hierarchy are /objects/ with a `key` property, hence the destructuring
-    // in the function.
-    newCellSets = newCellSets.map(({ key }) => ({ key, ...cellSets.properties[key] }));
+    const newVegaSpec = {
+      ...spec,
+      data: spec.data.map((datum) => ({
+        ...datum,
+        values: data[datum.name],
+      })),
+    };
+    setVegaSpec(newVegaSpec);
+  }, [expressionData, selectedGenes, config, cellSets]);
 
-    const expression = config.selectedGenes.map(
-      (geneName) => ({ ...expressionData[geneName], geneName }),
-    );
-
-    return { cellSets: newCellSets, expression };
+  // updatedField is a subset of what default config has and contains only the things we want change
+  const updatePlotWithChanges = (updatedField) => {
+    dispatch(updatePlotConfig(plotUuid, updatedField));
   };
 
   const onGeneEnter = (value) => {
     const updates = {};
 
-    if (config.selectedGenes.length >= 53) {
+    if (selectedGenes.length >= 53 || value.length === 0) {
       updates.labelColour = 'transparent';
     } else {
       updates.labelColour = 'black';
     }
 
-    if (value.length === 0) {
-      updates.labelColour = 'transparent';
-    }
-
-    updates.selectedGenes = value;
+    updates.selectedGenes = [...value];
+    // updating the selected genes in the config too so they are saved in dynamodb
 
     updatePlotWithChanges(updates);
+    dispatch(loadGeneExpression(experimentId, updates.selectedGenes, plotUuid));
   };
-
-  const onCellSetSelect = ({ value }) => {
-    updatePlotWithChanges({ selectedCellSet: value });
-  };
-
-  const renderExtraPanels = () => (
-    <>
-      <Panel header='Add genes' key='5'>
-        <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
-        <Space direction='vertical' style={{ width: '100%' }}>
-          <Select
-            mode='tags'
-            style={{ width: '100%' }}
-            placeholder='Select genes...'
-            onChange={onGeneEnter}
-            value={config.selectedGenes}
-            tokenSeparators={[' ']}
-            notFoundContent='No gene added yet.'
-          />
-          <Button
-            type='primary'
-            onClick={() => onGeneEnter([])}
-          >
-            Reset
-          </Button>
-        </Space>
-      </Panel>
-      <Panel header='Group by' key='6'>
-        <p>Select the cell set category you would like to group cells by.</p>
-        <Space direction='vertical' style={{ width: '100%' }}>
-          <Select
-            labelInValue
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            value={{ key: config.selectedCellSet }}
-            options={generateCellSetOptions()}
-            onChange={onCellSetSelect}
-          />
-        </Space>
-      </Panel>
-    </>
-  );
-
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading) {
       return (<Loader experimentId={experimentId} />);
@@ -137,12 +101,12 @@ const HeatmapPlot = ({ experimentId }) => {
         <PlatformError
           description='Could not load gene expression data.'
           error={error}
-          onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes))}
+          onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes))}
         />
       );
     }
 
-    if (config.selectedGenes.length === 0) {
+    if (selectedGenes.length === 0) {
       return (
         <Empty description={(
           <Text>Add some genes to this heatmap to get started.</Text>
@@ -150,21 +114,9 @@ const HeatmapPlot = ({ experimentId }) => {
         />
       );
     }
-
-    const groupName = cellSets.properties[config.selectedCellSet].name;
-
-    return <Vega spec={generateSpec(config, groupName)} data={generateVegaData()} renderer='canvas' />;
-  };
-
-  const generateCellSetOptions = () => {
-    const hierarchy = cellSets.hierarchy.map(
-      (cellSet) => ({ key: cellSet.key, children: cellSet.children?.length || 0 }),
-    );
-
-    return hierarchy.map(({ key, children }) => ({
-      value: key,
-      label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
-    }));
+    if (vegaSpec) {
+      return <Vega spec={vegaSpec} renderer='canvas' />;
+    }
   };
 
   const plotStylingControlsConfig = [
@@ -223,7 +175,12 @@ const HeatmapPlot = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} renderExtraPanels={renderExtraPanels} defaultActiveKey={['5']} />
+            <HeatmapControls
+              selectedGenes={selectedGenes}
+              plotUuid={plotUuid}
+              onGeneEnter={onGeneEnter}
+            />
+            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} defaultActiveKey={['5']} />
           </Space>
         </Col>
       </Row>

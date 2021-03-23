@@ -5,7 +5,6 @@ import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import { Button, Space } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
-import '@blueprintjs/core/lib/css/blueprint.css';
 
 import { createProject } from '../../redux/actions/projects';
 

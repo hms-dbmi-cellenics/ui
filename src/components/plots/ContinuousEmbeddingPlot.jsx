@@ -41,7 +41,12 @@ const ContinuousEmbeddingPlot = (props) => {
     geneNamesFilter: null,
     sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
   };
+
   useEffect(() => {
+    if (!config) {
+      return;
+    }
+
     const spec = generateSpec(config);
     setPlotSpec(spec);
   }, [config]);
@@ -72,7 +77,7 @@ const ContinuousEmbeddingPlot = (props) => {
     if (config?.shownGene !== 'notSelected' && config) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene]));
     }
-  }, [highestDispersionGene, config.shownGene]);
+  }, [highestDispersionGene, config?.shownGene]);
 
   useEffect(() => {
     if (plotData) {
@@ -82,6 +87,7 @@ const ContinuousEmbeddingPlot = (props) => {
 
     if (!loading
       && !error
+      && config
       && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
       && !cellSets.loading

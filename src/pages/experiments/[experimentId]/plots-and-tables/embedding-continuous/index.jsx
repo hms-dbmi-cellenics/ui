@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import {
-  Row, Col, Space, Collapse, Input,
+  Row, Col, Space, Collapse, Input, Skeleton,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -80,30 +80,27 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     updatePlotWithChanges({ shownGene: geneName });
   };
 
-  if (!config) {
-    return (
-      <center>
-        <Loader experimentId={experimentId} />
-      </center>
-    );
-  }
-
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene Selection' key='666'>
-        <Search
-          style={{ width: '100%' }}
-          enterButton='Search'
-          defaultValue={config.shownGene}
-          onSearch={(val) => changeDislayedGene(val)}
-        />
+        {config ? (
+          <Search
+            style={{ width: '100%' }}
+            enterButton='Search'
+            defaultValue={config.shownGene}
+            onSearch={(val) => changeDislayedGene(val)}
+          />
+        ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>
       <Panel header='Select Data' key='15'>
-        <SelectData
-          config={config}
-          onUpdate={updatePlotWithChanges}
-          cellSets={cellSets}
-        />
+        {config ? (
+          <SelectData
+            config={config}
+            onUpdate={updatePlotWithChanges}
+            cellSets={cellSets}
+          />
+        ) : <Skeleton.Input style={{ width: 200 }} active />}
+
       </Panel>
     </>
   );
@@ -121,6 +118,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
+
                 <ContinuousEmbeddingPlot
                   experimentId={experimentId}
                   config={config}

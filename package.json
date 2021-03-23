@@ -17,13 +17,15 @@
   "scripts": {
     "start": "NODE_ENV=development node server.js",
     "build": "next build",
-    "analyse": "NODE_ENV=analyse next build",
     "prod": "NODE_ENV=production node server.js",
     "pretest": "eslint ./src",
     "test": "jest",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "lint": "eslint ./src",
-    "detect-secrets": "pip3 install detect-secrets && git diff --staged --name-only | xargs detect-secrets-hook --baseline .secrets.baseline"
+    "detect-secrets": "pip3 install detect-secrets && git diff --staged --name-only | xargs detect-secrets-hook --baseline .secrets.baseline",
+    "analyze": "cross-env ANALYZE=true next build",
+    "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
   },
   "pre-commit": [
     "lint",
@@ -40,12 +42,14 @@
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/polyfill": "^7.8.7",
+    "@next/bundle-analyzer": "^10.0.9",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-less": "^1.0.1",
     "antd": "^4.9.2",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-plugin-import": "^1.9.0",
     "babel-plugin-lodash": "^3.3.4",
+    "cross-env": "^7.0.3",
     "cssnano": "^4.1.10",
     "dotenv": "^8.2.0",
     "express": "^4.16.3",
@@ -59,6 +63,7 @@
     "null-loader": "^3.0.0",
     "object-hash": "^2.0.3",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "moment-locales-webpack-plugin": "^1.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -76,8 +81,6 @@
   },
   "devDependencies": {
     "@ant-design/icons": "^4.2.1",
-    "@blueprintjs/core": "^3.30.0",
-    "@blueprintjs/icons": "^3.19.0",
     "@testing-library/jest-dom": "^5.8.0",
     "babel-eslint": "^9.0.0",
     "babel-jest": "^26.0.1",
@@ -112,6 +115,7 @@
     "react-color": "^2.18.1",
     "react-copy-to-clipboard": "^5.0.2",
     "react-csv": "^2.0.3",
+    "react-dropzone": "^11.3.1",
     "react-keyboard-event-handler": "^1.5.4",
     "react-mosaic-component": "^4.1.1",
     "react-resize-detector": "^5.0.6",
@@ -124,7 +128,6 @@
     "vega": "^5.13.0",
     "vega-lite": "^4.13.0",
     "vitessce": "^0.2.1",
-    "webpack": "^4.43.0",
-    "react-dropzone": "^11.3.1"
+    "webpack": "^4.43.0"
   }
 }

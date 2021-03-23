@@ -51,7 +51,6 @@ const ContentWrapper = (props) => {
   const pipelineRunningError = pipelineErrors.includes(pipelineStatusKey);
   // const pipelineRunning = false;
   // const pipelineRunningError = false;
-
   // This is used to prevent a race condition where the page would start loading immediately
   // when the pipeline status was previously loaded. In that case, `pipelineLoading` is `false`
   // and would be set to true only in the `loadPipelineStatus` action, the time between the
@@ -251,8 +250,9 @@ const ContentWrapper = (props) => {
               path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
             }) => {
               const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
-              const pipelineStatusDisable = disabledByPipelineStatus && (pipelineError || pipelineRunning || pipelineRunningError);
-
+              const pipelineStatusDisable = disabledByPipelineStatus && (
+                pipelineError || pipelineRunning || pipelineRunningError
+              );
               const menuItemDisabled = noExperimentDisable || pipelineStatusDisable;
 
               return (

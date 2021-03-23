@@ -28,11 +28,11 @@ const Header = (props) => {
   const { experimentId, plotUuid, finalRoute } = props;
 
   const dispatch = useDispatch();
-  const saved = !useSelector((state) => state.componentConfig[plotUuid].outstandingChanges);
-  const lastUpdated = useSelector((state) => state.componentConfig[plotUuid].lastUpdated);
+  const saved = !useSelector((state) => state.componentConfig[plotUuid]?.outstandingChanges);
+  const lastUpdated = useSelector((state) => state.componentConfig[plotUuid]?.lastUpdated);
   const router = useRouter();
-  const type = useSelector((state) => state.componentConfig[plotUuid].type);
-  const { config, outstandingChanges } = useSelector((state) => state.componentConfig[plotUuid]);
+  const type = useSelector((state) => state.componentConfig[plotUuid]?.type);
+  const { config, outstandingChanges } = useSelector((state) => state.componentConfig[plotUuid]) || {};
   const reset = useRef(true);
   const debounceSave = useCallback(_.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
 
@@ -90,8 +90,8 @@ const Header = (props) => {
     getFromApiExpectOK,
   );
 
-  if (!data) {
-    return <Skeleton.Input style={{ width: 200 }} active />;
+  if (!data || !config) {
+    return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
   }
 
   const baseRoutes = [

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 const PrettyTime = (props) => {
   const { isoTime } = props;
 
+  moment.locale('en-US');
   const relativeTime = moment(isoTime).fromNow();
   const localIsoTime = moment(isoTime).format('LLLL');
 
