@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, Form,
@@ -6,14 +6,15 @@ import {
 
 const BandwidthOrBinstep = (props) => {
   const {
-    onUpdate, config, type, max,
+    onUpdate, config, type, max, min,
   } = props;
-  let min = 0.001;
-  let maxDefault = 0.2;
-  if (max) {
-    min = max / 4;
-    maxDefault = max;
+  let minDefault = min ?? 0.001;
+  const maxDefault = max ?? 0.2;
+
+  if (!min) {
+    minDefault = maxDefault / 4;
   }
+
   const step = maxDefault / 200;
 
   if (type === 'bin step') {
@@ -21,7 +22,7 @@ const BandwidthOrBinstep = (props) => {
       <Form.Item label='Bin step:'>
         <Slider
           value={config.binStep}
-          min={min}
+          min={minDefault}
           max={maxDefault}
           onChange={(value) => { onUpdate({ binStep: value }); }}
           step={step}
@@ -47,6 +48,7 @@ const BandwidthOrBinstep = (props) => {
 
 BandwidthOrBinstep.defaultProps = {
   max: 100,
+  min: 25,
 };
 
 BandwidthOrBinstep.propTypes = {
@@ -54,6 +56,7 @@ BandwidthOrBinstep.propTypes = {
   config: PropTypes.object.isRequired,
   type: PropTypes.string.isRequired,
   max: PropTypes.number,
+  min: PropTypes.number,
 };
 
 export default BandwidthOrBinstep;

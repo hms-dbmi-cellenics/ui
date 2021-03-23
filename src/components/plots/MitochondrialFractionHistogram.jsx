@@ -12,6 +12,7 @@ const MitochondrialFractionHistogram = (props) => {
   const {
     experimentId, config, plotData, actions,
   } = props;
+
   const plotUuid = 'mitochondrialFractionHistogram';
   const plotType = 'mitochondrialFractionHistogram';
 

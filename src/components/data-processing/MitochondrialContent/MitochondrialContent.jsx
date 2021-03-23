@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import Loader from '../../Loader';
 
 import {
   updatePlotConfig,
@@ -82,10 +81,12 @@ const MitochondrialContent = (props) => {
   const config = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
   );
+
   const expConfig = useSelector(
     (state) => state.experimentSettings.processing.mitochondrialContent[sampleId]?.filterSettings
       || state.experimentSettings.processing.mitochondrialContent.filterSettings,
   );
+
   const plotData = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
   );
@@ -100,8 +101,12 @@ const MitochondrialContent = (props) => {
 
   useEffect(() => {
     if (config && plotData && expConfig) {
-      const newConfig = _.clone(config);
-      _.merge(newConfig, expConfig);
+      let newConfig = _.clone(config);
+
+      const expConfigSettings = expConfig.methodSettings[expConfig.method];
+
+      newConfig = _.merge(newConfig, expConfigSettings);
+
       setPlot(plots[selectedPlot].plot(newConfig, plotData, allowedPlotActions));
     }
   }, [expConfig, config, plotData]);

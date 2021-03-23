@@ -119,6 +119,8 @@ const CalculationConfig = (props) => {
         config={config.methodSettings[activeMethod]}
         onUpdate={updateSettingsForActiveMethod}
         type='bin step'
+        min={0.1}
+        max={10}
       />
       <Button onClick={updateAllSettings}>Copy to all samples</Button>
     </>
