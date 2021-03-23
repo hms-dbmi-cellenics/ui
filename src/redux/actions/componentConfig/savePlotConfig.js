@@ -3,7 +3,9 @@ import getApiEndpoint from '../../../utils/apiEndpoint';
 
 const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) => {
   // Do not save the 'outstandingChanges' state to the database.
-  const { outstandingChanges, ...content } = getState().componentConfig[plotUuid];
+  // Do not save the 'plotData' state to the database because it is not managed by the UI.
+  const { outstandingChanges, plotData, ...content } = getState().componentConfig[plotUuid];
+
   const response = await fetch(
     `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
     {
