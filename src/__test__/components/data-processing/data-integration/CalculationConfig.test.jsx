@@ -15,7 +15,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
-import generatePlotUuid from '../../../../utils/generatePlotUuid';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
@@ -33,7 +33,7 @@ describe('Data Integration Calculation Config', () => {
       ...initialExperimentState,
     },
     componentConfig: {
-      [generatePlotUuid(null, filterName, 2)]: {
+      [generateDataProcessingPlotUuid(null, filterName, 2)]: {
         config: {},
         plotData: Array(50).fill(PCObject()),
       },
@@ -85,7 +85,7 @@ describe('Data Integration Calculation Config', () => {
         ...initialExperimentState,
       },
       componentConfig: {
-        [generatePlotUuid(null, filterName, 2)]: {
+        [generateDataProcessingPlotUuid(null, filterName, 2)]: {
           config: {},
           plotData: [],
         },

@@ -21,7 +21,7 @@ import FeaturesVsUMIsScatterplot from '../../plots/FeaturesVsUMIsScatterplot';
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
 import CalculationConfig from './CalculationConfig';
-import generatePlotUuid from '../../../utils/generatePlotUuid';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
 
@@ -56,7 +56,7 @@ const GenesVsUMIs = (props) => {
   const plots = {
     histogram: {
       title: 'Histogram',
-      plotUuid: generatePlotUuid(sampleId, filterName, 0),
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'featuresVsUMIsHistogram',
       plot: (config, plotData, actions) => (
         <FeaturesVsUMIsHistogram
@@ -69,7 +69,7 @@ const GenesVsUMIs = (props) => {
     },
     scatterplot: {
       title: 'Knee Plot',
-      plotUuid: generatePlotUuid(sampleId, filterName, 0),
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'featuresVsUMIsScatterplot',
       plot: (config, plotData, actions) => (
         <FeaturesVsUMIsScatterplot

@@ -26,7 +26,7 @@ import {
 import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from '../../plots/FrequencyPlot';
 import ElbowPlot from '../../plots/ElbowPlot';
-import generatePlotUuid from '../../../utils/generatePlotUuid';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
@@ -51,7 +51,7 @@ const DataIntegration = (props) => {
   const plots = {
     embedding: {
       title: 'Sample embedding',
-      plotUuid: generatePlotUuid(null, filterName, 0),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'dataIntegrationEmbedding',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
@@ -64,7 +64,7 @@ const DataIntegration = (props) => {
     },
     frequency: {
       title: 'Frequency plot',
-      plotUuid: generatePlotUuid(null, filterName, 1),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'dataIntegrationFrequency',
       plot: (config, plotData, actions) => (
         <FrequencyPlot
@@ -77,7 +77,7 @@ const DataIntegration = (props) => {
     },
     elbow: {
       title: 'Elbow plot',
-      plotUuid: generatePlotUuid(null, filterName, 2),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
       plotType: 'dataIntegrationElbow',
       plot: (config, plotData, actions) => (
         <ElbowPlot

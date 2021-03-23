@@ -27,7 +27,7 @@ import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
 import Loader from '../../Loader';
-import generatePlotUuid from '../../../utils/generatePlotUuid';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
 
@@ -52,7 +52,7 @@ const ConfigureEmbedding = (props) => {
   const plots = {
     sample: {
       title: 'Colored by Samples',
-      plotUuid: generatePlotUuid(null, filterName, 0),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'embeddingPreviewBySample',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
@@ -65,7 +65,7 @@ const ConfigureEmbedding = (props) => {
     },
     cellCluster: {
       title: 'Colored by CellSets',
-      plotUuid: generatePlotUuid(null, filterName, 1),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'embeddingPreviewByCellSets',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
@@ -78,7 +78,7 @@ const ConfigureEmbedding = (props) => {
     },
     mitochondrialContent: {
       title: 'Mitochondrial fraction reads',
-      plotUuid: generatePlotUuid(null, filterName, 2),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
       plotType: 'embeddingPreviewMitochondrialContent',
       plot: (config, plotData, actions) => (
         <MitochondrialContentPlot
@@ -91,7 +91,7 @@ const ConfigureEmbedding = (props) => {
     },
     doubletScores: {
       title: 'Cell doublet score',
-      plotUuid: generatePlotUuid(null, filterName, 2),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
       plotType: 'embeddingPreviewDoubletScore',
       plot: (config, plotData, actions) => (
         <DoubletScoresPlot

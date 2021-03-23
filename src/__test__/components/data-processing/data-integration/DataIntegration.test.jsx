@@ -14,7 +14,7 @@ import initialCellSetsState from '../../../../redux/reducers/cellSets/initialSta
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import generatePlotUuid from '../../../../utils/generatePlotUuid';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
@@ -81,15 +81,15 @@ const store = mockStore({
     ...initialExperimentState,
   },
   componentConfig: {
-    [generatePlotUuid(null, filterName, 0)]: {
+    [generateDataProcessingPlotUuid(null, filterName, 0)]: {
       config: dataIntegrationFrequencyConfig,
       plotData: [],
     },
-    [generatePlotUuid(null, filterName, 1)]: {
+    [generateDataProcessingPlotUuid(null, filterName, 1)]: {
       config: dataIntegrationEmbeddingConfig,
       plotData: [],
     },
-    [generatePlotUuid(null, filterName, 2)]: {
+    [generateDataProcessingPlotUuid(null, filterName, 2)]: {
       config: dataIntegrationElbowConfig,
       plotData: [],
     },

@@ -18,7 +18,7 @@ import ClassifierEmptyDropsPlot from '../../plots/ClassifierEmptyDropsPlot';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import CalculationConfig from './CalculationConfig';
-import generatePlotUuid from '../../../utils/generatePlotUuid';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
 
@@ -29,7 +29,7 @@ const Classifier = (props) => {
 
   const filterName = 'classifier';
 
-  const plotUuid = generatePlotUuid(sampleId, filterName, 0);
+  const plotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
   const plotType = 'classifierEmptyDropsPlot';
 
   const allowedPlotActions = {

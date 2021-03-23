@@ -12,7 +12,7 @@ import CalculationConfig from '../../../../components/data-processing/DoubletSco
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
-import generatePlotUuid from '../../../../utils/generatePlotUuid';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -22,7 +22,7 @@ const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const filterName = 'doubletScores';
 const experimentId = 'e1234';
 
-const sample1 = generatePlotUuid(sampleId, filterName, 0);
+const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
 
 const noData = {
   experimentSettings: {

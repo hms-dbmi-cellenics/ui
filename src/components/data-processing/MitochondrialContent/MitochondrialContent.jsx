@@ -18,7 +18,7 @@ import {
 
 import MitochondrialFractionHistogram from '../../plots/MitochondrialFractionHistogram';
 import MitochondrialFractionLogHistogram from '../../plots/MitochondrialFractionLogHistogram';
-import generatePlotUuid from '../../../utils/generatePlotUuid';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
@@ -55,7 +55,7 @@ const MitochondrialContent = (props) => {
   const plots = {
     histogram: {
       title: 'Mitochondrial Fraction',
-      plotUuid: generatePlotUuid(sampleId, filterName, 0),
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'mitochondrialFractionHistogram',
       plot: (config, plotData, actions) => (
         <MitochondrialFractionHistogram
@@ -68,7 +68,7 @@ const MitochondrialContent = (props) => {
     },
     logHistogram: {
       title: 'Mitochondrial Fraction (Log)',
-      plotUuid: generatePlotUuid(sampleId, filterName, 1),
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
       plotType: 'mitochondrialFractionLogHistogram',
       plot: (config, plotData, actions) => (
         <MitochondrialFractionLogHistogram
