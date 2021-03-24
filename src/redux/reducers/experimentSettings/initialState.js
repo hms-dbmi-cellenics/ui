@@ -41,7 +41,7 @@ export default {
         regressionType: 'gam',
         regressionTypeSettings: {
           gam: {
-            'p.level': 9.090083e-05,
+            'p.level': 0.00009,
           },
         },
       },
@@ -58,7 +58,7 @@ export default {
         methodSettings: {
           seuratv4: {
             numGenes: 2000,
-            normalisation: 'logNormalise',
+            normalization: 'logNormalize',
           },
         },
       },
