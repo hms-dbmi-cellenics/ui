@@ -26,6 +26,7 @@ import _ from 'lodash';
 import SeuratV4Options from './SeuratV4Options';
 
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -33,7 +34,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, data, onPipelineRun,
+    experimentId, onPipelineRun,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -41,6 +42,9 @@ const CalculationConfig = (props) => {
   const { dataIntegration, dimensionalityReduction } = useSelector(
     (state) => state.experimentSettings.processing.dataIntegration,
   );
+
+  const elbowPlotUuid = generateDataProcessingPlotUuid(null, FILTER_UUID, 2);
+  const data = useSelector((state) => state.componentConfig[elbowPlotUuid]?.plotData);
 
   const methods = [
     {
@@ -234,11 +238,6 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
-  data: PropTypes.array,
-};
-
-CalculationConfig.defaultProps = {
-  data: [],
 };
 
 export default CalculationConfig;

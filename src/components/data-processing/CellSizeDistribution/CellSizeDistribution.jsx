@@ -22,6 +22,7 @@ import {
 
 import CellSizeDistributionHistogram from '../../plots/CellSizeDistributionHistogram';
 import CellSizeDistributionKneePlot from '../../plots/CellSizeDistributionKneePlot';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
@@ -32,6 +33,8 @@ const CellSizeDistribution = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
+
+  const filterName = 'cellSizeDistribution';
 
   const allowedPlotActions = {
     export: true,
@@ -66,7 +69,7 @@ const CellSizeDistribution = (props) => {
   const plots = {
     histogram: {
       title: 'Histogram',
-      plotUuid: 'cellSizeDistributionHistogram',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'cellSizeDistributionHistogram',
       plot: (config, plotData, actions) => (
         <CellSizeDistributionHistogram
@@ -79,7 +82,7 @@ const CellSizeDistribution = (props) => {
     },
     kneePlot: {
       title: 'Knee Plot',
-      plotUuid: 'cellSizeDistributionKneePlot',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
       plotType: 'cellSizeDistributionKneePlot',
       plot: (config, plotData, actions) => (
         <CellSizeDistributionKneePlot
@@ -189,6 +192,7 @@ const CellSizeDistribution = (props) => {
                   plotFn={plotObj.plot}
                   actions={false}
                 />
+
               </button>
 
             ))}
