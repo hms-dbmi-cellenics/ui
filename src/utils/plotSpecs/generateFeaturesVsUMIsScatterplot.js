@@ -12,7 +12,7 @@ const generateSpec = (config, plotData) => ({
       transform: [
         {
           type: 'filter',
-          expr: "datum['genes'] != null && datum['molecules'] != null",
+          expr: "datum['log_genes'] != null && datum['log_molecules'] != null",
         },
       ],
     },
@@ -35,7 +35,7 @@ const generateSpec = (config, plotData) => ({
       round: true,
       nice: true,
       zero: true,
-      domain: { data: 'plotData', field: 'molecules' },
+      domain: { data: 'plotData', field: 'log_genes' },
       domainMin: 2,
       range: 'height',
     },
@@ -81,9 +81,9 @@ const generateSpec = (config, plotData) => ({
       from: { data: 'plotData' },
       encode: {
         update: {
-          x: { scale: 'x', field: 'genes' },
-          y: { scale: 'y', field: 'molecules' },
-          size: { value: 3 },
+          x: { scale: 'x', field: 'log_molecules' },
+          y: { scale: 'y', field: 'log_genes' },
+          size: { value: 4 },
           strokeWidth: { value: 2 },
           opacity: { value: 0.2 },
           fill: { value: 'red' },
@@ -94,7 +94,7 @@ const generateSpec = (config, plotData) => ({
       type: 'rule',
       encode: {
         update: {
-          x: { scale: 'x', value: config.lowCutoff },
+          x: { scale: 'x', value: config.lower_cutoff },
           y: { value: 0 },
           y2: { field: { group: 'height' } },
           strokeWidth: { value: 2 },
@@ -107,7 +107,7 @@ const generateSpec = (config, plotData) => ({
       type: 'rule',
       encode: {
         update: {
-          x: { scale: 'x', value: config.upCutoff },
+          x: { scale: 'x', value: config.upper_cutoff },
           y: { value: 0 },
           y2: { field: { group: 'height' } },
           strokeWidth: { value: 2 },

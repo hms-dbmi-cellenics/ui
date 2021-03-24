@@ -37,7 +37,7 @@ const GenesVsUMIs = (props) => {
   const allowedPlotActions = {
     export: true,
     compiled: false,
-    source: false,
+    source: true,
     editor: false,
   };
 

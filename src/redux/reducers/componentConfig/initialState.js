@@ -445,32 +445,6 @@ const classifierEmptyDropsPlot = {
 };
 
 // GENES VS UMIS - Features vs UMIs
-const featuresVsUMIsHistogram = {
-  spec: '1.0.0',
-  dimensions: {
-    ...dimensionsBaseState,
-    width: 630,
-    height: 500,
-  },
-  axes: {
-    ...axesBaseState,
-    xAxisText: 'log10 [molecules]',
-    yAxisText: 'Frequency',
-    gridOpacity: 10,
-  },
-  title: {
-    ...titleBaseState,
-    fontSize: 20,
-  },
-  fontStyle: fontStyleBaseState,
-  colour: colourBaseState,
-  label: labelBaseState,
-  lowCutoff: 4.8,
-  upCutoff: 2.1,
-  binStep: 0.05,
-};
-
-// GENES VS UMIS - Features vs UMIs
 const featuresVsUMIsScatterplot = {
   spec: '1.0.0',
   dimensions: {
@@ -491,8 +465,8 @@ const featuresVsUMIsScatterplot = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   label: labelBaseState,
-  lowCutoff: 4.8,
-  upCutoff: 2.1,
+  lower_cutoff: 4.8,
+  upper_cutoff: 2.1,
 };
 
 // DOUBLE FILTER - Doublet filter histogram
@@ -640,7 +614,6 @@ const initialPlotConfigStates = {
   mitochondrialFractionHistogram,
   mitochondrialFractionLogHistogram,
   classifierEmptyDropsPlot,
-  featuresVsUMIsHistogram,
   featuresVsUMIsScatterplot,
   doubletScoreHistogram,
   embeddingCategorical: embeddingCategoricalInitialConfig,

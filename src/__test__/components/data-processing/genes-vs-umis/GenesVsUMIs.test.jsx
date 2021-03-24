@@ -31,10 +31,6 @@ const noData = {
   },
   componentConfig: {
     [sample1]: {
-      config: initialPlotConfigStates.featuresVsUMIsHistogram,
-      plotData: [],
-    },
-    [sample1]: {
       config: initialPlotConfigStates.featuresVsUMIsScatterplot,
       plotData: [],
     },
