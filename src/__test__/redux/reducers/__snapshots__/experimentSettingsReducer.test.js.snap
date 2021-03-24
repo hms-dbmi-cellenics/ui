@@ -9,6 +9,7 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
+      "enabled": true,
       "filterSettings": Object {
         "binStep": 200,
         "minCellSize": 10800,
@@ -47,13 +48,14 @@ Object {
           "value": "b",
         },
       },
+      "enabled": true,
     },
     "dataIntegration": Object {
       "dataIntegration": Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "seuratv4": Object {
-            "normalisation": "logNormalise",
+            "normalization": "logNormalize",
             "numGenes": 2000,
           },
         },
@@ -63,8 +65,10 @@ Object {
         "method": "rpca",
         "numPCs": 30,
       },
+      "enabled": true,
     },
     "doubletScores": Object {
+      "enabled": true,
       "filterSettings": Object {
         "binStep": 0.05,
         "probabilityThreshold": 0.2,
@@ -76,6 +80,7 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
+      "enabled": true,
       "filterSettings": Object {
         "method": "absolute_threshold",
         "methodSettings": Object {
@@ -93,7 +98,7 @@ Object {
         "regressionType": "gam",
         "regressionTypeSettings": Object {
           "gam": Object {
-            "p.level": 0.00009090083,
+            "p.level": 0.00009,
           },
         },
       },
@@ -112,6 +117,7 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
+      "enabled": true,
       "filterSettings": Object {
         "binStep": 200,
         "minCellSize": 10800,
@@ -147,13 +153,14 @@ Object {
         },
         "newProperty": "property",
       },
+      "enabled": true,
     },
     "dataIntegration": Object {
       "dataIntegration": Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "seuratv4": Object {
-            "normalisation": "logNormalise",
+            "normalization": "logNormalize",
             "numGenes": 2000,
           },
         },
@@ -163,8 +170,10 @@ Object {
         "method": "rpca",
         "numPCs": 30,
       },
+      "enabled": true,
     },
     "doubletScores": Object {
+      "enabled": true,
       "filterSettings": Object {
         "binStep": 0.05,
         "probabilityThreshold": 0.2,
@@ -176,6 +185,7 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
+      "enabled": true,
       "filterSettings": Object {
         "method": "absolute_threshold",
         "methodSettings": Object {
@@ -193,7 +203,7 @@ Object {
         "regressionType": "gam",
         "regressionTypeSettings": Object {
           "gam": Object {
-            "p.level": 0.00009090083,
+            "p.level": 0.00009,
           },
         },
       },
@@ -212,6 +222,7 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
+      "enabled": true,
       "filterSettings": Object {
         "binStep": 200,
         "minCellSize": 10800,
@@ -246,13 +257,14 @@ Object {
           },
         },
       },
+      "enabled": true,
     },
     "dataIntegration": Object {
       "dataIntegration": Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "seuratv4": Object {
-            "normalisation": "logNormalise",
+            "normalization": "logNormalize",
             "numGenes": 2000,
           },
         },
@@ -262,8 +274,10 @@ Object {
         "method": "rpca",
         "numPCs": 30,
       },
+      "enabled": true,
     },
     "doubletScores": Object {
+      "enabled": true,
       "filterSettings": Object {
         "binStep": 0.05,
         "probabilityThreshold": 0.2,
@@ -275,6 +289,7 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
+      "enabled": true,
       "filterSettings": Object {
         "method": "absolute_threshold",
         "methodSettings": Object {
@@ -292,7 +307,7 @@ Object {
         "regressionType": "gam",
         "regressionTypeSettings": Object {
           "gam": Object {
-            "p.level": 0.00009090083,
+            "p.level": 0.00009,
           },
         },
       },

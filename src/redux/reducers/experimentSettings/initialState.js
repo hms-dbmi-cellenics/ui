@@ -11,12 +11,14 @@ export default {
       loadingSettingsError: false,
     },
     cellSizeDistribution: {
+      enabled: true,
       filterSettings: {
         minCellSize: 10800,
         binStep: 200,
       },
     },
     mitochondrialContent: {
+      enabled: true,
       filterSettings: {
         method: 'absolute_threshold',
         methodSettings: {
@@ -47,12 +49,14 @@ export default {
       },
     },
     doubletScores: {
+      enabled: true,
       filterSettings: {
         probabilityThreshold: 0.2,
         binStep: 0.05,
       },
     },
     dataIntegration: {
+      enabled: true,
       dataIntegration: {
         method: 'seuratv4',
         methodSettings: {
@@ -69,6 +73,7 @@ export default {
       },
     },
     configureEmbedding: {
+      enabled: true,
       embeddingSettings: {
         method: 'umap',
         methodSettings: {
