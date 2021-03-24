@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import PlatformError from '../PlatformError';
-import generateSpec from '../../utils/plotSpecs/generateMitochondrialFractionLogHistogram';
+import generateSpec from '../../utils/plotSpecs/generateMitochondrialFractionScatterplot';
 
-const MitochondrialFractionLogHistogram = (props) => {
+const MitochondrialFractionScatterplot = (props) => {
   const {
     config, plotData, actions,
   } = props;
@@ -19,7 +19,7 @@ const MitochondrialFractionLogHistogram = (props) => {
   }, [config, plotData]);
 
   const render = () => {
-    if (!plotData.length) {
+    if (!plotData?.length) {
       return (
         <PlatformError
           description='There is no data to display. Please run the filter again.'
@@ -43,7 +43,7 @@ const MitochondrialFractionLogHistogram = (props) => {
   );
 };
 
-MitochondrialFractionLogHistogram.propTypes = {
+MitochondrialFractionScatterplot.propTypes = {
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
   actions: PropTypes.oneOfType([
@@ -52,9 +52,9 @@ MitochondrialFractionLogHistogram.propTypes = {
   ]),
 };
 
-MitochondrialFractionLogHistogram.defaultProps = {
+MitochondrialFractionScatterplot.defaultProps = {
   plotData: null,
   actions: true,
 };
 
-export default MitochondrialFractionLogHistogram;
+export default MitochondrialFractionScatterplot;
