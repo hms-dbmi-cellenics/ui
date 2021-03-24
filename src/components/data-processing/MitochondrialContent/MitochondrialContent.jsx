@@ -16,7 +16,7 @@ import {
 } from '../../../redux/actions/componentConfig';
 
 import MitochondrialFractionHistogram from '../../plots/MitochondrialFractionHistogram';
-import MitochondrialFractionLogHistogram from '../../plots/MitochondrialFractionLogHistogram';
+import MitochondrialFractionScatterplot from '../../plots/MitochondrialFractionLogHistogram';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
@@ -68,7 +68,7 @@ const MitochondrialContent = (props) => {
       plotUuid: 'mitochondrialFractionLogHistogram',
       plotType: 'mitochondrialFractionLogHistogram',
       plot: (config, plotData, actions) => (
-        <MitochondrialFractionLogHistogram
+        <MitochondrialFractionScatterplot
           experimentId={experimentId}
           config={config}
           plotData={plotData}

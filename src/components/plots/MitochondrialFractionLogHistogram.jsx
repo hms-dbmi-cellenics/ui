@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import PlatformError from '../PlatformError';
-import generateSpec from '../../utils/plotSpecs/generateMitochondrialFractionLogHistogram';
+import generateSpec from '../../utils/plotSpecs/generateMitochondrialFractionScatterplot';
 
 import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
-const MitochondrialFractionLogHistogram = (props) => {
+const MitochondrialFractionScatterplot = (props) => {
   const {
     experimentId, config, plotData, actions,
   } = props;
@@ -59,7 +59,7 @@ const MitochondrialFractionLogHistogram = (props) => {
   );
 };
 
-MitochondrialFractionLogHistogram.propTypes = {
+MitochondrialFractionScatterplot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
@@ -69,9 +69,9 @@ MitochondrialFractionLogHistogram.propTypes = {
   ]),
 };
 
-MitochondrialFractionLogHistogram.defaultProps = {
+MitochondrialFractionScatterplot.defaultProps = {
   plotData: null,
   actions: true,
 };
 
-export default MitochondrialFractionLogHistogram;
+export default MitochondrialFractionScatterplot;
