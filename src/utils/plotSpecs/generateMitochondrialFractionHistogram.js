@@ -104,11 +104,7 @@ const generateSpec = (config, plotData) => {
           [
             'green', 'blue',
           ],
-        domain: {
-          data: 'binned',
-          field: 'status',
-          sort: false,
-        },
+        domain: ['Alive', 'Dead'],
       },
     ],
     axes: [
