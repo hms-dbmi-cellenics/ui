@@ -12,20 +12,29 @@ import CalculationConfig from '../../../../components/data-processing/CellSizeDi
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
+
+const sampleId = 'sample-KO';
+const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
+const experimentId = 'e1234';
+const filterName = 'cellSizeDistribution';
+
+const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const sample2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);
 
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    cellSizeDistributionHistogram: {
+    [sample1]: {
       config: initialPlotConfigStates.cellSizeDistributionHistogram,
       plotData: [],
     },
-    cellSizeDistributionKneePlot: {
+    [sample2]: {
       config: initialPlotConfigStates.cellSizeDistributionKneePlot,
       plotData: [],
     },
@@ -36,36 +45,44 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    cellSizeDistributionHistogram: {
-      ...noData.componentConfig.cellSizeDistributionHistogram,
+    [sample1]: {
+      ...noData.componentConfig[sample1],
       plotData: [{
         u: 8890.246597269077,
+        status: 'low',
       },
       {
         u: 7986.663750139649,
+        status: 'low',
       },
       {
         u: 9301.510440766624,
+        status: 'low',
       }],
     },
-    cellSizeDistributionKneePlot: {
-      ...noData.componentConfig.cellSizeDistributionKneePlot,
+    [sample2]: {
+      ...noData.componentConfig[sample2],
       plotData: [{
-        u: 8890.246597269077,
+        u: 864,
+        rank: 1365,
+        status: 'low',
+        logUValue: 6460.3302,
       },
       {
-        u: 7986.663750139649,
+        u: 4472,
+        rank: 1110,
+        status: 'low',
+        logUValue: 8031.1039,
       },
       {
-        u: 9301.510440766624,
+        u: 3065,
+        rank: 584,
+        status: 'low',
+        logUValue: 7670.1470,
       }],
     },
   },
 };
-
-const sampleId = 'WT';
-const sampleIds = ['WT', 'WT1', 'KO'];
-const experimentId = 'e1234';
 
 describe('CellSizeDistribution', () => {
   beforeAll(async () => {
@@ -99,6 +116,7 @@ describe('CellSizeDistribution', () => {
           experimentId={experimentId}
           sampleId={sampleId}
           sampleIds={sampleIds}
+          onConfigChange={() => { }}
         />
       </Provider>,
     );
@@ -115,7 +133,7 @@ describe('CellSizeDistribution', () => {
     expect(plots.length).toEqual(0);
   });
 
-  it('Shows plot with data', () => {
+  it('Shows plot with data', async () => {
     const store = mockStore(withData);
 
     const component = mount(
@@ -124,6 +142,7 @@ describe('CellSizeDistribution', () => {
           experimentId={experimentId}
           sampleId={sampleId}
           sampleIds={sampleIds}
+          onConfigChange={() => { }}
         />
       </Provider>,
     );

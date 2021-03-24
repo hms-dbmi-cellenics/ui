@@ -12,20 +12,29 @@ import CalculationConfig from '../../../../components/data-processing/GenesVsUMI
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
+
+const sampleId = 'sample-WT';
+const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
+const experimentId = 'e1234';
+const filterName = 'numGenesVsNumUmis';
+
+const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const sample2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);
 
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    featuresVsUMIsHistogram: {
+    [sample1]: {
       config: initialPlotConfigStates.featuresVsUMIsHistogram,
       plotData: [],
     },
-    featuresVsUMIsScatterplot: {
+    [sample1]: {
       config: initialPlotConfigStates.featuresVsUMIsScatterplot,
       plotData: [],
     },
@@ -36,8 +45,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    featuresVsUMIsHistogram: {
-      ...noData.componentConfig.featuresVsUMIsHistogram,
+    [sample1]: {
+      ...noData.componentConfig[sample1],
       plotData: [
         {
           genes: 2.41995574848976,
@@ -53,8 +62,8 @@ const withData = {
         },
       ],
     },
-    featuresVsUMIsScatterplot: {
-      ...noData.componentConfig.featuresVsUMIsScatterplot,
+    [generateDataProcessingPlotUuid(sampleId, filterName, 1)]: {
+      ...noData.componentConfig[sample2],
       plotData: [
         {
           genes: 2.41995574848976,
@@ -72,10 +81,6 @@ const withData = {
     },
   },
 };
-
-const sampleId = 'WT';
-const sampleIds = ['WT', 'WT1', 'KO'];
-const experimentId = 'e1234';
 
 describe('GenesVsUMIs', () => {
   beforeAll(async () => {

@@ -37,7 +37,7 @@ const getMiniaturizedConfig = (config) => {
 
 const MiniPlot = (props) => {
   const {
-    experimentId, plotUuid, plotFn, actions,
+    plotUuid, plotFn, actions,
   } = props;
 
   const config = useSelector(

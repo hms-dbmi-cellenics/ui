@@ -12,16 +12,24 @@ import CalculationConfig from '../../../../components/data-processing/Classifier
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
+
+const sampleId = 'sample-WT';
+const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
+const filterName = 'classifier';
+const experimentId = 'e1234';
+
+const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
 
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    classifierEmptyDropsPlot: {
+    [sample1]: {
       config: initialPlotConfigStates.classifierEmptyDropsPlot,
       plotData: [],
     },
@@ -32,8 +40,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    classifierEmptyDropsPlot: {
-      ...noData.componentConfig.classifierEmptyDropsPlot,
+    [sample1]: {
+      ...noData.componentConfig[sample1],
       plotData: [
         {
           classifierP: 0.994553522823595,
@@ -51,10 +59,6 @@ const withData = {
     },
   },
 };
-
-const sampleId = 'WT';
-const sampleIds = ['WT', 'WT1', 'KO'];
-const experimentId = 'e1234';
 
 describe('Classifier', () => {
   beforeAll(async () => {

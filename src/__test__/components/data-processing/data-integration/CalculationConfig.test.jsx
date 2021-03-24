@@ -15,9 +15,9 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
-  EXPERIMENT_SETTINGS_PROCESSING_SAVE,
 } from '../../../../redux/actionTypes/experimentSettings';
 
 jest.mock('localforage');
@@ -25,21 +25,25 @@ enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
 describe('Data Integration Calculation Config', () => {
+  const filterName = 'dataIntegration';
+
+  const PCObject = () => ({ PC: 1, percent: 0.02, percentVariance: 0.02 });
   const storeState = {
     experimentSettings: {
       ...initialExperimentState,
     },
+    componentConfig: {
+      [generateDataProcessingPlotUuid(null, filterName, 2)]: {
+        config: {},
+        plotData: Array(50).fill(PCObject()),
+      },
+    },
   };
-
-  let data = null;
 
   configure({ adapter: new Adapter() });
 
   beforeEach(async () => {
     await preloadAll();
-
-    const PCObject = () => ({ PC: 1, percent: 0.02, percentVariance: 0.02 });
-    data = Array(50).fill(PCObject());
 
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -80,11 +84,17 @@ describe('Data Integration Calculation Config', () => {
       experimentSettings: {
         ...initialExperimentState,
       },
+      componentConfig: {
+        [generateDataProcessingPlotUuid(null, filterName, 2)]: {
+          config: {},
+          plotData: [],
+        },
+      },
     });
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
+        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -99,7 +109,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
+        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -117,7 +127,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
+        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -132,7 +142,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
+        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -150,7 +160,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
+        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -163,7 +173,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
+        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 
@@ -188,7 +198,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} data={data} onPipelineRun={onPipelineRun} />
+        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 

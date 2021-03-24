@@ -14,10 +14,13 @@ import initialCellSetsState from '../../../../redux/reducers/cellSets/initialSta
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
 const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;
+
+const filterName = 'dataIntegration';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -78,15 +81,15 @@ const store = mockStore({
     ...initialExperimentState,
   },
   componentConfig: {
-    dataIntegrationFrequency: {
+    [generateDataProcessingPlotUuid(null, filterName, 0)]: {
       config: dataIntegrationFrequencyConfig,
       plotData: [],
     },
-    dataIntegrationEmbedding: {
+    [generateDataProcessingPlotUuid(null, filterName, 1)]: {
       config: dataIntegrationEmbeddingConfig,
       plotData: [],
     },
-    dataIntegrationElbow: {
+    [generateDataProcessingPlotUuid(null, filterName, 2)]: {
       config: dataIntegrationElbowConfig,
       plotData: [],
     },
