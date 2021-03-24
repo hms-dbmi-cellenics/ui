@@ -15,9 +15,10 @@ Object {
       },
     },
     "classifier": Object {
+      "auto": true,
+      "enabled": true,
       "filterSettings": Object {
-        "bandwidth": -1,
-        "minProbability": 0.82,
+        "FDR": 0.1,
       },
     },
     "configureEmbedding": Object {
@@ -86,13 +87,15 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
+      "auto": true,
+      "enabled": true,
       "filterSettings": Object {
-        "binStep": 0.05,
-        "lowerCutoff": 2.1,
         "regressionType": "gam",
-        "smoothing": 13,
-        "stringency": 2.1,
-        "upperCutoff": 4.8,
+        "regressionTypeSettings": Object {
+          "gam": Object {
+            "p.level": 0.00009090083,
+          },
+        },
       },
     },
     "test": "test data",
@@ -115,9 +118,10 @@ Object {
       },
     },
     "classifier": Object {
+      "auto": true,
+      "enabled": true,
       "filterSettings": Object {
-        "bandwidth": -1,
-        "minProbability": 0.82,
+        "FDR": 0.1,
       },
     },
     "configureEmbedding": Object {
@@ -183,13 +187,15 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
+      "auto": true,
+      "enabled": true,
       "filterSettings": Object {
-        "binStep": 0.05,
-        "lowerCutoff": 2.1,
         "regressionType": "gam",
-        "smoothing": 13,
-        "stringency": 2.1,
-        "upperCutoff": 4.8,
+        "regressionTypeSettings": Object {
+          "gam": Object {
+            "p.level": 0.00009090083,
+          },
+        },
       },
     },
     "test": "test data",
@@ -212,9 +218,10 @@ Object {
       },
     },
     "classifier": Object {
+      "auto": true,
+      "enabled": true,
       "filterSettings": Object {
-        "bandwidth": -1,
-        "minProbability": 0.82,
+        "FDR": 0.1,
       },
     },
     "configureEmbedding": Object {
@@ -279,13 +286,15 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
+      "auto": true,
+      "enabled": true,
       "filterSettings": Object {
-        "binStep": 0.05,
-        "lowerCutoff": 2.1,
         "regressionType": "gam",
-        "smoothing": 13,
-        "stringency": 2.1,
-        "upperCutoff": 4.8,
+        "regressionTypeSettings": Object {
+          "gam": Object {
+            "p.level": 0.00009090083,
+          },
+        },
       },
     },
     "test": "test data",
