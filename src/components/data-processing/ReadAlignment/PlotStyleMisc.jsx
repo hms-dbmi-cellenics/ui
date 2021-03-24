@@ -8,22 +8,18 @@ const BandwidthOrBinstep = (props) => {
   const {
     onUpdate, config, type, max, min,
   } = props;
-  let minDefault = min ?? 0.001;
-  const maxDefault = max ?? 0.2;
 
-  if (!min) {
-    minDefault = maxDefault / 4;
-  }
+  const realMin = min ?? max / 4;
 
-  const step = maxDefault / 200;
+  const step = max / 200;
 
   if (type === 'bin step') {
     return (
       <Form.Item label='Bin step:'>
         <Slider
           value={config.binStep}
-          min={minDefault}
-          max={maxDefault}
+          min={realMin}
+          max={max}
           onChange={(value) => { onUpdate({ binStep: value }); }}
           step={step}
         />
@@ -48,7 +44,7 @@ const BandwidthOrBinstep = (props) => {
 
 BandwidthOrBinstep.defaultProps = {
   max: 100,
-  min: 25,
+  min: null,
 };
 
 BandwidthOrBinstep.propTypes = {
