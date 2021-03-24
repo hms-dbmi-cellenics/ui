@@ -398,8 +398,8 @@ const mitochondrialFractionLogHistogram = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'log10(#UMIs in cell)',
-    yAxisText: 'Percentage of mitochondrial reads',
+    xAxisText: 'Percentage of mitochondrial reads',
+    yAxisText: 'Num of UMIs in cell',
   },
   title: {
     ...titleBaseState,

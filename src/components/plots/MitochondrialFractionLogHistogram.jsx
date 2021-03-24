@@ -27,7 +27,7 @@ const MitochondrialFractionLogHistogram = (props) => {
   }, [config, plotData]);
 
   const render = () => {
-    if (!plotData.length) {
+    if (!plotData?.length) {
       return (
         <PlatformError
           description='No data to show. Please run the pipeline again.'

@@ -1,6 +1,6 @@
 const generateSpec = (config, plotData) => {
   let legend = null;
-  const deadOrAlive = '(datum.bin1 <= 2.5) ? \'Dead\' : (datum.bin1 >=3.5) ? \'Live\' : \'Unknown\'';
+  const deadOrAlive = `(datum.fracMito <= ${config.maxFraction}) ? 'Alive' : 'Dead'`;
 
   legend = !config.legend.enabled ? null : [
     {
@@ -45,26 +45,7 @@ const generateSpec = (config, plotData) => {
       {
         name: 'plotData',
         values: plotData,
-      },
-      {
-        name: 'binned',
-        source: 'plotData',
         transform: [
-          {
-            type: 'bin',
-            field: 'cellSize',
-            extent: [0, 6],
-            step: config.binStep,
-            nice: false,
-          },
-          {
-            type: 'aggregate',
-            key: 'bin0',
-            groupby: ['bin0', 'bin1'],
-            fields: ['fracMito'],
-            ops: ['average'],
-            as: ['averageFracMito'],
-          },
           {
             type: 'formula',
             as: 'status',
@@ -87,7 +68,7 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         range: 'height',
         round: true,
-        domain: { data: 'binned', field: 'averageFracMito' },
+        domain: { data: 'plotData', field: 'cellSize' },
         zero: true,
         nice: true,
       },
@@ -99,7 +80,7 @@ const generateSpec = (config, plotData) => {
             'blue', 'green', 'grey',
           ],
         domain: {
-          data: 'binned',
+          data: 'plotData',
           field: 'status',
           sort: true,
         },
@@ -137,17 +118,17 @@ const generateSpec = (config, plotData) => {
     ],
     marks: [
       {
-        type: 'rect',
-        from: { data: 'binned' },
+        name: 'marks',
+        type: 'symbol',
+        from: { data: 'plotData' },
         encode: {
           update: {
-            x: { scale: 'xscale', field: 'bin0' },
-            x2: {
-              scale: 'xscale',
-              field: 'bin1',
-            },
-            y: { scale: 'yscale', field: 'averageFracMito' },
-            y2: { scale: 'yscale', value: 0 },
+            x: { scale: 'xscale', field: 'fracMito' },
+            y: { scale: 'yscale', field: 'cellSize' },
+            size: { value: 10 },
+            shape: { value: 'circle' },
+            strokeWidth: { value: 2 },
+            opacity: { value: 0.5 },
             fill: {
               scale: 'color',
               field: 'status',

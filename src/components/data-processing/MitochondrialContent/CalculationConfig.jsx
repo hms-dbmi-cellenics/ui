@@ -105,11 +105,11 @@ const CalculationConfig = (props) => {
           <Option value='option3'>option3</Option>
         </Select>
       </Form.Item>
-      <Form.Item label='Max fraction:'>
+      <Form.Item label='Max percentage:'>
         <Slider
           value={config.methodSettings[activeMethod].maxFraction}
           min={0}
-          max={1}
+          max={100}
           step={0.05}
           collapsible={!filtering ? 'disabled' : 'header'}
           onChange={(val) => updateSettingsForActiveMethod({ maxFraction: val })}
