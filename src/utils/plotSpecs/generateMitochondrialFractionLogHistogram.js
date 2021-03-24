@@ -61,7 +61,6 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         range: 'width',
         domain: [0, 100],
-        domainMin: 1,
       },
       {
         name: 'yscale',
@@ -99,7 +98,6 @@ const generateSpec = (config, plotData) => {
         labelFontSize: { value: config.axes.labelFontSize },
         offset: { value: config.axes.offset },
         gridOpacity: { value: (config.axes.gridOpacity / 20) },
-
       },
       {
         orient: 'left',
