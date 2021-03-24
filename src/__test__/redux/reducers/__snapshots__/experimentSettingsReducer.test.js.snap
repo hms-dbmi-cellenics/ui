@@ -52,7 +52,7 @@ Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "seuratv4": Object {
-            "normalisation": "logNormalise",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
@@ -149,7 +149,7 @@ Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "seuratv4": Object {
-            "normalisation": "logNormalise",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
@@ -245,7 +245,7 @@ Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "seuratv4": Object {
-            "normalisation": "logNormalise",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },

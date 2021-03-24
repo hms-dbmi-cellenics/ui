@@ -52,7 +52,7 @@ const SeuratV4Options = (props) => {
             },
           })}
         >
-          <Option value='logNormalise'>LogNormalise</Option>
+          <Option value='logNormalize'>LogNormalize</Option>
           <Option value='scTransform'>SCTransform</Option>
         </Select>
       </Form.Item>
