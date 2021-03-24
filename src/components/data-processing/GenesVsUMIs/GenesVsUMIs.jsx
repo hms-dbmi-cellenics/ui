@@ -27,7 +27,7 @@ const { Panel } = Collapse;
 
 const GenesVsUMIs = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange, filtering,
+    experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
   const dispatch = useDispatch();
@@ -212,7 +212,6 @@ GenesVsUMIs.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
-  filtering: PropTypes.bool.isRequired,
   onConfigChange: PropTypes.func.isRequired,
 };
 

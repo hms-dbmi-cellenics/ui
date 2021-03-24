@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Space,
   Form,
   Button,
   Alert,
-  Slider,
+  InputNumber,
   Radio,
+  Tooltip,
+  Space,
 } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 import _ from 'lodash';
-
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
 
@@ -21,9 +21,9 @@ const CalculationConfig = (props) => {
     experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
-  const config = useSelector(
-    (state) => state.experimentSettings.processing.classifier[sampleId]?.filterSettings
-      || state.experimentSettings.processing.classifier.filterSettings,
+  const { auto, filterSettings: config } = useSelector(
+    (state) => state.experimentSettings.processing.classifier[sampleId]
+      || state.experimentSettings.processing.classifier,
   );
 
   const FILTER_UUID = 'classifier';
@@ -51,9 +51,17 @@ const CalculationConfig = (props) => {
 
   const updateSettings = (diff) => {
     const newConfig = _.cloneDeep(config);
-    _.merge(newConfig, diff);
 
-    const sampleSpecificDiff = { [sampleId]: { filterSettings: newConfig } };
+    if (!_.has(diff, 'auto')) {
+      _.merge(newConfig, diff);
+    }
+
+    const sampleSpecificDiff = {
+      [sampleId]: {
+        auto: diff?.auto ? diff.auto : auto,
+        filterSettings: newConfig,
+      },
+    };
 
     setDisplayIndividualChangesWarning(true);
     dispatch(updateProcessingSettings(
@@ -76,28 +84,34 @@ const CalculationConfig = (props) => {
           />
         </Form.Item>
       )}
-      <Radio.Group defaultValue={1} style={{ marginTop: '5px', marginBottom: '30px' }}>
-        <Radio value={1}>
+      <Radio.Group
+        defaultValue={auto}
+        style={{ marginTop: '5px', marginBottom: '30px' }}
+        onChange={(e) => (updateSettings({ auto: e.target.value }))}
+      >
+        <Radio value>
           Automatic
         </Radio>
-        <Radio value={2}>
+        <Radio value={false}>
           Manual
         </Radio>
       </Radio.Group>
-      <Form.Item label='Min probability:'>
-        <Slider
-          value={config.minProbability}
-          min={0}
-          max={1}
-          onChange={(val) => updateSettings({ minProbability: val })}
-          step={0.05}
-        />
+      <Form.Item label='FDR:'>
+        <Space direction='horizontal'>
+          <Tooltip title='False discovery rate (FDR) is calculated for each barcode by using the ‘emptyDrops’ function (https://rdrr.io/github/MarioniLab/DropletUtils/man/emptyDrops.html). This distinguishes between droplets containing cells and ambient RNA. The FDR range is [0-1]. The default FDR value is 0.01, where only barcodes with FDR < 0.01 are retained.'>
+            <InfoCircleOutlined />
+          </Tooltip>
+          <InputNumber
+            value={config.FDR}
+            onChange={(value) => updateSettings({ FDR: value })}
+            onPressEnter={(e) => updateSettings({ FDR: e.target.value })}
+            placeholder={0.01}
+            min={0}
+            max={1}
+            step={0.01}
+          />
+        </Space>
       </Form.Item>
-      <BandwidthOrBinstep
-        config={config}
-        onUpdate={updateSettings}
-        type='bandwidth'
-      />
       <Button onClick={updateAllSettings}>Copy to all samples</Button>
     </>
   );

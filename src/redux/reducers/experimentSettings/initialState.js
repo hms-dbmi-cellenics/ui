@@ -28,19 +28,22 @@ export default {
       },
     },
     classifier: {
+      enabled: true,
+      auto: true,
       filterSettings: {
-        minProbability: 0.82,
-        bandwidth: -1,
+        FDR: 0.1,
       },
     },
     numGenesVsNumUmis: {
+      enabled: true,
+      auto: true,
       filterSettings: {
         regressionType: 'gam',
-        smoothing: 13,
-        upperCutoff: 4.8,
-        lowerCutoff: 2.1,
-        stringency: 2.1,
-        binStep: 0.05,
+        regressionTypeSettings: {
+          gam: {
+            'p.level': 9.090083e-05,
+          },
+        },
       },
     },
     doubletScores: {
