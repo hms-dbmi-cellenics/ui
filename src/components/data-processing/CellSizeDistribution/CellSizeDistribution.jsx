@@ -3,16 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Collapse,
-  Row,
-  Col,
-  List,
-  Space,
-  Tooltip,
-  Button,
-  Skeleton,
+  Collapse, Row, Col, Space, Tooltip, Button, Skeleton, List,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import {
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 
 import {
   updatePlotConfig,
@@ -100,8 +95,8 @@ const CellSizeDistribution = (props) => {
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
   );
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.cellSizeDistribution[sampleId]?.filterSettings
-      || state.experimentSettings.processing.cellSizeDistribution.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
   const plotData = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
@@ -209,7 +204,7 @@ const CellSizeDistribution = (props) => {
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
-                filterUuid='cellSizeDistribution'
+                filterUuid={filterName}
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}

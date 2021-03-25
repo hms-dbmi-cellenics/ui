@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
-import {
-  Collapse, Row, Col, Space, Tooltip, Button, Skeleton,
-} from 'antd';
 import PropTypes from 'prop-types';
+import {
+  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
+} from 'antd';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
@@ -86,8 +86,8 @@ const MitochondrialContent = (props) => {
   );
 
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.mitochondrialContent[sampleId]?.filterSettings
-      || state.experimentSettings.processing.mitochondrialContent.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
 
   const plotData = useSelector(
@@ -193,7 +193,7 @@ const MitochondrialContent = (props) => {
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
-                filterUuid='mitochondrialContent'
+                filterUuid={filterName}
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}

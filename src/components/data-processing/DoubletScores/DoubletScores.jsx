@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import {
   Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
 } from 'antd';
-import PropTypes from 'prop-types';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
+
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -52,8 +53,8 @@ const DoubletScores = (props) => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.doubletScores[sampleId]?.filterSettings
-      || state.experimentSettings.processing.doubletScores.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
   const plotData = useSelector((state) => state.componentConfig[plotUuid]?.plotData);
 
@@ -130,7 +131,7 @@ const DoubletScores = (props) => {
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
-                filterUuid='doubletScores'
+                filterUuid={filterName}
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}

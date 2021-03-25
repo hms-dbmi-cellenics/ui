@@ -8,6 +8,7 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
+
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -55,8 +56,8 @@ const GenesVsUMIs = (props) => {
     (state) => state.componentConfig[plotUuid]?.config,
   );
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.numGenesVsNumUmis[sampleId]?.filterSettings
-      || state.experimentSettings.processing.numGenesVsNumUmis.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
   const plotData = useSelector(
     (state) => state.componentConfig[plotUuid]?.plotData,
@@ -128,7 +129,7 @@ const GenesVsUMIs = (props) => {
             <Space direction='vertical' style={{ width: '100%' }} />
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
-                filterUuid='numGenesVsNumUmis'
+                filterUuid={filterName}
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
