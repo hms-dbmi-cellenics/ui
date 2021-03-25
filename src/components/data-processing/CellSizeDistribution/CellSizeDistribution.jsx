@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space, Tooltip, Button, Skeleton, List,
+  Collapse, Row, Col, Space, Tooltip, Button, Skeleton,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -43,15 +43,6 @@ const CellSizeDistribution = (props) => {
 
   const [selectedPlot, setSelectedPlot] = useState('kneePlot');
   const [plot, setPlot] = useState(null);
-
-  const listData = [
-    'Estimated number of cells 8672',
-    'Fraction reads in cells  93.1%',
-    'Mean reads per cell  93,551',
-    'Median genes per cell  1,297',
-    'Total genes detected   21,425',
-    'Median UMI counts per cell   4,064',
-  ];
 
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
@@ -193,11 +184,6 @@ const CellSizeDistribution = (props) => {
 
             ))}
           </Space>
-          <List
-            dataSource={listData}
-            size='small'
-            renderItem={(item) => <List.Item>{item}</List.Item>}
-          />
         </Col>
 
         <Col span={5}>
