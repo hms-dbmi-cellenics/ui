@@ -266,18 +266,6 @@ const DiffExprCompute = (props) => {
           </>
         )}
 
-      <p>
-        <Text type='secondary'>
-          Cite
-          {' '}
-          <a href='https://github.com/kharchenkolab/conos/blob/master/man/Conos.Rd'>
-            Conos$getDifferentialGenes
-          </a>
-          {' '}
-          as appropriate.
-        </Text>
-      </p>
-
       <Form.Item>
         <Button
           size='small'

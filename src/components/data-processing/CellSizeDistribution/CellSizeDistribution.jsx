@@ -45,7 +45,7 @@ const CellSizeDistribution = (props) => {
 
   const dispatch = useDispatch();
 
-  const [selectedPlot, setSelectedPlot] = useState('histogram');
+  const [selectedPlot, setSelectedPlot] = useState('kneePlot');
   const [plot, setPlot] = useState(null);
 
   const listData = [
@@ -67,12 +67,12 @@ const CellSizeDistribution = (props) => {
   };
 
   const plots = {
-    histogram: {
-      title: 'Histogram',
-      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
-      plotType: 'cellSizeDistributionHistogram',
+    kneePlot: {
+      title: 'Knee Plot',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
+      plotType: 'cellSizeDistributionKneePlot',
       plot: (config, plotData, actions) => (
-        <CellSizeDistributionHistogram
+        <CellSizeDistributionKneePlot
           experimentId={experimentId}
           config={config}
           plotData={plotData}
@@ -80,12 +80,12 @@ const CellSizeDistribution = (props) => {
         />
       ),
     },
-    kneePlot: {
-      title: 'Knee Plot',
-      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
-      plotType: 'cellSizeDistributionKneePlot',
+    histogram: {
+      title: 'Histogram',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
+      plotType: 'cellSizeDistributionHistogram',
       plot: (config, plotData, actions) => (
-        <CellSizeDistributionKneePlot
+        <CellSizeDistributionHistogram
           experimentId={experimentId}
           config={config}
           plotData={plotData}
