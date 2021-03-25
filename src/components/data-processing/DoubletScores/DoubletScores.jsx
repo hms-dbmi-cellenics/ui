@@ -17,6 +17,7 @@ import {
 import DoubletScoreHistogram from '../../plots/DoubletScoreHistogram';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
@@ -40,7 +41,9 @@ const DoubletScores = (props) => {
     editor: false,
   };
 
-  const debounceSave = useCallback(_.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), [],
+  );
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -99,7 +102,14 @@ const DoubletScores = (props) => {
     }
 
     if (renderConfig && plotData) {
-      return <DoubletScoreHistogram experimentId={experimentId} config={renderConfig} plotData={plotData} actions={allowedPlotActions} />;
+      return (
+        <DoubletScoreHistogram
+          experimentId={experimentId}
+          config={renderConfig}
+          plotData={plotData}
+          actions={allowedPlotActions}
+        />
+      );
     }
   };
 
@@ -119,12 +129,16 @@ const DoubletScores = (props) => {
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig
+              <CalculationConfigContainer
+                filterUuid='doubletScores'
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-              />
+                plotType='bin step'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />

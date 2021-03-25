@@ -21,6 +21,7 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -191,12 +192,16 @@ const MitochondrialContent = (props) => {
         <Col span={6}>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig
+              <CalculationConfigContainer
+                filterUuid='mitochondrialContent'
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-              />
+                plotType='bin step'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />

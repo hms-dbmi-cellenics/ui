@@ -17,6 +17,7 @@ import {
 import ClassifierEmptyDropsPlot from '../../plots/ClassifierEmptyDropsPlot';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
@@ -41,7 +42,9 @@ const Classifier = (props) => {
 
   const dispatch = useDispatch();
 
-  const debounceSave = useCallback(_.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), [],
+  );
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -121,7 +124,16 @@ const Classifier = (props) => {
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} onConfigChange={onConfigChange} />
+              <CalculationConfigContainer
+                filterUuid='classifier'
+                experimentId={experimentId}
+                sampleId={sampleId}
+                sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
+                plotType='unused'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />

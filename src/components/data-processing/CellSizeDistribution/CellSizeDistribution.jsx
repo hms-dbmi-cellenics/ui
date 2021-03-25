@@ -26,6 +26,7 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -207,13 +208,16 @@ const CellSizeDistribution = (props) => {
         <Col span={5}>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig
+              <CalculationConfigContainer
+                filterUuid='cellSizeDistribution'
                 experimentId={experimentId}
                 sampleId={sampleId}
-                plotType='bin step'
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-              />
+                plotType='bin step'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
