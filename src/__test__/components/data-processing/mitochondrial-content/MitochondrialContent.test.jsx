@@ -12,20 +12,29 @@ import CalculationConfig from '../../../../components/data-processing/Mitochondr
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
+
+const sampleId = 'sample-WT';
+const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
+const experimentId = 'e1234';
+const filterName = 'mitochondrialContent';
+
+const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const sample2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);
 
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    mitochondrialFractionHistogram: {
+    [sample1]: {
       config: initialPlotConfigStates.mitochondrialFractionHistogram,
       plotData: [],
     },
-    mitochondrialFractionLogHistogram: {
+    [sample2]: {
       config: initialPlotConfigStates.mitochondrialFractionLogHistogram,
       plotData: [],
     },
@@ -36,8 +45,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    mitochondrialFractionHistogram: {
-      ...noData.componentConfig.mitochondrialFractionHistogram,
+    [sample1]: {
+      ...noData.componentConfig[sample1],
       plotData: [
         {
           fracMito: 0.0321412215329531,
@@ -52,8 +61,8 @@ const withData = {
         },
       ],
     },
-    mitochondrialFractionLogHistogram: {
-      ...noData.componentConfig.mitochondrialFractionLogHistogram,
+    [sample2]: {
+      ...noData.componentConfig[sample2],
       plotData: [
         {
           fracMito: 0.0321412215329531,
@@ -71,10 +80,6 @@ const withData = {
     },
   },
 };
-
-const sampleId = 'WT';
-const sampleIds = ['WT', 'WT1', 'KO'];
-const experimentId = 'e1234';
 
 describe('MitochondrialContent', () => {
   beforeAll(async () => {

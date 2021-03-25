@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {
@@ -18,6 +18,7 @@ import DoubletScoreHistogram from '../../plots/DoubletScoreHistogram';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import CalculationConfig from './CalculationConfig';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
 const DoubletScores = (props) => {
@@ -25,7 +26,9 @@ const DoubletScores = (props) => {
     experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
-  const plotUuid = 'doubletScoreHistogram';
+  const filterName = 'doubletScores';
+
+  const plotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
   const plotType = 'doubletScoreHistogram';
 
   const dispatch = useDispatch();
@@ -46,18 +49,25 @@ const DoubletScores = (props) => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.numGenesVsNumUmis[sampleId]?.filterSettings
-      || state.experimentSettings.processing.numGenesVsNumUmis.filterSettings,
+    (state) => state.experimentSettings.processing.doubletScores[sampleId]?.filterSettings
+      || state.experimentSettings.processing.doubletScores.filterSettings,
   );
   const plotData = useSelector((state) => state.componentConfig[plotUuid]?.plotData);
 
+  const [renderConfig, setRenderConfig] = useState(null);
+
+  useEffect(() => {
+    const newConfig = _.clone(config);
+    _.merge(newConfig, expConfig);
+
+    setRenderConfig(newConfig);
+  }, [config, expConfig]);
+
   useEffect(() => {
     if (!config) {
-      const newConfig = _.clone(config);
-      _.merge(newConfig, expConfig);
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
-  }, [config]);
+  }, [experimentId]);
 
   const plotStylingControlsConfig = [
     {
@@ -88,8 +98,8 @@ const DoubletScores = (props) => {
       );
     }
 
-    if (config && plotData) {
-      return <DoubletScoreHistogram experimentId={experimentId} config={config} plotData={plotData} actions={allowedPlotActions} />;
+    if (renderConfig && plotData) {
+      return <DoubletScoreHistogram experimentId={experimentId} config={renderConfig} plotData={plotData} actions={allowedPlotActions} />;
     }
   };
 

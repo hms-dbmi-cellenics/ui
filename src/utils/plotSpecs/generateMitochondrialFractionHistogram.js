@@ -1,6 +1,7 @@
 const generateSpec = (config, plotData) => {
   let legend = null;
   const deadOrAlive = `(datum.bin1 <= ${config.maxFraction}) ? 'Alive' : 'Dead'`;
+  const generatePercentage = `(datum.count * 100.0) / ${plotData.length}`;
 
   legend = !config.legend.enabled ? null : [
     {
@@ -54,7 +55,7 @@ const generateSpec = (config, plotData) => {
           {
             type: 'bin',
             field: 'fracMito',
-            extent: [0, 1],
+            extent: [0, 100],
             step: config.binStep,
             nice: false,
           },
@@ -68,8 +69,8 @@ const generateSpec = (config, plotData) => {
           },
           {
             type: 'formula',
-            as: 'count',
-            expr: 'datum.count/10000',
+            as: 'percentage',
+            expr: generatePercentage,
           },
           {
             type: 'formula',
@@ -85,14 +86,14 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: [0, 1],
+        domain: [0, 100],
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
         round: true,
-        domain: { data: 'binned', field: 'count' },
+        domain: { data: 'binned', field: 'percentage' },
         zero: true,
         nice: true,
       },
@@ -103,11 +104,7 @@ const generateSpec = (config, plotData) => {
           [
             'green', 'blue',
           ],
-        domain: {
-          data: 'binned',
-          field: 'status',
-          sort: false,
-        },
+        domain: ['Alive', 'Dead'],
       },
     ],
     axes: [
@@ -150,7 +147,7 @@ const generateSpec = (config, plotData) => {
               scale: 'xscale',
               field: 'bin1',
             },
-            y: { scale: 'yscale', field: 'count' },
+            y: { scale: 'yscale', field: 'percentage' },
             y2: { scale: 'yscale', value: 0 },
             fill: {
               scale: 'color',

@@ -22,6 +22,7 @@ import {
 
 import CellSizeDistributionHistogram from '../../plots/CellSizeDistributionHistogram';
 import CellSizeDistributionKneePlot from '../../plots/CellSizeDistributionKneePlot';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
@@ -33,6 +34,8 @@ const CellSizeDistribution = (props) => {
     experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
+  const filterName = 'cellSizeDistribution';
+
   const allowedPlotActions = {
     export: true,
     compiled: false,
@@ -42,7 +45,7 @@ const CellSizeDistribution = (props) => {
 
   const dispatch = useDispatch();
 
-  const [selectedPlot, setSelectedPlot] = useState('histogram');
+  const [selectedPlot, setSelectedPlot] = useState('kneePlot');
   const [plot, setPlot] = useState(null);
 
   const listData = [
@@ -64,12 +67,12 @@ const CellSizeDistribution = (props) => {
   };
 
   const plots = {
-    histogram: {
-      title: 'Histogram',
-      plotUuid: 'cellSizeDistributionHistogram',
-      plotType: 'cellSizeDistributionHistogram',
+    kneePlot: {
+      title: 'Knee Plot',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
+      plotType: 'cellSizeDistributionKneePlot',
       plot: (config, plotData, actions) => (
-        <CellSizeDistributionHistogram
+        <CellSizeDistributionKneePlot
           experimentId={experimentId}
           config={config}
           plotData={plotData}
@@ -77,12 +80,12 @@ const CellSizeDistribution = (props) => {
         />
       ),
     },
-    kneePlot: {
-      title: 'Knee Plot',
-      plotUuid: 'cellSizeDistributionKneePlot',
-      plotType: 'cellSizeDistributionKneePlot',
+    histogram: {
+      title: 'Histogram',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
+      plotType: 'cellSizeDistributionHistogram',
       plot: (config, plotData, actions) => (
-        <CellSizeDistributionKneePlot
+        <CellSizeDistributionHistogram
           experimentId={experimentId}
           config={config}
           plotData={plotData}
@@ -189,6 +192,7 @@ const CellSizeDistribution = (props) => {
                   plotFn={plotObj.plot}
                   actions={false}
                 />
+
               </button>
 
             ))}

@@ -26,6 +26,7 @@ import {
 import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from '../../plots/FrequencyPlot';
 import ElbowPlot from '../../plots/ElbowPlot';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
@@ -33,6 +34,8 @@ const DataIntegration = (props) => {
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
+
+  const filterName = 'dataIntegration';
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -48,7 +51,7 @@ const DataIntegration = (props) => {
   const plots = {
     embedding: {
       title: 'Sample embedding',
-      plotUuid: 'dataIntegrationEmbedding',
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'dataIntegrationEmbedding',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
@@ -61,7 +64,7 @@ const DataIntegration = (props) => {
     },
     frequency: {
       title: 'Frequency plot',
-      plotUuid: 'dataIntegrationFrequency',
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'dataIntegrationFrequency',
       plot: (config, plotData, actions) => (
         <FrequencyPlot
@@ -74,7 +77,7 @@ const DataIntegration = (props) => {
     },
     elbow: {
       title: 'Elbow plot',
-      plotUuid: 'dataIntegrationElbow',
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
       plotType: 'dataIntegrationElbow',
       plot: (config, plotData, actions) => (
         <ElbowPlot
@@ -293,9 +296,6 @@ const DataIntegration = (props) => {
 
         <Col span={3}>
           <Space direction='vertical'>
-            <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.'>
-              <Button icon={<InfoCircleOutlined />} />
-            </Tooltip>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'

@@ -9,8 +9,6 @@ import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
 
-import CalculationConfig from './CalculationConfig';
-
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -22,6 +20,8 @@ import FeaturesVsUMIsScatterplot from '../../plots/FeaturesVsUMIsScatterplot';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
+import CalculationConfig from './CalculationConfig';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
 
@@ -29,6 +29,8 @@ const GenesVsUMIs = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
+
+  const filterName = 'numGenesVsNumUmis';
 
   const dispatch = useDispatch();
 
@@ -54,7 +56,7 @@ const GenesVsUMIs = (props) => {
   const plots = {
     histogram: {
       title: 'Histogram',
-      plotUuid: 'featuresVsUMIsHistogram',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'featuresVsUMIsHistogram',
       plot: (config, plotData, actions) => (
         <FeaturesVsUMIsHistogram
@@ -67,7 +69,7 @@ const GenesVsUMIs = (props) => {
     },
     scatterplot: {
       title: 'Knee Plot',
-      plotUuid: 'featuresVsUMIsScatterplot',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'featuresVsUMIsScatterplot',
       plot: (config, plotData, actions) => (
         <FeaturesVsUMIsScatterplot

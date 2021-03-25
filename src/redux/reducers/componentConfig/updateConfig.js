@@ -2,7 +2,6 @@ import _ from 'lodash';
 
 const updateConfig = (state, action) => {
   const { plotUuid, configChanges = null, dataChanges = null } = action.payload;
-
   const newConfig = _.cloneDeep(state[plotUuid]?.config);
 
   const mergeConfig = (objValue, srcValue) => {
@@ -15,7 +14,7 @@ const updateConfig = (state, action) => {
     _.mergeWith(newConfig, configChanges, mergeConfig);
   }
 
-  const newData = dataChanges ?? state[plotUuid].plotData;
+  const newData = dataChanges ?? state[plotUuid]?.plotData;
 
   return {
     ...state,
