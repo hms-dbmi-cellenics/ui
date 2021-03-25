@@ -3,9 +3,7 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 
 const ElbowPlot = (props) => {
-  const {
-    experimentId, config, plotData, actions,
-  } = props;
+  const { config, plotData, actions } = props;
 
   const generateSpec = () => ({
     width: config.dimensions.width,
