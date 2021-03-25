@@ -115,6 +115,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       name: 'Cell size distribution filter',
       multiSample: true,
       render: (key) => (
+
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
@@ -262,6 +263,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     setStepIdx(upcomingStepIdxRef.current);
   }
 
+  const renderWithInnerScroll = (innerRenderer) => {
+    return (
+      <div style={{
+        position: 'relative', overflow: 'scroll', height: window.innerHeight * 0.8,
+      }}>
+        {innerRenderer()}
+      </div>
+    )
+  }
 
   const renderTitle = () => (
     <>
@@ -491,7 +501,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             }
 
             return (
-              <Space direction='vertical' style={{ width: '100%' }}>
+              <Space direction='vertical'>
                 {processingConfig[steps[stepIdx].key].enabled === false &&
                   <Alert
                     message="This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data."
@@ -499,7 +509,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     showIcon
                   />
                 }
-                {render(key, experimentId)}
+                { renderWithInnerScroll(() => render(key, experimentId))}
               </Space>
             )
           })}
