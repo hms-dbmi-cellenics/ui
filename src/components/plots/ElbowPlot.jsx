@@ -128,9 +128,8 @@ const ElbowPlot = (props) => {
 };
 
 ElbowPlot.propTypes = {
-  experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
-  plotData: PropTypes.array.isRequired,
+  plotData: PropTypes.array,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
@@ -139,6 +138,7 @@ ElbowPlot.propTypes = {
 
 ElbowPlot.defaultProps = {
   actions: true,
+  plotData: [],
 };
 
 export default ElbowPlot;

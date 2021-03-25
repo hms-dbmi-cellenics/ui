@@ -26,7 +26,6 @@ import {
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
-import Loader from '../../Loader';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
