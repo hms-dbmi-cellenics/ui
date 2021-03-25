@@ -31,10 +31,6 @@ const noData = {
   },
   componentConfig: {
     [sample1]: {
-      config: initialPlotConfigStates.featuresVsUMIsHistogram,
-      plotData: [],
-    },
-    [sample1]: {
       config: initialPlotConfigStates.featuresVsUMIsScatterplot,
       plotData: [],
     },
@@ -156,7 +152,7 @@ describe('GenesVsUMIs', () => {
 
     const plots = page.find(Vega);
 
-    // 1 main 2 miniatures
-    expect(plots.length).toEqual(3);
+    // only 1 main scatterplot
+    expect(plots.length).toEqual(1);
   });
 });
