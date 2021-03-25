@@ -41,13 +41,13 @@ const SeuratV4Options = (props) => {
           })}
         />
       </Form.Item>
-      <Form.Item label='Normalisation:'>
+      <Form.Item label='normalization:'>
         <Select
-          value={config.normalisation}
+          value={config.normalization}
           onChange={(val) => onUpdate({
             dataIntegration: {
               methodSettings: {
-                seuratv4: { normalisation: val },
+                seuratv4: { normalization: val },
               },
             },
           })}

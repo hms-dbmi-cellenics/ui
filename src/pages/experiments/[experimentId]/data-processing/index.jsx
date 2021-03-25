@@ -223,8 +223,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       render: (key, expId) => <DataIntegration experimentId={expId} key={key} onPipelineRun={() => onPipelineRun(key)} />,
     },
     {
-      key: 'computeEmbedding',
-      name: 'Compute embedding',
+      key: 'configureEmbedding',
+      name: 'Configure embedding',
       multiSample: false,
       render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} onPipelineRun={() => onPipelineRun(key)} />,
     },

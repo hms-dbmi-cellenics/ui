@@ -11,12 +11,14 @@ export default {
       loadingSettingsError: false,
     },
     cellSizeDistribution: {
+      enabled: true,
       filterSettings: {
         minCellSize: 10800,
         binStep: 200,
       },
     },
     mitochondrialContent: {
+      enabled: true,
       filterSettings: {
         method: 'absolute_threshold',
         methodSettings: {
@@ -28,34 +30,39 @@ export default {
       },
     },
     classifier: {
+      enabled: true,
+      auto: true,
       filterSettings: {
-        minProbability: 0.82,
-        bandwidth: -1,
+        FDR: 0.1,
       },
     },
     numGenesVsNumUmis: {
+      enabled: true,
+      auto: true,
       filterSettings: {
         regressionType: 'gam',
-        smoothing: 13,
-        upperCutoff: 4.8,
-        lowerCutoff: 2.1,
-        stringency: 2.1,
-        binStep: 0.05,
+        regressionTypeSettings: {
+          gam: {
+            'p.level': 0.00009,
+          },
+        },
       },
     },
     doubletScores: {
+      enabled: true,
       filterSettings: {
         probabilityThreshold: 0.2,
         binStep: 0.05,
       },
     },
     dataIntegration: {
+      enabled: true,
       dataIntegration: {
         method: 'seuratv4',
         methodSettings: {
           seuratv4: {
             numGenes: 2000,
-            normalisation: 'logNormalize',
+            normalization: 'logNormalize',
           },
         },
       },
@@ -66,6 +73,7 @@ export default {
       },
     },
     configureEmbedding: {
+      enabled: true,
       embeddingSettings: {
         method: 'umap',
         methodSettings: {
