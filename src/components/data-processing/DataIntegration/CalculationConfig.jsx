@@ -43,7 +43,7 @@ const CalculationConfig = (props) => {
     (state) => state.experimentSettings.processing.dataIntegration,
   );
 
-  const elbowPlotUuid = generateDataProcessingPlotUuid(null, FILTER_UUID, 2);
+  const elbowPlotUuid = generateDataProcessingPlotUuid(null, FILTER_UUID, 1);
   const data = useSelector((state) => state.componentConfig[elbowPlotUuid]?.plotData);
 
   const methods = [
