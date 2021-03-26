@@ -83,6 +83,7 @@ const DataIntegration = (props) => {
           config={config}
           plotData={plotData}
           actions={actions}
+          numPCs={calculationConfig?.dimensionalityReduction.numPCs}
         />
       ),
     },
@@ -224,7 +225,7 @@ const DataIntegration = (props) => {
         debouncedCellSetClustering(0.5);
       }
     }
-  }, [config, cellSets, plotData]);
+  }, [config, cellSets, plotData, calculationConfig]);
 
   useEffect(() => {
     const showPopupWhenUnsaved = (url) => {

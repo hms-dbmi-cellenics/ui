@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
+import PlatformError from '../PlatformError';
 
 const ElbowPlot = (props) => {
-  const { config, plotData, actions } = props;
+  const {
+    config, plotData, actions, numPCs,
+  } = props;
+
+  console.log('numPCs');
+  console.log(numPCs);
+
+  const [plotSpec, setPlotSpec] = useState(null);
+
+  useEffect(() => {
+    if (config && plotData && numPCs) {
+      setPlotSpec(generateSpec());
+    }
+  }, [config, plotData, numPCs]);
 
   const generateSpec = () => ({
     width: config.dimensions.width,
@@ -99,8 +113,7 @@ const ElbowPlot = (props) => {
         type: 'rule',
         encode: {
           update: {
-            // x: { scale: 'x', value: redLineXValue, round: true },
-            x: { scale: 'x', value: 30, round: true },
+            x: { scale: 'x', value: numPCs, round: true },
             y: { value: 0 },
             y2: { field: { group: 'height' } },
             strokeWidth: { value: 2 },
@@ -120,10 +133,20 @@ const ElbowPlot = (props) => {
     },
   });
 
+  if (plotSpec) {
+    return (
+      <center>
+        <Vega data={{ plotData }} spec={plotSpec} renderer='canvas' actions={actions} />
+      </center>
+    );
+  }
+
   return (
-    <center>
-      <Vega data={{ plotData }} spec={generateSpec()} renderer='canvas' actions={actions} />
-    </center>
+    <PlatformError
+      description='There is no data to display. Please run the filter again.'
+      actionable={false}
+      reason={' '}
+    />
   );
 };
 
@@ -134,11 +157,13 @@ ElbowPlot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
+  numPCs: PropTypes.number,
 };
 
 ElbowPlot.defaultProps = {
   actions: true,
   plotData: [],
+  numPCs: 30,
 };
 
 export default ElbowPlot;
