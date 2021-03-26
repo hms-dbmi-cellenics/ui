@@ -80,7 +80,6 @@ const DataIntegration = (props) => {
       plotType: 'dataIntegrationElbow',
       plot: (config, plotData, actions) => (
         <ElbowPlot
-          experimentId={experimentId}
           config={config}
           plotData={plotData}
           actions={actions}
