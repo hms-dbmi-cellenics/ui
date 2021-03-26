@@ -8,9 +8,6 @@ const ElbowPlot = (props) => {
     config, plotData, actions, numPCs,
   } = props;
 
-  console.log('numPCs');
-  console.log(numPCs);
-
   const [plotSpec, setPlotSpec] = useState(null);
 
   useEffect(() => {
@@ -133,20 +130,20 @@ const ElbowPlot = (props) => {
     },
   });
 
-  if (plotSpec) {
+  if (!plotSpec) {
     return (
-      <center>
-        <Vega data={{ plotData }} spec={plotSpec} renderer='canvas' actions={actions} />
-      </center>
+      <PlatformError
+        description='There is no data to display. Please run the filter again.'
+        actionable={false}
+        reason={' '}
+      />
     );
   }
 
   return (
-    <PlatformError
-      description='There is no data to display. Please run the filter again.'
-      actionable={false}
-      reason={' '}
-    />
+    <center>
+      <Vega data={{ plotData }} spec={plotSpec} renderer='canvas' actions={actions} />
+    </center>
   );
 };
 
