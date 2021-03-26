@@ -26,6 +26,8 @@ const generateSpec = (config, plotData) => {
         direction: 'horizontal',
         labelFont: { value: config?.fontStyle.font },
         titleFont: { value: config?.fontStyle.font },
+        columns: Math.floor(config.dimensions.width / 85),
+        labelLimit: 85,
       },
     ];
   }
