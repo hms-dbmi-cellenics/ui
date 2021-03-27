@@ -3,11 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
+  Collapse, Row, Col, Space, Skeleton,
 } from 'antd';
-import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
 import {
   updatePlotConfig,
   loadPlotConfig,

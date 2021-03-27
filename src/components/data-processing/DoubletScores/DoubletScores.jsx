@@ -2,12 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {
-  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
+  Collapse, Row, Col, Space, Skeleton,
 } from 'antd';
 import PropTypes from 'prop-types';
-import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
 import {
   updatePlotConfig,
   loadPlotConfig,

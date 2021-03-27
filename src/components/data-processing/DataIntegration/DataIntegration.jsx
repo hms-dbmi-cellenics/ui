@@ -3,9 +3,8 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Skeleton, Alert,
+  Row, Col, Space, PageHeader, Collapse, Skeleton, Alert,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';

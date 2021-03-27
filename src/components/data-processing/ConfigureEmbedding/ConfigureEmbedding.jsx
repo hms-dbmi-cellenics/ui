@@ -4,11 +4,8 @@ import { useRouter } from 'next/router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert, Skeleton,
+  Row, Col, Space, PageHeader, Collapse, Empty, Alert, Skeleton,
 } from 'antd';
-import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
 
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
