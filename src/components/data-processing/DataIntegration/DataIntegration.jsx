@@ -289,12 +289,12 @@ const DataIntegration = (props) => {
         title={plots[selectedPlot].title}
         style={{ width: '100%', paddingRight: '0px' }}
       />
-      <Row>
-        <Col span={15}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={3}>
+        <Col flex='1 0px'>
           <Space direction='vertical'>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
@@ -320,7 +320,8 @@ const DataIntegration = (props) => {
             ))}
           </Space>
         </Col>
-        <Col span={5}>
+
+        <Col flex='1 0px'>
           <CalculationConfig
             experimentId={experimentId}
             config={calculationConfig}

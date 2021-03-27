@@ -335,16 +335,13 @@ const ConfigureEmbedding = (props) => {
         title={plots[selectedPlot].title}
         style={{ width: '100%', paddingRight: '0px' }}
       />
-      <Row>
+      <Row gutter={16}>
         <Col flex='auto'>
           {renderPlot()}
         </Col>
 
         <Col flex='1 0px'>
           <Space direction='vertical'>
-            <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.'>
-              <Button icon={<InfoCircleOutlined />} />
-            </Tooltip>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'

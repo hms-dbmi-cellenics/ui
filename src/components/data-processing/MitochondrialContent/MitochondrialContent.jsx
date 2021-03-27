@@ -152,17 +152,13 @@ const MitochondrialContent = (props) => {
 
   return (
     <>
-      <Row>
-
+      <Row gutter={16}>
         <Col flex='auto'>
           {renderPlot()}
         </Col>
 
         <Col flex='1 0px'>
           <Space direction='vertical'>
-            <Tooltip title='A high fraction of mitochondrial reads is an indicator of cell death. The usual range for this cut-off is 0.1-0.5.'>
-              <Button icon={<InfoCircleOutlined />} />
-            </Tooltip>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'

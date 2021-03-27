@@ -112,15 +112,9 @@ const GenesVsUMIs = (props) => {
 
   return (
     <>
-      <Row>
+      <Row gutter={16}>
         <Col flex='auto'>
           {renderPlot()}
-        </Col>
-
-        <Col flex='1 0px'>
-          <Tooltip placement='bottom' title='The number of genes vs number of UMIs plot is used to exclude cell fragments and outliers. The user can set the stringency (to define the confidence band), and the min/max cell size (note that min cell size will change across filters).'>
-            <Button icon={<InfoCircleOutlined />} />
-          </Tooltip>
         </Col>
 
         <Col flex='1 0px'>

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
   Row, Col, Carousel, Card, Modal, Skeleton,
-  Descriptions
+  Tooltip
 } from 'antd';
 import {
   LeftOutlined,
@@ -13,7 +13,8 @@ import {
   CheckOutlined,
   CloseOutlined,
   EllipsisOutlined,
-  WarningOutlined
+  WarningOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 
 import _ from 'lodash';
@@ -114,6 +115,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'cellSizeDistribution',
       name: 'Cell size distribution filter',
+      description: 'The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). This filter is used to detect empty droplets and fine-tunes the Classifier filter. In some datasets this filter might be used instead of the Classifier filter.',
       multiSample: true,
       render: (key) => (
 
@@ -137,6 +139,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'mitochondrialContent',
       name: 'Mitochondrial content filter',
+      description: 'A high percentage of mitochondrial reads is an indicator of cell death. UMIs mapped to mitochondrial genes are calculated as a percentage of total UMIs. The percentage of mitochondrial reads depends on the cell type. The typical cut-off range is 10-50%, with the default cut-off set to 20%.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -158,6 +161,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'classifier',
       name: 'Classifier filter',
+      description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -179,6 +183,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'numGenesVsNumUmis',
       name: 'Number of genes vs UMIs filter',
+      description: 'The number of expressed genes per cell and number of UMIs per cell is expected to have a linear relationship. This filter is used to exclude outliers (e.g. many UMIs originating from only a few genes).',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -200,6 +205,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'doubletScores',
       name: 'Doublet filter',
+      description: 'Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘Scrublet’. The cut-off is typically set around 0.2.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -227,6 +233,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'configureEmbedding',
       name: 'Configure embedding',
+      description: 'The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.',
       multiSample: false,
       render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} onPipelineRun={() => onPipelineRun(key)} />,
     },
@@ -291,102 +298,108 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           </p>
         </Space>
       </Modal>
-      <Row justify="space-between">
+      <Row style={{ display: 'flex', justifyContent: 'flex-start' }} gutter={16}>
         <Col>
-          <Space size='small'>
-            <Select
-              value={stepIdx}
-              onChange={(idx) => {
-                changeStepId(idx);
-              }}
-              style={{ fontWeight: 'bold' }}
-              placeholder='Jump to a step...'
-            >
-              {
-                steps.map(
-                  ({ name, key }, i) => {
-                    const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
+          <Select
+            value={stepIdx}
+            onChange={(idx) => {
+              changeStepId(idx);
+            }}
+            style={{ fontWeight: 'bold' }}
+            placeholder='Jump to a step...'
+          >
+            {
+              steps.map(
+                ({ name, key }, i) => {
+                  const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
 
-                    return (
-                      <Option
-                        value={i}
-                        key={key}
-                        disabled={
-                          disabledByPipeline
-                        }
-                      >
-                        {processingConfig[key]?.enabled === false ? (
-                          <>
-                            <Text
-                              type='secondary'
+                  return (
+                    <Option
+                      value={i}
+                      key={key}
+                      disabled={
+                        disabledByPipeline
+                      }
+                    >
+                      {processingConfig[key]?.enabled === false ? (
+                        <>
+                          <Text
+                            type='secondary'
 
-                            >
-                              <CloseOutlined />
-                            </Text>
-                            <span
-                              style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
-                            >
-                              {name}
-                            </span>
-                          </>
-                        ) : !disabledByPipeline ? (
-                          <>
-                            <Text
-                              type='success'
+                          >
+                            <CloseOutlined />
+                          </Text>
+                          <span
+                            style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
+                          >
+                            {name}
+                          </span>
+                        </>
+                      ) : !disabledByPipeline ? (
+                        <>
+                          <Text
+                            type='success'
 
-                            >
-                              <CheckOutlined />
-                            </Text>
-                            <span
-                              style={{ marginLeft: '0.25rem' }}
-                            // style={!processingConfig[key]?.enabled ? { textDecoration: 'line-through' } : {}}
-                            >
-                              {name}
-                            </span>
-                          </>
-                        ) : pipelineRunning && !isStepComplete(key) ? (
-                          <>
-                            <Text
-                              type='warning'
-                              strong
-                            >
-                              <EllipsisOutlined />
-                            </Text>
-                            <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                          </>
-                        ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
-                          <>
-                            <Text
-                              type='danger'
-                              strong
-                            >
-                              <WarningOutlined />
-                            </Text>
-                            <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                          </>
-                        ) : <></>}
-                      </Option>
-                    );
-                  }
-                )
-              }
-            </Select>
-            {steps[stepIdx].multiSample && (
+                          >
+                            <CheckOutlined />
+                          </Text>
+                          <span
+                            style={{ marginLeft: '0.25rem' }}
+                          // style={!processingConfig[key]?.enabled ? { textDecoration: 'line-through' } : {}}
+                          >
+                            {name}
+                          </span>
+                        </>
+                      ) : pipelineRunning && !isStepComplete(key) ? (
+                        <>
+                          <Text
+                            type='warning'
+                            strong
+                          >
+                            <EllipsisOutlined />
+                          </Text>
+                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                        </>
+                      ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
+                        <>
+                          <Text
+                            type='danger'
+                            strong
+                          >
+                            <WarningOutlined />
+                          </Text>
+                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                        </>
+                      ) : <></>}
+                    </Option>
+                  );
+                }
+              )
+            }
+          </Select>
+        </Col>
+        <Col>
+          {steps[stepIdx].description && (
+            <Tooltip title={steps[stepIdx].description}>
+              <Button icon={<InfoCircleOutlined />} />
+            </Tooltip>
+          )}
+        </Col>
+        <Col>
+          {steps[stepIdx].multiSample && (
+            <Button
+              onClick={() => {
+                dispatch(updateProcessingSettings(
+                  experimentId,
+                  steps[stepIdx].key,
+                  { enabled: !processingConfig[steps[stepIdx].key]?.enabled },
+                ));
 
-              <Button
-                onClick={() => {
-                  dispatch(updateProcessingSettings(
-                    experimentId,
-                    steps[stepIdx].key,
-                    { enabled: !processingConfig[steps[stepIdx].key]?.enabled },
-                  ));
-
-                  dispatchDebounce(saveProcessingSettings(experimentId, steps[stepIdx].key));
-                }}>
-                {processingConfig[steps[stepIdx].key]?.enabled === false ? 'Enable' : 'Disable'}
-              </Button>
-            )}
-          </Space>
+                dispatchDebounce(saveProcessingSettings(experimentId, steps[stepIdx].key));
+              }}>
+              {processingConfig[steps[stepIdx].key]?.enabled === false ? 'Enable' : 'Disable'}
+            </Button>
+          )}
         </Col>
         <Col>
           {steps[stepIdx].multiSample && (
@@ -395,13 +408,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               type='primary'
               onClick={() => { onPipelineRun(steps[stepIdx].key) }}
               disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
-              style={{ marginLeft: '20px' }}
             >
               {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}
             </Button>
           )}
         </Col>
-        <Col>
+        <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex', marginLeft: 'auto' }}>
           <Space>
             <StepsIndicator
               allSteps={steps}
@@ -414,7 +426,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <Col>
           <StatusIndicator />
         </Col>
-        <Col>
+        <Col style={{ marginLeft: 'auto' }}>
           <Space size='large'>
             <Button
               disabled={stepIdx === 0}
@@ -454,7 +466,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   return (
     <div style={{
-      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', minHeight: '100vh',
+      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', height: '100vh',
     }}
     >
       <Header
@@ -466,7 +478,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
       <Card
         title={renderTitle()}
-        style={{ flex: 1 }}
       >
         <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
           {steps.map(({ render, key }) => {
