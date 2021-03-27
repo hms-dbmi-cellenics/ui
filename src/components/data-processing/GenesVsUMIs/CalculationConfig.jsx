@@ -7,27 +7,23 @@ import {
   Form,
   Button,
   Alert,
-  Slider,
-  Select,
   Radio,
+  Tooltip,
 } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 import _ from 'lodash';
 
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
-
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
-
-const { Option } = Select;
 
 const CalculationConfig = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange,
   } = props;
 
-  const config = useSelector(
-    (state) => state.experimentSettings.processing.numGenesVsNumUmis[sampleId]?.filterSettings
-      || state.experimentSettings.processing.numGenesVsNumUmis.filterSettings,
+  const { auto, filterSettings: config } = useSelector(
+    (state) => state.experimentSettings.processing.numGenesVsNumUmis[sampleId]
+      || state.experimentSettings.processing.numGenesVsNumUmis,
   );
 
   const FILTER_UUID = 'numGenesVsNumUmis';
@@ -55,9 +51,17 @@ const CalculationConfig = (props) => {
 
   const updateSettings = (diff) => {
     const newConfig = _.cloneDeep(config);
-    _.merge(newConfig, diff);
 
-    const sampleSpecificDiff = { [sampleId]: { filterSettings: newConfig } };
+    if (!_.has(diff, 'auto')) {
+      _.merge(newConfig, diff);
+    }
+
+    const sampleSpecificDiff = {
+      [sampleId]: {
+        auto: diff?.auto ? diff.auto : auto,
+        filterSettings: newConfig,
+      },
+    };
 
     setDisplayIndividualChangesWarning(true);
     dispatch(updateProcessingSettings(
@@ -68,8 +72,6 @@ const CalculationConfig = (props) => {
 
     onConfigChange();
   };
-
-  const filtering = false;
 
   return (
     <>
@@ -83,77 +85,39 @@ const CalculationConfig = (props) => {
           />
         </Form.Item>
       )}
-      <Radio.Group defaultValue={1} style={{ marginTop: '5px', marginBottom: '30px' }}>
-        <Radio value={1}>
+      <Radio.Group
+        defaultValue={auto}
+        style={{ marginTop: '5px', marginBottom: '30px' }}
+        onChange={(e) => (updateSettings({ auto: e.target.value }))}
+      >
+        <Radio value>
           Automatic
         </Radio>
-        <Radio value={2}>
+        <Radio value={false}>
           Manual
         </Radio>
       </Radio.Group>
       <Form.Item
         label='Regression type:'
-      >
-        <Select
-          value={config.regressionType}
-          style={{ width: 200 }}
-          collapsible={!filtering ? 'disabled' : 'header'}
-        >
-          <Option value='gam'>Gam</Option>
-          <Option value='option2'>option2</Option>
-          <Option value='option3'>option3</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item
-        label='Smoothing:'
-      >
-        <Slider
-          collapsible={!filtering ? 'disabled' : 'header'}
-          value={config.smoothing}
-          min={5}
-          max={21}
-          onChange={(val) => updateSettings({ smoothing: val })}
-        />
-      </Form.Item>
-      <Form.Item
-        label='Upper cut-off:'
-      >
-        <Slider
-          value={config.upperCutoff}
-          collapsible={!filtering ? 'disabled' : 'header'}
-          min={2}
-          max={5}
-          onChange={(val) => updateSettings({ upperCutoff: val })}
-          step={0.1}
-        />
-      </Form.Item>
-      <Form.Item
-        label='Lower cut-off:'
-      >
-        <Slider
-          defaultValue={config.lowerCutoff}
-          collapsible={!filtering ? 'disabled' : 'header'}
-          min={2}
-          max={5}
-          onChange={(val) => updateSettings({ lowerCutoff: val })}
-          step={0.1}
-        />
-      </Form.Item>
-      <Form.Item label='Stringency'>
-        <InputNumber
-          collapsible={!filtering ? 'disabled' : 'header'}
-          max={5}
-          min={0}
-          step={0.1}
-          onChange={(val) => updateSettings({ stringency: val })}
-          value={config.stringency}
-        />
-      </Form.Item>
-      <BandwidthOrBinstep
-        config={config}
-        onUpdate={updateSettings}
-        type='bin step'
       />
+      <Form.Item label='p-level cut-off:'>
+        <Space direction='horizontal'>
+          <Tooltip title='Linear regression (Gam) of UMIs vs features (genes) is performed for all cells in order to detect outliers. The ‘p-level cut-off’ is the stringency for defining outliers: ‘p.level’ refers to the confidence level for a given cell to deviate from the main trend. The smaller the number the more stringent cut-off.
+‘p.level’ sets the prediction intervals calculated by the R `predict.lm` whereas `level = 1 - p.value`. The underlying regression is performed with `MASS::rlm`'
+          >
+            <InfoCircleOutlined />
+          </Tooltip>
+          <InputNumber
+            value={config.regressionTypeSettings.gam['p.level']}
+            onChange={(value) => updateSettings({ regressionTypeSettings: { gam: { 'p.level': value } } })}
+            onPressEnter={(e) => updateSettings({ regressionTypeSettings: { gam: { 'p.level': e.target.value } } })}
+            placeholder={0.00001}
+            min={0}
+            max={1}
+            step={0.00001}
+          />
+        </Space>
+      </Form.Item>
       <Button onClick={updateAllSettings}>Copy to all samples</Button>
     </>
   );

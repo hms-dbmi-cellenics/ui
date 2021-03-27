@@ -1,6 +1,6 @@
 const generateSpec = (config, plotData) => {
   let legend = null;
-  const generateStatus = `(datum.bin1 <= ${config.probThreshold}) ? 'high score' : 'low score'`;
+  const generateStatus = `(datum.bin1 <= ${config.probabilityThreshold}) ? 'high score' : 'low score'`;
 
   legend = !config.legend.enabled ? {} : [
     {
@@ -102,11 +102,7 @@ const generateSpec = (config, plotData) => {
           [
             'green', 'blue',
           ],
-        domain: {
-          data: 'binned',
-          field: 'status',
-          sort: true,
-        },
+        domain: ['high score', 'low score'],
       },
     ],
     axes: [
@@ -160,10 +156,10 @@ const generateSpec = (config, plotData) => {
       },
       {
         type: 'rect',
-        from: { data: 'plotData' },
+        from: { data: 'binned' },
         encode: {
-          enter: {
-            x: { scale: 'xscale', field: 'fracMito' },
+          update: {
+            x: { scale: 'xscale', field: 'bin0' },
             width: { value: 1 },
             y: { value: 25, offset: { signal: 'height' } },
             height: { value: 5 },
@@ -172,6 +168,19 @@ const generateSpec = (config, plotData) => {
               scale: 'color',
               field: 'status',
             },
+          },
+        },
+      },
+      {
+        type: 'rule',
+        encode: {
+          update: {
+            x: { scale: 'xscale', value: config.probabilityThreshold },
+            y: { value: 0 },
+            y2: { field: { group: 'height' } },
+            strokeWidth: { value: 2 },
+            strokeDash: { value: [8, 4] },
+            stroke: { value: 'red' },
           },
         },
       },
