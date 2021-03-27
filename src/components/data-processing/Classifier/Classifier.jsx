@@ -107,17 +107,17 @@ const Classifier = (props) => {
   return (
     <>
       <Row>
-
-        <Col span={17}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={1}>
+        <Col flex='1 0px'>
           <Tooltip placement='bottom' title='The classifier combines several properties (mitochondrial content, entropy, etc.) into a single probability score and is used to refine the filtering of empty droplets. The cut-off is typically set around 0.6-0.9.'>
             <Button icon={<InfoCircleOutlined />} />
           </Tooltip>
         </Col>
-        <Col span={6}>
+
+        <Col flex='1 0px'>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>

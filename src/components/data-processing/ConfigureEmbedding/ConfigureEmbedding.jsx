@@ -336,11 +336,11 @@ const ConfigureEmbedding = (props) => {
         style={{ width: '100%', paddingRight: '0px' }}
       />
       <Row>
-        <Col span={15}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={3}>
+        <Col flex='1 0px'>
           <Space direction='vertical'>
             <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.'>
               <Button icon={<InfoCircleOutlined />} />
@@ -371,7 +371,7 @@ const ConfigureEmbedding = (props) => {
           </Space>
         </Col>
 
-        <Col span={5}>
+        <Col flex='1 0px'>
           <CalculationConfig experimentId={experimentId} onPipelineRun={onPipelineRun} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>

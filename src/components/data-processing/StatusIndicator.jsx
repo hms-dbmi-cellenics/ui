@@ -32,7 +32,7 @@ const StatusIndicator = () => {
 
   const statusIndicators = {
     NotCreated: {
-      icon: <StopOutlined />,
+      icon: <Text strong type='secondary'>to be started</Text>,
       title: 'to be started',
       description: (
         <Text>You have never submitted your analysis to data processing.</Text>
@@ -122,7 +122,7 @@ const StatusIndicator = () => {
     <Dropdown overlay={renderOverlay}>
       <Button type='text'>
         <Space>
-          <span>Status:</span>
+          Status:
           {statusIndicators[status].icon}
           <Text type='secondary'><DownOutlined /></Text>
         </Space>

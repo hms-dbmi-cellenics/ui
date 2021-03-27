@@ -9,7 +9,7 @@ const StepsIndicator = (props) => {
     completed: '#1890ff', // blue
   };
   return (
-    <>
+    <div style={{ width: 18 * allSteps.length, verticalAlign: 'middle' }}>
       {allSteps.map((step, index) => {
         let color = colors.completed;
         if (index === currentStep) {
@@ -23,7 +23,7 @@ const StepsIndicator = (props) => {
           </svg>
         );
       })}
-    </>
+    </div>
   );
 };
 
