@@ -37,7 +37,9 @@ const DoubletScores = (props) => {
     editor: false,
   };
 
-  const debounceSave = useCallback(_.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), [],
+  );
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -96,7 +98,14 @@ const DoubletScores = (props) => {
     }
 
     if (renderConfig && plotData) {
-      return <DoubletScoreHistogram experimentId={experimentId} config={renderConfig} plotData={plotData} actions={allowedPlotActions} />;
+      return (
+        <DoubletScoreHistogram
+          experimentId={experimentId}
+          config={renderConfig}
+          plotData={plotData}
+          actions={allowedPlotActions}
+        />
+      );
     }
   };
 

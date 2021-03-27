@@ -8,11 +8,8 @@ import {
   Col,
   List,
   Space,
-  Tooltip,
-  Button,
   Skeleton,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 
 import {
   updatePlotConfig,

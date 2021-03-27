@@ -39,7 +39,9 @@ const Classifier = (props) => {
 
   const dispatch = useDispatch();
 
-  const debounceSave = useCallback(_.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), [],
+  );
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
