@@ -92,7 +92,7 @@ const CalculationConfig = (props) => {
         </Radio>
       </Radio.Group>
 
-      <Form.Item disabled label='Min cell size:'>
+      <Form.Item disabled label='Minimum #UMIs per cell'>
         <InputNumber
           value={config.minCellSize}
           collapsible={!filtering ? 'disabled' : 'header'}

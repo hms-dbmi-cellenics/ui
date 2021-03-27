@@ -15,7 +15,7 @@ const BandwidthOrBinstep = (props) => {
 
   if (type === 'bin step') {
     return (
-      <Form.Item label='Bin step:'>
+      <Form.Item label='Bin step'>
         <Slider
           value={config.binStep}
           min={realMin}
@@ -30,7 +30,7 @@ const BandwidthOrBinstep = (props) => {
     return (null);
   }
   return (
-    <Form.Item label='Bandwidth:'>
+    <Form.Item label='Bandwidth'>
       <Slider
         value={config.bandwidth}
         min={-1}
