@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from '../../actionTypes/genes';
@@ -30,9 +29,9 @@ const loadGeneExpression = (
   // Check which of the genes we actually need to load. Only do this if
   // we are not forced to reload all of the data.
   let genesToFetch = [...genes];
+  const genesAlreadyLoaded = new Set(Object.keys(geneData));
 
   if (!forceReloadAll) {
-    const genesAlreadyLoaded = new Set(Object.keys(geneData));
     genesToFetch = genesToFetch.filter((gene) => !genesAlreadyLoaded.has(gene));
   }
 
@@ -57,16 +56,13 @@ const loadGeneExpression = (
     if (Object.keys(data).length === 0) {
       throw Error('There is no information available for selected genes.');
     }
-    const loadedGenes = _.cloneDeep(genes);
-    if (data[genesToFetch[0]].message) {
+    if (data[genesToFetch[0]]?.message) {
       dispatch(pushNotificationMessage('error', `Gene ${genesToFetch[0]} is not found!`, 3));
-      const index = genes.indexOf(genesToFetch[0]);
-      loadedGenes.splice(index, 1);
       dispatch({
         type: GENES_EXPRESSION_LOADED,
         payload: {
           data: [],
-          genes: loadedGenes,
+          genes: genesAlreadyLoaded,
           stopLoading: true,
         },
       });
