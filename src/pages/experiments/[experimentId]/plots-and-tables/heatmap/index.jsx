@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
-  Row, Col, Space, Collapse, Skeleton, Empty, Typography, message,
+  Row, Col, Space, Collapse, Skeleton, Empty, Typography,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
