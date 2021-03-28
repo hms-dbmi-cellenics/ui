@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
-  Row, Col, Space, Collapse, Skeleton, Empty, Typography,
+  Row, Col, Space, Collapse, Skeleton, Empty, Typography, message,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,6 +16,7 @@ import PlatformError from '../../../../../components/PlatformError';
 import Loader from '../../../../../components/Loader';
 import populateHeatmapData from '../../../../../components/plots/helpers/populateHeatmapData';
 import HeatmapControls from '../../../../../components/plots/styling/heatmap/HeatmapControls';
+import NotificationManager from '../../../../../components/notification/NotificationManager';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -47,6 +48,7 @@ const HeatmapPlot = ({ experimentId }) => {
     if (!config || _.isEmpty(expressionData)) {
       return;
     }
+
     if (!_.isEqual(selectedGenes, config.selectedGenes) && displaySavedGenes.current) {
       onGeneEnter(config.selectedGenes);
       displaySavedGenes.current = false;
@@ -54,7 +56,16 @@ const HeatmapPlot = ({ experimentId }) => {
   }, [config]);
 
   useEffect(() => {
-    if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes)) {
+    if (!config || _.isEmpty(expressionData)) {
+      return;
+    }
+    if (!_.isEqual(selectedGenes, config.selectedGenes) && !_.isEmpty(selectedGenes)) {
+      updatePlotWithChanges({ selectedGenes });
+    }
+  }, [selectedGenes]);
+
+  useEffect(() => {
+    if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes) || !loading) {
       return;
     }
 
@@ -69,7 +80,7 @@ const HeatmapPlot = ({ experimentId }) => {
       })),
     };
     setVegaSpec(newVegaSpec);
-  }, [expressionData, selectedGenes, config, cellSets]);
+  }, [expressionData, config, cellSets]);
 
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
@@ -88,7 +99,6 @@ const HeatmapPlot = ({ experimentId }) => {
     updates.selectedGenes = [...value];
     // updating the selected genes in the config too so they are saved in dynamodb
 
-    updatePlotWithChanges(updates);
     dispatch(loadGeneExpression(experimentId, updates.selectedGenes, plotUuid));
   };
   const renderPlot = () => {
@@ -159,7 +169,7 @@ const HeatmapPlot = ({ experimentId }) => {
 
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-
+      <NotificationManager />
       <Header plotUuid={plotUuid} experimentId={experimentId} finalRoute={route} />
       <Row gutter={16}>
         <Col span={16}>

@@ -15,7 +15,6 @@ const genesExpressionLoading = (state, action) => {
           ...state.expression.views[componentUuid],
           fetching: true,
           error: false,
-          data: genes,
         },
       },
       loading: _.union(state.expression.loading, genes),

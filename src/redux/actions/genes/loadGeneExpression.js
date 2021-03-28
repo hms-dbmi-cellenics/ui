@@ -1,7 +1,8 @@
+import _ from 'lodash';
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from '../../actionTypes/genes';
-
+import pushNotificationMessage from '../pushNotificationMessage';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const loadGeneExpression = (
@@ -56,16 +57,30 @@ const loadGeneExpression = (
     if (Object.keys(data).length === 0) {
       throw Error('There is no information available for selected genes.');
     }
-
-    dispatch({
-      type: GENES_EXPRESSION_LOADED,
-      payload: {
-        experimentId,
-        componentUuid,
-        genes,
-        data,
-      },
-    });
+    const loadedGenes = _.cloneDeep(genes);
+    if (data[genesToFetch[0]].message) {
+      dispatch(pushNotificationMessage('error', `Gene ${genesToFetch[0]} is not found!`, 3));
+      const index = genes.indexOf(genesToFetch[0]);
+      loadedGenes.splice(index, 1);
+      dispatch({
+        type: GENES_EXPRESSION_LOADED,
+        payload: {
+          data: [],
+          genes: loadedGenes,
+          stopLoading: true,
+        },
+      });
+    } else {
+      dispatch({
+        type: GENES_EXPRESSION_LOADED,
+        payload: {
+          experimentId,
+          componentUuid,
+          genes,
+          data,
+        },
+      });
+    }
   } catch (error) {
     dispatch({
       type: GENES_EXPRESSION_ERROR,
