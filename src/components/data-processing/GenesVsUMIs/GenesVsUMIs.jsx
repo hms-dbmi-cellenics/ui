@@ -3,11 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
+  Collapse, Row, Col, Space, Skeleton,
 } from 'antd';
-import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -112,17 +109,12 @@ const GenesVsUMIs = (props) => {
 
   return (
     <>
-      <Row>
-        <Col span={14}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={1}>
-          <Tooltip placement='bottom' title='The number of genes vs number of UMIs plot is used to exclude cell fragments and outliers. The user can set the stringency (to define the confidence band), and the min/max cell size (note that min cell size will change across filters).'>
-            <Button icon={<InfoCircleOutlined />} />
-          </Tooltip>
-        </Col>
-        <Col span={6}>
+        <Col flex='1 0px'>
           <Collapse defaultActiveKey={['settings']}>
             <Space direction='vertical' style={{ width: '100%' }} />
             <Panel header='Filtering Settings' key='settings'>

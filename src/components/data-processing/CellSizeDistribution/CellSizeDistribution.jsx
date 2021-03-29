@@ -8,11 +8,8 @@ import {
   Col,
   List,
   Space,
-  Tooltip,
-  Button,
   Skeleton,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 
 import {
   updatePlotConfig,
@@ -162,16 +159,13 @@ const CellSizeDistribution = (props) => {
 
   return (
     <>
-      <Row>
-        <Col span={14}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={5}>
+        <Col flex='1 0px'>
           <Space direction='vertical'>
-            <Tooltip title='The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). Look for bimodal distribution to set the cut-off.'>
-              <Button icon={<InfoCircleOutlined />} />
-            </Tooltip>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'
@@ -204,7 +198,7 @@ const CellSizeDistribution = (props) => {
           />
         </Col>
 
-        <Col span={5}>
+        <Col flex='1 0px'>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfig

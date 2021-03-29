@@ -96,7 +96,7 @@ const CalculationConfig = (props) => {
           Manual
         </Radio>
       </Radio.Group>
-      <Form.Item label='FDR:'>
+      <Form.Item label='FDR'>
         <Space direction='horizontal'>
           <Tooltip overlay={(
             <span>
