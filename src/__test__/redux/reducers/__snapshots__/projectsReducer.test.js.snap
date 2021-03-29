@@ -2,15 +2,6 @@
 
 exports[`projectsReducer Adds a new project correctly 1`] = `
 Object {
-  "12345": Object {
-    "createdDate": "01-01-2021",
-    "experiments": Array [],
-    "lastAnalyzed": null,
-    "lastModified": "01-01-2021",
-    "name": "test project",
-    "samples": Array [],
-    "uuid": "12345",
-  },
   "67890": Object {
     "createdDate": "01-01-2021",
     "experiments": Array [],
@@ -20,8 +11,17 @@ Object {
     "samples": Array [],
     "uuid": "67890",
   },
+  "asd123": Object {
+    "createdDate": "01-01-2021",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "asd123",
+  },
   "ids": Array [
-    "12345",
+    "asd123",
     "67890",
   ],
   "meta": Object {
@@ -32,35 +32,26 @@ Object {
 
 exports[`projectsReducer Inserts a new project correctly 1`] = `
 Object {
-  "12345": Object {
+  "asd123": Object {
     "createdDate": "01-01-2021",
     "experiments": Array [],
     "lastAnalyzed": null,
     "lastModified": "01-01-2021",
     "name": "test project",
     "samples": Array [],
-    "uuid": "12345",
+    "uuid": "asd123",
   },
   "ids": Array [
-    "12345",
+    "asd123",
   ],
   "meta": Object {
-    "activeProject": "12345",
+    "activeProject": "asd123",
   },
 }
 `;
 
 exports[`projectsReducer Sets an active project correctly 1`] = `
 Object {
-  "12345": Object {
-    "createdDate": "01-01-2021",
-    "experiments": Array [],
-    "lastAnalyzed": null,
-    "lastModified": "01-01-2021",
-    "name": "test project",
-    "samples": Array [],
-    "uuid": "12345",
-  },
   "67890": Object {
     "createdDate": "01-01-2021",
     "experiments": Array [],
@@ -70,8 +61,17 @@ Object {
     "samples": Array [],
     "uuid": "67890",
   },
+  "asd123": Object {
+    "createdDate": "01-01-2021",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "asd123",
+  },
   "ids": Array [
-    "12345",
+    "asd123",
     "67890",
   ],
   "meta": Object {
@@ -82,20 +82,20 @@ Object {
 
 exports[`projectsReducer Updates a project correctly 1`] = `
 Object {
-  "12345": Object {
+  "asd123": Object {
     "createdDate": "01-01-2021",
     "experiments": Array [],
     "lastAnalyzed": null,
     "lastModified": "02-01-2021",
     "name": "updated name",
     "samples": Array [],
-    "uuid": "12345",
+    "uuid": "asd123",
   },
   "ids": Array [
-    "12345",
+    "asd123",
   ],
   "meta": Object {
-    "activeProject": "12345",
+    "activeProject": "asd123",
   },
 }
 `;

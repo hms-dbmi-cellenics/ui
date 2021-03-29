@@ -6,10 +6,12 @@ import {
 } from '../../../redux/actionTypes/projects';
 
 describe('projectsReducer', () => {
+  const projectUuid1 = 'asd123';
+
   const project1 = {
     ...projectTemplate,
     name: 'test project',
-    uuid: '12345',
+    uuid: projectUuid1,
     createdDate: '01-01-2021',
     lastModified: '01-01-2021',
   };
@@ -86,6 +88,7 @@ describe('projectsReducer', () => {
     const newState = projectsReducer(oneProjectState, {
       type: PROJECTS_UPDATE,
       payload: {
+        projectUuid: projectUuid1,
         project: updatedProject1,
       },
     });

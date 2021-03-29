@@ -9,10 +9,12 @@ import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
 const mockStore = configureStore([thunk]);
 
 describe('updateProject action', () => {
+  const mockUuid = 'abc123';
+
   const mockProject = {
     ...projectTemplate,
     name: 'test project',
-    uuid: '12345',
+    uuid: mockUuid,
     createdDate: '01-01-2021',
     lastModified: '01-01-2021',
   };
@@ -33,7 +35,7 @@ describe('updateProject action', () => {
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateProject(updatedProject));
+    await store.dispatch(updateProject(mockUuid, updatedProject));
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(PROJECTS_UPDATE);
@@ -42,7 +44,7 @@ describe('updateProject action', () => {
   it('Updates the lastModified field', async () => {
     const originalModifiedDate = updatedProject.lastModified;
     const store = mockStore(mockState);
-    await store.dispatch(updateProject(updatedProject));
+    await store.dispatch(updateProject(mockUuid, updatedProject));
 
     const { project } = store.getActions()[0].payload;
     expect(project.lastModified).not.toEqual(originalModifiedDate);
@@ -51,7 +53,7 @@ describe('updateProject action', () => {
 
   it('Does not dispatch event if object contents are the same', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateProject(mockProject));
+    await store.dispatch(updateProject(mockUuid, mockProject));
 
     expect(store.getActions().length).toEqual(0);
   });
