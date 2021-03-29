@@ -12,7 +12,7 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
-    experimentId, config, actions, plotData,
+    experimentId, config, actions, plotData, plotDataCategoryName,
   } = props;
   const dispatch = useDispatch();
 
@@ -49,12 +49,12 @@ const CategoricalEmbeddingPlot = (props) => {
     }
 
     if (plotData) {
-      setPlotSpec(generateSpec(config, plotData));
+      setPlotSpec(generateSpec(config, plotData, plotDataCategoryName));
       return;
     }
 
     if (!cellSets.loading && !cellSets.error && embeddingData?.length) {
-      setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData)));
+      setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData), plotDataCategoryName));
     }
   }, [config, plotData, cellSets, embeddingData, config]);
 
@@ -98,11 +98,13 @@ CategoricalEmbeddingPlot.propTypes = {
     PropTypes.object,
   ]),
   plotData: PropTypes.array,
+  plotDataCategoryName: PropTypes.array,
 };
 
 CategoricalEmbeddingPlot.defaultProps = {
   actions: true,
   plotData: null,
+  plotDataCategoryName: 'sample',
 };
 
 export default CategoricalEmbeddingPlot;

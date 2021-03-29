@@ -22,6 +22,7 @@ const generateSpec = (config, plotData) => {
         },
       }];
   }
+
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'A basic scatter plot example depicting gene expression in the context of UMAP.',
@@ -58,7 +59,7 @@ const generateSpec = (config, plotData) => {
         name: 'color',
         type: 'linear',
         range: { scheme: config.colour.gradient },
-        domain: { data: 'plotData', field: 'value' },
+        domain: { data: 'plotData', field: 'doublet-score' },
         reverse: config.colour.reverseCbar,
       },
     ],
@@ -114,11 +115,11 @@ const generateSpec = (config, plotData) => {
             size: { value: config.marker.size },
             stroke: {
               scale: 'color',
-              field: 'value',
+              field: 'doublet-score',
             },
             fill: {
               scale: 'color',
-              field: 'value',
+              field: 'doublet-score',
             },
             shape: { value: config.marker.shape },
             fillOpacity: { value: config.marker.opacity / 10 },

@@ -11,7 +11,6 @@ import { loadEmbedding } from '../../redux/actions/embedding';
 import loadCellMeta from '../../redux/actions/cellMeta';
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
-import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 const DoubletScoresPlot = (props) => {
   const {
@@ -19,14 +18,13 @@ const DoubletScoresPlot = (props) => {
   } = props;
   const defaultEmbeddingType = 'umap';
   const dataName = 'doubletScores';
-  const plotUuid = 'embeddingPreviewDoubletScore';
-  const plotType = 'embeddingPreviewDoubletScore';
 
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
   );
+
   const embedding = useSelector((state) => state.embeddings[embeddingSettings?.method]);
 
   const doubletScores = useSelector((state) => state.cellMeta?.doubletScores);
@@ -94,20 +92,13 @@ const DoubletScoresPlot = (props) => {
       && (!embedding?.data
         || doubletScores?.loading
         || embedding?.loading
-        || cellSets.loading)) {
+        || cellSets.loading
+        || !plotComponent)
+    ) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
-      );
-    }
-
-    if (!plotComponent) {
-      return (
-        <PlatformError
-          description='Failed loading plot data'
-          onClick={() => { dispatch(loadPlotConfig(experimentId, plotUuid, plotType)); }}
-        />
       );
     }
 
