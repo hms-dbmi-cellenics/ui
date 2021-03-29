@@ -161,7 +161,7 @@ describe('DataProcessingPage', () => {
       </Provider>,
     );
 
-    const filterComponent = page.find('#cellSizeDistribution');
+    const filterComponent = page.find('#classifier');
 
     act(() => {
       filterComponent.at(0).props().onConfigChange();
