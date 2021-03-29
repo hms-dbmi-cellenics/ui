@@ -1,7 +1,8 @@
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Descriptions,
+  Table, Typography, Space, Tooltip, PageHeader, Button, Input,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -24,6 +25,8 @@ const ProjectDetails = ({ width, height }) => {
 
   const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
+  const samples = useSelector((state) => state.samples);
+  const sampleIds = samples.ids;
 
   useEffect(() => {
     if (!speciesData) {
@@ -208,30 +211,21 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   useEffect(() => {
-    if (data.length !== 0) {
-      return;
-    }
-
-    const newData = [];
-
-    for (let i = 0; i < 30; i += 1) {
+    if (data.length === 0) {
       const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-      newData.push({
-        key: i,
-        sampleID: `Sample ${i}`,
+      const newData = sampleIds.map((uuid, idx) => ({
+        key: idx,
+        name: samples[uuid].name,
+        uuid,
         barcodes: _.sample(statuses),
         genes: _.sample(statuses),
         matrix: _.sample(statuses),
         species: 'dataMissing',
-        'metadata-tissue': 'dataMissing',
-        'metadata-patient': 'dataMissing',
-        'metadata-collection-date': 'January 20',
-        'metadata-sequencing-date': 'dataMissing',
-      });
-    }
+      }));
 
-    setData(newData);
-  }, [data]);
+      setData(newData);
+    }
+  }, [samples]);
 
   return (
     <>

@@ -174,6 +174,7 @@ const NewProjectModal = (props) => {
           disabled={!canUpload}
           onClick={() => {
             onUpload(filesList, selectedTech);
+            setFilesList([]);
           }}
         >
           Upload
