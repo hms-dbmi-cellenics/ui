@@ -298,169 +298,179 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           </p>
         </Space>
       </Modal>
-      <Row style={{ display: 'flex', justifyContent: 'flex-start' }} gutter={16}>
-        <Col>
-          <Select
-            value={stepIdx}
-            onChange={(idx) => {
-              changeStepId(idx);
-            }}
-            style={{ fontWeight: 'bold' }}
-            placeholder='Jump to a step...'
-          >
-            {
-              steps.map(
-                ({ name, key }, i) => {
-                  const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
-
-                  return (
-                    <Option
-                      value={i}
-                      key={key}
-                      disabled={
-                        disabledByPipeline
-                      }
-                    >
-                      {processingConfig[key]?.enabled === false ? (
-                        <>
-                          <Text
-                            type='secondary'
-
-                          >
-                            <CloseOutlined />
-                          </Text>
-                          <span
-                            style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
-                          >
-                            {name}
-                          </span>
-                        </>
-                      ) : !disabledByPipeline ? (
-                        <>
-                          <Text
-                            type='success'
-
-                          >
-                            <CheckOutlined />
-                          </Text>
-                          <span
-                            style={{ marginLeft: '0.25rem' }}
-                          // style={!processingConfig[key]?.enabled ? { textDecoration: 'line-through' } : {}}
-                          >
-                            {name}
-                          </span>
-                        </>
-                      ) : pipelineRunning && !isStepComplete(key) ? (
-                        <>
-                          <Text
-                            type='warning'
-                            strong
-                          >
-                            <EllipsisOutlined />
-                          </Text>
-                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                        </>
-                      ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
-                        <>
-                          <Text
-                            type='danger'
-                            strong
-                          >
-                            <WarningOutlined />
-                          </Text>
-                          <span style={{ marginLeft: '0.25rem' }}>{name}</span>
-                        </>
-                      ) : <></>}
-                    </Option>
-                  );
-                }
-              )
-            }
-          </Select>
-        </Col>
-        <Col>
-          {steps[stepIdx].description && (
-            <Tooltip title={steps[stepIdx].description}>
-              <Button icon={<InfoCircleOutlined />} />
-            </Tooltip>
-          )}
-        </Col>
-        <Col>
-          {steps[stepIdx].multiSample && (
-            <Button
-              onClick={() => {
-                dispatch(updateProcessingSettings(
-                  experimentId,
-                  steps[stepIdx].key,
-                  { enabled: !processingConfig[steps[stepIdx].key]?.enabled },
-                ));
-
-                dispatchDebounce(saveProcessingSettings(experimentId, steps[stepIdx].key));
-              }}>
-              {processingConfig[steps[stepIdx].key]?.enabled === false ? 'Enable' : 'Disable'}
-            </Button>
-          )}
-        </Col>
-        <Col>
-          {steps[stepIdx].multiSample && (
-            <Button
-              id='runFilterButton'
-              type='primary'
-              onClick={() => { onPipelineRun(steps[stepIdx].key) }}
-              disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
-            >
-              {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}
-            </Button>
-          )}
-        </Col>
-        <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex', marginLeft: 'auto' }}>
-          <Space>
-            <StepsIndicator
-              allSteps={steps}
-              currentStep={stepIdx}
-              completedSteps={completedSteps.length}
-            />
-            <Text>{`${completedSteps.length} of ${steps.length} steps complete`}</Text>
-          </Space>
-        </Col>
-        <Col>
-          <StatusIndicator />
-        </Col>
-        <Col style={{ marginLeft: 'auto' }}>
-          <Space size='large'>
-            <Button
-              disabled={stepIdx === 0}
-              icon={<LeftOutlined />}
-              onClick={() => changeStepId(Math.max(stepIdx - 1, 0))}
-            >
-              Previous
-            </Button>
-            {stepIdx !== steps.length - 1 ? (
-              <Button
-                onClick={() => {
-                  const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
-                  changeStepId(newStepIdx);
+      <Row style={{ display: 'flex' }}>
+        <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+          <Row style={{ display: 'flex' }} gutter={16}>
+            <Col>
+              <Select
+                value={stepIdx}
+                onChange={(idx) => {
+                  changeStepId(idx);
                 }}
-                disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                style={{ fontWeight: 'bold' }}
+                placeholder='Jump to a step...'
               >
-                Next
-                <RightOutlined />
-              </Button>
-            )
-              : (
-                <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
+                {
+                  steps.map(
+                    ({ name, key }, i) => {
+                      const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
+
+                      return (
+                        <Option
+                          value={i}
+                          key={key}
+                          disabled={
+                            disabledByPipeline
+                          }
+                        >
+                          {processingConfig[key]?.enabled === false ? (
+                            <>
+                              <Text
+                                type='secondary'
+
+                              >
+                                <CloseOutlined />
+                              </Text>
+                              <span
+                                style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
+                              >
+                                {name}
+                              </span>
+                            </>
+                          ) : !disabledByPipeline ? (
+                            <>
+                              <Text
+                                type='success'
+
+                              >
+                                <CheckOutlined />
+                              </Text>
+                              <span
+                                style={{ marginLeft: '0.25rem' }}
+                              // style={!processingConfig[key]?.enabled ? { textDecoration: 'line-through' } : {}}
+                              >
+                                {name}
+                              </span>
+                            </>
+                          ) : pipelineRunning && !isStepComplete(key) ? (
+                            <>
+                              <Text
+                                type='warning'
+                                strong
+                              >
+                                <EllipsisOutlined />
+                              </Text>
+                              <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                            </>
+                          ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
+                            <>
+                              <Text
+                                type='danger'
+                                strong
+                              >
+                                <WarningOutlined />
+                              </Text>
+                              <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                            </>
+                          ) : <></>}
+                        </Option>
+                      );
+                    }
+                  )
+                }
+              </Select>
+            </Col>
+            <Col>
+              {steps[stepIdx].description && (
+                <Tooltip title={steps[stepIdx].description}>
+                  <Button icon={<InfoCircleOutlined />} />
+                </Tooltip>
+              )}
+            </Col>
+            <Col>
+              {steps[stepIdx].multiSample && (
+                <Button
+                  onClick={() => {
+                    dispatch(updateProcessingSettings(
+                      experimentId,
+                      steps[stepIdx].key,
+                      { enabled: !processingConfig[steps[stepIdx].key]?.enabled },
+                    ));
+
+                    dispatchDebounce(saveProcessingSettings(experimentId, steps[stepIdx].key));
+                  }}>
+                  {processingConfig[steps[stepIdx].key]?.enabled === false ? 'Enable' : 'Disable'}
+                </Button>
+              )}
+            </Col>
+            <Col>
+              {steps[stepIdx].multiSample && (
+                <Button
+                  id='runFilterButton'
+                  type='primary'
+                  onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+                  disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
+                >
+                  {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}
+                </Button>
+              )}
+            </Col>
+          </Row>
+        </Col>
+        <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <Row>
+            <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex', marginLeft: 'auto' }}>
+              <Space>
+                <StepsIndicator
+                  allSteps={steps}
+                  currentStep={stepIdx}
+                  completedSteps={completedSteps.length}
+                />
+                <Text>{`${completedSteps.length} of ${steps.length} steps complete`}</Text>
+              </Space>
+            </Col>
+            <Col>
+              <StatusIndicator />
+            </Col>
+            <Col style={{ marginLeft: 'auto' }}>
+              <Space size='large'>
+                <Button
+                  disabled={stepIdx === 0}
+                  icon={<LeftOutlined />}
+                  onClick={() => changeStepId(Math.max(stepIdx - 1, 0))}
+                >
+                  Previous
+                </Button>
+                {stepIdx !== steps.length - 1 ? (
                   <Button
-                    type='primary'
+                    onClick={() => {
+                      const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
+                      changeStepId(newStepIdx);
+                    }}
                     disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
                   >
-                    <span style={{ marginRight: '0.25rem' }}>Finish</span>
-                    <CheckOutlined />
+                    Next
+                    <RightOutlined />
                   </Button>
-                </Link>
-              )}
-          </Space>
+                )
+                  : (
+                    <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
+                      <Button
+                        type='primary'
+                        disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                      >
+                        <span style={{ marginRight: '0.25rem' }}>Finish</span>
+                        <CheckOutlined />
+                      </Button>
+                    </Link>
+                  )}
+              </Space>
+            </Col>
+          </Row>
         </Col>
       </Row>
+
+
     </>
   );
 
