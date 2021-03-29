@@ -111,8 +111,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const steps = [
     {
-      key: 'cellSizeDistribution',
-      name: 'Cell size distribution filter',
+      key: 'classifier',
+      name: 'Classifier filter',
       multiSample: true,
       render: (key) => (
 
@@ -120,8 +120,29 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
+            <Classifier
+              id={'classifier'}
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+              onConfigChange={onConfigChange}
+            />
+          )}
+        />
+      ),
+    },
+    {
+      key: 'cellSizeDistribution',
+      name: 'Cell size distribution filter',
+      multiSample: true,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
             <CellSizeDistribution
-              id={'cellSizeDistribution'}
               experimentId={experimentId}
               filtering
               key={key}
@@ -143,27 +164,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
             <MitochondrialContent
-              experimentId={experimentId}
-              filtering
-              key={key}
-              sampleId={sample.key}
-              sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
-            />
-          )}
-        />
-      ),
-    },
-    {
-      key: 'classifier',
-      name: 'Classifier filter',
-      multiSample: true,
-      render: (key) => (
-        <SingleComponentMultipleDataContainer
-          defaultActiveKey={sampleKeys}
-          inputsList={inputsList}
-          baseComponentRenderer={(sample) => (
-            <Classifier
               experimentId={experimentId}
               filtering
               key={key}
