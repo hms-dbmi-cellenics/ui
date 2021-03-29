@@ -1,6 +1,9 @@
 /* eslint-disable no-param-reassign */
 const generateSpec = (config, plotData) => {
   let legend = [];
+
+  const colorFieldName = plotData[0]?.color ? 'color' : 'col';
+
   if (config?.legend.enabled) {
     legend = [
       {
@@ -73,7 +76,7 @@ const generateSpec = (config, plotData) => {
       {
         name: 'cellSetColors',
         type: 'ordinal',
-        range: { data: 'values', field: 'col' },
+        range: { data: 'values', field: colorFieldName },
         domain: { data: 'values', field: 'sample', sort: true },
       },
       {
