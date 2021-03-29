@@ -46,23 +46,25 @@ const ConfigureEmbedding = (props) => {
   );
 
   const plots = {
-    sample: {
-      title: 'Colored by Samples',
+    cellCluster: {
+      title: 'Colored by CellSets',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
-      plotType: 'embeddingPreviewBySample',
+      plotType: 'embeddingPreviewByCellSets',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={config}
           plotData={plotData}
+          plotDataCategoryName='cluster'
           actions={actions}
         />
-      ),
+      )
+      ,
     },
-    cellCluster: {
-      title: 'Colored by CellSets',
+    sample: {
+      title: 'Colored by Samples',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
-      plotType: 'embeddingPreviewByCellSets',
+      plotType: 'embeddingPreviewBySample',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
@@ -87,7 +89,7 @@ const ConfigureEmbedding = (props) => {
     },
     doubletScores: {
       title: 'Cell doublet score',
-      plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 3),
       plotType: 'embeddingPreviewDoubletScore',
       plot: (config, plotData, actions) => (
         <DoubletScoresPlot
