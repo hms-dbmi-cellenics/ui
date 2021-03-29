@@ -5,7 +5,6 @@ import {
   Card, Space, Descriptions,
 } from 'antd';
 import { blue } from '@ant-design/colors';
-import { v4 as uuidv4 } from 'uuid';
 import EditableField from '../EditableField';
 
 // eslint-disable-next-line import/no-extraneous-dependencies

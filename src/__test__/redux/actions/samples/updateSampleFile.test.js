@@ -17,6 +17,7 @@ describe('updateSampleFile action', () => {
 
   const mockFile = {
     ...sampleFileTemplate,
+    name: fileName,
   };
 
   const mockSample = {
@@ -38,7 +39,7 @@ describe('updateSampleFile action', () => {
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateSampleFile(mockSample));
+    await store.dispatch(updateSampleFile(mockUuid, mockSample));
 
     // First action updates the sample
     const firstAction = store.getActions()[0];

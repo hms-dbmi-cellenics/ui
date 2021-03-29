@@ -171,7 +171,7 @@ const ProjectDetails = ({ width, height }) => {
   const columns = [
     {
       title: 'Sample ID',
-      dataIndex: 'sampleID',
+      dataIndex: 'name',
       fixed: true,
       render: renderSampleCells,
     },
