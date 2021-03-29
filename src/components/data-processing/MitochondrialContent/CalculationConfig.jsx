@@ -72,6 +72,8 @@ const CalculationConfig = (props) => {
 
   const filtering = false;
 
+  const activeMethod = config.method;
+
   return (
     <>
       <Space direction='vertical' style={{ width: '100%' }} />
