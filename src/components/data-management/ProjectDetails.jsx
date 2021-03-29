@@ -25,8 +25,8 @@ const ProjectDetails = ({ width, height }) => {
 
   const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
+  const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
-  const sampleIds = samples.ids;
 
   useEffect(() => {
     if (!speciesData) {
@@ -211,11 +211,13 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   useEffect(() => {
+    if (samples.ids.length === 0 || projects.ids.length === 0) return;
+
     const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-    const newData = sampleIds.map((uuid, idx) => ({
+    const newData = projects[projects.meta.activeProject].samples.map((sampleUuid, idx) => ({
       key: idx,
-      name: samples[uuid].name,
-      uuid,
+      name: samples[sampleUuid].name,
+      uuid: sampleUuid,
       barcodes: _.sample(statuses),
       genes: _.sample(statuses),
       matrix: _.sample(statuses),
@@ -223,7 +225,7 @@ const ProjectDetails = ({ width, height }) => {
     }));
 
     setData(newData);
-  }, [samples]);
+  }, [samples, projects]);
 
   return (
     <>

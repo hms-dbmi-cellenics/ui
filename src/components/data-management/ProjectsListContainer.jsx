@@ -39,7 +39,10 @@ const ProjectsListContainer = (props) => {
   const uploadFiles = (filesList, sampleType) => {
     const samplesMap = filesList.reduce((acc, file) => {
       const sampleName = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/')[0];
-      const sampleUuid = Object.values(samples).filter((s) => s.name === sampleName)[0]?.uuid;
+      const sampleUuid = Object.values(samples).filter(
+        (s) => s.name === sampleName
+          && s.projectUuid === projects.meta.activeProject,
+      )[0]?.uuid;
 
       return {
         ...acc,
