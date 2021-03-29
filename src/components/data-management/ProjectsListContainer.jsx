@@ -5,6 +5,7 @@ import {
   Card, Space, Descriptions,
 } from 'antd';
 import { blue } from '@ant-design/colors';
+import _ from 'lodash';
 import EditableField from '../EditableField';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -14,11 +15,14 @@ import FileUploadModal from './FileUploadModal';
 import { setActiveProject } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
 
+import { createSample, updateSampleFile } from '../../redux/actions/samples';
+
 const ProjectsListContainer = (props) => {
   const { height } = props;
   const dispatch = useDispatch();
 
   const projects = useSelector((state) => state.projects);
+  const samples = useSelector((state) => state.samples);
   const { activeProject } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(true);
@@ -33,7 +37,23 @@ const ProjectsListContainer = (props) => {
     border: `2px solid ${blue.primary}`,
   };
 
-  const uploadFiles = () => {
+  const uploadFiles = async (filesList, sampleType) => {
+    // Create sample if not exists
+    const sampleName = filesList[0].name.split('/')[0];
+    let sampleUuid = samples[sampleName]?.uuid;
+
+    // If sample name is not a uuidv4, it will create one
+    if (!sampleUuid) {
+      sampleUuid = await dispatch(createSample(projects.meta.activeProject, sampleName, sampleType));
+    }
+
+    filesList.forEach((file) => {
+      dispatch(updateSampleFile(sampleUuid, {
+        ...file,
+        path: `${projects.meta.activeProject}/file.name.replace(sampleName, sampleUuid)`,
+      }));
+    });
+
     setUploadModalVisible(false);
   };
 

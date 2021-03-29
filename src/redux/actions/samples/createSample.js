@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -6,18 +7,30 @@ import {
 import { sampleTemplate } from '../../reducers/samples/initialState';
 
 const createSample = (
-  sampleName,
+  projectUuid,
+  name,
+  type,
 ) => async (dispatch) => {
+  const createdAt = moment().toISOString();
+
+  const newSampleUuid = uuidv4();
+
   const newSample = {
     ...sampleTemplate,
-    name: sampleName,
-    uuid: uuidv4(),
+    name,
+    type,
+    projectUuid,
+    uuid: newSampleUuid,
+    createdDate: createdAt,
+    lastModified: createdAt,
   };
 
   dispatch({
     type: SAMPLES_CREATE,
     payload: { sample: newSample },
   });
+
+  return Promise.resolve(newSampleUuid);
 };
 
 export default createSample;

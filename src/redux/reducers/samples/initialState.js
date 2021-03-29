@@ -1,5 +1,6 @@
 const sampleTemplate = {
   name: null,
+  projectUuid: null,
   uuid: null,
   type: null,
   species: null,
