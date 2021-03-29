@@ -2,6 +2,8 @@ import {
   Table, Typography, Space, Tooltip, PageHeader, Button, Input, Descriptions,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -24,6 +26,9 @@ const ProjectDetails = ({ width, height }) => {
 
   const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
+
+  const { activeProject } = useSelector((state) => state.projects.meta) || false;
+  const { name: activeProjectName, description: activeProjectDescription } = useSelector((state) => state.projects[activeProject]) || false;
 
   useEffect(() => {
     if (!speciesData) {
@@ -242,7 +247,7 @@ const ProjectDetails = ({ width, height }) => {
       />
       <div width={width} height={height}>
         <PageHeader
-          title='A sample project name'
+          title={activeProjectName}
           extra={[
             <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
             <Button>Add metadata</Button>,
@@ -251,7 +256,7 @@ const ProjectDetails = ({ width, height }) => {
         >
           <Text strong>Description:</Text>
           {' '}
-          <Text editable>Here is where the description of your project would go. Lorem ipsum.</Text>
+          <Text editable>{activeProjectDescription}</Text>
         </PageHeader>
 
         <Table

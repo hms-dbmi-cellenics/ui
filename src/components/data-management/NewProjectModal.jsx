@@ -5,6 +5,7 @@ import {
 } from 'antd';
 
 const { Text, Title, Paragraph } = Typography;
+const { TextArea } = Input;
 
 const NewProjectModal = (props) => {
   const {
@@ -12,6 +13,7 @@ const NewProjectModal = (props) => {
   } = props;
 
   const [projectName, setProjectName] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
   const [isValid, setIsValid] = useState(false);
 
   const validateProjectName = (input) => input.length >= 8
@@ -43,7 +45,7 @@ const NewProjectModal = (props) => {
           block
           disabled={!isValid}
           onClick={() => {
-            onCreate(projectName);
+            onCreate(projectName, projectDescription);
             setProjectName('');
             setIsValid(false);
           }}
@@ -88,14 +90,23 @@ const NewProjectModal = (props) => {
                   setIsValid(validateProjectName(e.target.value));
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    onCreate(projectName);
+                  if (e.key === 'Enter' && isValid) {
+                    onCreate(projectName, projectDescription);
                     setProjectName('');
                     setIsValid(false);
                   }
                 }}
                 placeholder='Ex.: Lung gamma delta T cells'
                 value={projectName}
+              />
+            </Form.Item>
+            <Form.Item
+              label='Project description'
+            >
+              <TextArea
+                onChange={(e) => { setProjectDescription(e.target.value); }}
+                placeholder='Type description'
+                autoSize={{ minRows: 3, maxRows: 5 }}
               />
             </Form.Item>
           </Form>

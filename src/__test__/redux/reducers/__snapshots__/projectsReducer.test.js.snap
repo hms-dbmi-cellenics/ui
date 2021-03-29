@@ -4,6 +4,7 @@ exports[`projectsReducer Adds a new project correctly 1`] = `
 Object {
   "12345": Object {
     "createdDate": "01-01-2021",
+    "description": "this is a test description",
     "experiments": Array [],
     "lastAnalyzed": null,
     "lastModified": "01-01-2021",
@@ -13,6 +14,7 @@ Object {
   },
   "67890": Object {
     "createdDate": "01-01-2021",
+    "description": "This is another test description :)",
     "experiments": Array [],
     "lastAnalyzed": null,
     "lastModified": "01-01-2021",
@@ -34,6 +36,7 @@ exports[`projectsReducer Inserts a new project correctly 1`] = `
 Object {
   "12345": Object {
     "createdDate": "01-01-2021",
+    "description": "this is a test description",
     "experiments": Array [],
     "lastAnalyzed": null,
     "lastModified": "01-01-2021",
@@ -54,6 +57,7 @@ exports[`projectsReducer Sets an active project correctly 1`] = `
 Object {
   "12345": Object {
     "createdDate": "01-01-2021",
+    "description": "this is a test description",
     "experiments": Array [],
     "lastAnalyzed": null,
     "lastModified": "01-01-2021",
@@ -63,6 +67,7 @@ Object {
   },
   "67890": Object {
     "createdDate": "01-01-2021",
+    "description": "This is another test description :)",
     "experiments": Array [],
     "lastAnalyzed": null,
     "lastModified": "01-01-2021",
@@ -84,6 +89,7 @@ exports[`projectsReducer Updates a project correctly 1`] = `
 Object {
   "12345": Object {
     "createdDate": "01-01-2021",
+    "description": "this is a test description",
     "experiments": Array [],
     "lastAnalyzed": null,
     "lastModified": "02-01-2021",
