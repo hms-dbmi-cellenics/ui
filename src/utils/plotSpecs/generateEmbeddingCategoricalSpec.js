@@ -16,7 +16,7 @@ const generateSpec = (config, plotData) => {
           labels: {
             update: {
               text: {
-                scale: 'cellSetIDToName', field: 'label',
+                scale: 'sampleToName', field: 'label',
               },
               fill: { value: config?.colour.masterColour },
             },
@@ -47,7 +47,7 @@ const generateSpec = (config, plotData) => {
         source: 'values',
         transform: [
           {
-            type: 'aggregate', groupby: ['cellSetId'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
+            type: 'aggregate', groupby: ['sample'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
           },
         ],
       },
@@ -73,14 +73,14 @@ const generateSpec = (config, plotData) => {
       {
         name: 'cellSetColors',
         type: 'ordinal',
-        range: { data: 'values', field: 'color' },
-        domain: { data: 'values', field: 'cellSetId', sort: true },
+        range: { data: 'values', field: 'col' },
+        domain: { data: 'values', field: 'sample', sort: true },
       },
       {
-        name: 'cellSetIDToName',
+        name: 'sampleToName',
         type: 'ordinal',
-        range: { data: 'values', field: 'name' },
-        domain: { data: 'values', field: 'cellSetId' },
+        range: { data: 'values', field: 'sample' },
+        domain: { data: 'values', field: 'sample' },
       },
     ],
     axes: [
@@ -133,8 +133,8 @@ const generateSpec = (config, plotData) => {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
             size: { value: config?.marker.size },
-            stroke: { scale: 'cellSetColors', field: 'cellSetId' },
-            fill: { scale: 'cellSetColors', field: 'cellSetId' },
+            stroke: { scale: 'cellSetColors', field: 'sample' },
+            fill: { scale: 'cellSetColors', field: 'sample' },
             shape: { value: config?.marker.shape },
             fillOpacity: { value: config?.marker.opacity / 10 },
           },
@@ -147,7 +147,7 @@ const generateSpec = (config, plotData) => {
           enter: {
             x: { scale: 'x', field: 'meanX' },
             y: { scale: 'y', field: 'meanY' },
-            text: { scale: 'cellSetIDToName', field: 'cellSetId' },
+            text: { scale: 'sampleToName', field: 'sample' },
             fontSize: { value: config?.label.size },
             strokeWidth: { value: 1.2 },
             fill: { value: config?.colour.masterColour },
@@ -186,7 +186,7 @@ const filterCells = (cellSets, selectedCellSet) => {
 
     return cells.map((cellId) => ({
       cellId,
-      cellSetId: key,
+      sample: key,
       name: cellSets.properties[key].name,
       color: cellSets.properties[key].color,
     }));
