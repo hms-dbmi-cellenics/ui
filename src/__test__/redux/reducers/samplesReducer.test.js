@@ -98,9 +98,6 @@ describe('samplesReducer', () => {
       },
     });
 
-    console.log('new state');
-    console.log(newState);
-
     expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
     expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
   });

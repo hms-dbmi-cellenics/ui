@@ -27,9 +27,7 @@ const NewProjectModal = (props) => {
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1qX6no9od4pi-Wy87Q06hmjnLNECwItKJ/view?usp=sharing';
 
-  const defaultSelectedTech = '10X Chromium';
-
-  const [selectedTech, setSelectedTech] = useState(defaultSelectedTech);
+  const [selectedTech, setSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
