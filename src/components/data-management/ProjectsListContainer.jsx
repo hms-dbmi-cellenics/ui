@@ -5,7 +5,7 @@ import {
   Card, Space, Descriptions,
 } from 'antd';
 import { blue } from '@ant-design/colors';
-import _ from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import EditableField from '../EditableField';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -37,21 +37,37 @@ const ProjectsListContainer = (props) => {
     border: `2px solid ${blue.primary}`,
   };
 
-  const uploadFiles = async (filesList, sampleType) => {
-    // Create sample if not exists
-    const sampleName = filesList[0].name.split('/')[0];
-    let sampleUuid = samples[sampleName]?.uuid;
+  const uploadFiles = (filesList, sampleType) => {
+    const samplesMap = filesList.reduce((acc, file) => {
+      const sampleName = file.name.split('/')[0];
+      const sampleUuid = Object.values(samples).filter((s) => s.name === sampleName)[0]?.uuid;
 
-    // If sample name is not a uuidv4, it will create one
-    if (!sampleUuid) {
-      sampleUuid = await dispatch(createSample(projects.meta.activeProject, sampleName, sampleType));
-    }
+      return {
+        ...acc,
+        [sampleName]: {
+          ...acc[sampleName],
+          uuid: sampleUuid,
+          files: {
+            ...acc[sampleName]?.files,
+            [file.name]: file,
+          },
+        },
+      };
+    }, {});
 
-    filesList.forEach((file) => {
-      dispatch(updateSampleFile(sampleUuid, {
-        ...file,
-        path: `${projects.meta.activeProject}/file.name.replace(sampleName, sampleUuid)`,
-      }));
+    Object.entries(samplesMap).forEach(async ([name, sample]) => {
+      // Create sample if not exists
+      if (!sample.uuid) {
+        // eslint-disable-next-line no-param-reassign
+        sample.uuid = await dispatch(createSample(projects.meta.activeProject, name, sampleType));
+      }
+
+      Object.values(sample.files).forEach((file) => {
+        dispatch(updateSampleFile(sample.uuid, {
+          ...file,
+          path: `${projects.meta.activeProject}/${file.name.replace(name, sample.uuid)}`,
+        }));
+      });
     });
 
     setUploadModalVisible(false);
