@@ -2,25 +2,18 @@ import samplesReducer from '../../../redux/reducers/samples';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../redux/reducers/samples/initialState';
 
 import {
-  SAMPLES_CREATE, SAMPLES_UPDATE,
+  SAMPLES_CREATE, SAMPLES_UPDATE, SAMPLES_FILE_UPDATE,
 } from '../../../redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
-  const sample1Files = {
-    fileNames: ['features.tsv'],
-    files: {
-      'features.tsv': {
-        ...sampleFileTemplate,
-        name: 'features.tsv',
-      },
-    },
-  };
+  const mockUuid1 = 'asd123';
+  const mockUuid2 = 'qwe234';
+  const fileName = 'features.tsv';
 
   const sample1 = {
     ...sampleTemplate,
-    ...sample1Files,
     name: 'test sample',
-    uuid: '12345',
+    uuid: mockUuid1,
     createdDate: '2021-01-01T14:48:00.000Z',
     lastModified: '2021-01-01T14:48:00.000Z',
   };
@@ -28,14 +21,13 @@ describe('samplesReducer', () => {
   const sample2 = {
     ...sampleTemplate,
     name: 'test sample 2',
-    uuid: '67890',
+    uuid: mockUuid2,
     createdDate: '2021-01-02T14:48:00.000Z',
     lastModified: '2021-01-02T14:48:00.000Z',
   };
 
   const updateActionResult = {
     ...sample1,
-    ...sample1Files,
     name: 'updated name',
   };
 
@@ -43,6 +35,11 @@ describe('samplesReducer', () => {
     ...initialState,
     ids: [...initialState.ids, sample1.uuid],
     [sample1.uuid]: sample1,
+  };
+
+  const mockFile = {
+    ...sampleFileTemplate,
+    name: fileName,
   };
 
   it('Reduces identical state on unknown action', () => expect(
@@ -83,11 +80,28 @@ describe('samplesReducer', () => {
     const newState = samplesReducer(oneSampleState, {
       type: SAMPLES_UPDATE,
       payload: {
+        sampleUuid: mockUuid1,
         sample: updateActionResult,
       },
     });
 
     expect(newState.ids).toEqual(oneSampleState.ids);
     expect(newState[sample1.uuid]).toEqual(updateActionResult);
+  });
+
+  it('Updates sample files correctly', () => {
+    const newState = samplesReducer(oneSampleState, {
+      type: SAMPLES_FILE_UPDATE,
+      payload: {
+        sampleUuid: mockUuid1,
+        file: mockFile,
+      },
+    });
+
+    console.log('new state');
+    console.log(newState);
+
+    expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
+    expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
   });
 });

@@ -17,6 +17,7 @@ const sampleFileTemplate = {
   name: null,
   size: 0,
   mime: '',
+  path: '',
   success: false,
   error: false,
 };

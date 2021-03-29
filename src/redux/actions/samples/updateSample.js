@@ -6,6 +6,7 @@ import {
 } from '../../actionTypes/samples';
 
 const updateSample = (
+  sampleUuid,
   sample,
 ) => async (dispatch, getState) => {
   const currentSample = getState().samples[sample.uuid];
@@ -17,7 +18,10 @@ const updateSample = (
 
   dispatch({
     type: SAMPLES_UPDATE,
-    payload: { sample },
+    payload: {
+      sampleUuid,
+      sample,
+    },
   });
 };
 
