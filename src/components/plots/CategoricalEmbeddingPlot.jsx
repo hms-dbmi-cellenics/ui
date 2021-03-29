@@ -26,6 +26,10 @@ const CategoricalEmbeddingPlot = (props) => {
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
+    if (plotData) {
+      return;
+    }
+
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
     }
@@ -55,7 +59,7 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [config, plotData, cellSets, embeddingData, config]);
 
   const render = () => {
-    if (error) {
+    if (!plotData && error) {
       return (
         <PlatformError
           error={error}
@@ -64,7 +68,7 @@ const CategoricalEmbeddingPlot = (props) => {
       );
     }
 
-    if (cellSets.loading || !embeddingData || loading || !config) {
+    if (!plotData && (cellSets.loading || !embeddingData || loading || !config)) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
