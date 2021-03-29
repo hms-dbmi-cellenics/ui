@@ -26,6 +26,7 @@ const LegendEditor = (props) => {
     'top-bottom': {
       top: 'Top',
       bottom: 'Bottom',
+      right: 'Right',
     },
     'horizontal-vertical': {
       horizontal: 'Horizontal',

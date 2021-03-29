@@ -1,6 +1,12 @@
 const generateSpec = (config, plotData) => {
   let legend = [];
+
   if (config.legend.enabled) {
+    const positionIsRight = config.legend.position === 'right';
+
+    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+    const labelLimit = positionIsRight ? 0 : 85;
+
     legend = [
       {
         fill: 'color',
@@ -24,8 +30,8 @@ const generateSpec = (config, plotData) => {
         direction: 'horizontal',
         labelFont: { value: config.fontStyle.font },
         titleFont: { value: config.fontStyle.font },
-        columns: Math.floor(config.dimensions.width / 85),
-        labelLimit: 85,
+        columns: legendColumns,
+        labelLimit,
       },
     ];
   }
@@ -65,7 +71,7 @@ const generateSpec = (config, plotData) => {
         range: 'height',
         nice: true,
         zero: true,
-        domain: { data: 'plotData', field: 'y1' },
+        domain: [0, 100],
       },
       {
         name: 'c',
