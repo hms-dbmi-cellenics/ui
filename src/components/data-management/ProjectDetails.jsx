@@ -211,20 +211,18 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   useEffect(() => {
-    if (data.length === 0) {
-      const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-      const newData = sampleIds.map((uuid, idx) => ({
-        key: idx,
-        name: samples[uuid].name,
-        uuid,
-        barcodes: _.sample(statuses),
-        genes: _.sample(statuses),
-        matrix: _.sample(statuses),
-        species: 'dataMissing',
-      }));
+    const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
+    const newData = sampleIds.map((uuid, idx) => ({
+      key: idx,
+      name: samples[uuid].name,
+      uuid,
+      barcodes: _.sample(statuses),
+      genes: _.sample(statuses),
+      matrix: _.sample(statuses),
+      species: 'dataMissing',
+    }));
 
-      setData(newData);
-    }
+    setData(newData);
   }, [samples]);
 
   return (

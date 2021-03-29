@@ -24,10 +24,7 @@ const updateSampleFile = (
     type: SAMPLES_FILE_UPDATE,
     payload: {
       sampleUuid,
-      file: {
-        ...file,
-        name: file.name.trim().replace(/[\s]{2,}/ig, ' '),
-      },
+      file,
     },
   });
 };
