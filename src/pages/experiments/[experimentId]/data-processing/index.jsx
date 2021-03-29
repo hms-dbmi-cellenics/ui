@@ -113,9 +113,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const steps = [
     {
-      key: 'cellSizeDistribution',
-      name: 'Cell size distribution filter',
-      description: 'The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). This filter is used to detect empty droplets and fine-tunes the Classifier filter. In some datasets this filter might be used instead of the Classifier filter.',
+
+      key: 'classifier',
+      name: 'Classifier filter',
+      description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA',
       multiSample: true,
       render: (key) => (
 
@@ -123,8 +124,30 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
+            <Classifier
+              id={'classifier'}
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+              onConfigChange={onConfigChange}
+            />
+          )}
+        />
+      ),
+    },
+    {
+      key: 'cellSizeDistribution',
+      name: 'Cell size distribution filter',
+      description: 'The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). This filter is used to detect empty droplets and fine-tunes the Classifier filter. In some datasets this filter might be used instead of the Classifier filter.',
+      multiSample: true,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
             <CellSizeDistribution
-              id={'cellSizeDistribution'}
               experimentId={experimentId}
               filtering
               key={key}
@@ -147,28 +170,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
             <MitochondrialContent
-              experimentId={experimentId}
-              filtering
-              key={key}
-              sampleId={sample.key}
-              sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
-            />
-          )}
-        />
-      ),
-    },
-    {
-      key: 'classifier',
-      name: 'Classifier filter',
-      description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA',
-      multiSample: true,
-      render: (key) => (
-        <SingleComponentMultipleDataContainer
-          defaultActiveKey={sampleKeys}
-          inputsList={inputsList}
-          baseComponentRenderer={(sample) => (
-            <Classifier
               experimentId={experimentId}
               filtering
               key={key}
