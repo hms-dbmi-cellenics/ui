@@ -21,7 +21,9 @@ const deleteSample = (
     type: PROJECTS_UPDATE,
     payload: {
       projectUuid,
-      samples: samples.filter((s) => s.uuid !== sampleUuid),
+      project: {
+        samples: samples.filter((uuid) => uuid !== sampleUuid),
+      },
     },
   });
 };

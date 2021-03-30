@@ -14,7 +14,9 @@ import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
-import { createSample, updateSampleFile } from '../../redux/actions/samples';
+import {
+  createSample, deleteSample, updateSampleFile, updateSample,
+} from '../../redux/actions/samples';
 
 const { Text } = Typography;
 
@@ -188,6 +190,8 @@ const ProjectDetails = ({ width, height }) => {
       <EditableField
         deleteEnabled
         value={text}
+        onAfterSubmit={(name) => dispatch(updateSample(el.uuid, { name }))}
+        onDelete={() => dispatch(deleteSample(el.uuid))}
       />
     </Text>
   );
@@ -257,7 +261,10 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   useEffect(() => {
-    if (samples.ids.length === 0 || projects.ids.length === 0) return;
+    if (samples.ids.length === 0 || projects.ids.length === 0) {
+      setData([]);
+      return;
+    }
 
     const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
     const newData = projects[projects.meta.activeProject]?.samples.map((sampleUuid, idx) => ({
