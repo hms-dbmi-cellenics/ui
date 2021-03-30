@@ -1,9 +1,7 @@
 const generateSpec = (config, plotData) => {
   let legend = null;
-  const minHigh = 8800;
-  const minUnknown = 10800;
-  const generateStatus = `(datum.u < ${minUnknown}) ? 'low' : (datum.u >${minHigh}) ? 'high' : 'unknown'`;
-  const coloringExpressionPlot = "(datum.bin1 < 8800) ? 'low' : (datum.bin1 >10800) ? 'high' : 'unknown'";
+
+  const coloringExpressionPlot = `(datum.bin1 < ${config.minCellSize}) ? 'low' : 'high'`;
 
   legend = !config.legend.enabled ? null : [
     {
@@ -51,13 +49,6 @@ const generateSpec = (config, plotData) => {
       {
         name: 'plotData',
         values: plotData,
-        transform: [
-          {
-            type: 'formula',
-            as: 'status',
-            expr: generateStatus,
-          },
-        ],
       },
       {
         name: 'binned',
@@ -107,11 +98,7 @@ const generateSpec = (config, plotData) => {
         name: 'color',
         type: 'ordinal',
         range: ['green', '#f57b42', 'grey'],
-        domain: {
-          data: 'binned',
-          field: 'color',
-          sort: true,
-        },
+        domain: ['high', 'low'],
       },
     ],
     axes: [
