@@ -260,7 +260,7 @@ const ProjectDetails = ({ width, height }) => {
     if (samples.ids.length === 0 || projects.ids.length === 0) return;
 
     const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-    const newData = projects[projects.meta.activeProject].samples.map((sampleUuid, idx) => ({
+    const newData = projects[projects.meta.activeProject]?.samples.map((sampleUuid, idx) => ({
       key: idx,
       name: samples[sampleUuid].name,
       uuid: sampleUuid,
@@ -271,7 +271,7 @@ const ProjectDetails = ({ width, height }) => {
     }));
 
     setData(newData);
-  }, [samples, projects.meta.activeProject]);
+  }, [projects, samples, projects.meta.activeProject]);
 
   return (
     <>

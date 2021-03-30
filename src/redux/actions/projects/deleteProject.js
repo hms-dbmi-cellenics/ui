@@ -1,5 +1,5 @@
 import {
-  PROJECTS_DELETE,
+  PROJECTS_DELETE, PROJECTS_SET_ACTIVE,
 } from '../../actionTypes/projects';
 
 import {
@@ -10,10 +10,12 @@ const deleteProject = (
   projectUuid,
 ) => async (dispatch, getState) => {
   // Delete samples
-  const { samples } = getState().projects[projectUuid];
+  const { projects } = getState();
+  const { activeProject } = projects.meta;
+  const { samples } = projects[projectUuid];
 
   if (samples.length) {
-    samples.forEeach((sampleUuid) => {
+    samples.forEach((sampleUuid) => {
       dispatch({
         type: SAMPLES_DELETE,
         payload: {
@@ -23,11 +25,18 @@ const deleteProject = (
     });
   }
 
-  // Delete project
   dispatch({
     type: PROJECTS_DELETE,
     payload: { projectUuid },
   });
+
+  // If delete project is the same as the active project, choose another project
+  if (projectUuid === activeProject) {
+    dispatch({
+      type: PROJECTS_SET_ACTIVE,
+      payload: { projectUuid: projects.ids[0] || null },
+    });
+  }
 };
 
 export default deleteProject;

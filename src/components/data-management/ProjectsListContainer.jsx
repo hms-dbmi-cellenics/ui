@@ -11,7 +11,7 @@ import EditableField from '../EditableField';
 
 import ProjectDeleteModal from './ProjectDeleteModal';
 import FileUploadModal from './FileUploadModal';
-import { setActiveProject, updateProject } from '../../redux/actions/projects';
+import { setActiveProject, updateProject, deleteProject as deleteProjectAction } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
 import { createSample, updateSampleFile } from '../../redux/actions/samples';
 
@@ -23,6 +23,7 @@ const ProjectsListContainer = (props) => {
   const samples = useSelector((state) => state.samples);
   const { activeProject } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(true);
 
   useEffect(() => {
@@ -75,6 +76,7 @@ const ProjectsListContainer = (props) => {
   };
 
   const deleteProject = () => {
+    dispatch(deleteProjectAction(deleteProjectUuid));
     setDeleteModalVisible(false);
   };
 
@@ -89,6 +91,7 @@ const ProjectsListContainer = (props) => {
         visible={deleteModalVisible}
         onCancel={() => { setDeleteModalVisible(false); }}
         onDelete={deleteProject}
+        projectName={projects[deleteProjectUuid]?.name}
       />
 
       <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
@@ -111,12 +114,13 @@ const ProjectsListContainer = (props) => {
                 colon=''
                 title={(
                   <EditableField
-                    value={`${projects[uuid].name}`}
+                    value={projects[uuid].name}
                     onAfterSubmit={(name) => {
                       dispatch(updateProject(uuid, { name }));
                     }}
                     onDelete={(e) => {
                       e.stopPropagation();
+                      setDeleteProjectUuid(uuid);
                       setDeleteModalVisible(true);
                     }}
                   />
