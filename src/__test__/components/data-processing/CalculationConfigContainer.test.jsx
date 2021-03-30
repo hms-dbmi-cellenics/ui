@@ -1,12 +1,11 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
+import { render, screen, findByText } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
-import Adapter from 'enzyme-adapter-react-16';
-import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
-import { Alert, Button } from 'antd';
+import { Button } from 'antd';
 import rootReducer from '../../../redux/reducers/index';
 
 import CalculationConfigContainer from '../../../components/data-processing/CalculationConfigContainer';
@@ -25,14 +24,21 @@ const noData = {
   },
 };
 
-const MockCalculationConfig = () => (
-  <>
-    hi
-  </>
-);
+const ALERT_TEXT = 'copy these new settings to the rest of your samples';
+
+const MockCalculationConfig = (props) => {
+  // eslint-disable-next-line react/prop-types
+  const { disabled, updateSettings } = props;
+  return (
+    <div>
+      <h1>
+        {`${disabled}`}
+      </h1>
+      <Button onClick={() => updateSettings({ method: 'test method' })}>Mock update</Button>
+    </div>
+  );
+};
 describe('CalculationConfigContainer', () => {
-  let container = null;
-  let calculationConfig = null;
   let store = null;
   const onConfigChange = jest.fn();
 
@@ -40,12 +46,10 @@ describe('CalculationConfigContainer', () => {
     await preloadAll();
   });
 
-  configure({ adapter: new Adapter() });
-
   beforeEach(() => {
     jest.resetAllMocks();
     store = createStore(rootReducer, noData, applyMiddleware(thunk));
-    container = mount(
+    render(
       <Provider store={store}>
         <CalculationConfigContainer
           experimentId={experimentId}
@@ -59,65 +63,45 @@ describe('CalculationConfigContainer', () => {
         </CalculationConfigContainer>
       </Provider>,
     );
-    calculationConfig = container.find('MockCalculationConfig');
   });
   const setRadioButton = (value) => {
-    act(() => {
-      container.setProps({ value });
-      const radioButton = container.find(`input[value='${value}']`);
-      radioButton.simulate('change');
-    });
+    const label = value[0].toUpperCase() + value.slice(1);
+    userEvent.click(screen.getByText(label));
   };
   it('sets/resets a `disabled` property of contained components when auto/manual is set', () => {
     const testRadioButton = (value) => {
       setRadioButton(value);
-
-      // Useless... see comments below
-      container.update();
-      calculationConfig.update();
-
-      // The commented out test is the one I would like to pass,
-      // but I have not found a way to see useSelector do its magic
-
-      // expect(calculationConfig.props().disabled).toBe(value === 'automatic');
+      expect(screen.getByRole('heading')).toHaveTextContent(`${value === 'automatic'}`);
       expect(store.getState().experimentSettings.processing[filterName][sampleId].auto).toBe(value === 'automatic');
     };
 
     testRadioButton('manual');
     testRadioButton('automatic');
   });
-  it.skip('displays a warning when the auto setting is changed', () => {
+  it.skip('displays a warning when the auto setting is changed', async () => {
     // TODO: works excuted on its own, fails as part of the test suite
-    expect(container.find(Alert).length).toBe(0);
+    expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(0);
     setRadioButton('manual');
-    container.update();
-    expect(container.find(Alert).length).toBe(1);
+    await screen.findByText(ALERT_TEXT, { exact: false }, { timeout: 500 });
+    expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(1);
   });
   it('displays a warning when contained components notifies a change', () => {
-    expect(container.find(Alert).length).toBe(0);
-    act(() => {
-      calculationConfig.props().updateSettings({ method: 'test method' });
-    });
-    container.update();
-    expect(container.find(Alert).length).toBe(1);
+    expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(0);
+    userEvent.click(screen.getByText('Mock update'));
+    expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(1);
   });
   it('removes the warning when the values are applied to all samples', () => {
-    act(() => {
-      calculationConfig.props().updateSettings({ method: 'test method' });
-    });
-    container.update();
-    expect(container.find(Alert).length).toBe(1);
-    container.find(Button).simulate('click');
-    container.update();
-    expect(container.find(Alert).length).toBe(0);
+    userEvent.click(screen.getByText('Mock update'));
+    expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(1);
+    userEvent.click(screen.getByText('Copy to all samples'));
+    expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(0);
   });
   it('updates the redux store for all samples when the values are applied to all samples', () => {
     let state = store.getState().experimentSettings.processing;
     expect(state[filterName][sampleIds[0]]).not.toEqual(state[filterName][sampleIds[1]]);
     setRadioButton('manual');
-    container.find(Button).simulate('click');
+    userEvent.click(screen.getByText('Copy to all samples'));
     state = store.getState().experimentSettings.processing;
-    container.update();
     expect(state[filterName][sampleIds[0]]).toEqual(state[filterName][sampleIds[1]]);
   });
 });
