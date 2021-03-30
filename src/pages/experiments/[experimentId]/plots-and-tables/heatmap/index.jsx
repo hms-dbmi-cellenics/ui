@@ -104,10 +104,10 @@ const HeatmapPlot = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
   };
 
-  const onGeneEnter = (value) => {
+  const onGeneEnter = (genes) => {
     // updating the selected genes in the config too so they are saved in dynamodb
 
-    dispatch(loadGeneExpression(experimentId, value, plotUuid));
+    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading) {

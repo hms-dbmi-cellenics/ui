@@ -63,7 +63,7 @@ const loadGeneExpression = (
         payload: {
           data: [],
           genes: genesAlreadyLoaded,
-          stopLoading: true,
+          loadingStatus: [],
         },
       });
     } else {

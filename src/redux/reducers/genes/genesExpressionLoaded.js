@@ -3,7 +3,7 @@ import { initialViewState } from './initialState';
 
 const genesExpressionLoaded = (state, action) => {
   const {
-    data, componentUuid, genes, stopLoading = false,
+    data, componentUuid, genes, loadingStatus = _.difference(state.expression.loading, genes),
   } = action.payload;
   return {
     ...state,
@@ -23,7 +23,7 @@ const genesExpressionLoaded = (state, action) => {
         ...state.expression.data,
         ...data,
       },
-      loading: stopLoading || _.difference(state.expression.loading, genes),
+      loading: loadingStatus,
     },
   };
 };
