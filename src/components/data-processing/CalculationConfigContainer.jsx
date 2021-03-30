@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Space,
-  Form,
   Button,
   Alert,
   Radio,
@@ -66,15 +65,14 @@ const CalculationConfigContainer = (props) => {
 
   return (
     <div>
+
       <Space direction='vertical' style={{ width: '100%' }} />
       {displayIndividualChangesWarning && (
-        <Form.Item>
-          <Alert
-            message='To copy these new settings to the rest of your samples, click Copy to all samples.'
-            type='info'
-            showIcon
-          />
-        </Form.Item>
+        <Alert
+          message='To copy these new settings to the rest of your samples, click Copy to all samples.'
+          type='info'
+          showIcon
+        />
       )}
 
       <Radio.Group
