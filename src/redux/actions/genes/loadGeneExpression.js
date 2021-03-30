@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from '../../actionTypes/genes';
@@ -67,12 +68,20 @@ const loadGeneExpression = (
         },
       });
     } else {
+      let fetchedGenes = _.cloneDeep(genes);
+      const index = genes.indexOf(genesToFetch[0]);
+      // eslint-disable-next-line prefer-destructuring
+      fetchedGenes[index] = Object.keys(data)[0];
+
+      // making sure there are no repeating genes in the selectedGenes
+      fetchedGenes = Array.from(new Set(fetchedGenes));
+
       dispatch({
         type: GENES_EXPRESSION_LOADED,
         payload: {
           experimentId,
           componentUuid,
-          genes,
+          genes: fetchedGenes,
           data,
         },
       });
