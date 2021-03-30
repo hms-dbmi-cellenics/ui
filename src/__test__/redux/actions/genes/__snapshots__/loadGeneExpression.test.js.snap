@@ -64,7 +64,7 @@ Object {
     },
     "experimentId": "1234",
     "genes": Array [
-      "a",
+      "geneA",
       "b",
       "c",
     ],
