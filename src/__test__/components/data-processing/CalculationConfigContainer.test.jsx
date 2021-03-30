@@ -1,11 +1,12 @@
 import React from 'react';
-import { render, screen, findByText } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { Button } from 'antd';
+import _ from 'lodash';
 import rootReducer from '../../../redux/reducers/index';
 
 import CalculationConfigContainer from '../../../components/data-processing/CalculationConfigContainer';
@@ -15,7 +16,6 @@ jest.mock('localforage');
 
 const sampleId = 'sample-WT';
 const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
-const experimentId = 'e1234';
 const filterName = 'mitochondrialContent';
 
 const noData = {
@@ -48,11 +48,11 @@ describe('CalculationConfigContainer', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    store = createStore(rootReducer, noData, applyMiddleware(thunk));
+    store = createStore(rootReducer, _.cloneDeep(noData), applyMiddleware(thunk));
     render(
       <Provider store={store}>
         <CalculationConfigContainer
-          experimentId={experimentId}
+          experimentId={expect.getState().currentTestName}
           sampleId={sampleId}
           sampleIds={sampleIds}
           filterUuid={filterName}
@@ -78,11 +78,9 @@ describe('CalculationConfigContainer', () => {
     testRadioButton('manual');
     testRadioButton('automatic');
   });
-  it.skip('displays a warning when the auto setting is changed', async () => {
-    // TODO: works excuted on its own, fails as part of the test suite
+  it('displays a warning when the auto setting is changed', () => {
     expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(0);
     setRadioButton('manual');
-    await screen.findByText(ALERT_TEXT, { exact: false }, { timeout: 500 });
     expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(1);
   });
   it('displays a warning when contained components notifies a change', () => {
@@ -98,7 +96,6 @@ describe('CalculationConfigContainer', () => {
   });
   it('updates the redux store for all samples when the values are applied to all samples', () => {
     let state = store.getState().experimentSettings.processing;
-    expect(state[filterName][sampleIds[0]]).not.toEqual(state[filterName][sampleIds[1]]);
     setRadioButton('manual');
     userEvent.click(screen.getByText('Copy to all samples'));
     state = store.getState().experimentSettings.processing;
