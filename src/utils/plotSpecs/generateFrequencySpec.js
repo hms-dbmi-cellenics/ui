@@ -71,7 +71,7 @@ const generateSpec = (config, plotData) => {
         range: 'height',
         nice: true,
         zero: true,
-        domain: [0, 100],
+        domain: config.frequencyType === 'proportional' ? [0, 100] : { data: 'plotData', field: 'y1' },
       },
       {
         name: 'c',
