@@ -14,8 +14,8 @@ import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
-import { createSample, updateSampleFile } from '../../redux/actions/samples';
 import { updateProject } from '../../redux/actions/projects';
+import processUpload from '../../utils/processUpload';
 
 const { Text } = Typography;
 
@@ -35,41 +35,7 @@ const ProjectDetails = ({ width, height }) => {
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
   const uploadFiles = (filesList, sampleType) => {
-    const samplesMap = filesList.reduce((acc, file) => {
-      const sampleName = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/')[0];
-      const sampleUuid = Object.values(samples).filter(
-        (s) => s.name === sampleName
-          && s.projectUuid === activeProjectUuid,
-      )[0]?.uuid;
-
-      return {
-        ...acc,
-        [sampleName]: {
-          ...acc[sampleName],
-          uuid: sampleUuid,
-          files: {
-            ...acc[sampleName]?.files,
-            [sampleName]: file,
-          },
-        },
-      };
-    }, {});
-
-    Object.entries(samplesMap).forEach(async ([name, sample]) => {
-      // Create sample if not exists
-      if (!sample.uuid) {
-        // eslint-disable-next-line no-param-reassign
-        sample.uuid = await dispatch(createSample(activeProjectUuid, name, sampleType));
-      }
-
-      Object.values(sample.files).forEach((file) => {
-        dispatch(updateSampleFile(sample.uuid, {
-          ...file,
-          path: `${activeProjectUuid}/${file.name.replace(name, sample.uuid)}`,
-        }));
-      });
-    });
-
+    processUpload(filesList, sampleType, samples, activeProject, dispatch);
     setUploadModalVisible(false);
   };
 
