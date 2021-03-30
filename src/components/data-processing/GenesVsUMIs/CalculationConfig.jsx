@@ -97,10 +97,7 @@ const CalculationConfig = (props) => {
           Manual
         </Radio>
       </Radio.Group>
-      <Form.Item
-        label='Regression type:'
-      />
-      <Form.Item label='p-level cut-off:'>
+      <Form.Item label='p-level cut-off'>
         <Space direction='horizontal'>
           <Tooltip title='Linear regression (Gam) of UMIs vs features (genes) is performed for all cells in order to detect outliers. The ‘p-level cut-off’ is the stringency for defining outliers: ‘p.level’ refers to the confidence level for a given cell to deviate from the main trend. The smaller the number the more stringent cut-off.
 ‘p.level’ sets the prediction intervals calculated by the R `predict.lm` whereas `level = 1 - p.value`. The underlying regression is performed with `MASS::rlm`'

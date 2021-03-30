@@ -154,7 +154,7 @@ const CalculationConfig = (props) => {
             onBlur={(e) => setMinimumDistance(e.target.value)}
           />
         </Form.Item>
-        <Form.Item label='Distance metric:'>
+        <Form.Item label='Distance metric'>
           <Select
             value={umap.distanceMetric}
             onChange={(value) => setDistanceMetric(value)}
@@ -186,7 +186,7 @@ const CalculationConfig = (props) => {
         <Form.Item>
           <Text strong>Settings for t-SNE:</Text>
         </Form.Item>
-        <Form.Item label='Perplexity:'>
+        <Form.Item label='Perplexity'>
           <InputNumber
             value={tsne.perplexity}
             min={5}
@@ -196,7 +196,7 @@ const CalculationConfig = (props) => {
             onBlur={(e) => setPerplexity(e.target.value)}
           />
         </Form.Item>
-        <Form.Item label='Learning rate:'>
+        <Form.Item label='Learning rate'>
           <InputNumber
             value={tsne.learningRate}
             min={10}
@@ -225,7 +225,7 @@ const CalculationConfig = (props) => {
               <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
             </Form.Item>
           )}
-          <Form.Item label='Method:'>
+          <Form.Item label='Method'>
             <Select
               value={changes.embeddingSettings.method}
               // changes.({ embeddingSettings: { method: value } })
@@ -258,7 +258,7 @@ const CalculationConfig = (props) => {
       </Panel>
       <Panel header='Clustering settings' key='clustering-settings'>
         <Form size='small'>
-          <Form.Item label='Clustering method:'>
+          <Form.Item label='Clustering method'>
             <Select
               value={clusteringMethod}
               onChange={(value) => updateSettings(

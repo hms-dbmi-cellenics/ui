@@ -6,7 +6,8 @@ import {
 } from '../../actionTypes/projects';
 
 const updateProject = (
-  projectUuid, project,
+  projectUuid,
+  project,
 ) => async (dispatch, getState) => {
   const currentProject = getState().projects[project.uuid];
 

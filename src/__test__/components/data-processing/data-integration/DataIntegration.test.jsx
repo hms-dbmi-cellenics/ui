@@ -81,15 +81,15 @@ const store = mockStore({
     ...initialExperimentState,
   },
   componentConfig: {
-    [generateDataProcessingPlotUuid(null, filterName, 0)]: {
+    dataIntegrationFrequency: {
       config: dataIntegrationFrequencyConfig,
       plotData: [],
     },
-    [generateDataProcessingPlotUuid(null, filterName, 1)]: {
+    [generateDataProcessingPlotUuid(null, filterName, 0)]: {
       config: dataIntegrationEmbeddingConfig,
       plotData: [],
     },
-    [generateDataProcessingPlotUuid(null, filterName, 2)]: {
+    [generateDataProcessingPlotUuid(null, filterName, 1)]: {
       config: dataIntegrationElbowConfig,
       plotData: [],
     },

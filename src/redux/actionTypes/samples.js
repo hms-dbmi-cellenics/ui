@@ -18,7 +18,6 @@ const SAMPLES_DELETE = `${SAMPLES}/delete`;
 /**
  * Update files in sample.
  */
-
 const SAMPLES_FILE_UPDATE = `${SAMPLES}/file_update`;
 
 export {

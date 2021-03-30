@@ -146,13 +146,13 @@ const VolcanoPlot = ({ experimentId }) => {
     const dataPoints = _.cloneDeep(data);
     dataPoints
       .filter((datum) => {
-        const { log2fc } = datum;
-        const qval = parseFloat(datum.qval);
+        const { avg_log2FC } = datum;
+        const p_val_adj = parseFloat(datum.p_val_adj);
 
         // Downsample insignificant, not changing genes by the appropriate amount.
-        const isSignificant = (log2fc < config.logFoldChangeThreshold * -1
-          || log2fc > config.logFoldChangeThreshold)
-          && qval < config.pvalueThreshold;
+        const isSignificant = (avg_log2FC < config.logFoldChangeThreshold * -1
+          || avg_log2FC > config.logFoldChangeThreshold)
+          && p_val_adj < config.pvalueThreshold;
 
         if (isSignificant) {
           return true;
@@ -170,8 +170,8 @@ const VolcanoPlot = ({ experimentId }) => {
         // order the colors by the names, and the names are declared sorted,
         // so they must be alphabetically ordered.
         let status;
-        const { log2fc } = datum;
-        const qval = parseFloat(datum.qval);
+        const { avg_log2FC } = datum;
+        const p_val_adj = parseFloat(datum.p_val_adj);
 
         const pvalueThreshold = (
           10
@@ -179,29 +179,29 @@ const VolcanoPlot = ({ experimentId }) => {
         ).toExponential(3);
 
         if (
-          qval <= pvalueThreshold
-          && log2fc >= config.logFoldChangeThreshold
+          p_val_adj <= pvalueThreshold
+          && avg_log2FC >= config.logFoldChangeThreshold
         ) {
           status = '1_significantUpregulated';
         } else if (
-          qval <= pvalueThreshold
-          && log2fc <= config.logFoldChangeThreshold * -1
+          p_val_adj <= pvalueThreshold
+          && avg_log2FC <= config.logFoldChangeThreshold * -1
         ) {
           status = '2_significantDownregulated';
         } else if (
-          qval > pvalueThreshold
-          && datum.log2fc >= config.logFoldChangeThreshold
+          p_val_adj > pvalueThreshold
+          && datum.avg_log2FC >= config.logFoldChangeThreshold
         ) {
           status = '3_notSignificantUpregulated';
         } else if (
-          qval > pvalueThreshold
-          && log2fc <= config.logFoldChangeThreshold * -1
+          p_val_adj > pvalueThreshold
+          && avg_log2FC <= config.logFoldChangeThreshold * -1
         ) {
           status = '4_notSignificantDownregulated';
         } else if (
-          qval <= pvalueThreshold
-          && log2fc > config.logFoldChangeThreshold * -1
-          && log2fc < config.logFoldChangeThreshold
+          p_val_adj <= pvalueThreshold
+          && avg_log2FC > config.logFoldChangeThreshold * -1
+          && avg_log2FC < config.logFoldChangeThreshold
         ) {
           status = '5_significantChangeDirectionUnknown';
         } else {

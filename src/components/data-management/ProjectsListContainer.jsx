@@ -15,10 +15,14 @@ import { setActiveProject, updateProject, deleteProject as deleteProjectAction }
 import PrettyTime from '../PrettyTime';
 import { createSample, updateSampleFile } from '../../redux/actions/samples';
 
+// import { createSample, updateSampleFile } from '../../redux/actions/samples';
+import processUpload from '../../utils/processUpload';
+
 const ProjectsListContainer = (props) => {
   const { height } = props;
   const dispatch = useDispatch();
 
+  const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
   const { activeProject } = projects.meta;
@@ -37,41 +41,7 @@ const ProjectsListContainer = (props) => {
   };
 
   const uploadFiles = (filesList, sampleType) => {
-    const samplesMap = filesList.reduce((acc, file) => {
-      const sampleName = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/')[0];
-      const sampleUuid = Object.values(samples).filter(
-        (s) => s.name === sampleName
-          && s.projectUuid === activeProject,
-      )[0]?.uuid;
-
-      return {
-        ...acc,
-        [sampleName]: {
-          ...acc[sampleName],
-          uuid: sampleUuid,
-          files: {
-            ...acc[sampleName]?.files,
-            [sampleName]: file,
-          },
-        },
-      };
-    }, {});
-
-    Object.entries(samplesMap).forEach(async ([name, sample]) => {
-      // Create sample if not exists
-      if (!sample.uuid) {
-        // eslint-disable-next-line no-param-reassign
-        sample.uuid = await dispatch(createSample(activeProject, name, sampleType));
-      }
-
-      Object.values(sample.files).forEach((file) => {
-        dispatch(updateSampleFile(sample.uuid, {
-          ...file,
-          path: `${activeProject}/${file.name.replace(name, sample.uuid)}`,
-        }));
-      });
-    });
-
+    processUpload(filesList, sampleType, samples, activeProject, dispatch);
     setUploadModalVisible(false);
   };
 

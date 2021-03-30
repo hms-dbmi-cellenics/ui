@@ -15,9 +15,10 @@ import FileUploadModal from './FileUploadModal';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import {
-  createSample, deleteSample, updateSampleFile, updateSample,
+  deleteSample, updateSample,
 } from '../../redux/actions/samples';
 import { updateProject } from '../../redux/actions/projects';
+import processUpload from '../../utils/processUpload';
 
 const { Text, Paragraph } = Typography;
 
@@ -29,50 +30,15 @@ const ProjectDetails = ({ width, height }) => {
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromApiExpectOK,
   );
-
   const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
-  const { activeProject } = projects.meta;
-  const { name: activeProjectName, description: activeProjectDescription } = useSelector((state) => state.projects[activeProject]) || false;
   const samples = useSelector((state) => state.samples);
+  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProject) || false;
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
   const uploadFiles = (filesList, sampleType) => {
-    const samplesMap = filesList.reduce((acc, file) => {
-      const sampleName = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/')[0];
-      const sampleUuid = Object.values(samples).filter(
-        (s) => s.name === sampleName
-          && s.projectUuid === activeProject,
-      )[0]?.uuid;
-
-      return {
-        ...acc,
-        [sampleName]: {
-          ...acc[sampleName],
-          uuid: sampleUuid,
-          files: {
-            ...acc[sampleName]?.files,
-            [sampleName]: file,
-          },
-        },
-      };
-    }, {});
-
-    Object.entries(samplesMap).forEach(async ([name, sample]) => {
-      // Create sample if not exists
-      if (!sample.uuid) {
-        // eslint-disable-next-line no-param-reassign
-        sample.uuid = await dispatch(createSample(activeProject, name, sampleType));
-      }
-
-      Object.values(sample.files).forEach((file) => {
-        dispatch(updateSampleFile(sample.uuid, {
-          ...file,
-          path: `${activeProject}/${file.name.replace(name, sample.uuid)}`,
-        }));
-      });
-    });
-
+    processUpload(filesList, sampleType, samples, activeProject, dispatch);
     setUploadModalVisible(false);
   };
 
@@ -267,7 +233,7 @@ const ProjectDetails = ({ width, height }) => {
     }
 
     const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-    const newData = projects[projects.meta.activeProject]?.samples.map((sampleUuid, idx) => ({
+    const newData = projects[activeProjectUuid]?.samples.map((sampleUuid, idx) => ({
       key: idx,
       name: samples[sampleUuid].name,
       uuid: sampleUuid,
@@ -278,7 +244,11 @@ const ProjectDetails = ({ width, height }) => {
     }));
 
     setData(newData);
-  }, [projects, samples, projects.meta.activeProject]);
+  }, [projects, samples, activeProjectUuid]);
+
+  const changeDescription = (description) => {
+    dispatch(updateProject(activeProjectUuid, { description }));
+  };
 
   return (
     <>
@@ -289,7 +259,7 @@ const ProjectDetails = ({ width, height }) => {
       />
       <div width={width} height={height}>
         <PageHeader
-          title={activeProjectName}
+          title={activeProject.name}
           extra={[
             <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
             <Button>Add metadata</Button>,
@@ -299,13 +269,9 @@ const ProjectDetails = ({ width, height }) => {
           <Space direction='vertical' size='small'>
             <Text strong>Description:</Text>
             <Paragraph
-              editable={{
-                onChange: (description) => {
-                  dispatch(updateProject(activeProject, { description }));
-                },
-              }}
+              editable={{ onChange: changeDescription }}
             >
-              {activeProjectDescription}
+              {activeProject.description}
 
             </Paragraph>
           </Space>

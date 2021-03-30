@@ -3,9 +3,8 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Skeleton, Alert,
+  Row, Col, Space, PageHeader, Collapse, Skeleton, Alert,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
@@ -64,7 +63,7 @@ const DataIntegration = (props) => {
     },
     frequency: {
       title: 'Frequency plot',
-      plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
+      plotUuid: 'dataIntegrationFrequency',
       plotType: 'dataIntegrationFrequency',
       plot: (config, plotData, actions) => (
         <FrequencyPlot
@@ -77,14 +76,14 @@ const DataIntegration = (props) => {
     },
     elbow: {
       title: 'Elbow plot',
-      plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'dataIntegrationElbow',
       plot: (config, plotData, actions) => (
         <ElbowPlot
-          experimentId={experimentId}
           config={config}
           plotData={plotData}
           actions={actions}
+          numPCs={calculationConfig?.dimensionalityReduction.numPCs}
         />
       ),
     },
@@ -226,7 +225,7 @@ const DataIntegration = (props) => {
         debouncedCellSetClustering(0.5);
       }
     }
-  }, [config, cellSets, plotData]);
+  }, [config, cellSets, plotData, calculationConfig]);
 
   useEffect(() => {
     const showPopupWhenUnsaved = (url) => {
@@ -289,12 +288,12 @@ const DataIntegration = (props) => {
         title={plots[selectedPlot].title}
         style={{ width: '100%', paddingRight: '0px' }}
       />
-      <Row>
-        <Col span={15}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={3}>
+        <Col flex='1 0px'>
           <Space direction='vertical'>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
@@ -320,7 +319,8 @@ const DataIntegration = (props) => {
             ))}
           </Space>
         </Col>
-        <Col span={5}>
+
+        <Col flex='1 0px'>
           <CalculationConfig
             experimentId={experimentId}
             config={calculationConfig}

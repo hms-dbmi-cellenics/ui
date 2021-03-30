@@ -13,6 +13,7 @@ describe('projectsReducer', () => {
     ...projectTemplate,
     name: 'test project',
     uuid: projectUuid1,
+    description: 'this is a test description',
     createdDate: '01-01-2021',
     lastModified: '01-01-2021',
   };
