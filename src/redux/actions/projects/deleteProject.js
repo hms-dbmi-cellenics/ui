@@ -30,7 +30,7 @@ const deleteProject = (
     payload: { projectUuid },
   });
 
-  // If delete project is the same as the active project, choose another project
+  // If deleted project is the same as the active project, choose another project
   if (projectUuid === activeProject) {
     dispatch({
       type: PROJECTS_SET_ACTIVE,

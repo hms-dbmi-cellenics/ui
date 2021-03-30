@@ -2,7 +2,7 @@ import samplesReducer from '../../../redux/reducers/samples';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../redux/reducers/samples/initialState';
 
 import {
-  SAMPLES_CREATE, SAMPLES_UPDATE, SAMPLES_FILE_UPDATE,
+  SAMPLES_CREATE, SAMPLES_UPDATE, SAMPLES_FILE_UPDATE, SAMPLES_DELETE,
 } from '../../../redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
@@ -35,6 +35,12 @@ describe('samplesReducer', () => {
     ...initialState,
     ids: [...initialState.ids, sample1.uuid],
     [sample1.uuid]: sample1,
+  };
+
+  const twoSamplesState = {
+    ...oneSampleState,
+    ids: [...oneSampleState.ids, sample2.uuid],
+    [sample2.uuid]: sample2,
   };
 
   const mockFile = {
@@ -87,6 +93,7 @@ describe('samplesReducer', () => {
 
     expect(newState.ids).toEqual(oneSampleState.ids);
     expect(newState[sample1.uuid]).toEqual(updateActionResult);
+    expect(newState).toMatchSnapshot();
   });
 
   it('Updates sample files correctly', () => {
@@ -100,5 +107,19 @@ describe('samplesReducer', () => {
 
     expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
     expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Delete samples correctly', () => {
+    const newState = samplesReducer(twoSamplesState, {
+      type: SAMPLES_DELETE,
+      payload: {
+        sampleUuid: sample2.uuid,
+      },
+    });
+
+    expect(newState.ids).toEqual([sample1.uuid]);
+    expect(newState[sample2.uuid]).toBeUndefined();
+    expect(newState).toMatchSnapshot();
   });
 });
