@@ -2,6 +2,8 @@ import {
   Table, Typography, Space, Tooltip, PageHeader, Button, Input, Descriptions,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -11,19 +13,22 @@ import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
+import { updateProject } from '../../redux/actions/projects';
 
 const { Text } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const dispatch = useDispatch();
 
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromApiExpectOK,
   );
-
   const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
+  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProject) || false;
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
   useEffect(() => {
     if (!speciesData) {
@@ -233,6 +238,10 @@ const ProjectDetails = ({ width, height }) => {
     setData(newData);
   }, [data]);
 
+  const changeDescription = (value) => {
+    dispatch(updateProject({ ...activeProject, description: value }));
+  };
+
   return (
     <>
       <FileUploadModal
@@ -242,7 +251,7 @@ const ProjectDetails = ({ width, height }) => {
       />
       <div width={width} height={height}>
         <PageHeader
-          title='A sample project name'
+          title={activeProject.name}
           extra={[
             <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
             <Button>Add metadata</Button>,
@@ -251,7 +260,7 @@ const ProjectDetails = ({ width, height }) => {
         >
           <Text strong>Description:</Text>
           {' '}
-          <Text editable>Here is where the description of your project would go. Lorem ipsum.</Text>
+          <Text editable={{ onChange: changeDescription }}>{activeProject.description}</Text>
         </PageHeader>
 
         <Table

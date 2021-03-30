@@ -9,6 +9,7 @@ describe('projectsReducer', () => {
   const project1 = {
     ...projectTemplate,
     name: 'test project',
+    description: 'this is a test description',
     uuid: '12345',
     createdDate: '01-01-2021',
     lastModified: '01-01-2021',
@@ -17,6 +18,7 @@ describe('projectsReducer', () => {
   const project2 = {
     ...projectTemplate,
     name: 'test project 2',
+    description: 'This is another test description :)',
     uuid: '67890',
     createdDate: '01-01-2021',
     lastModified: '01-01-2021',
