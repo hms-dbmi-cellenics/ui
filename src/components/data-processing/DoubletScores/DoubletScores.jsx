@@ -3,12 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
+  Collapse, Row, Col, Space, Skeleton,
 } from 'antd';
-import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
-
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -116,17 +112,12 @@ const DoubletScores = (props) => {
 
   return (
     <>
-      <Row>
-
-        <Col span={17}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
-        <Col span={1}>
-          <Tooltip placement='bottom' title='Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The cut-off is typically set around 0.25.'>
-            <Button icon={<InfoCircleOutlined />} />
-          </Tooltip>
-        </Col>
-        <Col span={6}>
+
+        <Col flex='1 0px'>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>

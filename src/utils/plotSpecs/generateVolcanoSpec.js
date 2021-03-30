@@ -10,7 +10,7 @@ const generateSpec = (configSrc, data) => {
 
   data.forEach((o) => {
     Object.keys(o).forEach((k) => {
-      if (k === 'qval' && o[k] && o[k] !== 0) {
+      if (k === 'p_val_adj' && o[k] && o[k] !== 0) {
         maxNegativeLogpValue = Math.max(
           maxNegativeLogpValue, -Math.log10(o[k]),
         );
@@ -20,7 +20,7 @@ const generateSpec = (configSrc, data) => {
 
   data.forEach((o) => {
     Object.keys(o).forEach((k) => {
-      if (k === 'log2fc' && o[k] && o[k] !== 1 && o[k] !== 0) {
+      if (k === 'avg_log2FC' && o[k] && o[k] !== 1 && o[k] !== 0) {
         l2fcMin = Math.min(l2fcMin, o[k]);
         l2fcMax = Math.max(l2fcMax, o[k]);
       }
@@ -33,7 +33,7 @@ const generateSpec = (configSrc, data) => {
     xMax = Math.abs(l2fcMax);
   }
   const logFoldChangeFilterExpr = (config.logFoldChangeDomain)
-    ? `datum.log2fc > ${config.logFoldChangeDomain * -1} && datum.log2fc < ${config.logFoldChangeDomain}`
+    ? `datum.avg_log2FC > ${config.logFoldChangeDomain * -1} && datum.avg_log2FC < ${config.logFoldChangeDomain}`
     : 'true';
 
   const negativeLogpValueFilterExpr = (config.maxNegativeLogpValueDomain)
@@ -63,13 +63,13 @@ const generateSpec = (configSrc, data) => {
   // the data in the set.
   const logFoldChangeDomain = config.logFoldChangeDomain
     ? [config.logFoldChangeDomain * -1, config.logFoldChangeDomain]
-    : { data: 'data', field: 'log2fc' };
+    : { data: 'data', field: 'avg_log2FC' };
 
   const maxNegativeLogpValueDomain = config.maxNegativeLogpValueDomain
     ? [0, config.maxNegativeLogpValueDomain]
     : { data: 'data', field: 'neglogpvalue' };
 
-  const textEquation = `datum.log2fc !== 'NA' && datum.neglogpvalue >${config.textThresholdValue}`;
+  const textEquation = `datum.avg_log2FC !== 'NA' && datum.neglogpvalue >${config.textThresholdValue}`;
   let legend = [];
   if (config.legend.enabled) {
     legend = [
@@ -119,13 +119,13 @@ const generateSpec = (configSrc, data) => {
         transform: [
           {
             type: 'filter',
-            expr: 'datum.log2fc && datum.qval && datum.log2fc !== 0 && datum.qval !== 0',
+            expr: 'datum.avg_log2FC && datum.p_val_adj && datum.avg_log2FC !== 0 && datum.p_val_adj !== 0',
           },
           {
             type: 'formula',
             as: 'neglogpvalue',
 
-            expr: '-(log(datum.qval) / LN10)',
+            expr: '-(log(datum.p_val_adj) / LN10)',
           },
           {
             type: 'filter',
@@ -245,7 +245,7 @@ const generateSpec = (configSrc, data) => {
         from: { data: 'data' },
         encode: {
           enter: {
-            x: { scale: 'x', field: 'log2fc' },
+            x: { scale: 'x', field: 'avg_log2FC' },
             y: { scale: 'y', field: 'neglogpvalue' },
             size: { value: config.marker.size },
             shape: { value: config.marker.shape },
@@ -268,7 +268,7 @@ const generateSpec = (configSrc, data) => {
         from: { data: 'dex2' },
         encode: {
           enter: {
-            x: { scale: 'x', field: 'log2fc' },
+            x: { scale: 'x', field: 'avg_log2FC' },
             y: { scale: 'y', field: 'neglogpvalue' },
 
             fill: { value: config.colour.masterColour },

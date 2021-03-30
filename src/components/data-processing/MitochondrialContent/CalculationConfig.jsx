@@ -1,14 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Select,
   Slider,
   Form,
 } from 'antd';
 
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
-
-const { Option } = Select;
 
 const MitochondrialConfig = (props) => {
   const {
@@ -25,19 +22,7 @@ const MitochondrialConfig = (props) => {
 
   return (
     <>
-      <Form.Item label='Method:'>
-        <Select
-          value={activeMethod}
-          style={{ width: 200 }}
-          collapsible={!filtering ? 'disabled' : 'header'}
-          disabled={disabled}
-        >
-          <Option value='absolute_threshold'>Absolute threshold</Option>
-          <Option value='option2'>option2</Option>
-          <Option value='option3'>option3</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item label='Max percentage:'>
+      <Form.Item label='Max percentage'>
         <Slider
           value={config.methodSettings[activeMethod].maxFraction}
           min={0}

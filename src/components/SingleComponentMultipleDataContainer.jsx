@@ -6,23 +6,20 @@ import { Collapse } from 'antd';
 const { Panel } = Collapse;
 
 const SingleComponentMultipleDataContainer = (props) => {
-  const { defaultActiveKey, inputsList, baseComponentRenderer } = props;
+  const {
+    defaultActiveKey, inputsList, baseComponentRenderer,
+  } = props;
 
   return (
-    <div style={{
-      position: 'relative', overflow: 'scroll', height: window.innerHeight * 0.8, width: window.innerWidth * 0.89,
-    }}
-    >
-      <Collapse defaultActiveKey={defaultActiveKey}>
-        {
-          inputsList.map(({ key, headerName, params }) => (
-            <Panel header={headerName} key={key}>
-              {baseComponentRenderer(params)}
-            </Panel>
-          ))
-        }
-      </Collapse>
-    </div>
+    <Collapse defaultActiveKey={defaultActiveKey}>
+      {
+        inputsList.map(({ key, headerName, params }) => (
+          <Panel header={headerName} key={key}>
+            {baseComponentRenderer(params)}
+          </Panel>
+        ))
+      }
+    </Collapse>
   );
 };
 

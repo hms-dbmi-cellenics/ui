@@ -38,7 +38,7 @@ const CellSizeDistributionHistogram = (props) => {
 
   return (
     <>
-      { render()}
+      {render()}
     </>
   );
 };
