@@ -11,9 +11,8 @@ import EditableField from '../EditableField';
 
 import ProjectDeleteModal from './ProjectDeleteModal';
 import FileUploadModal from './FileUploadModal';
-import { setActiveProject } from '../../redux/actions/projects';
+import { setActiveProject, updateProject } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
-
 import { createSample, updateSampleFile } from '../../redux/actions/samples';
 
 const ProjectsListContainer = (props) => {
@@ -41,7 +40,7 @@ const ProjectsListContainer = (props) => {
       const sampleName = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/')[0];
       const sampleUuid = Object.values(samples).filter(
         (s) => s.name === sampleName
-          && s.projectUuid === projects.meta.activeProject,
+          && s.projectUuid === activeProject,
       )[0]?.uuid;
 
       return {
@@ -61,13 +60,13 @@ const ProjectsListContainer = (props) => {
       // Create sample if not exists
       if (!sample.uuid) {
         // eslint-disable-next-line no-param-reassign
-        sample.uuid = await dispatch(createSample(projects.meta.activeProject, name, sampleType));
+        sample.uuid = await dispatch(createSample(activeProject, name, sampleType));
       }
 
       Object.values(sample.files).forEach((file) => {
         dispatch(updateSampleFile(sample.uuid, {
           ...file,
-          path: `${projects.meta.activeProject}/${file.name.replace(name, sample.uuid)}`,
+          path: `${activeProject}/${file.name.replace(name, sample.uuid)}`,
         }));
       });
     });
@@ -113,8 +112,8 @@ const ProjectsListContainer = (props) => {
                 title={(
                   <EditableField
                     value={`${projects[uuid].name}`}
-                    onAfterSubmit={() => {
-                      console.log('name change');
+                    onAfterSubmit={(name) => {
+                      dispatch(updateProject(uuid, { name }));
                     }}
                     onDelete={(e) => {
                       e.stopPropagation();
