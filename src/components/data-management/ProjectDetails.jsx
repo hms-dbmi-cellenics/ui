@@ -17,8 +17,9 @@ import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import {
   createSample, deleteSample, updateSampleFile, updateSample,
 } from '../../redux/actions/samples';
+import { updateProject } from '../../redux/actions/projects';
 
-const { Text } = Typography;
+const { Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
@@ -32,6 +33,8 @@ const ProjectDetails = ({ width, height }) => {
   const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
+  const { activeProject } = projects.meta;
+  const { name: activeProjectName, description: activeProjectDescription } = useSelector((state) => state.projects[activeProject]) || false;
   const samples = useSelector((state) => state.samples);
 
   const uploadFiles = (filesList, sampleType) => {
@@ -39,7 +42,7 @@ const ProjectDetails = ({ width, height }) => {
       const sampleName = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/')[0];
       const sampleUuid = Object.values(samples).filter(
         (s) => s.name === sampleName
-          && s.projectUuid === projects.meta.activeProject,
+          && s.projectUuid === activeProject,
       )[0]?.uuid;
 
       return {
@@ -59,22 +62,19 @@ const ProjectDetails = ({ width, height }) => {
       // Create sample if not exists
       if (!sample.uuid) {
         // eslint-disable-next-line no-param-reassign
-        sample.uuid = await dispatch(createSample(projects.meta.activeProject, name, sampleType));
+        sample.uuid = await dispatch(createSample(activeProject, name, sampleType));
       }
 
       Object.values(sample.files).forEach((file) => {
         dispatch(updateSampleFile(sample.uuid, {
           ...file,
-          path: `${projects.meta.activeProject}/${file.name.replace(name, sample.uuid)}`,
+          path: `${activeProject}/${file.name.replace(name, sample.uuid)}`,
         }));
       });
     });
 
     setUploadModalVisible(false);
   };
-
-  const { activeProject } = useSelector((state) => state.projects.meta) || false;
-  const { name: activeProjectName, description: activeProjectDescription } = useSelector((state) => state.projects[activeProject]) || false;
 
   useEffect(() => {
     if (!speciesData) {
@@ -296,9 +296,19 @@ const ProjectDetails = ({ width, height }) => {
             <Button type='primary'>Launch analysis</Button>,
           ]}
         >
-          <Text strong>Description:</Text>
-          {' '}
-          <Text editable>{activeProjectDescription}</Text>
+          <Space direction='vertical' size='small'>
+            <Text strong>Description:</Text>
+            <Paragraph
+              editable={{
+                onChange: (description) => {
+                  dispatch(updateProject(activeProject, { description }));
+                },
+              }}
+            >
+              {activeProjectDescription}
+
+            </Paragraph>
+          </Space>
         </PageHeader>
 
         <Table
