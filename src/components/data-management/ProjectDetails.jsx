@@ -1,23 +1,26 @@
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Descriptions,
+  Table, Typography, Space, Tooltip, PageHeader, Button, Input,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
+
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
+
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
+import { createSample, updateSampleFile } from '../../redux/actions/samples';
 
 const { Text } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const dispatch = useDispatch();
 
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
@@ -26,6 +29,47 @@ const ProjectDetails = ({ width, height }) => {
 
   const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
+  const projects = useSelector((state) => state.projects);
+  const samples = useSelector((state) => state.samples);
+
+  const uploadFiles = (filesList, sampleType) => {
+    const samplesMap = filesList.reduce((acc, file) => {
+      const sampleName = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/')[0];
+      const sampleUuid = Object.values(samples).filter(
+        (s) => s.name === sampleName
+          && s.projectUuid === projects.meta.activeProject,
+      )[0]?.uuid;
+
+      return {
+        ...acc,
+        [sampleName]: {
+          ...acc[sampleName],
+          uuid: sampleUuid,
+          files: {
+            ...acc[sampleName]?.files,
+            [sampleName]: file,
+          },
+        },
+      };
+    }, {});
+
+    Object.entries(samplesMap).forEach(async ([name, sample]) => {
+      // Create sample if not exists
+      if (!sample.uuid) {
+        // eslint-disable-next-line no-param-reassign
+        sample.uuid = await dispatch(createSample(projects.meta.activeProject, name, sampleType));
+      }
+
+      Object.values(sample.files).forEach((file) => {
+        dispatch(updateSampleFile(sample.uuid, {
+          ...file,
+          path: `${projects.meta.activeProject}/${file.name.replace(name, sample.uuid)}`,
+        }));
+      });
+    });
+
+    setUploadModalVisible(false);
+  };
 
   const { activeProject } = useSelector((state) => state.projects.meta) || false;
   const { name: activeProjectName, description: activeProjectDescription } = useSelector((state) => state.projects[activeProject]) || false;
@@ -139,8 +183,8 @@ const ProjectDetails = ({ width, height }) => {
     );
   };
 
-  const renderSampleCells = (text) => (
-    <Text strong>
+  const renderSampleCells = (text, el, idx) => (
+    <Text strong key={`sample-cell-${idx}`}>
       <EditableField
         deleteEnabled
         value={text}
@@ -172,8 +216,8 @@ const ProjectDetails = ({ width, height }) => {
 
   const columns = [
     {
-      title: 'Sample ID',
-      dataIndex: 'sampleID',
+      title: 'Sample',
+      dataIndex: 'name',
       fixed: true,
       render: renderSampleCells,
     },
@@ -213,37 +257,28 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   useEffect(() => {
-    if (data.length !== 0) {
-      return;
-    }
+    if (samples.ids.length === 0 || projects.ids.length === 0) return;
 
-    const newData = [];
-
-    for (let i = 0; i < 30; i += 1) {
-      const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-      newData.push({
-        key: i,
-        sampleID: `Sample ${i}`,
-        barcodes: _.sample(statuses),
-        genes: _.sample(statuses),
-        matrix: _.sample(statuses),
-        species: 'dataMissing',
-        'metadata-tissue': 'dataMissing',
-        'metadata-patient': 'dataMissing',
-        'metadata-collection-date': 'January 20',
-        'metadata-sequencing-date': 'dataMissing',
-      });
-    }
+    const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
+    const newData = projects[projects.meta.activeProject].samples.map((sampleUuid, idx) => ({
+      key: idx,
+      name: samples[sampleUuid].name,
+      uuid: sampleUuid,
+      barcodes: _.sample(statuses),
+      genes: _.sample(statuses),
+      matrix: _.sample(statuses),
+      species: 'dataMissing',
+    }));
 
     setData(newData);
-  }, [data]);
+  }, [samples, projects.meta.activeProject]);
 
   return (
     <>
       <FileUploadModal
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
-        onUpload={() => setUploadModalVisible(false)}
+        onUpload={uploadFiles}
       />
       <div width={width} height={height}>
         <PageHeader

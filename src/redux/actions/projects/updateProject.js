@@ -6,6 +6,7 @@ import {
 } from '../../actionTypes/projects';
 
 const updateProject = (
+  projectUuid,
   project,
 ) => async (dispatch, getState) => {
   const currentProject = getState().projects[project.uuid];
@@ -17,7 +18,10 @@ const updateProject = (
 
   dispatch({
     type: PROJECTS_UPDATE,
-    payload: { project },
+    payload: {
+      projectUuid,
+      project,
+    },
   });
 };
 

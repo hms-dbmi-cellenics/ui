@@ -9,10 +9,12 @@ import { SAMPLES_UPDATE } from '../../../../redux/actionTypes/samples';
 const mockStore = configureStore([thunk]);
 
 describe('updateSample action', () => {
+  const mockUuid = 'asd123';
+
   const mockSample = {
     ...sampleTemplate,
     name: 'test sample',
-    uuid: '12345',
+    uuid: mockUuid,
   };
 
   const updatedSample = {
@@ -30,7 +32,7 @@ describe('updateSample action', () => {
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateSample(updatedSample));
+    await store.dispatch(updateSample(mockUuid, updatedSample));
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(SAMPLES_UPDATE);
@@ -39,7 +41,7 @@ describe('updateSample action', () => {
   it('Updates the lastModified field', async () => {
     const originalModifiedDate = updatedSample.lastModified;
     const store = mockStore(mockState);
-    await store.dispatch(updateSample(updatedSample));
+    await store.dispatch(updateSample(mockUuid, updatedSample));
 
     const { sample } = store.getActions()[0].payload;
     expect(sample.lastModified).not.toEqual(originalModifiedDate);
@@ -48,7 +50,7 @@ describe('updateSample action', () => {
 
   it('Does not dispatch event if object contents are the same', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateSample(mockSample));
+    await store.dispatch(updateSample(mockUuid, mockSample));
 
     expect(store.getActions().length).toEqual(0);
   });

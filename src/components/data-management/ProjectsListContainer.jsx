@@ -14,11 +14,14 @@ import FileUploadModal from './FileUploadModal';
 import { setActiveProject } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
 
+import { createSample, updateSampleFile } from '../../redux/actions/samples';
+
 const ProjectsListContainer = (props) => {
   const { height } = props;
   const dispatch = useDispatch();
 
   const projects = useSelector((state) => state.projects);
+  const samples = useSelector((state) => state.samples);
   const { activeProject } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(true);
@@ -33,7 +36,42 @@ const ProjectsListContainer = (props) => {
     border: `2px solid ${blue.primary}`,
   };
 
-  const uploadFiles = () => {
+  const uploadFiles = (filesList, sampleType) => {
+    const samplesMap = filesList.reduce((acc, file) => {
+      const sampleName = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/')[0];
+      const sampleUuid = Object.values(samples).filter(
+        (s) => s.name === sampleName
+          && s.projectUuid === projects.meta.activeProject,
+      )[0]?.uuid;
+
+      return {
+        ...acc,
+        [sampleName]: {
+          ...acc[sampleName],
+          uuid: sampleUuid,
+          files: {
+            ...acc[sampleName]?.files,
+            [sampleName]: file,
+          },
+        },
+      };
+    }, {});
+
+    Object.entries(samplesMap).forEach(async ([name, sample]) => {
+      // Create sample if not exists
+      if (!sample.uuid) {
+        // eslint-disable-next-line no-param-reassign
+        sample.uuid = await dispatch(createSample(projects.meta.activeProject, name, sampleType));
+      }
+
+      Object.values(sample.files).forEach((file) => {
+        dispatch(updateSampleFile(sample.uuid, {
+          ...file,
+          path: `${projects.meta.activeProject}/${file.name.replace(name, sample.uuid)}`,
+        }));
+      });
+    });
+
     setUploadModalVisible(false);
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button, Input, Space, Tooltip,
@@ -15,6 +15,10 @@ const EditableField = (props) => {
 
   const [editing, setEditing] = useState(defaultEditing);
   const [editedValue, setEditedValue] = useState(value);
+
+  useEffect(() => {
+    setEditedValue(value);
+  }, [value]);
 
   const deleteEditableField = (e) => {
     props.onDelete(e);
