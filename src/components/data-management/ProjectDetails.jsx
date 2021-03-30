@@ -38,7 +38,7 @@ const ProjectDetails = ({ width, height }) => {
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
   const uploadFiles = (filesList, sampleType) => {
-    processUpload(filesList, sampleType, samples, activeProject, dispatch);
+    processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
     setUploadModalVisible(false);
   };
 

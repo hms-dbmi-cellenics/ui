@@ -2,7 +2,7 @@ import samplesReducer from '../../../redux/reducers/samples';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../redux/reducers/samples/initialState';
 
 import {
-  SAMPLES_CREATE, SAMPLES_UPDATE, SAMPLES_FILE_UPDATE,
+  SAMPLES_CREATE, SAMPLES_UPDATE, SAMPLES_FILE_UPDATE, SAMPLES_DELETE,
 } from '../../../redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
@@ -35,6 +35,12 @@ describe('samplesReducer', () => {
     ...initialState,
     ids: [...initialState.ids, sample1.uuid],
     [sample1.uuid]: sample1,
+  };
+
+  const twoSamplesState = {
+    ...oneSampleState,
+    ids: [...oneSampleState.ids, sample2.uuid],
+    [sample2.uuid]: sample2,
   };
 
   const mockFile = {

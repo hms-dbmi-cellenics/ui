@@ -16,7 +16,7 @@ const createSample = (
   name,
   type,
 ) => async (dispatch, getState) => {
-  const { projects } = getState();
+  const project = getState().projects[projectUuid];
 
   const createdAt = moment().toISOString();
 
@@ -42,7 +42,7 @@ const createSample = (
     payload: {
       projectUuid,
       project: {
-        samples: [...projects[projectUuid].samples, newSampleUuid],
+        samples: [...project.samples, newSampleUuid],
       },
     },
   });
