@@ -46,7 +46,7 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body) => {
   }
   const response = await sendWork(experimentId, timeout, { ...body, genes: missingGenes });
   const responseData = JSON.parse(response.results[0].body);
-  if (!responseData[missingGenes[0]]?.message) {
+  if (!responseData[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
     const processedData = calculateZScore(responseData);
 

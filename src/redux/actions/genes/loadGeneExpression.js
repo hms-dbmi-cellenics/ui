@@ -56,8 +56,8 @@ const loadGeneExpression = (
     if (Object.keys(data).length === 0) {
       throw Error('There is no information available for selected genes.');
     }
-    if (data[genesToFetch[0]]?.message) {
-      dispatch(pushNotificationMessage('error', `Gene ${genesToFetch[0]} is not found!`, 3));
+    if (data[genesToFetch[0]]?.error) {
+      dispatch(pushNotificationMessage('error', data[genesToFetch[0]].message, 3));
       dispatch({
         type: GENES_EXPRESSION_LOADED,
         payload: {
