@@ -2,12 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {
-  Collapse, Row, Col, Space, Tooltip, Button, Skeleton,
+  Collapse, Row, Col, Space, Skeleton,
 } from 'antd';
 import PropTypes from 'prop-types';
-import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
 
 import {
   updatePlotConfig,
@@ -152,16 +149,13 @@ const MitochondrialContent = (props) => {
 
   return (
     <>
-      <Row>
-        <Col span={15}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={3}>
+        <Col flex='1 0px'>
           <Space direction='vertical'>
-            <Tooltip title='A high fraction of mitochondrial reads is an indicator of cell death. The usual range for this cut-off is 0.1-0.5.'>
-              <Button icon={<InfoCircleOutlined />} />
-            </Tooltip>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'
@@ -188,7 +182,7 @@ const MitochondrialContent = (props) => {
           </Space>
         </Col>
 
-        <Col span={6}>
+        <Col flex='1 0px'>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfig

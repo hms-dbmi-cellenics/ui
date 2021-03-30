@@ -11,7 +11,7 @@ const SeuratV4Options = (props) => {
 
   return (
     <>
-      <Form.Item label='# of genes:'>
+      <Form.Item label='# of genes'>
         <InputNumber
           value={numGenes}
           step={100}
@@ -41,7 +41,7 @@ const SeuratV4Options = (props) => {
           })}
         />
       </Form.Item>
-      <Form.Item label='normalization:'>
+      <Form.Item label='normalization'>
         <Select
           value={config.normalization}
           onChange={(val) => onUpdate({

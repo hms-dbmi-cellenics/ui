@@ -12,7 +12,7 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
-    experimentId, config, actions, plotData,
+    experimentId, config, actions, plotData, plotDataCategoryName,
   } = props;
   const dispatch = useDispatch();
 
@@ -26,6 +26,10 @@ const CategoricalEmbeddingPlot = (props) => {
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
+    if (plotData) {
+      return;
+    }
+
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
     }
@@ -45,17 +49,17 @@ const CategoricalEmbeddingPlot = (props) => {
     }
 
     if (plotData) {
-      setPlotSpec(generateSpec(config, plotData));
+      setPlotSpec(generateSpec(config, plotData, plotDataCategoryName));
       return;
     }
 
     if (!cellSets.loading && !cellSets.error && embeddingData?.length) {
-      setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData)));
+      setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData), plotDataCategoryName));
     }
   }, [config, plotData, cellSets, embeddingData, config]);
 
   const render = () => {
-    if (error) {
+    if (!plotData && error) {
       return (
         <PlatformError
           error={error}
@@ -64,7 +68,7 @@ const CategoricalEmbeddingPlot = (props) => {
       );
     }
 
-    if (cellSets.loading || !embeddingData || loading || !config) {
+    if (!plotData && (cellSets.loading || !embeddingData || loading || !config)) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -94,11 +98,13 @@ CategoricalEmbeddingPlot.propTypes = {
     PropTypes.object,
   ]),
   plotData: PropTypes.array,
+  plotDataCategoryName: PropTypes.array,
 };
 
 CategoricalEmbeddingPlot.defaultProps = {
   actions: true,
   plotData: null,
+  plotDataCategoryName: 'sample',
 };
 
 export default CategoricalEmbeddingPlot;

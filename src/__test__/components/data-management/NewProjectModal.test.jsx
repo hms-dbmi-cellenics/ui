@@ -5,6 +5,8 @@ import Adapter from 'enzyme-adapter-react-16';
 import '@testing-library/jest-dom';
 import NewProjectModal from '../../../components/data-management/NewProjectModal';
 
+const { TextArea } = Input;
+
 configure({ adapter: new Adapter() });
 
 describe('NewProjectModal', () => {
@@ -38,6 +40,9 @@ describe('NewProjectModal', () => {
     // It has an input
     expect(component.find(Input).length).toEqual(1);
 
+    // It has a project description input
+    expect(component.find(TextArea).length).toEqual(1);
+
     // It has a button
     expect(component.find(Button).length).toEqual(1);
   });
@@ -50,6 +55,9 @@ describe('NewProjectModal', () => {
 
     // It has an input
     expect(component.find(Input).length).toEqual(1);
+
+    // It has a project description input
+    expect(component.find(TextArea).length).toEqual(1);
 
     // It has a button
     expect(component.find(Button).length).toEqual(1);

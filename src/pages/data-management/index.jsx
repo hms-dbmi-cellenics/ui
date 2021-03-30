@@ -24,8 +24,8 @@ const DataManagementPage = ({ route }) => {
     }
   }, [projectsList]);
 
-  const createNewProject = (newProjectName) => {
-    dispatch(createProject(newProjectName));
+  const createNewProject = (newProjectName, newProjectDescription) => {
+    dispatch(createProject(newProjectName, newProjectDescription));
     setNewProjectModalVisible(false);
   };
 

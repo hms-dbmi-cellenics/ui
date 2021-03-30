@@ -96,9 +96,28 @@ const CalculationConfig = (props) => {
           Manual
         </Radio>
       </Radio.Group>
-      <Form.Item label='FDR:'>
+      <Form.Item label='FDR'>
         <Space direction='horizontal'>
-          <Tooltip title='False discovery rate (FDR) is calculated for each barcode by using the ‘emptyDrops’ function (https://rdrr.io/github/MarioniLab/DropletUtils/man/emptyDrops.html). This distinguishes between droplets containing cells and ambient RNA. The FDR range is [0-1]. The default FDR value is 0.01, where only barcodes with FDR < 0.01 are retained.'>
+          <Tooltip overlay={(
+            <span>
+              False discovery rate (FDR) is calculated for each barcode by using the
+              {' '}
+              <a
+                href='https://rdrr.io/github/MarioniLab/DropletUtils/man/emptyDrops.html'
+                target='_blank'
+                rel='noreferrer'
+              >
+                <code>emptyDrops</code>
+                {' '}
+                function
+              </a>
+              . This
+              distinguishes between droplets containing cells and ambient RNA. The FDR range is
+              [0-1]. The default FDR value is 0.01, where only barcodes with FDR &lt; 0.01
+              are retained.
+            </span>
+          )}
+          >
             <InfoCircleOutlined />
           </Tooltip>
           <InputNumber

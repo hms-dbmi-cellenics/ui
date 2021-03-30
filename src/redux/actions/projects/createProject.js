@@ -7,13 +7,14 @@ import {
 import { projectTemplate } from '../../reducers/projects/initialState';
 
 const createProject = (
-  projectName,
+  projectName, projectDescription,
 ) => async (dispatch) => {
   const createdAt = moment().toISOString();
 
   const newProject = {
     ...projectTemplate,
     name: projectName,
+    description: projectDescription,
     uuid: uuidv4(),
     createdDate: createdAt,
     lastModified: createdAt,

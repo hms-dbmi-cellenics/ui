@@ -15,6 +15,7 @@ import FileUploadModal from './FileUploadModal';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import { createSample, updateSampleFile } from '../../redux/actions/samples';
+import { updateProject } from '../../redux/actions/projects';
 
 const { Text } = Typography;
 
@@ -26,18 +27,19 @@ const ProjectDetails = ({ width, height }) => {
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromApiExpectOK,
   );
-
   const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
+  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProject) || false;
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
   const uploadFiles = (filesList, sampleType) => {
     const samplesMap = filesList.reduce((acc, file) => {
       const sampleName = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/')[0];
       const sampleUuid = Object.values(samples).filter(
         (s) => s.name === sampleName
-          && s.projectUuid === projects.meta.activeProject,
+          && s.projectUuid === activeProjectUuid,
       )[0]?.uuid;
 
       return {
@@ -57,13 +59,13 @@ const ProjectDetails = ({ width, height }) => {
       // Create sample if not exists
       if (!sample.uuid) {
         // eslint-disable-next-line no-param-reassign
-        sample.uuid = await dispatch(createSample(projects.meta.activeProject, name, sampleType));
+        sample.uuid = await dispatch(createSample(activeProjectUuid, name, sampleType));
       }
 
       Object.values(sample.files).forEach((file) => {
         dispatch(updateSampleFile(sample.uuid, {
           ...file,
-          path: `${projects.meta.activeProject}/${file.name.replace(name, sample.uuid)}`,
+          path: `${activeProjectUuid}/${file.name.replace(name, sample.uuid)}`,
         }));
       });
     });
@@ -257,7 +259,7 @@ const ProjectDetails = ({ width, height }) => {
     if (samples.ids.length === 0 || projects.ids.length === 0) return;
 
     const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-    const newData = projects[projects.meta.activeProject].samples.map((sampleUuid, idx) => ({
+    const newData = projects[activeProjectUuid].samples.map((sampleUuid, idx) => ({
       key: idx,
       name: samples[sampleUuid].name,
       uuid: sampleUuid,
@@ -268,7 +270,11 @@ const ProjectDetails = ({ width, height }) => {
     }));
 
     setData(newData);
-  }, [samples, projects.meta.activeProject]);
+  }, [samples, activeProjectUuid]);
+
+  const changeDescription = (description) => {
+    dispatch(updateProject(activeProjectUuid, { description }));
+  };
 
   return (
     <>
@@ -279,7 +285,7 @@ const ProjectDetails = ({ width, height }) => {
       />
       <div width={width} height={height}>
         <PageHeader
-          title='A sample project name'
+          title={activeProject.name}
           extra={[
             <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
             <Button>Add metadata</Button>,
@@ -288,7 +294,7 @@ const ProjectDetails = ({ width, height }) => {
         >
           <Text strong>Description:</Text>
           {' '}
-          <Text editable>Here is where the description of your project would go. Lorem ipsum.</Text>
+          <Text editable={{ onChange: changeDescription }}>{activeProject.description}</Text>
         </PageHeader>
 
         <Table

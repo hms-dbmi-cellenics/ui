@@ -2,6 +2,9 @@
 const generateSpec = (config, plotData) => {
   let legend = [];
 
+  console.log('plotDataDebug');
+  console.log(plotData);
+
   if (config.legend.enabled) {
     legend = [
       {
@@ -18,7 +21,6 @@ const generateSpec = (config, plotData) => {
             fontSize: { value: 12 },
             fill: { value: config.colour.masterColour },
           },
-
         },
       }];
   }
@@ -58,7 +60,7 @@ const generateSpec = (config, plotData) => {
         name: 'color',
         type: 'linear',
         range: { scheme: config.colour.gradient },
-        domain: { data: 'plotData', field: 'value' },
+        domain: { data: 'plotData', field: 'mt-content' },
         reverse: config.colour.reverseCbar,
       },
     ],
@@ -114,11 +116,11 @@ const generateSpec = (config, plotData) => {
             size: { value: config.marker.size },
             stroke: {
               scale: 'color',
-              field: 'value',
+              field: 'mt-content',
             },
             fill: {
               scale: 'color',
-              field: 'value',
+              field: 'mt-content',
             },
             shape: { value: config.marker.shape },
             fillOpacity: { value: config.marker.opacity / 10 },

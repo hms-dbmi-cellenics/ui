@@ -94,18 +94,7 @@ const CalculationConfig = (props) => {
           Manual
         </Radio>
       </Radio.Group>
-      <Form.Item label='Method:'>
-        <Select
-          value={activeMethod}
-          style={{ width: 200 }}
-          collapsible={!filtering ? 'disabled' : 'header'}
-        >
-          <Option value='absolute_threshold'>Absolute threshold</Option>
-          <Option value='option2'>option2</Option>
-          <Option value='option3'>option3</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item label='Max percentage:'>
+      <Form.Item label='Maximum percentage'>
         <Slider
           value={config.methodSettings[activeMethod].maxFraction}
           min={0}
