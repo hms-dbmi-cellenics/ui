@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import {
   Collapse, Row, Col, Space, Skeleton,
 } from 'antd';
-import PropTypes from 'prop-types';
 
 import {
   updatePlotConfig,
