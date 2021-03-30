@@ -27,7 +27,7 @@ const NewProjectModal = (props) => {
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1qX6no9od4pi-Wy87Q06hmjnLNECwItKJ/view?usp=sharing';
 
-  const [selectedTech] = useState('10X Chromium');
+  const [selectedTech, setSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
@@ -90,11 +90,13 @@ const NewProjectModal = (props) => {
       if (!isValidType) error.push('Invalid file type.');
 
       const acceptedFilenames = new RegExp(acceptedFilesRegexp, 'gi');
-      const isValidFilename = fileName.match(acceptedFilenames) || false;
+      const isValidFilename = fileName.match(acceptedFilenames) !== null;
       if (!isValidFilename) error.push('Invalid file name.');
 
       newList.push({
         name: fileName,
+        size: file.size,
+        mime: file.type,
         valid: isValidType && isValidFilename,
         errors: error.join(', '),
       });
@@ -169,7 +171,7 @@ const NewProjectModal = (props) => {
           block
           disabled={!canUpload}
           onClick={() => {
-            onUpload();
+            onUpload(filesList, selectedTech);
             setFilesList([]);
           }}
         >
@@ -185,7 +187,7 @@ const NewProjectModal = (props) => {
                 Technology:
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
-              <Select style={{ width: 250 }} defaultValue={selectedTech}>
+              <Select style={{ width: 250 }} defaultValue={selectedTech} onChange={(value) => setSelectedTech(value)}>
                 {Object.keys(techOptions).map((val, idx) => (
                   <Option key={idx} value={val}>{val}</Option>
                 ))}

@@ -14,10 +14,14 @@ import FileUploadModal from './FileUploadModal';
 import { setActiveProject } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
 
+// import { createSample, updateSampleFile } from '../../redux/actions/samples';
+import processUpload from '../../utils/processUpload';
+
 const ProjectsListContainer = (props) => {
   const { height } = props;
   const dispatch = useDispatch();
 
+  const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
   const { activeProject } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -33,7 +37,8 @@ const ProjectsListContainer = (props) => {
     border: `2px solid ${blue.primary}`,
   };
 
-  const uploadFiles = () => {
+  const uploadFiles = (filesList, sampleType) => {
+    processUpload(filesList, sampleType, samples, activeProject, dispatch);
     setUploadModalVisible(false);
   };
 

@@ -1,19 +1,21 @@
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Descriptions,
+  Table, Typography, Space, Tooltip, PageHeader, Button, Input,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
+
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
+
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import { updateProject } from '../../redux/actions/projects';
+import processUpload from '../../utils/processUpload';
 
 const { Text } = Typography;
 
@@ -27,8 +29,15 @@ const ProjectDetails = ({ width, height }) => {
   );
   const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
+  const projects = useSelector((state) => state.projects);
+  const samples = useSelector((state) => state.samples);
   const activeProjectUuid = useSelector((state) => state.projects.meta.activeProject) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+
+  const uploadFiles = (filesList, sampleType) => {
+    processUpload(filesList, sampleType, samples, activeProject, dispatch);
+    setUploadModalVisible(false);
+  };
 
   useEffect(() => {
     if (!speciesData) {
@@ -139,8 +148,8 @@ const ProjectDetails = ({ width, height }) => {
     );
   };
 
-  const renderSampleCells = (text) => (
-    <Text strong>
+  const renderSampleCells = (text, el, idx) => (
+    <Text strong key={`sample-cell-${idx}`}>
       <EditableField
         deleteEnabled
         value={text}
@@ -172,8 +181,8 @@ const ProjectDetails = ({ width, height }) => {
 
   const columns = [
     {
-      title: 'Sample ID',
-      dataIndex: 'sampleID',
+      title: 'Sample',
+      dataIndex: 'name',
       fixed: true,
       render: renderSampleCells,
     },
@@ -213,33 +222,24 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   useEffect(() => {
-    if (data.length !== 0) {
-      return;
-    }
+    if (samples.ids.length === 0 || projects.ids.length === 0) return;
 
-    const newData = [];
-
-    for (let i = 0; i < 30; i += 1) {
-      const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-      newData.push({
-        key: i,
-        sampleID: `Sample ${i}`,
-        barcodes: _.sample(statuses),
-        genes: _.sample(statuses),
-        matrix: _.sample(statuses),
-        species: 'dataMissing',
-        'metadata-tissue': 'dataMissing',
-        'metadata-patient': 'dataMissing',
-        'metadata-collection-date': 'January 20',
-        'metadata-sequencing-date': 'dataMissing',
-      });
-    }
+    const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
+    const newData = projects[activeProjectUuid].samples.map((sampleUuid, idx) => ({
+      key: idx,
+      name: samples[sampleUuid].name,
+      uuid: sampleUuid,
+      barcodes: _.sample(statuses),
+      genes: _.sample(statuses),
+      matrix: _.sample(statuses),
+      species: 'dataMissing',
+    }));
 
     setData(newData);
-  }, [data]);
+  }, [samples, activeProjectUuid]);
 
-  const changeDescription = (value) => {
-    dispatch(updateProject({ ...activeProject, description: value }));
+  const changeDescription = (description) => {
+    dispatch(updateProject(activeProjectUuid, { description }));
   };
 
   return (
@@ -247,7 +247,7 @@ const ProjectDetails = ({ width, height }) => {
       <FileUploadModal
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
-        onUpload={() => setUploadModalVisible(false)}
+        onUpload={uploadFiles}
       />
       <div width={width} height={height}>
         <PageHeader
