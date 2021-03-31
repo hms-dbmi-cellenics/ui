@@ -13,13 +13,13 @@ const FeaturesVsUMIsScatterplot = (props) => {
   const [plotSpec, setPlotSpec] = useState(config);
 
   useEffect(() => {
-    if (config && plotData) {
+    if (config && plotData && plotData.length) {
       setPlotSpec(generateSpec(config, plotData));
     }
   }, [config, plotData]);
 
   const render = () => {
-    if (!plotData.length) {
+    if (!plotData || !plotData.length) {
       return (
         <PlatformError
           description='There is no data to display. Please run the filter again.'

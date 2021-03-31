@@ -45,16 +45,22 @@ const withData = {
       ...noData.componentConfig[sample1],
       plotData: [
         {
-          genes: 2.41995574848976,
-          molecules: 2.70070371714502,
+          log_genes: 2.41995574848976,
+          log_molecules: 2.70070371714502,
+          lower_cutoff: 1,
+          upper_cutoff: 3,
         },
         {
-          genes: 2.36921585741014,
-          molecules: 2.7041505168398,
+          log_genes: 2.36921585741014,
+          log_molecules: 2.7041505168398,
+          lower_cutoff: 1,
+          upper_cutoff: 3,
         },
         {
-          genes: 2.46389298898591,
-          molecules: 2.70671778233676,
+          log_genes: 2.46389298898591,
+          log_molecules: 2.70671778233676,
+          lower_cutoff: 1,
+          upper_cutoff: 3,
         },
       ],
     },
@@ -62,16 +68,22 @@ const withData = {
       ...noData.componentConfig[sample2],
       plotData: [
         {
-          genes: 2.41995574848976,
-          molecules: 2.70070371714502,
+          log_genes: 2.41995574848976,
+          log_molecules: 2.70070371714502,
+          lower_cutoff: 1,
+          upper_cutoff: 3,
         },
         {
-          genes: 2.36921585741014,
-          molecules: 2.7041505168398,
+          log_genes: 2.36921585741014,
+          log_molecules: 2.7041505168398,
+          lower_cutoff: 1,
+          upper_cutoff: 3,
         },
         {
-          genes: 2.46389298898591,
-          molecules: 2.70671778233676,
+          log_genes: 2.46389298898591,
+          log_molecules: 2.70671778233676,
+          lower_cutoff: 1,
+          upper_cutoff: 3,
         },
       ],
     },
@@ -107,6 +119,7 @@ describe('GenesVsUMIs', () => {
     const component = mount(
       <Provider store={store}>
         <GenesVsUMIs
+          onConfigChange={jest.fn()}
           experimentId={experimentId}
           sampleId={sampleId}
           sampleIds={sampleIds}
@@ -126,7 +139,7 @@ describe('GenesVsUMIs', () => {
     expect(plots.length).toEqual(0);
   });
 
-  it('Shows plot with data', () => {
+  it('Shows plot with data', async () => {
     const store = mockStore({
       experimentSettings: {
         ...initialExperimentState,
@@ -137,6 +150,7 @@ describe('GenesVsUMIs', () => {
     const component = mount(
       <Provider store={store}>
         <GenesVsUMIs
+          onConfigChange={jest.fn()}
           experimentId={experimentId}
           sampleId={sampleId}
           sampleIds={sampleIds}
