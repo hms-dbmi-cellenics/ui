@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import {
   Collapse, Row, Col, Space, Skeleton,
 } from 'antd';
-import PropTypes from 'prop-types';
 
 import {
   updatePlotConfig,
@@ -18,6 +18,7 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -82,8 +83,8 @@ const MitochondrialContent = (props) => {
   );
 
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.mitochondrialContent[sampleId]?.filterSettings
-      || state.experimentSettings.processing.mitochondrialContent.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
 
   const plotData = useSelector(
@@ -185,12 +186,16 @@ const MitochondrialContent = (props) => {
         <Col flex='1 0px'>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig
+              <CalculationConfigContainer
+                filterUuid={filterName}
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-              />
+                plotType='bin step'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />

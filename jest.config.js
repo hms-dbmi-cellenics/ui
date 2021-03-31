@@ -8,6 +8,7 @@ module.exports = {
   setupFiles: [
     'react-app-polyfill/jsdom',
     'jest-canvas-mock',
+    '<rootDir>/src/__test__/matchMedia.mock.js',
   ],
   setupFilesAfterEnv: [
     '<rootDir>/setupTests.js',
@@ -15,6 +16,9 @@ module.exports = {
   testMatch: [
     '<rootDir>/src/**/__test__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
+  ],
+  testPathIgnorePatterns: [
+    '.*\\.mock\\.js',
   ],
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': '<rootDir>/node_modules/babel-jest',
