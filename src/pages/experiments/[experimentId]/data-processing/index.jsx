@@ -324,7 +324,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                             disabledByPipeline
                           }
                         >
-                          {processingConfig[key]?.enabled === false ? (
+                          {!processingConfig[key]?.enabled || processingConfig[key]?.preFiltered ? (
                             <>
                               <Text
                                 type='secondary'
@@ -391,16 +391,20 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <Col>
               {steps[stepIdx].multiSample && (
                 <Button
+                  disabled={processingConfig[steps[stepIdx].key]?.preFiltered}
                   onClick={() => {
                     dispatch(updateProcessingSettings(
                       experimentId,
                       steps[stepIdx].key,
                       { enabled: !processingConfig[steps[stepIdx].key]?.enabled },
                     ));
-
                     dispatchDebounce(saveProcessingSettings(experimentId, steps[stepIdx].key));
                   }}>
-                  {processingConfig[steps[stepIdx].key]?.enabled === false ? 'Enable' : 'Disable'}
+                  {
+                    !processingConfig[steps[stepIdx].key]?.enabled
+                      || processingConfig[steps[stepIdx].key].preFiltered
+                      ? 'Enable' : 'Disable'
+                  }
                 </Button>
               )}
             </Col>
