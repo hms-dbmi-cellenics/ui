@@ -2,16 +2,18 @@ import _ from 'lodash';
 import { initialViewState } from './initialState';
 
 const genesExpressionLoaded = (state, action) => {
-  const lowerCaseArray = (array) => {
+  const upperCaseArray = (array) => {
+    let newArray = [];
     if (array) {
-      array.map((element) => element.toLowerCase());
+      newArray = array.map((element) => element.toLowerCase());
     }
-    return array;
+    return newArray;
   };
   const {
     data, componentUuid, genes,
-    loadingStatus = _.difference(lowerCaseArray(state.expression.loading), lowerCaseArray(genes)),
+    loadingStatus = _.difference(upperCaseArray(state.expression.loading), upperCaseArray(genes)),
   } = action.payload;
+
   return {
     ...state,
     expression: {
