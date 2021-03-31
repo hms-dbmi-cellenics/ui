@@ -4,6 +4,7 @@ const samplesError = (state, action) => {
     ...state,
     meta: {
       ...state.meta,
+      loading: false,
       error,
     },
   };

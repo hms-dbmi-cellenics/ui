@@ -2,7 +2,11 @@ import samplesReducer from '../../../redux/reducers/samples';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../redux/reducers/samples/initialState';
 
 import {
-  SAMPLES_CREATE, SAMPLES_UPDATE, SAMPLES_FILE_UPDATE,
+  SAMPLES_CREATE,
+  SAMPLES_UPDATE,
+  SAMPLES_FILE_UPDATE,
+  SAMPLES_LOADED,
+  SAMPLES_ERROR,
 } from '../../../redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
@@ -100,5 +104,36 @@ describe('samplesReducer', () => {
 
     expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
     expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
+  });
+
+  it('Loads samples correctly', () => {
+    const newState = samplesReducer(oneSampleState, {
+      type: SAMPLES_LOADED,
+      payload: {
+        samples: {
+          ids: [sample1.uuid, sample2.uuid],
+          [sample1.uuid]: sample1,
+          [sample2.uuid]: sample2,
+        },
+      },
+    });
+
+    expect(newState.ids).toEqual([mockUuid1, mockUuid2]);
+    expect(newState.meta.loading).toEqual(false);
+    expect(newState.meta.error).toEqual(false);
+  });
+
+  it('Handles errors correctly', () => {
+    const error = 'Failed uploading samples';
+
+    const newState = samplesReducer(oneSampleState, {
+      type: SAMPLES_ERROR,
+      payload: {
+        error,
+      },
+    });
+
+    expect(newState.meta.loading).toEqual(false);
+    expect(newState.meta.error).toEqual(error);
   });
 });
