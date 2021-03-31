@@ -30,7 +30,6 @@ import DataIntegration from '../../../../components/data-processing/DataIntegrat
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
 
 import PlatformError from '../../../../components/PlatformError';
-import Loader from '../../../../components/Loader';
 
 import StepsIndicator from '../../../../components/data-processing/StepsIndicator';
 import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
@@ -38,6 +37,7 @@ import StatusIndicator from '../../../../components/data-processing/StatusIndica
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 import { loadProcessingSettings, updateProcessingSettings, saveProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
+import { loadSamples } from '../../../../redux/actions/samples'
 import { runPipeline } from '../../../../redux/actions/pipeline';
 import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
 
@@ -79,6 +79,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const preFilteredSamples = useMemo(() => {
     return Object.values(samples).filter(s => s.preFiltered).map(s => s.name)
   }, [samples])
+
+
+  useEffect(() => {
+    if (samples.meta.loading) dispatch(loadSamples(experimentId))
+  }, [samples.meta.loading])
 
   useEffect(() => {
     if (preFilteredSamples.length) {
