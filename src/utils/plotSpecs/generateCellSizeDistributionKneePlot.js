@@ -1,8 +1,16 @@
+import _ from 'lodash';
+
 const generateSpec = (config, plotData) => {
   let legend = null;
-  const minHigh = 2500;
-  const minUnknown = 2300;
-  const generateStatus = `(datum.rank < ${minUnknown}) ? 'low' : (datum.rank >${minHigh}) ? 'high' : 'unknown'`;
+
+  const minCellSizeItem = _.findLast(
+    plotData,
+    (element) => element.u >= config.minCellSize,
+  );
+
+  const minCellSizeRank = minCellSizeItem?.rank ?? 0;
+
+  const generateStatus = `(datum.rank <= ${minCellSizeRank}) ? 'high' : 'low'`;
 
   legend = !config.legend.enabled ? null : [
     {
@@ -66,6 +74,26 @@ const generateSpec = (config, plotData) => {
           },
         ],
       },
+      {
+        name: 'lowerHalfPlotData',
+        source: 'plotData',
+        transform: [
+          {
+            type: 'filter',
+            expr: `datum.rank <= ${minCellSizeRank}`,
+          },
+        ],
+      },
+      {
+        name: 'higherHalfPlotData',
+        source: 'plotData',
+        transform: [
+          {
+            type: 'filter',
+            expr: `datum.rank >= ${minCellSizeRank}`,
+          },
+        ],
+      },
     ],
 
     scales: [
@@ -85,11 +113,8 @@ const generateSpec = (config, plotData) => {
       {
         name: 'color',
         type: 'ordinal',
-        range: ['green', '#f57b42', 'grey'],
-        domain: {
-          data: 'plotData',
-          field: 'status',
-        },
+        range: ['green', '#f57b42'],
+        domain: ['high', 'low'],
       },
     ],
 
@@ -126,19 +151,25 @@ const generateSpec = (config, plotData) => {
     marks: [
       {
         type: 'area',
-        from: { data: 'plotData' },
+        from: { data: 'lowerHalfPlotData' },
         encode: {
           enter: {
             x: { scale: 'xscale', field: 'rank' },
             y: { scale: 'yscale', field: 'logUValue' },
             y2: { scale: 'yscale', value: 0 },
-            fill: {
-              scale: 'color',
-              field: 'status',
-            },
+            fill: { value: 'green' },
           },
-          update: {
-            fillOpacity: { value: 1 },
+        },
+      },
+      {
+        type: 'area',
+        from: { data: 'higherHalfPlotData' },
+        encode: {
+          enter: {
+            x: { scale: 'xscale', field: 'rank' },
+            y: { scale: 'yscale', field: 'logUValue' },
+            y2: { scale: 'yscale', value: 0 },
+            fill: { value: '#f57b42' },
           },
         },
       },
@@ -146,7 +177,7 @@ const generateSpec = (config, plotData) => {
         type: 'rule',
         encode: {
           update: {
-            x: { scale: 'xscale', value: config.minCellSize },
+            x: { scale: 'xscale', value: minCellSizeRank },
             y: { value: 0 },
             y2: { field: { group: 'height' } },
             strokeWidth: { value: 2 },
