@@ -76,6 +76,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
   const [disabledMessage, setDisabledMessage] = useState('')
 
+  const [stepIdx, setStepIdx] = useState(0);
+  const carouselRef = useRef(null);
+
   const preFilteredSamples = useMemo(() => {
     return Object.values(samples).filter(s => s.preFiltered).map(s => s.name)
   }, [samples])
@@ -262,10 +265,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} onPipelineRun={() => onPipelineRun(key)} />,
     },
   ];
-
-  const [stepIdx, setStepIdx] = useState(0);
-
-  const carouselRef = useRef(null);
 
   useEffect(() => {
     if (carouselRef.current) {
