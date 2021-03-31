@@ -60,9 +60,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
 
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
+  const samples = useSelector((state) => state.samples)
 
   const pipelineStatusKey = pipelineStatus.pipeline?.status;
-
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
 
   // Pipeline is not loaded (either running or in an errored state)
@@ -75,6 +75,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
   const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
+  const [preFiltered, setPreFiltered] = useState(false)
+
+  useEffect(() => {
+    if (Object.values(samples).filter(s => s.preFiltered === true)) {
+      dispatch(updateProcessingSettings(experimentId, 'classifier', { enabled: false }))
+      setPreFiltered(true)
+    }
+  }, [])
 
   const upcomingStepIdxRef = useRef(null);
 
@@ -324,7 +332,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                             disabledByPipeline
                           }
                         >
-                          {!processingConfig[key]?.enabled || processingConfig[key]?.preFiltered ? (
+                          {!processingConfig[key]?.enabled || preFiltered ? (
                             <>
                               <Text
                                 type='secondary'
@@ -348,7 +356,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                               </Text>
                               <span
                                 style={{ marginLeft: '0.25rem' }}
-                              // style={!processingConfig[key]?.enabled ? { textDecoration: 'line-through' } : {}}
                               >
                                 {name}
                               </span>
@@ -391,7 +398,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <Col>
               {steps[stepIdx].multiSample && (
                 <Button
-                  disabled={processingConfig[steps[stepIdx].key]?.preFiltered}
+                  disabled={preFiltered}
                   onClick={() => {
                     dispatch(updateProcessingSettings(
                       experimentId,
@@ -401,8 +408,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     dispatchDebounce(saveProcessingSettings(experimentId, steps[stepIdx].key));
                   }}>
                   {
-                    !processingConfig[steps[stepIdx].key]?.enabled
-                      || processingConfig[steps[stepIdx].key].preFiltered
+                    !processingConfig[steps[stepIdx].key]?.enabled || preFiltered
                       ? 'Enable' : 'Disable'
                   }
                 </Button>
