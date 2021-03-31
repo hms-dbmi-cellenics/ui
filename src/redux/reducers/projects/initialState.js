@@ -1,5 +1,6 @@
 const projectTemplate = {
   name: null,
+  description: null,
   uuid: null,
   createdDate: null,
   lastModified: null,

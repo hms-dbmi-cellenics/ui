@@ -188,7 +188,7 @@ const CalculationConfig = (props) => {
                 readOnly
               />
             </Form.Item>
-            <Form.Item label='Exclude genes categories:'>
+            <Form.Item label='Exclude genes categories'>
               <Checkbox.Group
                 onChange={(val) => updateSettings(
                   { dimensionalityReduction: { excludeGeneCategories: val } },
@@ -202,7 +202,7 @@ const CalculationConfig = (props) => {
                 </Space>
               </Checkbox.Group>
             </Form.Item>
-            <Form.Item label='Method:'>
+            <Form.Item label='Method'>
               <Select
                 value={dimensionalityReduction.method}
                 onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}

@@ -78,11 +78,7 @@ const generateSpec = (config, plotData) => {
           [
             'blue', 'green', 'grey',
           ],
-        domain: {
-          data: 'plotData',
-          field: 'status',
-          sort: true,
-        },
+        domain: ['Alive', 'Dead'],
       },
     ],
     axes: [
