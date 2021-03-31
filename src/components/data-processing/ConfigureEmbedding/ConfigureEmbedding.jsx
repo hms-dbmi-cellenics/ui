@@ -4,11 +4,8 @@ import { useRouter } from 'next/router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, Tooltip, PageHeader, Collapse, Empty, Alert, Skeleton,
+  Row, Col, Space, PageHeader, Collapse, Empty, Alert, Skeleton,
 } from 'antd';
-import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
 
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
@@ -26,7 +23,6 @@ import {
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
-import Loader from '../../Loader';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
@@ -50,23 +46,25 @@ const ConfigureEmbedding = (props) => {
   );
 
   const plots = {
-    sample: {
-      title: 'Colored by Samples',
+    cellCluster: {
+      title: 'Colored by CellSets',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
-      plotType: 'embeddingPreviewBySample',
+      plotType: 'embeddingPreviewByCellSets',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={config}
           plotData={plotData}
+          plotDataCategoryName='cluster'
           actions={actions}
         />
-      ),
+      )
+      ,
     },
-    cellCluster: {
-      title: 'Colored by CellSets',
+    sample: {
+      title: 'Colored by Samples',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
-      plotType: 'embeddingPreviewByCellSets',
+      plotType: 'embeddingPreviewBySample',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
@@ -91,7 +89,7 @@ const ConfigureEmbedding = (props) => {
     },
     doubletScores: {
       title: 'Cell doublet score',
-      plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 3),
       plotType: 'embeddingPreviewDoubletScore',
       plot: (config, plotData, actions) => (
         <DoubletScoresPlot
@@ -335,16 +333,13 @@ const ConfigureEmbedding = (props) => {
         title={plots[selectedPlot].title}
         style={{ width: '100%', paddingRight: '0px' }}
       />
-      <Row>
-        <Col span={15}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={3}>
+        <Col flex='1 0px'>
           <Space direction='vertical'>
-            <Tooltip title='The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.'>
-              <Button icon={<InfoCircleOutlined />} />
-            </Tooltip>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'
@@ -371,7 +366,7 @@ const ConfigureEmbedding = (props) => {
           </Space>
         </Col>
 
-        <Col span={5}>
+        <Col flex='1 0px'>
           <CalculationConfig experimentId={experimentId} onPipelineRun={onPipelineRun} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>

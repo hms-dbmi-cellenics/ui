@@ -1,8 +1,11 @@
 const samplesUpdate = (state, action) => {
-  const { sample } = action.payload;
+  const { sampleUuid, sample } = action.payload;
   return {
     ...state,
-    [sample.uuid]: sample,
+    [sampleUuid]: {
+      ...state[sampleUuid],
+      ...sample,
+    },
   };
 };
 

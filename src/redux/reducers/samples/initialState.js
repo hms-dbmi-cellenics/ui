@@ -1,5 +1,6 @@
 const sampleTemplate = {
   name: null,
+  projectUuid: null,
   uuid: null,
   type: null,
   species: null,
@@ -16,6 +17,7 @@ const sampleFileTemplate = {
   name: null,
   size: 0,
   mime: '',
+  path: '',
   success: false,
   error: false,
 };

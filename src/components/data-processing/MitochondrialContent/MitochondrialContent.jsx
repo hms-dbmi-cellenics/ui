@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
-import {
-  Collapse, Row, Col, Space, Tooltip, Button, Skeleton,
-} from 'antd';
 import PropTypes from 'prop-types';
 import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
+  Collapse, Row, Col, Space, Skeleton,
+} from 'antd';
 
 import {
   updatePlotConfig,
@@ -21,6 +18,7 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -85,8 +83,8 @@ const MitochondrialContent = (props) => {
   );
 
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.mitochondrialContent[sampleId]?.filterSettings
-      || state.experimentSettings.processing.mitochondrialContent.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
 
   const plotData = useSelector(
@@ -152,16 +150,13 @@ const MitochondrialContent = (props) => {
 
   return (
     <>
-      <Row>
-        <Col span={15}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={3}>
+        <Col flex='1 0px'>
           <Space direction='vertical'>
-            <Tooltip title='A high fraction of mitochondrial reads is an indicator of cell death. The usual range for this cut-off is 0.1-0.5.'>
-              <Button icon={<InfoCircleOutlined />} />
-            </Tooltip>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'
@@ -188,15 +183,19 @@ const MitochondrialContent = (props) => {
           </Space>
         </Col>
 
-        <Col span={6}>
+        <Col flex='1 0px'>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig
+              <CalculationConfigContainer
+                filterUuid={filterName}
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-              />
+                plotType='bin step'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />

@@ -1,92 +1,21 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Space,
   Slider,
   Form,
-  Button,
-  Alert,
-  Radio,
 } from 'antd';
-
-import _ from 'lodash';
 
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
-import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
-
-const CalculationConfig = (props) => {
+const DoubletScoresConfig = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange,
+    config, disabled, plotType, updateSettings,
   } = props;
-
-  const config = useSelector(
-    (state) => state.experimentSettings.processing.doubletScores[sampleId]?.filterSettings
-      || state.experimentSettings.processing.doubletScores.filterSettings,
-  );
-
-  const FILTER_UUID = 'doubletScores';
-
-  const dispatch = useDispatch();
-
-  const [displayIndividualChangesWarning, setDisplayIndividualChangesWarning] = useState(false);
-
-  const updateAllSettings = () => {
-    setDisplayIndividualChangesWarning(false);
-
-    const newConfig = {};
-    sampleIds.forEach((currentSampleId) => {
-      newConfig[currentSampleId] = { filterSettings: config };
-    });
-
-    dispatch(updateProcessingSettings(
-      experimentId,
-      FILTER_UUID,
-      newConfig,
-    ));
-
-    onConfigChange();
-  };
-
-  const updateSettings = (diff) => {
-    const newConfig = _.cloneDeep(config);
-    _.merge(newConfig, diff);
-
-    const sampleSpecificDiff = { [sampleId]: { filterSettings: newConfig } };
-
-    setDisplayIndividualChangesWarning(true);
-    dispatch(updateProcessingSettings(
-      experimentId,
-      FILTER_UUID,
-      sampleSpecificDiff,
-    ));
-
-    onConfigChange();
-  };
 
   const filtering = false;
 
   return (
     <>
-      <Space direction='vertical' style={{ width: '100%' }} />
-      {displayIndividualChangesWarning && (
-        <Form.Item>
-          <Alert
-            message='To copy these new settings to the rest of your samples, click Copy to all samples.'
-            type='info'
-            showIcon
-          />
-        </Form.Item>
-      )}
-      <Radio.Group defaultValue={1} style={{ marginTop: '5px', marginBottom: '30px' }}>
-        <Radio value={1}>
-          Automatic
-        </Radio>
-        <Radio value={2}>
-          Manual
-        </Radio>
-      </Radio.Group>
       <Form.Item label='Probability threshold'>
         <Slider
           collapsible={!filtering ? 'disabled' : 'header'}
@@ -95,25 +24,26 @@ const CalculationConfig = (props) => {
           max={1}
           onChange={(val) => updateSettings({ probabilityThreshold: val })}
           step={0.05}
+          disabled={disabled}
         />
       </Form.Item>
       <BandwidthOrBinstep
         config={config}
         onUpdate={updateSettings}
-        type='bin step'
+        type={plotType}
         max={0.5}
         min={0.001}
+        disabled={disabled}
       />
-      <Button onClick={updateAllSettings}>Copy to all samples</Button>
     </>
   );
 };
 
-CalculationConfig.propTypes = {
-  experimentId: PropTypes.string.isRequired,
-  sampleId: PropTypes.string.isRequired,
-  sampleIds: PropTypes.array.isRequired,
-  onConfigChange: PropTypes.func.isRequired,
+DoubletScoresConfig.propTypes = {
+  updateSettings: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
+  plotType: PropTypes.string.isRequired,
+  disabled: PropTypes.bool.isRequired,
 };
 
-export default CalculationConfig;
+export default DoubletScoresConfig;

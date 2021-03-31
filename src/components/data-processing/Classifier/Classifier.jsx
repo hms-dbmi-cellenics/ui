@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
-import {
-  Collapse, Row, Col, Space, Button, Tooltip, Skeleton,
-} from 'antd';
 import PropTypes from 'prop-types';
 import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
+  Collapse, Row, Col, Space, Skeleton,
+} from 'antd';
+
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -17,6 +15,7 @@ import {
 import ClassifierEmptyDropsPlot from '../../plots/ClassifierEmptyDropsPlot';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
@@ -41,7 +40,9 @@ const Classifier = (props) => {
 
   const dispatch = useDispatch();
 
-  const debounceSave = useCallback(_.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), [],
+  );
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -50,8 +51,8 @@ const Classifier = (props) => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.classifier[sampleId]?.filterSettings
-      || state.experimentSettings.processing.classifier.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
   const plotData = useSelector((state) => state.componentConfig[plotUuid]?.plotData);
 
@@ -106,22 +107,25 @@ const Classifier = (props) => {
 
   return (
     <>
-      <Row>
-
-        <Col span={17}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={1}>
-          <Tooltip placement='bottom' title='The classifier combines several properties (mitochondrial content, entropy, etc.) into a single probability score and is used to refine the filtering of empty droplets. The cut-off is typically set around 0.6-0.9.'>
-            <Button icon={<InfoCircleOutlined />} />
-          </Tooltip>
-        </Col>
-        <Col span={6}>
+        <Col flex='1 0px'>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig experimentId={experimentId} sampleId={sampleId} plotType='bin step' sampleIds={sampleIds} onConfigChange={onConfigChange} />
+              <CalculationConfigContainer
+                filterUuid={filterName}
+                experimentId={experimentId}
+                sampleId={sampleId}
+                sampleIds={sampleIds}
+                onConfigChange={onConfigChange}
+                plotType='unused'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />

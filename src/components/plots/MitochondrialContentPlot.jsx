@@ -12,7 +12,6 @@ import { loadEmbedding } from '../../redux/actions/embedding';
 import loadCellMeta from '../../redux/actions/cellMeta';
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
-import { loadPlotConfig } from '../../redux/actions/componentConfig';
 
 const MitochondrialContentPlot = (props) => {
   const {
@@ -20,8 +19,6 @@ const MitochondrialContentPlot = (props) => {
   } = props;
   const defaultEmbeddingType = 'umap';
   const dataName = 'mitochondrialContent';
-  const plotUuid = 'embeddingPreviewMitochondrialContent';
-  const plotType = 'embeddingPreviewMitochondrialContent';
 
   const dispatch = useDispatch();
 
@@ -96,20 +93,12 @@ const MitochondrialContentPlot = (props) => {
       || mitochondrialContent?.loading
       || embedding?.loading
       || cellSets.loading
+      || !plotComponent
     )) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
         </center>
-      );
-    }
-
-    if (!plotComponent) {
-      return (
-        <PlatformError
-          description='Failed loading plot data'
-          onClick={() => { dispatch(loadPlotConfig(experimentId, plotUuid, plotType)); }}
-        />
       );
     }
 

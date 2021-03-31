@@ -33,7 +33,7 @@ describe('Data Integration Calculation Config', () => {
       ...initialExperimentState,
     },
     componentConfig: {
-      [generateDataProcessingPlotUuid(null, filterName, 2)]: {
+      [generateDataProcessingPlotUuid(null, filterName, 1)]: {
         config: {},
         plotData: Array(50).fill(PCObject()),
       },
@@ -85,7 +85,7 @@ describe('Data Integration Calculation Config', () => {
         ...initialExperimentState,
       },
       componentConfig: {
-        [generateDataProcessingPlotUuid(null, filterName, 2)]: {
+        [generateDataProcessingPlotUuid(null, filterName, 1)]: {
           config: {},
           plotData: [],
         },

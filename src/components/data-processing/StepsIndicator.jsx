@@ -9,7 +9,7 @@ const StepsIndicator = (props) => {
     completed: '#1890ff', // blue
   };
   return (
-    <>
+    <div>
       {allSteps.map((step, index) => {
         let color = colors.completed;
         if (index === currentStep) {
@@ -18,12 +18,12 @@ const StepsIndicator = (props) => {
           color = colors.notCompleted;
         }
         return (
-          <svg width='18' height='8'>
-            <rect width='15' height='8' style={{ fill: color }} />
+          <svg width='18' height='10'>
+            <rect width='16' height='8' style={{ fill: color }} />
           </svg>
         );
       })}
-    </>
+    </div>
   );
 };
 

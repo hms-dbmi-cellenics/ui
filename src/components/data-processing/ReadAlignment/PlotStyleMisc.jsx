@@ -6,7 +6,7 @@ import {
 
 const BandwidthOrBinstep = (props) => {
   const {
-    onUpdate, config, type, max, min,
+    onUpdate, config, type, max, min, disabled,
   } = props;
 
   const realMin = min ?? max / 4;
@@ -15,13 +15,14 @@ const BandwidthOrBinstep = (props) => {
 
   if (type === 'bin step') {
     return (
-      <Form.Item label='Bin step:'>
+      <Form.Item label='Bin step'>
         <Slider
           value={config.binStep}
           min={realMin}
           max={max}
           onChange={(value) => { onUpdate({ binStep: value }); }}
           step={step}
+          disabled={disabled}
         />
       </Form.Item>
     );
@@ -30,13 +31,14 @@ const BandwidthOrBinstep = (props) => {
     return (null);
   }
   return (
-    <Form.Item label='Bandwidth:'>
+    <Form.Item label='Bandwidth'>
       <Slider
         value={config.bandwidth}
         min={-1}
         max={max}
         onChange={(value) => onUpdate({ bandwidth: value })}
         step={1}
+        disabled={disabled}
       />
     </Form.Item>
   );
@@ -53,6 +55,9 @@ BandwidthOrBinstep.propTypes = {
   type: PropTypes.string.isRequired,
   max: PropTypes.number,
   min: PropTypes.number,
+  disabled: PropTypes.bool,
 };
-
+BandwidthOrBinstep.defaultProps = {
+  disabled: false,
+};
 export default BandwidthOrBinstep;

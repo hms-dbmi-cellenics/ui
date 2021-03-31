@@ -434,7 +434,7 @@ class ReadAlignment extends React.Component {
                     <Option value='option3'>option3</Option>
                   </Select>
                 </Form.Item>
-                <Form.Item label='Filter threshold:'>
+                <Form.Item label='Filter threshold'>
                   <Slider
                     defaultValue={0.5}
                     min={0}

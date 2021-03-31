@@ -2,30 +2,24 @@
 
 exports[`samplesReducer Adds a new sample correctly 1`] = `
 Object {
-  "12345": Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Array [
-      "features.tsv",
-    ],
-    "files": Object {
-      "features.tsv": Object {
-        "error": false,
-        "mime": "",
-        "name": "features.tsv",
-        "objectKey": "",
-        "size": 0,
-        "success": false,
-      },
-    },
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "name": "test sample",
+    "projectUuid": null,
     "species": null,
     "type": null,
-    "uuid": "12345",
+    "uuid": "asd123",
   },
-  "67890": Object {
+  "ids": Array [
+    "asd123",
+    "qwe234",
+  ],
+  "qwe234": Object {
     "complete": false,
     "createdDate": "2021-01-02T14:48:00.000Z",
     "error": false,
@@ -33,44 +27,31 @@ Object {
     "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
     "name": "test sample 2",
+    "projectUuid": null,
     "species": null,
     "type": null,
-    "uuid": "67890",
+    "uuid": "qwe234",
   },
-  "ids": Array [
-    "12345",
-    "67890",
-  ],
 }
 `;
 
 exports[`samplesReducer Inserts a new sample correctly 1`] = `
 Object {
-  "12345": Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Array [
-      "features.tsv",
-    ],
-    "files": Object {
-      "features.tsv": Object {
-        "error": false,
-        "mime": "",
-        "name": "features.tsv",
-        "objectKey": "",
-        "size": 0,
-        "success": false,
-      },
-    },
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "name": "test sample",
+    "projectUuid": null,
     "species": null,
     "type": null,
-    "uuid": "12345",
+    "uuid": "asd123",
   },
   "ids": Array [
-    "12345",
+    "asd123",
   ],
 }
 `;

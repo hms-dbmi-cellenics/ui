@@ -6,13 +6,9 @@ import {
   Collapse,
   Row,
   Col,
-  List,
   Space,
-  Tooltip,
-  Button,
   Skeleton,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 
 import {
   updatePlotConfig,
@@ -26,6 +22,7 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -47,15 +44,6 @@ const CellSizeDistribution = (props) => {
 
   const [selectedPlot, setSelectedPlot] = useState('kneePlot');
   const [plot, setPlot] = useState(null);
-
-  const listData = [
-    'Estimated number of cells 8672',
-    'Fraction reads in cells  93.1%',
-    'Mean reads per cell  93,551',
-    'Median genes per cell  1,297',
-    'Total genes detected   21,425',
-    'Median UMI counts per cell   4,064',
-  ];
 
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
@@ -99,8 +87,8 @@ const CellSizeDistribution = (props) => {
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
   );
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.cellSizeDistribution[sampleId]?.filterSettings
-      || state.experimentSettings.processing.cellSizeDistribution.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
   const plotData = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
@@ -162,16 +150,13 @@ const CellSizeDistribution = (props) => {
 
   return (
     <>
-      <Row>
-        <Col span={14}>
+      <Row gutter={16}>
+        <Col flex='auto'>
           {renderPlot()}
         </Col>
 
-        <Col span={5}>
+        <Col flex='1 0px'>
           <Space direction='vertical'>
-            <Tooltip title='The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). Look for bimodal distribution to set the cut-off.'>
-              <Button icon={<InfoCircleOutlined />} />
-            </Tooltip>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'
@@ -197,23 +182,21 @@ const CellSizeDistribution = (props) => {
 
             ))}
           </Space>
-          <List
-            dataSource={listData}
-            size='small'
-            renderItem={(item) => <List.Item>{item}</List.Item>}
-          />
         </Col>
 
-        <Col span={5}>
+        <Col flex='1 0px'>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig
+              <CalculationConfigContainer
+                filterUuid={filterName}
                 experimentId={experimentId}
                 sampleId={sampleId}
-                plotType='bin step'
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-              />
+                plotType='bin step'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />

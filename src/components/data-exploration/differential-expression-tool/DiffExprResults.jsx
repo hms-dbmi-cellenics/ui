@@ -45,7 +45,7 @@ const DiffExprResults = (props) => {
       title: 'adj p-value',
       key: 'p_val_adj',
       sorter: true,
-      render: (score, record) => <Tooltip title={`adj p-value: ${record.qval}`}>{score}</Tooltip>,
+      render: (score, record) => <Tooltip title={`adj p-value: ${record.p_val_adj}`}>{score}</Tooltip>,
     },
     {
       title: 'Pct 1',
