@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
@@ -39,12 +39,11 @@ import SingleComponentMultipleDataContainer from '../../../../components/SingleC
 import { loadProcessingSettings, updateProcessingSettings, saveProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { runPipeline } from '../../../../redux/actions/pipeline';
-import PreloadContent from '../../../../components/PreloadContent';
 import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
 
 
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
@@ -75,14 +74,25 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
   const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
-  const [preFiltered, setPreFiltered] = useState(false)
+  const [disabledMessage, setDisabledMessage] = useState('')
+
+  const preFilteredSamples = useMemo(() => {
+    return Object.values(samples).filter(s => s.preFiltered).map(s => s.name)
+  }, [samples])
 
   useEffect(() => {
-    if (Object.values(samples).filter(s => s.preFiltered === true)) {
+    if (preFilteredSamples.length) {
       dispatch(updateProcessingSettings(experimentId, 'classifier', { enabled: false }))
-      setPreFiltered(true)
     }
-  }, [])
+  }, [preFilteredSamples])
+
+  useEffect(() => {
+    if (preFilteredSamples.length) {
+      setDisabledMessage(`This filter is disabled because ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered.`)
+    } else if (!processingConfig[steps[stepIdx].key].enabled) {
+      setDisabledMessage('This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.')
+    }
+  }, [stepIdx, processingConfig])
 
   const upcomingStepIdxRef = useRef(null);
 
@@ -332,7 +342,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                             disabledByPipeline
                           }
                         >
-                          {!processingConfig[key]?.enabled || preFiltered ? (
+                          {!processingConfig[key]?.enabled || preFilteredSamples.length ? (
                             <>
                               <Text
                                 type='secondary'
@@ -398,7 +408,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <Col>
               {steps[stepIdx].multiSample && (
                 <Button
-                  disabled={preFiltered}
+                  disabled={preFilteredSamples.length}
                   onClick={() => {
                     dispatch(updateProcessingSettings(
                       experimentId,
@@ -408,7 +418,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     dispatchDebounce(saveProcessingSettings(experimentId, steps[stepIdx].key));
                   }}>
                   {
-                    !processingConfig[steps[stepIdx].key]?.enabled || preFiltered
+                    !processingConfig[steps[stepIdx].key]?.enabled || preFilteredSamples.length
                       ? 'Enable' : 'Disable'
                   }
                 </Button>
@@ -538,9 +548,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
             return (
               <Space direction='vertical'>
-                {processingConfig[steps[stepIdx].key].enabled === false &&
-                  <Alert
-                    message="This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data."
+                {(!processingConfig[steps[stepIdx].key].enabled
+                  || preFilteredSamples.length > 0) &&
+                  < Alert
+                    message={disabledMessage}
                     type="info"
                     showIcon
                   />
