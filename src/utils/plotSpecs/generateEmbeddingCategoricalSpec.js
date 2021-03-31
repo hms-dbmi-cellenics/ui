@@ -196,8 +196,7 @@ const filterCells = (cellSets, selectedCellSet) => {
 
     return cells.map((cellId) => ({
       cellId,
-      sample: key,
-      name: cellSets.properties[key].name,
+      sample: cellSets.properties[key].name,
       color: cellSets.properties[key].color,
     }));
   });
