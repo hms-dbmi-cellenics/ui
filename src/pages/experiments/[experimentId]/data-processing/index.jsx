@@ -74,15 +74,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
   const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
-  const [disabledMessage, setDisabledMessage] = useState('')
-
+  const [disabledByPrefilter, setDisabledByPrefilter] = useState(false)
   const [stepIdx, setStepIdx] = useState(0);
   const carouselRef = useRef(null);
+
+  const stepsDisabledByPrefilter = ['classifier']
 
   const preFilteredSamples = useMemo(() => {
     return Object.values(samples).filter(s => s.preFiltered).map(s => s.name)
   }, [samples])
-
 
   useEffect(() => {
     if (samples.meta.loading) dispatch(loadSamples(experimentId))
@@ -90,17 +90,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   useEffect(() => {
     if (preFilteredSamples.length) {
-      dispatch(updateProcessingSettings(experimentId, 'classifier', { enabled: false }))
+      stepsDisabledByPrefilter.forEach((step) => {
+        dispatch(updateProcessingSettings(experimentId, step, { enabled: false }))
+      })
     }
   }, [preFilteredSamples])
 
   useEffect(() => {
     if (preFilteredSamples.length) {
-      setDisabledMessage(`This filter is disabled because ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered.`)
-    } else if (!processingConfig[steps[stepIdx].key].enabled) {
-      setDisabledMessage('This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.')
+      setDisabledByPrefilter(stepsDisabledByPrefilter.includes(steps[stepIdx].key))
     }
-  }, [stepIdx, processingConfig])
+  }, [stepIdx])
 
   const upcomingStepIdxRef = useRef(null);
 
@@ -346,7 +346,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                             disabledByPipeline
                           }
                         >
-                          {!processingConfig[key]?.enabled || preFilteredSamples.length ? (
+                          {!processingConfig[key]?.enabled ? (
                             <>
                               <Text
                                 type='secondary'
@@ -412,7 +412,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <Col>
               {steps[stepIdx].multiSample && (
                 <Button
-                  disabled={preFilteredSamples.length}
+                  disabled={disabledByPrefilter}
                   onClick={() => {
                     dispatch(updateProcessingSettings(
                       experimentId,
@@ -422,7 +422,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     dispatchDebounce(saveProcessingSettings(experimentId, steps[stepIdx].key));
                   }}>
                   {
-                    !processingConfig[steps[stepIdx].key]?.enabled || preFilteredSamples.length
+                    !processingConfig[steps[stepIdx].key]?.enabled
                       ? 'Enable' : 'Disable'
                   }
                 </Button>
@@ -552,10 +552,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
             return (
               <Space direction='vertical'>
-                {(!processingConfig[steps[stepIdx].key].enabled
-                  || preFilteredSamples.length > 0) &&
+                {!processingConfig[steps[stepIdx].key].enabled &&
                   < Alert
-                    message={disabledMessage}
+                    message={
+                      disabledByPrefilter ?
+                        `This filter is disabled because ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered.`
+                        : 'This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'
+                    }
                     type="info"
                     showIcon
                   />
