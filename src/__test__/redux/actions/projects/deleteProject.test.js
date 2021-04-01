@@ -108,8 +108,6 @@ describe('deleteProject action', () => {
     const store = mockStore(initialStateMultipleProjects);
     await store.dispatch(deleteProject(mockProjectUuid1));
 
-    console.log(store.getActions());
-
     // Delete sample
     const action1 = store.getActions()[0];
     expect(action1.type).toEqual(SAMPLES_DELETE);

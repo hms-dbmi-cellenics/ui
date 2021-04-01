@@ -42,7 +42,6 @@ import { runPipeline } from '../../../../redux/actions/pipeline';
 import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
 
 
-
 const { Text } = Typography;
 const { Option } = Select;
 
@@ -74,15 +73,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
   const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
-  const [disabledByPrefilter, setDisabledByPrefilter] = useState(false)
   const [stepIdx, setStepIdx] = useState(0);
+  const [preFilteredSamples, setPreFilteredSamples] = useState([])
+  const [disabledByPrefilter, setDisabledByPrefilter] = useState(false)
   const carouselRef = useRef(null);
 
   const stepsDisabledByPrefilter = ['classifier']
-
-  const preFilteredSamples = useMemo(() => {
-    return Object.values(samples).filter(s => s.preFiltered).map(s => s.name)
-  }, [samples])
 
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
@@ -99,11 +95,24 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [samples.meta.loading])
 
   useEffect(() => {
-    if (preFilteredSamples.length) {
+    if (samples.ids.length) {
+      setPreFilteredSamples(
+        samples.ids.reduce(
+          (acc, sampleUuid) => samples[sampleUuid].preFiltered ? [...acc, sampleUuid] : acc, []
+        )
+      )
+    }
+  }, [samples])
+
+  useEffect(() => {
+
+    if (preFilteredSamples.length && processingConfig[steps[stepIdx].key].enabled) {
       stepsDisabledByPrefilter.forEach((step) => {
         dispatch(updateProcessingSettings(experimentId, step, { enabled: false }))
+        dispatch(saveProcessingSettings(experimentId, step))
       })
     }
+
   }, [preFilteredSamples])
 
   useEffect(() => {
