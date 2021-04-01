@@ -7,6 +7,7 @@ import {
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_ERROR,
+  SAMPLES_DELETE,
 } from '../../../redux/actionTypes/samples';
 
 describe('samplesReducer', () => {

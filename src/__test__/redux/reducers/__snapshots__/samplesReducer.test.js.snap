@@ -57,6 +57,10 @@ Object {
   "ids": Array [
     "asd123",
   ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+  },
 }
 `;
 
@@ -103,6 +107,10 @@ Object {
   "ids": Array [
     "asd123",
   ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+  },
 }
 `;
 
@@ -136,5 +144,9 @@ Object {
   "ids": Array [
     "asd123",
   ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+  },
 }
 `;
