@@ -5,7 +5,7 @@ const projectsCreate = (state, action) => {
     ids: [...state.ids, project.uuid],
     meta: {
       ...state.meta,
-      activeProject: project.uuid,
+      activeProjectUuid: project.uuid,
     },
     [project.uuid]: project,
   };

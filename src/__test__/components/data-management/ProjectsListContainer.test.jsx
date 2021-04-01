@@ -39,7 +39,7 @@ const filledStore = mockStore({
     ...initialState,
     ids: [project1.uuid, project2.uuid],
     meta: {
-      activeProject: project1.uuid,
+      activeProjectUuid: project1.uuid,
     },
     [project1.uuid]: project1,
     [project2.uuid]: project2,
