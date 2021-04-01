@@ -85,7 +85,7 @@ const generateSpec = (config, plotData) => ({
           size: { value: 15 },
           strokeWidth: { value: 2 },
           opacity: { value: 0.9 },
-          fill: { value: 'red' },
+          fill: { value: 'blue' },
         },
       },
     },
