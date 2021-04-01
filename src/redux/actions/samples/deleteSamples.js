@@ -22,8 +22,6 @@ const deleteSamples = (
       acc[samples[sampleUuid].projectUuid] = [];
     }
 
-    console.log(acc);
-
     return {
       ...acc,
       [samples[sampleUuid].projectUuid]: [
@@ -32,8 +30,6 @@ const deleteSamples = (
       ],
     };
   }, {});
-
-  console.log(projectSamples);
 
   Object.entries(projectSamples).forEach(([projectUuid, samplesToDelete]) => {
     dispatch({

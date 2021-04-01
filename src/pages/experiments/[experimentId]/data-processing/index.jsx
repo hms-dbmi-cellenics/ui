@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
@@ -30,7 +30,6 @@ import DataIntegration from '../../../../components/data-processing/DataIntegrat
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
 
 import PlatformError from '../../../../components/PlatformError';
-import Loader from '../../../../components/Loader';
 
 import StepsIndicator from '../../../../components/data-processing/StepsIndicator';
 import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
@@ -38,13 +37,12 @@ import StatusIndicator from '../../../../components/data-processing/StatusIndica
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 import { loadProcessingSettings, updateProcessingSettings, saveProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
+import { loadSamples } from '../../../../redux/actions/samples'
 import { runPipeline } from '../../../../redux/actions/pipeline';
-import PreloadContent from '../../../../components/PreloadContent';
 import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
 
 
-
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
@@ -60,9 +58,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
 
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
+  const samples = useSelector((state) => state.samples)
 
   const pipelineStatusKey = pipelineStatus.pipeline?.status;
-
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
 
   // Pipeline is not loaded (either running or in an errored state)
@@ -75,8 +73,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
   const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
+  const [stepIdx, setStepIdx] = useState(0);
+  const [preFilteredSamples, setPreFilteredSamples] = useState([])
+  const [disabledByPrefilter, setDisabledByPrefilter] = useState(false)
+  const carouselRef = useRef(null);
 
-  const upcomingStepIdxRef = useRef(null);
+  const stepsDisabledByPrefilter = ['classifier']
 
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
@@ -87,6 +89,41 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       dispatch(loadProcessingSettings(experimentId));
     }
   }, [experimentId]);
+
+  useEffect(() => {
+    if (samples.meta.loading) dispatch(loadSamples(experimentId))
+  }, [samples.meta.loading])
+
+  useEffect(() => {
+    if (samples.ids.length) {
+      setPreFilteredSamples(
+        samples.ids.reduce(
+          (acc, sampleUuid) => samples[sampleUuid].preFiltered ? [...acc, sampleUuid] : acc, []
+        )
+      )
+    }
+  }, [samples])
+
+  useEffect(() => {
+
+    if (preFilteredSamples.length && processingConfig[steps[stepIdx].key].enabled) {
+      stepsDisabledByPrefilter.forEach((step) => {
+        dispatch(updateProcessingSettings(experimentId, step, { enabled: false }))
+        dispatch(saveProcessingSettings(experimentId, step))
+      })
+    }
+
+  }, [preFilteredSamples])
+
+  useEffect(() => {
+    if (preFilteredSamples.length
+      && !processingConfig.meta.loading
+      && !processingConfig.meta.loadingSettingsError) {
+      setDisabledByPrefilter(stepsDisabledByPrefilter.includes(steps[stepIdx].key))
+    }
+  }, [stepIdx, processingConfig])
+
+  const upcomingStepIdxRef = useRef(null);
 
   const sampleKeys = cellSets.hierarchy?.find(
     (rootNode) => (rootNode.key === 'sample'),
@@ -240,10 +277,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
   ];
 
-  const [stepIdx, setStepIdx] = useState(0);
-
-  const carouselRef = useRef(null);
-
   useEffect(() => {
     if (carouselRef.current) {
       carouselRef.current.goTo(stepIdx, true);
@@ -324,7 +357,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                             disabledByPipeline
                           }
                         >
-                          {processingConfig[key]?.enabled === false ? (
+                          {!processingConfig[key]?.enabled ? (
                             <>
                               <Text
                                 type='secondary'
@@ -348,7 +381,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                               </Text>
                               <span
                                 style={{ marginLeft: '0.25rem' }}
-                              // style={!processingConfig[key]?.enabled ? { textDecoration: 'line-through' } : {}}
                               >
                                 {name}
                               </span>
@@ -391,16 +423,19 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <Col>
               {steps[stepIdx].multiSample && (
                 <Button
+                  disabled={disabledByPrefilter}
                   onClick={() => {
                     dispatch(updateProcessingSettings(
                       experimentId,
                       steps[stepIdx].key,
                       { enabled: !processingConfig[steps[stepIdx].key]?.enabled },
                     ));
-
                     dispatchDebounce(saveProcessingSettings(experimentId, steps[stepIdx].key));
                   }}>
-                  {processingConfig[steps[stepIdx].key]?.enabled === false ? 'Enable' : 'Disable'}
+                  {
+                    !processingConfig[steps[stepIdx].key]?.enabled
+                      ? 'Enable' : 'Disable'
+                  }
                 </Button>
               )}
             </Col>
@@ -528,9 +563,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
             return (
               <Space direction='vertical'>
-                {processingConfig[steps[stepIdx].key].enabled === false &&
-                  <Alert
-                    message="This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data."
+                {!processingConfig[steps[stepIdx].key].enabled &&
+                  < Alert
+                    message={
+                      disabledByPrefilter ?
+                        `This filter is disabled because ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered.`
+                        : 'This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'
+                    }
                     type="info"
                     showIcon
                   />

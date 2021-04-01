@@ -20,9 +20,21 @@ const SAMPLES_DELETE = `${SAMPLES}/delete`;
  */
 const SAMPLES_FILE_UPDATE = `${SAMPLES}/file_update`;
 
+/**
+ * Load sample.
+ */
+const SAMPLES_LOADED = `${SAMPLES}/loaded`;
+
+/**
+ * Error loading/saving sample.
+ */
+const SAMPLES_ERROR = `${SAMPLES}/error`;
+
 export {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
   SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
+  SAMPLES_LOADED,
+  SAMPLES_ERROR,
 };

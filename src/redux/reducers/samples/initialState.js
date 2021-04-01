@@ -24,6 +24,10 @@ const sampleFileTemplate = {
 
 const initialState = {
   ids: [],
+  meta: {
+    loading: true,
+    error: false,
+  },
 };
 
 export default initialState;
