@@ -5,6 +5,11 @@ import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import useSWR from 'swr';
+
+import AWS from 'aws-sdk';
+import Amplify from 'aws-amplify';
+import { Credentials } from '@aws-amplify/core';
+
 import ContentWrapper from '../components/ContentWrapper';
 import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
@@ -19,6 +24,47 @@ import '../../assets/nprogress.css';
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
+
+const setupAmplify = () => {
+  const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+
+  Amplify.configure({
+    Storage: {
+      AWSS3: {
+        bucket: 'biomage-source-development', // REQUIRED -  Amazon S3 bucket
+        region: 'eu-west-1', // OPTIONAL -  Amazon service region
+        dangerouslyConnectToHttpEndpointForTesting: isDev,
+        identityId: 'fake',
+      },
+    },
+  });
+
+  // // Configure Amplify to not use prefix when uploading to public folder, instead of '/'
+  // Storage.configure({
+  //   customPrefix: {
+  //     public: '',
+  //   },
+  // });
+
+  // Mock for localhost
+  if (isDev) {
+    Credentials.get = async () => (
+      new AWS.Credentials({
+        accessKeyId: 'asd',
+        secretAccessKey: 'asfdsa',
+      })
+    );
+
+    Credentials.shear = () => (
+      new AWS.Credentials({
+        accessKeyId: 'asd',
+        secretAccessKey: 'asfdsa',
+      })
+    );
+  }
+};
+
+setupAmplify();
 
 const WrappedApp = ({ Component, pageProps }) => {
   const router = useRouter();

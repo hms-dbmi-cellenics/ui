@@ -97,6 +97,7 @@ const NewProjectModal = (props) => {
         name: fileName,
         size: file.size,
         mime: file.type,
+        file,
         valid: isValidType && isValidFilename,
         errors: error.join(', '),
       });
