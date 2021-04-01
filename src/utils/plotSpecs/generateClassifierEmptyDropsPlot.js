@@ -12,7 +12,7 @@ const generateSpec = (config, plotData) => ({
       transform: [
         {
           type: 'filter',
-          expr: 'datum.size != null && datum.classifierP != null',
+          expr: 'datum.log_u != null && datum.FDR != null',
         },
       ],
     },
@@ -23,8 +23,8 @@ const generateSpec = (config, plotData) => ({
         {
           type: 'kde2d',
           size: [{ signal: 'width' }, { signal: 'height' }],
-          x: { expr: "scale('x', datum.size)" },
-          y: { expr: "scale('y', datum.classifierP)" },
+          x: { expr: "scale('x', datum.log_u)" },
+          y: { expr: "scale('y', datum.FDR)" },
           bandwidth: [config.bandwidth, config.bandwidth],
           cellSize: 25,
         },
@@ -43,7 +43,7 @@ const generateSpec = (config, plotData) => ({
       round: true,
       nice: true,
       zero: true,
-      domain: { data: 'plotData', field: 'size' },
+      domain: { data: 'plotData', field: 'log_u' },
       domainMin: 1.5,
       range: 'width',
     },
@@ -53,7 +53,7 @@ const generateSpec = (config, plotData) => ({
       round: true,
       nice: true,
       zero: true,
-      domain: { data: 'plotData', field: 'classifierP' },
+      domain: { data: 'plotData', field: 'FDR' },
       range: 'height',
     },
   ],
@@ -96,8 +96,8 @@ const generateSpec = (config, plotData) => ({
       from: { data: 'plotData' },
       encode: {
         update: {
-          x: { scale: 'x', field: 'size' },
-          y: { scale: 'y', field: 'classifierP' },
+          x: { scale: 'x', field: 'log_u' },
+          y: { scale: 'y', field: 'FDR' },
           size: { value: 4 },
           fill: { value: '#ccc' },
         },
@@ -124,19 +124,19 @@ const generateSpec = (config, plotData) => ({
         },
       ],
     },
-    {
-      type: 'rule',
-      encode: {
-        update: {
-          x: { value: 0 },
-          x2: { field: { group: 'width' } },
-          y: { scale: 'y', value: config.minProbability, round: false },
-          strokeWidth: { value: 2 },
-          strokeDash: { value: [8, 4] },
-          stroke: { value: 'red' },
-        },
-      },
-    },
+    // {
+    //   type: 'rule',
+    //   encode: {
+    //     update: {
+    //       x: { value: 0 },
+    //       x2: { field: { group: 'width' } },
+    //       y: { scale: 'y', value: config.minProbability, round: false },
+    //       strokeWidth: { value: 2 },
+    //       strokeDash: { value: [8, 4] },
+    //       stroke: { value: 'red' },
+    //     },
+    //   },
+    // },
   ],
   title:
   {
