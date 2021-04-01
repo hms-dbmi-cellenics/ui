@@ -11,10 +11,9 @@ import EditableField from '../EditableField';
 
 import ProjectDeleteModal from './ProjectDeleteModal';
 import FileUploadModal from './FileUploadModal';
-import { setActiveProject } from '../../redux/actions/projects';
+import { setActiveProject, updateProject, deleteProject as deleteProjectAction } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
 
-// import { createSample, updateSampleFile } from '../../redux/actions/samples';
 import processUpload from '../../utils/processUpload';
 
 const ProjectsListContainer = (props) => {
@@ -23,13 +22,14 @@ const ProjectsListContainer = (props) => {
 
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
-  const { activeProject } = projects.meta;
+  const { activeProjectUuid } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(true);
 
   useEffect(() => {
-    setUploadModalVisible(projects[activeProject]?.samples.length === 0);
-  }, [activeProject]);
+    setUploadModalVisible(projects[activeProjectUuid]?.samples.length === 0);
+  }, [activeProjectUuid]);
 
   const activeProjectStyle = {
     backgroundColor: blue[0],
@@ -38,11 +38,12 @@ const ProjectsListContainer = (props) => {
   };
 
   const uploadFiles = (filesList, sampleType) => {
-    processUpload(filesList, sampleType, samples, activeProject, dispatch);
+    processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
     setUploadModalVisible(false);
   };
 
   const deleteProject = () => {
+    dispatch(deleteProjectAction(deleteProjectUuid));
     setDeleteModalVisible(false);
   };
 
@@ -57,6 +58,7 @@ const ProjectsListContainer = (props) => {
         visible={deleteModalVisible}
         onCancel={() => { setDeleteModalVisible(false); }}
         onDelete={deleteProject}
+        projectName={projects[deleteProjectUuid]?.name}
       />
 
       <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
@@ -65,7 +67,7 @@ const ProjectsListContainer = (props) => {
             <Card
               key={uuid}
               type='primary'
-              style={activeProject === uuid ? activeProjectStyle : { cursor: 'pointer' }}
+              style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}
 
               onClick={() => {
                 dispatch(setActiveProject(uuid));
@@ -79,12 +81,13 @@ const ProjectsListContainer = (props) => {
                 colon=''
                 title={(
                   <EditableField
-                    value={`${projects[uuid].name}`}
-                    onAfterSubmit={() => {
-                      console.log('name change');
+                    value={projects[uuid].name}
+                    onAfterSubmit={(name) => {
+                      dispatch(updateProject(uuid, { name }));
                     }}
                     onDelete={(e) => {
                       e.stopPropagation();
+                      setDeleteProjectUuid(uuid);
                       setDeleteModalVisible(true);
                     }}
                   />

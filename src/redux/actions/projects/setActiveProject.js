@@ -6,10 +6,10 @@ const setActiveProject = (
   projectUuid,
 ) => async (dispatch, getState) => {
   const {
-    activeProject,
+    activeProjectUuid,
   } = getState().projects.meta;
 
-  if (activeProject === projectUuid) return null;
+  if (activeProjectUuid === projectUuid) return null;
 
   dispatch({
     type: PROJECTS_SET_ACTIVE,

@@ -11,7 +11,12 @@ const SAMPLES_CREATE = `${SAMPLES}/create`;
 const SAMPLES_UPDATE = `${SAMPLES}/update`;
 
 /**
- * Update file in sample.
+ * Delete sample.
+ */
+const SAMPLES_DELETE = `${SAMPLES}/delete`;
+
+/**
+ * Update files in sample.
  */
 const SAMPLES_FILE_UPDATE = `${SAMPLES}/file_update`;
 
@@ -28,6 +33,7 @@ const SAMPLES_ERROR = `${SAMPLES}/error`;
 export {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
+  SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_ERROR,

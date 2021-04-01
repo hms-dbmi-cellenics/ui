@@ -9,6 +9,7 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
+      "auto": true,
       "enabled": true,
       "filterSettings": Object {
         "binStep": 200,
@@ -68,6 +69,7 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
+      "auto": true,
       "enabled": true,
       "filterSettings": Object {
         "binStep": 0.05,
@@ -80,6 +82,7 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
+      "auto": true,
       "enabled": true,
       "filterSettings": Object {
         "method": "absolute_threshold",
@@ -117,6 +120,7 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
+      "auto": true,
       "enabled": true,
       "filterSettings": Object {
         "binStep": 200,
@@ -173,6 +177,7 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
+      "auto": true,
       "enabled": true,
       "filterSettings": Object {
         "binStep": 0.05,
@@ -185,6 +190,7 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
+      "auto": true,
       "enabled": true,
       "filterSettings": Object {
         "method": "absolute_threshold",
@@ -222,6 +228,7 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
+      "auto": true,
       "enabled": true,
       "filterSettings": Object {
         "binStep": 200,
@@ -277,6 +284,7 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
+      "auto": true,
       "enabled": true,
       "filterSettings": Object {
         "binStep": 0.05,
@@ -289,6 +297,7 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
+      "auto": true,
       "enabled": true,
       "filterSettings": Object {
         "method": "absolute_threshold",

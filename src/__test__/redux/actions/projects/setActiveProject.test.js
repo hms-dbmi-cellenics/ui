@@ -30,7 +30,7 @@ describe('setActiveProject action', () => {
       ids: [...initialState.ids, activeProject.uuid, otherProject.uuid],
       meta: {
         ...initialState.meta,
-        activeProject: activeProject.uuid,
+        activeProjectUuid: activeProject.uuid,
       },
       [activeProject.uuid]: activeProject,
       [otherProject.uuid]: otherProject,

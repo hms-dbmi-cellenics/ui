@@ -14,10 +14,13 @@ import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
+import {
+  deleteSamples, updateSample,
+} from '../../redux/actions/samples';
 import { updateProject } from '../../redux/actions/projects';
 import processUpload from '../../utils/processUpload';
 
-const { Text } = Typography;
+const { Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
@@ -31,11 +34,11 @@ const ProjectDetails = ({ width, height }) => {
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
-  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProject) || false;
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
   const uploadFiles = (filesList, sampleType) => {
-    processUpload(filesList, sampleType, samples, activeProject, dispatch);
+    processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
     setUploadModalVisible(false);
   };
 
@@ -153,6 +156,8 @@ const ProjectDetails = ({ width, height }) => {
       <EditableField
         deleteEnabled
         value={text}
+        onAfterSubmit={(name) => dispatch(updateSample(el.uuid, { name }))}
+        onDelete={() => dispatch(deleteSamples(el.uuid))}
       />
     </Text>
   );
@@ -222,10 +227,13 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   useEffect(() => {
-    if (samples.ids.length === 0 || projects.ids.length === 0) return;
+    if (samples.ids.length === 0 || projects.ids.length === 0) {
+      setData([]);
+      return;
+    }
 
     const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-    const newData = projects[activeProjectUuid].samples.map((sampleUuid, idx) => ({
+    const newData = projects[activeProjectUuid]?.samples.map((sampleUuid, idx) => ({
       key: idx,
       name: samples[sampleUuid].name,
       uuid: sampleUuid,
@@ -236,7 +244,7 @@ const ProjectDetails = ({ width, height }) => {
     }));
 
     setData(newData);
-  }, [samples, activeProjectUuid]);
+  }, [projects, samples, activeProjectUuid]);
 
   const changeDescription = (description) => {
     dispatch(updateProject(activeProjectUuid, { description }));
@@ -258,9 +266,15 @@ const ProjectDetails = ({ width, height }) => {
             <Button type='primary'>Launch analysis</Button>,
           ]}
         >
-          <Text strong>Description:</Text>
-          {' '}
-          <Text editable={{ onChange: changeDescription }}>{activeProject.description}</Text>
+          <Space direction='vertical' size='small'>
+            <Text strong>Description:</Text>
+            <Paragraph
+              editable={{ onChange: changeDescription }}
+            >
+              {activeProject.description}
+
+            </Paragraph>
+          </Space>
         </PageHeader>
 
         <Table

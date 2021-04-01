@@ -4,7 +4,7 @@ const projectsSetActive = (state, action) => {
     ...state,
     meta: {
       ...state.meta,
-      activeProject: projectUuid,
+      activeProjectUuid: projectUuid,
     },
   };
 };

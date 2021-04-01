@@ -14,6 +14,7 @@ import {
 import FeaturesVsUMIsScatterplot from '../../plots/FeaturesVsUMIsScatterplot';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
@@ -51,8 +52,8 @@ const GenesVsUMIs = (props) => {
     (state) => state.componentConfig[plotUuid]?.config,
   );
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.numGenesVsNumUmis[sampleId]?.filterSettings
-      || state.experimentSettings.processing.numGenesVsNumUmis.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
   const plotData = useSelector(
     (state) => state.componentConfig[plotUuid]?.plotData,
@@ -118,12 +119,16 @@ const GenesVsUMIs = (props) => {
           <Collapse defaultActiveKey={['settings']}>
             <Space direction='vertical' style={{ width: '100%' }} />
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig
+              <CalculationConfigContainer
+                filterUuid={filterName}
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-              />
+                plotType='unused'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />

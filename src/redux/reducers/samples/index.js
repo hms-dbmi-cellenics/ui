@@ -1,6 +1,7 @@
 import {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
+  SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_ERROR,
@@ -8,6 +9,7 @@ import {
 import initialState from './initialState';
 import samplesCreate from './samplesCreate';
 import samplesUpdate from './samplesUpdate';
+import samplesDelete from './samplesDelete';
 import samplesFileUpdate from './samplesFileUpdate';
 import samplesLoaded from './samplesLoaded';
 import samplesError from './samplesError';
@@ -20,6 +22,10 @@ const samplesReducer = (state = initialState, action) => {
 
     case SAMPLES_UPDATE: {
       return samplesUpdate(state, action);
+    }
+
+    case SAMPLES_DELETE: {
+      return samplesDelete(state, action);
     }
 
     case SAMPLES_FILE_UPDATE: {
