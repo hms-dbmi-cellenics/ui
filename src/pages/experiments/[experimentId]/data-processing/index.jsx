@@ -85,6 +85,16 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [samples])
 
   useEffect(() => {
+    if (cellSets.loading && !cellSets.error) {
+      dispatch(loadCellSets(experimentId));
+    }
+
+    if (experimentId) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, [experimentId]);
+
+  useEffect(() => {
     if (samples.meta.loading) dispatch(loadSamples(experimentId))
   }, [samples.meta.loading])
 
@@ -97,22 +107,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [preFilteredSamples])
 
   useEffect(() => {
-    if (preFilteredSamples.length) {
+    if (preFilteredSamples.length
+      && !processingConfig.meta.loading
+      && !processingConfig.meta.loadingSettingsError) {
       setDisabledByPrefilter(stepsDisabledByPrefilter.includes(steps[stepIdx].key))
     }
-  }, [stepIdx])
+  }, [stepIdx, processingConfig])
 
   const upcomingStepIdxRef = useRef(null);
-
-  useEffect(() => {
-    if (cellSets.loading && !cellSets.error) {
-      dispatch(loadCellSets(experimentId));
-    }
-
-    if (experimentId) {
-      dispatch(loadProcessingSettings(experimentId));
-    }
-  }, [experimentId]);
 
   const sampleKeys = cellSets.hierarchy?.find(
     (rootNode) => (rootNode.key === 'sample'),
