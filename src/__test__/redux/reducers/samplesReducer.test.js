@@ -114,7 +114,7 @@ describe('samplesReducer', () => {
     const newState = samplesReducer(twoSamplesState, {
       type: SAMPLES_DELETE,
       payload: {
-        sampleUuid: sample2.uuid,
+        sampleUuids: [sample2.uuid],
       },
     });
 

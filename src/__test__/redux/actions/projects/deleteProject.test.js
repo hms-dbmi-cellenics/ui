@@ -68,7 +68,7 @@ describe('deleteProject action', () => {
   const initialStateMultipleProjects = {
     projects: {
       ...initialProjectState,
-      meta: { activeProject: mockProjectUuid1 },
+      meta: { activeProjectUuid: mockProjectUuid1 },
       ids: [mockProjectUuid1, mockProjectUuid2],
       [mockProjectUuid1]: mockProject,
       [mockProjectUuid2]: {
@@ -95,20 +95,16 @@ describe('deleteProject action', () => {
     const store = mockStore(initialStateMultipleSamples);
     await store.dispatch(deleteProject(mockProjectUuid1));
 
-    // Delete sample 1
+    // Delete samples 1 and 2
     const action1 = store.getActions()[0];
     expect(action1.type).toEqual(SAMPLES_DELETE);
 
-    // Delete sample 2
-    const action2 = store.getActions()[1];
-    expect(action2.type).toEqual(SAMPLES_DELETE);
-
     // Delete project
-    const action3 = store.getActions()[2];
+    const action3 = store.getActions()[1];
     expect(action3.type).toEqual(PROJECTS_DELETE);
   });
 
-  it('Switches to activeProject to another project if multiple project exists', async () => {
+  it('Switches to activeProjectUuid to another project if multiple project exists', async () => {
     const store = mockStore(initialStateMultipleProjects);
     await store.dispatch(deleteProject(mockProjectUuid1));
 

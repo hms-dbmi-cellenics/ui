@@ -37,7 +37,7 @@ describe('projectsReducer', () => {
     ...initialState,
     ids: [...initialState.ids, project1.uuid],
     meta: {
-      activeProject: project1.uuid,
+      activeProjectUuid: project1.uuid,
     },
     [project1.uuid]: project1,
   };
@@ -46,7 +46,7 @@ describe('projectsReducer', () => {
     ...oneProjectState,
     ids: [...oneProjectState.ids, project2.uuid],
     meta: {
-      activeProject: project2.uuid,
+      activeProjectUuid: project2.uuid,
     },
     [project2.uuid]: project2,
   };
@@ -67,7 +67,7 @@ describe('projectsReducer', () => {
     });
 
     expect(newState.ids).toEqual([project1.uuid]);
-    expect(newState.meta.activeProject).toEqual(project1.uuid);
+    expect(newState.meta.activeProjectUuid).toEqual(project1.uuid);
     expect(newState[project1.uuid]).toEqual(project1);
     expect(newState).toMatchSnapshot();
   });
@@ -81,7 +81,7 @@ describe('projectsReducer', () => {
     });
 
     expect(newState.ids).toEqual([project1.uuid, project2.uuid]);
-    expect(newState.meta.activeProject).toEqual(project2.uuid);
+    expect(newState.meta.activeProjectUuid).toEqual(project2.uuid);
     expect(newState[project1.uuid]).toEqual(project1);
     expect(newState[project2.uuid]).toEqual(project2);
     expect(newState).toMatchSnapshot();
@@ -97,7 +97,7 @@ describe('projectsReducer', () => {
     });
 
     expect(newState.ids).toEqual(oneProjectState.ids);
-    expect(newState.meta.activeProject).toEqual(oneProjectState.meta.activeProject);
+    expect(newState.meta.activeProjectUuid).toEqual(oneProjectState.meta.activeProjectUuid);
     expect(newState[project1.uuid]).toEqual(updatedProject1);
     expect(newState).toMatchSnapshot();
   });
@@ -111,7 +111,7 @@ describe('projectsReducer', () => {
     });
 
     expect(newState.ids).toEqual(twoProjectsState.ids);
-    expect(newState.meta.activeProject).toEqual(project2.uuid);
+    expect(newState.meta.activeProjectUuid).toEqual(project2.uuid);
     expect(newState).toMatchSnapshot();
   });
 

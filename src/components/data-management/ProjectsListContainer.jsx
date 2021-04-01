@@ -22,7 +22,7 @@ const ProjectsListContainer = (props) => {
 
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
-  const { activeProject : activeProjectUuid } = projects.meta;
+  const { activeProjectUuid } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(true);

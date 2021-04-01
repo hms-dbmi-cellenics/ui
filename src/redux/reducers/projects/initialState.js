@@ -12,7 +12,7 @@ const projectTemplate = {
 const initialState = {
   ids: [],
   meta: {
-    activeProject: null,
+    activeProjectUuid: null,
   },
 };
 

@@ -1,11 +1,11 @@
 import createSample from './createSample';
 import updateSample from './updateSample';
 import updateSampleFile from './updateSampleFile';
-import deleteSample from './deleteSample';
+import deleteSamples from './deleteSamples';
 
 export {
   createSample,
   updateSample,
   updateSampleFile,
-  deleteSample,
+  deleteSamples,
 };

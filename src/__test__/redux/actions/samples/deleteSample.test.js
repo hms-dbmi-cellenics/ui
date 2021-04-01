@@ -1,6 +1,6 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import deleteSample from '../../../../redux/actions/samples/deleteSample';
+import deleteSamples from '../../../../redux/actions/samples/deleteSamples';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 
@@ -42,7 +42,7 @@ describe('deleteSample action', () => {
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(deleteSample(mockSampleUuid));
+    await store.dispatch(deleteSamples(mockSampleUuid));
 
     // Create sample
     const action1 = store.getActions()[0];

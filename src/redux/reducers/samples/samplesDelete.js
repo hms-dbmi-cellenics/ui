@@ -1,16 +1,12 @@
 import _ from 'lodash';
 
 const samplesDelete = (state, action) => {
-  const { sampleUuid } = action.payload;
+  const { sampleUuids } = action.payload;
 
   let updatedObject = null;
 
-  if (!_.has(state, sampleUuid)) {
-    return state;
-  }
-
-  updatedObject = _.omit(state, sampleUuid);
-  updatedObject.ids = updatedObject.ids.filter((p) => p !== sampleUuid);
+  updatedObject = _.omit(state, sampleUuids);
+  updatedObject.ids = _.difference(state.ids, sampleUuids);
 
   return updatedObject;
 };

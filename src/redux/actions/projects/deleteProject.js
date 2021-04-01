@@ -11,19 +11,14 @@ const deleteProject = (
 ) => async (dispatch, getState) => {
   // Delete samples
   const { projects } = getState();
-  const { activeProject } = projects.meta;
-  const { samples } = projects[projectUuid];
+  const { activeProjectUuid } = projects.meta;
 
-  if (samples.length) {
-    samples.forEach((sampleUuid) => {
-      dispatch({
-        type: SAMPLES_DELETE,
-        payload: {
-          sampleUuid,
-        },
-      });
-    });
-  }
+  dispatch({
+    type: SAMPLES_DELETE,
+    payload: {
+      sampleUuids: projects[projectUuid].samples,
+    },
+  });
 
   dispatch({
     type: PROJECTS_DELETE,
@@ -31,7 +26,7 @@ const deleteProject = (
   });
 
   // If deleted project is the same as the active project, choose another project
-  if (projectUuid === activeProject) {
+  if (projectUuid === activeProjectUuid) {
     dispatch({
       type: PROJECTS_SET_ACTIVE,
       payload: { projectUuid: projects.ids[0] || null },

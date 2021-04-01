@@ -15,7 +15,7 @@ import FileUploadModal from './FileUploadModal';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import {
-  deleteSample, updateSample,
+  deleteSamples, updateSample,
 } from '../../redux/actions/samples';
 import { updateProject } from '../../redux/actions/projects';
 import processUpload from '../../utils/processUpload';
@@ -34,7 +34,7 @@ const ProjectDetails = ({ width, height }) => {
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
-  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProject) || false;
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
   const uploadFiles = (filesList, sampleType) => {
@@ -157,7 +157,7 @@ const ProjectDetails = ({ width, height }) => {
         deleteEnabled
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(el.uuid, { name }))}
-        onDelete={() => dispatch(deleteSample(el.uuid))}
+        onDelete={() => dispatch(deleteSamples(el.uuid))}
       />
     </Text>
   );
