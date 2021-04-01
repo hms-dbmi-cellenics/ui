@@ -13,13 +13,13 @@ const FeaturesVsUMIsScatterplot = (props) => {
   const [plotSpec, setPlotSpec] = useState(config);
 
   useEffect(() => {
-    if (config && plotData && plotData.length) {
+    if (config && plotData?.length) {
       setPlotSpec(generateSpec(config, plotData));
     }
   }, [config, plotData]);
 
   const render = () => {
-    if (!plotData || !plotData.length) {
+    if (!plotData?.length) {
       return (
         <PlatformError
           description='There is no data to display. Please run the filter again.'
@@ -30,7 +30,7 @@ const FeaturesVsUMIsScatterplot = (props) => {
     }
 
     return (
-      <center>
+      <center data-testid='vega-container'>
         <Vega spec={plotSpec} renderer='canvas' actions={actions} />
       </center>
     );

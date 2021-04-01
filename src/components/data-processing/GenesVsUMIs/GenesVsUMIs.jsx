@@ -149,12 +149,6 @@ GenesVsUMIs.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
-};
-
-GenesVsUMIs.propTypes = {
-  experimentId: PropTypes.string.isRequired,
-  sampleId: PropTypes.string.isRequired,
-  sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
 };
 

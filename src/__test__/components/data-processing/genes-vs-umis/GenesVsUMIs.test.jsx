@@ -1,14 +1,11 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import preloadAll from 'jest-next-dynamic';
-import Adapter from 'enzyme-adapter-react-16';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { Vega } from 'react-vega';
 
 import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/GenesVsUMIs';
-import CalculationConfig from '../../../../components/data-processing/GenesVsUMIs/CalculationConfig';
 import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
@@ -21,6 +18,7 @@ const sampleId = 'sample-WT';
 const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const experimentId = 'e1234';
 const filterName = 'numGenesVsNumUmis';
+const PLOTS_PER_SAMPLE = 1;
 
 const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
 const sample2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);
@@ -95,78 +93,46 @@ describe('GenesVsUMIs', () => {
     await preloadAll();
   });
 
-  beforeEach(async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-  });
-
-  configure({ adapter: new Adapter() });
-
-  it('renders correctly with no data', () => {
-    const store = mockStore(noData);
-
-    const component = mount(
+  const renderGeneVsUMIs = (store) => {
+    render(
       <Provider store={store}>
         <GenesVsUMIs
           onConfigChange={jest.fn()}
           experimentId={experimentId}
           sampleId={sampleId}
           sampleIds={sampleIds}
+          updateSettings={jest.fn()}
+          plotType='unused'
+          disabled={false}
         />
       </Provider>,
     );
+  };
 
-    const page = component.find(GenesVsUMIs).at(0);
-    const calculationConfig = page.find(CalculationConfig);
+  it('renders correctly with no data', () => {
+    const store = mockStore(noData);
+    renderGeneVsUMIs(store);
 
-    // There is a config element
-    expect(calculationConfig.length).toEqual(1);
-
-    const plots = page.find(Vega);
-
-    // No plots when there are no data
-    expect(plots.length).toEqual(0);
+    // Quering by text because antd does not create appropiate roles
+    // Quering by test id because canvases are note created with tests
+    expect(screen.queryByText('Filtering Settings')).toBeInTheDocument();
+    expect(screen.queryByText(/no data to display/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('vega-container')).not.toBeInTheDocument();
   });
 
-  it('Shows plot with data', async () => {
+  it('Shows plot with data', () => {
     const store = mockStore({
       experimentSettings: {
         ...initialExperimentState,
       },
       ...withData,
     });
+    renderGeneVsUMIs(store);
 
-    const component = mount(
-      <Provider store={store}>
-        <GenesVsUMIs
-          onConfigChange={jest.fn()}
-          experimentId={experimentId}
-          sampleId={sampleId}
-          sampleIds={sampleIds}
-        />
-      </Provider>,
-    );
-
-    const page = component.find(GenesVsUMIs).at(0);
-    const calculationConfig = page.find(CalculationConfig);
-
-    // There is a config element
-    expect(calculationConfig.length).toEqual(1);
-
-    const plots = page.find(Vega);
-
-    // only 1 main scatterplot
-    expect(plots.length).toEqual(1);
+    // Quering by text because antd does not create appropiate roles
+    // Quering by test id because canvases are note created with tests
+    expect(screen.queryByText('Filtering Settings')).toBeInTheDocument();
+    expect(screen.queryAllByTestId('vega-container').length).toEqual(PLOTS_PER_SAMPLE);
+    expect(screen.queryByText(/no data to display/i)).not.toBeInTheDocument();
   });
 });
