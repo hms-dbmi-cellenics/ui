@@ -5,6 +5,11 @@ const generateSpec = (config, plotData, plotDataCategoryName) => {
   const colorFieldName = plotData[0]?.color ? 'color' : 'col';
 
   if (config?.legend.enabled) {
+    const positionIsRight = config.legend.position === 'right';
+
+    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+    const labelLimit = positionIsRight ? 0 : 85;
+
     legend = [
       {
         fill: 'cellSetColors',
@@ -29,6 +34,8 @@ const generateSpec = (config, plotData, plotDataCategoryName) => {
         direction: 'horizontal',
         labelFont: { value: config?.fontStyle.font },
         titleFont: { value: config?.fontStyle.font },
+        columns: legendColumns,
+        labelLimit,
       },
     ];
   }
@@ -189,8 +196,7 @@ const filterCells = (cellSets, selectedCellSet) => {
 
     return cells.map((cellId) => ({
       cellId,
-      sample: key,
-      name: cellSets.properties[key].name,
+      sample: cellSets.properties[key].name,
       color: cellSets.properties[key].color,
     }));
   });

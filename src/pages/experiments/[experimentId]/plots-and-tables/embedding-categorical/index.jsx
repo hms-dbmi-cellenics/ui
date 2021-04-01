@@ -107,6 +107,10 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
         },
       }],
     },
+    {
+      panelTitle: 'Labels',
+      controls: ['labels'],
+    },
   ];
 
   const renderExtraPanels = () => (
