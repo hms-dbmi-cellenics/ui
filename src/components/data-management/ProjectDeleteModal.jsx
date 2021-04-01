@@ -4,11 +4,11 @@ import {
   Modal, Button, Input, Space, Typography, Form, Alert,
 } from 'antd';
 
-const { Text, Paragraph, Title } = Typography;
+const { Text, Paragraph } = Typography;
 
 const ProjectDeleteModal = (props) => {
   const {
-    visible, onDelete, onCancel,
+    visible, onDelete, onCancel, projectName,
   } = props;
 
   const [inputProjectName, setInputProjectName] = useState('');
@@ -35,9 +35,9 @@ const ProjectDeleteModal = (props) => {
           <Button
             type='danger'
             key='create'
-            // disabled={!isValid}
+            disabled={!isValid}
             onClick={() => {
-              onDelete(inputProjectName);
+              onDelete();
               setInputProjectName('');
               setIsValid(false);
             }}
@@ -61,9 +61,7 @@ const ProjectDeleteModal = (props) => {
             {' '}
             This will delete the project
             {' '}
-            <Text strong>
-              Sample project
-            </Text>
+            <Text strong>{projectName}</Text>
             {', '}
             all of its data sets, metadata,
             analyses, and all other information
@@ -84,9 +82,10 @@ const ProjectDeleteModal = (props) => {
             >
               <Input
                 onChange={(e) => {
+                  setIsValid(projectName === e.target.value);
                   setInputProjectName(e.target.value);
                 }}
-                placeholder='Ex.: Lung gamma delta T cells'
+                placeholder={projectName}
                 value={inputProjectName}
               />
             </Form.Item>
@@ -103,12 +102,14 @@ ProjectDeleteModal.propTypes = {
   visible: PropTypes.bool,
   onDelete: PropTypes.func,
   onCancel: PropTypes.func,
+  projectName: PropTypes.string,
 };
 
 ProjectDeleteModal.defaultProps = {
   onDelete: () => null,
   onCancel: () => null,
   visible: false,
+  projectName: null,
 };
 
 export default ProjectDeleteModal;
