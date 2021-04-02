@@ -43,10 +43,16 @@ const GenesVsUMIsConfig = (props) => {
 };
 
 GenesVsUMIsConfig.propTypes = {
-  updateSettings: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
-  plotType: PropTypes.string.isRequired,
-  disabled: PropTypes.bool.isRequired,
+  plotType: PropTypes.string,
+  updateSettings: PropTypes.func,
+  config: PropTypes.object,
+  disabled: PropTypes.bool,
+};
+GenesVsUMIsConfig.defaultProps = {
+  plotType: 'overriden by CalculationConfigContainer, like the rest of props here',
+  updateSettings: () => { },
+  config: {},
+  disabled: false,
 };
 
 export default GenesVsUMIsConfig;
