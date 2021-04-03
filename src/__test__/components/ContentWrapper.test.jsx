@@ -61,7 +61,7 @@ describe('ContentWrapper', () => {
   it('renders correctly', () => {
     const wrapper = mount(
       <Provider store={store}>
-        <ContentWrapper>
+        <ContentWrapper experimentId='1234'>
           <></>
         </ContentWrapper>
       </Provider>,
