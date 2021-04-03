@@ -249,7 +249,7 @@ const ContentWrapper = (props) => {
     <Layout style={{ minHeight: '100vh' }}>
       <NotificationManager />
       <Sider
-        width={220}
+        width={210}
         theme='dark'
         mode='inline'
         collapsible
@@ -300,29 +300,30 @@ const ContentWrapper = (props) => {
           {
             !collapsed && (
               <Footer style={{
-                textAlign: 'center',
                 backgroundColor: 'inherit',
                 marginTop: 'auto',
-                paddingLeft: 16,
-                paddingRight: 16,
+                paddingLeft: 24,
+                paddingRight: 24,
               }}
               >
+                <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
+                  <a href='//www.biomage.net/our-team'>Team</a>
+                &nbsp;&middot;&nbsp;
+                  <a href='//www.biomage.net/careers'>Careers</a>
+                &nbsp;&middot;&nbsp;
+                  <a href='mailto:hello@biomage.net'>Contact</a>
+                </Paragraph>
+
                 <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
                   &copy;
                   {' '}
                   {new Date().getFullYear()}
                   {' '}
-                  Biomage Ltd.
-                  {' & '}
-                  affiliates and contributors.
+                  Biomage Ltd,
+                  <br />
+                  affiliates &amp; contributors.
                 </Paragraph>
-                <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
-                  <a href='mailto:hello@biomage.net'>Contact us</a>
-                &nbsp;&middot;&nbsp;
-                  <a href='//www.biomage.net/our-team'>Our team</a>
-                &nbsp;&middot;&nbsp;
-                  <a href='//www.biomage.net/'>About</a>
-                </Paragraph>
+
               </Footer>
             )
           }
