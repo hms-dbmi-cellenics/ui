@@ -536,7 +536,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <PlatformError
-                      description={'Details about this step are not available.'}
+                      description={'We don\'t have anything for this step.'}
+                      reason={'The last run ended before this step could be finished.'}
                       onClick={() => { onPipelineRun(steps[stepIdx].key) }}
                     />
                   </div>
