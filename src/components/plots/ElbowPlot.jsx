@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
-import PlatformError from '../PlatformError';
+import EmptyPlot from './helpers/EmptyPlot';
 
 const ElbowPlot = (props) => {
   const {
@@ -132,11 +132,7 @@ const ElbowPlot = (props) => {
 
   if (!plotSpec) {
     return (
-      <PlatformError
-        description='There is no data to display. Please run the filter again.'
-        actionable={false}
-        reason={' '}
-      />
+      <EmptyPlot mini={config.miniPlot} />
     );
   }
 

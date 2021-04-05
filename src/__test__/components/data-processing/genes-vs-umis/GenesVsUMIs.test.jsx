@@ -116,7 +116,7 @@ describe('GenesVsUMIs', () => {
     // Quering by text because antd does not create appropiate roles
     // Quering by test id because canvases are note created with tests
     expect(screen.queryByText('Filtering Settings')).toBeInTheDocument();
-    expect(screen.queryByText(/no data to display/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Results will appear here/i)).toBeInTheDocument();
     expect(screen.queryByTestId('vega-container')).not.toBeInTheDocument();
   });
 
@@ -133,6 +133,6 @@ describe('GenesVsUMIs', () => {
     // Quering by test id because canvases are note created with tests
     expect(screen.queryByText('Filtering Settings')).toBeInTheDocument();
     expect(screen.queryAllByTestId('vega-container').length).toEqual(PLOTS_PER_SAMPLE);
-    expect(screen.queryByText(/no data to display/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Results will appear here/i)).not.toBeInTheDocument();
   });
 });
