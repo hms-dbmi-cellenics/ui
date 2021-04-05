@@ -65,8 +65,6 @@ Object {
     "experimentId": "1234",
     "genes": Array [
       "geneA",
-      "b",
-      "c",
     ],
   },
   "type": "genes/expressionLoaded",

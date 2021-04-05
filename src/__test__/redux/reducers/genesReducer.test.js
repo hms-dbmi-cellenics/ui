@@ -95,7 +95,7 @@ describe('genesReducer', () => {
       },
     });
 
-    expect(newState.expression.loading).toEqual(['d', 'e']);
+    expect(newState.expression.loading).toEqual(['D', 'E']);
     expect(newState).toMatchSnapshot();
   });
 

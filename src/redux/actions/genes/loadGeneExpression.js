@@ -16,7 +16,9 @@ const loadGeneExpression = (
   if (loading.length > 0) {
     return null;
   }
+  const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
 
+  const upperCaseGenes = new Set(upperCaseArray(genes));
   // Dispatch loading state.
   dispatch({
     type: GENES_EXPRESSION_LOADING,
@@ -29,12 +31,19 @@ const loadGeneExpression = (
 
   // Check which of the genes we actually need to load. Only do this if
   // we are not forced to reload all of the data.
+
   let genesToFetch = [...genes];
-  const genesAlreadyLoaded = new Set(Object.keys(geneData));
+  const genesAlreadyLoaded = Object.keys(geneData);
 
   if (!forceReloadAll) {
-    genesToFetch = genesToFetch.filter((gene) => !genesAlreadyLoaded.has(gene));
+    genesToFetch = genesToFetch.filter(
+      (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
+    );
   }
+
+  const displayedGenes = genesAlreadyLoaded.filter(
+    (gene) => upperCaseGenes.has(gene.toUpperCase()),
+  );
 
   if (genesToFetch.length === 0) {
     return dispatch({
@@ -42,7 +51,7 @@ const loadGeneExpression = (
       payload: {
         experimentId,
         componentUuid,
-        genes,
+        genes: displayedGenes,
       },
     });
   }
@@ -54,9 +63,6 @@ const loadGeneExpression = (
 
   try {
     const data = await fetchCachedWork(experimentId, 30, body);
-    if (Object.keys(data).length === 0) {
-      throw Error('There is no information available for selected genes.');
-    }
     if (data[genesToFetch[0]]?.error) {
       dispatch(pushNotificationMessage('error', data[genesToFetch[0]].message, 3));
       dispatch({
@@ -68,13 +74,7 @@ const loadGeneExpression = (
         },
       });
     } else {
-      let fetchedGenes = _.cloneDeep(genes);
-      const index = genes.indexOf(genesToFetch[0]);
-      // eslint-disable-next-line prefer-destructuring
-      fetchedGenes[index] = Object.keys(data)[0];
-
-      // making sure there are no repeating genes in the selectedGenes
-      fetchedGenes = Array.from(new Set(fetchedGenes));
+      const fetchedGenes = _.concat(displayedGenes, Object.keys(data));
 
       dispatch({
         type: GENES_EXPRESSION_LOADED,
