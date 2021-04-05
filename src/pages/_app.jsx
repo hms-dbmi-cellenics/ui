@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
+import { DefaultSeo } from 'next-seo';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
@@ -20,9 +21,11 @@ Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-const WrappedApp = ({ Component, pageProps }) => {
+const WrappedApp = ({ Component, pageProps, req }) => {
   const router = useRouter();
   const [experimentId, setExperimentId] = useState(undefined);
+
+  console.log(req, pageProps);
 
   // Only hydrate pages when experiment ID is loaded.
   useEffect(() => {
@@ -43,7 +46,9 @@ const WrappedApp = ({ Component, pageProps }) => {
   const mainContent = () => {
     // If the page is statically rendered (on server), show a loading context.
     if (!isBrowser) {
-      return (<PreloadContent />);
+      return (
+        <PreloadContent />
+      );
     }
 
     // If this is a not found error, show it without the navigation bar.
@@ -93,10 +98,21 @@ const WrappedApp = ({ Component, pageProps }) => {
 
   return (
     <>
-      <Head>
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <title>Cellscope</title>
-      </Head>
+      <DefaultSeo
+        titleTemplate='%s &middot; Cellscope'
+        defaultTitle='Cellscope'
+        description='Cellscope by Biomage turns your single cell datasets into meaningful biology. It’s free for academic researchers, and you get world-class quality analytical insight: simple data upload, data integration for batch effect correction, beautiful publication-quality figures, and much more.'
+        twitter={{
+          site: '@BiomageLtd',
+          cardType: 'summary',
+        }}
+        openGraph={{
+          type: 'website',
+          url: window.location.href,
+          locale: 'en_US',
+          site_name: 'Biomage Cellscope',
+        }}
+      />
       {mainContent(Component, pageProps)}
     </>
   );

@@ -3,6 +3,7 @@ import {
   PageHeader, Space,
 } from 'antd';
 import PropTypes from 'prop-types';
+import { NextSeo } from 'next-seo';
 
 import FeedbackButton from './FeedbackButton';
 import itemRender from '../utils/renderBreadcrumbLinks';
@@ -49,8 +50,16 @@ const Header = (props) => {
       );
   };
 
+  const truncateText = (text) => (
+    (text && text.length > 28) ? `${text.substr(0, 27)}…` : text
+  );
+
   return (
     <>
+      <NextSeo
+        title={experimentData ? `${title} · ${truncateText(experimentData?.experimentName)}` : title}
+      />
+
       <PageHeader
         title={title}
         style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
