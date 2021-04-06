@@ -9,6 +9,12 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     return null;
   }
 
+  const { startDate: lastRun } = getState().experimentSettings.pipelineStatus.status?.pipeline;
+
+  if (!lastRun) {
+    return;
+  }
+
   // Does not load anything if experiment settings is not loaded
   const embeddingState = getState()
     .experimentSettings
@@ -34,6 +40,7 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     name: 'GetEmbedding',
     type: embeddingType,
     config: methodSettings[embeddingType],
+    lastRun,
   };
 
   try {

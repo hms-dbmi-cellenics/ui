@@ -38,6 +38,7 @@ import SingleComponentMultipleDataContainer from '../../../../components/SingleC
 import { loadProcessingSettings, updateProcessingSettings, saveProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { loadSamples } from '../../../../redux/actions/samples'
+import { resetEmbedding } from '../../../../redux/actions/embedding'
 import { runPipeline } from '../../../../redux/actions/pipeline';
 import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
 
@@ -296,6 +297,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = (stepKey) => {
     setChangesOutstanding(false);
+
+    // Reset cell data
+    dispatch(resetEmbedding())
     dispatch((runPipeline(experimentId, stepKey)))
   }
 
