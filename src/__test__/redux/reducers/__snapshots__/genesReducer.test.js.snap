@@ -102,12 +102,16 @@ Object {
     },
     "error": false,
     "loading": Array [
-      "d",
-      "e",
+      "D",
+      "E",
     ],
     "views": Object {
       "asd": Object {
-        "data": Array [],
+        "data": Array [
+          "a",
+          "b",
+          "c",
+        ],
         "error": false,
         "fetching": false,
       },
@@ -243,19 +247,12 @@ Object {
     ],
     "views": Object {
       "abc": Object {
-        "data": Array [
-          "a",
-          "b",
-        ],
+        "data": Array [],
         "error": false,
         "fetching": true,
       },
       "def": Object {
-        "data": Array [
-          "a",
-          "b",
-          "c",
-        ],
+        "data": Array [],
         "error": false,
         "fetching": true,
       },
@@ -418,7 +415,7 @@ Object {
     "loading": Array [],
     "views": Object {
       "abc": Object {
-        "data": Array [],
+        "data": undefined,
         "error": false,
         "fetching": false,
       },
@@ -446,11 +443,7 @@ Object {
     ],
     "views": Object {
       "abc": Object {
-        "data": Array [
-          "A",
-          "B",
-          "C",
-        ],
+        "data": Array [],
         "error": false,
         "fetching": true,
       },

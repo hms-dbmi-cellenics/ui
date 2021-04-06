@@ -16,6 +16,7 @@ import PlatformError from '../../../../../components/PlatformError';
 import Loader from '../../../../../components/Loader';
 import populateHeatmapData from '../../../../../components/plots/helpers/populateHeatmapData';
 import HeatmapControls from '../../../../../components/plots/styling/heatmap/HeatmapControls';
+import NotificationManager from '../../../../../components/notification/NotificationManager';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -47,6 +48,7 @@ const HeatmapPlot = ({ experimentId }) => {
     if (!config || _.isEmpty(expressionData)) {
       return;
     }
+
     if (!_.isEqual(selectedGenes, config.selectedGenes) && displaySavedGenes.current) {
       onGeneEnter(config.selectedGenes);
       displaySavedGenes.current = false;
@@ -54,7 +56,17 @@ const HeatmapPlot = ({ experimentId }) => {
   }, [config]);
 
   useEffect(() => {
-    if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes)) {
+    if (!config || _.isEmpty(expressionData)) {
+      return;
+    }
+
+    if (!_.isEqual(selectedGenes, config.selectedGenes) && !_.isEmpty(selectedGenes)) {
+      updatePlotWithChanges({ selectedGenes });
+    }
+  }, [selectedGenes]);
+
+  useEffect(() => {
+    if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes) || !loading) {
       return;
     }
 
@@ -63,33 +75,39 @@ const HeatmapPlot = ({ experimentId }) => {
 
     const newVegaSpec = {
       ...spec,
+      axes: [...spec.axes, ...displayLabels()],
       data: spec.data.map((datum) => ({
         ...datum,
         values: data[datum.name],
       })),
     };
     setVegaSpec(newVegaSpec);
-  }, [expressionData, selectedGenes, config, cellSets]);
+  }, [expressionData, config, cellSets]);
+
+  const displayLabels = () => {
+    // if there are more than 53 genes - do not display the labels axe
+    const labels = [
+      {
+        domain: false,
+        orient: 'left',
+        scale: 'y',
+      },
+    ];
+    if (selectedGenes.length <= 53) {
+      return labels;
+    }
+    return [];
+  };
 
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
   };
 
-  const onGeneEnter = (value) => {
-    const updates = {};
-
-    if (selectedGenes.length >= 53 || value.length === 0) {
-      updates.labelColour = 'transparent';
-    } else {
-      updates.labelColour = 'black';
-    }
-
-    updates.selectedGenes = [...value];
+  const onGeneEnter = (genes) => {
     // updating the selected genes in the config too so they are saved in dynamodb
 
-    updatePlotWithChanges(updates);
-    dispatch(loadGeneExpression(experimentId, updates.selectedGenes, plotUuid));
+    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading) {
@@ -159,7 +177,7 @@ const HeatmapPlot = ({ experimentId }) => {
 
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-
+      <NotificationManager />
       <Header plotUuid={plotUuid} experimentId={experimentId} finalRoute={route} />
       <Row gutter={16}>
         <Col span={16}>
