@@ -2,7 +2,10 @@ import embeddingsReducer from '../../../redux/reducers/embeddings';
 import initialState from '../../../redux/reducers/embeddings/initialState';
 
 import {
-  EMBEDDINGS_ERROR, EMBEDDINGS_LOADED, EMBEDDINGS_LOADING,
+  EMBEDDINGS_ERROR,
+  EMBEDDINGS_LOADED,
+  EMBEDDINGS_LOADING,
+  EMBEDDINGS_RESET,
 } from '../../../redux/actionTypes/embeddings';
 
 const experimentId = 'asdsa';
@@ -96,6 +99,14 @@ describe('embeddingsReducer', () => {
     });
 
     expect(newState[embeddingType].error).toEqual(false);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Resets embedding correctly', () => {
+    const newState = embeddingsReducer(initialState, {
+      type: EMBEDDINGS_RESET,
+    });
+
     expect(newState).toMatchSnapshot();
   });
 });
