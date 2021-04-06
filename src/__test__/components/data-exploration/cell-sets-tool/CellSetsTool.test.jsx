@@ -316,4 +316,22 @@ describe('CellSetsTool', () => {
     tabs.props().onChange('cellSets');
     expect(text.text()).toEqual('3 cells selected');
   });
+  it('Scratchpad cluster deletion works ', () => {
+    const store = mockStore(storeState);
+    const component = mount(
+      <Provider store={store}>
+        <CellSetsTool
+          experimentId='asd'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
+    waitForComponentToPaint(component);
+    const deleteButton = component.find(DeleteOutlined);
+    expect(deleteButton.length).toEqual(1);
+    expect(store.getActions().length).toEqual(0);
+    deleteButton.simulate('click');
+    expect(store.getActions().length).toEqual(2);
+  });
 });
