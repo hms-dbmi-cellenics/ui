@@ -7,14 +7,14 @@ import NProgress from 'nprogress';
 import useSWR from 'swr';
 
 import AWS from 'aws-sdk';
-import Amplify from 'aws-amplify';
+import Amplify, { Storage } from 'aws-amplify';
 import { Credentials } from '@aws-amplify/core';
 
 import ContentWrapper from '../components/ContentWrapper';
 import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
 import Error from './_error';
-import isBrowser from '../utils/environment';
+import Environment, { isBrowser, getCurrentEnvironment } from '../utils/Environment';
 import wrapper from '../redux/store';
 import getApiEndpoint from '../utils/apiEndpoint';
 import getFromApiExpectOK from '../utils/getFromApiExpectOK';
@@ -26,28 +26,37 @@ Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 const setupAmplify = () => {
-  const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+  // These will be replaced when we can actually make this work in prod/staging
+  const identityPoolIds = {
+    [Environment.PRODUCTION]: 'prodPlaceholderIdentityPoolId',
+    [Environment.STAGING]: 'stagingPlaceholderIdentityPoolId',
+    [Environment.DEVELOPMENT]: 'fake',
+  };
+
+  const currentEnvironment = getCurrentEnvironment();
+
+  const bucketName = `biomage-originals-${currentEnvironment}`;
 
   Amplify.configure({
     Storage: {
       AWSS3: {
-        bucket: 'biomage-source-development', // REQUIRED -  Amazon S3 bucket
+        bucket: bucketName, // REQUIRED -  Amazon S3 bucket
         region: 'eu-west-1', // OPTIONAL -  Amazon service region
-        dangerouslyConnectToHttpEndpointForTesting: isDev,
-        identityId: 'fake',
+        dangerouslyConnectToHttpEndpointForTesting: currentEnvironment === Environment.DEVELOPMENT,
+        identityId: identityPoolIds[currentEnvironment],
       },
     },
   });
 
-  // // Configure Amplify to not use prefix when uploading to public folder, instead of '/'
-  // Storage.configure({
-  //   customPrefix: {
-  //     public: '',
-  //   },
-  // });
+  // Configure Amplify to not use prefix when uploading to public folder, instead of '/'
+  Storage.configure({
+    customPrefix: {
+      public: '',
+    },
+  });
 
-  // Mock for localhost
-  if (isDev) {
+  // Mock credentials so that it works with inframock
+  if (currentEnvironment === Environment.DEVELOPMENT) {
     Credentials.get = async () => (
       new AWS.Credentials({
         accessKeyId: 'asd',
@@ -64,8 +73,6 @@ const setupAmplify = () => {
   }
 };
 
-setupAmplify();
-
 const WrappedApp = ({ Component, pageProps }) => {
   const router = useRouter();
   const [experimentId, setExperimentId] = useState(undefined);
@@ -79,6 +86,8 @@ const WrappedApp = ({ Component, pageProps }) => {
     if (router.route.includes('experimentId')) {
       setExperimentId(router.query.experimentId);
     }
+
+    setupAmplify();
   }, [router.query.experimentId]);
 
   const { data: experimentData, error: experimentError } = useSWR(

@@ -2,7 +2,7 @@
 import hash from 'object-hash';
 import cache from './cache';
 import sendWork from './sendWork';
-import isBrowser from './environment';
+import { isBrowser } from './Environment';
 import { calculateZScore } from './postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
