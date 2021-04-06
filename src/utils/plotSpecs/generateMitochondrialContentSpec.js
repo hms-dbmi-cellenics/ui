@@ -2,9 +2,6 @@
 const generateSpec = (config, plotData) => {
   let legend = [];
 
-  console.log('plotDataDebug');
-  console.log(plotData);
-
   if (config.legend.enabled) {
     legend = [
       {

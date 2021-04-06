@@ -19,6 +19,8 @@ import {
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 
+import UploadStatus from '../../utils/UploadStatus';
+
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
@@ -95,9 +97,8 @@ const NewProjectModal = (props) => {
 
       newList.push({
         name: fileName,
-        size: file.size,
-        mime: file.type,
-        file,
+        bundle: file,
+        status: UploadStatus.UPLOADING,
         valid: isValidType && isValidFilename,
         errors: error.join(', '),
       });

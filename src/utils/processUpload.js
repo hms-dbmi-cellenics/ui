@@ -1,42 +1,75 @@
+/* eslint-disable no-param-reassign */
 import { Storage } from 'aws-amplify';
 import pako from 'pako';
 import _ from 'lodash';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
+import UploadStatus from './UploadStatus';
 
-const loadAndCompressIfNecessary = async (fileName, file, onLoaded) => {
-  const inGzipFormat = file.mime === 'application/gzip';
+const loadAndCompressIfNecessary = async (file, onLoaded, onError) => {
+  const inGzipFormat = file.bundle.mime === 'application/gzip';
 
   const reader = new FileReader();
-  reader.onabort = () => console.log('file reading was aborted');
-  reader.onerror = () => console.log('file reading has failed');
+  reader.onabort = () => onError();
+  reader.onerror = () => onError();
   reader.onload = () => {
     const loadedFile = reader.result;
 
     if (inGzipFormat) {
-      onLoaded(loadedFile, fileName);
+      onLoaded(loadedFile);
     } else {
       const compressed = pako.gzip(loadedFile, { to: 'string' });
-      onLoaded(compressed, `${fileName}.gz`);
+      onLoaded(compressed);
     }
   };
 
-  reader.readAsArrayBuffer(file.file);
+  reader.readAsArrayBuffer(file.bundle);
 };
 
-const compressAndUpload = async (sample, activeProjectUuid) => {
-  Object.entries(sample.files).map(async ([fileName, file]) => {
+const compressAndUpload = async (sample, activeProjectUuid, dispatch) => {
+  const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
+    const uncompressed = file.bundle.type !== 'application/gzip';
+
+    const newFileName = uncompressed ? `${fileName}.gz` : fileName;
+    const newFile = {
+      ...file,
+      name: newFileName,
+    };
+
+    result[newFileName] = newFile;
+
+    return result;
+  }, {});
+
+  Object.entries(updatedSampleFiles).map(async ([fileName, file]) => {
     loadAndCompressIfNecessary(
-      fileName,
       file,
-      async (loadedFile, updatedFileName) => {
-        const bucketKey = `${activeProjectUuid}/${sample.uuid}/${updatedFileName}`;
+      async (loadedFile) => {
+        const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
 
         return Storage.put(bucketKey, loadedFile)
-          .then(() => { })
-          .catch((err) => console.log(err));
+          .then(() => {
+            dispatch(updateSampleFile(sample.uuid, {
+              ...file,
+              status: UploadStatus.UPLOADED,
+            }));
+          })
+          .catch(() => {
+            dispatch(updateSampleFile(sample.uuid, {
+              ...file,
+              status: UploadStatus.UPLOAD_ERROR,
+            }));
+          });
+      },
+      async () => {
+        dispatch(updateSampleFile(sample.uuid, {
+          ...file,
+          status: UploadStatus.UPLOAD_ERROR,
+        }));
       },
     );
   });
+
+  return updatedSampleFiles;
 };
 
 const processUpload = (filesList, sampleType, samples, activeProjectUuid, dispatch) => {
@@ -45,6 +78,10 @@ const processUpload = (filesList, sampleType, samples, activeProjectUuid, dispat
 
     const sampleName = pathToArray[0];
     const fileName = _.last(pathToArray);
+
+    // Update the file name so that instead of being saved as
+    // e.g. WT13/matrix.tsv.gz, we save it as matrix.tsv.gz
+    file.name = fileName;
 
     const sampleUuid = Object.values(samples).filter(
       (s) => s.name === sampleName
@@ -67,11 +104,10 @@ const processUpload = (filesList, sampleType, samples, activeProjectUuid, dispat
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
     // Create sample if not exists
     if (!sample.uuid) {
-      // eslint-disable-next-line no-param-reassign
       sample.uuid = await dispatch(createSample(activeProjectUuid, name, sampleType));
     }
 
-    compressAndUpload(sample, activeProjectUuid);
+    sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
 
     Object.values(sample.files).forEach((file) => {
       dispatch(updateSampleFile(sample.uuid, {
