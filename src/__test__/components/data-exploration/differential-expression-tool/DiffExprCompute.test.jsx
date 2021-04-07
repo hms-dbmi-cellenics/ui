@@ -14,7 +14,7 @@ import {
 } from '../../../../redux/actionTypes/differentialExpression';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/environment', () => false);
+jest.mock('../../../../utils/Environment', () => false);
 
 const { Item } = Form;
 
