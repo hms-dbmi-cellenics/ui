@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Modal, Button, Input, Space, Typography, Form,
 } from 'antd';
+import { useSelector } from 'react-redux';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -12,13 +13,22 @@ const NewProjectModal = (props) => {
     visible, onCreate, onCancel, firstTimeFlow,
   } = props;
 
+  const projects = useSelector((state) => state.projects);
+  const { ids } = projects;
+  const [projectNames, setProjectNames] = useState(new Set());
+
+  useEffect(() => {
+    setProjectNames(new Set(ids.map((id) => projects[id].name)));
+  }, [ids]);
+
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isValid, setIsValid] = useState(false);
 
   const validateProjectName = (input) => input.length >= 8
     && input.match(/([a-zA-Z\d]{2,}){1,}/gm)
-    && input.match(/^[a-zA-Z\s\d-_]{8,}$/gm);
+    && input.match(/^[a-zA-Z\s\d-_]{8,}$/gm)
+    && !projectNames.has(input);
 
   const renderHelpText = () => {
     if (projectName.length === 0) {
@@ -27,6 +37,10 @@ const NewProjectModal = (props) => {
 
     if (projectName.length < 8) {
       return 'Your project name must be at least 8 characters';
+    }
+
+    if (projectNames.has(projectName)) {
+      return 'A project with this name exists, please user another name';
     }
 
     if (!isValid) {
