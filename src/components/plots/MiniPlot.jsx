@@ -32,6 +32,8 @@ const getMiniaturizedConfig = (config) => {
 
   if (miniPlotConfig.signals) { miniPlotConfig.signals[0].bind = undefined; }
 
+  miniPlotConfig.miniPlot = true;
+
   return miniPlotConfig;
 };
 

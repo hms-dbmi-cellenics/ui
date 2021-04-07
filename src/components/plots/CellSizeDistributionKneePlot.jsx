@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import PlatformError from '../PlatformError';
+import EmptyPlot from './helpers/EmptyPlot';
 import generateSpec from '../../utils/plotSpecs/generateCellSizeDistributionKneePlot';
 
 const CellSizeDistributionKneePlot = (props) => {
@@ -21,11 +21,7 @@ const CellSizeDistributionKneePlot = (props) => {
   const render = () => {
     if (!plotData.length) {
       return (
-        <PlatformError
-          description='There is no data to display. Please run the filter again.'
-          actionable={false}
-          reason={' '}
-        />
+        <EmptyPlot mini={config.miniPlot} />
       );
     }
 
