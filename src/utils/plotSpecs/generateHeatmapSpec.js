@@ -193,11 +193,6 @@ const generateSpec = (config, groupName) => {
 
     axes: [
       {
-        domain: false,
-        orient: 'left',
-        scale: 'y',
-      },
-      {
         orient: 'left',
         scale: 'yTrack',
         domain: false,

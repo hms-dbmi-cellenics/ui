@@ -135,7 +135,7 @@ const WrappedApp = ({ Component, pageProps }) => {
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <ContentWrapper>
+      <ContentWrapper experimentId={experimentId} experimentData={experimentData}>
         <Component
           experimentId={experimentId}
           experimentData={experimentData}

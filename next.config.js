@@ -218,6 +218,16 @@ module.exports = withBundleAnalyzer(
               destination: '/experiments/e52b39624588791a7889e39c617f669e/data-exploration', // pragma: allowlist secret
               permanent: false,
             },
+            {
+              source: '/experiments',
+              destination: '/data-management',
+              permanent: false,
+            },
+            {
+              source: '/experiments/:experimentId',
+              destination: '/experiments/:experimentId/data-exploration',
+              permanent: false,
+            },
           ];
         },
       }),

@@ -12,6 +12,7 @@ export default {
     },
     cellSizeDistribution: {
       enabled: true,
+      auto: true,
       filterSettings: {
         minCellSize: 10800,
         binStep: 200,
@@ -19,6 +20,7 @@ export default {
     },
     mitochondrialContent: {
       enabled: true,
+      auto: true,
       filterSettings: {
         method: 'absolute_threshold',
         methodSettings: {
@@ -50,6 +52,7 @@ export default {
     },
     doubletScores: {
       enabled: true,
+      auto: true,
       filterSettings: {
         probabilityThreshold: 0.2,
         binStep: 0.05,

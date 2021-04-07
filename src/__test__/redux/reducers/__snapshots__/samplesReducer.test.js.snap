@@ -19,6 +19,10 @@ Object {
     "asd123",
     "qwe234",
   ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+  },
   "qwe234": Object {
     "complete": false,
     "createdDate": "2021-01-02T14:48:00.000Z",
@@ -31,6 +35,31 @@ Object {
     "species": null,
     "type": null,
     "uuid": "qwe234",
+  },
+}
+`;
+
+exports[`samplesReducer Delete samples correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
   },
 }
 `;
@@ -53,5 +82,71 @@ Object {
   "ids": Array [
     "asd123",
   ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+  },
+}
+`;
+
+exports[`samplesReducer Updates a sample correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "name": "updated name",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+  },
+}
+`;
+
+exports[`samplesReducer Updates sample files correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [
+      "features.tsv",
+    ],
+    "files": Object {
+      "features.tsv": Object {
+        "error": false,
+        "mime": "",
+        "name": "features.tsv",
+        "objectKey": "",
+        "path": "",
+        "size": 0,
+        "success": false,
+      },
+    },
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+  },
 }
 `;

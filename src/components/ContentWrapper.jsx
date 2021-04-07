@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Layout, Menu, Typography,
+  Layout, Menu, Typography, Space, Tooltip,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -26,16 +26,17 @@ import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
 
 const { Sider, Footer } = Layout;
-const { Paragraph } = Typography;
+const { SubMenu } = Menu;
+
+const { Paragraph, Text } = Typography;
 
 const ContentWrapper = (props) => {
   const dispatch = useDispatch();
 
-  const [collapsed, setCollapsed] = useState(true);
-  const { children } = props;
+  const [collapsed, setCollapsed] = useState(false);
+  const { experimentId, experimentData, children } = props;
 
   const router = useRouter();
-  const { experimentId } = router?.query || {};
   const route = router?.route || '';
 
   const {
@@ -49,8 +50,7 @@ const ContentWrapper = (props) => {
 
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
   const pipelineRunningError = pipelineErrors.includes(pipelineStatusKey);
-  // const pipelineRunning = false;
-  // const pipelineRunningError = false;
+
   // This is used to prevent a race condition where the page would start loading immediately
   // when the pipeline status was previously loaded. In that case, `pipelineLoading` is `false`
   // and would be set to true only in the `loadPipelineStatus` action, the time between the
@@ -224,12 +224,34 @@ const ContentWrapper = (props) => {
     return children;
   };
 
+  const menuItemRender = ({
+    path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
+  }) => {
+    const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
+    const pipelineStatusDisable = disabledByPipelineStatus && (
+      pipelineError || pipelineRunning || pipelineRunningError
+    );
+
+    return (
+      <Menu.Item
+        disabled={noExperimentDisable || pipelineStatusDisable}
+        key={path}
+        icon={icon}
+      >
+        <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
+          <a>{name}</a>
+        </Link>
+      </Menu.Item>
+    );
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <NotificationManager />
       <Sider
-        width={300}
+        width={210}
         theme='dark'
+        mode='inline'
         collapsible
         collapsed={collapsed}
         onCollapse={(collapse) => setCollapsed(collapse)}
@@ -246,49 +268,65 @@ const ContentWrapper = (props) => {
             }
             mode='inline'
           >
-            {menuLinks.map(({
-              path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
-            }) => {
-              const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
-              const pipelineStatusDisable = disabledByPipelineStatus && (
-                pipelineError || pipelineRunning || pipelineRunningError
-              );
-              const menuItemDisabled = noExperimentDisable || pipelineStatusDisable;
+            {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
 
-              return (
-                <Menu.Item
-                  disabled={menuItemDisabled}
-                  key={path}
-                  icon={icon}
-                >
-                  <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
-                    <a>{name}</a>
-                  </Link>
-                </Menu.Item>
-              );
-            })}
-          </Menu>
-          {!collapsed && (
-            <Footer style={{
-              textAlign: 'center', backgroundColor: 'inherit', marginTop: 'auto',
-            }}
+            <Menu.ItemGroup title={!collapsed && (
+              <Tooltip title={experimentData?.experimentName} placement='right'>
+                <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
+                  <Text
+                    style={{
+                      width: '100%',
+                      color: '#999999',
+                    }}
+                    strong
+                    ellipsis
+                  >
+                    {experimentData?.experimentName || 'No analysis'}
+                  </Text>
+                  {experimentData?.experimentName && (
+                    <Text style={{ color: '#999999' }}>
+                      Current analysis
+                    </Text>
+                  )}
+                </Space>
+              </Tooltip>
+
+            )}
             >
-              <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#dddddd' }}>
-                <a href='//www.biomage.net/our-team'>Our team</a>
+              {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
+            </Menu.ItemGroup>
+
+          </Menu>
+          {
+            !collapsed && (
+              <Footer style={{
+                backgroundColor: 'inherit',
+                marginTop: 'auto',
+                paddingLeft: 24,
+                paddingRight: 24,
+              }}
+              >
+                <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
+                  <a href='//www.biomage.net/our-team'>Team</a>
                 &nbsp;&middot;&nbsp;
-                <a href='mailto:hello@biomage.net'>Contact us</a>
-              </Paragraph>
-              <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
-                &copy;
-                {' '}
-                {new Date().getFullYear()}
-                {' '}
-                Biomage Ltd
-                {' & '}
-                other affiliates and contributors.
-              </Paragraph>
-            </Footer>
-          )}
+                  <a href='//www.biomage.net/careers'>Careers</a>
+                &nbsp;&middot;&nbsp;
+                  <a href='mailto:hello@biomage.net'>Contact</a>
+                </Paragraph>
+
+                <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
+                  &copy;
+                  {' '}
+                  {new Date().getFullYear()}
+                  {' '}
+                  Biomage Ltd,
+                  <br />
+                  affiliates &amp; contributors.
+                </Paragraph>
+
+              </Footer>
+            )
+          }
         </div>
 
       </Sider>
@@ -300,6 +338,8 @@ const ContentWrapper = (props) => {
 };
 
 ContentWrapper.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+  experimentData: PropTypes.object.isRequired,
   children: PropTypes.node.isRequired,
 };
 

@@ -14,6 +14,9 @@ const NotFoundPage = () => (
         src='/undraw_not_found_60pq.svg'
         width={250}
         height={250}
+        style={{
+          display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%',
+        }}
       />
     )}
     subTitle={(

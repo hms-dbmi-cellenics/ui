@@ -6,6 +6,7 @@ import waitForActions from 'redux-mock-store-await-actions';
 import Adapter from 'enzyme-adapter-react-16';
 import { act } from 'react-dom/test-utils';
 import thunk from 'redux-thunk';
+import _ from 'lodash';
 
 import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
 
@@ -21,8 +22,8 @@ jest.mock('localforage');
 
 const mockStore = configureMockStore([thunk]);
 
-const getStore = () => {
-  const store = mockStore({
+const getStore = (settings = {}) => {
+  const initialState = {
     notifications: {},
     experimentSettings: {
       ...initialExperimentSettingsState,
@@ -102,7 +103,22 @@ const getStore = () => {
     componentConfig: {
       ...initialPlotConfigStates,
     },
-  });
+    samples: {
+      ids: ['sample-1', 'sample-2'],
+      meta: {
+        loading: false,
+        error: false,
+      },
+      'sample-1': {
+        name: 'sample-1',
+      },
+      'sample-2': {
+        name: 'sample-2',
+      },
+    },
+  };
+
+  const store = mockStore(_.merge(initialState, settings));
 
   return store;
 };
@@ -184,6 +200,27 @@ describe('DataProcessingPage', () => {
     await waitForActions(store, [EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING]);
 
     // Run filter is disabled after triggering the pipeline
+    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);
+  });
+
+  it('preFiltered on a sample disables filter', async () => {
+    const store = getStore({
+      samples: {
+        'sample-1': {
+          preFiltered: true,
+        },
+      },
+    });
+
+    const page = mount(
+      <Provider store={store}>
+        <DataProcessingPage experimentId='experimentId' experimentData={experimentData} route='route'>
+          <></>
+        </DataProcessingPage>
+      </Provider>,
+    );
+
+    // Run filter button is disabled on the first
     expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);
   });
 });

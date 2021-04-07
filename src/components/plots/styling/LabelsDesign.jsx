@@ -14,7 +14,7 @@ const LabelsDesign = (props) => {
   return (
     <Form>
 
-      <p><strong>Toggle Legend</strong></p>
+      <p><strong>Toggle Labels</strong></p>
       <Form.Item>
         <Radio.Group onChange={(e) => onUpdate({ label: { enabled: e.target.value } })} value={config.label.enabled}>
           <Radio value>Show</Radio>

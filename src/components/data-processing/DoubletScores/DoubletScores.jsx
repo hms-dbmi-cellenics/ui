@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import {
   Collapse, Row, Col, Space, Skeleton,
 } from 'antd';
-import PropTypes from 'prop-types';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -14,6 +14,7 @@ import {
 import DoubletScoreHistogram from '../../plots/DoubletScoreHistogram';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
+import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
@@ -48,8 +49,8 @@ const DoubletScores = (props) => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing.doubletScores[sampleId]?.filterSettings
-      || state.experimentSettings.processing.doubletScores.filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
+      || state.experimentSettings.processing[filterName].filterSettings,
   );
   const plotData = useSelector((state) => state.componentConfig[plotUuid]?.plotData);
 
@@ -120,12 +121,16 @@ const DoubletScores = (props) => {
           <Space direction='vertical' style={{ width: '100%' }} />
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfig
+              <CalculationConfigContainer
+                filterUuid={filterName}
                 experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-              />
+                plotType='bin step'
+              >
+                <CalculationConfig />
+              </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
