@@ -108,7 +108,6 @@ const WrappedApp = ({ Component, pageProps, req }) => {
         }}
         openGraph={{
           type: 'website',
-          url: window?.location.href,
           locale: 'en_US',
           site_name: 'Biomage Cellscope',
         }}
