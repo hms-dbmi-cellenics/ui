@@ -17,7 +17,10 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
       `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
       {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer admin',
+        },
         body: JSON.stringify([{
           name: settingName,
           body: content,

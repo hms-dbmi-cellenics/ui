@@ -22,7 +22,10 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
       `${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`,
       {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer admin',
+        },
         body: JSON.stringify(
           treeData,
           (k, v) => ((k === 'title') ? undefined : v),

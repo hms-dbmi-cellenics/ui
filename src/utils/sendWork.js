@@ -10,7 +10,9 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const io = await connectionPromise();
 
   // Check if we need to have a bigger timeout because the worker being down.
-  const statusResponse = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`);
+  const statusResponse = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`, {
+    headers: { Authorization: 'Bearer admin' },
+  });
   const jsonResponse = await statusResponse.json();
 
   const { worker: { started, ready } } = jsonResponse;
@@ -22,6 +24,9 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
     uuid: requestUuid,
     socketId: io.id,
     experimentId,
+    extraHeaders: {
+      Authorization: 'Bearer XDDDDDDDDDDDDD',
+    },
     timeout: timeoutDate,
     body,
     ...requestProps,

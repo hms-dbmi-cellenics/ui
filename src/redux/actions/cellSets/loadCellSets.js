@@ -18,7 +18,9 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`);
+    const response = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`, {
+      headers: { Authorization: 'Bearer admin' },
+    });
     const json = await response.json();
     dispatch({
       type: CELL_SETS_LOADED,

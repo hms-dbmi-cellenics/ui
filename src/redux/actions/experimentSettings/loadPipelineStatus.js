@@ -16,7 +16,9 @@ const loadPipelineStatus = (experimentId) => async (dispatch) => {
 
   try {
     const response = await fetch(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`,
+      `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`, {
+        headers: { Authorization: 'Bearer admin' },
+      },
     );
 
     if (response.ok) {

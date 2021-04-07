@@ -8,7 +8,9 @@ const loadSamples = (
   experimentId,
 ) => async (dispatch) => {
   try {
-    const response = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/samples`);
+    const response = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/samples`, {
+      headers: { Authorization: 'Bearer admin' },
+    });
     const json = await response.json();
     dispatch({
       type: SAMPLES_LOADED,

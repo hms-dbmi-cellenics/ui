@@ -7,8 +7,11 @@ import { initialPlotConfigStates } from '../../reducers/componentConfig/initialS
 
 const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
   try {
+    console.log('getting conf');
     const response = await fetch(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
+      `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`, {
+        headers: { Authorization: 'Bearer admin' },
+      },
     );
     if (response.ok) {
       const data = await response.json();

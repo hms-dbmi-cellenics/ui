@@ -1,7 +1,9 @@
 import CustomError from './customError';
 
 const getFromApiExpectOK = async (url) => {
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: { Authorization: 'Bearer admin' },
+  });
 
   if (response.ok) {
     const data = await response.json();

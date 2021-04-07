@@ -10,7 +10,10 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
     `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
     {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer admin',
+      },
       body: JSON.stringify(content),
     },
   );

@@ -27,7 +27,10 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
       `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer admin',
+        },
         body: JSON.stringify({
           processingConfig: [
             {

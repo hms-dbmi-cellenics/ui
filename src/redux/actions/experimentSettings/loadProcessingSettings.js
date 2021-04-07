@@ -19,7 +19,9 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
 
   try {
     const response = await fetch(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
+      `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`, {
+        headers: { Authorization: 'Bearer admin' },
+      },
     );
 
     if (response.ok) {
