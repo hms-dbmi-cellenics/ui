@@ -7,7 +7,8 @@ const connectionPromise = () => new Promise((resolve, reject) => {
   if (io && io.connected) {
     resolve(io);
   } else {
-    io = socketIOClient(getApiEndpoint());
+    io = socketIOClient(getApiEndpoint(), { transports: ['websocket'] });
+
     io.on('connect', () => {
       // There is a bug where `io.id` is simply not getting assigned straight away
       // even though it should be. We don't know what causes this, so we are just waiting
