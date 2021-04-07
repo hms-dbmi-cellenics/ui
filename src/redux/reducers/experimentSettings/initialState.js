@@ -1,23 +1,8 @@
-const initialPipelineState = {
-  startDate: null,
-  endDate: null,
-  status: null,
-  completedSteps: [],
-};
-
-const initialWorkerState = {
-  status: null,
-  started: false,
-  ready: null,
-  restartCount: 0,
-};
-
-const initialState = {
+export default {
   pipelineStatus: {
     loading: false,
     error: false,
-    status: {
-    },
+    status: {},
   },
   processing: {
     meta: {
@@ -116,6 +101,3 @@ const initialState = {
     },
   },
 };
-
-export default initialState;
-export { initialPipelineState, initialWorkerState };
