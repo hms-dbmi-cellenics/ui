@@ -118,7 +118,7 @@ const WrappedApp = ({ Component, pageProps, req }) => {
 };
 
 WrappedApp.propTypes = {
-  Component: PropTypes.element.isRequired,
+  Component: PropTypes.func.isRequired,
   pageProps: PropTypes.object.isRequired,
 };
 
