@@ -13,7 +13,7 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
   const { pipeline } = getState().experimentSettings.pipelineStatus.status;
 
   if (!pipeline?.startDate) {
-    return null;
+    return;
   }
 
   // Does not load anything if experiment settings is not loaded
