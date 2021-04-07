@@ -205,6 +205,14 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
   );
 };
 
+// ExplorationViewPage.getInitialProps = ({
+//   store, pathname, req, res,
+// }) => ({
+//   props: {
+//     url: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+//   },
+// });
+
 ExplorationViewPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
   experimentData: PropTypes.object.isRequired,
