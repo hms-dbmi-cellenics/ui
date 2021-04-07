@@ -17,7 +17,11 @@ import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from '../../../../redux/actionTyp
 jest.mock('localforage');
 
 // ensure isBrowser is `true`
-jest.mock('../../../../utils/Environment', () => true);
+jest.mock('../../../../utils/Environment', () => ({
+  __esModule: true,
+  isBrowser: () => true,
+}));
+
 jest.mock('../../../../utils/sendWork', () => ({
   __esModule: true, // this property makes it work
   default: jest.fn(() => new Promise((resolve) => resolve({
