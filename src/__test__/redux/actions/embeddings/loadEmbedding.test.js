@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { loadEmbedding } from '../../../../redux/actions/embedding';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState, { initialPipelineState } from '../../../../redux/reducers/experimentSettings/initialState';
 
 import sendWork from '../../../../utils/sendWork';
 
@@ -18,16 +18,49 @@ const mockStore = configureStore([thunk]);
 describe('loadEmbedding action', () => {
   const experimentId = '1234';
   const embeddingType = 'umap';
+  const experimentSettings = {
+    ...initialExperimentState,
+    pipelineStatus: {
+      status: {
+        pipeline: {
+          ...initialPipelineState,
+          startDate: '2021-01-01T01:01:01.000Z',
+        },
+      },
+    },
+  };
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('Dispatches on already loaded embedding', async () => {
+  it('Dispatches if not loaded', async () => {
     const store = mockStore(
       {
+        experimentSettings,
+        embeddings: {},
+      },
+    );
+
+    store.dispatch(loadEmbedding(experimentId, embeddingType));
+    expect(store.getActions().length).toEqual(1);
+  });
+
+  it('Does not dispatch if embedding is already loaded', async () => {
+    const store = mockStore(
+      {
+        experimentSettings,
         embeddings:
-          { [embeddingType]: { ...initialEmbeddingState, loading: false } },
+        {
+          [embeddingType]: {
+            ...initialEmbeddingState,
+            loading: false,
+            data: [
+              [1, 2],
+              [3, 4],
+            ],
+          },
+        },
       },
     );
 
@@ -38,6 +71,7 @@ describe('loadEmbedding action', () => {
   it('Does not dispatch on a loading embedding', async () => {
     const store = mockStore(
       {
+        experimentSettings,
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, loading: true } },
       },
@@ -67,9 +101,7 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         embeddings: {},
-        experimentSettings: {
-          ...initialExperimentState,
-        },
+        experimentSettings,
       },
     );
 
@@ -108,9 +140,7 @@ describe('loadEmbedding action', () => {
       {
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, error: true, loading: false } },
-        experimentSettings: {
-          ...initialExperimentState,
-        },
+        experimentSettings,
       },
     );
 
@@ -131,11 +161,8 @@ describe('loadEmbedding action', () => {
   it('Dispatches error action on unsuccessful loading', async () => {
     const store = mockStore(
       {
-        embeddings:
-          {},
-        experimentSettings: {
-          ...initialExperimentState,
-        },
+        embeddings: {},
+        experimentSettings,
       },
     );
 
@@ -158,10 +185,9 @@ describe('loadEmbedding action', () => {
   it('Does not return anything while waiting for config data to load', async () => {
     const store = mockStore(
       {
-        embeddings:
-          {},
+        embeddings: {},
         experimentSettings: {
-          ...initialExperimentState,
+          ...experimentSettings,
           processing: {},
         },
       },
@@ -169,7 +195,27 @@ describe('loadEmbedding action', () => {
 
     await store.dispatch(loadEmbedding(experimentId, embeddingType));
 
-    // We should have been dispatched two events.
+    // There should be no dispatch.
+    expect(store.getActions().length).toEqual(0);
+  });
+
+  it('Does not dispatch if pipeline has not been run', async () => {
+    const store = mockStore(
+      {
+        embeddings: {},
+        experimentSettings: {
+          ...experimentSettings,
+          pipelineStatus: {
+            ...experimentSettings.pipelineStatus,
+            status: {},
+          },
+        },
+      },
+    );
+
+    await store.dispatch(loadEmbedding(experimentId, embeddingType));
+
+    // There should be no dispatch.
     expect(store.getActions().length).toEqual(0);
   });
 });
