@@ -23,15 +23,17 @@ import {
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
+import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
   const { experimentId, onPipelineRun } = props;
-  const [selectedPlot, setSelectedPlot] = useState('sample');
+  // const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
+  const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector((state) => state.experimentSettings.processing.meta);
   const filterName = 'configureEmbedding';
 
   const router = useRouter();
@@ -344,7 +346,13 @@ const ConfigureEmbedding = (props) => {
               <button
                 type='button'
                 key={key}
-                onClick={() => setSelectedPlot(key)}
+                onClick={() => dispatch(
+                  updateProcessingSettings(
+                    experimentId,
+                    'meta',
+                    { selectedConfigureEmbeddingPlot: key },
+                  ),
+                )}
                 style={{
                   margin: 0,
                   backgroundColor: 'transparent',
