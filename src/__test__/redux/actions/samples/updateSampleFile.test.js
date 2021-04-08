@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import updateSampleFile from '../../../../redux/actions/samples/updateSampleFile';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../../redux/reducers/samples/initialState';
 
-import { SAMPLES_UPDATE, SAMPLES_FILE_UPDATE } from '../../../../redux/actionTypes/samples';
+import { SAMPLES_FILE_UPDATE } from '../../../../redux/actionTypes/samples';
 
 const mockStartTime = '4022-01-01T00:00:00.000Z';
 const mockEndTime = '4021-01-01T00:00:00.000Z';
@@ -41,12 +41,8 @@ describe('updateSampleFile action', () => {
     const store = mockStore(mockState);
     await store.dispatch(updateSampleFile(mockUuid, mockSample));
 
-    // First action updates the sample
-    const firstAction = store.getActions()[0];
-    expect(firstAction.type).toEqual(SAMPLES_UPDATE);
-
-    // Second action updates the files
-    const secondAction = store.getActions()[1];
+    // action updates the files
+    const secondAction = store.getActions()[0];
     expect(secondAction.type).toEqual(SAMPLES_FILE_UPDATE);
   });
 
@@ -55,9 +51,10 @@ describe('updateSampleFile action', () => {
     const store = mockStore(mockState);
     await store.dispatch(updateSampleFile(mockUuid, mockFile));
 
-    const { sample } = store.getActions()[0].payload;
-    expect(sample.lastModified).not.toEqual(originalModifiedDate);
-    expect(sample.lastModified).toEqual(mockEndTime);
+    const { lastModified } = store.getActions()[0].payload;
+
+    expect(lastModified).not.toEqual(originalModifiedDate);
+    expect(lastModified).toEqual(mockEndTime);
   });
 
   it('Inserts file into sample', async () => {
@@ -67,7 +64,7 @@ describe('updateSampleFile action', () => {
       mockFile,
       name: fileName,
     }));
-    const { file } = store.getActions()[1].payload;
+    const { file } = store.getActions()[0].payload;
     expect(file.name).toEqual(fileName);
   });
 });

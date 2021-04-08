@@ -134,7 +134,7 @@ Object {
         "success": false,
       },
     },
-    "lastModified": "2021-01-01T14:48:00.000Z",
+    "lastModified": "newLastModified",
     "name": "test sample",
     "projectUuid": null,
     "species": null,
