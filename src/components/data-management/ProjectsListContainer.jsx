@@ -55,8 +55,6 @@ const ProjectsListContainer = (props) => {
     setDeleteModalVisible(false);
   };
 
-  const renderHelpText = () => 'A project with this name exists, please use another name';
-
   return (
     <>
       <FileUploadModal
@@ -93,10 +91,6 @@ const ProjectsListContainer = (props) => {
                   <EditableField
                     value={projects[uuid].name}
                     onAfterSubmit={(name) => {
-                      if (projectNames.has(name)) {
-                        renderHelpText();
-                        return null;
-                      }
                       dispatch(updateProject(uuid, { name }));
                     }}
                     onDelete={(e) => {
