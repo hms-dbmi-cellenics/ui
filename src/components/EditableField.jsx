@@ -49,13 +49,15 @@ const EditableField = (props) => {
   const onChange = (e) => {
     const { value: newValue } = e.target;
 
-    // Returns true on valid, error code on false
-    const validation = value === newValue || validationFunc(newValue);
-    if (validation !== true) {
-      setErrorCode(validation);
-      setIsValid(false);
-    } else {
-      setIsValid(true);
+    if (validationFunc) {
+      // Returns true on valid, error code on false
+      const valid = value === newValue || validationFunc(newValue);
+      if (valid !== true) {
+        setErrorCode(valid);
+        setIsValid(false);
+      } else {
+        setIsValid(true);
+      }
     }
 
     setEditedValue(newValue);
