@@ -21,30 +21,12 @@ const NewProjectModal = (props) => {
   const [projectNames, setProjectNames] = useState(new Set());
 
   useEffect(() => {
-    setProjectNames(new Set(projects.ids.map((id) => projects[id].name)));
+    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
   }, [projects.ids]);
 
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isValid, setIsValid] = useState(false);
-
-  const renderHelpText = () => {
-    if (projectName.length === 0) {
-      return undefined;
-    }
-
-    if (projectName.length < 8) {
-      return 'Your project name must be at least 8 characters';
-    }
-
-    if (projectNames.has(projectName)) {
-      return 'A project with this name exists, please use another name';
-    }
-
-    if (!isValid) {
-      return 'Your project name can only contain letters, numbers, space, _, and -.';
-    }
-  };
 
   return (
     <Modal
@@ -84,8 +66,8 @@ const NewProjectModal = (props) => {
 
           <Form layout='vertical'>
             <Form.Item
-              validateStatus={renderHelpText() && 'error'}
-              help={renderHelpText()}
+              validateStatus={validateProjectName(projectName, projectNames) !== true && 'error'}
+              help={validateProjectName(projectName, projectNames)}
               label={(
                 <span>
                   Project name
@@ -99,7 +81,7 @@ const NewProjectModal = (props) => {
               <Input
                 onChange={(e) => {
                   setProjectName(e.target.value);
-                  setIsValid(validateProjectName(e.target.value, projectNames));
+                  setIsValid(validateProjectName(e.target.value, projectNames) === true);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && isValid) {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Card, Space, Descriptions, Typography,
+  Card, Space, Descriptions,
 } from 'antd';
 import { blue } from '@ant-design/colors';
 import EditableField from '../EditableField';
@@ -17,8 +17,6 @@ import PrettyTime from '../PrettyTime';
 import processUpload from '../../utils/processUpload';
 import validateProjectName from '../../utils/validateProjectName';
 
-const { Text } = Typography;
-
 const ProjectsListContainer = (props) => {
   const { height } = props;
   const dispatch = useDispatch();
@@ -32,7 +30,7 @@ const ProjectsListContainer = (props) => {
   const [projectNames, setProjectNames] = useState(new Set());
 
   useEffect(() => {
-    setProjectNames(new Set(projects.ids.map((id) => projects[id].name)));
+    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
   }, [projects.ids]);
 
   useEffect(() => {
@@ -99,7 +97,6 @@ const ProjectsListContainer = (props) => {
                       setDeleteModalVisible(true);
                     }}
                     validationFunc={(name) => validateProjectName(name, projectNames)}
-                    errorFunc={(name) => validateProjectName(name, projectNames)}
                   />
                 )}
               >

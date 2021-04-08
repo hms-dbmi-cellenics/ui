@@ -20,8 +20,6 @@ const EditableField = (props) => {
     renderBold,
     defaultEditing,
     validationFunc,
-    errorText,
-    errorFunc,
   } = props;
 
   const [editing, setEditing] = useState(defaultEditing);
@@ -133,9 +131,8 @@ const EditableField = (props) => {
           }
         </Space>
         {!isValid ? (
-          <Text type='danger'>
-            {errorText}
-            {errorFunc(editedValue)}
+          <Text type='danger' style={{ fontSize: 12, fontWeight: 600 }}>
+            {validationFunc(editedValue) === false ? 'Invalid input' : ''}
           </Text>
         ) : <></>}
       </Space>
@@ -147,9 +144,7 @@ EditableField.defaultProps = {
   onAfterSubmit: () => null,
   onAfterCancel: () => null,
   onDelete: () => null,
-  validationFunc: null,
-  errorFunc: () => null,
-  errorText: '',
+  validationFunc: undefined,
   renderBold: false,
   value: null,
   showEdit: true,
@@ -163,8 +158,6 @@ EditableField.propTypes = {
   onAfterCancel: PropTypes.func,
   onDelete: PropTypes.func,
   validationFunc: PropTypes.func,
-  errorFunc: PropTypes.func,
-  errorText: PropTypes.string,
   deleteEnabled: PropTypes.bool,
   showEdit: PropTypes.bool,
   renderBold: PropTypes.bool,

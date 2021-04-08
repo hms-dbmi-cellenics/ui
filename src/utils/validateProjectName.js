@@ -1,7 +1,7 @@
 const defaultErrorMessages = {
-  MIN_8: 'Min 8 characters',
-  MIN_2_CHAR: 'Min 2 characters in sequence',
-  INVALID_CHARS: 'Invalid characters',
+  MIN_8_CHAR: 'Min. 8 characters required',
+  MIN_2_CHAR: 'Min. 2 characters in sequence',
+  INVALID_CHARS: 'Only letters, numbers, space, _, and - allowed',
   NAME_EXISTS: 'A project with the same name exists',
 };
 
@@ -12,7 +12,7 @@ const validateProjectName = (input, projectNames, customErrors) => {
   };
 
   if (input.length < 8) {
-    return errorMessages.MIN_8;
+    return errorMessages.MIN_8_CHAR;
   }
 
   if (!input.match(/([a-zA-Z\d]{2,}){1,}/gm)) {

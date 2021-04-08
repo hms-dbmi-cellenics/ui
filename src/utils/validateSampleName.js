@@ -1,10 +1,15 @@
-const errorMessages = {
+const defaultErrorMessages = {
   MIN_1_CHAR: 'Min 1 alphanumeric character',
-  INVALID_CHARS: 'Invalid characters',
+  INVALID_CHARS: 'Only alphanumeric,-,_ and spaces allowd',
   NAME_EXISTS: 'A sample with the same name exists',
 };
 
-const validateSampleName = (input, sampleNames) => {
+const validateSampleName = (input, sampleNames, customErrors) => {
+  const errorMessages = {
+    ...defaultErrorMessages,
+    customErrors,
+  };
+
   if (input.length < 1 || !input.match(/[a-zA-Z\d]{1,}/gm)) {
     return errorMessages.MIN_1_CHAR;
   }

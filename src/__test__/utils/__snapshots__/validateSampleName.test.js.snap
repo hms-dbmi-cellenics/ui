@@ -2,7 +2,7 @@
 
 exports[`validateSampleName unit test sample name should not be the same with existing samples 1`] = `true`;
 
-exports[`validateSampleName unit test sample name should not contain invalid characters 1`] = `"Invalid characters"`;
+exports[`validateSampleName unit test sample name should not contain invalid characters 1`] = `"Only alphanumeric,-,_ and spaces allowd"`;
 
 exports[`validateSampleName unit test sample names minimal 1 char  1`] = `"Min 1 alphanumeric character"`;
 

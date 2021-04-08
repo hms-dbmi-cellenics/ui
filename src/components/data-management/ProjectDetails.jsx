@@ -46,7 +46,7 @@ const ProjectDetails = ({ width, height }) => {
 
   useEffect(() => {
     if (activeProject) {
-      setSampleNames(new Set(activeProject.samples.map((id) => samples[id].name)));
+      setSampleNames(new Set(activeProject.samples.map((id) => samples[id].name.trim())));
     }
   }, [samples, projects]);
 
@@ -167,7 +167,6 @@ const ProjectDetails = ({ width, height }) => {
         onAfterSubmit={(name) => dispatch(updateSample(el.uuid, { name }))}
         onDelete={() => dispatch(deleteSamples(el.uuid))}
         validationFunc={(name) => validateSampleName(name, sampleNames)}
-        errorFunc={(name) => validateSampleName(name, sampleNames)}
       />
     </Text>
   );
