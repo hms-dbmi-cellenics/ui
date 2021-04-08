@@ -25,7 +25,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
     socketId: io.id,
     experimentId,
     extraHeaders: {
-      Authorization: 'Bearer XDDDDDDDDDDDDD',
+      Authorization: 'Bearer admin',
     },
     timeout: timeoutDate,
     body,
