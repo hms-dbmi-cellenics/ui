@@ -99,7 +99,7 @@ const ProjectsListContainer = (props) => {
                       setDeleteModalVisible(true);
                     }}
                     validationFunc={(name) => validateProjectName(name, projectNames)}
-                    errorText={<Text type='danger'>A project with this name exists</Text>}
+                    errorFunc={(name) => validateProjectName(name, projectNames)}
                   />
                 )}
               >

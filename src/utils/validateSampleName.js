@@ -1,7 +1,7 @@
 const errorMessages = {
-  MIN_1_CHAR: 'Minimal 1 alphanumeric character',
+  MIN_1_CHAR: 'Min 1 alphanumeric character',
   INVALID_CHARS: 'Invalid characters',
-  NAME_EXISTS: 'A project with the same name exists',
+  NAME_EXISTS: 'A sample with the same name exists',
 };
 
 const validateSampleName = (input, sampleNames) => {

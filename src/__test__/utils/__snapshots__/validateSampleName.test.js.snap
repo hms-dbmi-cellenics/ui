@@ -4,6 +4,6 @@ exports[`validateSampleName unit test sample name should not be the same with ex
 
 exports[`validateSampleName unit test sample name should not contain invalid characters 1`] = `"Invalid characters"`;
 
-exports[`validateSampleName unit test sample names minimal 1 char  1`] = `"Minimal 1 alphanumeric character"`;
+exports[`validateSampleName unit test sample names minimal 1 char  1`] = `"Min 1 alphanumeric character"`;
 
-exports[`validateSampleName unit test sample names minimal 1 char  2`] = `"Minimal 1 alphanumeric character"`;
+exports[`validateSampleName unit test sample names minimal 1 char  2`] = `"Min 1 alphanumeric character"`;

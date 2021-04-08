@@ -1,11 +1,16 @@
-const errorMessages = {
-  MIN_8: 'Minimal 8 characters',
+const defaultErrorMessages = {
+  MIN_8: 'Min 8 characters',
   MIN_2_CHAR: 'Min 2 characters in sequence',
-  INVALID_CHARS: 'Invalid character',
+  INVALID_CHARS: 'Invalid characters',
   NAME_EXISTS: 'A project with the same name exists',
 };
 
-const validateProjectName = (input, projectNames) => {
+const validateProjectName = (input, projectNames, customErrors) => {
+  const errorMessages = {
+    ...defaultErrorMessages,
+    customErrors,
+  };
+
   if (input.length < 8) {
     return errorMessages.MIN_8;
   }

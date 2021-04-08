@@ -167,7 +167,7 @@ const ProjectDetails = ({ width, height }) => {
         onAfterSubmit={(name) => dispatch(updateSample(el.uuid, { name }))}
         onDelete={() => dispatch(deleteSamples(el.uuid))}
         validationFunc={(name) => validateSampleName(name, sampleNames)}
-        errorText={<Text type='danger'>A sample with this name exists</Text>}
+        errorFunc={(name) => validateSampleName(name, sampleNames)}
       />
     </Text>
   );

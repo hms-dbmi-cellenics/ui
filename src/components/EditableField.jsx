@@ -21,12 +21,12 @@ const EditableField = (props) => {
     defaultEditing,
     validationFunc,
     errorText,
+    errorFunc,
   } = props;
 
   const [editing, setEditing] = useState(defaultEditing);
   const [editedValue, setEditedValue] = useState(value);
   const [isValid, setIsValid] = useState(true);
-  const [errorCode, setErrorCode] = useState(null);
 
   useEffect(() => {
     setEditedValue(value);
@@ -50,14 +50,10 @@ const EditableField = (props) => {
     const { value: newValue } = e.target;
 
     if (validationFunc) {
-      // Returns true on valid, error code on false
       const valid = value === newValue || validationFunc(newValue);
-      if (valid !== true) {
-        setErrorCode(valid);
-        setIsValid(false);
-      } else {
-        setIsValid(true);
-      }
+
+      // Validation func may not return false on invalid
+      setIsValid(valid === true);
     }
 
     setEditedValue(newValue);
@@ -138,9 +134,8 @@ const EditableField = (props) => {
         </Space>
         {!isValid ? (
           <Text type='danger'>
-            {typeof errorText === 'string'
-              || React.isValidElement(errorText) ? errorText
-              : errorText[errorCode]}
+            {errorText}
+            {errorFunc(editedValue)}
           </Text>
         ) : <></>}
       </Space>
@@ -153,7 +148,8 @@ EditableField.defaultProps = {
   onAfterCancel: () => null,
   onDelete: () => null,
   validationFunc: null,
-  errorText: {},
+  errorFunc: () => null,
+  errorText: '',
   renderBold: false,
   value: null,
   showEdit: true,
@@ -167,10 +163,8 @@ EditableField.propTypes = {
   onAfterCancel: PropTypes.func,
   onDelete: PropTypes.func,
   validationFunc: PropTypes.func,
-  errorText: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.string,
-  ]),
+  errorFunc: PropTypes.func,
+  errorText: PropTypes.string,
   deleteEnabled: PropTypes.bool,
   showEdit: PropTypes.bool,
   renderBold: PropTypes.bool,
