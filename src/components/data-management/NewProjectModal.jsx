@@ -5,6 +5,8 @@ import {
 } from 'antd';
 import { useSelector } from 'react-redux';
 
+import validateProjectName from '../../utils/validateProjectName';
+
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
@@ -14,21 +16,15 @@ const NewProjectModal = (props) => {
   } = props;
 
   const projects = useSelector((state) => state.projects);
-  const { ids } = projects;
   const [projectNames, setProjectNames] = useState(new Set());
 
   useEffect(() => {
-    setProjectNames(new Set(ids.map((id) => projects[id].name)));
-  }, [ids]);
+    setProjectNames(new Set(projects.ids.map((id) => projects[id].name)));
+  }, [projects.ids]);
 
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isValid, setIsValid] = useState(false);
-
-  const validateProjectName = (input) => input.length >= 8
-    && input.match(/([a-zA-Z\d]{2,}){1,}/gm)
-    && input.match(/^[a-zA-Z\s\d-_]{8,}$/gm)
-    && !projectNames.has(input);
 
   const renderHelpText = () => {
     if (projectName.length === 0) {
@@ -40,7 +36,7 @@ const NewProjectModal = (props) => {
     }
 
     if (projectNames.has(projectName)) {
-      return 'A project with this name exists, please user another name';
+      return 'A project with this name exists, please use another name';
     }
 
     if (!isValid) {
@@ -101,7 +97,7 @@ const NewProjectModal = (props) => {
               <Input
                 onChange={(e) => {
                   setProjectName(e.target.value);
-                  setIsValid(validateProjectName(e.target.value));
+                  setIsValid(validateProjectName(e.target.value, projectNames));
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && isValid) {

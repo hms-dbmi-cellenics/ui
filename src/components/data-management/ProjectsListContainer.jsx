@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Card, Space, Descriptions,
+  Card, Space, Descriptions, Typography,
 } from 'antd';
 import { blue } from '@ant-design/colors';
 import EditableField from '../EditableField';
@@ -15,6 +15,9 @@ import { setActiveProject, updateProject, deleteProject as deleteProjectAction }
 import PrettyTime from '../PrettyTime';
 
 import processUpload from '../../utils/processUpload';
+import validateProjectName from '../../utils/validateProjectName';
+
+const { Text } = Typography;
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
@@ -26,6 +29,11 @@ const ProjectsListContainer = (props) => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(true);
+  const [projectNames, setProjectNames] = useState(new Set());
+
+  useEffect(() => {
+    setProjectNames(new Set(projects.ids.map((id) => projects[id].name)));
+  }, [projects.ids]);
 
   useEffect(() => {
     setUploadModalVisible(projects[activeProjectUuid]?.samples.length === 0);
@@ -46,6 +54,8 @@ const ProjectsListContainer = (props) => {
     dispatch(deleteProjectAction(deleteProjectUuid));
     setDeleteModalVisible(false);
   };
+
+  const renderHelpText = () => 'A project with this name exists, please use another name';
 
   return (
     <>
@@ -83,6 +93,10 @@ const ProjectsListContainer = (props) => {
                   <EditableField
                     value={projects[uuid].name}
                     onAfterSubmit={(name) => {
+                      if (projectNames.has(name)) {
+                        renderHelpText();
+                        return null;
+                      }
                       dispatch(updateProject(uuid, { name }));
                     }}
                     onDelete={(e) => {
@@ -90,6 +104,8 @@ const ProjectsListContainer = (props) => {
                       setDeleteProjectUuid(uuid);
                       setDeleteModalVisible(true);
                     }}
+                    validationFunc={(name) => validateProjectName(name, projectNames)}
+                    errorText={<Text type='danger'>A project with this name exists</Text>}
                   />
                 )}
               >
