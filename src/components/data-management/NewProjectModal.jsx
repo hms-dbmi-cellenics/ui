@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {
   Modal, Button, Input, Space, Typography, Form,
 } from 'antd';
-import { useSelector } from 'react-redux';
 
 import validateProjectName from '../../utils/validateProjectName';
 
@@ -12,10 +11,13 @@ const { TextArea } = Input;
 
 const NewProjectModal = (props) => {
   const {
-    visible, onCreate, onCancel, firstTimeFlow,
+    visible,
+    onCreate,
+    onCancel,
+    firstTimeFlow,
+    projects,
   } = props;
 
-  const projects = useSelector((state) => state.projects);
   const [projectNames, setProjectNames] = useState(new Set());
 
   useEffect(() => {
@@ -133,6 +135,7 @@ NewProjectModal.propTypes = {
   onCreate: PropTypes.func,
   onCancel: PropTypes.func,
   firstTimeFlow: PropTypes.bool,
+  projects: PropTypes.object,
 };
 
 NewProjectModal.defaultProps = {
@@ -140,6 +143,7 @@ NewProjectModal.defaultProps = {
   onCreate: () => null,
   onCancel: () => null,
   firstTimeFlow: false,
+  projects: { ids: [] },
 };
 
 export default NewProjectModal;
