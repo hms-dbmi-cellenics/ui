@@ -238,7 +238,6 @@ const ProjectDetails = ({ width, height }) => {
       const sampleFiles = samples[sampleUuid].files;
 
       const barcodesStatus = sampleFiles['barcodes.tsv.gz']?.status;
-      // TODO:  File name for genes can be one of these, should we rename to have only one possible name before putting it in S3?
       const genesStatus = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz'])?.status;
       const matrixStatus = sampleFiles['matrix.mtx.gz']?.status;
 

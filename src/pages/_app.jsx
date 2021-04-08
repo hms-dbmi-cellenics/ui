@@ -6,72 +6,22 @@ import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import useSWR from 'swr';
 
-import AWS from 'aws-sdk';
-import Amplify, { Storage } from 'aws-amplify';
-import { Credentials } from '@aws-amplify/core';
-
 import ContentWrapper from '../components/ContentWrapper';
 import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
 import Error from './_error';
-import Environment, { isBrowser, getCurrentEnvironment } from '../utils/Environment';
 import wrapper from '../redux/store';
 import getApiEndpoint from '../utils/apiEndpoint';
 import getFromApiExpectOK from '../utils/getFromApiExpectOK';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
+import { isBrowser, getCurrentEnvironment } from '../utils/Environment';
+import setupAmplify from '../utils/setupAmplify';
+
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
-
-const setupAmplify = () => {
-  // These will be replaced when we can actually make this work in prod/staging
-  const identityPoolIds = {
-    [Environment.PRODUCTION]: 'prodPlaceholderIdentityPoolId',
-    [Environment.STAGING]: 'stagingPlaceholderIdentityPoolId',
-    [Environment.DEVELOPMENT]: 'fake',
-  };
-
-  const currentEnvironment = getCurrentEnvironment();
-
-  const bucketName = `biomage-originals-${currentEnvironment}`;
-
-  Amplify.configure({
-    Storage: {
-      AWSS3: {
-        bucket: bucketName, // REQUIRED -  Amazon S3 bucket
-        region: 'eu-west-1', // OPTIONAL -  Amazon service region
-        dangerouslyConnectToHttpEndpointForTesting: currentEnvironment === Environment.DEVELOPMENT,
-        identityId: identityPoolIds[currentEnvironment],
-      },
-    },
-  });
-
-  // Configure Amplify to not use prefix when uploading to public folder, instead of '/'
-  Storage.configure({
-    customPrefix: {
-      public: '',
-    },
-  });
-
-  // Mock credentials so that it works with inframock
-  if (currentEnvironment === Environment.DEVELOPMENT) {
-    Credentials.get = async () => (
-      new AWS.Credentials({
-        accessKeyId: 'asd',
-        secretAccessKey: 'asfdsa',
-      })
-    );
-
-    Credentials.shear = () => (
-      new AWS.Credentials({
-        accessKeyId: 'asd',
-        secretAccessKey: 'asfdsa',
-      })
-    );
-  }
-};
 
 const WrappedApp = ({ Component, pageProps }) => {
   const router = useRouter();
@@ -87,7 +37,7 @@ const WrappedApp = ({ Component, pageProps }) => {
       setExperimentId(router.query.experimentId);
     }
 
-    setupAmplify();
+    setupAmplify(getCurrentEnvironment());
   }, [router.query.experimentId]);
 
   const { data: experimentData, error: experimentError } = useSWR(

@@ -1,5 +1,5 @@
 const samplesFileUpdate = (state, action) => {
-  const { sampleUuid, file } = action.payload;
+  const { sampleUuid, file, lastModified } = action.payload;
 
   return {
     ...state,
@@ -10,6 +10,7 @@ const samplesFileUpdate = (state, action) => {
         ...state[sampleUuid].files,
         [file.name]: file,
       },
+      lastModified,
     },
   };
 };
