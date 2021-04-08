@@ -1,29 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { Storage } from 'aws-amplify';
-import pako from 'pako';
 import _ from 'lodash';
+import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
 import UploadStatus from './UploadStatus';
-
-const loadAndCompressIfNecessary = async (file, onLoaded, onError) => {
-  const inGzipFormat = file.bundle.mime === 'application/gzip';
-
-  const reader = new FileReader();
-  reader.onabort = () => onError();
-  reader.onerror = () => onError();
-  reader.onload = () => {
-    const loadedFile = reader.result;
-
-    if (inGzipFormat) {
-      onLoaded(loadedFile);
-    } else {
-      const compressed = pako.gzip(loadedFile, { to: 'string' });
-      onLoaded(compressed);
-    }
-  };
-
-  reader.readAsArrayBuffer(file.bundle);
-};
 
 const compressAndUpload = async (sample, activeProjectUuid, dispatch) => {
   const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
@@ -41,11 +21,9 @@ const compressAndUpload = async (sample, activeProjectUuid, dispatch) => {
   }, {});
 
   Object.entries(updatedSampleFiles).map(async ([fileName, file]) => {
-    loadAndCompressIfNecessary(
-      file,
-      async (loadedFile) => {
+    loadAndCompressIfNecessary(file)
+      .then((loadedFile) => {
         const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
-
         return Storage.put(bucketKey, loadedFile)
           .then(() => {
             dispatch(updateSampleFile(sample.uuid, {
@@ -59,14 +37,13 @@ const compressAndUpload = async (sample, activeProjectUuid, dispatch) => {
               status: UploadStatus.UPLOAD_ERROR,
             }));
           });
-      },
-      async () => {
+      })
+      .catch(() => {
         dispatch(updateSampleFile(sample.uuid, {
           ...file,
           status: UploadStatus.UPLOAD_ERROR,
         }));
-      },
-    );
+      });
   });
 
   return updatedSampleFiles;
@@ -101,13 +78,21 @@ const processUpload = (filesList, sampleType, samples, activeProjectUuid, dispat
     };
   }, {});
 
+  console.log('samplesMapDebugStart');
+  console.log(samplesMap);
+
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
     // Create sample if not exists
     if (!sample.uuid) {
       sample.uuid = await dispatch(createSample(activeProjectUuid, name, sampleType));
+      console.log('sampleDebug');
+      console.log(sample);
     }
 
     sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
+
+    console.log('sampleDebugAfterUpload');
+    console.log(sample);
 
     Object.values(sample.files).forEach((file) => {
       dispatch(updateSampleFile(sample.uuid, {
@@ -115,7 +100,13 @@ const processUpload = (filesList, sampleType, samples, activeProjectUuid, dispat
         path: `${activeProjectUuid}/${file.name.replace(name, sample.uuid)}`,
       }));
     });
+
+    console.log('sampleDebugAfterUpdate');
+    console.log(sample);
   });
+
+  console.log('samplesMapDebugEnd');
+  console.log(samplesMap);
 };
 
 export default processUpload;
