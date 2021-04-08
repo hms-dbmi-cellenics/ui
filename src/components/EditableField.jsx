@@ -132,7 +132,7 @@ const EditableField = (props) => {
         </Space>
         {!isValid ? (
           <Text type='danger' style={{ fontSize: 12, fontWeight: 600 }}>
-            {validationFunc(editedValue) === false ? 'Invalid input' : ''}
+            {validationFunc(editedValue) === false ? 'Invalid input' : validationFunc(editedValue)}
           </Text>
         ) : <></>}
       </Space>
