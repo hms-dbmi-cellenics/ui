@@ -2,7 +2,7 @@ import AWS from 'aws-sdk';
 import Amplify, { Storage } from 'aws-amplify';
 import { Credentials } from '@aws-amplify/core';
 
-import Environment from './Environment';
+import Environment from './environment';
 
 const setupAmplify = (currentEnvironment) => {
   // These will be replaced when we can actually make this work in prod/staging

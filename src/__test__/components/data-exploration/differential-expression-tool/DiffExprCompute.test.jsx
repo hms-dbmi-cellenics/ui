@@ -14,7 +14,7 @@ import {
 } from '../../../../redux/actionTypes/differentialExpression';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/Environment', () => ({
+jest.mock('../../../../utils/environment', () => ({
   __esModule: true,
   isBrowser: () => false,
 }));

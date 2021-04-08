@@ -22,7 +22,7 @@ import {
   unhideAllCellSets,
 } from '../../../redux/actions/cellSets';
 import composeTree from '../../../utils/composeTree';
-import { isBrowser } from '../../../utils/Environment';
+import { isBrowser } from '../../../utils/environment';
 import messages from '../../notification/messages';
 import PlatformError from '../../PlatformError';
 import CellSetOperation from './CellSetOperation';

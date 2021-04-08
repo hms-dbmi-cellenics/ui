@@ -16,7 +16,7 @@ import getFromApiExpectOK from '../utils/getFromApiExpectOK';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
-import { isBrowser, getCurrentEnvironment } from '../utils/Environment';
+import { isBrowser, getCurrentEnvironment } from '../utils/environment';
 import setupAmplify from '../utils/setupAmplify';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
