@@ -429,7 +429,7 @@ const classifierEmptyDropsPlot = {
   axes: {
     ...axesBaseState,
     xAxisText: 'log10[ cell size (UMIs) ]',
-    yAxisText: 'classifier prob',
+    yAxisText: 'FDR (emptyDrops)',
     gridOpacity: 10,
   },
   title: {

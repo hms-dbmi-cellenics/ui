@@ -98,6 +98,7 @@ const Classifier = (props) => {
         <ClassifierEmptyDropsPlot
           experimentId={experimentId}
           config={config}
+          expConfig={expConfig}
           plotData={plotData}
           actions={allowedPlotActions}
         />
