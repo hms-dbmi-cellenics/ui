@@ -21,6 +21,8 @@ import { updateProject } from '../../redux/actions/projects';
 import processUpload from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 
+import UploadStatus from '../../utils/UploadStatus';
+
 const { Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
@@ -80,7 +82,7 @@ const ProjectDetails = ({ width, height }) => {
   }, [speciesData]);
 
   const renderCells = (columnId, text) => {
-    if (text === 'uploaded') {
+    if (text === UploadStatus.UPLOADED) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Text type='success'>Uploaded</Text>
@@ -88,7 +90,7 @@ const ProjectDetails = ({ width, height }) => {
       );
     }
 
-    if (text === 'uploading') {
+    if (text === UploadStatus.UPLOADING) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
@@ -98,7 +100,7 @@ const ProjectDetails = ({ width, height }) => {
       );
     }
 
-    if (text === 'uploadError') {
+    if (text === UploadStatus.UPLOAD_ERROR) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
@@ -116,7 +118,7 @@ const ProjectDetails = ({ width, height }) => {
       );
     }
 
-    if (text === 'fileNotFound') {
+    if (text === UploadStatus.FILE_NOT_FOUND) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
@@ -134,7 +136,7 @@ const ProjectDetails = ({ width, height }) => {
       );
     }
 
-    if (text === 'dataMissing') {
+    if (text === UploadStatus.DATA_MISSING) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
@@ -241,17 +243,23 @@ const ProjectDetails = ({ width, height }) => {
       return;
     }
 
-    const statuses = ['uploaded', 'uploading', 'uploadError', 'fileNotFound'];
-    const newData = projects[activeProjectUuid]?.samples.map((sampleUuid, idx) => ({
-      key: idx,
-      name: samples[sampleUuid].name,
-      uuid: sampleUuid,
-      barcodes: _.sample(statuses),
-      genes: _.sample(statuses),
-      matrix: _.sample(statuses),
-      species: 'dataMissing',
-    }));
+    const newData = projects[activeProjectUuid].samples.map((sampleUuid, idx) => {
+      const sampleFiles = samples[sampleUuid].files;
 
+      const barcodesStatus = sampleFiles['barcodes.tsv.gz']?.status;
+      const genesStatus = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz'])?.status;
+      const matrixStatus = sampleFiles['matrix.mtx.gz']?.status;
+
+      return {
+        key: idx,
+        name: samples[sampleUuid].name,
+        uuid: sampleUuid,
+        barcodes: barcodesStatus ?? UploadStatus.FILE_NOT_FOUND,
+        genes: genesStatus ?? UploadStatus.FILE_NOT_FOUND,
+        matrix: matrixStatus ?? UploadStatus.FILE_NOT_FOUND,
+        species: 'dataMissing',
+      };
+    });
     setData(newData);
   }, [projects, samples, activeProjectUuid]);
 
