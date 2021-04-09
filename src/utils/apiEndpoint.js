@@ -1,6 +1,6 @@
-const getApiEndpoint = () => {
+const getApiEndpoint = (location) => {
   try {
-    const url = new URL(window.location.href);
+    const url = new URL(location || window.location.href);
 
     if (url.hostname.includes('staging')) {
       return url.origin.replace('ui', 'api');

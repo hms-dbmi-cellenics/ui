@@ -5,6 +5,7 @@ import {
 import PropTypes from 'prop-types';
 import { NextSeo } from 'next-seo';
 
+import UserButton from './UserButton';
 import FeedbackButton from './FeedbackButton';
 import itemRender from '../utils/renderBreadcrumbLinks';
 
@@ -65,9 +66,12 @@ const Header = (props) => {
         style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
         breadcrumb={{ routes: buildRoutes(route), itemRender }}
         extra={(
-          <Space>
-            <FeedbackButton />
-            {extra}
+          <Space size='large'>
+            <Space>
+              <FeedbackButton />
+              {extra}
+            </Space>
+            <UserButton />
           </Space>
         )}
       />

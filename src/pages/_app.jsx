@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import useSWR from 'swr';
+import Amplify from 'aws-amplify';
 import ContentWrapper from '../components/ContentWrapper';
 import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
@@ -17,15 +18,24 @@ import getFromApiExpectOK from '../utils/getFromApiExpectOK';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
+import configure from '../utils/amplify-config';
+
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-const WrappedApp = ({ Component, pageProps, req }) => {
+const WrappedApp = ({ Component, pageProps }) => {
   const router = useRouter();
   const [experimentId, setExperimentId] = useState(undefined);
 
-  console.log(req, pageProps);
+  const { userPoolId, identityPoolid } = pageProps;
+
+  console.log(pageProps);
+
+  Amplify.configure({
+    ...configure(userPoolId, identityPoolid),
+    ssr: true,
+  });
 
   // Only hydrate pages when experiment ID is loaded.
   useEffect(() => {
@@ -44,13 +54,6 @@ const WrappedApp = ({ Component, pageProps, req }) => {
   );
 
   const mainContent = () => {
-    // If the page is statically rendered (on server), show a loading context.
-    if (!isBrowser) {
-      return (
-        <PreloadContent />
-      );
-    }
-
     // If this is a not found error, show it without the navigation bar.
     if (Component === NotFoundPage) {
       return <Component {...pageProps} />;

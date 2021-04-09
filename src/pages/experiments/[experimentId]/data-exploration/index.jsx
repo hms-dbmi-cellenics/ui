@@ -7,6 +7,7 @@ import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import Header from '../../../../components/Header';
 import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
@@ -17,6 +18,9 @@ import HeatmapSettings from '../../../../components/data-exploration/heatmap/Hea
 import MosaicCloseButton from '../../../../components/MosaicCloseButton';
 import { updateLayout, addWindow, addToWindow } from '../../../../redux/actions/layout';
 import SearchMenu from '../../../../components/SearchMenu';
+
+import getExperimentInfo from '../../../../utils/ssr/getExperimentInfo';
+import getAuthenticationInfo from '../../../../utils/ssr/getAuthenticationInfo';
 
 import 'react-mosaic-component/react-mosaic-component.css';
 
@@ -205,13 +209,13 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
   );
 };
 
-// ExplorationViewPage.getInitialProps = ({
-//   store, pathname, req, res,
-// }) => ({
-//   props: {
-//     url: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
-//   },
-// });
+export async function getServerSideProps(context) {
+  const results = await Promise.all(
+    [getAuthenticationInfo(context), getExperimentInfo(context)],
+  );
+
+  return _.merge(...results);
+}
 
 ExplorationViewPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
