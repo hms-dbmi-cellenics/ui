@@ -16,6 +16,7 @@ import getApiEndpoint from '../utils/apiEndpoint';
 import getFromApiExpectOK from '../utils/getFromApiExpectOK';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
+import { isBrowser } from '../utils/environment';
 
 import configure from '../utils/amplify-config';
 
@@ -61,6 +62,10 @@ const WrappedApp = ({ Component, pageProps }) => {
   );
 
   const mainContent = () => {
+    if (!isBrowser) {
+      return (<PreloadContent />);
+    }
+
     // If this is a not found error, show it without the navigation bar.
     if (Component === NotFoundPage) {
       return <Component {...pageProps} />;
