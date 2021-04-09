@@ -47,15 +47,15 @@ describe('Continuous embedding plot', () => {
       properties: {
         test: {
           name: 'Test',
-          cellIds: 'Set()',
+          cellIds: new Set(),
         },
         'test-1': {
           name: 'Test-1',
-          cellIds: 'Set(1, 2, 3)',
+          cellIds: new Set([1, 2, 3]),
         },
         'test-2': {
           name: 'Test-1',
-          cellIds: 'Set(4, 5, 6)',
+          cellIds: new Set([4, 5, 6]),
         },
       },
       hierarchy: [

@@ -32,23 +32,23 @@ describe('CellSetsTool', () => {
         'cluster-a': {
           name: 'cluster a',
           key: 'cluster-a',
-          cellIds: new Set(['1', '2']),
+          cellIds: new Set([1, 2]),
           color: '#00FF00',
         },
         'cluster-b': {
           name: 'cluster b',
           key: 'cluster-b',
-          cellIds: new Set(['2', '3', '4', '5']),
+          cellIds: new Set([2, 3, 4, 5]),
           color: '#FF0000',
         },
         'cluster-c': {
           name: 'cluster c',
           key: 'cluster-c',
-          cellIds: new Set(['2', '5']),
+          cellIds: new Set([2, 5]),
           color: '#0000FF',
         },
         'scratchpad-a': {
-          cellIds: new Set(['3']),
+          cellIds: new Set([3]),
           key: 'scratchpad-a',
           name: 'New Cluster',
           color: '#ff00ff',

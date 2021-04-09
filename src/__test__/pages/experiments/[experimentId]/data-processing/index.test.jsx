@@ -58,27 +58,27 @@ const getStore = (settings = {}) => {
       properties: {
         test: {
           name: 'Test',
-          cellIds: 'Set()',
+          cellIds: new Set(),
         },
         'test-1': {
           name: 'Test-1',
-          cellIds: 'Set(1, 2, 3)',
+          cellIds: new Set([1, 2, 3]),
         },
         'test-2': {
           name: 'Test-1',
-          cellIds: 'Set(4, 5, 6)',
+          cellIds: new Set([4, 5, 6]),
         },
         sample: {
           name: 'Test',
-          cellIds: 'Set()',
+          cellIds: new Set(),
         },
         'sample-1': {
           name: 'Test-1',
-          cellIds: 'Set(2, 3)',
+          cellIds: new Set([2, 3]),
         },
         'sample-2': {
           name: 'Test-1',
-          cellIds: 'Set(1, 4, 5, 6)',
+          cellIds: new Set([1, 4, 5, 6]),
         },
       },
       hierarchy: [

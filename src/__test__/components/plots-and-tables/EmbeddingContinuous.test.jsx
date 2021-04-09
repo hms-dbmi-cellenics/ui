@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
-import _ from 'lodash';
 import { Vega } from 'react-vega';
 
 import { generateSpec, generateData } from '../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
@@ -17,46 +16,46 @@ const cellSets = {
     'cluster-a': {
       name: 'cluster a',
       key: 'cluster-a',
-      cellIds: [0, 1, 2, 3, 4, 5],
+      cellIds: new Set([0, 1, 2, 3, 4, 5]),
       color: '#00FF00',
     },
     'cluster-b': {
       name: 'cluster b',
       key: 'cluster-b',
-      cellIds: [6, 7, 8, 9, 10],
+      cellIds: new Set([6, 7, 8, 9, 10]),
       color: '#FF0000',
     },
     'sample-a': {
       name: 'sample a',
       key: 'sample-a',
-      cellIds: [0, 2, 7, 8],
+      cellIds: new Set([0, 2, 7, 8]),
       color: '#00FF00',
     },
     'sample-b': {
       name: 'sample b',
       key: 'sample-b',
-      cellIds: [1, 3, 4, 6, 7, 8, 5],
+      cellIds: new Set([1, 3, 4, 6, 7, 8, 5]),
       color: '#FF0000',
     },
     louvain: {
       name: 'Louvain clusters',
       key: 'louvain',
       type: 'cellSets',
-      cellIds: [],
+      cellIds: new Set(),
       rootNode: true,
     },
     scratchpad: {
       name: 'Custom selections',
       key: 'scratchpad',
       type: 'cellSets',
-      cellIds: [],
+      cellIds: new Set(),
       rootNode: true,
     },
     sample: {
       name: 'Samples',
       key: 'sample',
       type: 'metadataCategorical',
-      cellIds: [],
+      cellIds: new Set(),
       rootNode: true,
     },
   },
@@ -91,7 +90,8 @@ const data = [
   [18, 10],
 ];
 const config = initialPlotConfigStates.embeddingContinuous;
-const expression = [0.844880940781665, 0, 0, 0, 0, 0, 1, 2, 1.0892605007475098, 0.9444651009182008, 0, 0, 0.9955310761799436, 0, 0];
+const expression = [0.844880940781665, 0, 0, 0, 0, 0, 1, 2, 1.0892605007475098,
+  0.9444651009182008, 0, 0, 0.9955310761799436, 0, 0];
 
 const initialState = {
   cellSets,
@@ -113,7 +113,8 @@ const initialState = {
 const store = mockStore(initialState);
 let component;
 
-const spec = generateSpec(config, generateData(expression, config.selectedSample, data, properties));
+const spec = generateSpec(config,
+  generateData(expression, config.selectedSample, data, properties));
 
 const testPlot = () => mount(
   <Provider store={store}>
