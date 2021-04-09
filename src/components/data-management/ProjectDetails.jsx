@@ -19,6 +19,7 @@ import {
 } from '../../redux/actions/samples';
 import { updateProject } from '../../redux/actions/projects';
 import processUpload from '../../utils/processUpload';
+import validateSampleName from '../../utils/validateSampleName';
 
 const { Text, Paragraph } = Typography;
 
@@ -36,11 +37,18 @@ const ProjectDetails = ({ width, height }) => {
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+  const [sampleNames, setSampleNames] = useState(new Set());
 
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
     setUploadModalVisible(false);
   };
+
+  useEffect(() => {
+    if (activeProject) {
+      setSampleNames(new Set(activeProject.samples.map((id) => samples[id].name.trim())));
+    }
+  }, [samples, projects]);
 
   useEffect(() => {
     if (!speciesData) {
@@ -158,6 +166,7 @@ const ProjectDetails = ({ width, height }) => {
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(el.uuid, { name }))}
         onDelete={() => dispatch(deleteSamples(el.uuid))}
+        validationFunc={(name) => validateSampleName(name, sampleNames)}
       />
     </Text>
   );
