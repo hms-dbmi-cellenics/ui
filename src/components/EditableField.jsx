@@ -1,20 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button, Input, Space, Tooltip,
+  Button, Input, Space, Tooltip, Typography,
 } from 'antd';
 
 import {
   EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined,
 } from '@ant-design/icons';
 
+const { Text } = Typography;
+
 const EditableField = (props) => {
   const {
-    value, deleteEnabled, showEdit, onAfterSubmit, onAfterCancel, renderBold, defaultEditing,
+    value,
+    deleteEnabled,
+    showEdit,
+    onAfterSubmit,
+    onAfterCancel,
+    renderBold,
+    defaultEditing,
+    validationFunc,
   } = props;
 
   const [editing, setEditing] = useState(defaultEditing);
   const [editedValue, setEditedValue] = useState(value);
+  const [isValid, setIsValid] = useState(true);
+
   useEffect(() => {
     setEditedValue(value);
   }, [value]);
@@ -36,17 +47,26 @@ const EditableField = (props) => {
   const onChange = (e) => {
     const { value: newValue } = e.target;
 
+    if (validationFunc) {
+      const valid = value === newValue || validationFunc(newValue);
+
+      // Validation func may not return false on invalid
+      setIsValid(valid === true);
+    }
+
     setEditedValue(newValue);
   };
 
   const onSubmit = (e) => {
     e.stopPropagation();
+    if (!isValid) return null;
     onAfterSubmit(editedValue);
     toggleEditing(e);
   };
 
   const onCancel = (e) => {
     e.stopPropagation();
+    if (!isValid) setIsValid(true);
     setEditedValue(value);
     toggleEditing(e);
     onAfterCancel();
@@ -97,17 +117,26 @@ const EditableField = (props) => {
   };
 
   return (
-    <Space>
-      {renderEditState()}
-      {
-        deleteEnabled
-          ? (
-            <Tooltip placement='bottom' title='Delete' mouseLeaveDelay={0}>
-              <Button size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
-            </Tooltip>
-          ) : <></>
-      }
-    </Space>
+    <>
+      <Space direction='vertical'>
+        <Space>
+          {renderEditState()}
+          {
+            deleteEnabled
+              ? (
+                <Tooltip placement='bottom' title='Delete' mouseLeaveDelay={0}>
+                  <Button size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
+                </Tooltip>
+              ) : <></>
+          }
+        </Space>
+        {!isValid ? (
+          <Text type='danger' style={{ fontSize: 12, fontWeight: 600 }}>
+            {validationFunc(editedValue) === false ? 'Invalid input' : validationFunc(editedValue)}
+          </Text>
+        ) : <></>}
+      </Space>
+    </>
   );
 };
 
@@ -115,6 +144,7 @@ EditableField.defaultProps = {
   onAfterSubmit: () => null,
   onAfterCancel: () => null,
   onDelete: () => null,
+  validationFunc: undefined,
   renderBold: false,
   value: null,
   showEdit: true,
@@ -127,6 +157,7 @@ EditableField.propTypes = {
   onAfterSubmit: PropTypes.func,
   onAfterCancel: PropTypes.func,
   onDelete: PropTypes.func,
+  validationFunc: PropTypes.func,
   deleteEnabled: PropTypes.bool,
   showEdit: PropTypes.bool,
   renderBold: PropTypes.bool,

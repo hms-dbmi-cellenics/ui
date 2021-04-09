@@ -23,7 +23,7 @@ import {
   colorByGeneExpression,
 } from '../../../utils/embeddingPlotHelperFunctions/helpers';
 import legend from '../../../../static/media/viridis.png';
-import isBrowser from '../../../utils/environment';
+import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
 
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';

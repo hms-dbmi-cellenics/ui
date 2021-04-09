@@ -11,7 +11,6 @@ import ContentWrapper from '../components/ContentWrapper';
 import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
 import Error from './_error';
-import isBrowser from '../utils/environment';
 import wrapper from '../redux/store';
 import getApiEndpoint from '../utils/apiEndpoint';
 import getFromApiExpectOK from '../utils/getFromApiExpectOK';
@@ -19,6 +18,11 @@ import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
 import configure from '../utils/amplify-config';
+
+// TODO: this needs to be refactored after auth works properly
+//
+// import { isBrowser, getCurrentEnvironment } from '../utils/environment';
+// import setupAmplify from '../utils/setupAmplify';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -46,6 +50,9 @@ const WrappedApp = ({ Component, pageProps }) => {
     if (router.route.includes('experimentId')) {
       setExperimentId(router.query.experimentId);
     }
+
+    // TODO: this needs to be worked on as well
+    // setupAmplify(getCurrentEnvironment());
   }, [router.query.experimentId]);
 
   const { data: experimentData, error: experimentError } = useSWR(

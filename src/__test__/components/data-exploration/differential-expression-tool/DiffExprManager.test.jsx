@@ -12,7 +12,10 @@ import DiffExprResults from '../../../../components/data-exploration/differentia
 import initialState from '../../../../redux/reducers/differentialExpression/initialState';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/environment', () => false);
+jest.mock('../../../../utils/environment', () => ({
+  __esModule: true,
+  isBrowser: () => false,
+}));
 
 const mockStore = configureMockStore([thunk]);
 
