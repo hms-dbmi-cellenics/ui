@@ -47,8 +47,6 @@ const createSample = (
     },
   });
 
-  console.log('newSampleUuidDebug');
-  console.log(newSampleUuid);
   return Promise.resolve(newSampleUuid);
 };
 

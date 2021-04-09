@@ -20,11 +20,11 @@ const compressAndUpload = async (sample, activeProjectUuid, dispatch) => {
     return result;
   }, {});
 
-  Object.entries(updatedSampleFiles).map(async ([fileName, file]) => {
+  Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
     loadAndCompressIfNecessary(file)
-      .then((loadedFile) => {
+      .then(async (loadedFile) => {
         const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
-        return Storage.put(bucketKey, loadedFile)
+        await Storage.put(bucketKey, loadedFile)
           .then(() => {
             dispatch(updateSampleFile(sample.uuid, {
               ...file,
@@ -49,7 +49,7 @@ const compressAndUpload = async (sample, activeProjectUuid, dispatch) => {
   return updatedSampleFiles;
 };
 
-const processUpload = (filesList, sampleType, samples, activeProjectUuid, dispatch) => {
+const processUpload = async (filesList, sampleType, samples, activeProjectUuid, dispatch) => {
   const samplesMap = filesList.reduce((acc, file) => {
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
@@ -78,21 +78,13 @@ const processUpload = (filesList, sampleType, samples, activeProjectUuid, dispat
     };
   }, {});
 
-  console.log('samplesMapDebugStart');
-  console.log(samplesMap);
-
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
     // Create sample if not exists
     if (!sample.uuid) {
       sample.uuid = await dispatch(createSample(activeProjectUuid, name, sampleType));
-      console.log('sampleDebug');
-      console.log(sample);
     }
 
-    sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
-
-    console.log('sampleDebugAfterUpload');
-    console.log(sample);
+    sample.files = await compressAndUpload(sample, activeProjectUuid, dispatch);
 
     Object.values(sample.files).forEach((file) => {
       dispatch(updateSampleFile(sample.uuid, {
@@ -100,13 +92,7 @@ const processUpload = (filesList, sampleType, samples, activeProjectUuid, dispat
         path: `${activeProjectUuid}/${file.name.replace(name, sample.uuid)}`,
       }));
     });
-
-    console.log('sampleDebugAfterUpdate');
-    console.log(sample);
   });
-
-  console.log('samplesMapDebugEnd');
-  console.log(samplesMap);
 };
 
 export default processUpload;
