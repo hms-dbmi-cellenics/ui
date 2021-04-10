@@ -1,6 +1,8 @@
 import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../../actionTypes/embeddings';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
+import WorkGenericError from '../../../utils/WorkGenericError';
+
 const TIMEOUT_SECONDS = 90;
 
 const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState) => {
@@ -13,7 +15,14 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
   const { pipeline } = getState().experimentSettings.pipelineStatus.status;
 
   if (!pipeline?.startDate) {
-    return null;
+    return dispatch({
+      type: EMBEDDINGS_ERROR,
+      payload: {
+        experimentId,
+        embeddingType,
+        error: new WorkGenericError('Embeddings cannot be shown until data processing is complete.'),
+      },
+    });
   }
 
   // Does not load anything if experiment settings is not loaded
