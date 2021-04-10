@@ -1,12 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import { DefaultSeo } from 'next-seo';
-import Head from 'next/head';
 import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import useSWR from 'swr';
-import Amplify from 'aws-amplify';
 import ContentWrapper from '../components/ContentWrapper';
 import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
@@ -16,9 +14,7 @@ import getApiEndpoint from '../utils/apiEndpoint';
 import getFromApiExpectOK from '../utils/getFromApiExpectOK';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
-import { isBrowser } from '../utils/environment';
-
-import configure from '../utils/amplify-config';
+// import { isBrowser } from '../utils/environment';
 
 // TODO: this needs to be refactored after auth works properly
 //
@@ -32,15 +28,6 @@ Router.events.on('routeChangeError', () => NProgress.done());
 const WrappedApp = ({ Component, pageProps }) => {
   const router = useRouter();
   const [experimentId, setExperimentId] = useState(undefined);
-
-  const { userPoolId, identityPoolid } = pageProps;
-
-  console.log(pageProps);
-
-  Amplify.configure({
-    ...configure(userPoolId, identityPoolid),
-    ssr: true,
-  });
 
   // Only hydrate pages when experiment ID is loaded.
   useEffect(() => {
@@ -62,10 +49,6 @@ const WrappedApp = ({ Component, pageProps }) => {
   );
 
   const mainContent = () => {
-    if (!isBrowser) {
-      return (<PreloadContent />);
-    }
-
     // If this is a not found error, show it without the navigation bar.
     if (Component === NotFoundPage) {
       return <Component {...pageProps} />;
