@@ -21,6 +21,17 @@ Object {
 }
 `;
 
+exports[`loadEmbedding action Dispatches error if pipeline has not been run 1`] = `
+Object {
+  "payload": Object {
+    "embeddingType": "umap",
+    "error": [Error: Embeddings cannot be shown until data processing is complete.],
+    "experimentId": "1234",
+  },
+  "type": "embeddings/error",
+}
+`;
+
 exports[`loadEmbedding action Dispatches on a previous error condition 1`] = `
 Object {
   "payload": Object {

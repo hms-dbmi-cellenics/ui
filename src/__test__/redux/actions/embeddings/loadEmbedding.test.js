@@ -199,7 +199,7 @@ describe('loadEmbedding action', () => {
     expect(store.getActions().length).toEqual(0);
   });
 
-  it('Does not dispatch if pipeline has not been run', async () => {
+  it('Dispatches error if pipeline has not been run', async () => {
     const store = mockStore(
       {
         embeddings: {},
@@ -215,7 +215,10 @@ describe('loadEmbedding action', () => {
 
     await store.dispatch(loadEmbedding(experimentId, embeddingType));
 
-    // There should be no dispatch.
-    expect(store.getActions().length).toEqual(0);
+    // There should be an error.
+    expect(store.getActions().length).toEqual(1);
+
+    const firstAction = store.getActions()[0];
+    expect(firstAction).toMatchSnapshot();
   });
 });
