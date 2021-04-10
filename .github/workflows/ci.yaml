@@ -188,7 +188,7 @@ jobs:
           | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
           | yq w -d1 - spec.values.image.repository "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
-          | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/api-role-${{ matrix.environment }}" \
+          | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/ui-role-${{ matrix.environment }}" \
           > $DEPLOYMENT_NAME-without-host.yaml
 
           if [ "${{ matrix.environment }}" = "production" ]
