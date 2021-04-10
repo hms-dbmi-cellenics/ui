@@ -8,13 +8,24 @@ import {
   ListUserPoolsCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 
+import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
+import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
+
 const getAuthenticationInfo = async () => {
   const identityPoolClient = new CognitoIdentityClient(
-    { region: 'eu-west-1' },
+    {
+      region: 'eu-west-1',
+      credentials: fromTokenFile({
+        roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
+      }),
+    },
   );
   const userPoolClient = new CognitoIdentityProviderClient(
     {
       region: 'eu-west-1',
+      credentials: fromTokenFile({
+        roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
+      }),
     },
   );
 
