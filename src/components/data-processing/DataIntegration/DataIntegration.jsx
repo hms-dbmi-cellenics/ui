@@ -206,8 +206,6 @@ const DataIntegration = (props) => {
 
   const configureEmbeddingFinished = useRef(null);
   useEffect(() => {
-    console.log('completedStepsDebug');
-    console.log(completedSteps);
     configureEmbeddingFinished.current = completedSteps?.includes('ConfigureEmbedding');
   }, [completedSteps]);
 
@@ -293,8 +291,11 @@ const DataIntegration = (props) => {
   };
 
   const renderPlot = () => {
+    const disabledByConfigEmbedding = plots[selectedPlot].blockedByConfigureEmbedding
+      && !configureEmbeddingFinished.current;
+
     // Spinner for main window
-    if (!selectedConfig) {
+    if (!selectedConfig || disabledByConfigEmbedding) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
