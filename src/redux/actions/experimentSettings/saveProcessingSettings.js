@@ -1,3 +1,4 @@
+import fetch from 'better-fetch';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_SAVE,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
@@ -19,7 +20,6 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer admin',
         },
         body: JSON.stringify([{
           name: settingName,

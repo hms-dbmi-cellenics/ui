@@ -1,3 +1,4 @@
+import fetch from 'better-fetch';
 import getApiEndpoint from '../../../utils/apiEndpoint';
 import { CELL_SETS_SAVE } from '../../actionTypes/cellSets';
 import pushNotificationMessage from '../notifications';
@@ -24,7 +25,6 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer admin',
         },
         body: JSON.stringify(
           treeData,

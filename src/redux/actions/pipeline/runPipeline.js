@@ -1,3 +1,4 @@
+import fetch from 'better-fetch';
 import {
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
@@ -29,7 +30,6 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer admin',
         },
         body: JSON.stringify({
           processingConfig: [

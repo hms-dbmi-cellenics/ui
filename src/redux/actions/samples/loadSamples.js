@@ -1,3 +1,4 @@
+import fetch from 'better-fetch';
 import getApiEndpoint from '../../../utils/apiEndpoint';
 import {
   SAMPLES_LOADED,
@@ -8,9 +9,7 @@ const loadSamples = (
   experimentId,
 ) => async (dispatch) => {
   try {
-    const response = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/samples`, {
-      headers: { Authorization: 'Bearer admin' },
-    });
+    const response = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/samples`);
     const json = await response.json();
     dispatch({
       type: SAMPLES_LOADED,

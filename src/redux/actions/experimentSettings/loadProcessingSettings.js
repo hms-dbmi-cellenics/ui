@@ -1,3 +1,4 @@
+import fetch from 'better-fetch';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
@@ -19,9 +20,7 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
 
   try {
     const response = await fetch(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`, {
-        headers: { Authorization: 'Bearer admin' },
-      },
+      `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
     );
 
     if (response.ok) {

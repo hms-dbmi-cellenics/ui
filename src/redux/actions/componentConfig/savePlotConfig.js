@@ -1,3 +1,4 @@
+import fetch from 'better-fetch';
 import { SAVE_CONFIG } from '../../actionTypes/componentConfig';
 import getApiEndpoint from '../../../utils/apiEndpoint';
 
@@ -12,7 +13,6 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer admin',
       },
       body: JSON.stringify(content),
     },

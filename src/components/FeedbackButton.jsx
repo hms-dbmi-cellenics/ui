@@ -47,7 +47,6 @@ const FeedbackButton = () => {
     try {
       const r = await fetch(atob(HOOK_URL), {
         method: 'POST',
-        headers: { Authorization: 'Bearer admin' },
         body: JSON.stringify(feedbackData),
       });
 

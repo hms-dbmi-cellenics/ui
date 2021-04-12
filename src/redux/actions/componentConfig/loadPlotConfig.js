@@ -1,3 +1,4 @@
+import fetch from 'better-fetch';
 import _ from 'lodash';
 import { LOAD_CONFIG } from '../../actionTypes/componentConfig';
 import getApiEndpoint from '../../../utils/apiEndpoint';
@@ -7,11 +8,8 @@ import { initialPlotConfigStates } from '../../reducers/componentConfig/initialS
 
 const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
   try {
-    console.log('getting conf');
     const response = await fetch(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`, {
-        headers: { Authorization: 'Bearer admin' },
-      },
+      `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
     );
     if (response.ok) {
       const data = await response.json();

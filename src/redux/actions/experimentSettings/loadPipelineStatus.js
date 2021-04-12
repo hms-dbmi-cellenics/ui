@@ -1,3 +1,4 @@
+import fetch from 'better-fetch';
 import {
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED,
@@ -16,9 +17,7 @@ const loadPipelineStatus = (experimentId) => async (dispatch) => {
 
   try {
     const response = await fetch(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`, {
-        headers: { Authorization: 'Bearer admin' },
-      },
+      `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`,
     );
 
     if (response.ok) {
