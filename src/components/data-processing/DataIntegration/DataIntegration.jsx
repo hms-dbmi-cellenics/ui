@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useCallback,
+  useState, useEffect, useRef, useCallback,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -61,6 +61,7 @@ const DataIntegration = (props) => {
           actions={actions}
         />
       ),
+      blockedByConfigureEmbedding: true,
     },
     frequency: {
       title: 'Frequency plot',
@@ -74,6 +75,7 @@ const DataIntegration = (props) => {
           actions={actions}
         />
       ),
+      blockedByConfigureEmbedding: true,
     },
     elbow: {
       title: 'Elbow plot',
@@ -87,6 +89,7 @@ const DataIntegration = (props) => {
           numPCs={calculationConfig?.dimensionalityReduction.numPCs}
         />
       ),
+      blockedByConfigureEmbedding: false,
     },
   };
 
@@ -179,17 +182,38 @@ const DataIntegration = (props) => {
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges,
   );
 
-  const config = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
-  );
+  const plotConfigs = useSelector((state) => {
+    const plotUuids = Object.values(plots).map((plotIt) => plotIt.plotUuid);
+
+    const plotConfigsToReturn = plotUuids.reduce((acum, plotUuidIt) => {
+      // eslint-disable-next-line no-param-reassign
+      acum[plotUuidIt] = state.componentConfig[plotUuidIt]?.config;
+      return acum;
+    }, {});
+
+    return plotConfigsToReturn;
+  });
 
   const plotData = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
   );
 
+  const selectedConfig = plotConfigs[plots[selectedPlot].plotUuid];
+
+  const completedSteps = useSelector(
+    (state) => state.experimentSettings.pipelineStatus.status.pipeline?.completedSteps,
+  );
+
+  const configureEmbeddingFinished = useRef(null);
+  useEffect(() => {
+    console.log('completedStepsDebug');
+    console.log(completedSteps);
+    configureEmbeddingFinished.current = completedSteps?.includes('ConfigureEmbedding');
+  }, [completedSteps]);
+
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
-      if (!config) {
+      if (!plotConfigs[obj.plotUuid]) {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
@@ -205,28 +229,28 @@ const DataIntegration = (props) => {
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-    if (!config || !plotData) {
+    if (!selectedConfig || !plotData) {
       return;
     }
 
     if (!cellSets.loading
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
-      && config
+      && selectedConfig
       && plotData) {
-      setPlot(plots[selectedPlot].plot(config, plotData, true));
-      if (!config.selectedCellSet) { return; }
+      setPlot(plots[selectedPlot].plot(selectedConfig, plotData, true));
+      if (!selectedConfig.selectedCellSet) { return; }
 
       const propertiesArray = Object.keys(cellSets.properties);
       const cellSetClusteringLength = propertiesArray.filter(
-        (cellSet) => cellSet === config.selectedCellSet,
+        (cellSet) => cellSet === selectedConfig.selectedCellSet,
       ).length;
 
       if (!cellSetClusteringLength) {
         debouncedCellSetClustering(0.5);
       }
     }
-  }, [config, cellSets, plotData, calculationConfig]);
+  }, [selectedConfig, cellSets, plotData, calculationConfig]);
 
   useEffect(() => {
     const showPopupWhenUnsaved = (url) => {
@@ -270,7 +294,7 @@ const DataIntegration = (props) => {
 
   const renderPlot = () => {
     // Spinner for main window
-    if (!config) {
+    if (!selectedConfig) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -310,12 +334,20 @@ const DataIntegration = (props) => {
                   cursor: 'pointer',
                 }}
               >
-                <MiniPlot
-                  experimentId={experimentId}
-                  plotUuid={plotObj.plotUuid}
-                  plotFn={plotObj.plot}
-                  actions={false}
-                />
+                {plotObj.blockedByConfigureEmbedding && !configureEmbeddingFinished.current
+                  ? (
+                    <center>
+                      <Skeleton.Image />
+                    </center>
+                  )
+                  : (
+                    <MiniPlot
+                      experimentId={experimentId}
+                      plotUuid={plotObj.plotUuid}
+                      plotFn={plotObj.plot}
+                      actions={false}
+                    />
+                  )}
               </button>
             ))}
           </Space>
@@ -332,7 +364,7 @@ const DataIntegration = (props) => {
               <div style={{ height: 8 }} />
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
-                config={config}
+                config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
               />
             </Panel>
