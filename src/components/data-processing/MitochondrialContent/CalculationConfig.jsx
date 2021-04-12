@@ -13,7 +13,14 @@ const MitochondrialConfig = (props) => {
   } = props;
 
   const updateSettingsForActiveMethod = (diff) => {
-    const realDiff = { methodSettings: { [activeMethod]: diff } };
+    // This is a temporary measure to account for the fact that
+    // the pipeline is using fractions instead of percentages
+    const newDiff = { ...diff };
+    if (newDiff.maxFraction) {
+      newDiff.maxFraction /= 100;
+    }
+
+    const realDiff = { methodSettings: { [activeMethod]: newDiff } };
     updateSettings(realDiff);
   };
   const filtering = false;
@@ -24,7 +31,7 @@ const MitochondrialConfig = (props) => {
     <>
       <Form.Item label='Max percentage'>
         <Slider
-          value={config.methodSettings[activeMethod].maxFraction}
+          value={config.methodSettings[activeMethod].maxFraction * 100}
           min={0}
           max={100}
           step={0.05}

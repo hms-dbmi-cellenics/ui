@@ -1,6 +1,8 @@
 const generateSpec = (config, plotData) => {
   let legend = null;
-  const deadOrAlive = `(datum.fracMito <= ${config.maxFraction}) ? 'Alive' : 'Dead'`;
+  const maxPercentage = config.maxFraction * 100;
+
+  const deadOrAlive = `(datum.fracMito <= ${maxPercentage}) ? 'Alive' : 'Dead'`;
 
   legend = !config.legend.enabled ? null : [
     {
@@ -134,7 +136,7 @@ const generateSpec = (config, plotData) => {
         type: 'rule',
         encode: {
           update: {
-            x: { scale: 'xscale', value: config.maxFraction },
+            x: { scale: 'xscale', value: maxPercentage },
             y: { value: 0 },
             y2: { field: { group: 'height' } },
             strokeWidth: { value: 2 },
