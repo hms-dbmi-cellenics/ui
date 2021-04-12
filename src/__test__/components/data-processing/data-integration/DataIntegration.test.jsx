@@ -21,6 +21,7 @@ const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFr
 const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;
 
 const filterName = 'dataIntegration';
+const configureEmbeddingFilterName = 'configureEmbedding';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -33,7 +34,7 @@ jest.mock('next/router', () => ({
   })),
 }));
 
-const store = mockStore({
+const createStore = (completedSteps) => mockStore({
   cellSets: {
     ...initialCellSetsState,
     properties: {
@@ -79,13 +80,14 @@ const store = mockStore({
   },
   experimentSettings: {
     ...initialExperimentState,
+    pipelineStatus: { status: { pipeline: { completedSteps } } },
   },
   componentConfig: {
     dataIntegrationFrequency: {
       config: dataIntegrationFrequencyConfig,
       plotData: [],
     },
-    [generateDataProcessingPlotUuid(null, filterName, 0)]: {
+    [generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1)]: {
       config: dataIntegrationEmbeddingConfig,
       plotData: [],
     },
@@ -120,6 +122,34 @@ describe('DataIntegration', () => {
   configure({ adapter: new Adapter() });
 
   it('renders correctly', () => {
+    const store = createStore(['ConfigureEmbedding']);
+
+    const component = mount(
+      <Provider store={store}>
+        <DataIntegration
+          experimentId='1234'
+          width={50}
+          height={50}
+          onPipelineRun={() => { }}
+        />
+      </Provider>,
+    );
+
+    const dataIntegration = component.find(DataIntegration).at(0);
+    const calculationConfig = dataIntegration.find(CalculationConfig);
+
+    // There is a config element
+    expect(calculationConfig.length).toEqual(1);
+
+    const plots = dataIntegration.find(Vega);
+
+    // There are 4 plots (1 main and 3 miniatures)
+    expect(plots.length).toEqual(4);
+  });
+
+  it('doesnt show plots that depend on configure embedding if it hasnt finished running yet', () => {
+    const store = createStore([]);
+
     const component = mount(
       <Provider store={store}>
         <DataIntegration
@@ -136,9 +166,9 @@ describe('DataIntegration', () => {
     // There is a config element
     expect(calculationConfig.length).toEqual(1);
 
-    const plots = dataIntegration.find(Vega);
-
-    // There are 4 plots (1 main and 3 miniatures)
-    expect(plots.length).toEqual(4);
+    // Only elbow plot is shown
+    expect(dataIntegration.find('ElbowPlot')).toHaveLength(1);
+    expect(dataIntegration.find('CategoricalEmbeddingPlot')).toHaveLength(0);
+    expect(dataIntegration.find('FrequencyPlot')).toHaveLength(0);
   });
 });
