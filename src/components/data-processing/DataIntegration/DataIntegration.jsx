@@ -35,6 +35,7 @@ const DataIntegration = (props) => {
   const cellSets = useSelector((state) => state.cellSets);
 
   const filterName = 'dataIntegration';
+  const configureEmbeddingFilterName = 'configureEmbedding';
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -50,7 +51,7 @@ const DataIntegration = (props) => {
   const plots = {
     embedding: {
       title: 'Sample embedding',
-      plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
+      plotUuid: generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1),
       plotType: 'dataIntegrationEmbedding',
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
