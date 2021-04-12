@@ -78,6 +78,7 @@ const DataManagementPage = ({ route }) => {
         firstTimeFlow={projectsList.ids.length === 0}
         onCancel={() => { setNewProjectModalVisible(false); }}
         onCreate={createNewProject}
+        projects={projectsList}
       />
       <div style={{ height: '100%', width: '100%', margin: 0 }}>
         <Mosaic

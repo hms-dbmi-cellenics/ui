@@ -98,7 +98,7 @@ CategoricalEmbeddingPlot.propTypes = {
     PropTypes.object,
   ]),
   plotData: PropTypes.array,
-  plotDataCategoryName: PropTypes.array,
+  plotDataCategoryName: PropTypes.string,
 };
 
 CategoricalEmbeddingPlot.defaultProps = {

@@ -5,7 +5,14 @@ const TIMEOUT_SECONDS = 90;
 
 const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState) => {
   // If a previous load was initiated, hold off on it until that one is executed.
-  if (getState().embeddings[embeddingType] && getState().embeddings[embeddingType].loading) {
+  if (getState().embeddings[embeddingType]?.loading
+    || getState().embeddings[embeddingType]?.data.length) {
+    return null;
+  }
+
+  const { pipeline } = getState().experimentSettings.pipelineStatus.status;
+
+  if (!pipeline?.startDate) {
     return null;
   }
 
@@ -34,6 +41,7 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     name: 'GetEmbedding',
     type: embeddingType,
     config: methodSettings[embeddingType],
+    lastRun: pipeline.startDate,
   };
 
   try {

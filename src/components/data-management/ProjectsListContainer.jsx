@@ -15,6 +15,7 @@ import { setActiveProject, updateProject, deleteProject as deleteProjectAction }
 import PrettyTime from '../PrettyTime';
 
 import processUpload from '../../utils/processUpload';
+import validateProjectName from '../../utils/validateProjectName';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
@@ -25,11 +26,12 @@ const ProjectsListContainer = (props) => {
   const { activeProjectUuid } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
-  const [uploadModalVisible, setUploadModalVisible] = useState(true);
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [projectNames, setProjectNames] = useState(new Set());
 
   useEffect(() => {
-    setUploadModalVisible(projects[activeProjectUuid]?.samples.length === 0);
-  }, [activeProjectUuid]);
+    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
+  }, [projects.ids]);
 
   const activeProjectStyle = {
     backgroundColor: blue[0],
@@ -71,7 +73,6 @@ const ProjectsListContainer = (props) => {
 
               onClick={() => {
                 dispatch(setActiveProject(uuid));
-                setUploadModalVisible(projects[uuid].samples.length === 0);
               }}
             >
               <Descriptions
@@ -90,6 +91,7 @@ const ProjectsListContainer = (props) => {
                       setDeleteProjectUuid(uuid);
                       setDeleteModalVisible(true);
                     }}
+                    validationFunc={(name) => validateProjectName(name, projectNames)}
                   />
                 )}
               >
