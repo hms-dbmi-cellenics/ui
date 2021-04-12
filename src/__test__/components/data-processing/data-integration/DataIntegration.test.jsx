@@ -21,6 +21,7 @@ const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFr
 const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;
 
 const filterName = 'dataIntegration';
+const configureEmbeddingFilterName = 'configureEmbedding';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -79,13 +80,14 @@ const store = mockStore({
   },
   experimentSettings: {
     ...initialExperimentState,
+    pipelineStatus: { status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } } },
   },
   componentConfig: {
     dataIntegrationFrequency: {
       config: dataIntegrationFrequencyConfig,
       plotData: [],
     },
-    [generateDataProcessingPlotUuid(null, filterName, 0)]: {
+    [generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1)]: {
       config: dataIntegrationEmbeddingConfig,
       plotData: [],
     },
