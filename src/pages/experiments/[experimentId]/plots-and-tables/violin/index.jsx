@@ -1,41 +1,53 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import {
-  Row, Col, Space, Collapse, Input, Skeleton,
+  Row,
+  Col,
+  Space,
+  Collapse,
+  Tooltip,
+  Input,
+  Button,
+  Skeleton,
+  Form,
+  Slider,
+  Radio,
 } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
-import SelectData from '../../../../../components/plots/styling/embedding-continuous/SelectData';
+import SelectData from '../../../../../components/plots/styling/violin/SelectData';
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from '../../../../../redux/actions/componentConfig/index';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import Header from '../../../../../components/plots/Header';
-import ContinuousEmbeddingPlot from '../../../../../components/plots/ContinuousEmbeddingPlot';
-import Loader from '../../../../../components/Loader';
+import ViolinPlot from '../../../../../components/plots/ViolinPlot';
 
 const { Panel } = Collapse;
 const { Search } = Input;
 
 const route = {
-  path: 'embedding-continuous',
-  breadcrumbName: 'Continuous Embedding',
+  path: 'violin',
+  breadcrumbName: 'Violin',
 };
 
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
-const plotUuid = 'embeddingContinuousMain';
-const plotType = 'embeddingContinuous';
+const plotUuid = 'ViolinMain';
+const plotType = 'violin';
 
-const EmbeddingContinuousIndex = ({ experimentId }) => {
+const ViolinIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state?.cellSets);
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
+    console.log('useEffect');
+    console.log(config);
   }, [experimentId]);
 
   // updateField is a subset of what default config has and contains only the things we want change
@@ -100,7 +112,31 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
             cellSets={cellSets}
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
-
+      </Panel>
+      <Panel header='Data Transformation' key='16'>
+        {config ? (
+          <div>
+            <Form.Item>
+              <p>Transform Gene Expression</p>
+              <Radio.Group
+                onChange={(e) => updatePlotWithChanges({ normalised: e.target.value })}
+                value={config.normalised}
+              >
+                <Radio value='normalised'>Normalised</Radio>
+                <Radio value='raw'>Raw values</Radio>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item label='Bandwidth Adjustment'>
+              <Slider
+                value={config.kdeBandwidth}
+                min={0}
+                max={1}
+                onChange={(val) => updatePlotWithChanges({ kdeBandwidth: val })}
+                step={0.05}
+              />
+            </Form.Item>
+          </div>
+        ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>
     </>
   );
@@ -117,20 +153,35 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
-              <Panel header='Preview' key='1'>
-
-                <ContinuousEmbeddingPlot
-                  experimentId={experimentId}
-                  config={config}
-                  plotUuid={plotUuid}
-                />
+              <Panel
+                header='Preview'
+                key='1'
+                extra={(
+                  <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
+                    <Button icon={<InfoCircleOutlined />} />
+                  </Tooltip>
+                )}
+              >
+                {config
+                  && (
+                    <ViolinPlot
+                      experimentId={experimentId}
+                      config={config}
+                      plotUuid={plotUuid}
+                    />
+                  )}
               </Panel>
             </Collapse>
           </Space>
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} renderExtraPanels={renderExtraPanels} />
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={renderExtraPanels}
+            />
           </Space>
         </Col>
       </Row>
@@ -138,8 +189,8 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
   );
 };
 
-EmbeddingContinuousIndex.propTypes = {
+ViolinIndex.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default EmbeddingContinuousIndex;
+export default ViolinIndex;

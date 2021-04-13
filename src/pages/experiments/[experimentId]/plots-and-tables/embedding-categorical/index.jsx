@@ -22,8 +22,6 @@ import Header from '../../../../../components/plots/Header';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import CategoricalEmbeddingPlot from '../../../../../components/plots/CategoricalEmbeddingPlot';
 
-import Loader from '../../../../../components/Loader';
-
 const { Panel } = Collapse;
 
 // TODO: when we want to enable users to create their custom plots,

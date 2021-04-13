@@ -5,27 +5,19 @@ import { Vega } from 'react-vega';
 
 import { Skeleton } from 'antd';
 import PlatformError from '../PlatformError';
-import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import { loadEmbedding } from '../../redux/actions/embedding';
+import { generateSpec, generateData } from '../../utils/plotSpecs/generateViolinSpec';
 import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/actions/genes';
 import { loadCellSets } from '../../redux/actions/cellSets';
-import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
 
-const ContinuousEmbeddingPlot = (props) => {
+const ViolinPlot = (props) => {
   const {
     experimentId, config, plotUuid, plotData, actions,
   } = props;
-  const embeddingType = 'umap';
   const dispatch = useDispatch();
+  const error = false; // TO_DO - relate to cellset loading and gene expression loading
+  const loading = false;
 
-  const embeddingSettings = useSelector(
-    (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
-  );
-  const {
-    data: embeddingData,
-    loading, error,
-  } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
   const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
@@ -42,15 +34,6 @@ const ContinuousEmbeddingPlot = (props) => {
     sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
   };
 
-  useEffect(() => {
-    if (!config) {
-      return;
-    }
-
-    const spec = generateSpec(config);
-    setPlotSpec(spec);
-  }, [config]);
-
   if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
@@ -58,15 +41,7 @@ const ContinuousEmbeddingPlot = (props) => {
     if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
-
-    if (!embeddingSettings) {
-      dispatch(loadProcessingSettings(experimentId, embeddingType));
-    }
-
-    if (!embeddingData && embeddingSettings.method) {
-      dispatch(loadEmbedding(experimentId, embeddingSettings.method));
-    }
-  }, [experimentId, embeddingSettings.method]);
+  }, [experimentId]);
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
@@ -92,26 +67,23 @@ const ContinuousEmbeddingPlot = (props) => {
       && !geneExpression.error
       && !cellSets.loading
       && !cellSets.error) {
-      setPlotSpec(
-        generateSpec(
-          config,
-          generateData(
-            geneExpression.data[config.shownGene].expression,
-            config.selectedSample,
-            embeddingData,
-            cellSets.properties,
-          ),
-        ),
+      const expressionType = config.normalised === 'normalised' ? 'expression' : 'zScore';
+      const generatedPlotData = generateData(
+        cellSets,
+        geneExpression.data[config.shownGene][expressionType],
+        config.selectedCellSet,
+        config.selectedPoints,
       );
+      setPlotSpec(generateSpec(config, generatedPlotData));
     }
-  }, [config, plotData, embeddingData, geneExpression, cellSets, loading]);
+  }, [config, plotData, geneExpression, cellSets, loading]);
 
   const render = () => {
     if (error) {
       return (
         <PlatformError
           error={error}
-          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings.method)); }}
+        // onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings.method)); }}
         />
       );
     }
@@ -120,13 +92,14 @@ const ContinuousEmbeddingPlot = (props) => {
       return (
         <PlatformError
           error={geneExpression.error}
-          onClick={() => { dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid)); }}
+          onClick={() => {
+            dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
+          }}
         />
       );
     }
 
-    if (!embeddingData
-      || geneExpression.loading.length
+    if (geneExpression.loading.length
       || loading
       || cellSets.loading
       || fetching) {
@@ -151,12 +124,12 @@ const ContinuousEmbeddingPlot = (props) => {
   );
 };
 
-ContinuousEmbeddingPlot.defaultProps = {
+ViolinPlot.defaultProps = {
   plotData: null,
   actions: true,
 };
 
-ContinuousEmbeddingPlot.propTypes = {
+ViolinPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotUuid: PropTypes.string.isRequired,
@@ -167,4 +140,4 @@ ContinuousEmbeddingPlot.propTypes = {
   ]),
 };
 
-export default ContinuousEmbeddingPlot;
+export default ViolinPlot;

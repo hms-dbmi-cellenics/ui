@@ -176,6 +176,36 @@ const frequencyInitialConfig = {
   geneexpLegendloc: '',
 };
 
+// PLOTS & TABLES - Violin
+const violinConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'UMAP 1',
+    yAxisText: 'UMAP 2',
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  shownGene: 'notSelected',
+  selectedCellSet: 'louvain',
+  selectedPoints: 'All',
+  kdeBandwidth: 0.3,
+  normalised: 'normalised',
+};
 // EMBEDDING PREVIEW - Coloured by sample
 const embeddingPreviewBySampleInitialConfig = {
   spec: '1.0.0',
@@ -620,6 +650,7 @@ const initialPlotConfigStates = {
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
+  violin: violinConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
