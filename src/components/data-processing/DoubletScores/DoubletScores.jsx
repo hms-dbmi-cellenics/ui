@@ -156,3 +156,5 @@ DoubletScores.propTypes = {
 
 DoubletScores.defaultProps = {
 };
+
+export default DoubletScores;

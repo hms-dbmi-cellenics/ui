@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
-import hash from 'object-hash';
 
 import EmptyPlot from './helpers/EmptyPlot';
 import generateSpec from '../../utils/plotSpecs/generateMitochondrialFractionScatterplot';
@@ -54,7 +53,4 @@ MitochondrialFractionScatterplot.defaultProps = {
   actions: true,
 };
 
-export default React.memo(
-  MitochondrialFractionScatterplot,
-  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
-);
+export default MitochondrialFractionScatterplot;
