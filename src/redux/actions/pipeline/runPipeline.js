@@ -1,4 +1,4 @@
-import fetch from 'better-fetch';
+import fetchAPI from '../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
@@ -24,7 +24,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
 
     // We don't need to manually save any processing config because it is done by
     // the api once the pipeline finishes successfully
-    const response = await fetch(
+    const response = await fetchAPI(
       `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`,
       {
         method: 'POST',

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
-import fetch from 'better-fetch';
+import fetchAPI from './fetchAPI';
 import connectionPromise from './socketConnection';
 import WorkResponseError from './WorkResponseError';
 import WorkTimeoutError from './WorkTimeoutError';
@@ -11,7 +11,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const io = await connectionPromise();
 
   // Check if we need to have a bigger timeout because the worker being down.
-  const statusResponse = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`);
+  const statusResponse = await fetchAPI(`${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`);
   const jsonResponse = await statusResponse.json();
 
   const { worker: { started, ready } } = jsonResponse;

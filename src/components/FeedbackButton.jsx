@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { CommentOutlined, DownOutlined } from '@ant-design/icons';
 import messages from './notification/messages';
 import pushNotificationMessage from '../redux/actions/notifications';
+import fetchAPI from '../utils/fetchAPI';
 
 const { TextArea } = Input;
 
@@ -45,7 +46,7 @@ const FeedbackButton = () => {
     };
 
     try {
-      const r = await fetch(atob(HOOK_URL), {
+      const r = await fetchAPI(atob(HOOK_URL), {
         method: 'POST',
         body: JSON.stringify(feedbackData),
       });

@@ -1,4 +1,4 @@
-import fetch from 'better-fetch';
+import fetchAPI from '../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_SAVE,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
@@ -14,7 +14,7 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
   const content = getState().experimentSettings.processing[settingName];
 
   try {
-    const response = await fetch(
+    const response = await fetchAPI(
       `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
       {
         method: 'PUT',

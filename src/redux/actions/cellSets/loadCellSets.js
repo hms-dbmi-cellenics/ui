@@ -1,6 +1,5 @@
-import fetch from 'better-fetch';
 import getApiEndpoint from '../../../utils/apiEndpoint';
-
+import fetchAPI from '../../../utils/fetchAPI';
 import {
   CELL_SETS_LOADED, CELL_SETS_LOADING, CELL_SETS_ERROR,
 } from '../../actionTypes/cellSets';
@@ -20,7 +19,7 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(`${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`);
+    const response = await fetchAPI(`${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`);
     const json = await response.json();
     dispatch({
       type: CELL_SETS_LOADED,

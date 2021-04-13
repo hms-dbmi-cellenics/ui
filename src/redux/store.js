@@ -2,7 +2,6 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { createWrapper } from 'next-redux-wrapper';
-import fetch from 'better-fetch';
 import rootReducer from './reducers/index';
 
 const bindMiddleware = (middleware) => {
@@ -15,11 +14,6 @@ const bindMiddleware = (middleware) => {
   }
   return applyMiddleware(...middleware);
 };
-
-// default headers added for each api request
-fetch.setDefaultHeaders({
-  Authorization: 'Bearer admin',
-});
 
 const getStore = (initialState) => {
   const store = createStore(

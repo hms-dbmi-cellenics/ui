@@ -1,4 +1,4 @@
-import fetch from 'better-fetch';
+import fetchAPI from '../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
@@ -19,7 +19,7 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(
+    const response = await fetchAPI(
       `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
     );
 

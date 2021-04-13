@@ -1,4 +1,4 @@
-import fetch from 'better-fetch';
+import fetchAPI from '../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED,
@@ -16,7 +16,7 @@ const loadPipelineStatus = (experimentId) => async (dispatch) => {
   });
 
   try {
-    const response = await fetch(
+    const response = await fetchAPI(
       `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`,
     );
 
