@@ -5,6 +5,7 @@ import {
   Form,
 } from 'antd';
 
+import hash from 'object-hash';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const DoubletScoresConfig = (props) => {
@@ -46,4 +47,7 @@ DoubletScoresConfig.propTypes = {
   disabled: PropTypes.bool.isRequired,
 };
 
-export default DoubletScoresConfig;
+export default React.memo(
+  DoubletScoresConfig,
+  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);

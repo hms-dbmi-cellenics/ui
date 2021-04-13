@@ -7,6 +7,7 @@ import {
   Space,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import hash from 'object-hash';
 
 const ClassifierConfig = (props) => {
   const {
@@ -63,4 +64,7 @@ ClassifierConfig.propTypes = {
   disabled: PropTypes.bool.isRequired,
 };
 
-export default ClassifierConfig;
+export default React.memo(
+  ClassifierConfig,
+  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);

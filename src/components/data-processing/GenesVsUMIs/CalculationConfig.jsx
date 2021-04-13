@@ -7,6 +7,7 @@ import {
   Tooltip,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import hash from 'object-hash';
 
 const GenesVsUMIsConfig = (props) => {
   const {
@@ -55,4 +56,7 @@ GenesVsUMIsConfig.defaultProps = {
   disabled: false,
 };
 
-export default GenesVsUMIsConfig;
+export default React.memo(
+  GenesVsUMIsConfig,
+  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);

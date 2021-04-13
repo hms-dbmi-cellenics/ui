@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import hash from 'object-hash';
 import EmptyPlot from './helpers/EmptyPlot';
 import generateSpec from '../../utils/plotSpecs/generateClassifierEmptyDropsPlot';
 
@@ -52,4 +53,7 @@ ClassifierEmptyDropsPlot.defaultProps = {
   plotData: null,
 };
 
-export default ClassifierEmptyDropsPlot;
+export default React.memo(
+  ClassifierEmptyDropsPlot,
+  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);

@@ -5,6 +5,7 @@ import {
   Form,
 } from 'antd';
 
+import hash from 'object-hash';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const MitochondrialConfig = (props) => {
@@ -52,4 +53,7 @@ MitochondrialConfig.propTypes = {
   disabled: PropTypes.bool.isRequired,
 };
 
-export default MitochondrialConfig;
+export default React.memo(
+  MitochondrialConfig,
+  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import hash from 'object-hash';
 import EmptyPlot from './helpers/EmptyPlot';
 import generateSpec from '../../utils/plotSpecs/generateCellSizeDistributionHistogram';
 
@@ -53,4 +54,7 @@ CellSizeDistributionHistogram.defaultProps = {
   actions: true,
 };
 
-export default CellSizeDistributionHistogram;
+export default React.memo(
+  CellSizeDistributionHistogram,
+  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);

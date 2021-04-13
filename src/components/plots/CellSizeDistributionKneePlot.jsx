@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import hash from 'object-hash';
 import EmptyPlot from './helpers/EmptyPlot';
 import generateSpec from '../../utils/plotSpecs/generateCellSizeDistributionKneePlot';
 
@@ -40,7 +41,6 @@ const CellSizeDistributionKneePlot = (props) => {
 };
 
 CellSizeDistributionKneePlot.propTypes = {
-  experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
   actions: PropTypes.oneOfType([
@@ -54,4 +54,6 @@ CellSizeDistributionKneePlot.defaultProps = {
   actions: true,
 };
 
-export default CellSizeDistributionKneePlot;
+export default React.memo(
+  CellSizeDistributionKneePlot, (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);

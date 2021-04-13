@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import hash from 'object-hash';
 import EmptyPlot from './helpers/EmptyPlot';
 import generateSpec from '../../utils/plotSpecs/generateDoubletScoreHistogram';
 
@@ -53,4 +54,7 @@ DoubletScoreHistogram.defaultProps = {
   actions: true,
 };
 
-export default DoubletScoreHistogram;
+export default React.memo(
+  DoubletScoreHistogram,
+  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);

@@ -8,6 +8,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import hash from 'object-hash';
 import PreloadContent from '../../PreloadContent';
 
 import {
@@ -311,4 +312,7 @@ CalculationConfig.propTypes = {
   onPipelineRun: PropTypes.func.isRequired,
 };
 
-export default CalculationConfig;
+export default React.memo(
+  CalculationConfig,
+  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);

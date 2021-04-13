@@ -4,11 +4,14 @@ import {
   Slider, Form,
 } from 'antd';
 
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
+
 const BandwidthOrBinstep = (props) => {
   const {
     onUpdate, config, type, max, min, disabled,
   } = props;
 
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
   const realMin = min ?? max / 4;
 
   const step = max / 200;
@@ -17,10 +20,10 @@ const BandwidthOrBinstep = (props) => {
     return (
       <Form.Item label='Bin step'>
         <Slider
-          value={config.binStep}
+          value={newConfig.binStep}
           min={realMin}
           max={max}
-          onChange={(value) => { onUpdate({ binStep: value }); }}
+          onChange={(value) => { handleChange({ binStep: value }); }}
           step={step}
           disabled={disabled}
         />
@@ -33,10 +36,10 @@ const BandwidthOrBinstep = (props) => {
   return (
     <Form.Item label='Bandwidth'>
       <Slider
-        value={config.bandwidth}
+        value={newConfig.bandwidth}
         min={-1}
         max={max}
-        onChange={(value) => onUpdate({ bandwidth: value })}
+        onChange={(value) => handleChange({ bandwidth: value })}
         step={1}
         disabled={disabled}
       />

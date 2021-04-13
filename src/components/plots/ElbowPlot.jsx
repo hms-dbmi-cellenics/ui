@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
+import hash from 'object-hash';
 import EmptyPlot from './helpers/EmptyPlot';
 
 const ElbowPlot = (props) => {
@@ -159,4 +160,7 @@ ElbowPlot.defaultProps = {
   numPCs: 30,
 };
 
-export default ElbowPlot;
+export default React.memo(
+  ElbowPlot,
+  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+);
