@@ -7,7 +7,7 @@ const fetchAPI = async (path, params = {}) => {
     ...params,
     headers: {
       ...headers,
-      Authorization: authorizationHeader.Authorization,
+      ...authorizationHeader,
     },
   };
 

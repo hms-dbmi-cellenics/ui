@@ -3,7 +3,7 @@ import fetchAPI from './fetchAPI';
 
 const getFromApiExpectOK = async (url) => {
   let response = null;
-  if (url.includes('experiments')) {
+  if (url[0] === '/') {
     response = await fetchAPI(url);
   } else {
     response = await fetch(url);
