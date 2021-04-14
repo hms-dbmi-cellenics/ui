@@ -49,5 +49,5 @@ DoubletScoresConfig.propTypes = {
 
 export default React.memo(
   DoubletScoresConfig,
-  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+  (prev, next) => prev.config.probabilityThreshold === next.config.probabilityThreshold && prev.disabled === next.disabled,
 );

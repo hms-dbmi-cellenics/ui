@@ -62,4 +62,7 @@ ClassifierConfig.propTypes = {
   disabled: PropTypes.bool.isRequired,
 };
 
-export default React.memo(ClassifierConfig);
+export default React.memo(
+  ClassifierConfig,
+  (prev, next) => prev.config.FDR === next.config.FDR && prev.disabled === next.disabled,
+);

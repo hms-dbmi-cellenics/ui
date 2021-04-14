@@ -55,5 +55,5 @@ CellSizeDistributionConfig.propTypes = {
 
 export default React.memo(
   CellSizeDistributionConfig,
-  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+  (prev, next) => prev.config.minCellSize === next.config.minCellSize && prev.disabled === next.disabled,
 );

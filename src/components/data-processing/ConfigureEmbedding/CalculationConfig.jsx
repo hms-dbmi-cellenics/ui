@@ -312,7 +312,4 @@ CalculationConfig.propTypes = {
   onPipelineRun: PropTypes.func.isRequired,
 };
 
-export default React.memo(
-  CalculationConfig,
-  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
-);
+export default CalculationConfig;

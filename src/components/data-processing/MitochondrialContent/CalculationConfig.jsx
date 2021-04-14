@@ -55,5 +55,5 @@ MitochondrialConfig.propTypes = {
 
 export default React.memo(
   MitochondrialConfig,
-  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
+  (prev, next) => prev.config.maxFraction === next.config.maxFraction && prev.disabled === next.disabled,
 );
