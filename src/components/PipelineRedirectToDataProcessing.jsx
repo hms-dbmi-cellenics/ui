@@ -19,6 +19,11 @@ const PipelineRedirectToDataProcessing = ({ experimentId, pipelineStatus }) => {
       title: 'We\'re working on your project...',
       subTitle: 'You can check the progress we\'ve made in Data Processing.',
     },
+    toBeRun: {
+      status: 'info',
+      title: 'Let\'s process your data first.',
+      subTitle: 'You need to process your data before it can be explored. To begin, go to Data Processing.',
+    },
     runningStep: {
       status: 'info',
       title: 'Your data is getting ready.',
