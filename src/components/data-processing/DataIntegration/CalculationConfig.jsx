@@ -243,4 +243,4 @@ CalculationConfig.propTypes = {
   onPipelineRun: PropTypes.func.isRequired,
 };
 
-export default React.memo(CalculationConfig);
+export default CalculationConfig;

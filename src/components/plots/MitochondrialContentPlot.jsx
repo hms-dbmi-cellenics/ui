@@ -133,4 +133,4 @@ MitochondrialContentPlot.defaultProps = {
   actions: true,
 };
 
-export default React.memo(MitochondrialContentPlot);
+export default MitochondrialContentPlot;

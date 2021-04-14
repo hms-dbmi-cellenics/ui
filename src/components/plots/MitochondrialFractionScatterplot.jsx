@@ -53,4 +53,4 @@ MitochondrialFractionScatterplot.defaultProps = {
   actions: true,
 };
 
-export default React.memo(MitochondrialFractionScatterplot);
+export default MitochondrialFractionScatterplot;

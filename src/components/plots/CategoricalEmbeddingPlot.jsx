@@ -114,4 +114,4 @@ CategoricalEmbeddingPlot.defaultProps = {
   plotDataCategoryName: 'sample',
 };
 
-export default React.memo(CategoricalEmbeddingPlot);
+export default CategoricalEmbeddingPlot;

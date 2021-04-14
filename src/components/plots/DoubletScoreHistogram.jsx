@@ -53,4 +53,4 @@ DoubletScoreHistogram.defaultProps = {
   actions: true,
 };
 
-export default React.memo(DoubletScoreHistogram);
+export default DoubletScoreHistogram;

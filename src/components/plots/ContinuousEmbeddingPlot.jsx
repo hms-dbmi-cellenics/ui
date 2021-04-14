@@ -167,4 +167,4 @@ ContinuousEmbeddingPlot.propTypes = {
   ]),
 };
 
-export default React.memo(ContinuousEmbeddingPlot);
+export default ContinuousEmbeddingPlot;

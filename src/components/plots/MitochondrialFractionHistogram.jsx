@@ -53,4 +53,4 @@ MitochondrialFractionHistogram.defaultProps = {
   actions: true,
 };
 
-export default React.memo(MitochondrialFractionHistogram);
+export default MitochondrialFractionHistogram;

@@ -159,4 +159,4 @@ ElbowPlot.defaultProps = {
   numPCs: 30,
 };
 
-export default React.memo(ElbowPlot);
+export default ElbowPlot;

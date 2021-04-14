@@ -131,4 +131,4 @@ DoubletScoresPlot.defaultProps = {
   actions: true,
 };
 
-export default React.memo(DoubletScoresPlot);
+export default DoubletScoresPlot;
