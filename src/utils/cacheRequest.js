@@ -38,14 +38,15 @@ const decomposeBody = async (body, experimentId) => {
   return { missingDataKeys, cachedData };
 };
 
-const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, getState) => {
+const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, workerPipelineStatus) => {
   const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
   const missingGenes = Object.keys(missingDataKeys);
   if (missingGenes.length === 0) {
     return cachedData;
   }
 
-  const { pipeline: { startDate } } = getState().experimentSettings.pipelineStatus.status;
+  const { pipeline: { startDate } } = workerPipelineStatus;
+
   const response = await sendWork(
     experimentId, timeout, { ...body, genes: missingGenes }, { ETagPipelineRun: startDate },
   );
@@ -62,12 +63,12 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, getSta
   return responseData;
 };
 
-const fetchCachedWork = async (experimentId, timeout, body, getState) => {
+const fetchCachedWork = async (experimentId, timeout, body, workerPipelineStatus) => {
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
 
-  const { pipeline: { startDate, status } } = getState().experimentSettings.pipelineStatus.status;
+  const { pipeline: { startDate, status } } = workerPipelineStatus;
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 
   if (!startDate) {
@@ -79,7 +80,7 @@ const fetchCachedWork = async (experimentId, timeout, body, getState) => {
   }
 
   if (body.name === 'GeneExpression') {
-    return fetchCachedGeneExpressionWork(experimentId, timeout, body, getState);
+    return fetchCachedGeneExpressionWork(experimentId, timeout, body, workerPipelineStatus);
   }
 
   const key = createObjectHash({ experimentId, body, startDate });

@@ -66,6 +66,16 @@ const initialState = {
     },
     selected: ['A'],
   },
+  experimentSettings: {
+    pipelineStatus: {
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+          startDate: '2021-01-01T01:01:01.000Z',
+        },
+      },
+    },
+  },
 };
 
 describe('ComponentActions', () => {
@@ -132,10 +142,19 @@ describe('ComponentActions', () => {
     // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(store, [GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
 
-    expect(fetchCachedWork).toHaveBeenCalledWith(experimentId, 30, {
-      name: 'GeneExpression',
-      genes: ['A', 'B', 'C'],
-    }, expect.any(Function));
+    expect(fetchCachedWork).toHaveBeenCalledWith(
+      experimentId, 30,
+      {
+        name: 'GeneExpression',
+        genes: ['A', 'B', 'C'],
+      },
+      {
+        pipeline: {
+          status: 'SUCCEEDED',
+          startDate: '2021-01-01T01:01:01.000Z',
+        },
+      },
+    );
 
     expect(store.getActions().length).toEqual(2);
 

@@ -96,27 +96,25 @@ jest.mock('../../utils/sendWork', () => ({
 }));
 
 describe('tests for fetchCachedWork', () => {
-  const experimentSettings = {
-    pipelineStatus: {
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-          startDate: '2021-01-01T01:01:01.000Z',
-        },
-      },
-    },
-  };
-
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('test fetchCachedWork with GeneExpression task', async () => {
     const experimentId = '1234';
-    const res = await fetchCachedWork(experimentId, 10, {
-      name: 'GeneExpression',
-      genes: ['A', 'B', 'C', 'D'],
-    }, () => ({ experimentSettings }));
+    const res = await fetchCachedWork(
+      experimentId, 10,
+      {
+        name: 'GeneExpression',
+        genes: ['A', 'B', 'C', 'D'],
+      },
+      {
+        pipeline: {
+          status: 'SUCCEEDED',
+          startDate: '2021-01-01T01:01:01.000Z',
+        },
+      },
+    );
     expect(res).toEqual({ D: fakeData.D });
     expect(mockSendWork).toHaveBeenCalledWith(experimentId, 10, { name: 'GeneExpression', genes: ['D'] });
     expect(mockGet).toHaveBeenCalledTimes(4);
