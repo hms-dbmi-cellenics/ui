@@ -13,7 +13,6 @@ import { useBeforeunload } from 'react-beforeunload';
 import FeedbackButton from '../FeedbackButton';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import itemRender from '../../utils/renderBreadcrumbLinks';
-import getApiEndpoint from '../../utils/apiEndpoint';
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 
 import { LOAD_CONFIG } from '../../redux/actionTypes/componentConfig';
@@ -86,7 +85,7 @@ const Header = (props) => {
     };
   }, [router.asPath, router.events, saved]);
   const { data } = useSWR(
-    `${getApiEndpoint()}/v1/experiments/${experimentId}`,
+    `/v1/experiments/${experimentId}`,
     getFromApiExpectOK,
   );
 
