@@ -10,7 +10,6 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import hash from 'object-hash';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const CellSizeDistributionConfig = (props) => {

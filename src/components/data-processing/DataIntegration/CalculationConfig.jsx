@@ -23,7 +23,6 @@ import {
 
 import _ from 'lodash';
 
-import hash from 'object-hash';
 import SeuratV4Options from './SeuratV4Options';
 
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';

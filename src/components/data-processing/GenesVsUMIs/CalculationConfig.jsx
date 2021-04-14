@@ -7,7 +7,6 @@ import {
   Tooltip,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import hash from 'object-hash';
 
 const GenesVsUMIsConfig = (props) => {
   const {

@@ -8,7 +8,6 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import hash from 'object-hash';
 import PreloadContent from '../../PreloadContent';
 
 import {

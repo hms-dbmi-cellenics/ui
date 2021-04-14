@@ -5,7 +5,6 @@ import {
   Form,
 } from 'antd';
 
-import hash from 'object-hash';
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 
 const DoubletScoresConfig = (props) => {
