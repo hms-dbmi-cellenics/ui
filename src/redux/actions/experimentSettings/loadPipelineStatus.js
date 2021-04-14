@@ -5,8 +5,6 @@ import {
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
 } from '../../actionTypes/experimentSettings';
 
-import getApiEndpoint from '../../../utils/apiEndpoint';
-
 const loadPipelineStatus = (experimentId) => async (dispatch) => {
   dispatch({
     type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
@@ -17,7 +15,7 @@ const loadPipelineStatus = (experimentId) => async (dispatch) => {
 
   try {
     const response = await fetchAPI(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`,
+      `/v1/experiments/${experimentId}/pipelines`,
     );
 
     if (response.ok) {

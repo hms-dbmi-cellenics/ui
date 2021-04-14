@@ -5,8 +5,6 @@ import {
 } from '../../actionTypes/experimentSettings';
 
 import pushNotificationMessage from '../pushNotificationMessage';
-
-import getApiEndpoint from '../../../utils/apiEndpoint';
 import errorTypes from './errorTypes';
 
 const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
@@ -20,7 +18,7 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
 
   try {
     const response = await fetchAPI(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
+      `/v1/experiments/${experimentId}/processingConfig`,
     );
 
     if (response.ok) {

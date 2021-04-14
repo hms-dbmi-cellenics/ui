@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
 import { LOAD_CONFIG } from '../../actionTypes/componentConfig';
-import getApiEndpoint from '../../../utils/apiEndpoint';
 import pushNotificationMessage from '../notifications';
 import messages from '../../../components/notification/messages';
 import { initialPlotConfigStates } from '../../reducers/componentConfig/initialState';
@@ -9,7 +8,7 @@ import { initialPlotConfigStates } from '../../reducers/componentConfig/initialS
 const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
   try {
     const response = await fetchAPI(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
+      `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
     );
     if (response.ok) {
       const data = await response.json();

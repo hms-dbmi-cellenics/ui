@@ -1,4 +1,5 @@
 import getApiEndpoint from './apiEndpoint';
+import authorizationHeader from './authorizationHeader';
 
 const fetchAPI = async (path, params = {}) => {
   const headers = params.headers ? params.headers : {};
@@ -6,16 +7,12 @@ const fetchAPI = async (path, params = {}) => {
     ...params,
     headers: {
       ...headers,
-      Authorization: 'Bearer admin',
+      Authorization: authorizationHeader.Authorization,
     },
   };
-  let url = path;
-  if (!path.includes(getApiEndpoint())) {
-    url = getApiEndpoint() + url;
-  }
 
+  const url = getApiEndpoint() + path;
   const result = await fetch(url, parameters);
-
   return result;
 };
 export default fetchAPI;

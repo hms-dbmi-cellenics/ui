@@ -4,8 +4,6 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../actionTypes/experimentSettings';
 
-import getApiEndpoint from '../../../utils/apiEndpoint';
-
 import pushNotificationMessage from '../pushNotificationMessage';
 
 import errorTypes from './errorTypes';
@@ -15,7 +13,7 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
 
   try {
     const response = await fetchAPI(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
+      `/v1/experiments/${experimentId}/processingConfig`,
       {
         method: 'PUT',
         headers: {

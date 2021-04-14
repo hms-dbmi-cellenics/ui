@@ -1,5 +1,4 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import getApiEndpoint from '../../../utils/apiEndpoint';
 import { CELL_SETS_SAVE } from '../../actionTypes/cellSets';
 import pushNotificationMessage from '../notifications';
 import composeTree from '../../../utils/composeTree';
@@ -20,7 +19,7 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
   const treeData = composeTree(hierarchy, properties);
   try {
     const response = await fetchAPI(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/cellSets`,
+      `/v1/experiments/${experimentId}/cellSets`,
       {
         method: 'PUT',
         headers: {

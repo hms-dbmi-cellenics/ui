@@ -1,6 +1,5 @@
 import fetchAPI from '../../../utils/fetchAPI';
 import { SAVE_CONFIG } from '../../actionTypes/componentConfig';
-import getApiEndpoint from '../../../utils/apiEndpoint';
 
 const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) => {
   // Do not save the 'outstandingChanges' state to the database.
@@ -8,7 +7,7 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
   const { outstandingChanges, plotData, ...content } = getState().componentConfig[plotUuid];
 
   const response = await fetchAPI(
-    `${getApiEndpoint()}/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
+    `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
     {
       method: 'PUT',
       headers: {
