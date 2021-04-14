@@ -31,7 +31,7 @@ const Header = (props) => {
   const saved = !useSelector((state) => state.componentConfig[plotUuid]?.outstandingChanges);
   const lastUpdated = useSelector((state) => state.componentConfig[plotUuid]?.lastUpdated);
   const router = useRouter();
-  const type = useSelector((state) => state.componentConfig[plotUuid]?.type);
+  const plotType = useSelector((state) => state.componentConfig[plotUuid]?.plotType);
   const { config, outstandingChanges } = useSelector((state) => state.componentConfig[plotUuid]) || {};
   const reset = useRef(true);
   const debounceSave = useCallback(_.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
@@ -125,13 +125,14 @@ const Header = (props) => {
   };
 
   const onClickReset = () => {
+    console.log('RESETTING ', initialPlotConfigStates[plotType], 'TYPE IS ', plotType);
     dispatch({
       type: LOAD_CONFIG,
       payload: {
         experimentId,
         plotUuid,
-        type,
-        config: _.cloneDeep(initialPlotConfigStates[type]),
+        plotType,
+        config: _.cloneDeep(initialPlotConfigStates[plotType]),
       },
     });
     dispatch(savePlotConfig(experimentId, plotUuid));
