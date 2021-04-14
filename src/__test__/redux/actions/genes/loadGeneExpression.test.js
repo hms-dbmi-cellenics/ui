@@ -22,6 +22,17 @@ describe('loadGeneExpression action', () => {
   const componentUuid = 'asd';
   const loadingGenes = ['a', 'b', 'c'];
 
+  const experimentSettings = {
+    pipelineStatus: {
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+          startDate: '2021-01-01T01:01:01.000Z',
+        },
+      },
+    },
+  };
+
   it('Does not dispatch when expression is already loading', async () => {
     const store = mockStore({
       genes:
@@ -48,6 +59,7 @@ describe('loadGeneExpression action', () => {
           },
         },
       },
+      experimentSettings,
     });
 
     sendWork.mockImplementation(() => {
@@ -86,6 +98,7 @@ describe('loadGeneExpression action', () => {
           },
         },
       },
+      experimentSettings,
     });
 
     sendWork.mockImplementation(() => {
@@ -113,6 +126,7 @@ describe('loadGeneExpression action', () => {
       genes: {
         ...initialState,
       },
+      experimentSettings,
     });
 
     // Need to mock result accurately because of post-request processing
@@ -163,6 +177,7 @@ describe('loadGeneExpression action', () => {
       genes: {
         ...initialState,
       },
+      experimentSettings,
     });
 
     sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
@@ -172,8 +187,37 @@ describe('loadGeneExpression action', () => {
     expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);
     expect(loadingAction).toMatchSnapshot();
 
-    const loadedAction = store.getActions()[1];
-    expect(loadedAction.type).toEqual(GENES_EXPRESSION_ERROR);
-    expect(loadedAction).toMatchSnapshot();
+    const errorAction = store.getActions()[1];
+    expect(errorAction.type).toEqual(GENES_EXPRESSION_ERROR);
+    expect(errorAction).toMatchSnapshot();
+  });
+
+  it('Dispatches appropriately on unrun pipeline', async () => {
+    const store = mockStore({
+      genes: {
+        ...initialState,
+      },
+      experimentSettings: {
+        pipelineStatus: {
+          status: {
+            pipeline: {
+              status: 'NotCreated',
+              startDate: null,
+            },
+          },
+        },
+      },
+    });
+
+    sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
+
+    const loadingAction = store.getActions()[0];
+    expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);
+    expect(loadingAction).toMatchSnapshot();
+
+    const errorAction = store.getActions()[1];
+    expect(errorAction.type).toEqual(GENES_EXPRESSION_ERROR);
+    expect(errorAction).toMatchSnapshot();
   });
 });
