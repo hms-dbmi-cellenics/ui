@@ -10,12 +10,6 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     return null;
   }
 
-  const { pipeline } = getState().experimentSettings.pipelineStatus.status;
-
-  if (!pipeline?.startDate) {
-    return null;
-  }
-
   // Does not load anything if experiment settings is not loaded
   const embeddingState = getState()
     .experimentSettings
@@ -41,11 +35,10 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     name: 'GetEmbedding',
     type: embeddingType,
     config: methodSettings[embeddingType],
-    lastRun: pipeline.startDate,
   };
 
   try {
-    const data = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body, 3600, 1);
+    const data = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body, getState);
     return dispatch({
       type: EMBEDDINGS_LOADED,
       payload: {

@@ -24,6 +24,17 @@ describe('loadPaginatedGeneProperties action', () => {
   const properties = ['a', 'b', 'c'];
   const componentUuid = 'asd';
 
+  const experimentSettings = {
+    pipelineStatus: {
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+          startDate: '2021-01-01T01:01:01.000Z',
+        },
+      },
+    },
+  };
+
   // experimentId, properties, componentUuid, tableState
 
   it('Does not dispatch when some of the properties are already loading', async () => {
@@ -36,6 +47,7 @@ describe('loadPaginatedGeneProperties action', () => {
           loading: ['b'],
         },
       },
+      experimentSettings,
     });
 
     store.dispatch(loadPaginatedGeneProperties(experimentId, properties, componentUuid, {}));
@@ -48,6 +60,7 @@ describe('loadPaginatedGeneProperties action', () => {
       {
         ...initialState,
       },
+      experimentSettings,
     });
 
     sendWork.mockImplementation(() => {
@@ -111,6 +124,7 @@ describe('loadPaginatedGeneProperties action', () => {
       {
         ...initialState,
       },
+      experimentSettings,
     });
 
     sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));

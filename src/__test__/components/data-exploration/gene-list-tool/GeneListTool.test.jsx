@@ -161,7 +161,7 @@ describe('GeneListTool', () => {
       orderBy: 'gene_names',
       orderDirection: 'ASC',
       selectFields: ['gene_names', 'dispersions'],
-    });
+    }, expect.any(Function));
 
     expect(store.getActions()[0]).toMatchSnapshot();
     expect(store.getActions()[1]).toMatchSnapshot();

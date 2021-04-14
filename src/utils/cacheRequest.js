@@ -38,14 +38,19 @@ const decomposeBody = async (body, experimentId) => {
   return { missingDataKeys, cachedData };
 };
 
-const fetchCachedGeneExpressionWork = async (experimentId, timeout, body) => {
+const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, getState) => {
   const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
   const missingGenes = Object.keys(missingDataKeys);
   if (missingGenes.length === 0) {
     return cachedData;
   }
-  const response = await sendWork(experimentId, timeout, { ...body, genes: missingGenes });
+
+  const { pipeline: { startDate } } = getState().experimentSettings.pipelineStatus.status;
+  const response = await sendWork(
+    experimentId, timeout, { ...body, genes: missingGenes }, { ETagPipelineRun: startDate },
+  );
   const responseData = JSON.parse(response.results[0].body);
+
   if (!responseData[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
     const processedData = calculateZScore(responseData);
@@ -57,21 +62,36 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body) => {
   return responseData;
 };
 
-const fetchCachedWork = async (experimentId, timeout, body) => {
-  if (isBrowser) {
-    if (body.name === 'GeneExpression') {
-      return fetchCachedGeneExpressionWork(experimentId, timeout, body);
-    }
-    const key = createObjectHash({ experimentId, body });
-    const data = await cache.get(key);
-
-    if (data) return data;
-    const response = await sendWork(experimentId, timeout, body);
-    const responseData = JSON.parse(response.results[0].body);
-    await cache.set(key, responseData);
-    return responseData;
+const fetchCachedWork = async (experimentId, timeout, body, getState) => {
+  if (!isBrowser) {
+    throw new Error('Disabling network interaction on server');
   }
-  throw new Error('Disabling network interaction on server');
+
+  const { pipeline: { startDate, status } } = getState().experimentSettings.pipelineStatus.status;
+  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+
+  if (!startDate) {
+    throw new Error('Cannot submit work before the data processing pipeline has been started.');
+  }
+
+  if (pipelineErrors.includes(status)) {
+    throw new Error('Cannot submit work before the data processing pipeline has been started.');
+  }
+
+  if (body.name === 'GeneExpression') {
+    return fetchCachedGeneExpressionWork(experimentId, timeout, body, getState);
+  }
+
+  const key = createObjectHash({ experimentId, body, startDate });
+  const data = await cache.get(key);
+
+  if (data) return data;
+  const response = await sendWork(
+    experimentId, timeout, body, { PipelineRunETag: startDate },
+  );
+  const responseData = JSON.parse(response.results[0].body);
+  await cache.set(key, responseData);
+  return responseData;
 };
 
 export { fetchCachedWork, fetchCachedGeneExpressionWork };

@@ -4,6 +4,11 @@ import { loadEmbedding } from '../../../../redux/actions/embedding';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 import initialExperimentState, { initialPipelineState } from '../../../../redux/reducers/experimentSettings/initialState';
 
+import {
+  EMBEDDINGS_ERROR,
+  EMBEDDINGS_LOADING,
+} from '../../../../redux/actionTypes/embeddings';
+
 import sendWork from '../../../../utils/sendWork';
 
 jest.mock('localforage');
@@ -199,7 +204,7 @@ describe('loadEmbedding action', () => {
     expect(store.getActions().length).toEqual(0);
   });
 
-  it('Does not dispatch if pipeline has not been run', async () => {
+  it('Dispatches error if pipeline has not been run', async () => {
     const store = mockStore(
       {
         embeddings: {},
@@ -215,7 +220,8 @@ describe('loadEmbedding action', () => {
 
     await store.dispatch(loadEmbedding(experimentId, embeddingType));
 
-    // There should be no dispatch.
-    expect(store.getActions().length).toEqual(0);
+    const [first, second] = store.getActions();
+    expect(first.type).toBe(EMBEDDINGS_LOADING);
+    expect(second.type).toBe(EMBEDDINGS_ERROR);
   });
 });

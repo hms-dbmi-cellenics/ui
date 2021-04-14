@@ -71,6 +71,37 @@ Object {
 }
 `;
 
+exports[`loadGeneExpression action Dispatches appropriately on unrun pipeline 1`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "experimentId": "1234",
+    "genes": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/expressionLoading",
+}
+`;
+
+exports[`loadGeneExpression action Dispatches appropriately on unrun pipeline 2`] = `
+Object {
+  "payload": Object {
+    "componentUuid": "asd",
+    "error": [Error: Cannot submit work before the data processing pipeline has been started.],
+    "experimentId": "1234",
+    "genes": Array [
+      "a",
+      "b",
+      "c",
+    ],
+  },
+  "type": "genes/expressionError",
+}
+`;
+
 exports[`loadGeneExpression action Does not send work for already loaded expression data. 1`] = `
 [MockFunction] {
   "calls": Array [
@@ -83,6 +114,9 @@ exports[`loadGeneExpression action Does not send work for already loaded express
           "c",
         ],
         "name": "GeneExpression",
+      },
+      Object {
+        "ETagPipelineRun": "2021-01-01T01:01:01.000Z",
       },
     ],
   ],
@@ -108,6 +142,9 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
         ],
         "name": "GeneExpression",
       },
+      Object {
+        "ETagPipelineRun": "2021-01-01T01:01:01.000Z",
+      },
     ],
     Array [
       "1234",
@@ -119,6 +156,9 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
           "c",
         ],
         "name": "GeneExpression",
+      },
+      Object {
+        "ETagPipelineRun": "2021-01-01T01:01:01.000Z",
       },
     ],
   ],

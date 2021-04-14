@@ -33,7 +33,7 @@ const loadCellMeta = (
   };
 
   try {
-    const data = await fetchCachedWork(experimentId, 30, body);
+    const data = await fetchCachedWork(experimentId, 30, body, getState);
     dispatch({
       type: CELL_META_LOADED,
       payload: {
