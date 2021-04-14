@@ -53,4 +53,4 @@ FeaturesVsUMIsScatterplot.defaultProps = {
   actions: true,
 };
 
-export default FeaturesVsUMIsScatterplot;
+export default React.memo(FeaturesVsUMIsScatterplot);

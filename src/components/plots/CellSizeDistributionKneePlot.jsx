@@ -53,4 +53,4 @@ CellSizeDistributionKneePlot.defaultProps = {
   actions: true,
 };
 
-export default CellSizeDistributionKneePlot;
+export default React.memo(CellSizeDistributionKneePlot);

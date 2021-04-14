@@ -65,12 +65,7 @@ const generateSpec = (config, plotData) => {
           },
           {
             type: 'filter',
-            expr: 'datum.u > 0 && datum.rank > 0',
-          },
-          {
-            type: 'formula',
-            as: 'logUValue',
-            expr: '(log(datum.u) / LN10)*2200',
+            expr: 'datum.log_u > 0 && datum.rank > 0',
           },
         ],
       },
@@ -108,7 +103,7 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         range: 'height',
         nice: true,
-        domain: { data: 'plotData', field: 'logUValue' },
+        domain: { data: 'plotData', field: 'log_u' },
       },
       {
         name: 'color',
@@ -155,7 +150,7 @@ const generateSpec = (config, plotData) => {
         encode: {
           enter: {
             x: { scale: 'xscale', field: 'rank' },
-            y: { scale: 'yscale', field: 'logUValue' },
+            y: { scale: 'yscale', field: 'log_u' },
             y2: { scale: 'yscale', value: 0 },
             fill: { value: 'green' },
           },
@@ -167,7 +162,7 @@ const generateSpec = (config, plotData) => {
         encode: {
           enter: {
             x: { scale: 'xscale', field: 'rank' },
-            y: { scale: 'yscale', field: 'logUValue' },
+            y: { scale: 'yscale', field: 'log_u' },
             y2: { scale: 'yscale', value: 0 },
             fill: { value: '#f57b42' },
           },

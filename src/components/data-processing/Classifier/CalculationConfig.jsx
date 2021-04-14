@@ -7,12 +7,11 @@ import {
   Space,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import hash from 'object-hash';
 
 const ClassifierConfig = (props) => {
   const {
     // eslint-disable-next-line no-unused-vars
-    config, disabled, updateSettings, plotType,
+    config, disabled, updateSettings,
   } = props;
 
   return (
@@ -46,8 +45,8 @@ const ClassifierConfig = (props) => {
             onChange={(value) => updateSettings({ FDR: value })}
             onPressEnter={(e) => updateSettings({ FDR: e.target.value })}
             placeholder={0.01}
-            min={0}
-            max={1}
+            min={0.00}
+            max={1.00}
             step={0.01}
             disabled={disabled}
           />
@@ -60,11 +59,7 @@ const ClassifierConfig = (props) => {
 ClassifierConfig.propTypes = {
   updateSettings: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
-  plotType: PropTypes.string.isRequired,
   disabled: PropTypes.bool.isRequired,
 };
 
-export default React.memo(
-  ClassifierConfig,
-  (prevProps, nextProps) => hash(prevProps) === hash(nextProps),
-);
+export default React.memo(ClassifierConfig);

@@ -48,4 +48,4 @@ FrequencyPlot.defaultProps = {
   actions: true,
 };
 
-export default FrequencyPlot;
+export default React.memo(FrequencyPlot);

@@ -53,4 +53,4 @@ CellSizeDistributionHistogram.defaultProps = {
   actions: true,
 };
 
-export default CellSizeDistributionHistogram;
+export default React.memo(CellSizeDistributionHistogram);

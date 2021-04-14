@@ -52,4 +52,4 @@ ClassifierEmptyDropsPlot.defaultProps = {
   plotData: null,
 };
 
-export default ClassifierEmptyDropsPlot;
+export default React.memo(ClassifierEmptyDropsPlot);
