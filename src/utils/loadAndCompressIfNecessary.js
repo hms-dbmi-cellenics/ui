@@ -5,8 +5,8 @@ const loadAndCompressIfNecessary = async (file) => {
 
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onabort = () => reject(new Error('Operation aborted'));
-    reader.onerror = () => reject(new Error('Error'));
+    reader.onabort = () => reject(new Error('aborted'));
+    reader.onerror = () => reject(new Error('error'));
     reader.onload = () => {
       const loadedFile = reader.result;
 

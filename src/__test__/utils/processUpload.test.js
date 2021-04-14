@@ -65,7 +65,7 @@ jest.mock('../../utils/loadAndCompressIfNecessary',
   () => jest.fn().mockImplementation(
     (file) => {
       if (!file.valid) {
-        return Promise.reject(new Error());
+        return Promise.reject(new Error('error'));
       }
 
       return Promise.resolve('loadedGzippedFile');
@@ -95,6 +95,11 @@ describe('processUpload (in development)', () => {
   afterEach(() => {
     mockStorageCalls = [];
     jest.clearAllMocks();
+  });
+
+  beforeEach(() => {
+    // eslint-disable-next-line no-param-reassign
+    validFilesList.forEach((file) => { file.valid = true; });
   });
 
   it('Uploads and updates redux correctly when there are no errors', async () => {
@@ -173,7 +178,7 @@ describe('processUpload (in development)', () => {
     );
 
     const errorFileStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.UPLOAD_ERROR,
+      (status) => status === UploadStatus.FILE_READ_ERROR,
     );
 
     // There are 3 files actions with status uploading
@@ -183,7 +188,7 @@ describe('processUpload (in development)', () => {
     expect(errorFileStatuses.length).toEqual(3);
   });
 
-  it('Updates redux correctly when there are file load and compress errors', async () => {
+  it('Updates redux correctly when there are file upload errors', async () => {
     const store = mockStore({
       projects: {
         errorProjectUuid: {
@@ -191,9 +196,6 @@ describe('processUpload (in development)', () => {
         },
       },
     });
-
-    // eslint-disable-next-line no-param-reassign
-    validFilesList.forEach((file) => { file.valid = false; });
 
     processUpload(validFilesList, sampleType, samples, 'errorProjectUuid', store.dispatch);
 

@@ -81,30 +81,30 @@ const ProjectDetails = ({ width, height }) => {
     setSortedSpeciesData(d);
   }, [speciesData]);
 
-  const renderCells = (columnId, text) => {
-    if (text === UploadStatus.UPLOADED) {
+  const renderCells = (columnId, uploadStatus) => {
+    if (uploadStatus === UploadStatus.UPLOADED) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
-          <Text type='success'>Uploaded</Text>
+          <Text type='success'>{uploadStatus.message()}</Text>
         </div>
       );
     }
 
-    if (text === UploadStatus.UPLOADING) {
+    if (uploadStatus === UploadStatus.UPLOADING) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
-            <Text type='warning'>Uploading...</Text>
+            <Text type='warning'>{uploadStatus.message()}</Text>
           </Space>
         </div>
       );
     }
 
-    if (text === UploadStatus.UPLOAD_ERROR) {
+    if (uploadStatus === UploadStatus.UPLOAD_ERROR) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
-            <Text type='danger'>Upload error</Text>
+            <Text type='danger'>{uploadStatus.message()}</Text>
             <Tooltip placement='bottom' title='Retry' mouseLeaveDelay={0}>
               <Button
                 size='small'
@@ -118,11 +118,17 @@ const ProjectDetails = ({ width, height }) => {
       );
     }
 
-    if (text === UploadStatus.FILE_NOT_FOUND) {
+    if (
+      [
+        UploadStatus.FILE_NOT_FOUND,
+        UploadStatus.FILE_READ_ABORTED,
+        UploadStatus.FILE_READ_ERROR,
+      ].includes(uploadStatus)
+    ) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
-            <Text type='danger'>File not found</Text>
+            <Text type='danger'>{uploadStatus.message()}</Text>
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
               <Button
                 size='small'
@@ -136,7 +142,7 @@ const ProjectDetails = ({ width, height }) => {
       );
     }
 
-    if (text === UploadStatus.DATA_MISSING) {
+    if (uploadStatus === UploadStatus.DATA_MISSING) {
       return (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
@@ -154,7 +160,7 @@ const ProjectDetails = ({ width, height }) => {
         <Space>
           <EditableField
             deleteEnabled={false}
-            value={text}
+            value={uploadStatus}
           />
         </Space>
       </div>

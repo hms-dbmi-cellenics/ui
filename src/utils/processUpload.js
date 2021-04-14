@@ -38,10 +38,12 @@ const compressAndUpload = async (sample, activeProjectUuid, dispatch) => {
             }));
           });
       })
-      .catch(() => {
+      .catch((e) => {
+        const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+
         dispatch(updateSampleFile(sample.uuid, {
           ...file,
-          status: UploadStatus.UPLOAD_ERROR,
+          status: fileErrorStatus,
         }));
       });
   });
