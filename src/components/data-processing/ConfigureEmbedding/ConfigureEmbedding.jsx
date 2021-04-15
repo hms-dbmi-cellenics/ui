@@ -57,7 +57,6 @@ const ConfigureEmbedding = (props) => {
           experimentId={experimentId}
           config={config}
           plotData={plotData}
-          plotDataCategoryName='cluster'
           actions={actions}
         />
       )
@@ -70,7 +69,10 @@ const ConfigureEmbedding = (props) => {
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
-          config={config}
+          config={{
+            ...config,
+            selectedCellSet: 'sample',
+          }}
           plotData={plotData}
           actions={actions}
         />
