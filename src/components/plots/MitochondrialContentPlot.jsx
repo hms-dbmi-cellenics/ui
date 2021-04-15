@@ -6,7 +6,7 @@ import { Vega } from 'react-vega';
 import { Skeleton } from 'antd';
 
 import PlatformError from '../PlatformError';
-import { generateSpec } from '../../utils/plotSpecs/generateMitochondrialContentSpec';
+import generateSpec from '../../utils/plotSpecs/generateMitochondrialContentSpec';
 import loadCellMeta from '../../redux/actions/cellMeta';
 
 const MitochondrialContentPlot = (props) => {

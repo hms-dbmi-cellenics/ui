@@ -5,7 +5,7 @@ import { Vega } from 'react-vega';
 
 import { Skeleton } from 'antd';
 import PlatformError from '../PlatformError';
-import { generateSpec } from '../../utils/plotSpecs/generateDoubletScoresSpec';
+import generateSpec from '../../utils/plotSpecs/generateDoubletScoresSpec';
 import loadCellMeta from '../../redux/actions/cellMeta';
 
 const DoubletScoresPlot = (props) => {
