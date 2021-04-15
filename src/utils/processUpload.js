@@ -20,7 +20,7 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
     return result;
   }, {});
 
-  Object.entries(updatedSampleFiles).map(async ([fileName, file]) => (
+  Object.entries(updatedSampleFiles).forEach(([fileName, file]) => (
     loadAndCompressIfNecessary(file)
       .then((loadedFile) => {
         const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;

@@ -5,14 +5,8 @@ import waitForActions from 'redux-mock-store-await-actions';
 import { Storage } from 'aws-amplify';
 import { SAMPLES_FILE_UPDATE } from '../../redux/actionTypes/samples';
 
-// import loadAndCompressIfNecessary from '../../utils/loadAndCompressIfNecessary';
-
 import processUpload from '../../utils/processUpload';
 import UploadStatus from '../../utils/UploadStatus';
-
-// import {
-//   PROJECTS_UPDATE,
-// } from '../../redux/actionTypes/projects';
 
 const validFilesList = [
   {
@@ -21,7 +15,7 @@ const validFilesList = [
       path: '/WT13/features.tsv.gz',
       type: 'application/gzip',
     },
-    status: UploadStatus.UPLOADING,
+    upload: { status: UploadStatus.UPLOADING },
     valid: true,
     errors: '',
   },
@@ -31,7 +25,7 @@ const validFilesList = [
       path: '/WT13/barcodes.tsv.gz',
       type: 'application/gzip',
     },
-    status: UploadStatus.UPLOADING,
+    upload: { status: UploadStatus.UPLOADING },
     valid: true,
     errors: '',
   },
@@ -41,7 +35,7 @@ const validFilesList = [
       path: '/WT13/matrix.mtx.gz',
       type: 'application/gzip',
     },
-    status: UploadStatus.UPLOADING,
+    upload: { status: UploadStatus.UPLOADING },
     valid: true,
     errors: '',
   },
@@ -131,7 +125,7 @@ describe('processUpload (in development)', () => {
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.status);
+    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.upload.status);
 
     const firstThreeFilesStatuses = filesStatuses.slice(0, 2);
     const secondThreeFilesStatuses = filesStatuses.slice(3);
@@ -171,7 +165,7 @@ describe('processUpload (in development)', () => {
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.status);
+    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.upload.status);
 
     const uploadingFileStatuses = filesStatuses.filter(
       (status) => status === UploadStatus.UPLOADING,
@@ -202,14 +196,14 @@ describe('processUpload (in development)', () => {
     await waitForActions(
       store,
       new Array(6).fill(SAMPLES_FILE_UPDATE),
-      { matcher: waitForActions.matchers.containing },
+      { matcher: waitForActions.matchers.containing, throttleWait: 2 },
     );
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.status);
+    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.upload.status);
 
     const uploadingFileStatuses = filesStatuses.filter(
       (status) => status === UploadStatus.UPLOADING,
