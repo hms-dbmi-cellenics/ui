@@ -11,7 +11,7 @@ import ContinuousEmbeddingPlot from '../../../components/plots/ContinuousEmbeddi
 import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
 import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
 import initialGeneExpressionState, { initialExpressionState } from '../../../redux/reducers/genes/initialState';
-import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState from '../../experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 
 jest.mock('localforage');
