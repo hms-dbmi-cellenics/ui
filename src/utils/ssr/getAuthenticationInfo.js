@@ -12,20 +12,28 @@ import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
 import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 
 const getAuthenticationInfo = async () => {
+  let additionalClientParams = {};
+
+  if (process.env.NODE_ENV !== 'development') {
+    additionalClientParams = {
+      ...additionalClientParams,
+      credentials: fromTokenFile({
+        roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
+      }),
+    };
+  }
+
   const identityPoolClient = new CognitoIdentityClient(
     {
       region: 'eu-west-1',
-      credentials: fromTokenFile({
-        roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
-      }),
+      ...additionalClientParams,
     },
   );
+
   const userPoolClient = new CognitoIdentityProviderClient(
     {
       region: 'eu-west-1',
-      credentials: fromTokenFile({
-        roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
-      }),
+      ...additionalClientParams,
     },
   );
 
