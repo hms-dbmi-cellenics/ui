@@ -5,7 +5,7 @@ const generateSpec = (config, plotData) => {
 
   const minCellSizeItem = _.findLast(
     plotData,
-    (element) => element.u >= config.minCellSize,
+    (element) => element.log_u >= config.minCellSize,
   );
 
   const minCellSizeRank = minCellSizeItem?.rank ?? 0;
