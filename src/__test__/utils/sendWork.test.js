@@ -60,6 +60,9 @@ describe('sendWork unit tests', () => {
       uuid: 'my-random-uuid',
       socketId: '5678',
       experimentId: '1234',
+      extraHeaders: {
+        Authorization: 'Bearer admin',
+      },
       timeout: '4022-01-01T00:00:30.000Z',
       body: { name: 'ImportantTask', type: 'fake task' },
     });
@@ -91,6 +94,9 @@ describe('sendWork unit tests', () => {
       uuid: 'my-random-uuid',
       socketId: '5678',
       experimentId: '1234',
+      extraHeaders: {
+        Authorization: 'Bearer admin',
+      },
       timeout: '4022-01-01T00:00:30.000Z',
       body: { name: 'ImportantTask', type: 'fake task' },
     });

@@ -69,6 +69,16 @@ const initialState = {
       store: null,
     },
   },
+  experimentSettings: {
+    pipelineStatus: {
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+          startDate: '2021-01-01T01:01:01.000Z',
+        },
+      },
+    },
+  },
 };
 
 const eventStub = { stopPropagation: () => null };
@@ -154,14 +164,18 @@ describe('GeneListTool', () => {
     // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(store, [GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED]);
 
-    expect(fetchCachedWork).toHaveBeenCalledWith('1234', 30, {
-      limit: 4,
-      name: 'ListGenes',
-      offset: 0,
-      orderBy: 'gene_names',
-      orderDirection: 'ASC',
-      selectFields: ['gene_names', 'dispersions'],
-    });
+    expect(fetchCachedWork).toHaveBeenCalledWith(
+      '1234', 30,
+      {
+        limit: 4,
+        name: 'ListGenes',
+        offset: 0,
+        orderBy: 'gene_names',
+        orderDirection: 'ASC',
+        selectFields: ['gene_names', 'dispersions'],
+      },
+      initialState.experimentSettings.pipelineStatus.status,
+    );
 
     expect(store.getActions()[0]).toMatchSnapshot();
     expect(store.getActions()[1]).toMatchSnapshot();

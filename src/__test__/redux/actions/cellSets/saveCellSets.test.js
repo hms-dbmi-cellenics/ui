@@ -70,7 +70,10 @@ describe('saveCellSets action', () => {
       'http://localhost:3000/v1/experiments/1234/cellSets',
       {
         body: JSON.stringify(treeData),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          Authorization: 'Bearer admin',
+          'Content-Type': 'application/json',
+        },
         method: 'PUT',
       },
     );

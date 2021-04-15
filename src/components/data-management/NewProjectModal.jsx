@@ -1,38 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Modal, Button, Input, Space, Typography, Form,
 } from 'antd';
+
+import validateProjectName from '../../utils/validateProjectName';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
 const NewProjectModal = (props) => {
   const {
-    visible, onCreate, onCancel, firstTimeFlow,
+    visible,
+    onCreate,
+    onCancel,
+    firstTimeFlow,
+    projects,
   } = props;
+
+  const [projectNames, setProjectNames] = useState(new Set());
+
+  useEffect(() => {
+    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
+  }, [projects.ids]);
 
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isValid, setIsValid] = useState(false);
-
-  const validateProjectName = (input) => input.length >= 8
-    && input.match(/([a-zA-Z\d]{2,}){1,}/gm)
-    && input.match(/^[a-zA-Z\s\d-_]{8,}$/gm);
-
-  const renderHelpText = () => {
-    if (projectName.length === 0) {
-      return undefined;
-    }
-
-    if (projectName.length < 8) {
-      return 'Your project name must be at least 8 characters';
-    }
-
-    if (!isValid) {
-      return 'Your project name can only contain letters, numbers, space, _, and -.';
-    }
-  };
 
   return (
     <Modal
@@ -72,8 +66,8 @@ const NewProjectModal = (props) => {
 
           <Form layout='vertical'>
             <Form.Item
-              validateStatus={renderHelpText() && 'error'}
-              help={renderHelpText()}
+              validateStatus={validateProjectName(projectName, projectNames) !== true && 'error'}
+              help={validateProjectName(projectName, projectNames)}
               label={(
                 <span>
                   Project name
@@ -87,7 +81,7 @@ const NewProjectModal = (props) => {
               <Input
                 onChange={(e) => {
                   setProjectName(e.target.value);
-                  setIsValid(validateProjectName(e.target.value));
+                  setIsValid(validateProjectName(e.target.value, projectNames) === true);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && isValid) {
@@ -123,6 +117,7 @@ NewProjectModal.propTypes = {
   onCreate: PropTypes.func,
   onCancel: PropTypes.func,
   firstTimeFlow: PropTypes.bool,
+  projects: PropTypes.object,
 };
 
 NewProjectModal.defaultProps = {
@@ -130,6 +125,7 @@ NewProjectModal.defaultProps = {
   onCreate: () => null,
   onCancel: () => null,
   firstTimeFlow: false,
+  projects: { ids: [] },
 };
 
 export default NewProjectModal;

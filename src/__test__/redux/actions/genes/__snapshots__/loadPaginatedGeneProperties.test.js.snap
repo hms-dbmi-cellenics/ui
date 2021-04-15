@@ -49,6 +49,9 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on success 
           "c",
         ],
       },
+      Object {
+        "PipelineRunETag": "2021-01-01T01:01:01.000Z",
+      },
     ],
   ],
   "results": Array [

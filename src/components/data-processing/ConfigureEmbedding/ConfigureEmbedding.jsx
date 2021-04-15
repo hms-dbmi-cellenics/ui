@@ -221,17 +221,27 @@ const ConfigureEmbedding = (props) => {
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.outstandingChanges,
   );
 
-  const config = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
-  );
+  const plotConfigs = useSelector((state) => {
+    const plotUuids = Object.values(plots).map((plotIt) => plotIt.plotUuid);
+
+    const plotConfigsToReturn = plotUuids.reduce((acum, plotUuidIt) => {
+      // eslint-disable-next-line no-param-reassign
+      acum[plotUuidIt] = state.componentConfig[plotUuidIt]?.config;
+      return acum;
+    }, {});
+
+    return plotConfigsToReturn;
+  });
 
   const plotData = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
   );
 
+  const selectedConfig = plotConfigs[plots[selectedPlot].plotUuid];
+
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
-      if (!config) {
+      if (!plotConfigs[obj.plotUuid]) {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
@@ -247,28 +257,28 @@ const ConfigureEmbedding = (props) => {
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-    if (!config || !plotData) {
+    if (!selectedConfig || !plotData) {
       return;
     }
 
     if (!cellSets.loading
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
-      && config
+      && selectedConfig
       && plotData) {
-      setPlot(plots[selectedPlot].plot(config, plotData));
-      if (!config.selectedCellSet) { return; }
+      setPlot(plots[selectedPlot].plot(selectedConfig, plotData));
+      if (!selectedConfig.selectedCellSet) { return; }
 
       const propertiesArray = Object.keys(cellSets.properties);
       const cellSetClusteringLength = propertiesArray.filter(
-        (cellSet) => cellSet === config.selectedCellSet,
+        (cellSet) => cellSet === selectedConfig.selectedCellSet,
       ).length;
 
       if (!cellSetClusteringLength) {
         debouncedCellSetClustering(0.5);
       }
     }
-  }, [config, cellSets, plotData]);
+  }, [selectedConfig, cellSets, plotData]);
 
   useEffect(() => {
     const showPopupWhenUnsaved = (url) => {
@@ -310,7 +320,7 @@ const ConfigureEmbedding = (props) => {
 
   const renderPlot = () => {
     // Spinner for main window
-    if (!config) {
+    if (!selectedConfig) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -320,7 +330,7 @@ const ConfigureEmbedding = (props) => {
 
     if (selectedPlot === 'sample'
       && !cellSets.loading
-      && filterCells(cellSets, config.selectedCellSet).length === 0) {
+      && filterCells(cellSets, selectedConfig.selectedCellSet).length === 0) {
       return (
         <Empty description='Your project has only one sample.' />
       );
@@ -383,7 +393,7 @@ const ConfigureEmbedding = (props) => {
               <div style={{ height: 8 }} />
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
-                config={config}
+                config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
               />
             </Panel>

@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import {
-  SAMPLES_FILE_UPDATE, SAMPLES_UPDATE,
+  SAMPLES_FILE_UPDATE,
 } from '../../actionTypes/samples';
 
 const updateSampleFile = (
@@ -11,19 +11,10 @@ const updateSampleFile = (
   const updatedAt = moment().toISOString();
 
   dispatch({
-    type: SAMPLES_UPDATE,
-    payload: {
-      sampleUuid,
-      sample: {
-        lastModified: updatedAt,
-      },
-    },
-  });
-
-  dispatch({
     type: SAMPLES_FILE_UPDATE,
     payload: {
       sampleUuid,
+      lastModified: updatedAt,
       file,
     },
   });

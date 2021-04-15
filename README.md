@@ -9,14 +9,16 @@ Development
 ### Prerequisites
 
 We highly recommend using VSCode for development, if you don't have it, make sure you get it installed. You will also need to install:
-`homebrew`, `docker`, `npm`.
+`homebrew`, `docker`, `npm`. You should also install the package `dbaeumer.vscode-eslint` for syntax linting & format errors in VS Code.
 
 ### Running locally
 
 Make sure that you clone this repo and are in the `ui` folder. then simply do:
 
-    npm install
-    npm start
+    make install
+    make run
+
+See more available commands like syntax checking with `make help`.
 
 Note that since the UI is not connected to the backend, you should see an empty screen saying `You are not connected to the backend.`
 To get it running end-to-end locally with mocked dataset, you will need to set up and run each of these:

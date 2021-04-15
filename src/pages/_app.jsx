@@ -6,16 +6,18 @@ import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import useSWR from 'swr';
+
 import ContentWrapper from '../components/ContentWrapper';
 import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
 import Error from './_error';
-import isBrowser from '../utils/environment';
 import wrapper from '../redux/store';
-import getApiEndpoint from '../utils/apiEndpoint';
 import getFromApiExpectOK from '../utils/getFromApiExpectOK';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
+
+import { isBrowser, getCurrentEnvironment } from '../utils/environment';
+import setupAmplify from '../utils/setupAmplify';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -36,10 +38,12 @@ const WrappedApp = ({ Component, pageProps, req }) => {
     if (router.route.includes('experimentId')) {
       setExperimentId(router.query.experimentId);
     }
+
+    setupAmplify(getCurrentEnvironment());
   }, [router.query.experimentId]);
 
   const { data: experimentData, error: experimentError } = useSWR(
-    () => (experimentId ? `${getApiEndpoint()}/v1/experiments/${experimentId}` : null),
+    () => (experimentId ? `/v1/experiments/${experimentId}` : null),
     getFromApiExpectOK,
   );
 

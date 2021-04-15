@@ -209,14 +209,17 @@ const generateData = (cellSets, selectedCellSet, embeddingData) => {
   const newCellSets = filterCells(cellSets, selectedCellSet);
 
   const test = newCellSets
-    .filter((d) => d.cellId < embeddingData.length && embeddingData[d.cellId])
-    .map((data) => (
-      {
-        ...data,
-        x: embeddingData[data.cellId][0],
-        y: embeddingData[data.cellId][1],
-      }
-    ));
+    .filter((d) => d.cellId < embeddingData.length)
+    .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
+    .map((data) => {
+      const { cellId, ...leftOverData } = data;
+
+      return {
+        ...leftOverData,
+        x: embeddingData[cellId][0],
+        y: embeddingData[cellId][1],
+      };
+    });
 
   return test;
 };
