@@ -1,9 +1,8 @@
+import fetchAPI from '../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
 } from '../../actionTypes/experimentSettings';
-
-import getApiEndpoint from '../../../utils/apiEndpoint';
 import loadPipelineStatus from '../experimentSettings/loadPipelineStatus';
 
 const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) => {
@@ -23,11 +22,13 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
 
     // We don't need to manually save any processing config because it is done by
     // the api once the pipeline finishes successfully
-    const response = await fetch(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines`,
+    const response = await fetchAPI(
+      `/v1/experiments/${experimentId}/pipelines`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           processingConfig: [
             {

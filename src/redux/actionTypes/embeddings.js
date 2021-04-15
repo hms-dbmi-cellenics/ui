@@ -15,14 +15,8 @@ const EMBEDDINGS_LOADED = `${EMBEDDINGS}/loaded`;
  */
 const EMBEDDINGS_ERROR = `${EMBEDDINGS}/error`;
 
-/**
- * Reset embeedding
- */
-const EMBEDDINGS_RESET = `${EMBEDDINGS}/reset`;
-
 export {
   EMBEDDINGS_LOADING,
   EMBEDDINGS_LOADED,
   EMBEDDINGS_ERROR,
-  EMBEDDINGS_RESET,
 };

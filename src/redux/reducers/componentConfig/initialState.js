@@ -411,7 +411,7 @@ const mitochondrialFractionLogHistogram = {
   marker: markerBaseState,
   label: labelBaseState,
   binStep: 0.05,
-  maxFraction: 3.5,
+  maxFraction: 0.2,
 };
 
 // CLASSIFIER - Classifier Empty Drops
@@ -429,7 +429,7 @@ const classifierEmptyDropsPlot = {
   axes: {
     ...axesBaseState,
     xAxisText: 'log10[ cell size (UMIs) ]',
-    yAxisText: 'classifier prob',
+    yAxisText: 'FDR (emptyDrops)',
     gridOpacity: 10,
   },
   title: {

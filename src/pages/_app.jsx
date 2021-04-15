@@ -10,7 +10,6 @@ import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
 import Error from './_error';
 import wrapper from '../redux/store';
-import getApiEndpoint from '../utils/apiEndpoint';
 import getFromApiExpectOK from '../utils/getFromApiExpectOK';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
@@ -44,7 +43,7 @@ const WrappedApp = ({ Component, pageProps }) => {
   }, [router.query.experimentId]);
 
   const { data: experimentData, error: experimentError } = useSWR(
-    () => (experimentId ? `${getApiEndpoint()}/v1/experiments/${experimentId}` : null),
+    () => (experimentId ? `/v1/experiments/${experimentId}` : null),
     getFromApiExpectOK,
   );
 

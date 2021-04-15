@@ -5,13 +5,12 @@ import { Typography } from 'antd';
 import useSWR from 'swr';
 
 import getFromApiExpectOK from '../utils/getFromApiExpectOK';
-import getApiEndpoint from '../utils/apiEndpoint';
 
 const { Text } = Typography;
 
 const Loader = ({ experimentId }) => {
   const { data: workerStatus, error } = useSWR(
-    () => (experimentId ? `${getApiEndpoint()}/v1/experiments/${experimentId}/pipelines` : null),
+    () => (experimentId ? `/v1/experiments/${experimentId}/pipelines` : null),
     getFromApiExpectOK,
   );
 
