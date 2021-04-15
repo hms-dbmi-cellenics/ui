@@ -5,7 +5,7 @@ import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
 import UploadStatus from './UploadStatus';
 
-const compressAndUpload = async (sample, activeProjectUuid, dispatch) => {
+const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
     const uncompressed = file.bundle.type !== 'application/gzip';
 
@@ -20,33 +20,47 @@ const compressAndUpload = async (sample, activeProjectUuid, dispatch) => {
     return result;
   }, {});
 
-  Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
+  Object.entries(updatedSampleFiles).map(async ([fileName, file]) => (
     loadAndCompressIfNecessary(file)
-      .then(async (loadedFile) => {
+      .then((loadedFile) => {
         const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
-        await Storage.put(bucketKey, loadedFile)
-          .then(() => {
-            dispatch(updateSampleFile(sample.uuid, {
-              ...file,
-              status: UploadStatus.UPLOADED,
-            }));
-          })
-          .catch(() => {
-            dispatch(updateSampleFile(sample.uuid, {
-              ...file,
-              status: UploadStatus.UPLOAD_ERROR,
-            }));
-          });
-      })
-      .catch((e) => {
+
+        Storage.put(
+          bucketKey,
+          loadedFile,
+          {
+            progressCallback(progress) {
+              const percentProgress = Math.round((progress.loaded / progress.total) * 100);
+
+              dispatch(updateSampleFile(sample.uuid, {
+                ...file,
+                upload: {
+                  status: UploadStatus.UPLOADING,
+                  progress: percentProgress ?? 0,
+                },
+              }));
+            },
+          },
+        ).then(async () => {
+          dispatch(updateSampleFile(sample.uuid, {
+            ...file,
+            upload: { status: UploadStatus.UPLOADED },
+          }));
+        }).catch(() => {
+          dispatch(updateSampleFile(sample.uuid, {
+            ...file,
+            upload: { status: UploadStatus.UPLOAD_ERROR },
+          }));
+        });
+      }).catch((e) => {
         const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
         dispatch(updateSampleFile(sample.uuid, {
           ...file,
-          status: fileErrorStatus,
+          upload: { status: fileErrorStatus },
         }));
-      });
-  });
+      })
+  ));
 
   return updatedSampleFiles;
 };
@@ -86,7 +100,7 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
       sample.uuid = await dispatch(createSample(activeProjectUuid, name, sampleType));
     }
 
-    sample.files = await compressAndUpload(sample, activeProjectUuid, dispatch);
+    sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
 
     Object.values(sample.files).forEach((file) => {
       dispatch(updateSampleFile(sample.uuid, {

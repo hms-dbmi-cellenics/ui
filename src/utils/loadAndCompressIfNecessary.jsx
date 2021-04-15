@@ -1,4 +1,4 @@
-import pako from 'pako';
+import { gzip } from 'fflate';
 
 const loadAndCompressIfNecessary = async (file) => {
   const inGzipFormat = file.bundle.mime === 'application/gzip';
@@ -8,13 +8,16 @@ const loadAndCompressIfNecessary = async (file) => {
     reader.onabort = () => reject(new Error('aborted'));
     reader.onerror = () => reject(new Error('error'));
     reader.onload = () => {
-      const loadedFile = reader.result;
-
+      const loadedFile = new Uint8Array(reader.result);
+      resolve(loadedFile);
       if (inGzipFormat) {
         resolve(loadedFile);
       } else {
-        const compressed = pako.gzip(loadedFile, { to: 'string' });
-        resolve(compressed);
+        gzip(loadedFile, {}, (error, compressedFile) => {
+          if (error) { reject(new Error('error')); }
+
+          resolve(compressedFile);
+        });
       }
     };
 
