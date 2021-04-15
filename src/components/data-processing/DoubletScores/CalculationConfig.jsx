@@ -46,7 +46,4 @@ DoubletScoresConfig.propTypes = {
   disabled: PropTypes.bool.isRequired,
 };
 
-export default React.memo(
-  DoubletScoresConfig,
-  (prev, next) => prev.config.probabilityThreshold === next.config.probabilityThreshold && prev.disabled === next.disabled,
-);
+export default DoubletScoresConfig;

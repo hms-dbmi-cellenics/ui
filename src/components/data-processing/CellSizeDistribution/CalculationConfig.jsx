@@ -52,7 +52,4 @@ CellSizeDistributionConfig.propTypes = {
   disabled: PropTypes.bool.isRequired,
 };
 
-export default React.memo(
-  CellSizeDistributionConfig,
-  (prev, next) => prev.config.minCellSize === next.config.minCellSize && prev.disabled === next.disabled,
-);
+export default CellSizeDistributionConfig;

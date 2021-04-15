@@ -55,7 +55,4 @@ GenesVsUMIsConfig.defaultProps = {
   disabled: false,
 };
 
-export default React.memo(
-  GenesVsUMIsConfig,
-  (prev, next) => prev.config.regressionTypeSettings === next.config.regressionTypeSettings && prev.disabled === next.disabled,
-);
+export default GenesVsUMIsConfig;

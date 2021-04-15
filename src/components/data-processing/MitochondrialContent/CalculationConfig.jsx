@@ -52,7 +52,4 @@ MitochondrialConfig.propTypes = {
   disabled: PropTypes.bool.isRequired,
 };
 
-export default React.memo(
-  MitochondrialConfig,
-  (prev, next) => prev.config.maxFraction === next.config.maxFraction && prev.disabled === next.disabled,
-);
+export default MitochondrialConfig;
