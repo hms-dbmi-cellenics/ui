@@ -365,7 +365,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                             disabledByPipeline
                           }
                         >
-                          {!processingConfig[key]?.enabled ? (
+                          {processingConfig[key]?.enabled === false ? (
                             <>
                               <Text
                                 type='secondary'
@@ -572,7 +572,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
             return (
               <Space direction='vertical'>
-                {!processingConfig[steps[stepIdx].key].enabled &&
+                {processingConfig[steps[stepIdx].key].enabled === false &&
                   < Alert
                     message={
                       disabledByPrefilter ?
