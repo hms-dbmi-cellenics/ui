@@ -80,6 +80,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
+      "selectedConfigureEmbeddingPlot": "sample",
     },
     "mitochondrialContent": Object {
       "auto": true,
@@ -188,6 +189,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
+      "selectedConfigureEmbeddingPlot": "sample",
     },
     "mitochondrialContent": Object {
       "auto": true,
@@ -295,6 +297,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
+      "selectedConfigureEmbeddingPlot": "sample",
     },
     "mitochondrialContent": Object {
       "auto": true,
