@@ -20,47 +20,51 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
     return result;
   }, {});
 
-  Object.entries(updatedSampleFiles).forEach(([fileName, file]) => (
-    loadAndCompressIfNecessary(file)
-      .then((loadedFile) => {
-        const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
+  Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
+    let loadedFile = null;
+    try {
+      loadedFile = await loadAndCompressIfNecessary(file);
+    } catch (e) {
+      const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
-        Storage.put(
-          bucketKey,
-          loadedFile,
-          {
-            progressCallback(progress) {
-              const percentProgress = Math.round((progress.loaded / progress.total) * 100);
+      dispatch(updateSampleFile(sample.uuid, {
+        ...file,
+        upload: { status: fileErrorStatus },
+      }));
+    }
 
-              dispatch(updateSampleFile(sample.uuid, {
-                ...file,
-                upload: {
-                  status: UploadStatus.UPLOADING,
-                  progress: percentProgress ?? 0,
-                },
-              }));
-            },
+    const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
+
+    try {
+      await Storage.put(
+        bucketKey,
+        loadedFile,
+        {
+          progressCallback(progress) {
+            const percentProgress = Math.round((progress.loaded / progress.total) * 100);
+
+            dispatch(updateSampleFile(sample.uuid, {
+              ...file,
+              upload: {
+                status: UploadStatus.UPLOADING,
+                progress: percentProgress ?? 0,
+              },
+            }));
           },
-        ).then(async () => {
-          dispatch(updateSampleFile(sample.uuid, {
-            ...file,
-            upload: { status: UploadStatus.UPLOADED },
-          }));
-        }).catch(() => {
-          dispatch(updateSampleFile(sample.uuid, {
-            ...file,
-            upload: { status: UploadStatus.UPLOAD_ERROR },
-          }));
-        });
-      }).catch((e) => {
-        const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+        },
+      );
+    } catch (e) {
+      dispatch(updateSampleFile(sample.uuid, {
+        ...file,
+        upload: { status: UploadStatus.UPLOAD_ERROR },
+      }));
+    }
 
-        dispatch(updateSampleFile(sample.uuid, {
-          ...file,
-          upload: { status: fileErrorStatus },
-        }));
-      })
-  ));
+    dispatch(updateSampleFile(sample.uuid, {
+      ...file,
+      upload: { status: UploadStatus.UPLOADED },
+    }));
+  });
 
   return updatedSampleFiles;
 };
