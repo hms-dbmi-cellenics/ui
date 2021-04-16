@@ -8,72 +8,12 @@ Object {
     "status": Object {},
   },
   "processing": Object {
-    "cellSizeDistribution": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "binStep": 200,
-        "minCellSize": 10800,
-      },
-    },
-    "classifier": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "FDR": 0.1,
-      },
-    },
     "configureEmbedding": Object {
-      "clusteringSettings": Object {
-        "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
-            "resolution": 0.5,
-          },
-        },
-      },
       "embeddingSettings": Object {
-        "method": "newMethod",
-        "methodSettings": Object {
-          "tsne": Object {
-            "learningRate": 200,
-            "perplexity": 30,
-          },
-          "umap": Object {
-            "distanceMetric": "euclidean",
-            "minimumDistance": 0.1,
-          },
-        },
         "newProperty": Object {
           "name": "a",
           "value": "b",
         },
-      },
-      "enabled": true,
-    },
-    "dataIntegration": Object {
-      "dataIntegration": Object {
-        "method": "seuratv4",
-        "methodSettings": Object {
-          "seuratv4": Object {
-            "normalization": "logNormalize",
-            "numGenes": 2000,
-          },
-        },
-      },
-      "dimensionalityReduction": Object {
-        "excludeGeneCategories": Array [],
-        "method": "rpca",
-        "numPCs": 30,
-      },
-      "enabled": true,
-    },
-    "doubletScores": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "binStep": 0.05,
-        "probabilityThreshold": 0.2,
       },
     },
     "meta": Object {
@@ -81,31 +21,6 @@ Object {
       "loading": true,
       "loadingSettingsError": false,
       "selectedConfigureEmbeddingPlot": "sample",
-    },
-    "mitochondrialContent": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "method": "absolute_threshold",
-        "methodSettings": Object {
-          "absolute_threshold": Object {
-            "binStep": 200,
-            "maxFraction": 0.1,
-          },
-        },
-      },
-    },
-    "numGenesVsNumUmis": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "regressionType": "gam",
-        "regressionTypeSettings": Object {
-          "gam": Object {
-            "p.level": 0.00009,
-          },
-        },
-      },
     },
     "test": "test data",
   },
@@ -120,69 +35,9 @@ Object {
     "status": Object {},
   },
   "processing": Object {
-    "cellSizeDistribution": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "binStep": 200,
-        "minCellSize": 10800,
-      },
-    },
-    "classifier": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "FDR": 0.1,
-      },
-    },
     "configureEmbedding": Object {
-      "clusteringSettings": Object {
-        "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
-            "resolution": 0.5,
-          },
-        },
-      },
       "embeddingSettings": Object {
-        "method": "newMethod",
-        "methodSettings": Object {
-          "tsne": Object {
-            "learningRate": 200,
-            "perplexity": 30,
-          },
-          "umap": Object {
-            "distanceMetric": "euclidean",
-            "minimumDistance": 0.1,
-          },
-        },
         "newProperty": "property",
-      },
-      "enabled": true,
-    },
-    "dataIntegration": Object {
-      "dataIntegration": Object {
-        "method": "seuratv4",
-        "methodSettings": Object {
-          "seuratv4": Object {
-            "normalization": "logNormalize",
-            "numGenes": 2000,
-          },
-        },
-      },
-      "dimensionalityReduction": Object {
-        "excludeGeneCategories": Array [],
-        "method": "rpca",
-        "numPCs": 30,
-      },
-      "enabled": true,
-    },
-    "doubletScores": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "binStep": 0.05,
-        "probabilityThreshold": 0.2,
       },
     },
     "meta": Object {
@@ -190,31 +45,6 @@ Object {
       "loading": true,
       "loadingSettingsError": false,
       "selectedConfigureEmbeddingPlot": "sample",
-    },
-    "mitochondrialContent": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "method": "absolute_threshold",
-        "methodSettings": Object {
-          "absolute_threshold": Object {
-            "binStep": 200,
-            "maxFraction": 0.1,
-          },
-        },
-      },
-    },
-    "numGenesVsNumUmis": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "regressionType": "gam",
-        "regressionTypeSettings": Object {
-          "gam": Object {
-            "p.level": 0.00009,
-          },
-        },
-      },
     },
     "test": "test data",
   },
@@ -229,68 +59,9 @@ Object {
     "status": Object {},
   },
   "processing": Object {
-    "cellSizeDistribution": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "binStep": 200,
-        "minCellSize": 10800,
-      },
-    },
-    "classifier": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "FDR": 0.1,
-      },
-    },
     "configureEmbedding": Object {
-      "clusteringSettings": Object {
-        "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
-            "resolution": 0.5,
-          },
-        },
-      },
       "embeddingSettings": Object {
         "method": "newMethod",
-        "methodSettings": Object {
-          "tsne": Object {
-            "learningRate": 200,
-            "perplexity": 30,
-          },
-          "umap": Object {
-            "distanceMetric": "euclidean",
-            "minimumDistance": 0.1,
-          },
-        },
-      },
-      "enabled": true,
-    },
-    "dataIntegration": Object {
-      "dataIntegration": Object {
-        "method": "seuratv4",
-        "methodSettings": Object {
-          "seuratv4": Object {
-            "normalization": "logNormalize",
-            "numGenes": 2000,
-          },
-        },
-      },
-      "dimensionalityReduction": Object {
-        "excludeGeneCategories": Array [],
-        "method": "rpca",
-        "numPCs": 30,
-      },
-      "enabled": true,
-    },
-    "doubletScores": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "binStep": 0.05,
-        "probabilityThreshold": 0.2,
       },
     },
     "meta": Object {
@@ -298,31 +69,6 @@ Object {
       "loading": true,
       "loadingSettingsError": false,
       "selectedConfigureEmbeddingPlot": "sample",
-    },
-    "mitochondrialContent": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "method": "absolute_threshold",
-        "methodSettings": Object {
-          "absolute_threshold": Object {
-            "binStep": 200,
-            "maxFraction": 0.1,
-          },
-        },
-      },
-    },
-    "numGenesVsNumUmis": Object {
-      "auto": true,
-      "enabled": true,
-      "filterSettings": Object {
-        "regressionType": "gam",
-        "regressionTypeSettings": Object {
-          "gam": Object {
-            "p.level": 0.00009,
-          },
-        },
-      },
     },
     "test": "test data",
   },

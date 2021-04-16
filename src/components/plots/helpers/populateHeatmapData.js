@@ -9,6 +9,19 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
   } = config;
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
+
+  // return a set with all the cells found in group node
+  // e.g: node = {key: louvain, children: []}, {...}
+  const getCellsSetInGroup = (node) => {
+    let cellIdsInAnyGroupBy = new Set();
+    node.children.forEach(({ key }) => {
+      const cellSet = getCellsInSet(key);
+      // Union of allCellsInSets and cellSet
+      cellIdsInAnyGroupBy = new Set([...cellIdsInAnyGroupBy, ...cellSet]);
+    });
+    return cellIdsInAnyGroupBy;
+  };
+
   const trackOrder = Array.from(selectedTracks).reverse();
   const generateTrackData = (cells, track) => {
     // Find the `groupBy` root node.
@@ -100,19 +113,18 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
     return intersectedCellSets;
   };
   const getAllEnabledCellIds = (groupByRootNodes) => {
-    let cellIdsInAnyGroupBy = new Set();
+    // const cellIdsInAnyGroupBy = getAllCellsSet(groupByRootNodes);
 
-    groupByRootNodes.forEach((rootNode) => {
-      rootNode.children.forEach(({ key }) => {
-        const cellSet = getCellsInSet(key);
-        // Union of allCellsInSets and cellSet
-        cellIdsInAnyGroupBy = new Set([...cellIdsInAnyGroupBy, ...cellSet]);
-      });
-    });
+    // we want to avoid displaying elements which are not in a louvain cluster
+    // so initially consider as enabled only cells in louvain clusters
+    // See: https://biomage.atlassian.net/browse/BIOMAGE-809
+    const louvainClusters = groupByRootNodes.find((groupingName) => groupingName.key === 'louvain');
+    const cellIsInLouvainCluster = getCellsSetInGroup(louvainClusters);
 
-    // Only work with non-hidden cells.
+    // Remove cells from groups marked as hidden by the user in the UI.
     const hiddenCellIds = union(Array.from(hidden), properties);
-    const enabledCellIds = new Set([...cellIdsInAnyGroupBy].filter((x) => !hiddenCellIds.has(x)));
+    const enabledCellIds = new Set([...cellIsInLouvainCluster]
+      .filter((cellId) => !hiddenCellIds.has(cellId)));
 
     return enabledCellIds;
   };
@@ -147,6 +159,7 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
     if (!groupByRootNodes.length) {
       return [];
     }
+
     const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
 
     if (downsampling) {

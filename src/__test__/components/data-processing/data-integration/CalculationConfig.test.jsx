@@ -14,7 +14,7 @@ import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
-import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState from '../../../experimentSettings.mock';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
