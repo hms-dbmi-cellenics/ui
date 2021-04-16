@@ -5,6 +5,26 @@ import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
 import UploadStatus from './UploadStatus';
 
+const putInS3 = (bucketKey, loadedFile, dispatch, sample, file) => (
+  Storage.put(
+    bucketKey,
+    loadedFile,
+    {
+      progressCallback(progress) {
+        const percentProgress = Math.round((progress.loaded / progress.total) * 100);
+
+        dispatch(updateSampleFile(sample.uuid, {
+          ...file,
+          upload: {
+            status: UploadStatus.UPLOADING,
+            progress: percentProgress ?? 0,
+          },
+        }));
+      },
+    },
+  )
+);
+
 const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
     const uncompressed = file.bundle.type !== 'application/gzip';
@@ -36,23 +56,7 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
     const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
 
     try {
-      await Storage.put(
-        bucketKey,
-        loadedFile,
-        {
-          progressCallback(progress) {
-            const percentProgress = Math.round((progress.loaded / progress.total) * 100);
-
-            dispatch(updateSampleFile(sample.uuid, {
-              ...file,
-              upload: {
-                status: UploadStatus.UPLOADING,
-                progress: percentProgress ?? 0,
-              },
-            }));
-          },
-        },
-      );
+      await putInS3(bucketKey, loadedFile, dispatch, sample, file);
     } catch (e) {
       dispatch(updateSampleFile(sample.uuid, {
         ...file,
