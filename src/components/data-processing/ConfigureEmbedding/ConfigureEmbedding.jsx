@@ -30,7 +30,6 @@ const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
   const { experimentId, onPipelineRun } = props;
-  // const [selectedPlot, setSelectedPlot] = useState('sample');
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
   const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector((state) => state.experimentSettings.processing.meta);
