@@ -20,8 +20,12 @@ const CategoricalEmbeddingPlot = (props) => {
 
   const cellSets = useSelector((state) => state.cellSets);
 
-  const embeddingSettings = useSelector((state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings);
-  const { data: embeddingData, loading, error } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
+  const embeddingSettings = useSelector(
+    (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
+  );
+  const { data: embeddingData, loading, error } = useSelector(
+    (state) => state.embeddings[embeddingSettings.method],
+  ) || {};
 
   const [plotSpec, setPlotSpec] = useState({});
 
@@ -54,7 +58,10 @@ const CategoricalEmbeddingPlot = (props) => {
     }
 
     if (!cellSets.loading && !cellSets.error && embeddingData?.length) {
-      setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData), plotDataCategoryName));
+      setPlotSpec(
+        generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData),
+          plotDataCategoryName),
+      );
     }
   }, [config, plotData, cellSets, embeddingData, config]);
 

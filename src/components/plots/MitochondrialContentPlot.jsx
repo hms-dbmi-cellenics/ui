@@ -31,7 +31,9 @@ const MitochondrialContentPlot = (props) => {
   const cellSets = useSelector((state) => state.cellSets);
 
   const [plotSpec, setPlotSpec] = useState({});
-  const plotComponent = useSelector((state) => state.componentConfig.embeddingPreviewMitochondrialContent);
+  const plotComponent = useSelector(
+    (state) => state.componentConfig.embeddingPreviewMitochondrialContent,
+  );
 
   useEffect(() => {
     if (plotData.length) {
