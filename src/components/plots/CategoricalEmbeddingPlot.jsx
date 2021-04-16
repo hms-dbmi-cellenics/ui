@@ -12,7 +12,7 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
-    experimentId, config, actions, plotData, plotDataCategoryName,
+    experimentId, config, actions,
   } = props;
   const dispatch = useDispatch();
 
@@ -30,10 +30,6 @@ const CategoricalEmbeddingPlot = (props) => {
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (plotData) {
-      return;
-    }
-
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
     }
@@ -48,25 +44,19 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [experimentId, embeddingSettings.method]);
 
   useEffect(() => {
-    if (!config) {
+    if (!config
+      || cellSets.loading
+      || cellSets.error) {
       return;
     }
 
-    if (plotData) {
-      setPlotSpec(generateSpec(config, plotData, plotDataCategoryName));
-      return;
+    if (embeddingData?.length) {
+      setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData)));
     }
-
-    if (!cellSets.loading && !cellSets.error && embeddingData?.length) {
-      setPlotSpec(
-        generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData),
-          plotDataCategoryName),
-      );
-    }
-  }, [config, plotData, cellSets, embeddingData, config]);
+  }, [config, cellSets, embeddingData, config]);
 
   const render = () => {
-    if (!plotData && error) {
+    if (error) {
       return (
         <PlatformError
           error={error}
@@ -75,7 +65,7 @@ const CategoricalEmbeddingPlot = (props) => {
       );
     }
 
-    if (!plotData && (cellSets.loading || !embeddingData || loading || !config)) {
+    if (cellSets.loading || !embeddingData || loading || !config) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -104,14 +94,10 @@ CategoricalEmbeddingPlot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
-  plotData: PropTypes.array,
-  plotDataCategoryName: PropTypes.string,
 };
 
 CategoricalEmbeddingPlot.defaultProps = {
   actions: true,
-  plotData: null,
-  plotDataCategoryName: 'sample',
 };
 
 export default CategoricalEmbeddingPlot;
