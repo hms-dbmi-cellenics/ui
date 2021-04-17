@@ -92,7 +92,17 @@ const ContinuousEmbeddingPlot = (props) => {
       && !geneExpression.error
       && !cellSets.loading
       && !cellSets.error) {
-      setPlotSpec(generateSpec(config, generateData(geneExpression.data[config.shownGene].expression, config.selectedSample, embeddingData, cellSets.properties)));
+      setPlotSpec(
+        generateSpec(
+          config,
+          generateData(
+            geneExpression.data[config.shownGene].expression,
+            config.selectedSample,
+            embeddingData,
+            cellSets.properties,
+          ),
+        ),
+      );
     }
   }, [config, plotData, embeddingData, geneExpression, cellSets, loading]);
 

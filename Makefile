@@ -17,7 +17,7 @@ check: ## Checks code for linting/construct errors
 	@echo "    [✓]\n"
 run: build ## Runs the UI 
 	@npm start
-.PHONY:install run help
+.PHONY:install build check run help
 clean: ## Cleans up temporary files
 	@echo "==> Cleaning up node modules ..."
 	@rm -r node_modules
