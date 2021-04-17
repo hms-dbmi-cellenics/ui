@@ -5,8 +5,14 @@ import waitForActions from 'redux-mock-store-await-actions';
 import { Storage } from 'aws-amplify';
 import { SAMPLES_FILE_UPDATE } from '../../redux/actionTypes/samples';
 
+// import loadAndCompressIfNecessary from '../../utils/loadAndCompressIfNecessary';
+
 import processUpload from '../../utils/processUpload';
 import UploadStatus from '../../utils/UploadStatus';
+
+// import {
+//   PROJECTS_UPDATE,
+// } from '../../redux/actionTypes/projects';
 
 const validFilesList = [
   {
@@ -15,7 +21,7 @@ const validFilesList = [
       path: '/WT13/features.tsv.gz',
       type: 'application/gzip',
     },
-    upload: { status: UploadStatus.UPLOADING },
+    status: UploadStatus.UPLOADING,
     valid: true,
     errors: '',
   },
@@ -25,7 +31,7 @@ const validFilesList = [
       path: '/WT13/barcodes.tsv.gz',
       type: 'application/gzip',
     },
-    upload: { status: UploadStatus.UPLOADING },
+    status: UploadStatus.UPLOADING,
     valid: true,
     errors: '',
   },
@@ -35,7 +41,7 @@ const validFilesList = [
       path: '/WT13/matrix.mtx.gz',
       type: 'application/gzip',
     },
-    upload: { status: UploadStatus.UPLOADING },
+    status: UploadStatus.UPLOADING,
     valid: true,
     errors: '',
   },
@@ -59,7 +65,7 @@ jest.mock('../../utils/loadAndCompressIfNecessary',
   () => jest.fn().mockImplementation(
     (file) => {
       if (!file.valid) {
-        return Promise.reject(new Error('error'));
+        return Promise.reject(new Error());
       }
 
       return Promise.resolve('loadedGzippedFile');
@@ -91,11 +97,6 @@ describe('processUpload (in development)', () => {
     jest.clearAllMocks();
   });
 
-  beforeEach(() => {
-    // eslint-disable-next-line no-param-reassign
-    validFilesList.forEach((file) => { file.valid = true; });
-  });
-
   it('Uploads and updates redux correctly when there are no errors', async () => {
     const store = mockStore({
       projects: {
@@ -125,7 +126,7 @@ describe('processUpload (in development)', () => {
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.upload.status);
+    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.status);
 
     const firstThreeFilesStatuses = filesStatuses.slice(0, 2);
     const secondThreeFilesStatuses = filesStatuses.slice(3);
@@ -165,14 +166,14 @@ describe('processUpload (in development)', () => {
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.upload.status);
+    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.status);
 
     const uploadingFileStatuses = filesStatuses.filter(
       (status) => status === UploadStatus.UPLOADING,
     );
 
     const errorFileStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.FILE_READ_ERROR,
+      (status) => status === UploadStatus.UPLOAD_ERROR,
     );
 
     // There are 3 files actions with status uploading
@@ -182,7 +183,7 @@ describe('processUpload (in development)', () => {
     expect(errorFileStatuses.length).toEqual(3);
   });
 
-  it('Updates redux correctly when there are file upload errors', async () => {
+  it('Updates redux correctly when there are file load and compress errors', async () => {
     const store = mockStore({
       projects: {
         errorProjectUuid: {
@@ -191,19 +192,22 @@ describe('processUpload (in development)', () => {
       },
     });
 
+    // eslint-disable-next-line no-param-reassign
+    validFilesList.forEach((file) => { file.valid = false; });
+
     processUpload(validFilesList, sampleType, samples, 'errorProjectUuid', store.dispatch);
 
     await waitForActions(
       store,
       new Array(6).fill(SAMPLES_FILE_UPDATE),
-      { matcher: waitForActions.matchers.containing, throttleWait: 2 },
+      { matcher: waitForActions.matchers.containing },
     );
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.upload.status);
+    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.status);
 
     const uploadingFileStatuses = filesStatuses.filter(
       (status) => status === UploadStatus.UPLOADING,

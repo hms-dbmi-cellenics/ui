@@ -98,10 +98,7 @@ const NewProjectModal = (props) => {
       newList.push({
         name: fileName,
         bundle: file,
-        upload: {
-          status: UploadStatus.UPLOADING,
-          progress: 0,
-        },
+        status: UploadStatus.UPLOADING,
         valid: isValidType && isValidFilename,
         errors: error.join(', '),
       });
