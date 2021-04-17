@@ -1,5 +1,5 @@
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
+  Table, Typography, Space, Tooltip, PageHeader, Button, Input,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -33,7 +33,7 @@ const ProjectDetails = ({ width, height }) => {
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromApiExpectOK,
   );
-  const [tableData, setTableData] = useState([]);
+  const [data, setData] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
@@ -81,51 +81,30 @@ const ProjectDetails = ({ width, height }) => {
     setSortedSpeciesData(d);
   }, [speciesData]);
 
-  const renderUploadCell = (columnId, tableCellData) => {
-    const { status, progress = null } = tableCellData;
-
-    if (status === UploadStatus.UPLOADED) {
+  const renderCells = (columnId, text) => {
+    if (text === UploadStatus.UPLOADED) {
       return (
-        <Space>
-          <div style={{
-            whiteSpace: 'nowrap',
-            height: '35px',
-            minWidth: '90px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          >
-            <Text type='success'>{status.message()}</Text>
-          </div>
-        </Space>
+        <div style={{ whiteSpace: 'nowrap' }}>
+          <Text type='success'>Uploaded</Text>
+        </div>
       );
     }
 
-    if (status === UploadStatus.UPLOADING) {
+    if (text === UploadStatus.UPLOADING) {
       return (
-        <div style={{
-          whiteSpace: 'nowrap',
-          height: '35px',
-          minWidth: '90px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
-          <Space direction='vertical' size={[1, 1]}>
-            <Text type='warning'>{`${status.message()}`}</Text>
-            {progress ? (<Progress percent={progress} size='small' />) : <div />}
+        <div style={{ whiteSpace: 'nowrap' }}>
+          <Space>
+            <Text type='warning'>Uploading...</Text>
           </Space>
         </div>
       );
     }
 
-    if (status === UploadStatus.UPLOAD_ERROR) {
+    if (text === UploadStatus.UPLOAD_ERROR) {
       return (
-        <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
+        <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
-            <Text type='danger'>{status.message()}</Text>
+            <Text type='danger'>Upload error</Text>
             <Tooltip placement='bottom' title='Retry' mouseLeaveDelay={0}>
               <Button
                 size='small'
@@ -139,17 +118,11 @@ const ProjectDetails = ({ width, height }) => {
       );
     }
 
-    if (
-      [
-        UploadStatus.FILE_NOT_FOUND,
-        UploadStatus.FILE_READ_ABORTED,
-        UploadStatus.FILE_READ_ERROR,
-      ].includes(status)
-    ) {
+    if (text === UploadStatus.FILE_NOT_FOUND) {
       return (
-        <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
+        <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
-            <Text type='danger'>{status.message()}</Text>
+            <Text type='danger'>File not found</Text>
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
               <Button
                 size='small'
@@ -163,9 +136,9 @@ const ProjectDetails = ({ width, height }) => {
       );
     }
 
-    if (status === UploadStatus.DATA_MISSING) {
+    if (text === UploadStatus.DATA_MISSING) {
       return (
-        <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
+        <div style={{ whiteSpace: 'nowrap' }}>
           <Space>
             <Text type='danger'>Data missing</Text>
             <MetadataEditor size='small' shape='link' icon={<EditOutlined />}>
@@ -175,18 +148,18 @@ const ProjectDetails = ({ width, height }) => {
         </div>
       );
     }
-  };
 
-  const renderEditableFieldCell = (text) => (
-    <div style={{ whiteSpace: 'nowrap' }}>
-      <Space>
-        <EditableField
-          deleteEnabled={false}
-          value={text}
-        />
-      </Space>
-    </div>
-  );
+    return (
+      <div style={{ whiteSpace: 'nowrap' }}>
+        <Space>
+          <EditableField
+            deleteEnabled={false}
+            value={text}
+          />
+        </Space>
+      </div>
+    );
+  };
 
   const renderSampleCells = (text, el, idx) => (
     <Text strong key={`sample-cell-${idx}`}>
@@ -217,7 +190,7 @@ const ProjectDetails = ({ width, height }) => {
       ),
       fillInBy: <Input />,
       dataIndex,
-      render: (value) => renderEditableFieldCell(dataIndex, value),
+      render: (value) => renderCells(dataIndex, value),
       width: 200,
     });
   };
@@ -232,17 +205,17 @@ const ProjectDetails = ({ width, height }) => {
     {
       title: 'Barcodes.csv',
       dataIndex: 'barcodes',
-      render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
+      render: (text) => renderCells('barcodes', text),
     },
     {
       title: 'Genes.csv',
       dataIndex: 'genes',
-      render: (tableCellData) => renderUploadCell('genes', tableCellData),
+      render: (text) => renderCells('genes', text),
     },
     {
       title: 'Matrix.mtx',
       dataIndex: 'matrix',
-      render: (tableCellData) => renderUploadCell('matrix', tableCellData),
+      render: (text) => renderCells('matrix', text),
     },
     {
       title: () => (
@@ -255,7 +228,7 @@ const ProjectDetails = ({ width, height }) => {
       ),
       fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
       dataIndex: 'species',
-      render: (text) => renderEditableFieldCell('species', text),
+      render: (text) => renderCells('species', text),
       width: 200,
     },
     createMetadataColumn('Tissue', 'tissue'),
@@ -266,29 +239,28 @@ const ProjectDetails = ({ width, height }) => {
 
   useEffect(() => {
     if (samples.ids.length === 0 || projects.ids.length === 0) {
-      setTableData([]);
+      setData([]);
       return;
     }
 
     const newData = projects[activeProjectUuid].samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
-      const barcodesUpload = sampleFiles['barcodes.tsv.gz']?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const genesUpload = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz'])?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const matrixUpload = sampleFiles['matrix.mtx.gz']?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const barcodesStatus = sampleFiles['barcodes.tsv.gz']?.status;
+      const genesStatus = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz'])?.status;
+      const matrixStatus = sampleFiles['matrix.mtx.gz']?.status;
 
       return {
         key: idx,
         name: samples[sampleUuid].name,
         uuid: sampleUuid,
-        barcodes: barcodesUpload,
-        genes: genesUpload,
-        matrix: matrixUpload,
+        barcodes: barcodesStatus ?? UploadStatus.FILE_NOT_FOUND,
+        genes: genesStatus ?? UploadStatus.FILE_NOT_FOUND,
+        matrix: matrixStatus ?? UploadStatus.FILE_NOT_FOUND,
         species: 'dataMissing',
       };
     });
-
-    setTableData(newData);
+    setData(newData);
   }, [projects, samples, activeProjectUuid]);
 
   const changeDescription = (description) => {
@@ -330,7 +302,7 @@ const ProjectDetails = ({ width, height }) => {
           }}
           bordered
           columns={columns}
-          dataSource={tableData}
+          dataSource={data}
           sticky
           pagination={false}
         />
