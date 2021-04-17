@@ -7,8 +7,6 @@ import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import Amplify from 'aws-amplify';
 import Header from '../../../../components/Header';
 import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
@@ -19,11 +17,6 @@ import HeatmapSettings from '../../../../components/data-exploration/heatmap/Hea
 import MosaicCloseButton from '../../../../components/MosaicCloseButton';
 import { updateLayout, addWindow, addToWindow } from '../../../../redux/actions/layout';
 import SearchMenu from '../../../../components/SearchMenu';
-
-import getExperimentInfo from '../../../../utils/ssr/getExperimentInfo';
-import getAuthenticationInfo from '../../../../utils/ssr/getAuthenticationInfo';
-import configure from '../../../../utils/amplify-config';
-
 import 'react-mosaic-component/react-mosaic-component.css';
 
 const { TabPane } = Tabs;
@@ -40,7 +33,7 @@ const renderWindow = (tile, width, height) => {
 };
 
 const ExplorationViewPage = ({
-  experimentId, experimentData, userPoolId, identityPoolid, route,
+  experimentId, experimentData, route,
 }) => {
   const dispatch = useDispatch();
   const layout = useSelector((state) => state.layout);
@@ -51,11 +44,6 @@ const ExplorationViewPage = ({
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
-
-  Amplify.configure({
-    ...configure(userPoolId, identityPoolid),
-    ssr: true,
-  });
 
   const TILE_MAP = {
     'UMAP Embedding': {
@@ -218,19 +206,9 @@ const ExplorationViewPage = ({
   );
 };
 
-export async function getServerSideProps(context) {
-  const results = await Promise.all(
-    [getAuthenticationInfo(context), getExperimentInfo(context)],
-  );
-
-  return _.merge(...results);
-}
-
 ExplorationViewPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
   experimentData: PropTypes.object.isRequired,
-  userPoolId: PropTypes.string.isRequired,
-  identityPoolid: PropTypes.string.isRequired,
   route: PropTypes.string.isRequired,
 };
 

@@ -1,20 +1,21 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { DefaultSeo } from 'next-seo';
 import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
-import useSWR from 'swr';
+import Amplify from 'aws-amplify';
+import _ from 'lodash';
 import ContentWrapper from '../components/ContentWrapper';
-import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
 import Error from './_error';
-import wrapper from '../redux/store';
-import getFromApiExpectOK from '../utils/getFromApiExpectOK';
+import { wrapper } from '../redux/store';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
-// import { isBrowser } from '../utils/environment';
+import configure from '../utils/amplify-config';
 
+// import { isBrowser } from '../utils/environment';
 // TODO: this needs to be refactored after auth works properly
 //
 // import { isBrowser, getCurrentEnvironment } from '../utils/environment';
@@ -25,44 +26,27 @@ Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 const WrappedApp = ({ Component, pageProps }) => {
+  const { experimentId, experimentData } = pageProps;
   const router = useRouter();
-  const [experimentId, setExperimentId] = useState(undefined);
 
-  // Only hydrate pages when experiment ID is loaded.
+  console.log(experimentData);
+
+  const { auth: { userPoolId, identityPoolid } } = useSelector((state) => state.networkResources);
+
   useEffect(() => {
-    if (!router.route.includes('experimentId')) {
-      setExperimentId(false);
-    }
+    Amplify.configure({
+      ...configure(userPoolId, identityPoolid),
+      ssr: true,
+    });
+  }, [userPoolId, identityPoolid]);
 
-    if (router.route.includes('experimentId')) {
-      setExperimentId(router.query.experimentId);
-    }
-
-    // TODO: this needs to be worked on as well
-    // setupAmplify(getCurrentEnvironment());
-  }, [router.query.experimentId]);
-
-  const { data: experimentData, error: experimentError } = useSWR(
-    () => (experimentId ? `/v1/experiments/${experimentId}` : null),
-    getFromApiExpectOK,
-  );
+  // TODO: FIX THIS
+  const experimentError = null;
 
   const mainContent = () => {
     // If this is a not found error, show it without the navigation bar.
     if (Component === NotFoundPage) {
       return <Component {...pageProps} />;
-    }
-
-    // If the experiment ID does not exist and is not `false` (i.e. not necessary)
-    // wait until the experiment ID is loaded before loading the page.
-    if (!experimentId && experimentId !== false) {
-      return (<PreloadContent />);
-    }
-
-    // If we found the experiment ID, but we haven't yet queried the API for data
-    // about the experiment, wait until that is done.
-    if (experimentId && !experimentData && !experimentError) {
-      return (<PreloadContent />);
     }
 
     // If there was an error querying the API, display an error state.
@@ -112,6 +96,31 @@ const WrappedApp = ({ Component, pageProps }) => {
       {mainContent(Component, pageProps)}
     </>
   );
+};
+
+WrappedApp.getInitialProps = async ({ Component, ctx }) => {
+  const { store, req, query } = ctx;
+
+  const pageProps = Component.getInitialProps
+    ? await Component.getInitialProps(ctx)
+    : {};
+
+  const promises = [];
+
+  if (req) {
+    if (query?.experimentId) {
+      const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
+      promises.push(getExperimentInfo);
+    }
+
+    const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
+    promises.push(getAuthenticationInfo);
+  }
+
+  let results = await Promise.all(promises.map((f) => f(ctx, store)));
+  results = _.merge(...results);
+
+  return { pageProps: { ...pageProps, ...results } };
 };
 
 WrappedApp.propTypes = {

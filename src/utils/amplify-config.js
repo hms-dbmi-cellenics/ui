@@ -1,6 +1,5 @@
 const configure = (userPoolId, identityPoolId) => ({
   Auth: {
-
     region: 'eu-west-1',
     identityPoolId,
     userPoolId,

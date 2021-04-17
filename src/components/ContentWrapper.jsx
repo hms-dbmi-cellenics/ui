@@ -26,7 +26,6 @@ import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
 
 const { Sider, Footer } = Layout;
-const { SubMenu } = Menu;
 
 const { Paragraph, Text } = Typography;
 

@@ -10,8 +10,16 @@ import {
 
 import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
 import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
+import loadAuthenticationInfo from '../../redux/actions/networkResources/loadAuthenticationInfo';
 
-const getAuthenticationInfo = async () => {
+const getAuthenticationInfo = async (context, store) => {
+  if (
+    store.getState().networkResources.auth.userPoolId
+    || store.getState().networkResources.auth.identityPoolId
+  ) {
+    return;
+  }
+
   let additionalClientParams = {};
 
   if (process.env.NODE_ENV !== 'development') {
@@ -52,12 +60,9 @@ const getAuthenticationInfo = async () => {
 
   const userPoolId = UserPools.find((pool) => pool.Name.includes('staging')).Id;
 
-  return {
-    props: {
-      userPoolId,
-      identityPoolId,
-    },
-  };
+  store.dispatch(loadAuthenticationInfo(userPoolId, identityPoolId));
+
+  return {};
 };
 
 export default getAuthenticationInfo;

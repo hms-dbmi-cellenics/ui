@@ -115,6 +115,12 @@ module.exports = withBundleAnalyzer(
             });
           }
 
+          if (!isServer) {
+            config.node = {
+              fs: 'empty',
+            };
+          }
+
           // analyse use webpack-bundle-analyser
           if (isAnalyse) {
             BundleAnalyzerPlugin({
