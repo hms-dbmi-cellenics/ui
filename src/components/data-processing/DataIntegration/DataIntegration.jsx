@@ -56,7 +56,10 @@ const DataIntegration = (props) => {
       plot: (config, plotData, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
-          config={config}
+          config={{
+            ...config,
+            selectedCellSet: 'sample',
+          }}
           plotData={plotData}
           actions={actions}
         />

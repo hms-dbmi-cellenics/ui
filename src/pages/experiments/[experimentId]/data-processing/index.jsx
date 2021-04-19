@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
@@ -38,7 +38,6 @@ import SingleComponentMultipleDataContainer from '../../../../components/SingleC
 import { loadProcessingSettings, updateProcessingSettings, saveProcessingSettings } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { loadSamples } from '../../../../redux/actions/samples'
-import { resetEmbedding } from '../../../../redux/actions/embedding'
 import { runPipeline } from '../../../../redux/actions/pipeline';
 import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
 
@@ -92,34 +91,42 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [experimentId]);
 
   useEffect(() => {
-    if (samples.meta.loading) dispatch(loadSamples(experimentId))
-  }, [samples.meta.loading])
+    if (samples.meta.loading) {
+      dispatch(loadSamples(experimentId));
+      return;
+    }
 
-  useEffect(() => {
-    if (samples.ids.length) {
+    if (samples.ids.length > 0) {
       setPreFilteredSamples(
         samples.ids.reduce(
           (acc, sampleUuid) => samples[sampleUuid].preFiltered ? [...acc, sampleUuid] : acc, []
         )
       )
     }
-  }, [samples])
+
+  }, [samples.meta.loading])
 
   useEffect(() => {
-
-    if (preFilteredSamples.length && processingConfig[steps[stepIdx].key].enabled) {
+    if (
+      preFilteredSamples.length > 0
+      && !processingConfig.meta.loading
+      && !processingConfig.meta.loadingSettingsError
+      && processingConfig[steps[stepIdx].key].enabled
+    ) {
       stepsDisabledByPrefilter.forEach((step) => {
         dispatch(updateProcessingSettings(experimentId, step, { enabled: false }))
         dispatch(saveProcessingSettings(experimentId, step))
       })
     }
 
-  }, [preFilteredSamples])
+  }, [preFilteredSamples, processingConfig])
 
   useEffect(() => {
-    if (preFilteredSamples.length
+    if (
+      preFilteredSamples.length > 0
       && !processingConfig.meta.loading
-      && !processingConfig.meta.loadingSettingsError) {
+      && !processingConfig.meta.loadingSettingsError
+    ) {
       setDisabledByPrefilter(stepsDisabledByPrefilter.includes(steps[stepIdx].key))
     }
   }, [stepIdx, processingConfig])
@@ -297,9 +304,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = (stepKey) => {
     setChangesOutstanding(false);
-
-    // Reset cell data
-    dispatch(resetEmbedding())
     dispatch((runPipeline(experimentId, stepKey)))
   }
 
@@ -361,7 +365,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                             disabledByPipeline
                           }
                         >
-                          {!processingConfig[key]?.enabled ? (
+                          {processingConfig[key]?.enabled === false ? (
                             <>
                               <Text
                                 type='secondary'
@@ -549,7 +553,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               );
             }
 
-            if (cellSets.loading) {
+            if (cellSets.loading || samples.meta.loading || processingConfig.meta.loading) {
               return (
                 <div className='preloadContextSkeleton' style={{ padding: '16px 0px' }}>
                   <Skeleton.Input style={{ width: '100%', height: 400 }} active />
@@ -557,7 +561,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               );
             }
 
-            if (cellSets.error) {
+            if (cellSets.error || samples.meta.error || processingConfig.meta.loadingSettingsError) {
               return (
                 <PlatformError
                   error={cellSets.error.toString()}
@@ -568,7 +572,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
             return (
               <Space direction='vertical'>
-                {!processingConfig[steps[stepIdx].key].enabled &&
+                {processingConfig[steps[stepIdx].key].enabled === false &&
                   < Alert
                     message={
                       disabledByPrefilter ?

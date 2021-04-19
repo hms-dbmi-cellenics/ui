@@ -107,7 +107,10 @@ const CalculationConfig = (props) => {
   };
 
   const roundedVariationExplained = () => {
-    const variationExplained = data?.length ? data.slice(0, dimensionalityReduction.numPCs).reduce((acum, current) => acum + current.percentVariance, 0) : 0;
+    const variationExplained = data?.length
+      ? data.slice(0, dimensionalityReduction.numPCs).reduce(
+        (acum, current) => acum + current.percentVariance, 0,
+      ) : 0;
     const roundingPrecision = 2;
 
     return _.round(variationExplained * 100, roundingPrecision);

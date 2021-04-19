@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
-import initialExperimentState from '../../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState from '../../../experimentSettings.mock';
 import initialCellSetsState from '../../../../redux/reducers/cellSets/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';

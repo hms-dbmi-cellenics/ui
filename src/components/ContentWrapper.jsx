@@ -213,13 +213,17 @@ const ContentWrapper = (props) => {
       return <Error errorText='Could not get current pipeline settings.' />;
     }
 
-    if (pipelineRunningError && !route.includes('data-processing')) {
-      return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='error' />;
-    }
+    // if (pipelineRunningError && !route.includes('data-processing')) {
+    //   return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='error' />;
+    // }
 
-    if (pipelineRunning && !route.includes('data-processing')) {
-      return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='running' />;
-    }
+    // if (pipelineRunning && !route.includes('data-processing')) {
+    //   return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='running' />;
+    // }
+
+    // if (pipelineStatusKey === 'NotCreated' && !route.includes('data-processing')) {
+    //   return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='toBeRun' />;
+    // }
 
     return children;
   };

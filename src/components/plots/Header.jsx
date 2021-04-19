@@ -15,7 +15,6 @@ import { useBeforeunload } from 'react-beforeunload';
 import FeedbackButton from '../FeedbackButton';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import itemRender from '../../utils/renderBreadcrumbLinks';
-import getApiEndpoint from '../../utils/apiEndpoint';
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 
 import { LOAD_CONFIG } from '../../redux/actionTypes/componentConfig';
@@ -54,8 +53,9 @@ const Header = (props) => {
     if (!saved && config) {
       debounceSave();
     }
-    if (!_.isEqual(config, initialPlotConfigStates[plotType])) {
+    if (!_.isEqual(initialPlotConfigStates[plotType], config)) {
       console.log(' not equal', initialPlotConfigStates.frequency, 'config is ', config);
+      console.log('difference is ', _.difference(initialPlotConfigStates[plotType], config));
       setResetDisabled(false);
     } else {
       setResetDisabled(true);
@@ -96,7 +96,7 @@ const Header = (props) => {
     };
   }, [router.asPath, router.events, saved]);
   const { data } = useSWR(
-    `${getApiEndpoint()}/v1/experiments/${experimentId}`,
+    `/v1/experiments/${experimentId}`,
     getFromApiExpectOK,
   );
 
@@ -190,4 +190,4 @@ Header.propTypes = {
   plotUuid: PropTypes.string.isRequired,
 };
 
-export default Header;
+export default React.memo(Header);
