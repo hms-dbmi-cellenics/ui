@@ -50,9 +50,9 @@ const SelectData = (props) => {
           }}
         >
           {
-            tree.map(({ key }) => (
+            tree.map(({ key, name }) => (
               <Option key={key}>
-                {properties[key]?.name}
+                {name}
               </Option>
             ))
           }

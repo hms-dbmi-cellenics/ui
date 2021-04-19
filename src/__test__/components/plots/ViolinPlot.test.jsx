@@ -284,18 +284,25 @@ describe('ViolinIndex', () => {
     const panelContainer = dataSelection.parentElement;
 
     userEvent.click(dataSelection);
-    // I have not found a way to test Select actions/contents
-    // with @testing-library/react :-(
-    // This is something that we do without much hassle with enzyme
-    // See an example in
-    // src/__test__/components/data-exploration/generic-gene-table/GeneSelectionMenu.test.jsx
 
-    // With RTL, I have tried clicking without luck these two alternatives:
-    //  rtl.getAllByRole(panelContainer, 'combobox')[0]
-    //  rtl.getAllByLabelText(panelContainer, 'down')[0]
-    // That said, I was looking for the options in the wrong place, because
-    // it is `body` by default. Check the docs for the option `getPopupContainer`.
+    // Testing Selection is awkard :-(
+    // The popup descends from the `body`, not from `panelContainer`
+    // The `listbox` element that we need to wait for is not really the popup
+    // (and I don't not what it is), but rather a sibling of it
+    userEvent.click(rtl.getAllByRole(panelContainer, 'combobox')[0]);
+    const popup1 = rtl.screen.getByRole('listbox').parentNode;
+    expect(popup1).toHaveTextContent('Louvain clusters');
+    expect(popup1).toHaveTextContent('Samples');
+    expect(popup1).toHaveTextContent('Scratchpad');
+    userEvent.click(rtl.getAllByRole(panelContainer, 'combobox')[0]);
 
+    userEvent.click(rtl.getAllByRole(panelContainer, 'combobox')[1]);
+    const popup2 = rtl.screen.getAllByRole('listbox')[1].parentNode;
+    expect(popup2).toHaveTextContent('cluster a');
+    expect(popup2).toHaveTextContent('Sample 1');
+    userEvent.click(rtl.getAllByRole(panelContainer, 'combobox')[1]);
+
+    // Testing the default values
     const inputFields = rtl.getAllByRole(panelContainer, 'combobox');
     expect(inputFields.length).toEqual(2);
     expect(inputFields[0].parentNode.parentNode).toHaveTextContent('Louvain clusters');
@@ -304,6 +311,7 @@ describe('ViolinIndex', () => {
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
     expect(getCanvasStrings()).toContain('cluster a');
 
+    // Testing the effect of grouping by sample
     store.dispatch(updatePlotConfig(plotUuid, { selectedCellSet: 'sample' }));
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
     expect(getCanvasStrings()).toContain('Sample 1');
