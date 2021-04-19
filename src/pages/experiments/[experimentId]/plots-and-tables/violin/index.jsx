@@ -80,16 +80,19 @@ const ViolinIndex = ({ experimentId }) => {
       controls: ['axes'],
     },
     {
-      panelTitle: 'Colours',
-      controls: ['colourScheme', 'colourInversion'],
-    },
-    {
       panelTitle: 'Markers',
-      controls: ['markers'],
+      controls: ['violinMarkers'],
     },
     {
       panelTitle: 'Legend',
-      controls: ['legend'],
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+        },
+      }],
     },
   ];
 

@@ -255,6 +255,10 @@ describe('ViolinIndex', () => {
       .filter((event) => event.type === 'fillText')
       .map((event) => event.props.text);
   };
+  const ocurrencesInCanvas = (str) => {
+    const strings = getCanvasStrings();
+    return strings.filter((inCanvas) => inCanvas.includes(str)).length;
+  };
   it('loads by default the gene with the highest dispersion, allows another to be selected, ansd updates the plot\'s title', async () => {
     await renderViolinIndex(defaultStore);
 
@@ -319,8 +323,8 @@ describe('ViolinIndex', () => {
   it('has a Data Tranformation panel', async () => {
     await renderViolinIndex(defaultStore);
 
-    const dataTransformation = rtl.screen.getAllByRole('tab')[2];
-    expect(dataTransformation).toHaveTextContent('Data Transformation');
+    const tabs = rtl.screen.getAllByRole('tab');
+    const dataTransformation = tabs.find((tab) => tab.textContent === 'Data Transformation');
     const panelContainer = dataTransformation.parentElement;
     userEvent.click(dataTransformation);
 
@@ -338,5 +342,59 @@ describe('ViolinIndex', () => {
     expect(slider).toHaveAttribute('aria-valuemin', '0');
     expect(slider).toHaveAttribute('aria-valuemax', '1');
     expect(slider).toHaveAttribute('aria-valuenow', '0.3');
+  });
+
+  it('has a Markers panel', async () => {
+    await renderViolinIndex(defaultStore);
+
+    const tabs = rtl.screen.getAllByRole('tab');
+    const markers = tabs.find((tab) => tab.textContent === 'Markers');
+    const panelContainer = markers.parentElement;
+    userEvent.click(markers);
+
+    const radioButtons = rtl.getAllByRole(panelContainer, 'radio');
+    expect(radioButtons.length).toBe(4);
+    expect(panelContainer).toHaveTextContent(/cell markers/i);
+    expect(radioButtons[0]).toBeChecked();
+    // toHaveDisplayValue() currently does not support input[type="radio"]
+    expect(radioButtons[0].parentNode.parentNode).toHaveTextContent('Show');
+
+    const slider = rtl.getByRole(panelContainer, 'slider');
+    expect(slider).toHaveAttribute('aria-valuemin', '1');
+    expect(slider).toHaveAttribute('aria-valuemax', '100');
+    expect(slider).toHaveAttribute('aria-valuenow', '5');
+
+    expect(panelContainer).toHaveTextContent(/median and interquartile range/i);
+    expect(radioButtons[3]).toBeChecked();
+    expect(radioButtons[3].parentNode.parentNode).toHaveTextContent('Hide');
+  });
+
+  it('has a Lengend panel', async () => {
+    await renderViolinIndex(defaultStore);
+
+    const tabs = rtl.screen.getAllByRole('tab');
+    const markers = tabs.find((tab) => tab.textContent === 'Legend');
+    const panelContainer = markers.parentElement;
+    userEvent.click(markers);
+
+    let radioButtons = rtl.getAllByRole(panelContainer, 'radio');
+    expect(radioButtons.length).toBe(2);
+    expect(panelContainer).toHaveTextContent(/toggle/i);
+    expect(radioButtons[1]).toBeChecked();
+    // toHaveDisplayValue() currently does not support input[type="radio"]
+    expect(radioButtons[1].parentNode.parentNode).toHaveTextContent('Hide');
+
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+    expect(ocurrencesInCanvas('cluster a')).toBe(1);
+
+    userEvent.click(radioButtons[0]);
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
+    radioButtons = rtl.getAllByRole(panelContainer, 'radio');
+    expect(radioButtons.length).toBe(5);
+    expect(panelContainer).toHaveTextContent(/position/i);
+    expect(radioButtons[2]).toBeChecked();
+    expect(radioButtons[2].parentNode.parentNode).toHaveTextContent('Top');
+
+    expect(ocurrencesInCanvas('cluster a')).toBe(2);
   });
 });

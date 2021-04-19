@@ -18,7 +18,7 @@ const ViolinPlot = (props) => {
   const error = false; // TO_DO - relate to cellset loading and gene expression loading
   const loading = false;
 
-  const geneExpression = useSelector((state) => state.genes.expression);
+  const geneExpression = useSelector((state) => state.genes.expression); // TO-DO Can break
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
   const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);
@@ -47,8 +47,6 @@ const ViolinPlot = (props) => {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
       dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
     }
-  }, [highestDispersionGene, config]);
-  useEffect(() => {
     if (config?.shownGene !== 'notSelected' && config) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
@@ -83,7 +81,10 @@ const ViolinPlot = (props) => {
       return (
         <PlatformError
           error={error}
-        // onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings.method)); }}
+          onClick={() => {
+            dispatch(loadCellSets(experimentId));
+            dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+          }}
         />
       );
     }

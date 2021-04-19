@@ -179,7 +179,11 @@ const frequencyInitialConfig = {
 // PLOTS & TABLES - Violin
 const violinConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    position: 'top',
+    enabled: false,
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
@@ -203,6 +207,8 @@ const violinConfig = {
   shownGene: 'notSelected',
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
+  selectedPointsVisible: true,
+  statisticsVisible: false,
   kdeBandwidth: 0.3,
   normalised: 'normalised',
 };

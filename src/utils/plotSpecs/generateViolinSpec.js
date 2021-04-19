@@ -2,13 +2,11 @@ import _ from 'lodash';
 
 /* eslint-disable no-param-reassign */
 const generateSpec = (config, plotData) => {
-  const legends = [];
-
   const numGroups = _.keys(plotData.groups).length;
   let plotWidth = Math.round(Math.min(100, 0.9 * (config.dimensions.width / numGroups)));
   plotWidth += (plotWidth % 2);
 
-  return {
+  const spec = {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'A set of violin plot depicting gene expression accross groupings.',
     width: config.dimensions.width,
@@ -16,7 +14,6 @@ const generateSpec = (config, plotData) => {
     autosize: { type: 'fit', resize: true },
     background: config.colour.toggleInvert,
     padding: 5,
-    legends,
     signals: [
       {
         name: 'plotWidth',
@@ -334,7 +331,6 @@ const generateSpec = (config, plotData) => {
                 x: {
                   scale: 'xrandom',
                   field: 'x',
-                  // mult: { signal: 'plotWidth' },
                   offset: { signal: 'plotWidth / 2' },
                 },
                 y: {
@@ -342,7 +338,7 @@ const generateSpec = (config, plotData) => {
                   field: 'y',
                 },
                 size: {
-                  value: 5,
+                  value: config.marker.size,
                 },
                 strokeWidth: {
                   value: 0,
@@ -353,44 +349,12 @@ const generateSpec = (config, plotData) => {
                 fill: {
                   value: 'black',
                 },
-              },
-            },
-          },
-          /*
-          {
-            type: 'symbol',
-            from: {
-              data: 'density',
-            },
-            encode: {
-              update: {
-                x: {
-                  scale: 'xdensity',
-                  field: 'density',
-                },
-                y: {
-                  scale: 'yscale',
-                  field: 'value',
-                },
-                shape: {
-                  value: 'circle',
-                },
-                strokeWidth: {
-                  value: 2,
-                },
-                opacity: {
-                  value: 0.5,
-                },
-                stroke: {
-                  value: 'blue',
-                },
-                fill: {
-                  value: 'transparent',
+                fillOpacity: {
+                  value: config.marker.opacity / 10,
                 },
               },
             },
           },
-          */
         ],
       },
     ],
@@ -404,6 +368,53 @@ const generateSpec = (config, plotData) => {
       fontSize: { value: config.title.fontSize },
     },
   };
+  // So far, signals cannot be used to hide stuff
+  //   https://github.com/vega/vega/issues/1153
+  // so we remove the stuff to be hidden by changing the spec
+
+  if (!config.selectedPointsVisible) {
+    spec.marks[0].marks = spec.marks[0].marks.filter((mark) => mark.from.data !== 'cellsInGroup');
+  }
+  if (!config.statisticsVisible) {
+    spec.marks[0].marks = spec.marks[0].marks.filter((mark) => mark.from.data !== 'summaryOfGroup');
+  }
+
+  if (config?.legend.enabled) {
+    const positionIsRight = config.legend.position === 'right';
+
+    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+    const labelLimit = positionIsRight ? 0 : 85;
+    if (positionIsRight) {
+      const plotWidthIndex = spec.signals.findIndex((item) => item.name === 'plotWidth');
+      spec.signals[plotWidthIndex].value = plotWidth * 0.85;
+    }
+
+    const groups = _.keys(plotData.groups);
+    const groupNames = groups.map((id) => plotData.groups[id].name);
+    const groupColors = groups.map((id) => plotData.groups[id].color);
+    spec.scales.push({
+      name: 'legend',
+      type: 'ordinal',
+      range: groupColors,
+      domain: groupNames,
+    });
+    spec.legends = [
+      {
+        fill: 'legend',
+        type: 'symbol',
+        symbolType: 'square',
+        symbolSize: { value: 200 },
+        orient: config?.legend.position,
+        offset: 40,
+        direction: 'horizontal',
+        labelFont: { value: config?.fontStyle.font },
+        columns: legendColumns,
+        labelLimit,
+      },
+    ];
+  }
+
+  return spec;
 };
 
 const generateData = (
