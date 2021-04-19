@@ -28,8 +28,6 @@ const WrappedApp = ({ Component, pageProps, req }) => {
   const router = useRouter();
   const [experimentId, setExperimentId] = useState(undefined);
 
-  console.log(req, pageProps);
-
   // Only hydrate pages when experiment ID is loaded.
   useEffect(() => {
     if (!router.route.includes('experimentId')) {

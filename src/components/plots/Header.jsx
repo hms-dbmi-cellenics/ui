@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, {
+  useEffect, useRef, useCallback, useState,
+} from 'react';
 import useSWR from 'swr';
 import {
   PageHeader, Row, Col, Button, Skeleton, Space,
@@ -26,6 +28,7 @@ const KeyboardEventHandler = dynamic(
 
 const Header = (props) => {
   const { experimentId, plotUuid, finalRoute } = props;
+  console.log(initialPlotConfigStates.frequency, 'IN HEADER');
 
   const dispatch = useDispatch();
   const saved = !useSelector((state) => state.componentConfig[plotUuid]?.outstandingChanges);
@@ -35,6 +38,7 @@ const Header = (props) => {
   const { config, outstandingChanges } = useSelector((state) => state.componentConfig[plotUuid]) || {};
   const reset = useRef(true);
   const debounceSave = useCallback(_.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+  const [resetDisabled, setResetDisabled] = useState(true);
 
   if (outstandingChanges) {
     reset.current = false;
@@ -49,6 +53,12 @@ const Header = (props) => {
   useEffect(() => {
     if (!saved && config) {
       debounceSave();
+    }
+    if (!_.isEqual(config, initialPlotConfigStates[plotType])) {
+      console.log(' not equal', initialPlotConfigStates.frequency, 'config is ', config);
+      setResetDisabled(false);
+    } else {
+      setResetDisabled(true);
     }
   }, [config]);
 
@@ -125,7 +135,6 @@ const Header = (props) => {
   };
 
   const onClickReset = () => {
-    console.log('RESETTING ', initialPlotConfigStates[plotType], 'TYPE IS ', plotType);
     dispatch({
       type: LOAD_CONFIG,
       payload: {
@@ -136,8 +145,9 @@ const Header = (props) => {
       },
     });
     dispatch(savePlotConfig(experimentId, plotUuid));
-    reset.current = true;
+    setResetDisabled(true);
   };
+  console.log('reset is ', resetDisabled);
   return (
     <Row>
       <Col span={16}>
@@ -162,7 +172,7 @@ const Header = (props) => {
                 key='reset'
                 type='primary'
                 onClick={onClickReset}
-                disabled={reset.current}
+                disabled={resetDisabled}
               >
                 Reset
               </Button>

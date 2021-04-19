@@ -18,7 +18,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
         payload: {
           ...data,
           plotType,
-          config: _.merge(initialPlotConfigStates[plotType], data.config),
+          config: data.config, // _.merge(initialPlotConfigStates[plotType], data.config),
         },
       });
     } else if (response.status === 404) {
