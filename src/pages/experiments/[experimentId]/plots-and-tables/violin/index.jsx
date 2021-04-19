@@ -62,7 +62,12 @@ const ViolinIndex = ({ experimentId }) => {
       children: [
         {
           panelTitle: 'Title',
-          controls: ['title'],
+          controls: [{
+            name: 'title',
+            props: {
+              allowTitleChange: false,
+            },
+          }],
         },
         {
           panelTitle: 'Font',
