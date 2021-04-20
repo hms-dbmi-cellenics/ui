@@ -27,20 +27,23 @@ Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 const WrappedApp = ({ Component, pageProps }) => {
-  const { experimentId, experimentData, httpError } = pageProps;
+  const { httpError } = pageProps;
   const router = useRouter();
 
   const { auth } = useSelector((state) => state.networkResources);
 
-  useEffect(() => {
-    const { userPoolId, identityPoolid } = auth;
+  const { experimentId } = router.query;
+  const experimentData = useSelector((state) => (experimentId ? state.experimentSettings.info : {}));
 
-    if (!auth.userPoolId || !auth.identityPoolid) {
+  useEffect(() => {
+    const { userPoolId, identityPoolId, userPoolClientDetails } = auth;
+
+    if (!auth.userPoolId || !auth.identityPoolId) {
       return;
     }
 
     Amplify.configure({
-      ...configure(userPoolId, identityPoolid),
+      ...configure(userPoolId, identityPoolId, userPoolClientDetails),
       ssr: true,
     });
   }, [auth]);
@@ -68,7 +71,10 @@ const WrappedApp = ({ Component, pageProps }) => {
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <ContentWrapper experimentId={experimentId} experimentData={experimentData}>
+      <ContentWrapper
+        experimentId={experimentId}
+        experimentData={experimentData}
+      >
         <Component
           experimentId={experimentId}
           experimentData={experimentData}
@@ -112,13 +118,13 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const promises = [];
 
   if (req) {
+    const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
+    promises.push(getAuthenticationInfo);
+
     if (query?.experimentId) {
       const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
       promises.push(getExperimentInfo);
     }
-
-    const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
-    promises.push(getAuthenticationInfo);
   }
 
   try {

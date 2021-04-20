@@ -7,6 +7,8 @@ import {
   CognitoIdentityProviderClient,
   ListUserPoolsCommand,
   ListUserPoolClientsCommand,
+  DescribeUserPoolClientCommand,
+  DescribeUserPoolCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
@@ -58,16 +60,34 @@ const getAuthenticationInfo = async (context, store) => {
   const identityPoolId = IdentityPools.find(
     (pool) => pool.IdentityPoolName.includes('staging'),
   ).IdentityPoolId;
-
   const userPoolId = UserPools.find((pool) => pool.Name.includes('staging')).Id;
 
   const { UserPoolClients } = await userPoolClient.send(
     new ListUserPoolClientsCommand({ UserPoolId: userPoolId, MaxResults: 60 }),
   );
-
   const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes('local-staging')).ClientId;
 
-  store.dispatch(loadAuthenticationInfo(userPoolId, identityPoolId, userPoolClientId));
+  const [{ UserPoolClient: userPoolClientDetails }, { UserPool: { Domain } }] = await Promise.all([
+    userPoolClient.send(
+      new DescribeUserPoolClientCommand({ UserPoolId: userPoolId, ClientId: userPoolClientId }),
+    ),
+    userPoolClient.send(
+      new DescribeUserPoolCommand({ UserPoolId: userPoolId }),
+    ),
+  ]);
+
+  const {
+    ClientId, DefaultRedirectURI, LogoutURLs, AllowedOAuthScopes, AllowedOAuthFlows,
+  } = userPoolClientDetails;
+
+  store.dispatch(loadAuthenticationInfo(userPoolId, identityPoolId, {
+    ClientId,
+    DefaultRedirectURI,
+    LogoutURLs,
+    AllowedOAuthScopes,
+    AllowedOAuthFlows,
+    Domain: `${Domain}.auth.eu-west-1.amazoncognito.com`,
+  }));
 
   return {};
 };

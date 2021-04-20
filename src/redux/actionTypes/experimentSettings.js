@@ -1,6 +1,11 @@
 const EXPERIMENT_SETTINGS = 'experimentSettings';
 
 /**
+ * Loaded general information about the experiment.
+ */
+const EXPERIMENT_SETTINGS_INFO_UPDATE = `${EXPERIMENT_SETTINGS}/updateInfo`;
+
+/**
  * Sets the state of the processing component to a state displayable by the system.
  */
 const EXPERIMENT_SETTINGS_PROCESSING_LOAD = `${EXPERIMENT_SETTINGS}/loadProcessing`;
@@ -36,6 +41,7 @@ const EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED = `${EXPERIMENT_SETTINGS}/pipel
 const EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR = `${EXPERIMENT_SETTINGS}/pipelineStatusError`;
 
 export {
+  EXPERIMENT_SETTINGS_INFO_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_SAVE,
