@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, {
-  useEffect, useRef, useCallback, useState,
+  useEffect, useCallback, useState,
 } from 'react';
 import useSWR from 'swr';
 import {
@@ -10,7 +10,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import dynamic from 'next/dynamic';
 import { useBeforeunload } from 'react-beforeunload';
 import FeedbackButton from '../FeedbackButton';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
@@ -29,14 +28,9 @@ const Header = (props) => {
   const lastUpdated = useSelector((state) => state.componentConfig[plotUuid]?.lastUpdated);
   const router = useRouter();
   const plotType = useSelector((state) => state.componentConfig[plotUuid]?.plotType);
-  const { config, outstandingChanges } = useSelector((state) => state.componentConfig[plotUuid]) || {};
-  const reset = useRef(true);
+  const { config } = useSelector((state) => state.componentConfig[plotUuid]) || {};
   const debounceSave = useCallback(_.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
   const [resetDisabled, setResetDisabled] = useState(true);
-  if (outstandingChanges) {
-    reset.current = false;
-  }
-  // Add prompt to save if modified since last save if changes happened.
 
   useBeforeunload((e) => {
     if (!saved) {
