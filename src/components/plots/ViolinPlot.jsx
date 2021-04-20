@@ -80,7 +80,6 @@ const ViolinPlot = (props) => {
 
   const render = () => {
     if (cellSets.error) {
-      console.log(cellSets.error);
       return (
         <PlatformError
           error={cellSets.error}
@@ -91,7 +90,6 @@ const ViolinPlot = (props) => {
       );
     }
     if (highestDispersionError) {
-      console.log(highestDispersionError);
       return (
         <PlatformError
           error={highestDispersionError}
@@ -102,7 +100,6 @@ const ViolinPlot = (props) => {
       );
     }
     if (geneExpression.error) {
-      console.log(geneExpression.error);
       return (
         <PlatformError
           error={geneExpression.error}
