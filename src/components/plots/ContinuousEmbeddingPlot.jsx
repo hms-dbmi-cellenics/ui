@@ -25,7 +25,7 @@ const ContinuousEmbeddingPlot = (props) => {
   const {
     data: embeddingData,
     loading, error,
-  } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
+  } = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
   const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
@@ -63,10 +63,10 @@ const ContinuousEmbeddingPlot = (props) => {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
 
-    if (!embeddingData && embeddingSettings.method) {
+    if (!embeddingData && embeddingSettings?.method) {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
-  }, [experimentId, embeddingSettings.method]);
+  }, [experimentId, embeddingSettings?.method]);
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
@@ -129,7 +129,8 @@ const ContinuousEmbeddingPlot = (props) => {
       || geneExpression.loading.length
       || loading
       || cellSets.loading
-      || fetching) {
+      || fetching
+    ) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />

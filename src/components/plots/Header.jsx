@@ -16,18 +16,13 @@ import FeedbackButton from '../FeedbackButton';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import itemRender from '../../utils/renderBreadcrumbLinks';
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
-
 import { LOAD_CONFIG } from '../../redux/actionTypes/componentConfig';
 import { initialPlotConfigStates } from '../../redux/reducers/componentConfig/initialState';
 
-const KeyboardEventHandler = dynamic(
-  () => import('react-keyboard-event-handler'),
-  { ssr: false },
-);
-
 const Header = (props) => {
-  const { experimentId, plotUuid, finalRoute } = props;
-  console.log(initialPlotConfigStates.frequency, 'IN HEADER');
+  const {
+    experimentId, plotUuid, finalRoute, testing,
+  } = props;
 
   const dispatch = useDispatch();
   const saved = !useSelector((state) => state.componentConfig[plotUuid]?.outstandingChanges);
@@ -38,7 +33,6 @@ const Header = (props) => {
   const reset = useRef(true);
   const debounceSave = useCallback(_.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
   const [resetDisabled, setResetDisabled] = useState(true);
-
   if (outstandingChanges) {
     reset.current = false;
   }
@@ -49,13 +43,27 @@ const Header = (props) => {
       e.preventDefault();
     }
   });
+
+  const checkIfDefaultConfig = (objValue, otherValue) => {
+    const ignoredFields = {
+      // config fields that are set dynamically on component render should not be compared to their initial values
+      frequency: ['proportionGrouping', 'xAxisGrouping'],
+      embeddingContinuous: ['shownGene'],
+    };
+    const currentKey = Object.keys(config).find((key) => config[key] === otherValue || false);
+    if (ignoredFields[plotType]?.includes(currentKey)) {
+      return true;
+    }
+  };
+
   useEffect(() => {
-    if (!saved && config) {
+    if (!config) {
+      return;
+    }
+    if (!saved) {
       debounceSave();
     }
-    if (!_.isEqual(initialPlotConfigStates[plotType], config)) {
-      console.log(' not equal', initialPlotConfigStates.frequency, 'config is ', config);
-      console.log('difference is ', _.difference(initialPlotConfigStates[plotType], config));
+    if (!_.isEqualWith(initialPlotConfigStates[plotType], config, checkIfDefaultConfig)) {
       setResetDisabled(false);
     } else {
       setResetDisabled(true);
@@ -65,6 +73,7 @@ const Header = (props) => {
   useEffect(() => {
     const showPopupWhenUnsaved = (url) => {
       // Only handle if we are navigating away.
+
       if (router.asPath === url || saved) {
         return;
       }
@@ -88,19 +97,20 @@ const Header = (props) => {
         dispatch(savePlotConfig(experimentId, plotUuid));
       }
     };
-
+    if (!router?.asPath || !router?.events) {
+      return;
+    }
     router.events.on('routeChangeStart', showPopupWhenUnsaved);
 
     return () => {
       router.events.off('routeChangeStart', showPopupWhenUnsaved);
     };
-  }, [router.asPath, router.events, saved]);
+  }, [router?.asPath, router?.events, saved]);
   const { data } = useSWR(
     `/v1/experiments/${experimentId}`,
     getFromApiExpectOK,
   );
-
-  if (!data || !config) {
+  if ((!data && !testing) || !config) {
     return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
   }
 
@@ -126,13 +136,6 @@ const Header = (props) => {
       .fromNow()
       .toLowerCase()
     : 'never';
-  const onClickSave = () => {
-    if (saved) {
-      return;
-    }
-
-    dispatch(savePlotConfig(experimentId, plotUuid));
-  };
 
   const onClickReset = () => {
     dispatch({
@@ -147,19 +150,10 @@ const Header = (props) => {
     dispatch(savePlotConfig(experimentId, plotUuid));
     setResetDisabled(true);
   };
-  console.log('reset is ', resetDisabled);
   return (
+
     <Row>
       <Col span={16}>
-        <KeyboardEventHandler
-          handleFocusableElements
-          handleKeys={['ctrl+s', 'meta+s']}
-          onKeyEvent={(key, e) => {
-            onClickSave();
-            e.preventDefault();
-          }}
-        />
-
         <PageHeader
           style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
           title='Edit collection'
@@ -169,6 +163,7 @@ const Header = (props) => {
             <Space>
               <FeedbackButton key='feedback' />
               <Button
+                id='resetButton'
                 key='reset'
                 type='primary'
                 onClick={onClickReset}
@@ -183,8 +178,12 @@ const Header = (props) => {
     </Row>
   );
 };
+Header.defaultProps = {
+  testing: false,
+};
 
 Header.propTypes = {
+  testing: PropTypes.bool,
   finalRoute: PropTypes.object.isRequired,
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
