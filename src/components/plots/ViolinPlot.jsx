@@ -15,15 +15,19 @@ const ViolinPlot = (props) => {
     experimentId, config, plotUuid, plotData, actions,
   } = props;
   const dispatch = useDispatch();
-  const error = false; // TO_DO - relate to cellset loading and gene expression loading
-  const loading = false;
 
-  const geneExpression = useSelector((state) => state.genes.expression); // TO-DO Can break
+  const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
-  const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);
+  const highestDispersionLoading = useSelector(
+    (state) => state.genes.properties.views[plotUuid]?.fetching,
+  );
+  const highestDispersionError = useSelector(
+    (state) => state.genes.properties.views[plotUuid]?.error,
+  );
   const highestDispersionGene = useSelector(
-    (state) => state.genes.properties.views[plotUuid]?.data[0],
+    (state) => (state.genes.properties.views[plotUuid]?.data
+      ? state.genes.properties.views[plotUuid]?.data[0] : undefined),
   );
   const PROPERTIES = ['dispersions'];
   const tableState = {
@@ -34,7 +38,7 @@ const ViolinPlot = (props) => {
     sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
   };
 
-  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
+  if (config?.shownGene === 'notSelected' && !highestDispersionLoading && !highestDispersionGene) {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
   useEffect(() => {
@@ -58,9 +62,7 @@ const ViolinPlot = (props) => {
       return;
     }
 
-    if (!loading
-      && !error
-      && config
+    if (config
       && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
       && !cellSets.loading
@@ -74,22 +76,33 @@ const ViolinPlot = (props) => {
       );
       setPlotSpec(generateSpec(config, generatedPlotData));
     }
-  }, [config, plotData, geneExpression, cellSets, loading]);
+  }, [config, plotData, geneExpression, cellSets]);
 
   const render = () => {
-    if (error) {
+    if (cellSets.error) {
+      console.log(cellSets.error);
       return (
         <PlatformError
-          error={error}
+          error={cellSets.error}
           onClick={() => {
             dispatch(loadCellSets(experimentId));
+          }}
+        />
+      );
+    }
+    if (highestDispersionError) {
+      console.log(highestDispersionError);
+      return (
+        <PlatformError
+          error={highestDispersionError}
+          onClick={() => {
             dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
           }}
         />
       );
     }
-
     if (geneExpression.error) {
+      console.log(geneExpression.error);
       return (
         <PlatformError
           error={geneExpression.error}
@@ -101,9 +114,8 @@ const ViolinPlot = (props) => {
     }
 
     if (geneExpression.loading.length
-      || loading
       || cellSets.loading
-      || fetching) {
+      || highestDispersionLoading) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -134,7 +146,7 @@ ViolinPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotUuid: PropTypes.string.isRequired,
-  plotData: PropTypes.array,
+  plotData: PropTypes.object,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,

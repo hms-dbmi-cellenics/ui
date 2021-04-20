@@ -46,8 +46,6 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-    console.log('useEffect');
-    console.log(config);
   }, [experimentId]);
 
   // updateField is a subset of what default config has and contains only the things we want change

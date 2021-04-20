@@ -4,16 +4,21 @@ import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import { initialComponentConfigStates } from '../../../redux/reducers/componentConfig/initialState';
+import {
+  initialComponentConfigStates,
+  initialPlotConfigStates,
+} from '../../../redux/reducers/componentConfig/initialState';
 import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
 import rootReducer from '../../../redux/reducers/index';
 import genes from '../../../redux/reducers/genes/initialState';
 import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
 import { updatePlotConfig } from '../../../redux/actions/componentConfig/index';
+import ViolinPlot from '../../../components/plots/ViolinPlot';
 import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
@@ -21,6 +26,7 @@ import { fetchCachedWork } from '../../../utils/cacheRequest';
 const generateData = generateViolinSpec.generateData;
 
 jest.mock('localforage');
+const mockStore = configureMockStore([thunk]);
 enableFetchMocks();
 jest.mock('../../../components/plots/Header', () => () => <div />);
 jest.mock('../../../utils/cacheRequest', () => ({
@@ -218,6 +224,85 @@ describe('generateData', () => {
   });
 });
 
+describe('ViolinPlot', () => {
+  let store = null;
+
+  beforeAll(async () => {
+    await preloadAll();
+  });
+  beforeEach(() => {
+    jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
+  });
+
+  const renderViolinPlot = (initialMockStore, config = initialPlotConfigStates.violin) => {
+    store = mockStore(_.cloneDeep(initialMockStore));
+    rtl.render(
+      <Provider store={store}>
+        <ViolinPlot
+          experimentId={experimentId}
+          plotUuid={plotUuid}
+          config={config}
+        />
+      </Provider>,
+    );
+  };
+  const actionCount = (action) => store.getActions().filter(
+    (item) => (item.type === action),
+  ).length;
+
+  it('displays an error panel with Try Again if cellSets has an error', () => {
+    const actionOnTryAgain = 'cellSets/loading';
+    const storeContents = {
+      ..._.cloneDeep(defaultStore),
+      cellSets: {
+        error: 'Broken CellSet',
+      },
+    };
+    renderViolinPlot(storeContents);
+    const loadingActions = actionCount(actionOnTryAgain);
+    userEvent.click(rtl.screen.getByRole('button'));
+    expect(actionCount(actionOnTryAgain)).toBe(loadingActions + 1);
+  });
+  it('displays an error panel with Try Again if error getting gene disperssion', () => {
+    const actionOnTryAgain = 'genes/propertiesLoading';
+    const storeContents = {
+      ..._.cloneDeep(defaultStore),
+    };
+    storeContents.genes.properties.views[plotUuid] = {
+      error: 'Broken dispersion',
+    };
+    renderViolinPlot(storeContents);
+    const loadingActions = actionCount(actionOnTryAgain);
+    userEvent.click(rtl.screen.getByRole('button'));
+    expect(actionCount(actionOnTryAgain)).toBe(loadingActions + 1);
+  });
+  it('displays an error panel with Try Again if error getting gene expression', () => {
+    const actionOnTryAgain = 'genes/expressionLoading';
+    const storeContents = {
+      ..._.cloneDeep(defaultStore),
+    };
+    storeContents.genes.expression.error = 'Broken expression';
+
+    renderViolinPlot(storeContents);
+    const loadingActions = actionCount(actionOnTryAgain);
+    userEvent.click(rtl.screen.getByRole('button'));
+    // console.log(store.getActions());
+    // rtl.screen.debug();
+    expect(actionCount(actionOnTryAgain)).toBe(loadingActions + 1);
+  });
+  it('does not fetch dispersion if gene already selected', () => {
+    renderViolinPlot(defaultStore);
+    expect(actionCount('genes/propertiesLoading')).toBe(1);
+    store.clearActions();
+    const config = {
+      ..._.cloneDeep(initialPlotConfigStates.violin),
+      shownGene: 'GeneName',
+    };
+    renderViolinPlot(defaultStore, config);
+    expect(actionCount('genes/propertiesLoading')).toBe(0);
+  });
+});
+
 describe('ViolinIndex', () => {
   let store = null;
   let loadConfigSpy = null;
@@ -235,8 +320,8 @@ describe('ViolinIndex', () => {
     generateSpecSpy = jest.spyOn(generateViolinSpec, 'generateSpec');
   });
 
-  const renderViolinIndex = async (initialStoreContents) => {
-    store = createStore(rootReducer, _.cloneDeep(initialStoreContents), applyMiddleware(thunk));
+  const renderViolinIndex = async () => {
+    store = createStore(rootReducer, _.cloneDeep(defaultStore), applyMiddleware(thunk));
     rtl.render(
       <Provider store={store}>
         <ViolinIndex
@@ -260,7 +345,7 @@ describe('ViolinIndex', () => {
     return strings.filter((inCanvas) => inCanvas.includes(str)).length;
   };
   it('loads by default the gene with the highest dispersion, allows another to be selected, ansd updates the plot\'s title', async () => {
-    await renderViolinIndex(defaultStore);
+    await renderViolinIndex();
 
     const geneSelection = rtl.screen.getAllByRole('tab')[0];
     expect(geneSelection).toHaveTextContent('Gene Selection');
@@ -281,7 +366,7 @@ describe('ViolinIndex', () => {
   });
 
   it('allows selection of the grouping/points, defaulting to louvain and All', async () => {
-    await renderViolinIndex(defaultStore);
+    await renderViolinIndex();
 
     const dataSelection = rtl.screen.getAllByRole('tab')[1];
     expect(dataSelection).toHaveTextContent('Select Data');
@@ -321,7 +406,7 @@ describe('ViolinIndex', () => {
     expect(getCanvasStrings()).toContain('Sample 1');
   });
   it('has a Data Tranformation panel', async () => {
-    await renderViolinIndex(defaultStore);
+    await renderViolinIndex();
 
     const tabs = rtl.screen.getAllByRole('tab');
     const dataTransformation = tabs.find((tab) => tab.textContent === 'Data Transformation');
@@ -345,7 +430,7 @@ describe('ViolinIndex', () => {
   });
 
   it('has a Markers panel', async () => {
-    await renderViolinIndex(defaultStore);
+    await renderViolinIndex();
 
     const tabs = rtl.screen.getAllByRole('tab');
     const markers = tabs.find((tab) => tab.textContent === 'Markers');
@@ -370,7 +455,7 @@ describe('ViolinIndex', () => {
   });
 
   it('has a Lengend panel', async () => {
-    await renderViolinIndex(defaultStore);
+    await renderViolinIndex();
 
     const tabs = rtl.screen.getAllByRole('tab');
     const markers = tabs.find((tab) => tab.textContent === 'Legend');
