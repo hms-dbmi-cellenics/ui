@@ -14,6 +14,7 @@ import { wrapper } from '../redux/store';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 import configure from '../utils/amplify-config';
+import CustomError from '../utils/customError';
 
 // import { isBrowser } from '../utils/environment';
 // TODO: this needs to be refactored after auth works properly
@@ -26,22 +27,23 @@ Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 const WrappedApp = ({ Component, pageProps }) => {
-  const { experimentId, experimentData } = pageProps;
+  const { experimentId, experimentData, httpError } = pageProps;
   const router = useRouter();
 
-  console.log(experimentData);
-
-  const { auth: { userPoolId, identityPoolid } } = useSelector((state) => state.networkResources);
+  const { auth } = useSelector((state) => state.networkResources);
 
   useEffect(() => {
+    const { userPoolId, identityPoolid } = auth;
+
+    if (!auth.userPoolId || !auth.identityPoolid) {
+      return;
+    }
+
     Amplify.configure({
       ...configure(userPoolId, identityPoolid),
       ssr: true,
     });
-  }, [userPoolId, identityPoolid]);
-
-  // TODO: FIX THIS
-  const experimentError = null;
+  }, [auth]);
 
   const mainContent = () => {
     // If this is a not found error, show it without the navigation bar.
@@ -50,18 +52,18 @@ const WrappedApp = ({ Component, pageProps }) => {
     }
 
     // If there was an error querying the API, display an error state.
-    if (experimentError) {
-      if (experimentError.payload === undefined) {
-        return <Error errorText='Cannot connect to API service.' />;
+    if (httpError) {
+      if (httpError === 404) {
+        return (
+          <NotFoundPage
+            title={'Analysis doesn\'t exist.'}
+            subTitle={'We searched, but we couldn\'t find the analysis you\'re looking for.'}
+            hint='It may have been deleted by the project owner. Go home to see your own priejcts and analyses.'
+          />
+        );
       }
 
-      const { status } = experimentError.payload;
-
-      if (status === 404) {
-        return <NotFoundPage />;
-      }
-
-      return <Error statusCode={status} />;
+      return <Error statusCode={httpError} />;
     }
 
     // Otherwise, load the page inside the content wrapper.
@@ -99,7 +101,9 @@ const WrappedApp = ({ Component, pageProps }) => {
 };
 
 WrappedApp.getInitialProps = async ({ Component, ctx }) => {
-  const { store, req, query } = ctx;
+  const {
+    store, req, query, res,
+  } = ctx;
 
   const pageProps = Component.getInitialProps
     ? await Component.getInitialProps(ctx)
@@ -117,10 +121,24 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     promises.push(getAuthenticationInfo);
   }
 
-  let results = await Promise.all(promises.map((f) => f(ctx, store)));
-  results = _.merge(...results);
+  try {
+    let results = await Promise.all(promises.map((f) => f(ctx, store)));
+    results = _.merge(...results);
 
-  return { pageProps: { ...pageProps, ...results } };
+    return { pageProps: { ...pageProps, ...results } };
+  } catch (e) {
+    if (e instanceof CustomError) {
+      if (res && e.payload.status) {
+        res.statusCode = e.payload.status;
+      } else {
+        res.statusCode = 500;
+      }
+
+      return { pageProps: { ...pageProps, httpError: e.payload.status || true } };
+    }
+
+    throw e;
+  }
 };
 
 WrappedApp.propTypes = {

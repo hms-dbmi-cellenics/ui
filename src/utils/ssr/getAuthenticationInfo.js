@@ -6,6 +6,7 @@ import {
 import {
   CognitoIdentityProviderClient,
   ListUserPoolsCommand,
+  ListUserPoolClientsCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
@@ -60,7 +61,13 @@ const getAuthenticationInfo = async (context, store) => {
 
   const userPoolId = UserPools.find((pool) => pool.Name.includes('staging')).Id;
 
-  store.dispatch(loadAuthenticationInfo(userPoolId, identityPoolId));
+  const { UserPoolClients } = await userPoolClient.send(
+    new ListUserPoolClientsCommand({ UserPoolId: userPoolId, MaxResults: 60 }),
+  );
+
+  const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes('local-staging')).ClientId;
+
+  store.dispatch(loadAuthenticationInfo(userPoolId, identityPoolId, userPoolClientId));
 
   return {};
 };

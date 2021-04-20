@@ -26,7 +26,7 @@ const notificationsReducer = (state = initialState, action) => {
         newState = { ...newState, apiUrl };
       }
 
-      if (auth.userPoolId && auth.identityPoolId) {
+      if (auth.userPoolId && auth.identityPoolId && auth.userPoolClientId) {
         newState = { ...newState, auth };
       }
 

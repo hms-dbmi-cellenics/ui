@@ -15,8 +15,6 @@ const getExperimentInfo = async (context, store) => {
 
   const experimentData = await getFromApiExpectOK(`${apiUrl}/v1/experiments/${experimentId}`);
 
-  console.log(experimentData);
-
   store.dispatch(loadAPIUrl(apiUrl));
   return { experimentId, experimentData };
 };

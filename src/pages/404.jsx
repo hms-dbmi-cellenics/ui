@@ -1,13 +1,14 @@
 import React from 'react';
 import { Result, Button, Typography } from 'antd';
 
+import PropTypes from 'prop-types';
 import FeedbackButton from '../components/FeedbackButton';
 
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
-const NotFoundPage = () => (
+const NotFoundPage = ({ title, subTitle, hint }) => (
   <Result
-    title={<Title level={2}>Page not found</Title>}
+    title={<Title level={2}>{title}</Title>}
     icon={(
       <img
         alt='People looking into bushes to find something (illustration).'
@@ -20,12 +21,20 @@ const NotFoundPage = () => (
       />
     )}
     subTitle={(
-      <Title
-        level={4}
-        style={{ fontWeight: 'normal' }}
-      >
-        We can&apos;t seem to find the page you&apos;re looking for.
-      </Title>
+      <>
+        <Title
+          level={5}
+          style={{ fontWeight: 'normal' }}
+        >
+          {subTitle}
+          {hint && (
+            <>
+              <br />
+              <span>{hint}</span>
+            </>
+          )}
+        </Title>
+      </>
     )}
     extra={(
       <>
@@ -37,5 +46,17 @@ const NotFoundPage = () => (
     )}
   />
 );
+
+NotFoundPage.defaultProps = {
+  hint: null,
+  title: 'Page not found',
+  subTitle: 'We can\'t seem to find the page you\'re looking for.',
+};
+
+NotFoundPage.propTypes = {
+  title: NotFoundPage.element,
+  subTitle: NotFoundPage.element,
+  hint: NotFoundPage.element,
+};
 
 export default NotFoundPage;

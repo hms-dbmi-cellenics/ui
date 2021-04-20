@@ -1,11 +1,12 @@
 const networkResourcesAuthLoaded = (state, action) => {
-  const { identityPoolId, userPoolId } = action.payload;
+  const { identityPoolId, userPoolId, userPoolClientId } = action.payload;
 
   return {
     ...state,
     auth: {
       userPoolId,
       identityPoolId,
+      userPoolClientId,
     },
   };
 };
