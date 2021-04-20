@@ -17,7 +17,9 @@ const loadAndCompressIfNecessary = async (file) => {
       if (inGzipFormat) {
         resolve(loadedFile);
       } else {
-        gzip(new Uint8Array(loadedFile), {}, (error, compressedFile) => {
+        const loadedFileUint = Buffer.from(loadedFile);
+
+        gzip(loadedFileUint, {}, (error, compressedFile) => {
           if (error) { reject(new Error('error')); }
 
           resolve(uintArrayToBuffer(compressedFile));
