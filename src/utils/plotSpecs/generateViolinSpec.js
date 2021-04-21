@@ -353,7 +353,7 @@ const generateSpec = (config, plotData) => {
     ],
     title:
     {
-      text: config.shownGene,
+      text: config.title.text ? config.title.text : config.shownGene,
       color: { value: config.colour.masterColour },
       anchor: { value: config.title.anchor },
       font: { value: config.fontStyle.font },

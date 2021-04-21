@@ -180,7 +180,7 @@ describe('ViolinIndex', () => {
     const strings = getCanvasStrings();
     return strings.filter((inCanvas) => inCanvas.includes(str)).length;
   };
-  it('loads by default the gene with the highest dispersion, allows another to be selected, ansd updates the plot\'s title', async () => {
+  it('loads by default the gene with the highest dispersion, allows another to be selected, and updates the plot\'s title', async () => {
     await renderViolinIndex();
 
     const geneSelection = rtl.screen.getAllByRole('tab')[0];
@@ -320,6 +320,41 @@ describe('ViolinIndex', () => {
     expect(radioButtons[2].parentNode.parentNode).toHaveTextContent('Top');
 
     expect(ocurrencesInCanvas('cluster a')).toBe(2);
+  });
+
+  it('allows the gene name to be overriden as the title and clears the override upon new gene selection', async () => {
+    await renderViolinIndex();
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+
+    let tabs = rtl.screen.getAllByRole('tab');
+    const mainSchema = tabs.find((tab) => tab.textContent === 'Main schema');
+    userEvent.click(mainSchema);
+    tabs = rtl.screen.getAllByRole('tab');
+    const titleTab = tabs.find((tab) => tab.textContent === 'Title');
+    userEvent.click(titleTab);
+    let panelContainer = mainSchema.parentElement;
+    const titleInput = rtl.getByRole(panelContainer, 'textbox');
+    expect(titleInput).toHaveValue('');
+    expect(ocurrencesInCanvas('MockGeneWithHighestDispersion')).toBe(1);
+
+    const titleOverride = 'Title Override';
+    generateSpecSpy.mockClear();
+    userEvent.type(titleInput, titleOverride);
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalled());
+    expect(ocurrencesInCanvas('MockGeneWithHighestDispersion')).toBe(0);
+    // Cannot look for title ocurrence because of re-draw being triggered by firts letters typed
+    // expect(ocurrencesInCanvas(titleOverride)).toBe(1);
+
+    const geneSelection = tabs.find((tab) => tab.textContent === 'Gene Selection');
+    panelContainer = geneSelection.parentNode;
+    userEvent.click(geneSelection);
+    const geneInput = rtl.getByRole(panelContainer, 'textbox');
+    const newGeneShown = 'NewGeneShown';
+    generateSpecSpy.mockClear();
+    userEvent.type(geneInput, `{selectall}{del}${newGeneShown}`);
+    userEvent.click(rtl.getByRole(panelContainer, 'button'));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalled());
+    expect(ocurrencesInCanvas(newGeneShown)).toBe(1);
   });
 
   it.skip('has an Axis and Margins panel (TO-DO)', async () => {

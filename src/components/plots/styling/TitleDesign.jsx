@@ -7,7 +7,9 @@ import {
 import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const TitleDesign = (props) => {
-  const { onUpdate, config, allowTitleChange } = props;
+  const {
+    onUpdate, config, allowTitleChange, placeHolder,
+  } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -23,7 +25,7 @@ const TitleDesign = (props) => {
               label='Define Title'
             >
               <Input
-                placeholder='Enter title'
+                placeholder={placeHolder}
                 value={newConfig.title.text}
                 onChange={(e) => {
                   handleChange({ title: { text: e.target.value } });
@@ -64,9 +66,11 @@ TitleDesign.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   allowTitleChange: PropTypes.bool,
+  placeHolder: PropTypes.string,
 };
 TitleDesign.defaultProps = {
   allowTitleChange: true,
+  placeHolder: 'Enter title',
 };
 
 export default TitleDesign;

@@ -63,7 +63,7 @@ const ViolinIndex = ({ experimentId }) => {
           controls: [{
             name: 'title',
             props: {
-              allowTitleChange: false,
+              placeHolder: 'Gene name if empty',
             },
           }],
         },
@@ -95,7 +95,10 @@ const ViolinIndex = ({ experimentId }) => {
   ];
 
   const changeDisplayedGene = (geneName) => {
-    updatePlotWithChanges({ shownGene: geneName });
+    updatePlotWithChanges({
+      shownGene: geneName,
+      title: { text: '' },
+    });
   };
 
   const renderExtraPanels = () => (
