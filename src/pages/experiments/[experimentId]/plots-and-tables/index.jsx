@@ -11,7 +11,7 @@ import SearchMenu from '../../../../components/SearchMenu';
 import heatmap from '../../../../../static/media/heatmap.png';
 import embeddingContinuous from '../../../../../static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../static/media/embeddingCategorical.png';
-import violin from '../../../../../static/media/violin.png'; // TO-DO: fix!
+import violin from '../../../../../static/media/violin.png';
 import volcano from '../../../../../static/media/volcano.png';
 import frequency from '../../../../../static/media/frequency.png';
 import Header from '../../../../components/Header';
