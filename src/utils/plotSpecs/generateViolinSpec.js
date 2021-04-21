@@ -151,6 +151,20 @@ const generateSpec = (config, plotData) => {
         orient: 'bottom',
         scale: 'layout',
         zindex: 1,
+        title: '',
+        // title: { value: config.axes.xAxisText },
+        titlePadding: 5,
+        gridColor: { value: config.colour.masterColour },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        gridWidth: { value: (config.axes.gridWidth / 20) },
+        tickColor: { value: config.colour.masterColour },
+        offset: { value: config.axes.offset },
+        titleFont: { value: config.fontStyle.font },
+        labelFont: { value: config.fontStyle.font },
+        labelColor: { value: config.colour.masterColour },
+        titleFontSize: { value: config.axes.titleFontSize },
+        titleColor: { value: config.colour.masterColour },
+        labelFontSize: { value: config.axes.labelFontSize },
         encode: {
           labels: {
             update: {
@@ -161,27 +175,6 @@ const generateSpec = (config, plotData) => {
           },
         },
       },
-      /*
-      {
-        scale: 'x',
-        grid: true,
-        domain: true,
-        orient: 'bottom',
-        title: { value: config.axes.xAxisText },
-        titleFont: { value: config.fontStyle.font },
-        labelFont: { value: config.fontStyle.font },
-        labelColor: { value: config.colour.masterColour },
-        tickColor: { value: config.colour.masterColour },
-        gridColor: { value: config.colour.masterColour },
-        gridOpacity: { value: (config.axes.gridOpacity / 20) },
-        gridWidth: { value: (config.gridWidth / 20) },
-        offset: { value: config.axes.offset },
-        titleFontSize: { value: config.axes.titleFontSize },
-        titleColor: { value: config.colour.masterColour },
-        labelFontSize: { value: config.axes.labelFontSize },
-        domainWidth: { value: config.axes.domainWidth },
-      },
-      */
     ],
     marks: [
       {
@@ -360,7 +353,7 @@ const generateSpec = (config, plotData) => {
     ],
     title:
     {
-      text: { value: config.shownGene },
+      text: config.shownGene,
       color: { value: config.colour.masterColour },
       anchor: { value: config.title.anchor },
       font: { value: config.fontStyle.font },
@@ -463,7 +456,9 @@ const generateData = (
           cell.x = Math.random();
         }
       }
-      cells.push(cell);
+      if (cell.y !== null) {
+        cells.push(cell);
+      }
     });
   });
 

@@ -24,7 +24,7 @@ const cellSets = {
     'cluster-a': {
       name: 'cluster a',
       key: 'cluster-a',
-      cellIds: new Set([0, 1]),
+      cellIds: new Set([0, 1, 6]),
       color: '#01FFFF',
     },
     'cluster-b': {
@@ -83,7 +83,7 @@ const cellSets = {
 
 describe('generateData', () => {
   const MOCK_RANDOM = 0.1;
-  const mockGeneExpression = [...Array(6).keys()];
+  const mockGeneExpression = [0, 1, 2, 3, 4, 5, null];
   beforeEach(() => {
     jest.spyOn(global.Math, 'random').mockReturnValue(MOCK_RANDOM);
   });
