@@ -65,7 +65,12 @@ const getAuthenticationInfo = async (context, store) => {
   const { UserPoolClients } = await userPoolClient.send(
     new ListUserPoolClientsCommand({ UserPoolId: userPoolId, MaxResults: 60 }),
   );
-  const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes('cluster-staging')).ClientId;
+
+  const sandboxId = process.env.SANDBOX_ID;
+
+  console.log('we have sandbox id', sandboxId);
+
+  const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes(`cluster-${sandboxId}`)).ClientId;
 
   const [{ UserPoolClient: userPoolClientDetails }, { UserPool: { Domain } }] = await Promise.all([
     userPoolClient.send(
