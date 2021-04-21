@@ -122,16 +122,19 @@ const ViolinIndex = ({ experimentId }) => {
       <Panel header='Data Transformation' key='16'>
         {config ? (
           <div>
-            <Form.Item>
-              <p>Transform Gene Expression</p>
-              <Radio.Group
-                onChange={(e) => updatePlotWithChanges({ normalised: e.target.value })}
-                value={config.normalised}
-              >
-                <Radio value='normalised'>Normalised</Radio>
-                <Radio value='raw'>Raw values</Radio>
-              </Radio.Group>
-            </Form.Item>
+            { false // Control removed until we are able to get the raw values
+              && (
+                <Form.Item>
+                  <p>Transform Gene Expression</p>
+                  <Radio.Group
+                    onChange={(e) => updatePlotWithChanges({ normalised: e.target.value })}
+                    value={config.normalised}
+                  >
+                    <Radio value='normalised'>Normalised</Radio>
+                    <Radio value='raw'>Raw values</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              )}
             <Form.Item label='Bandwidth Adjustment'>
               <Slider
                 value={config.kdeBandwidth}
