@@ -65,7 +65,7 @@ const getAuthenticationInfo = async (context, store) => {
   const { UserPoolClients } = await userPoolClient.send(
     new ListUserPoolClientsCommand({ UserPoolId: userPoolId, MaxResults: 60 }),
   );
-  const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes('local-staging')).ClientId;
+  const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes('cluster-staging')).ClientId;
 
   const [{ UserPoolClient: userPoolClientDetails }, { UserPool: { Domain } }] = await Promise.all([
     userPoolClient.send(
