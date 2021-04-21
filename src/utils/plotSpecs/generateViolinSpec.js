@@ -133,7 +133,7 @@ const generateSpec = (config, plotData) => {
         orient: 'left',
         scale: 'yscale',
         zindex: 1,
-        title: config.normalised === 'normalised' ? 'Normalised Expression' : 'Raw Expression',
+        title: config.axes.yAxisText ? config.axes.yAxisText : (config.normalised === 'normalised' ? 'Normalised Expression' : 'Raw Expression'),
         titlePadding: 5,
         gridColor: { value: config.colour.masterColour },
         gridOpacity: { value: (config.axes.gridOpacity / 20) },
@@ -151,8 +151,7 @@ const generateSpec = (config, plotData) => {
         orient: 'bottom',
         scale: 'layout',
         zindex: 1,
-        title: '',
-        // title: { value: config.axes.xAxisText },
+        title: config.axes.xAxisText ? config.axes.xAxisText : plotData.grouping,
         titlePadding: 5,
         gridColor: { value: config.colour.masterColour },
         gridOpacity: { value: (config.axes.gridOpacity / 20) },
@@ -465,6 +464,7 @@ const generateData = (
   const plotData = {
     groups,
     cells,
+    grouping: cellSets.properties[groupingHierarchyId].name,
   };
   return plotData;
 };

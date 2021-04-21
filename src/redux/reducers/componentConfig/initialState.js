@@ -191,8 +191,6 @@ const violinConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
     offset: 10,
   },
   title: {
