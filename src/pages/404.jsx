@@ -54,9 +54,9 @@ NotFoundPage.defaultProps = {
 };
 
 NotFoundPage.propTypes = {
-  title: NotFoundPage.element,
-  subTitle: NotFoundPage.element,
-  hint: NotFoundPage.element,
+  title: NotFoundPage.string,
+  subTitle: NotFoundPage.string,
+  hint: NotFoundPage.string,
 };
 
 export default NotFoundPage;
