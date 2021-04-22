@@ -151,7 +151,7 @@ const generateSpec = (config, plotData) => {
         orient: 'bottom',
         scale: 'layout',
         zindex: 1,
-        title: config.axes.xAxisText ? config.axes.xAxisText : plotData.grouping,
+        title: config.axes.xAxisText ? config.axes.xAxisText : plotData.settings.groupingName,
         titlePadding: 5,
         gridColor: { value: config.colour.masterColour },
         gridOpacity: { value: (config.axes.gridOpacity / 20) },
@@ -416,7 +416,10 @@ const generateData = (
   displayId,
 ) => {
   /*
-   groups: {
+
+  Format of the generated plotData:
+  {
+    groups: {
       group_id_1: {
         name: cellSet.properties[group_id_1].name,
         color: cellSet.properties[group_id_1].color,
@@ -430,7 +433,11 @@ const generateData = (
         x: Math.random() // only if cell has to be displayed
       },
       ...
-    ]
+    ],
+    settings: {
+      groupingName: Name of the category used for grouping
+    }
+  }
   */
   const groupIds = cellSets.hierarchy.find(
     (hierarchy) => hierarchy.key === groupingHierarchyId,
@@ -464,7 +471,7 @@ const generateData = (
   const plotData = {
     groups,
     cells,
-    grouping: cellSets.properties[groupingHierarchyId].name,
+    settings: { groupingName: cellSets.properties[groupingHierarchyId].name },
   };
   return plotData;
 };
