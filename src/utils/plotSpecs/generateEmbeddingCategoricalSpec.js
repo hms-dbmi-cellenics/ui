@@ -13,7 +13,7 @@ const generateSpec = (config, plotData) => {
     legend = [
       {
         fill: 'cellSetColors',
-        title: 'Cluster Name',
+        title: config?.legend.title || 'Cluster Name',
         titleColor: config?.colour.masterColour,
         type: 'symbol',
         orient: config?.legend.position,
