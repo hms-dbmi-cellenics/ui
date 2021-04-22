@@ -19,6 +19,7 @@ import { updatePlotConfig } from '../../../redux/actions/componentConfig/index';
 import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { mockCellSets1 as cellSets } from '../../cellSets.mock';
 
 jest.mock('localforage');
 enableFetchMocks();
@@ -46,85 +47,6 @@ jest.mock('../../../utils/cacheRequest', () => ({
     }
   }),
 }));
-
-const cellSets = {
-  hierarchy: [
-    {
-      key: 'louvain',
-      children: [{ key: 'cluster-a' }, { key: 'cluster-b' }, { key: 'cluster-c' }],
-      cellIds: new Set(),
-    },
-    {
-      key: 'sample',
-      children: [{ key: 'sample-1' }, { key: 'sample-2' }],
-      cellIds: new Set(),
-    },
-    {
-      key: 'scratchpad',
-      children: [{ key: 'scratchpad-a' }],
-      cellIds: new Set(),
-    },
-  ],
-  properties: {
-    'cluster-a': {
-      name: 'cluster a',
-      key: 'cluster-a',
-      cellIds: new Set([0, 1]),
-      color: '#01FFFF',
-    },
-    'cluster-b': {
-      name: 'cluster b',
-      key: 'cluster-b',
-      cellIds: new Set([2, 3]),
-      color: '#23FFFF',
-    },
-    'cluster-c': {
-      name: 'cluster c',
-      key: 'cluster-c',
-      cellIds: new Set([4, 5]),
-      color: '#45FFFF',
-    },
-    'sample-1': {
-      name: 'Sample 1',
-      key: 'sample-1',
-      cellIds: new Set([0, 1, 2]),
-      color: '#012FFF',
-    },
-    'sample-2': {
-      name: 'Sample 2',
-      key: 'sample-2',
-      cellIds: new Set([3, 4, 5]),
-      color: '#345FFF',
-    },
-    'scratchpad-a': {
-      cellIds: new Set(['5']),
-      key: 'scratchpad-a',
-      name: 'New Cluster',
-      color: '#5FFFFF',
-    },
-    louvain: {
-      cellIds: new Set(),
-      name: 'Louvain clusters',
-      key: 'louvain',
-      type: 'cellSets',
-      rootNode: true,
-    },
-    sample: {
-      cellIds: new Set(),
-      name: 'Samples',
-      key: 'sample',
-      type: 'cellSets',
-      rootNode: true,
-    },
-    scratchpad: {
-      cellIds: new Set(),
-      name: 'Scratchpad',
-      key: 'scratchpad',
-      type: 'cellSets',
-      rootNode: true,
-    },
-  },
-};
 
 const defaultStore = {
   cellSets,
