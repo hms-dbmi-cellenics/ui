@@ -69,7 +69,7 @@ jest.mock('../../utils/loadAndCompressIfNecessary',
 jest.mock('../../utils/environment', () => ({
   __esModule: true,
   isBrowser: () => false,
-  getCurrentEnvironment: () => 'development',
+  ssrGetCurrentEnvironment: () => 'development',
 }));
 
 let mockStorageCalls = [];

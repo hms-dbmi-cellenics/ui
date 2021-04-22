@@ -1,15 +1,11 @@
 const NETWORK_RESOURCES = 'networkResources';
 
 /**
- * Add API URL for environment to the store.
+ * Loads name environment for the current request.
  */
-const NETWORK_RESOURCES_API_URL_LOADED = `${NETWORK_RESOURCES}/apiUrlLoaded`;
-
-/**
- * Add API URL for environment to the store.
- */
-const NETWORK_RESOURCES_AUTH_LOADED = `${NETWORK_RESOURCES}/authLoaded`;
+const NETWORK_RESOURCES_LOAD_ENVIRONMENT = `${NETWORK_RESOURCES}/loadEnvironment`;
 
 export {
-  NETWORK_RESOURCES_API_URL_LOADED, NETWORK_RESOURCES_AUTH_LOADED,
+  // eslint-disable-next-line import/prefer-default-export
+  NETWORK_RESOURCES_LOAD_ENVIRONMENT,
 };

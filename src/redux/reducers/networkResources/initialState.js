@@ -1,9 +1,5 @@
 const initialState = {
-  apiUrl: undefined,
-  auth: {
-    userPoolId: undefined,
-    identityPoolId: undefined,
-  },
+  environment: undefined,
 };
 
 export default initialState;

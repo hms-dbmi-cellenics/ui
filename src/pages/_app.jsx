@@ -13,34 +13,26 @@ import Error from './_error';
 import { wrapper } from '../redux/store';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
-import configure from '../utils/amplify-config';
 import CustomError from '../utils/customError';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-const WrappedApp = ({ Component, pageProps }) => {
-  const { httpError } = pageProps;
-  const router = useRouter();
+Amplify.configure({
+  ssr: true,
+});
 
-  const { auth } = useSelector((state) => state.networkResources);
+const WrappedApp = ({ Component, pageProps }) => {
+  const { httpError, amplifyConfig } = pageProps;
+  const router = useRouter();
 
   const { experimentId } = router.query;
   const experimentData = useSelector((state) => (experimentId ? state.experimentSettings.info : {}));
 
   useEffect(() => {
-    const { userPoolId, identityPoolId, userPoolClientDetails } = auth;
-
-    if (!auth.userPoolId || !auth.identityPoolId) {
-      return;
-    }
-
-    Amplify.configure({
-      ...configure(userPoolId, identityPoolId, userPoolClientDetails),
-      ssr: true,
-    });
-  }, [auth]);
+    Amplify.configure(amplifyConfig);
+  }, [amplifyConfig]);
 
   const mainContent = () => {
     // If this is a not found error, show it without the navigation bar.
@@ -112,6 +104,9 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const promises = [];
 
   if (req) {
+    const { default: getEnvironmentInfo } = require('../utils/ssr/getEnvironmentInfo');
+    promises.push(getEnvironmentInfo);
+
     const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
     promises.push(getAuthenticationInfo);
 

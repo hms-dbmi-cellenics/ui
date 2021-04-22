@@ -13,15 +13,16 @@ import {
 
 import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
 import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
-import loadAuthenticationInfo from '../../redux/actions/networkResources/loadAuthenticationInfo';
+import configure from '../amplify-config';
+import Environment, { ssrGetCurrentEnvironment } from '../environment';
 
-const getAuthenticationInfo = async (context, store) => {
-  if (
-    store.getState().networkResources.auth.userPoolId
-    || store.getState().networkResources.auth.identityPoolId
-  ) {
-    return;
-  }
+const getAuthenticationInfo = async () => {
+  // if (
+  //   store.getState().networkResources.auth.userPoolId
+  //   || store.getState().networkResources.auth.identityPoolId
+  // ) {
+  //   return;
+  // }
 
   let additionalClientParams = {};
 
@@ -57,7 +58,7 @@ const getAuthenticationInfo = async (context, store) => {
     ),
   ]);
 
-  const sandboxId = process.env.SANDBOX_ID || 'default';
+  const sandboxId = process.env.SANDBOX_ID || 'develop';
 
   /**
    * NOTE: if no environment is supplied (i.e. local development)
@@ -78,7 +79,7 @@ const getAuthenticationInfo = async (context, store) => {
   );
 
   const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes(
-    `${process.env.K8S_ENV ? 'cluster' : 'local'}-${sandboxId}`,
+    `${ssrGetCurrentEnvironment() !== Environment.DEVELOPMENT ? `cluster-${sandboxId}` : 'local'}`,
   )).ClientId;
 
   const [{ UserPoolClient: userPoolClientDetails }, { UserPool: { Domain } }] = await Promise.all([
@@ -90,20 +91,23 @@ const getAuthenticationInfo = async (context, store) => {
     ),
   ]);
 
-  const {
-    ClientId, DefaultRedirectURI, LogoutURLs, AllowedOAuthScopes, AllowedOAuthFlows,
-  } = userPoolClientDetails;
+  const amplifyConfig = configure(
+    userPoolId,
+    identityPoolId,
+    { ...userPoolClientDetails, Domain: `${Domain}.auth.eu-west-1.amazoncognito.com` },
+  );
 
-  store.dispatch(loadAuthenticationInfo(userPoolId, identityPoolId, {
-    ClientId,
-    DefaultRedirectURI,
-    LogoutURLs,
-    AllowedOAuthScopes,
-    AllowedOAuthFlows,
-    Domain: `${Domain}.auth.eu-west-1.amazoncognito.com`,
-  }));
+  /*
+    You can use this as a shim for authorization in the future:
 
-  return {};
+    const { Auth } = withSSRContext(context);
+    Auth.configure(amplifyConfig.Auth);
+    const user = await Auth.currentAuthenticatedUser();
+  */
+
+  return {
+    amplifyConfig,
+  };
 };
 
 export default getAuthenticationInfo;
