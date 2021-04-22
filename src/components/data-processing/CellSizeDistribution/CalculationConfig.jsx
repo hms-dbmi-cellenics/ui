@@ -32,6 +32,7 @@ const CellSizeDistributionConfig = (props) => {
             onPressEnter={(e) => updateSettings({ minCellSize: e.target.value })}
             placeholder={10800}
             step={100}
+            disabled={disabled}
           />
         </Space>
       </Form.Item>
