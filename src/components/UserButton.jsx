@@ -42,7 +42,6 @@ const UserButton = () => {
   }, []);
 
   const content = () => (
-    // <button onClick={() => Auth.federatedSignIn()}>Open Hosted UI</button>
     <Menu>
       <Menu.ItemGroup key='g1' title={`Signed in as ${user.attributes.name}`} />
       <Menu.Item key='profile' disabled>Your profile</Menu.Item>
