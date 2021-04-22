@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
-import _ from 'lodash';
 import { Vega } from 'react-vega';
 
 import { generateSpec, generateData } from '../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
@@ -91,7 +90,8 @@ const data = [
   [18, 10],
 ];
 const config = initialPlotConfigStates.embeddingContinuous;
-const expression = [0.844880940781665, 0, 0, 0, 0, 0, 1, 2, 1.0892605007475098, 0.9444651009182008, 0, 0, 0.9955310761799436, 0, 0];
+const expression = [0.844880940781665, 0, 0, 0, 0, 0, 1, 2,
+  1.0892605007475098, 0.9444651009182008, 0, 0, 0.9955310761799436, 0, 0];
 
 const initialState = {
   cellSets,
@@ -113,7 +113,8 @@ const initialState = {
 const store = mockStore(initialState);
 let component;
 
-const spec = generateSpec(config, generateData(expression, config.selectedSample, data, properties));
+const spec = generateSpec(config,
+  generateData(expression, config.selectedSample, data, properties));
 
 const testPlot = () => mount(
   <Provider store={store}>

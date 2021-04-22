@@ -119,7 +119,7 @@ const HeatmapPlot = ({ experimentId }) => {
         <PlatformError
           description='Could not load gene expression data.'
           error={error}
-          onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes))}
+          onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes, plotUuid))}
         />
       );
     }
