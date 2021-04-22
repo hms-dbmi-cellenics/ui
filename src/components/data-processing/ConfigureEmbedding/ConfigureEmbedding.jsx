@@ -70,11 +70,9 @@ const ConfigureEmbedding = (props) => {
           experimentId={experimentId}
           config={{
             ...config,
-            config: {
+            legend: {
               ...config.legend,
-              legend: {
-                title: 'Sample Name',
-              },
+              title: 'Sample Name',
             },
             selectedCellSet: 'sample',
           }}
