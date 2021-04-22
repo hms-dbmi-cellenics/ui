@@ -26,7 +26,6 @@ import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
 
 const { Sider, Footer } = Layout;
-const { SubMenu } = Menu;
 
 const { Paragraph, Text } = Typography;
 
@@ -219,6 +218,10 @@ const ContentWrapper = (props) => {
 
     if (pipelineRunning && !route.includes('data-processing')) {
       return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='running' />;
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      return children;
     }
 
     if (pipelineStatusKey === 'NotCreated' && !route.includes('data-processing')) {
