@@ -1,17 +1,10 @@
-import { Auth } from 'aws-amplify';
 import getApiEndpoint from './apiEndpoint';
+import getAuthJWT from './getAuthJWT';
 
 const fetchAPI = async (path, params = {}) => {
   const headers = params.headers ? params.headers : {};
 
-  let authJWT = null;
-
-  try {
-    const currentSession = await Auth.currentSession();
-    authJWT = currentSession.getIdToken().getJwtToken();
-  } catch (e) {
-    authJWT = null;
-  }
+  const authJWT = await getAuthJWT();
 
   const parameters = {
     ...params,

@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
-import { Auth } from 'aws-amplify';
 import fetchAPI from './fetchAPI';
 import connectionPromise from './socketConnection';
 import WorkResponseError from './WorkResponseError';
 import WorkTimeoutError from './WorkTimeoutError';
+import getAuthJWT from './getAuthJWT';
 
 const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();
@@ -19,13 +19,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
 
   const timeoutDate = moment().add(adjustedTimeout, 's').toISOString();
 
-  let authJWT = null;
-  try {
-    const currentSession = await Auth.currentSession();
-    authJWT = currentSession.getIdToken().getJwtToken();
-  } catch (e) {
-    authJWT = null;
-  }
+  const authJWT = await getAuthJWT();
 
   const request = {
     uuid: requestUuid,
