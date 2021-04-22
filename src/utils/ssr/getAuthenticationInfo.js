@@ -60,7 +60,7 @@ const getAuthenticationInfo = async (context, store) => {
   const sandboxId = process.env.SANDBOX_ID || 'develop';
 
   const identityPoolId = IdentityPools.find(
-    (pool) => pool.IdentityPoolName.includes(`cluster-${sandboxId}`),
+    (pool) => pool.IdentityPoolName.includes(`staging-${sandboxId}`),
   ).IdentityPoolId;
   const userPoolId = UserPools.find((pool) => pool.Name.includes('staging')).Id;
 
