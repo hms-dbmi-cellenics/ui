@@ -16,12 +16,6 @@ import '../../assets/nprogress.css';
 import configure from '../utils/amplify-config';
 import CustomError from '../utils/customError';
 
-// import { isBrowser } from '../utils/environment';
-// TODO: this needs to be refactored after auth works properly
-//
-// import { isBrowser, getCurrentEnvironment } from '../utils/environment';
-// import setupAmplify from '../utils/setupAmplify';
-
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
