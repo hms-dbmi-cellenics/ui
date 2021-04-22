@@ -98,8 +98,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
     if (samples.ids.length > 0) {
       setPreFilteredSamples(
-        samples.ids.reduce(
-          (acc, sampleUuid) => samples[sampleUuid].preFiltered ? [...acc, sampleUuid] : acc, []
+        samples.ids.filter(
+          (sampleUuid) => samples[sampleUuid].preFiltered
         )
       )
     }
@@ -119,7 +119,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       })
     }
 
-  }, [preFilteredSamples, processingConfig])
+  }, [preFilteredSamples, processingConfig.meta])
 
   useEffect(() => {
     if (
@@ -129,7 +129,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     ) {
       setDisabledByPrefilter(stepsDisabledByPrefilter.includes(steps[stepIdx].key))
     }
-  }, [stepIdx, processingConfig])
+  }, [stepIdx, processingConfig.meta])
 
   const upcomingStepIdxRef = useRef(null);
 
