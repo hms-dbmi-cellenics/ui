@@ -57,18 +57,29 @@ const getAuthenticationInfo = async (context, store) => {
     ),
   ]);
 
-  const sandboxId = process.env.SANDBOX_ID || 'develop';
+  const sandboxId = process.env.SANDBOX_ID || 'default';
+
+  /**
+   * NOTE: if no environment is supplied (i.e. local development)
+   * we are connecting to the staging Cognito environment. This is
+   * because we do not have a way to reliably replicate Cognito in
+   * local development.
+   */
+  const k8sEnv = process.env.K8S_ENV || 'staging';
 
   const identityPoolId = IdentityPools.find(
-    (pool) => pool.IdentityPoolName.includes(`staging-${sandboxId}`),
+    (pool) => pool.IdentityPoolName.includes(sandboxId),
   ).IdentityPoolId;
-  const userPoolId = UserPools.find((pool) => pool.Name.includes('staging')).Id;
+
+  const userPoolId = UserPools.find((pool) => pool.Name.includes(k8sEnv)).Id;
 
   const { UserPoolClients } = await userPoolClient.send(
     new ListUserPoolClientsCommand({ UserPoolId: userPoolId, MaxResults: 60 }),
   );
 
-  const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes(`cluster-${sandboxId}`)).ClientId;
+  const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes(
+    `${process.env.K8S_ENV ? 'cluster' : 'local'}-${sandboxId}`,
+  )).ClientId;
 
   const [{ UserPoolClient: userPoolClientDetails }, { UserPool: { Domain } }] = await Promise.all([
     userPoolClient.send(
