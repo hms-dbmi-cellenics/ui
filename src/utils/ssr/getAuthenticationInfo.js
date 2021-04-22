@@ -57,18 +57,16 @@ const getAuthenticationInfo = async (context, store) => {
     ),
   ]);
 
+  const sandboxId = process.env.SANDBOX_ID || 'develop';
+
   const identityPoolId = IdentityPools.find(
-    (pool) => pool.IdentityPoolName.includes('staging'),
+    (pool) => pool.IdentityPoolName.includes(`cluster-${sandboxId}`),
   ).IdentityPoolId;
   const userPoolId = UserPools.find((pool) => pool.Name.includes('staging')).Id;
 
   const { UserPoolClients } = await userPoolClient.send(
     new ListUserPoolClientsCommand({ UserPoolId: userPoolId, MaxResults: 60 }),
   );
-
-  const sandboxId = process.env.SANDBOX_ID;
-
-  console.log('we have sandbox id', sandboxId);
 
   const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes(`cluster-${sandboxId}`)).ClientId;
 
