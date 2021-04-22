@@ -287,11 +287,11 @@ describe('ViolinIndex', () => {
     const panelContainer = markers.parentElement;
     userEvent.click(markers);
 
-    expect(panelContainer).not.toHaveTextContent(/Axis Title/i);
+    // TO-DO: review these tests onec the missing violin plot features
+    // are implemented and the `.skip` can be removed
     expect(panelContainer).toHaveTextContent(/linear/i);
     expect(panelContainer).toHaveTextContent(/angled/i);
 
-    /*:
     let radioButtons = rtl.getAllByRole(panelContainer, 'radio');
     expect(radioButtons.length).toBe(2);
     expect(panelContainer).toHaveTextContent(/toggle/i);
@@ -311,6 +311,5 @@ describe('ViolinIndex', () => {
     expect(radioButtons[2].parentNode.parentNode).toHaveTextContent('Top');
 
     expect(ocurrencesInCanvas('cluster a')).toBe(2);
-    */
   });
 });
