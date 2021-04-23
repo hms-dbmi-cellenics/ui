@@ -4,7 +4,7 @@ import fetchAPI from './fetchAPI';
 import connectionPromise from './socketConnection';
 import WorkResponseError from './WorkResponseError';
 import WorkTimeoutError from './WorkTimeoutError';
-import authorizationHeader from './authorizationHeader';
+import getAuthJWT from './getAuthJWT';
 
 const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();
@@ -19,13 +19,13 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
 
   const timeoutDate = moment().add(adjustedTimeout, 's').toISOString();
 
+  const authJWT = await getAuthJWT();
+
   const request = {
     uuid: requestUuid,
     socketId: io.id,
     experimentId,
-    extraHeaders: {
-      ...authorizationHeader,
-    },
+    ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
     timeout: timeoutDate,
     body,
     ...requestProps,

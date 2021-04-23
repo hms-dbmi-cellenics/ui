@@ -71,7 +71,6 @@ describe('saveCellSets action', () => {
       {
         body: JSON.stringify(treeData),
         headers: {
-          Authorization: 'Bearer admin',
           'Content-Type': 'application/json',
         },
         method: 'PUT',

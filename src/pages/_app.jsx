@@ -1,95 +1,66 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { DefaultSeo } from 'next-seo';
-import Head from 'next/head';
 import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
-import useSWR from 'swr';
-
+import Amplify from 'aws-amplify';
+import _ from 'lodash';
 import ContentWrapper from '../components/ContentWrapper';
-import PreloadContent from '../components/PreloadContent';
 import NotFoundPage from './404';
 import Error from './_error';
-import wrapper from '../redux/store';
-import getFromApiExpectOK from '../utils/getFromApiExpectOK';
+import { wrapper } from '../redux/store';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
-
-import { isBrowser, getCurrentEnvironment } from '../utils/environment';
-import setupAmplify from '../utils/setupAmplify';
+import CustomError from '../utils/customError';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-const WrappedApp = ({ Component, pageProps, req }) => {
+Amplify.configure({
+  ssr: true,
+});
+
+const WrappedApp = ({ Component, pageProps }) => {
+  const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
-  const [experimentId, setExperimentId] = useState(undefined);
 
-  console.log(req, pageProps);
+  const { experimentId } = router.query;
+  const experimentData = useSelector((state) => (experimentId ? state.experimentSettings.info : {}));
 
-  // Only hydrate pages when experiment ID is loaded.
   useEffect(() => {
-    if (!router.route.includes('experimentId')) {
-      setExperimentId(false);
-    }
-
-    if (router.route.includes('experimentId')) {
-      setExperimentId(router.query.experimentId);
-    }
-
-    setupAmplify(getCurrentEnvironment());
-  }, [router.query.experimentId]);
-
-  const { data: experimentData, error: experimentError } = useSWR(
-    () => (experimentId ? `/v1/experiments/${experimentId}` : null),
-    getFromApiExpectOK,
-  );
+    Amplify.configure(amplifyConfig);
+  }, [amplifyConfig]);
 
   const mainContent = () => {
-    // If the page is statically rendered (on server), show a loading context.
-    if (!isBrowser) {
-      return (
-        <PreloadContent />
-      );
-    }
-
     // If this is a not found error, show it without the navigation bar.
     if (Component === NotFoundPage) {
       return <Component {...pageProps} />;
     }
 
-    // If the experiment ID does not exist and is not `false` (i.e. not necessary)
-    // wait until the experiment ID is loaded before loading the page.
-    if (!experimentId && experimentId !== false) {
-      return (<PreloadContent />);
-    }
-
-    // If we found the experiment ID, but we haven't yet queried the API for data
-    // about the experiment, wait until that is done.
-    if (experimentId && !experimentData && !experimentError) {
-      return (<PreloadContent />);
-    }
-
     // If there was an error querying the API, display an error state.
-    if (experimentError) {
-      if (experimentError.payload === undefined) {
-        return <Error errorText='Cannot connect to API service.' />;
+    if (httpError) {
+      if (httpError === 404) {
+        return (
+          <NotFoundPage
+            title={'Analysis doesn\'t exist.'}
+            subTitle={'We searched, but we couldn\'t find the analysis you\'re looking for.'}
+            hint='It may have been deleted by the project owner. Go home to see your own priejcts and analyses.'
+          />
+        );
       }
 
-      const { status } = experimentError.payload;
-
-      if (status === 404) {
-        return <NotFoundPage />;
-      }
-
-      return <Error statusCode={status} />;
+      return <Error statusCode={httpError} />;
     }
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <ContentWrapper experimentId={experimentId} experimentData={experimentData}>
+      <ContentWrapper
+        experimentId={experimentId}
+        experimentData={experimentData}
+      >
         <Component
           experimentId={experimentId}
           experimentData={experimentData}
@@ -119,6 +90,50 @@ const WrappedApp = ({ Component, pageProps, req }) => {
       {mainContent(Component, pageProps)}
     </>
   );
+};
+
+WrappedApp.getInitialProps = async ({ Component, ctx }) => {
+  const {
+    store, req, query, res,
+  } = ctx;
+
+  const pageProps = Component.getInitialProps
+    ? await Component.getInitialProps(ctx)
+    : {};
+
+  const promises = [];
+
+  if (req) {
+    const { default: getEnvironmentInfo } = require('../utils/ssr/getEnvironmentInfo');
+    promises.push(getEnvironmentInfo);
+
+    const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
+    promises.push(getAuthenticationInfo);
+
+    if (query?.experimentId) {
+      const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
+      promises.push(getExperimentInfo);
+    }
+  }
+
+  try {
+    let results = await Promise.all(promises.map((f) => f(ctx, store)));
+    results = _.merge(...results);
+
+    return { pageProps: { ...pageProps, ...results } };
+  } catch (e) {
+    if (e instanceof CustomError) {
+      if (res && e.payload.status) {
+        res.statusCode = e.payload.status;
+      } else {
+        res.statusCode = 500;
+      }
+
+      return { pageProps: { ...pageProps, httpError: e.payload.status || true } };
+    }
+
+    throw e;
+  }
 };
 
 WrappedApp.propTypes = {

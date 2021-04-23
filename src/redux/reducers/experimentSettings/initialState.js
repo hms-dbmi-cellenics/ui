@@ -19,6 +19,10 @@ const initialState = {
     status: {
     },
   },
+  info: {
+    experimentId: null,
+    experimentName: null,
+  },
   processing: {
     meta: {
       loading: true,

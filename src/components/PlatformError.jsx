@@ -7,6 +7,7 @@ import moment from 'moment';
 
 import WorkResponseError from '../utils/WorkResponseError';
 import WorkTimeoutError from '../utils/WorkTimeoutError';
+import WorkGenericError from '../utils/WorkGenericError';
 
 const { Text } = Typography;
 
@@ -49,6 +50,10 @@ const PlatformError = (props) => {
           We stopped waiting so you can try again.
         </>
       );
+    }
+
+    if (error instanceof WorkGenericError) {
+      reason = error.message;
     }
 
     return (
