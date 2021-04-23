@@ -29,7 +29,7 @@ const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
       oauth: {
         domain: userPoolClientDetails.Domain,
         scope: userPoolClientDetails.AllowedOAuthScopes,
-        redirectSignIn: userPoolClientDetails.DefaultRedirectURI,
+        redirectSignIn: userPoolClientDetails.CallbackURLs[0],
         redirectSignOut: userPoolClientDetails.LogoutURLs[0],
         responseType: userPoolClientDetails.AllowedOAuthFlows[0],
       },
