@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Slider, InputNumber,
+  Slider, InputNumber, Space,
 } from 'antd';
 
 import useUpdateThrottled from '../utils/customHooks/useUpdateThrottled';
@@ -14,26 +14,27 @@ const SliderWithInput = (props) => {
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
   return (
-    <div>
+    <Space>
       <Slider
         value={newConfig[propertyToUpdate]}
         min={min}
         max={max}
         onChange={(value) => handleChange({ [propertyToUpdate]: value })}
         step={1}
-      // disabled={disabled}
+        style={{ minWidth: 100 }}
       />
 
       <InputNumber
         value={newConfig[propertyToUpdate]}
-        // step={100}
         min={min}
         max={max}
         onChange={(value) => {
-          handleChange({ [propertyToUpdate]: value });
+          const valueWithinBounds = Math.min(Math.max(value, min), max);
+          handleChange({ [propertyToUpdate]: valueWithinBounds });
         }}
+        style={{ width: 60 }}
       />
-    </div>
+    </Space>
   );
 };
 

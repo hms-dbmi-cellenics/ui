@@ -38,13 +38,15 @@ const CellSizeDistributionConfig = (props) => {
         </Space>
       </Form.Item>
 
-      <SliderWithInput
-        min={100}
-        max={400}
-        config={config}
-        propertyToUpdate='binStep'
-        onUpdate={updateSettings}
-      />
+      <Form.Item label='Bin step'>
+        <SliderWithInput
+          min={100}
+          max={400}
+          config={config}
+          propertyToUpdate='binStep'
+          onUpdate={updateSettings}
+        />
+      </Form.Item>
     </>
   );
 };
