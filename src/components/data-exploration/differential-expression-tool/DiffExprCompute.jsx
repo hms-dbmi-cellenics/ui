@@ -210,15 +210,15 @@ const DiffExprCompute = (props) => {
       }} defaultValue={selectedComparison}>
         <Radio
           style={radioStyle}
+          value={ComparisonType.within}>
+          Compare cell sets within a sample/group
+        </Radio>
+        <Radio
+          style={radioStyle}
           value={ComparisonType.between}
           disabled={!hasMetadata}
         >
           Compare a selected cell set between samples/groups
-        </Radio>
-        <Radio
-          style={radioStyle}
-          value={ComparisonType.within}>
-          Compare cell sets within a sample/group
         </Radio>
       </Radio.Group>
 
