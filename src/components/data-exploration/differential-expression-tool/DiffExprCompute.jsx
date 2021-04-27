@@ -30,6 +30,7 @@ const DiffExprCompute = (props) => {
   const properties = useSelector((state) => state.cellSets.properties);
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [numSamples, setNumSamples] = useState(1);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
 
@@ -79,6 +80,11 @@ const DiffExprCompute = (props) => {
       }
 
     });
+
+    // Calculate the number of sampelIds
+    setNumSamples(hierarchy?.find(
+      (rootNode) => (rootNode.key === 'sample'),
+    )?.children.length);
 
   }, [hierarchy, properties]);
 
@@ -216,7 +222,7 @@ const DiffExprCompute = (props) => {
         <Radio
           style={radioStyle}
           value={ComparisonType.between}
-          disabled={!hasMetadata}
+          disabled={!hasMetadata || numSamples === 1}
         >
           Compare a selected cell set between samples/groups
         </Radio>
