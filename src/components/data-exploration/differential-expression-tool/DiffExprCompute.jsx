@@ -31,6 +31,7 @@ const DiffExprCompute = (props) => {
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const [isFormValid, setIsFormValid] = useState(false);
   const [numSamples, setNumSamples] = useState(1);
+  const [onlySample, setOnlySample] = useState('');
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
 
@@ -81,10 +82,17 @@ const DiffExprCompute = (props) => {
 
     });
 
-    // Calculate the number of sampelIds
-    setNumSamples(hierarchy?.find(
+    // Calculate the number of sampleIds.
+    // if there is only 1 sample, set sample using sample name
+    const samples = hierarchy?.find(
       (rootNode) => (rootNode.key === 'sample'),
-    )?.children.length);
+    )?.children;
+
+    setNumSamples(samples.length)
+
+    if (samples.length === 1) {
+      setOnlySample(`sample/${samples[0].key}`)
+    }
 
   }, [hierarchy, properties]);
 
@@ -174,7 +182,8 @@ const DiffExprCompute = (props) => {
           style={{ width: 200 }}
           onChange={(cellSet) => onSelectCluster(cellSet, option)}
           value={
-            comparisonGroup[selectedComparison][option] ?? null
+            option === "basis" && numSamples === 1 ? onlySample :
+              comparisonGroup[selectedComparison][option] ?? null
           }
           size='small'
         >
