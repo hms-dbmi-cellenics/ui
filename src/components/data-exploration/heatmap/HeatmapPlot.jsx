@@ -73,7 +73,7 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
-    if (hierarchy.length === 0 || cellSetsLoading) {
+    if (!hierarchy || hierarchy.length === 0 || cellSetsLoading) {
       return;
     }
 
@@ -91,7 +91,9 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    const data = populateHeatmapData(cellSets, heatmapSettings, expressionData, selectedGenes, true);
+    const data = populateHeatmapData(
+      cellSets, heatmapSettings, expressionData, selectedGenes, true,
+    );
     setDataDebounce(data);
   }, [loadingGenes,
     hidden,

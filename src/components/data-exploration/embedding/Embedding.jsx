@@ -96,7 +96,7 @@ const Embedding = (props) => {
 
       // Cell sets are easy, just return the appropriate color and set them up.
       case 'cellSets': {
-        if (isBrowser) {
+        if (isBrowser && cellSetHierarchy && cellSetProperties) {
           setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
           setCellInfoVisible(false);
         }
