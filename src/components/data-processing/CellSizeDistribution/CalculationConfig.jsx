@@ -10,13 +10,14 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
+import SliderWithInput from '../../SliderWithInput';
 
 const CellSizeDistributionConfig = (props) => {
   const filtering = false;
   const {
-    config, disabled, plotType, updateSettings,
+    config, disabled, updateSettings,
   } = props;
+
   return (
     <>
 
@@ -36,12 +37,13 @@ const CellSizeDistributionConfig = (props) => {
           />
         </Space>
       </Form.Item>
-      <BandwidthOrBinstep
-        config={config}
-        onUpdate={updateSettings}
-        type={plotType}
+
+      <SliderWithInput
+        min={100}
         max={400}
-        disabled={disabled}
+        config={config}
+        propertyToUpdate='binStep'
+        onUpdate={updateSettings}
       />
     </>
   );
@@ -49,7 +51,6 @@ const CellSizeDistributionConfig = (props) => {
 CellSizeDistributionConfig.propTypes = {
   updateSettings: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
-  plotType: PropTypes.string.isRequired,
   disabled: PropTypes.bool.isRequired,
 };
 
