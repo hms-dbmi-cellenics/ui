@@ -92,7 +92,12 @@ const CalculationConfigContainer = (props) => {
         config, plotType, updateSettings, disabled: auto,
       })}
 
-      <Button onClick={updateAllSettings}>Copy to all samples</Button>
+      {
+        sampleIds.length > 1 ? (
+          <Button onClick={updateAllSettings} disabled={auto === 'automatic'}>Copy to all samples</Button>
+        ) : <></>
+      }
+
     </div>
   );
 };
