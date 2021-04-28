@@ -1,0 +1,253 @@
+name: Build and deploy the UI to develop
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+jobs:
+  build:
+    name: Build website
+    runs-on: ubuntu-20.04
+    env:
+      CI: "true"
+    steps:
+    - id: checkout
+      name: Check out source code
+      uses: actions/checkout@v2
+
+    - id: cache-seek
+      name: Check for npm cache hit
+      uses: c-hive/gha-npm-cache@v1
+
+    - id: install
+      name: Install dependencies
+      run: |-
+        npm ci
+
+    - id: test
+      name: Run unit tests
+      run: |-
+        npm test
+
+    - id: next-cache-seek
+      name: Look up the Next.js build cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.workspace }}/.next/cache
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+
+    - id: build
+      name: Build project
+      run: |-
+        npm run build
+
+    - id: upload-build-out
+      name: Upload Next.js build output
+      uses: actions/upload-artifact@v2
+      with:
+        name: next-build-out
+        path: |
+          .next/
+          !.next/cache
+
+  build-docker:
+    name: Build Docker container
+    runs-on: ubuntu-20.04
+    needs: build
+    steps:
+      - id: checkout
+        name: Check out source code
+        uses: actions/checkout@v2
+
+      - id: download-build-out
+        name: Download Next.js build output
+        uses: actions/download-artifact@v2
+        with:
+          name: next-build-out
+          path: .next/
+
+      - id: ref
+        name: Format docker tag and repository name.
+        run: |-
+          # This will take a ref like `refs/heads/master`
+          # and turn it into `refs-heads-master`
+          REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
+
+          # the final tag is something like:
+          # refs-heads-master-a4f8bc313dae
+          # this is what we push to ECR
+          echo "::set-output name=tag::$REF_ID-$GITHUB_SHA"
+
+          # This will take a GitHub repo name like `biomage-ltd/iac`
+          # and turns it into `iac`. This will be the name of the
+          # ECR repository.
+          IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
+          echo "::set-output name=repo-name::$IMAGE_REPO_NAME"
+
+      - id: set-up-creds
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - id: login-ecr
+        name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - id: create-ecr-registry
+        name: Create an ECR repository (if needed)
+        # This will fail if the registry already exists, which is fine. If there is some other
+        # error, the `push` step will fail instead.
+        continue-on-error: true
+        run: |-
+          aws ecr create-repository --repository-name $REPO_NAME --image-tag-mutability IMMUTABLE
+        env:
+          REPO_NAME: ${{ steps.ref.outputs.repo-name }}
+
+      - id: build
+        name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
+          push: false
+
+      - id: push
+        name: Push docker image to ECR
+        run: |-
+          echo Pushing image $IMAGE_NAME to ECR.
+          docker push $IMAGE_NAME
+        env:
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
+
+  deploy:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-20.04
+    needs: build-docker
+    strategy:
+      max-parallel: 1
+      matrix:
+        environment: ['develop', 'staging']
+    steps:
+      - id: checkout
+        name: Check out source code
+        uses: actions/checkout@v2
+
+      - id: setup-aws
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - id: login-ecr
+        name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - id: install-yq
+        name: Install yq for modifying the eksctl yaml spec.
+        run: |-
+          sudo wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
+
+      - id: fill-metadata
+        name: Fill out a new HelmRelease resource
+        run: |-
+          REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
+          DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
+          echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
+          echo "::set-output name=ref-dashed::$REF_DASHED"
+
+          if [ "${{ matrix.environment }}" = "production" ]; then
+            SANDBOX_ID="default"
+            CHART_REF="master"
+          fi
+
+          if [ "${{ matrix.environment }}" = "staging" ]; then
+            SANDBOX_ID="STAGING_SANDBOX_ID"
+            CHART_REF="STAGING_CHART_REF"
+          fi
+          
+          yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
+          | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
+          | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
+          | yq w -d0 - metadata.labels.sandboxId "$SANDBOX_ID" \
+          | yq w -d1 - metadata.labels.sandboxId "$SANDBOX_ID" \
+          | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
+          | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
+          | yq w -d1 - spec.chart.ref "$CHART_REF" \
+          | yq w -d1 - spec.values.kubernetes.env "staging" \
+          | yq w -d1 - spec.values.biomageCi.repo "$GITHUB_REPOSITORY" \
+          | yq w -d1 - spec.values.biomageCi.sandboxId "$SANDBOX_ID" \
+          | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
+          | yq w -d1 - spec.values.image.repository "$DEPLOYMENT_NAME" \
+          | yq w -d1 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
+          | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/ui-role-staging" \
+          > $DEPLOYMENT_NAME.yaml
+
+
+          cat $DEPLOYMENT_NAME.yaml
+        env:
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, needs.build-docker.outputs.repo-name, needs.build-docker.outputs.tag) }}
+
+      - id: disable-admin-enforcement
+        name: Temporarily disable admin enforcement
+        uses: benjefferies/branch-protection-bot@master
+        with:
+          access-token: ${{ secrets.API_TOKEN_GITHUB }}
+          owner: biomage-ltd
+          repo: iac
+          enforce_admins: false
+          retries: 8
+
+      - name: Push develop deployment to iac
+        if:
+          github.ref == 'refs/heads/develop' && github.event_name == 'push' && matrix.environment == 'develop'
+        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: '${{ steps.fill-metadata.outputs.deployment-name }}.yaml'
+          destination_repo: '${{ github.repository_owner }}/iac'
+          destination_folder: 'releases/staging'
+          user_email: 'ci@biomage.net'
+          user_name: 'Biomage CI/CD'
+
+      - name: Change name of deployment file for staging deployment
+        if:
+          matrix.environment == 'staging'
+        env:
+          DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
+          REF_DASHED: ${{ steps.fill-metadata.outputs.ref-dashed }}
+        run: |-
+          mv $DEPLOYMENT_NAME.yaml $REF_DASHED.yaml
+
+      - name: Push staging deployment template to iac
+        if:
+          matrix.environment == 'staging'
+        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: '${{ steps.fill-metadata.outputs.ref-dashed }}.yaml'
+          destination_repo: '${{ github.repository_owner }}/iac'
+          destination_folder: 'releases/staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}'
+          user_email: 'ci@biomage.net'
+          user_name: 'Biomage CI/CD'
+
+      - id: enable-admin-enforcement
+        name: Re-enable admin enforcement
+        uses: benjefferies/branch-protection-bot@master
+        if: always()
+        with:
+          access-token: ${{ secrets.API_TOKEN_GITHUB }}
+          owner: biomage-ltd
+          repo: iac
+          enforce_admins: true
+          retries: 8
