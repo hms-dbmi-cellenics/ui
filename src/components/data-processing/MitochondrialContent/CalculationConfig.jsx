@@ -6,6 +6,7 @@ import {
 } from 'antd';
 
 import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
+import SliderWithInput from '../../SliderWithInput';
 
 const MitochondrialConfig = (props) => {
   const {
@@ -23,31 +24,42 @@ const MitochondrialConfig = (props) => {
     const realDiff = { methodSettings: { [activeMethod]: newDiff } };
     updateSettings(realDiff);
   };
-  const filtering = false;
+  // const filtering = false;
 
   const activeMethod = config.method;
+
+  const activeMethodSettings = config.methodSettings[activeMethod];
+  activeMethodSettings.maxPercentage = (activeMethodSettings.maxFraction * 100).toFixed(2);
 
   return (
     <>
       <Form.Item label='Max percentage'>
-        <Slider
-          value={config.methodSettings[activeMethod].maxFraction * 100}
+        <SliderWithInput
           min={0}
           max={100}
           step={0.05}
-          collapsible={!filtering ? 'disabled' : 'header'}
-          onChange={(val) => updateSettingsForActiveMethod({ maxFraction: val })}
-          disabled={disabled}
+          config={config.methodSettings[activeMethod]}
+          propertyToUpdate='maxPercentage'
+          onUpdate={(obj) => updateSettingsForActiveMethod({ maxFraction: obj.maxPercentage })}
         />
       </Form.Item>
-      <BandwidthOrBinstep
+      <Form.Item label='Bin step'>
+        <SliderWithInput
+          min={0.1}
+          max={10}
+          config={config.methodSettings[activeMethod]}
+          propertyToUpdate='binStep'
+          onUpdate={updateSettingsForActiveMethod}
+        />
+      </Form.Item>
+      {/* <BandwidthOrBinstep
         config={config.methodSettings[activeMethod]}
         onUpdate={updateSettingsForActiveMethod}
         type={plotType}
         min={0.1}
         max={10}
         disabled={disabled}
-      />
+      /> */}
     </>
   );
 };

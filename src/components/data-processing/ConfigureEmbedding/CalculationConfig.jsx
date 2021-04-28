@@ -17,6 +17,8 @@ import {
 
 import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
 
+import SliderWithInput from '../../SliderWithInput';
+
 const { Option } = Select;
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -278,8 +280,8 @@ const CalculationConfig = (props) => {
               </Option>
             </Select>
           </Form.Item>
-          <Form.Item label='Resolution'>
-            <Slider
+          <Form.Item label='Probability threshold'>
+            <SliderWithInput
               value={resolution}
               min={0}
               max={2}
@@ -300,6 +302,29 @@ const CalculationConfig = (props) => {
               }}
             />
           </Form.Item>
+
+          {/* <Form.Item label='Resolution'>
+            <Slider
+              value={resolution}
+              min={0}
+              max={2}
+              step={0.1}
+              onChange={(value) => {
+                setResolution(value);
+              }}
+              onAfterChange={(value) => {
+                updateSettings({
+                  clusteringSettings: {
+                    methodSettings: {
+                      louvain: { resolution: value },
+                    },
+                  },
+                });
+
+                debouncedCellSetClustering(value);
+              }}
+            />
+          </Form.Item> */}
         </Form>
       </Panel>
     </Collapse>
