@@ -11,6 +11,9 @@ const DoubletScoresConfig = (props) => {
 
   const filtering = false;
 
+  console.log('configBinStepDebug');
+  console.log(config.binStep);
+
   return (
     <>
       <Form.Item label='Probability threshold'>
@@ -18,9 +21,9 @@ const DoubletScoresConfig = (props) => {
           min={0}
           max={1}
           step={0.05}
-          config={config}
+          value={config.probabilityThreshold}
           propertyToUpdate='probabilityThreshold'
-          onUpdate={updateSettings}
+          onUpdate={(newValue) => updateSettings({ probabilityThreshold: newValue })}
           disabled={disabled}
         />
       </Form.Item>
@@ -28,9 +31,9 @@ const DoubletScoresConfig = (props) => {
         <SliderWithInput
           min={0.001}
           max={0.5}
-          config={config}
+          value={config.binStep}
           propertyToUpdate='binStep'
-          onUpdate={updateSettings}
+          onUpdate={(newValue) => updateSettings({ binStep: newValue })}
           disabled={disabled}
         />
       </Form.Item>

@@ -286,10 +286,8 @@ const CalculationConfig = (props) => {
               min={0}
               max={2}
               step={0.1}
-              onChange={(value) => {
+              onUpdate={(value) => {
                 setResolution(value);
-              }}
-              onAfterChange={(value) => {
                 updateSettings({
                   clusteringSettings: {
                     methodSettings: {

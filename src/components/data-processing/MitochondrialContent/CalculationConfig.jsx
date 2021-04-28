@@ -38,18 +38,18 @@ const MitochondrialConfig = (props) => {
           min={0}
           max={100}
           step={0.05}
-          config={config.methodSettings[activeMethod]}
+          value={config.methodSettings[activeMethod].maxPercentage}
           propertyToUpdate='maxPercentage'
-          onUpdate={(obj) => updateSettingsForActiveMethod({ maxFraction: obj.maxPercentage })}
+          onUpdate={(newValue) => updateSettingsForActiveMethod({ maxFraction: newValue })}
         />
       </Form.Item>
       <Form.Item label='Bin step'>
         <SliderWithInput
           min={0.1}
           max={10}
-          config={config.methodSettings[activeMethod]}
+          value={config.methodSettings[activeMethod].binStep}
           propertyToUpdate='binStep'
-          onUpdate={updateSettingsForActiveMethod}
+          onUpdate={(newValue) => updateSettingsForActiveMethod({ binStep: newValue })}
         />
       </Form.Item>
       {/* <BandwidthOrBinstep

@@ -8,32 +8,32 @@ import useUpdateThrottled from '../utils/customHooks/useUpdateThrottled';
 
 const SliderWithInput = (props) => {
   const {
-    min, max, config, propertyToUpdate, onUpdate, disabled, step,
+    min, max, value, propertyToUpdate, onUpdate, disabled, step,
   } = props;
 
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
+  const [newValue, handleChange] = useUpdateThrottled(onUpdate, value);
 
   const stepToSet = step ?? max / 200;
 
   return (
     <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
       <Slider
-        value={newConfig[propertyToUpdate]}
+        value={newValue}
         min={min}
         max={max}
-        onChange={(value) => handleChange({ [propertyToUpdate]: value })}
+        onChange={(changedValue) => handleChange(changedValue)}
         step={stepToSet}
         disabled={disabled}
         style={{ minWidth: 100, display: 'inline-block', flexGrow: 100 }}
       />
 
       <InputNumber
-        value={newConfig[propertyToUpdate]}
+        value={newValue}
         min={min}
         max={max}
-        onChange={(value) => {
-          const valueWithinBounds = Math.min(Math.max(value, min), max);
-          handleChange({ [propertyToUpdate]: valueWithinBounds });
+        onChange={(changedValue) => {
+          const changedValueWithinBounds = Math.min(Math.max(changedValue, min), max);
+          handleChange(changedValueWithinBounds);
         }}
         step={stepToSet}
         disabled={disabled}
@@ -46,7 +46,7 @@ const SliderWithInput = (props) => {
 SliderWithInput.propTypes = {
   min: PropTypes.number.isRequired,
   max: PropTypes.number.isRequired,
-  config: PropTypes.object.isRequired,
+  value: PropTypes.number.isRequired,
   propertyToUpdate: PropTypes.string.isRequired,
   onUpdate: PropTypes.func.isRequired,
   disabled: PropTypes.bool,

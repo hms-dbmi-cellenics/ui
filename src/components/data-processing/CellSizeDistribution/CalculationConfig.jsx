@@ -42,9 +42,9 @@ const CellSizeDistributionConfig = (props) => {
         <SliderWithInput
           min={100}
           max={400}
-          config={config}
+          value={config.binStep}
           propertyToUpdate='binStep'
-          onUpdate={updateSettings}
+          onUpdate={(value) => updateSettings({ binStep: value })}
           disabled={disabled}
         />
       </Form.Item>
