@@ -206,7 +206,7 @@ jobs:
           enforce_admins: false
           retries: 8
 
-      - name: Push develop deployment to iac
+      - name: Push develop deployment to iac for deployment
         if:
           github.ref == 'refs/heads/develop' && github.event_name == 'push' && matrix.environment == 'develop'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
