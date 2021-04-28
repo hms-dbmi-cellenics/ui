@@ -5,7 +5,6 @@ import {
   Form,
 } from 'antd';
 
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
 import SliderWithInput from '../../SliderWithInput';
 
 const MitochondrialConfig = (props) => {
@@ -27,9 +26,7 @@ const MitochondrialConfig = (props) => {
   // const filtering = false;
 
   const activeMethod = config.method;
-
   const activeMethodSettings = config.methodSettings[activeMethod];
-  activeMethodSettings.maxPercentage = (activeMethodSettings.maxFraction * 100).toFixed(2);
 
   return (
     <>
@@ -37,9 +34,8 @@ const MitochondrialConfig = (props) => {
         <SliderWithInput
           min={0}
           max={100}
-          step={0.05}
-          value={config.methodSettings[activeMethod].maxPercentage}
-          propertyToUpdate='maxPercentage'
+          step={2}
+          value={(activeMethodSettings.maxFraction * 100).toFixed(2)}
           onUpdate={(newValue) => updateSettingsForActiveMethod({ maxFraction: newValue })}
         />
       </Form.Item>
@@ -48,7 +44,6 @@ const MitochondrialConfig = (props) => {
           min={0.1}
           max={10}
           value={config.methodSettings[activeMethod].binStep}
-          propertyToUpdate='binStep'
           onUpdate={(newValue) => updateSettingsForActiveMethod({ binStep: newValue })}
         />
       </Form.Item>

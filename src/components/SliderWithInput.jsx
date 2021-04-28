@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, InputNumber,
@@ -8,33 +8,38 @@ import useUpdateThrottled from '../utils/customHooks/useUpdateThrottled';
 
 const SliderWithInput = (props) => {
   const {
-    min, max, value, propertyToUpdate, onUpdate, disabled, step,
+    min, max, value, onUpdate, disabled, step,
   } = props;
 
-  const [newValue, handleChange] = useUpdateThrottled(onUpdate, value);
+  const [, handleChange] = useUpdateThrottled(onUpdate, value);
+
+  const [newLocalValue, setNewValue] = useState(value);
 
   const stepToSet = step ?? max / 200;
 
   return (
     <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
       <Slider
-        value={newValue}
+        value={newLocalValue}
         min={min}
         max={max}
-        onChange={(changedValue) => handleChange(changedValue)}
+        onChange={setNewValue}
+        onAfterChange={() => handleChange(newLocalValue)}
         step={stepToSet}
         disabled={disabled}
         style={{ minWidth: 100, display: 'inline-block', flexGrow: 100 }}
       />
 
       <InputNumber
-        value={newValue}
+        value={newLocalValue}
         min={min}
         max={max}
         onChange={(changedValue) => {
           const changedValueWithinBounds = Math.min(Math.max(changedValue, min), max);
-          handleChange(changedValueWithinBounds);
+          setNewValue(changedValueWithinBounds);
         }}
+        onPressEnter={() => { handleChange(newLocalValue); }}
+        onStep={() => { handleChange(newLocalValue); }}
         step={stepToSet}
         disabled={disabled}
         style={{ width: 80, display: 'inline-block' }}

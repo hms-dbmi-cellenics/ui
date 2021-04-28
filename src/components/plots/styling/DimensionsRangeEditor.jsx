@@ -19,7 +19,7 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config, 1000000);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>

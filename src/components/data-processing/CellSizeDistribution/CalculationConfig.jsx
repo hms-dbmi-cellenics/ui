@@ -44,7 +44,9 @@ const CellSizeDistributionConfig = (props) => {
           max={400}
           value={config.binStep}
           propertyToUpdate='binStep'
-          onUpdate={(value) => updateSettings({ binStep: value })}
+          onUpdate={(value) => {
+            updateSettings({ binStep: value });
+          }}
           disabled={disabled}
         />
       </Form.Item>

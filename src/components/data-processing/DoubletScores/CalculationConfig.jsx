@@ -11,9 +11,6 @@ const DoubletScoresConfig = (props) => {
 
   const filtering = false;
 
-  console.log('configBinStepDebug');
-  console.log(config.binStep);
-
   return (
     <>
       <Form.Item label='Probability threshold'>
