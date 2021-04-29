@@ -46,6 +46,10 @@ const MiniPlot = (props) => {
     (state) => state.componentConfig[plotUuid]?.config,
   );
 
+  const plotData = useSelector(
+    (state) => state.componentConfig[plotUuid]?.plotData,
+  );
+
   const renderPlot = () => {
     // Spinner for main window
     if (!config) {
@@ -56,7 +60,7 @@ const MiniPlot = (props) => {
       );
     }
 
-    return plotFn(getMiniaturizedConfig(config), actions);
+    return plotFn(getMiniaturizedConfig(config), plotData, actions);
   };
 
   return (
