@@ -588,7 +588,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
             return (
               <Space direction='vertical'>
-                {processingConfig[steps[stepIdx].key].enabled === false ?
+                {processingConfig[steps[stepIdx].key]?.enabled === false ?
                   (
                     stepDisabledByCondition ? (
                       applicableFilters.map(filter =>
