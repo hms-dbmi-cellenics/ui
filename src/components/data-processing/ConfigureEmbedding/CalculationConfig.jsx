@@ -16,6 +16,7 @@ import {
 } from '../../../redux/actions/experimentSettings';
 
 import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
+import { types } from 'mime-types';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -25,6 +26,12 @@ const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to com
   + 'Larger values ensure embedded points are more evenly distributed, while '
   + 'smaller values allow the algorithm to optimise more accurately with regard '
   + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
+
+const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some information and there are several methods available. '
+  + 'PCA (Principal component analysis) is fast and preserves the global structure of the data, whereas nonlinear techniques '
+  + 'such as t-SNE and UMAP are very effective for visualizing clusters or groups of data points and their relative proximities.'
+  + 'It is usually a good idea to have a look at both types. '
+  + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs';
 
 const CalculationConfig = (props) => {
   const { experimentId, onPipelineRun } = props;
@@ -155,6 +162,10 @@ const CalculationConfig = (props) => {
           />
         </Form.Item>
         <Form.Item label='Distance metric'>
+          <Tooltip title='A metric determines how similarity between cells is measured. 
+          Euclidean is has been used for most data-sets so far. Cosine might be a good choice for unnormalized data.'>
+            <QuestionCircleOutlined />
+          </Tooltip>
           <Select
             value={umap.distanceMetric}
             onChange={(value) => setDistanceMetric(value)}
@@ -195,8 +206,19 @@ const CalculationConfig = (props) => {
             onPressEnter={(e) => e.preventDefault()}
             onBlur={(e) => setPerplexity(e.target.value)}
           />
+          <Tooltip title='This determines how to much emphasis should be on local or global aspects of your data.
+          The parameter is, in a sense, a guess about the number of close neighbors each cell has.
+          In most implementations, perplexity defaults to 30. This focuses the attention of t-SNE on preserving the
+          distances to its 30 nearest neighbors and puts virtually no weight on preserving distances to the remaining points.
+          The perplexity value has a complex effect on the resulting pictures.'>
+            <QuestionCircleOutlined />
+          </Tooltip>
         </Form.Item>
+
         <Form.Item label='Learning rate'>
+
+
+
           <InputNumber
             value={tsne.learningRate}
             min={10}
@@ -207,6 +229,10 @@ const CalculationConfig = (props) => {
             onPressEnter={(e) => e.preventDefault()}
             onBlur={(e) => setLearningRate(e.target.value)}
           />
+          <Tooltip title='If the learning rate is too high, the data may look like a "ball" with any point approximately equidistant from its nearest neighbours.
+          If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'>
+            <QuestionCircleOutlined />
+          </Tooltip>
         </Form.Item>
       </>
     );
@@ -237,6 +263,10 @@ const CalculationConfig = (props) => {
               <Option value='umap'>UMAP</Option>
               <Option value='tsne'>t-SNE</Option>
             </Select>
+            <Tooltip title={EMBEDD_METHOD_TEXT}>
+              <QuestionCircleOutlined />
+            </Tooltip>
+
           </Form.Item>
           {changes.embeddingSettings.method === 'umap' && renderUMAPSettings()}
           {changes.embeddingSettings.method === 'tsne' && renderTSNESettings()}
@@ -259,6 +289,12 @@ const CalculationConfig = (props) => {
       <Panel header='Clustering settings' key='clustering-settings'>
         <Form size='small'>
           <Form.Item label='Clustering method'>
+            <Tooltip title='Louvain and Leiden are so called graph-based clustering is the most popular 
+            clustering algorithm in scRNA-seq data analysis, 
+            and has been reported to have outperformed other clustering methods in many situations. 
+            They are also more efficient than other cluster methods which is crucial large scRNA-seq datasets.'>
+              <QuestionCircleOutlined />
+            </Tooltip>
             <Select
               value={clusteringMethod}
               onChange={(value) => updateSettings(
@@ -279,6 +315,12 @@ const CalculationConfig = (props) => {
             </Select>
           </Form.Item>
           <Form.Item label='Resolution'>
+            <Tooltip title='Resolution is a parameter for the Louvain community detection algorithm that affects the size of the recovered clusters. 
+            Smaller resolutions recover smaller, and therefore a larger number of clusters, 
+            and conversely, larger values recover clusters containing more data points. 
+            Default is 0.3'>
+              <QuestionCircleOutlined />
+            </Tooltip>
             <Slider
               value={resolution}
               min={0}

@@ -192,6 +192,14 @@ const CalculationConfig = (props) => {
               />
             </Form.Item>
             <Form.Item label='Exclude genes categories'>
+              <Tooltip title='Normalization can be biased by certain gene categories such the ones listed here.
+              Checking them will ignore those categories.
+              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day. 
+              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences 
+              in expression between cell types.
+              This is not implemented yet'>
+                <QuestionCircleOutlined />
+              </Tooltip>
               <Checkbox.Group
                 onChange={(val) => updateSettings(
                   { dimensionalityReduction: { excludeGeneCategories: val } },
@@ -213,6 +221,20 @@ const CalculationConfig = (props) => {
                 <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
                 <Option key='cca' value='cca'>Cannonical Correlation Analysis (CCA)</Option>
               </Select>
+              <Tooltip title='To integrate data, dimensional reduction is performed to find so called "anchors".
+              cross-dataset pairs of cells that are in a matched biological state (‘anchors’), can are both to correct for technical
+               differences between datasets
+              (i.e. batch effect correction), and to perform comparative scRNA-seq analysis across experimental conditions.
+              CCA is well-suitedn cell types are conserved, but there are very substantial differences
+              in gene expression across experiments.
+              However, CCA-based integration may also lead to overcorrection, especially when a large proportion of cells are
+              non-overlapping across datasets.
+
+              RPCA-based integration runs significantly faster, and also represents a more conservative approach where
+              cells in different biological states are less likely to ‘align’ after integration.
+              More info here: https://satijalab.org/seurat/articles/integration_rpca.html'>
+                <QuestionCircleOutlined />
+              </Tooltip>
             </Form.Item>
             <Form.Item>
               <Row>
