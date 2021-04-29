@@ -280,12 +280,12 @@ const CalculationConfig = (props) => {
               </Option>
             </Select>
           </Form.Item>
-          <Form.Item label='Probability threshold'>
+          <Form.Item label='Resolution'>
             <SliderWithInput
-              value={resolution}
               min={0}
               max={2}
               step={0.1}
+              value={resolution}
               onUpdate={(value) => {
                 setResolution(value);
                 updateSettings({

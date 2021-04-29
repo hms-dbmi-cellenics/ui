@@ -6,10 +6,8 @@ import SliderWithInput from '../../SliderWithInput';
 
 const DoubletScoresConfig = (props) => {
   const {
-    config, disabled, plotType, updateSettings,
+    config, disabled, updateSettings,
   } = props;
-
-  const filtering = false;
 
   return (
     <>
@@ -19,7 +17,6 @@ const DoubletScoresConfig = (props) => {
           max={1}
           step={0.05}
           value={config.probabilityThreshold}
-          propertyToUpdate='probabilityThreshold'
           onUpdate={(newValue) => updateSettings({ probabilityThreshold: newValue })}
           disabled={disabled}
         />
@@ -29,7 +26,6 @@ const DoubletScoresConfig = (props) => {
           min={0.001}
           max={0.5}
           value={config.binStep}
-          propertyToUpdate='binStep'
           onUpdate={(newValue) => updateSettings({ binStep: newValue })}
           disabled={disabled}
         />

@@ -37,6 +37,7 @@ const MitochondrialConfig = (props) => {
           step={2}
           value={(activeMethodSettings.maxFraction * 100).toFixed(2)}
           onUpdate={(newValue) => updateSettingsForActiveMethod({ maxFraction: newValue })}
+          disabled={disabled}
         />
       </Form.Item>
       <Form.Item label='Bin step'>
@@ -45,16 +46,9 @@ const MitochondrialConfig = (props) => {
           max={10}
           value={config.methodSettings[activeMethod].binStep}
           onUpdate={(newValue) => updateSettingsForActiveMethod({ binStep: newValue })}
+          disabled={disabled}
         />
       </Form.Item>
-      {/* <BandwidthOrBinstep
-        config={config.methodSettings[activeMethod]}
-        onUpdate={updateSettingsForActiveMethod}
-        type={plotType}
-        min={0.1}
-        max={10}
-        disabled={disabled}
-      /> */}
     </>
   );
 };

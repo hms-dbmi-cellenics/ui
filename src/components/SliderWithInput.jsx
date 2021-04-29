@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, InputNumber,
@@ -14,6 +14,10 @@ const SliderWithInput = (props) => {
   const [, handleChange] = useUpdateThrottled(onUpdate, value);
 
   const [newLocalValue, setNewValue] = useState(value);
+
+  useEffect(() => {
+    setNewValue(value);
+  }, [value]);
 
   const stepToSet = step ?? max / 200;
 
@@ -52,7 +56,6 @@ SliderWithInput.propTypes = {
   min: PropTypes.number.isRequired,
   max: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
-  propertyToUpdate: PropTypes.string.isRequired,
   onUpdate: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   step: PropTypes.number,
