@@ -4,31 +4,90 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import { Skeleton } from 'antd';
+
 import PlatformError from '../PlatformError';
-import generateSpec from '../../utils/plotSpecs/generateDoubletScoresSpec';
+import { generateSpec, generateData } from '../../utils/plotSpecs/generateDoubletScoresSpec';
 import loadCellMeta from '../../redux/actions/cellMeta';
+import { loadCellSets } from '../../redux/actions/cellSets';
+import { loadEmbedding } from '../../redux/actions/embedding';
+import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const DoubletScoresPlot = (props) => {
   const {
-    experimentId, config, plotData, actions,
+    experimentId, config, actions, plotUuid,
   } = props;
+  const embeddingType = 'umap';
   const dataName = 'doubletScores';
 
   const dispatch = useDispatch();
 
+  const cellSets = useSelector((state) => state.cellSets);
   const doubletScores = useSelector((state) => state.cellMeta?.doubletScores);
+  const embeddingSettings = useSelector(
+    (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
+  );
+  const {
+    data: embeddingData,
+    loading: embeddingLoading,
+    error: embeddingError,
+  } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
 
   const [plotSpec, setPlotSpec] = useState({});
-  const plotComponent = useSelector((state) => state.componentConfig.embeddingPreviewDoubletScore);
+  const plotComponent = useSelector((state) => state.componentConfig[plotUuid]);
 
   useEffect(() => {
-    if (plotData.length) {
-      setPlotSpec(generateSpec(config, plotData));
+    if (doubletScores.loading && !doubletScores.error) {
+      dispatch(loadCellMeta(experimentId, dataName));
     }
-  }, [plotData]);
+  }, [experimentId]);
+
+  useEffect(() => {
+    if (cellSets.loading && !cellSets.error) {
+      dispatch(loadCellSets(experimentId));
+    }
+
+    if (!embeddingSettings) {
+      dispatch(loadProcessingSettings(experimentId, embeddingType));
+    }
+
+    if (!embeddingData && embeddingSettings.method) {
+      dispatch(loadEmbedding(experimentId, embeddingSettings.method));
+    }
+  }, [experimentId, embeddingSettings.method]);
+
+  useEffect(() => {
+    if (!config
+      && !doubletScores.loading
+      && !doubletScores.error
+      && doubletScores.data.length > 0) {
+      return;
+    }
+
+    setPlotSpec(generateSpec(config, doubletScores.data));
+  }, [config, doubletScores.data]);
+
+  useEffect(() => {
+    if (!embeddingLoading
+      && !embeddingError
+      && config
+      && !cellSets.loading
+      && !cellSets.error) {
+      setPlotSpec(
+        generateSpec(
+          config,
+          generateData(
+            doubletScores.data,
+            config.selectedSample,
+            embeddingData,
+            cellSets.properties,
+          ),
+        ),
+      );
+    }
+  }, [config, embeddingData, cellSets, embeddingLoading]);
 
   const render = () => {
-    if (!plotData.length) {
+    if (doubletScores.error) {
       return (
         <PlatformError
           description={doubletScores?.error}
@@ -37,9 +96,8 @@ const DoubletScoresPlot = (props) => {
       );
     }
 
-    if (!plotData.length
-      && (doubletScores?.loading
-        || !plotComponent)
+    if (
+      doubletScores?.loading || !plotComponent
     ) {
       return (
         <center>
@@ -65,7 +123,7 @@ const DoubletScoresPlot = (props) => {
 DoubletScoresPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
-  plotData: PropTypes.array,
+  plotUuid: PropTypes.string.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
@@ -73,7 +131,6 @@ DoubletScoresPlot.propTypes = {
 };
 
 DoubletScoresPlot.defaultProps = {
-  plotData: null,
   actions: true,
 };
 

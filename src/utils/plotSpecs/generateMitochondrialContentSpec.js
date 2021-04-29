@@ -139,4 +139,35 @@ const generateSpec = (config, plotData) => {
   };
 };
 
-export default generateSpec;
+const generateData = (
+  doubletScore,
+  selectedSample,
+  embeddingData,
+  cellSetProperties,
+) => {
+  // the result of the map on embedding data contains non-consecutive indices (aka empties)
+  // filter removes missing elements in the array thus effectively reindexing the resulting array
+  // into consecutive indexes which is the format expected by Vega.
+  // If we have a specific sample then filter will act normally, in case of using all samples
+  // we just provide a dummy filter function.
+  // See for more information: https://262.ecma-international.org/5.1/#sec-15.4.4.20
+  let filterFunc = () => true;
+  if (selectedSample !== 'All') {
+    const cellIds = Array.from(cellSetProperties[selectedSample].cellIds);
+    filterFunc = (val, idx) => cellIds.includes(idx);
+  }
+  const filteredData = embeddingData
+    .map((coord, cellId) => ({
+      x: coord[0],
+      y: coord[1],
+      'mt-content': doubletScore[cellId],
+    }))
+    .filter(filterFunc);
+
+  return filteredData;
+};
+
+export {
+  generateSpec,
+  generateData,
+};

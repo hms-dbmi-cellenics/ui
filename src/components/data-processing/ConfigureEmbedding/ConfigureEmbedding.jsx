@@ -51,11 +51,10 @@ const ConfigureEmbedding = (props) => {
       title: 'Colored by CellSets',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'embeddingPreviewByCellSets',
-      plot: (config, plotData, actions) => (
+      plot: (config, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={config}
-          plotData={plotData}
           actions={actions}
         />
       )
@@ -65,7 +64,7 @@ const ConfigureEmbedding = (props) => {
       title: 'Colored by Samples',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'embeddingPreviewBySample',
-      plot: (config, plotData, actions) => (
+      plot: (config, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={{
@@ -76,7 +75,6 @@ const ConfigureEmbedding = (props) => {
             },
             selectedCellSet: 'sample',
           }}
-          plotData={plotData}
           actions={actions}
         />
       ),
@@ -85,12 +83,12 @@ const ConfigureEmbedding = (props) => {
       title: 'Mitochondrial fraction reads',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
       plotType: 'embeddingPreviewMitochondrialContent',
-      plot: (config, plotData, actions) => (
+      plot: (config, actions) => (
         <MitochondrialContentPlot
           experimentId={experimentId}
           config={config}
-          plotData={plotData}
           actions={actions}
+          plotUuid={generateDataProcessingPlotUuid(null, filterName, 2)}
         />
       ),
     },
@@ -98,12 +96,12 @@ const ConfigureEmbedding = (props) => {
       title: 'Cell doublet score',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 3),
       plotType: 'embeddingPreviewDoubletScore',
-      plot: (config, plotData, actions) => (
+      plot: (config, actions) => (
         <DoubletScoresPlot
           experimentId={experimentId}
           config={config}
-          plotData={plotData}
           actions={actions}
+          plotUuid={generateDataProcessingPlotUuid(null, filterName, 3)}
         />
       ),
     },

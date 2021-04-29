@@ -24,7 +24,8 @@ const ContinuousEmbeddingPlot = (props) => {
   );
   const {
     data: embeddingData,
-    loading, error,
+    loading: embeddingLoading,
+    error: embeddingError,
   } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
   const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
@@ -54,6 +55,7 @@ const ContinuousEmbeddingPlot = (props) => {
   if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
+
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
@@ -67,12 +69,14 @@ const ContinuousEmbeddingPlot = (props) => {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
   }, [experimentId, embeddingSettings.method]);
+
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
       dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
     }
   }, [highestDispersionGene, config]);
+
   useEffect(() => {
     if (config?.shownGene !== 'notSelected' && config) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
@@ -85,8 +89,8 @@ const ContinuousEmbeddingPlot = (props) => {
       return;
     }
 
-    if (!loading
-      && !error
+    if (!embeddingLoading
+      && !embeddingError
       && config
       && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
@@ -104,13 +108,13 @@ const ContinuousEmbeddingPlot = (props) => {
         ),
       );
     }
-  }, [config, plotData, embeddingData, geneExpression, cellSets, loading]);
+  }, [config, plotData, embeddingData, geneExpression, cellSets, embeddingLoading]);
 
   const render = () => {
-    if (error) {
+    if (embeddingError) {
       return (
         <PlatformError
-          error={error}
+          error={embeddingError}
           onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings.method)); }}
         />
       );
@@ -129,7 +133,7 @@ const ContinuousEmbeddingPlot = (props) => {
 
     if (!embeddingData
       || geneExpression.loading.length
-      || loading
+      || embeddingLoading
       || cellSets.loading
       || fetching) {
       return (

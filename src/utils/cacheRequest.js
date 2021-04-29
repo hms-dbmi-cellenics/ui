@@ -84,9 +84,9 @@ const fetchCachedWork = async (experimentId, timeout, body, workerPipelineStatus
   }
 
   const key = createObjectHash({ experimentId, body, startDate });
-  const data = await cache.get(key);
+  // const data = await cache.get(key);
 
-  if (data) return data;
+  // if (data) return data;
   const response = await sendWork(
     experimentId, timeout, body, { PipelineRunETag: startDate },
   );
