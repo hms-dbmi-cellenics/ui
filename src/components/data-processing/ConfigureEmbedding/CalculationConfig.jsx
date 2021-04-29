@@ -300,29 +300,6 @@ const CalculationConfig = (props) => {
               }}
             />
           </Form.Item>
-
-          {/* <Form.Item label='Resolution'>
-            <Slider
-              value={resolution}
-              min={0}
-              max={2}
-              step={0.1}
-              onChange={(value) => {
-                setResolution(value);
-              }}
-              onAfterChange={(value) => {
-                updateSettings({
-                  clusteringSettings: {
-                    methodSettings: {
-                      louvain: { resolution: value },
-                    },
-                  },
-                });
-
-                debouncedCellSetClustering(value);
-              }}
-            />
-          </Form.Item> */}
         </Form>
       </Panel>
     </Collapse>

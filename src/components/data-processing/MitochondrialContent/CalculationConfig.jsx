@@ -23,7 +23,6 @@ const MitochondrialConfig = (props) => {
     const realDiff = { methodSettings: { [activeMethod]: newDiff } };
     updateSettings(realDiff);
   };
-  // const filtering = false;
 
   const activeMethod = config.method;
   const activeMethodSettings = config.methodSettings[activeMethod];
