@@ -47,10 +47,10 @@ const CalculationConfigContainer = (props) => {
     const newConfig = _.cloneDeep(config);
     _.merge(newConfig, diff);
 
-    updateSample({ [sampleId]: { auto, filterSettings: newConfig } });
+    updateSample({ [sampleId]: { filterSettings: newConfig } });
   };
   const updateAuto = (autoMode) => {
-    updateSample({ [sampleId]: { auto: autoMode, filterSettings: config } });
+    updateSample({ [sampleId]: { auto: autoMode } });
   };
   const updateSample = (newSampleSettings) => {
     setDisplayIndividualChangesWarning(true);
@@ -67,7 +67,7 @@ const CalculationConfigContainer = (props) => {
     <div>
 
       <Space direction='vertical' style={{ width: '100%' }} />
-      {displayIndividualChangesWarning && (
+      {displayIndividualChangesWarning && sampleIds.length > 1 && (
         <Alert
           message='To copy these new settings to the rest of your samples, click Copy to all samples.'
           type='info'

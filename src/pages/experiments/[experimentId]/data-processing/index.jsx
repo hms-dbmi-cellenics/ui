@@ -150,7 +150,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
     // Get the first value because return of Object.entries is [filterName,[steps]]
     setApplicableFilters(applicableFilters.map(filter => filter[0]))
-    setStepDisabledByCondition(applicableFilters.length > 0)
+    setStepDisabledByCondition(
+      applicableFilters.length > 0
+      && !processingConfig[steps[stepIdx].key]?.enabled
+    )
   }, [stepIdx])
 
   const upcomingStepIdxRef = useRef(null);
@@ -193,6 +196,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={onConfigChange}
+              stepDisabled={!processingConfig[key]?.enabled}
             />
           )}
         />
@@ -215,6 +219,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={onConfigChange}
+              stepDisabled={!processingConfig[key].enabled}
             />
           )}
         />
@@ -237,6 +242,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={onConfigChange}
+              stepDisabled={!processingConfig[key].enabled}
             />
           )}
         />
@@ -259,6 +265,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={onConfigChange}
+              stepDisabled={!processingConfig[key].enabled}
             />
           )}
         />
@@ -281,6 +288,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={onConfigChange}
+              stepDisabled={!processingConfig[key].enabled}
             />
           )}
         />
@@ -290,14 +298,27 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       key: 'dataIntegration',
       name: 'Data integration',
       multiSample: false,
-      render: (key, expId) => <DataIntegration experimentId={expId} key={key} onPipelineRun={() => onPipelineRun(key)} />,
+      render: (key, expId) => (
+        <DataIntegration
+          experimentId={expId}
+          key={key}
+          onPipelineRun={() => onPipelineRun(key)}
+          stepDisabled={!processingConfig[key].enabled}
+        />
+      ),
     },
     {
       key: 'configureEmbedding',
       name: 'Configure embedding',
       description: 'The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.',
       multiSample: false,
-      render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} onPipelineRun={() => onPipelineRun(key)} />,
+      render: (key, expId) => (
+        <ConfigureEmbedding
+          experimentId={expId}
+          key={key}
+          onPipelineRun={() => onPipelineRun(key)}
+        />
+      ),
     },
   ];
 

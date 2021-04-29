@@ -22,7 +22,7 @@ const { Panel } = Collapse;
 
 const GenesVsUMIs = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
   const filterName = 'numGenesVsNumUmis';
@@ -126,6 +126,7 @@ const GenesVsUMIs = (props) => {
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
                 plotType='unused'
+                stepDisabled={stepDisabled}
               >
                 <CalculationConfig />
               </CalculationConfigContainer>
@@ -150,6 +151,11 @@ GenesVsUMIs.propTypes = {
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  stepDisabled: PropTypes.bool,
+};
+
+GenesVsUMIs.defaultProps = {
+  stepDisabled: false,
 };
 
 export default GenesVsUMIs;
