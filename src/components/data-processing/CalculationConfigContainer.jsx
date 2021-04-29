@@ -14,7 +14,7 @@ import { updateProcessingSettings } from '../../redux/actions/experimentSettings
 
 const CalculationConfigContainer = (props) => {
   const {
-    filterUuid, experimentId, sampleId, plotType, sampleIds, onConfigChange, children,
+    filterUuid, experimentId, sampleId, plotType, sampleIds, onConfigChange, children, stepDisabled,
   } = props;
 
   const { auto, filterSettings: config } = useSelector(
@@ -79,6 +79,7 @@ const CalculationConfigContainer = (props) => {
         value={auto ? 'automatic' : 'manual'}
         onChange={(e) => { updateAuto(e.target.value === 'automatic'); }}
         style={{ marginTop: '5px', marginBottom: '30px' }}
+        disabled={stepDisabled}
       >
         <Radio value='automatic'>
           Automatic
@@ -89,7 +90,7 @@ const CalculationConfigContainer = (props) => {
       </Radio.Group>
 
       {React.cloneElement(children, {
-        config, plotType, updateSettings, disabled: auto,
+        config, plotType, updateSettings, disabled: stepDisabled || auto,
       })}
 
       {
@@ -109,6 +110,11 @@ CalculationConfigContainer.propTypes = {
   plotType: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  stepDisabled: PropTypes.bool,
+};
+
+CalculationConfigContainer.defaultProps = {
+  stepDisabled: false,
 };
 
 export default CalculationConfigContainer;
