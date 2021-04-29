@@ -13,7 +13,6 @@ import {
 import SliderWithInput from '../../SliderWithInput';
 
 const CellSizeDistributionConfig = (props) => {
-  const filtering = false;
   const {
     config, disabled, updateSettings,
   } = props;
@@ -28,7 +27,6 @@ const CellSizeDistributionConfig = (props) => {
           </Tooltip>
           <InputNumber
             value={config.minCellSize}
-            collapsible={!filtering ? 'disabled' : 'header'}
             onChange={(value) => updateSettings({ minCellSize: value })}
             onPressEnter={(e) => updateSettings({ minCellSize: e.target.value })}
             placeholder={10800}
