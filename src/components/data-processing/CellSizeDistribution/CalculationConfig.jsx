@@ -41,7 +41,6 @@ const CellSizeDistributionConfig = (props) => {
           min={100}
           max={400}
           value={config.binStep}
-          propertyToUpdate='binStep'
           onUpdate={(value) => {
             updateSettings({ binStep: value });
           }}
