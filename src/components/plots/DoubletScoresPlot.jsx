@@ -69,6 +69,7 @@ const DoubletScoresPlot = (props) => {
   useEffect(() => {
     if (!embeddingLoading
       && !embeddingError
+      && embeddingData?.length > 0
       && config
       && !cellSets.loading
       && !cellSets.error) {
