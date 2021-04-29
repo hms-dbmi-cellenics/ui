@@ -193,7 +193,6 @@ const CellSizeDistribution = (props) => {
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-                plotType='bin step'
               >
                 <CalculationConfig />
               </CalculationConfigContainer>
