@@ -79,10 +79,10 @@ const MitochondrialContentPlot = (props) => {
         generateSpec(
           config,
           generateData(
-            mitochondrialContent.data,
+            cellSets,
             config.selectedSample,
+            mitochondrialContent.data,
             embeddingData,
-            cellSets.properties,
           ),
         ),
       );

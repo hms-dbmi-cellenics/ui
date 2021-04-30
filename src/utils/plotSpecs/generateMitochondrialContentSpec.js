@@ -139,11 +139,32 @@ const generateSpec = (config, plotData) => {
   };
 };
 
+const filterCells = (cellSets, selectedCellSet) => {
+  let newCellSets = cellSets.hierarchy.find(
+    (rootNode) => rootNode.key === selectedCellSet,
+  )?.children || [];
+
+  // Build up the data source based on the properties. Note that the child nodes
+  // in the hierarchy are /objects/ with a `key` property, hence the destructuring
+  // in the function.
+  newCellSets = newCellSets.flatMap(({ key }) => {
+    const cells = Array.from(cellSets.properties[key].cellIds);
+
+    return cells.map((cellId) => ({
+      cellId,
+      cluster: cellSets.properties[key].name,
+      color: cellSets.properties[key].color,
+    }));
+  });
+
+  return newCellSets;
+};
+
 const generateData = (
-  doubletScore,
+  cellSets,
   selectedSample,
+  mitochondrialContent,
   embeddingData,
-  cellSetProperties,
 ) => {
   // the result of the map on embedding data contains non-consecutive indices (aka empties)
   // filter removes missing elements in the array thus effectively reindexing the resulting array
@@ -151,20 +172,20 @@ const generateData = (
   // If we have a specific sample then filter will act normally, in case of using all samples
   // we just provide a dummy filter function.
   // See for more information: https://262.ecma-international.org/5.1/#sec-15.4.4.20
-  let filterFunc = () => true;
-  if (selectedSample !== 'All') {
-    const cellIds = Array.from(cellSetProperties[selectedSample].cellIds);
-    filterFunc = (val, idx) => cellIds.includes(idx);
-  }
-  const filteredData = embeddingData
-    .map((coord, cellId) => ({
-      x: coord[0],
-      y: coord[1],
-      'mt-content': doubletScore[cellId],
-    }))
-    .filter(filterFunc);
+  const newCellSets = filterCells(cellSets, selectedSample);
 
-  return filteredData;
+  return newCellSets
+    .filter((d) => d.cellId < embeddingData.length)
+    .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
+    .map((data) => {
+      const { cellId } = data;
+
+      return {
+        x: embeddingData[cellId][0],
+        y: embeddingData[cellId][1],
+        'mt-content': mitochondrialContent[cellId],
+      };
+    });
 };
 
 export {

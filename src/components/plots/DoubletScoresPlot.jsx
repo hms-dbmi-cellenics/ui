@@ -77,10 +77,10 @@ const DoubletScoresPlot = (props) => {
         generateSpec(
           config,
           generateData(
-            doubletScores.data,
+            cellSets,
             config.selectedSample,
+            doubletScores.data,
             embeddingData,
-            cellSets.properties,
           ),
         ),
       );
