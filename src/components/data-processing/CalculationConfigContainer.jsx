@@ -8,8 +8,7 @@ import {
   Radio,
 } from 'antd';
 
-import { updateProcessingSettings } from '../../redux/actions/experimentSettings';
-import updateSampleSettings from '../../redux/actions/experimentSettings/updateSampleSettings';
+import { updateProcessingSettings, updateSampleSettings } from '../../redux/actions/experimentSettings';
 
 const CalculationConfigContainer = (props) => {
   const {
