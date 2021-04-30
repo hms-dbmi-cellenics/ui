@@ -16,7 +16,6 @@ const ContinuousEmbeddingPlot = (props) => {
   const {
     experimentId, config, plotUuid, plotData, actions,
   } = props;
-  const embeddingType = 'umap';
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
@@ -62,7 +61,7 @@ const ContinuousEmbeddingPlot = (props) => {
     }
 
     if (!embeddingSettings) {
-      dispatch(loadProcessingSettings(experimentId, embeddingType));
+      dispatch(loadProcessingSettings(experimentId));
     }
 
     if (!embeddingData && embeddingSettings.method) {

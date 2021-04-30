@@ -16,7 +16,6 @@ const MitochondrialContentPlot = (props) => {
   const {
     experimentId, config, actions, plotUuid,
   } = props;
-  const embeddingType = 'umap';
   const dataName = 'mitochondrialContent';
 
   const dispatch = useDispatch();
@@ -49,7 +48,7 @@ const MitochondrialContentPlot = (props) => {
     }
 
     if (!embeddingSettings) {
-      dispatch(loadProcessingSettings(experimentId, embeddingType));
+      dispatch(loadProcessingSettings(experimentId));
     }
 
     if (!embeddingData && embeddingSettings.method) {

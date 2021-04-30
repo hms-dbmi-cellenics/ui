@@ -16,7 +16,6 @@ const DoubletScoresPlot = (props) => {
   const {
     experimentId, config, actions, plotUuid,
   } = props;
-  const embeddingType = 'umap';
   const dataName = 'doubletScores';
 
   const dispatch = useDispatch();
@@ -47,7 +46,7 @@ const DoubletScoresPlot = (props) => {
     }
 
     if (!embeddingSettings) {
-      dispatch(loadProcessingSettings(experimentId, embeddingType));
+      dispatch(loadProcessingSettings(experimentId));
     }
 
     if (!embeddingData && embeddingSettings.method) {

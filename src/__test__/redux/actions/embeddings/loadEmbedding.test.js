@@ -19,10 +19,10 @@ jest.mock('../../../../utils/sendWork', () => ({
 }));
 
 const mockStore = configureStore([thunk]);
+const embeddingType = 'umap';
 
 describe('loadEmbedding action', () => {
   const experimentId = '1234';
-  const embeddingType = 'umap';
   const experimentSettings = {
     ...initialExperimentState,
     pipelineStatus: {
@@ -47,7 +47,7 @@ describe('loadEmbedding action', () => {
       },
     );
 
-    store.dispatch(loadEmbedding(experimentId, embeddingType));
+    store.dispatch(loadEmbedding(experimentId));
     expect(store.getActions().length).toEqual(1);
   });
 

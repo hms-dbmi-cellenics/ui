@@ -16,8 +16,6 @@ const CategoricalEmbeddingPlot = (props) => {
   } = props;
   const dispatch = useDispatch();
 
-  const defaultEmbeddingType = 'umap';
-
   const cellSets = useSelector((state) => state.cellSets);
 
   const embeddingSettings = useSelector(
@@ -31,7 +29,7 @@ const CategoricalEmbeddingPlot = (props) => {
 
   useEffect(() => {
     if (!embeddingSettings) {
-      dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
+      dispatch(loadProcessingSettings(experimentId));
     }
 
     if (cellSets.loading && !cellSets.error) {

@@ -30,7 +30,6 @@ const loadCellMeta = (
 
   const body = {
     name: plotWorkName[metaName],
-    config: {},
   };
 
   try {
