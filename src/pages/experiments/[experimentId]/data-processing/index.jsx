@@ -279,7 +279,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'configureEmbedding',
       name: 'Configure embedding',
-      // description: 'The number of dimensions used to configure the embedding is set here. This dictates the number of clusters in the Uniform Manifold Approximation and Projection (UMAP) which is taken forward to the ‘Data Exploration’ page.',
       description: 'Single cell data is very complex. To visualize the relationship (similarity) between cells, we need to reduce this complexity (dimension reduction) to be able to plot (embedd into 2D space).',
       multiSample: false,
       render: (key, expId) => <ConfigureEmbedding experimentId={expId} key={key} onPipelineRun={() => onPipelineRun(key)} />,

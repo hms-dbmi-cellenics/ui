@@ -16,7 +16,6 @@ import {
 } from '../../../redux/actions/experimentSettings';
 
 import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
-import { types } from 'mime-types';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -214,11 +213,7 @@ const CalculationConfig = (props) => {
             <QuestionCircleOutlined />
           </Tooltip>
         </Form.Item>
-
         <Form.Item label='Learning rate'>
-
-
-
           <InputNumber
             value={tsne.learningRate}
             min={10}
