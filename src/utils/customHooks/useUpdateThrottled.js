@@ -5,24 +5,25 @@ import {
 
 // A custom hook for the sliders in plot styling for throttling the dispatching of updates to redux
 
-const useUpdateThrottled = (onUpdate, config, throttleTime = 1000) => {
+const useUpdateThrottled = (onUpdate, value, throttleTime = 1000) => {
   const updateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), throttleTime), []);
-  const [newConfig, setNewConfig] = useState(config);
+  // const updateThrottled = useCallback((obj) => onUpdate(obj), []);
+  const [newValue, setNewValue] = useState(value);
 
   // if the plot is reset - update the newConfig too
   useEffect(() => {
-    if (!_.isEqual(newConfig, config)) {
-      setNewConfig(config);
+    if (!_.isEqual(newValue, value)) {
+      setNewValue(value);
     }
-  }, [config]);
+  }, [value]);
 
   const update = (updatedField) => {
-    const changes = _.cloneDeep(newConfig);
+    const changes = _.cloneDeep(newValue);
     _.merge(changes, updatedField);
-    setNewConfig(changes);
+    setNewValue(changes);
     updateThrottled(updatedField);
   };
-  return [newConfig, update];
+  return [newValue, update];
 };
 
 export default useUpdateThrottled;

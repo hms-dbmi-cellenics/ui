@@ -15,7 +15,7 @@ Your changes will be ready for merging after each of the steps below have been c
 
 ### Testing
 - [ ] Unit tests written
-- [ ] Tested locally with Inframock
+- [ ] Tested locally with Inframock (with latest production data downloaded with biomage experiment pull)
 - [ ] Deployed to staging
 
 To set up easy local testing with inframock, follow the instructions here: https://github.com/biomage-ltd/inframock
