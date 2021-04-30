@@ -5,7 +5,9 @@ import { Form, InputNumber, Select } from 'antd';
 const { Option } = Select;
 
 const SeuratV4Options = (props) => {
-  const { config, onUpdate, onChange } = props;
+  const {
+    config, onUpdate, onChange, disabled,
+  } = props;
 
   const [numGenes, setNumGenes] = useState(config.numGenes);
 
@@ -39,6 +41,7 @@ const SeuratV4Options = (props) => {
               },
             },
           })}
+          disabled={disabled}
         />
       </Form.Item>
       <Form.Item label='normalization'>
@@ -51,6 +54,7 @@ const SeuratV4Options = (props) => {
               },
             },
           })}
+          disabled={disabled}
         >
           <Option value='logNormalize'>LogNormalize</Option>
           <Option value='scTransform'>SCTransform</Option>

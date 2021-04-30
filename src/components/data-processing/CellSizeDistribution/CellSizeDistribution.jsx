@@ -28,7 +28,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const CellSizeDistribution = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
   const filterName = 'cellSizeDistribution';
@@ -193,6 +193,8 @@ const CellSizeDistribution = (props) => {
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
+                plotType='bin step'
+                stepDisabled={stepDisabled}
               >
                 <CalculationConfig />
               </CalculationConfigContainer>
@@ -217,6 +219,11 @@ CellSizeDistribution.propTypes = {
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  stepDisabled: PropTypes.bool,
+};
+
+CellSizeDistribution.defaultProps = {
+  stepDisabled: false,
 };
 
 export default CellSizeDistribution;
