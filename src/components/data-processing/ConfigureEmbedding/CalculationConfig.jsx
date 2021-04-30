@@ -17,6 +17,8 @@ import {
 
 import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
 
+import SliderWithInput from '../../SliderWithInput';
+
 const { Option } = Select;
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -394,15 +396,13 @@ const CalculationConfig = (props) => {
             </span>
           )}
           >
-            <Slider
-              value={resolution}
+            <SliderWithInput
               min={0}
               max={2}
               step={0.1}
-              onChange={(value) => {
+              value={resolution}
+              onUpdate={(value) => {
                 setResolution(value);
-              }}
-              onAfterChange={(value) => {
                 updateSettings({
                   clusteringSettings: {
                     methodSettings: {

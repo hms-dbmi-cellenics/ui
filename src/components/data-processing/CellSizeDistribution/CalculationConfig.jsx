@@ -10,13 +10,13 @@ import {
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
+import SliderWithInput from '../../SliderWithInput';
 
 const CellSizeDistributionConfig = (props) => {
-  const filtering = false;
   const {
-    config, disabled, plotType, updateSettings,
+    config, disabled, updateSettings,
   } = props;
+
   return (
     <>
 
@@ -27,7 +27,6 @@ const CellSizeDistributionConfig = (props) => {
           </Tooltip>
           <InputNumber
             value={config.minCellSize}
-            collapsible={!filtering ? 'disabled' : 'header'}
             onChange={(value) => updateSettings({ minCellSize: value })}
             onPressEnter={(e) => updateSettings({ minCellSize: e.target.value })}
             placeholder={10800}
@@ -36,20 +35,24 @@ const CellSizeDistributionConfig = (props) => {
           />
         </Space>
       </Form.Item>
-      <BandwidthOrBinstep
-        config={config}
-        onUpdate={updateSettings}
-        type={plotType}
-        max={400}
-        disabled={disabled}
-      />
+
+      <Form.Item label='Bin step'>
+        <SliderWithInput
+          min={100}
+          max={400}
+          value={config.binStep}
+          onUpdate={(value) => {
+            updateSettings({ binStep: value });
+          }}
+          disabled={disabled}
+        />
+      </Form.Item>
     </>
   );
 };
 CellSizeDistributionConfig.propTypes = {
   updateSettings: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
-  plotType: PropTypes.string.isRequired,
   disabled: PropTypes.bool.isRequired,
 };
 

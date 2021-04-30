@@ -34,7 +34,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun,
+    experimentId, onPipelineRun, disabled,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -102,6 +102,7 @@ const CalculationConfig = (props) => {
         config={dataIntegration.methodSettings.seuratv4}
         onUpdate={updateSettings}
         onChange={() => setChangesOutstanding(true)}
+        disabled={disabled}
       />
     ),
   };
@@ -145,6 +146,7 @@ const CalculationConfig = (props) => {
               <Select
                 value={dataIntegration.method}
                 onChange={(val) => updateSettings({ dataIntegration: { method: val } })}
+                disabled={disabled}
               >
                 {
                   methods.map((el) => (
@@ -182,12 +184,13 @@ const CalculationConfig = (props) => {
                 onBlur={(e) => updateSettings(
                   { dimensionalityReduction: { numPCs: parseInt(e.target.value, 0) } },
                 )}
+                disabled={disabled}
               />
             </Form.Item>
             <Form.Item label='% variation explained'>
               <InputNumber
                 value={roundedVariationExplained()}
-                disabled
+                disabled={disabled}
                 readOnly
               />
             </Form.Item>
@@ -205,6 +208,7 @@ const CalculationConfig = (props) => {
                   { dimensionalityReduction: { excludeGeneCategories: val } },
                 )}
                 value={dimensionalityReduction.excludeGeneCategories}
+                disabled={disabled}
               >
                 <Space direction='vertical'>
                   <Checkbox value='ribosomal'>ribosomal</Checkbox>
@@ -249,6 +253,7 @@ const CalculationConfig = (props) => {
               <Select
                 value={dimensionalityReduction.method}
                 onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
+                disabled={disabled}
               >
                 <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
                 <Option key='cca' value='cca'>Cannonical Correlation Analysis (CCA)</Option>
@@ -282,6 +287,11 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+};
+
+CalculationConfig.defaultProps = {
+  disabled: false,
 };
 
 export default CalculationConfig;

@@ -8,7 +8,7 @@ const initialState = {
     total: 0,
   },
   comparison: {
-    type: 'between',
+    type: 'within',
     group: {
       between: {
         cellSet: null,
