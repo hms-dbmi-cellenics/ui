@@ -43,7 +43,9 @@ const SliderWithInput = (props) => {
           setLocalValue(changedValueWithinBounds);
         }}
         onPressEnter={() => { handleChange(localValue); }}
-        onStep={() => { handleChange(localValue); }}
+        onStep={(newValue) => {
+          handleChange(newValue);
+        }}
         step={stepToSet}
         disabled={disabled}
         style={{ width: 80, display: 'inline-block' }}

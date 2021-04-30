@@ -21,16 +21,6 @@ const CalculationConfigContainer = (props) => {
       || state.experimentSettings.processing[filterUuid]),
   );
 
-  const allConfigDebug = useSelector(
-    (state) => state.experimentSettings.processing[filterUuid]['sample-KO'],
-  );
-  const allConfigDebug1 = useSelector(
-    (state) => state.experimentSettings.processing[filterUuid]['sample-WT1'],
-  );
-  const allConfigDebug2 = useSelector(
-    (state) => state.experimentSettings.processing[filterUuid]['sample-WT2'],
-  );
-
   const dispatch = useDispatch();
 
   const [displayIndividualChangesWarning, setDisplayIndividualChangesWarning] = useState(false);
