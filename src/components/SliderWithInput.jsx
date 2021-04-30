@@ -14,10 +14,20 @@ const SliderWithInput = (props) => {
   const [, handleChange] = useUpdateThrottled(onUpdate, value);
 
   const [localValue, setLocalValue] = useState(value);
+  const [writtenLocalValue, setWrittenLocalValue] = useState(value);
 
   useEffect(() => {
     setLocalValue(parseFloat(value));
   }, [value]);
+
+  useEffect(() => {
+    if (writtenLocalValue === null) {
+      return;
+    }
+
+    const timeOutId = setTimeout(() => { handleChange(writtenLocalValue); }, 1000);
+    return () => clearTimeout(timeOutId);
+  }, [writtenLocalValue]);
 
   const stepToSet = step ?? max / 200;
 
@@ -39,8 +49,12 @@ const SliderWithInput = (props) => {
         min={min}
         max={max}
         onChange={(changedValue) => {
+          if (changedValue === value) { return; }
+
           const changedValueWithinBounds = Math.min(Math.max(changedValue, min), max);
+
           setLocalValue(changedValueWithinBounds);
+          setWrittenLocalValue(changedValueWithinBounds);
         }}
         onPressEnter={() => { handleChange(localValue); }}
         onStep={(newValue) => {
