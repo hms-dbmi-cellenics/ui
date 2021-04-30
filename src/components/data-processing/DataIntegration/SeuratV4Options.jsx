@@ -66,7 +66,32 @@ const SeuratV4Options = (props) => {
           <QuestionCircleOutlined />
         </Tooltip>
       </Form.Item>
-      <Form.Item label='normalization'>
+      <Form.Item label={(
+        <span>
+          Normalization&nbsp;
+          <Tooltip overlay={(
+            <span>
+              Normalization aims to remove technical factors including sequencing depth.
+              There are several methods to achive normalization.
+              "sctransform" claims to recover sharper biological distinction compared to log-normalization.
+              Normalization is applied to each sample before integration.
+              Further info can be found
+              <a
+                href='https://satijalab.org/seurat/articles/sctransform_vignette.html'
+                target='_blank'
+                rel='noreferrer'
+              >
+                {' '}
+                <code>here</code>
+              </a>
+            </span>
+          )}
+          >
+            <QuestionCircleOutlined />
+          </Tooltip>
+        </span>
+      )}
+      >
         <Select
           value={config.normalization}
           onChange={(val) => onUpdate({
@@ -80,26 +105,7 @@ const SeuratV4Options = (props) => {
           <Option value='logNormalize'>LogNormalize</Option>
           <Option value='scTransform'>SCTransform</Option>
         </Select>
-        <Tooltip overlay={(
-          <span>
-            Normalization aims to remove technical factors including sequencing depth.
-            There are several methods to achive normalization.
-            "sctransform" claims to recover sharper biological distinction compared to log-normalization.
-            Normalization is applied to each sample before integration.
-            Further info can be found
-            <a
-              href='https://satijalab.org/seurat/articles/sctransform_vignette.html'
-              target='_blank'
-              rel='noreferrer'
-            >
-              {' '}
-              <code>here</code>
-            </a>
-          </span>
-        )}
-        >
-          <QuestionCircleOutlined />
-        </Tooltip>
+
       </Form.Item>
     </>
   );
