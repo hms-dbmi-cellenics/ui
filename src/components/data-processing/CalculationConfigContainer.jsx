@@ -8,9 +8,8 @@ import {
   Radio,
 } from 'antd';
 
-import _ from 'lodash';
-
 import { updateProcessingSettings } from '../../redux/actions/experimentSettings';
+import updateSampleSettings from '../../redux/actions/experimentSettings/updateSampleSettings';
 
 const CalculationConfigContainer = (props) => {
   const {
@@ -19,8 +18,17 @@ const CalculationConfigContainer = (props) => {
 
   const { auto, filterSettings: config } = useSelector(
     (state) => (state.experimentSettings.processing[filterUuid][sampleId]
-      || state.experimentSettings.processing[filterUuid])
-    ,
+      || state.experimentSettings.processing[filterUuid]),
+  );
+
+  const allConfigDebug = useSelector(
+    (state) => state.experimentSettings.processing[filterUuid]['sample-KO'],
+  );
+  const allConfigDebug1 = useSelector(
+    (state) => state.experimentSettings.processing[filterUuid]['sample-WT1'],
+  );
+  const allConfigDebug2 = useSelector(
+    (state) => state.experimentSettings.processing[filterUuid]['sample-WT2'],
   );
 
   const dispatch = useDispatch();
@@ -44,29 +52,14 @@ const CalculationConfigContainer = (props) => {
     onConfigChange();
   };
 
-  const updateSettings = (diff) => {
-    const newConfig = _.cloneDeep(config);
-    _.merge(newConfig, diff);
-
-    updateSample({ [sampleId]: { filterSettings: newConfig } });
-  };
-  const updateAuto = (autoMode) => {
-    updateSample({ [sampleId]: { auto: autoMode } });
-  };
-  const updateSample = (newSampleSettings) => {
+  const onSampleSettingsChange = (propertyDiff, property = 'filterSettings') => {
     setDisplayIndividualChangesWarning(true);
-    dispatch(updateProcessingSettings(
-      experimentId,
-      filterUuid,
-      newSampleSettings,
-    ));
-
+    dispatch(updateSampleSettings(filterUuid, sampleId, { [property]: propertyDiff }));
     onConfigChange();
   };
 
   return (
     <div>
-
       <Space direction='vertical' style={{ width: '100%' }} />
       {displayIndividualChangesWarning && sampleIds.length > 1 && (
         <Alert
@@ -78,7 +71,7 @@ const CalculationConfigContainer = (props) => {
 
       <Radio.Group
         value={auto ? 'automatic' : 'manual'}
-        onChange={(e) => { updateAuto(e.target.value === 'automatic'); }}
+        onChange={(e) => { onSampleSettingsChange(e.target.value === 'automatic', 'auto'); }}
         style={{ marginTop: '5px', marginBottom: '30px' }}
         disabled={stepDisabled}
       >
@@ -91,7 +84,7 @@ const CalculationConfigContainer = (props) => {
       </Radio.Group>
 
       {React.cloneElement(children, {
-        config, plotType, updateSettings, disabled: stepDisabled || auto,
+        config, plotType, updateSettings: onSampleSettingsChange, disabled: stepDisabled || auto,
       })}
 
       {
