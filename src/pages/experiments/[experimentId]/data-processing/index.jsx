@@ -85,8 +85,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }
 
   const disabledConditionMessage = {
-    prefilter: `Filter disabled because ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered.`,
-    unisample: "Step disabled because there is only one sample"
+    prefilter: `This filter disabled because samples ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered.`,
+    unisample: "This step is disabled as there is only one sample"
   }
 
   const sampleKeys = cellSets.hierarchy?.find(
