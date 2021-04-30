@@ -65,7 +65,7 @@ const embeddingContinuousInitialConfig = {
   label: labelBaseState,
   logEquation: 'datum.expression*1',
   shownGene: 'notSelected',
-  selectedSample: 'All',
+  selectedSample: 'sample',
 };
 
 // PLOTS & TABLES - Heatmap

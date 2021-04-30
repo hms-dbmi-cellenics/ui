@@ -59,7 +59,7 @@ const generateSpec = (config, plotData) => {
         name: 'color',
         type: 'linear',
         range: { scheme: config.colour.gradient },
-        domain: { data: 'plotData', field: 'doublet-score' },
+        domain: { data: 'plotData', field: 'value' },
         reverse: config.colour.reverseCbar,
       },
     ],
@@ -115,11 +115,11 @@ const generateSpec = (config, plotData) => {
             size: { value: config.marker.size },
             stroke: {
               scale: 'color',
-              field: 'doublet-score',
+              field: 'value',
             },
             fill: {
               scale: 'color',
-              field: 'doublet-score',
+              field: 'value',
             },
             shape: { value: config.marker.shape },
             fillOpacity: { value: config.marker.opacity / 10 },
@@ -165,7 +165,7 @@ const filterCells = (cellSets, selectedCellSet) => {
 const generateData = (
   cellSets,
   selectedSample,
-  doubletScore,
+  plotData,
   embeddingData,
 ) => {
   // the result of the map on embedding data contains non-consecutive indices (aka empties)
@@ -185,7 +185,7 @@ const generateData = (
       return {
         x: embeddingData[cellId][0],
         y: embeddingData[cellId][1],
-        'doublet-score': doubletScore[cellId],
+        value: plotData[cellId],
       };
     });
 };

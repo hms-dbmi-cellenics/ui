@@ -29,7 +29,7 @@ const MitochondrialContentPlot = (props) => {
     data: embeddingData,
     loading: embeddingLoading,
     error: embeddingError,
-  } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
+  } = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
 
   const [plotSpec, setPlotSpec] = useState({});
   const plotComponent = useSelector(
@@ -51,10 +51,10 @@ const MitochondrialContentPlot = (props) => {
       dispatch(loadProcessingSettings(experimentId));
     }
 
-    if (!embeddingData && embeddingSettings.method) {
+    if (!embeddingData && embeddingSettings?.method) {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
-  }, [experimentId, embeddingSettings.method]);
+  }, [experimentId, embeddingSettings?.method]);
 
   useEffect(() => {
     if (!config

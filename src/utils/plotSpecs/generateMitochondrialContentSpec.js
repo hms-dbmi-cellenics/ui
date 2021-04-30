@@ -57,7 +57,7 @@ const generateSpec = (config, plotData) => {
         name: 'color',
         type: 'linear',
         range: { scheme: config.colour.gradient },
-        domain: { data: 'plotData', field: 'mt-content' },
+        domain: { data: 'plotData', field: 'value' },
         reverse: config.colour.reverseCbar,
       },
     ],
@@ -113,11 +113,11 @@ const generateSpec = (config, plotData) => {
             size: { value: config.marker.size },
             stroke: {
               scale: 'color',
-              field: 'mt-content',
+              field: 'value',
             },
             fill: {
               scale: 'color',
-              field: 'mt-content',
+              field: 'value',
             },
             shape: { value: config.marker.shape },
             fillOpacity: { value: config.marker.opacity / 10 },
@@ -163,7 +163,7 @@ const filterCells = (cellSets, selectedCellSet) => {
 const generateData = (
   cellSets,
   selectedSample,
-  mitochondrialContent,
+  plotData,
   embeddingData,
 ) => {
   // the result of the map on embedding data contains non-consecutive indices (aka empties)
@@ -183,7 +183,7 @@ const generateData = (
       return {
         x: embeddingData[cellId][0],
         y: embeddingData[cellId][1],
-        'mt-content': mitochondrialContent[cellId],
+        value: plotData[cellId],
       };
     });
 };
