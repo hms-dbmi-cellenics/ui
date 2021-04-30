@@ -84,6 +84,7 @@ const Header = (props) => {
       router.events.off('routeChangeStart', showPopupWhenUnsaved);
     };
   }, [router.asPath, router.events, saved]);
+
   const { data } = useSWR(
     `/v1/experiments/${experimentId}`,
     getFromApiExpectOK,

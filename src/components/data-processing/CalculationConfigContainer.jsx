@@ -18,8 +18,9 @@ const CalculationConfigContainer = (props) => {
   } = props;
 
   const { auto, filterSettings: config } = useSelector(
-    (state) => state.experimentSettings.processing[filterUuid][sampleId]
-      || state.experimentSettings.processing[filterUuid],
+    (state) => (state.experimentSettings.processing[filterUuid][sampleId]
+      || state.experimentSettings.processing[filterUuid])
+    ,
   );
 
   const dispatch = useDispatch();
