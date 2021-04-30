@@ -154,7 +154,4 @@ DoubletScores.propTypes = {
   onConfigChange: PropTypes.func.isRequired,
 };
 
-DoubletScores.defaultProps = {
-};
-
 export default DoubletScores;

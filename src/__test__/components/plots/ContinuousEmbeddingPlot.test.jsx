@@ -10,65 +10,54 @@ import { Skeleton } from 'antd';
 import ContinuousEmbeddingPlot from '../../../components/plots/ContinuousEmbeddingPlot';
 import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
 import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
-import initialGeneExpressionState, { initialExpressionState } from '../../../redux/reducers/genes/initialState';
+import initialGeneExpressionState from '../../../redux/reducers/genes/initialState';
 import initialExperimentState from '../../experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 
 jest.mock('localforage');
+
+const mockCellSets = {
+  properties: {
+    test: {
+      name: 'Test',
+      cellIds: 'Set()',
+    },
+    'test-1': {
+      name: 'Test-1',
+      cellIds: 'Set(1, 2, 3)',
+    },
+    'test-2': {
+      name: 'Test-1',
+      cellIds: 'Set(4, 5, 6)',
+    },
+  },
+  hierarchy: [
+    {
+      key: 'test',
+      children: [
+        { key: 'test-1' },
+        { key: 'test-2' },
+      ],
+    },
+  ],
+  loading: false,
+  error: false,
+};
+
 const mockStore = configureStore([thunk]);
 
 describe('Continuous embedding plot', () => {
   const config = initialPlotConfigStates.embeddingContinuous;
   const experimentId = 'asd';
+  const shownGene = 'CST3';
   const plotUuid = 'fakeUuid';
-  const emptyStore = {
-    cellSets: {
-      ...initialCellSetsState,
-    },
-    embeddings: initialEmbeddingState,
-    genes: {
-      ...initialGeneExpressionState,
-      expression: {
-        loading: [],
-        error: false,
-        data: {
-          ...initialExpressionState,
-        },
-      },
-    },
-    experimentSettings: {
-      ...initialExperimentState,
-    },
-  };
-
   const mockedStore = {
     cellSets: {
       ...initialCellSetsState,
-      properties: {
-        test: {
-          name: 'Test',
-          cellIds: 'Set()',
-        },
-        'test-1': {
-          name: 'Test-1',
-          cellIds: 'Set(1, 2, 3)',
-        },
-        'test-2': {
-          name: 'Test-1',
-          cellIds: 'Set(4, 5, 6)',
-        },
-      },
-      hierarchy: [
-        {
-          key: 'test',
-          children: [
-            { key: 'test-1' },
-            { key: 'test-2' },
-          ],
-        },
-      ],
-      loading: false,
-      error: false,
+      ...mockCellSets,
+    },
+    componentConfig: {
+      [plotUuid]: config,
     },
     embeddings: {
       ...initialEmbeddingState,
@@ -91,7 +80,7 @@ describe('Continuous embedding plot', () => {
         loading: [],
         error: false,
         data: {
-          CST3: {
+          [shownGene]: {
             min: 1,
             max: 6,
             mean: 3.5,
@@ -111,7 +100,7 @@ describe('Continuous embedding plot', () => {
   configure({ adapter: new Adapter() });
 
   it('shows spinner when data is still loading', () => {
-    const store = mockStore(emptyStore);
+    const store = mockStore(mockedStore);
 
     const component = mount(
       <Provider store={store}>
@@ -119,6 +108,9 @@ describe('Continuous embedding plot', () => {
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
+          plotData={mockedStore.genes.expression.data[shownGene].expression}
+          loading
+          error={mockedStore.genes.expression.error}
         />
       </Provider>,
     );
@@ -132,17 +124,15 @@ describe('Continuous embedding plot', () => {
   it('renders correctly when data is in the store', () => {
     const store = mockStore(mockedStore);
 
-    const chosenStore = {
-      ...config,
-      shownGene: 'CST3',
-    };
-
     const component = mount(
       <Provider store={store}>
         <ContinuousEmbeddingPlot
           experimentId={experimentId}
-          config={chosenStore}
+          config={config}
           plotUuid={plotUuid}
+          plotData={mockedStore.genes.expression.data[shownGene].expression}
+          loading={false}
+          error={mockedStore.genes.expression.error}
         />
       </Provider>,
     );

@@ -140,23 +140,42 @@ const generateSpec = (config, plotData) => {
   };
 };
 
-const filterCells = (cellSets, selectedCellSet) => {
-  let newCellSets = cellSets.hierarchy.find(
-    (rootNode) => rootNode.key === selectedCellSet,
-  )?.children || [];
+const filterCells = (cellSets, selectedSample, embeddingData) => {
+  let newCellSets = [];
 
-  // Build up the data source based on the properties. Note that the child nodes
-  // in the hierarchy are /objects/ with a `key` property, hence the destructuring
-  // in the function.
-  newCellSets = newCellSets.flatMap(({ key }) => {
-    const cells = Array.from(cellSets.properties[key].cellIds);
+  console.log('test');
+  console.log(cellSets.hierarchy);
 
-    return cells.map((cellId) => ({
+  const cellSetHierarchyKeys = cellSets.hierarchy.map((value) => value.key);
+
+  // Filter by cellSet
+  if (cellSetHierarchyKeys.includes(selectedSample)) {
+    newCellSets = cellSets.hierarchy.find(
+      (rootNode) => rootNode.key === selectedSample,
+    )?.children || [];
+
+    // Build up the data source based on the properties. Note that the child nodes
+    // in the hierarchy are /objects/ with a `key` property, hence the destructuring
+    // in the function.
+    newCellSets = newCellSets.flatMap(({ key }) => {
+      const cells = Array.from(cellSets.properties[key].cellIds);
+
+      return cells.map((cellId) => ({
+        cellId,
+      }));
+    });
+
+    // Filter by sample
+  } else {
+    newCellSets = embeddingData.map((_, cellId) => ({
       cellId,
-      cluster: cellSets.properties[key].name,
-      color: cellSets.properties[key].color,
     }));
-  });
+
+    if (selectedSample !== 'All') {
+      const cellIds = Array.from(cellSets.properties[selectedSample].cellIds);
+      newCellSets = newCellSets.filter((val) => cellIds.includes(val.cellId));
+    }
+  }
 
   return newCellSets;
 };
@@ -167,15 +186,9 @@ const generateData = (
   plotData,
   embeddingData,
 ) => {
-  // the result of the map on embedding data contains non-consecutive indices (aka empties)
-  // filter removes missing elements in the array thus effectively reindexing the resulting array
-  // into consecutive indexes which is the format expected by Vega.
-  // If we have a specific sample then filter will act normally, in case of using all samples
-  // we just provide a dummy filter function.
-  // See for more information: https://262.ecma-international.org/5.1/#sec-15.4.4.20
-  const newCellSets = filterCells(cellSets, selectedSample);
+  const newCellSets = filterCells(cellSets, selectedSample, embeddingData);
 
-  return newCellSets
+  const cells = newCellSets
     .filter((d) => d.cellId < embeddingData.length)
     .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
     .map((data) => {
@@ -187,6 +200,8 @@ const generateData = (
         value: plotData[cellId],
       };
     });
+
+  return cells;
 };
 
 export {
