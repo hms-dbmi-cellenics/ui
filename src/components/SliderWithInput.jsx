@@ -16,7 +16,7 @@ const SliderWithInput = (props) => {
   const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
-    setLocalValue(value);
+    setLocalValue(parseFloat(value));
   }, [value]);
 
   const stepToSet = step ?? max / 200;
