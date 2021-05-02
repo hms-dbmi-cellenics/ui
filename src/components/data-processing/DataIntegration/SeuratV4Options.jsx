@@ -48,6 +48,7 @@ const SeuratV4Options = (props) => {
           })}
           disabled={disabled}
         />
+        {' '}
         <Tooltip overlay={(
           <span>
             Number of genes to mark as top highly variable genes (HGV).
