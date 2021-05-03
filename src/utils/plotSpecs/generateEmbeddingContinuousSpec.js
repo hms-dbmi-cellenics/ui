@@ -143,9 +143,6 @@ const generateSpec = (config, plotData) => {
 const filterCells = (cellSets, selectedSample, embeddingData) => {
   let newCellSets = [];
 
-  console.log('test');
-  console.log(cellSets.hierarchy);
-
   const cellSetHierarchyKeys = cellSets.hierarchy.map((value) => value.key);
 
   // Filter by cellSet

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
+import { fastLoad } from '../Loader';
 
-import { Skeleton } from 'antd';
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { loadCellSets } from '../../redux/actions/cellSets';
@@ -78,10 +78,10 @@ const ContinuousEmbeddingPlot = (props) => {
       );
     }
 
-    if (loading || !plotComponent) {
+    if (loading || embeddingLoading || !plotComponent) {
       return (
         <center>
-          <Skeleton.Image style={{ width: 400, height: 400 }} />
+          { fastLoad()}
         </center>
       );
     }

@@ -80,3 +80,33 @@ Object {
   "type": "embeddings/loaded",
 }
 `;
+
+exports[`loadEmbedding action Dispatches on if forceReload is set to true 1`] = `
+Object {
+  "payload": Object {
+    "embeddingType": "umap",
+    "experimentId": "1234",
+  },
+  "type": "embeddings/loading",
+}
+`;
+
+exports[`loadEmbedding action Dispatches on if forceReload is set to true 2`] = `
+Object {
+  "payload": Object {
+    "data": Array [
+      Array [
+        1,
+        2,
+      ],
+      Array [
+        3,
+        4,
+      ],
+    ],
+    "embeddingType": "umap",
+    "experimentId": "1234",
+  },
+  "type": "embeddings/loaded",
+}
+`;

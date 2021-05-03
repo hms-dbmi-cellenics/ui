@@ -224,4 +224,45 @@ describe('loadEmbedding action', () => {
     expect(first.type).toBe(EMBEDDINGS_LOADING);
     expect(second.type).toBe(EMBEDDINGS_ERROR);
   });
+
+  it('Dispatches on if forceReload is set to true', async () => {
+    sendWork.mockImplementation(() => {
+      // We are resolving with two identical results, because in the transition period
+      // the worker will return both types of results. TODO: reduce this to just one
+      // result when the initial version of the UI is pushed.
+
+      const resolveWith = {
+        results:
+          [
+            { body: JSON.stringify([[1, 2], [3, 4]]) },
+            { body: JSON.stringify([[1, 2], [3, 4]]) },
+          ],
+      };
+
+      return new Promise((resolve) => resolve(resolveWith));
+    });
+
+    const store = mockStore(
+      {
+        embeddings:
+          { [embeddingType]: { ...initialEmbeddingState, error: false, loading: false } },
+        experimentSettings,
+      },
+    );
+
+    await store.dispatch(loadEmbedding(experimentId, embeddingType, true));
+
+    console.log(store.getActions());
+
+    // We should have been dispatched two events.
+    expect(store.getActions().length).toEqual(2);
+
+    // The first action should have been a loading.
+    const firstAction = store.getActions()[0];
+    expect(firstAction).toMatchSnapshot();
+
+    // The first action should have been an appropriately constructed loaded action.
+    const secondAction = store.getActions()[1];
+    expect(secondAction).toMatchSnapshot();
+  });
 });
