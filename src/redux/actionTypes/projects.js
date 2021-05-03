@@ -23,17 +23,17 @@ const PROJECTS_DELETE = `${PROJECTS}/delete`;
 /**
  * Add project metadata.
  */
-const PROJECTS_METADATA_CREATE = `${PROJECTS}/metadata_create`;
+const PROJECTS_METADATA_CREATE = `${PROJECTS}/metadataCreate`;
 
 /**
  * Update project metadata.
  */
-const PROJECTS_METADATA_UPDATE = `${PROJECTS}/metadata_update`;
+const PROJECTS_METADATA_UPDATE = `${PROJECTS}/metadataUpdate`;
 
 /**
  * Delete project metadta.
  */
-const PROJECTS_METADATA_DELETE = `${PROJECTS}/metadata_delete`;
+const PROJECTS_METADATA_DELETE = `${PROJECTS}/metadataDelete`;
 
 export {
   PROJECTS_CREATE,

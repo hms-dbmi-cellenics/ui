@@ -359,7 +359,17 @@ const ProjectDetails = ({ width, height }) => {
           title={activeProject.name}
           extra={[
             <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
-            <Button onClick={() => createMetadataColumn()}>Add metadata</Button>,
+            <Tooltip
+              title='Add samples to add metadata'
+              trigger='hover'
+            >
+              <Button
+                disabled={samples.ids.length === 0}
+                onClick={() => createMetadataColumn()}
+              >
+                Add metadata
+              </Button>
+            </Tooltip>,
             <Button type='primary'>Launch analysis</Button>,
           ]}
         >
