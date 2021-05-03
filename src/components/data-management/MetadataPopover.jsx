@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
-import EditableField from '../../EditableField';
-import colorProvider from '../../../utils/colorProvider';
+import EditableField from '../EditableField';
 
-const MetadataPopover = (props) => {
+const ClusterPopover = (props) => {
   const {
     popoverPosition, onCreate, onCancel, message, children, ...restOfProps
   } = props;
 
   const getContent = () => (
     <EditableField
-      onAfterSubmit={(e) => {
-        onCreate(e, colorProvider.getColor());
+      onAfterSubmit={(value) => {
+        onCreate(value);
       }}
       onAfterCancel={() => {
         onCancel();
       }}
       deleteEnabled={false}
-      value='New Cluster'
+      value='Track name'
       defaultEditing
     />
   );
@@ -54,13 +53,13 @@ const MetadataPopover = (props) => {
   /* eslint-enable react/jsx-props-no-spreading */
 };
 
-MetadataPopover.defaultProps = {
+ClusterPopover.defaultProps = {
   popoverPosition: null,
   message: 'Add cell set',
   children: null,
 };
 
-MetadataPopover.propTypes = {
+ClusterPopover.propTypes = {
   onCreate: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   popoverPosition: PropTypes.object,
@@ -68,4 +67,4 @@ MetadataPopover.propTypes = {
   message: PropTypes.string,
 };
 
-export default MetadataPopover;
+export default ClusterPopover;

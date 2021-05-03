@@ -1,5 +1,5 @@
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
+  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress, Popover,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,6 +12,7 @@ import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
+import MetadataPopover from './MetadataPopover';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import {
@@ -170,7 +171,7 @@ const ProjectDetails = ({ width, height }) => {
           <Space>
             <Text type='danger'>Data missing</Text>
             <MetadataEditor size='small' shape='link' icon={<EditOutlined />}>
-              {_.find(columns, { dataIndex: columnId }).fillInBy}
+              {_.find(tableColumns, { dataIndex: columnId }).fillInBy}
             </MetadataEditor>
           </Space>
         </div>
@@ -201,17 +202,50 @@ const ProjectDetails = ({ width, height }) => {
     </Text>
   );
 
+  const metadataKeyStub = 'metadata';
   const createMetadataColumn = () => {
-    const name = 'metadata';
-    const id = 'metadata';
-
-    const dataIndex = `metadata-${id}`;
+    // Create unique keys so that column is searchable (and deletable)
+    const key = `${key}-${tableColumns.filter((column) => column.key.match(metadataKeyStub)).length}`;
 
     const metadataColumn = {
+      key,
+      title: () => (
+        <MetadataPopover
+          onCreate={(name) => {
+            updateMetadataColumn(name);
+          }}
+          onCancel={() => {
+            deleteMetadataColumn(key);
+          }}
+          message='Provide new metadata track name'
+          visible
+        >
+          <Space>
+            New Metadata Track
+          </Space>
+        </MetadataPopover>
+      ),
+      fillInBy: <Input />,
+      width: 200,
+    };
+
+    setTableColumns([...tableColumns, metadataColumn]);
+  };
+
+  const deleteMetadataColumn = (key) => {
+    setTableColumns([...tableColumns.filter((name) => name !== key)]);
+  };
+
+  const updateMetadataColumn = (name) => {
+    const key = `${metadataKeyStub}-${name.trim().replace(/\s+/g, '-').toLowerCase()}`;
+
+    const updatedMetadataColumn = {
+      key,
       title: () => (
         <Space>
           <EditableField
             deleteEnabled
+            onDelete={() => deleteMetadataColumn(key)}
             value={name}
           />
           <MetadataEditor massEdit>
@@ -220,38 +254,43 @@ const ProjectDetails = ({ width, height }) => {
         </Space>
       ),
       fillInBy: <Input />,
-      dataIndex,
-      render: (value) => renderEditableFieldCell(dataIndex, value),
       width: 200,
+      dataIndex: key,
+      render: (value) => renderEditableFieldCell('N.A.', value),
     };
 
-    setTableColumns([...tableColumns, metadataColumn]);
+    setTableColumns([...tableColumns, updatedMetadataColumn]);
   };
 
   useEffect(() => {
     const columns = [
       {
+        key: 'sample',
         title: 'Sample',
         dataIndex: 'name',
         fixed: true,
         render: renderSampleCells,
       },
       {
+        key: 'barcodes',
         title: 'Barcodes.csv',
         dataIndex: 'barcodes',
         render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
       },
       {
+        key: 'genes',
         title: 'Genes.csv',
         dataIndex: 'genes',
         render: (tableCellData) => renderUploadCell('genes', tableCellData),
       },
       {
+        key: 'matrix',
         title: 'Matrix.mtx',
         dataIndex: 'matrix',
         render: (tableCellData) => renderUploadCell('matrix', tableCellData),
       },
       {
+        key: 'species',
         title: () => (
           <Space>
             <Text>Species</Text>
