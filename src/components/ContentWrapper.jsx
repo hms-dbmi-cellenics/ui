@@ -26,7 +26,6 @@ import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
 
 const { Sider, Footer } = Layout;
-const { SubMenu } = Menu;
 
 const { Paragraph, Text } = Typography;
 
@@ -205,26 +204,32 @@ const ContentWrapper = (props) => {
   ];
 
   const renderContent = () => {
-    if (pipelineLoading || !pipelineStatusRequested) {
-      return <PreloadContent />;
-    }
+    if (experimentId) {
+      if (pipelineLoading || !pipelineStatusRequested) {
+        return <PreloadContent />;
+      }
 
-    if (pipelineError) {
-      return <Error errorText='Could not get current pipeline settings.' />;
-    }
+      if (pipelineError) {
+        return <Error errorText='Could not get current pipeline settings.' />;
+      }
 
-    if (pipelineRunningError && !route.includes('data-processing')) {
-      return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='error' />;
-    }
+      if (pipelineRunningError && !route.includes('data-processing')) {
+        return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='error' />;
+      }
 
-    if (pipelineRunning && !route.includes('data-processing')) {
-      return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='running' />;
-    }
+      if (pipelineRunning && !route.includes('data-processing')) {
+        return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='running' />;
+      }
+      
+      if (process.env.NODE_ENV === 'development') {
+        return children;
+      }
 
-    if (pipelineStatusKey === 'NotCreated' && !route.includes('data-processing')) {
-      return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='toBeRun' />;
+      if (pipelineStatusKey === 'NotCreated' && !route.includes('data-processing')) {
+        return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='toBeRun' />;
+      }
     }
-
+    
     return children;
   };
 

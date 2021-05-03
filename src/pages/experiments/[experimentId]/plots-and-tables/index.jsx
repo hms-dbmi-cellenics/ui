@@ -11,6 +11,7 @@ import SearchMenu from '../../../../components/SearchMenu';
 import heatmap from '../../../../../static/media/heatmap.png';
 import embeddingContinuous from '../../../../../static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../static/media/embeddingCategorical.png';
+import violin from '../../../../../static/media/violin.png';
 import volcano from '../../../../../static/media/volcano.png';
 import frequency from '../../../../../static/media/frequency.png';
 import Header from '../../../../components/Header';
@@ -60,6 +61,9 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
   let lastUpdatedFrequency = useSelector(
     (state) => state.componentConfig.frequencyPlotMain?.lastUpdated,
   );
+  let lastUpdatedViolin = useSelector(
+    (state) => state.componentConfig.violinPlotMain?.lastUpdated,
+  );
 
   if (!lastUpdatedVolcano) {
     lastUpdatedVolcano = 'never';
@@ -75,6 +79,9 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
   }
   if (!lastUpdatedFrequency) {
     lastUpdatedFrequency = 'never';
+  }
+  if (!lastUpdatedViolin) {
+    lastUpdatedViolin = 'never';
   }
   const plots = [
     {
@@ -111,6 +118,13 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       key: 'frequency-key',
       link: 'frequency',
       description: `Last updated: ${lastUpdatedFrequency}`,
+    },
+    {
+      name: 'Violin Plot',
+      image: violin,
+      key: 'violin-key',
+      link: 'violin',
+      description: `Last updated: ${lastUpdatedViolin}`,
     },
   ];
 

@@ -17,7 +17,6 @@ import HeatmapSettings from '../../../../components/data-exploration/heatmap/Hea
 import MosaicCloseButton from '../../../../components/MosaicCloseButton';
 import { updateLayout, addWindow, addToWindow } from '../../../../redux/actions/layout';
 import SearchMenu from '../../../../components/SearchMenu';
-
 import 'react-mosaic-component/react-mosaic-component.css';
 
 const { TabPane } = Tabs;
@@ -33,7 +32,9 @@ const renderWindow = (tile, width, height) => {
   return <></>;
 };
 
-const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
+const ExplorationViewPage = ({
+  experimentId, experimentData, route,
+}) => {
   const dispatch = useDispatch();
   const layout = useSelector((state) => state.layout);
   const { windows, panel } = layout;
@@ -204,14 +205,6 @@ const ExplorationViewPage = ({ experimentId, experimentData, route }) => {
     </>
   );
 };
-
-// ExplorationViewPage.getInitialProps = ({
-//   store, pathname, req, res,
-// }) => ({
-//   props: {
-//     url: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
-//   },
-// });
 
 ExplorationViewPage.propTypes = {
   experimentId: PropTypes.string.isRequired,

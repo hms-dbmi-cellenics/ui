@@ -24,7 +24,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const MitochondrialContent = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
   const dispatch = useDispatch();
@@ -193,6 +193,7 @@ const MitochondrialContent = (props) => {
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
                 plotType='bin step'
+                stepDisabled={stepDisabled}
               >
                 <CalculationConfig />
               </CalculationConfigContainer>
@@ -217,6 +218,11 @@ MitochondrialContent.propTypes = {
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  stepDisabled: PropTypes.bool,
+};
+
+MitochondrialContent.defaultProps = {
+  stepDisabled: false,
 };
 
 export default MitochondrialContent;

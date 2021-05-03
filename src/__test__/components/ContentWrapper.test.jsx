@@ -38,6 +38,10 @@ const store = mockStore({
       error: false,
       status: {},
     },
+    info: {
+      experimentId: '1234',
+      experimentName: 'test experiment',
+    },
   },
 });
 
@@ -113,6 +117,11 @@ describe('ContentWrapper', () => {
   });
 
   test('View changes if there is a pipeline run underway', () => {
+    const info = {
+      experimentId: '1234',
+      experimentName: 'test experiment',
+    };
+
     const testStore = mockStore({
       notifications: {},
       experimentSettings: {
@@ -121,12 +130,16 @@ describe('ContentWrapper', () => {
           error: false,
           status: { pipeline: { status: 'RUNNING' } },
         },
+        info,
       },
     });
 
     const wrapper = mount(
       <Provider store={testStore}>
-        <ContentWrapper backendStatus={{}}>
+        <ContentWrapper
+          experimentId={info.experimentId}
+          experimentData={info}
+        >
           <></>
         </ContentWrapper>
       </Provider>,

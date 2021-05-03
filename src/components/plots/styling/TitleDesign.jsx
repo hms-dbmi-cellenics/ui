@@ -7,7 +7,9 @@ import {
 import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const TitleDesign = (props) => {
-  const { onUpdate, config } = props;
+  const {
+    onUpdate, config, allowTitleChange, placeHolder,
+  } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -17,17 +19,20 @@ const TitleDesign = (props) => {
         wrapperCol={{ span: 12 }}
       >
         <p><strong>Title Styles</strong></p>
-        <Form.Item
-          label='Define Title'
-        >
-          <Input
-            placeholder='Enter title'
-            value={newConfig.title.text}
-            onChange={(e) => {
-              handleChange({ title: { text: e.target.value } });
-            }}
-          />
-        </Form.Item>
+        {allowTitleChange
+          && (
+            <Form.Item
+              label='Define Title'
+            >
+              <Input
+                placeholder={placeHolder}
+                value={newConfig.title.text}
+                onChange={(e) => {
+                  handleChange({ title: { text: e.target.value } });
+                }}
+              />
+            </Form.Item>
+          )}
         <Form.Item
           label='Title Font Size'
         >
@@ -60,6 +65,12 @@ const TitleDesign = (props) => {
 TitleDesign.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
+  allowTitleChange: PropTypes.bool,
+  placeHolder: PropTypes.string,
+};
+TitleDesign.defaultProps = {
+  allowTitleChange: true,
+  placeHolder: 'Enter title',
 };
 
 export default TitleDesign;

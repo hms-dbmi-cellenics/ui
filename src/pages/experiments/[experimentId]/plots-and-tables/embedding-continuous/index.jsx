@@ -76,7 +76,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     },
   ];
 
-  const changeDislayedGene = (geneName) => {
+  const changeDisplayedGene = (geneName) => {
     updatePlotWithChanges({ shownGene: geneName });
   };
 
@@ -88,7 +88,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
             style={{ width: '100%' }}
             enterButton='Search'
             defaultValue={config.shownGene}
-            onSearch={(val) => changeDislayedGene(val)}
+            onSearch={(val) => changeDisplayedGene(val)}
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>

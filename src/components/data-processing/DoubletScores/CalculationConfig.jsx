@@ -1,40 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Slider,
-  Form,
-} from 'antd';
+import { Form } from 'antd';
 
-import BandwidthOrBinstep from '../ReadAlignment/PlotStyleMisc';
+import SliderWithInput from '../../SliderWithInput';
 
 const DoubletScoresConfig = (props) => {
   const {
-    config, disabled, plotType, updateSettings,
+    config, disabled, updateSettings,
   } = props;
-
-  const filtering = false;
 
   return (
     <>
       <Form.Item label='Probability threshold'>
-        <Slider
-          collapsible={!filtering ? 'disabled' : 'header'}
-          value={config.probabilityThreshold}
+        <SliderWithInput
           min={0}
           max={1}
-          onChange={(val) => updateSettings({ probabilityThreshold: val })}
           step={0.05}
+          value={config.probabilityThreshold}
+          onUpdate={(newValue) => updateSettings({ probabilityThreshold: newValue })}
           disabled={disabled}
         />
       </Form.Item>
-      <BandwidthOrBinstep
-        config={config}
-        onUpdate={updateSettings}
-        type={plotType}
-        max={0.5}
-        min={0.001}
-        disabled={disabled}
-      />
+      <Form.Item label='Bin step'>
+        <SliderWithInput
+          min={0.001}
+          max={0.5}
+          value={config.binStep}
+          onUpdate={(newValue) => updateSettings({ binStep: newValue })}
+          disabled={disabled}
+        />
+      </Form.Item>
     </>
   );
 };

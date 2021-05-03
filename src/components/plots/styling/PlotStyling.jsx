@@ -17,6 +17,8 @@ import PointDesign from './PointDesign';
 import ColourbarDesign from './ColourbarDesign';
 import ColourInversion from './ColourInversion';
 
+import ViolinMarkersEditor from './violin/MarkersEditor';
+
 import VolcanoDimensionsRangeEditor from './volcano/DimensionsRangeEditor';
 import VolcanoThresholdsGuidesEditor from './volcano/ThresholdsGuidesEditor';
 import VolcanoMarkersEditor from './volcano/MarkersEditor';
@@ -38,6 +40,7 @@ const PlotStyling = (props) => {
     markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
     legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
     labels: (attr) => <LabelsDesign key='legend' onUpdate={onUpdate} config={config} {...attr} />,
+    violinMarkers: (attr) => <ViolinMarkersEditor key='violinMarkers' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoDimensions: (attr) => <VolcanoDimensionsRangeEditor key='volcanoDimensions' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoThresholds: (attr) => <VolcanoThresholdsGuidesEditor key='volcanoThresholds' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoMarkers: (attr) => <VolcanoMarkersEditor key='volcanoMarkers' config={config} onUpdate={onUpdate} {...attr} />,

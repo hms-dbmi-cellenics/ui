@@ -70,12 +70,12 @@ const ContinuousEmbeddingPlot = (props) => {
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
-      dispatch(loadGeneExpression(experimentId, [highestDispersionGene]));
+      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
     }
   }, [highestDispersionGene, config]);
   useEffect(() => {
     if (config?.shownGene !== 'notSelected' && config) {
-      dispatch(loadGeneExpression(experimentId, [config.shownGene]));
+      dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
   }, [highestDispersionGene, config?.shownGene]);
 
@@ -120,7 +120,9 @@ const ContinuousEmbeddingPlot = (props) => {
       return (
         <PlatformError
           error={geneExpression.error}
-          onClick={() => { dispatch(loadGeneExpression(experimentId, [config.shownGene])); }}
+          onClick={() => {
+            dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
+          }}
         />
       );
     }
