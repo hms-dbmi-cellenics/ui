@@ -14,7 +14,7 @@ const SliderWithInput = (props) => {
   const [, handleChange] = useUpdateThrottled(onUpdate, value);
 
   const [localValue, setLocalValue] = useState(value);
-  const [writtenLocalValue, setWrittenLocalValue] = useState(value);
+  const [writtenLocalValue, setWrittenLocalValue] = useState(null);
 
   useEffect(() => {
     setLocalValue(parseFloat(value));
