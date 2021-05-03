@@ -73,7 +73,7 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
-    if (!hierarchy || hierarchy.length === 0 || cellSetsLoading) {
+    if (hierarchy.length === 0 || cellSetsLoading) {
       return;
     }
 

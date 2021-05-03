@@ -184,7 +184,7 @@ const generateSpec = (config, plotData) => {
 };
 
 const filterCells = (cellSets, selectedCellSet) => {
-  let newCellSets = cellSets.hierarchy?.find(
+  let newCellSets = cellSets.hierarchy.find(
     (rootNode) => rootNode.key === selectedCellSet,
   )?.children || [];
 
