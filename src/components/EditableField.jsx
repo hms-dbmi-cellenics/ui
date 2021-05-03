@@ -31,7 +31,7 @@ const EditableField = (props) => {
   }, [value]);
 
   const deleteEditableField = (e) => {
-    props.onDelete(e);
+    props.onDelete(e, editedValue);
   };
 
   const onKeyDown = (e) => {

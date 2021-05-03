@@ -1,5 +1,5 @@
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress, Popover,
+  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -18,9 +18,15 @@ import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
-import { updateProject } from '../../redux/actions/projects';
+import {
+  updateProject,
+  createMetadataTrack,
+  updateMetadataTrack,
+  deleteMetadataTrack,
+} from '../../redux/actions/projects';
 import processUpload from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
+import { metadataNameToKey, temporaryMetadataKey } from '../../utils/metadataUtils';
 
 import UploadStatus from '../../utils/UploadStatus';
 
@@ -202,17 +208,15 @@ const ProjectDetails = ({ width, height }) => {
     </Text>
   );
 
-  const metadataKeyStub = 'metadata';
   const createMetadataColumn = () => {
-    // Create unique keys so that column is searchable (and deletable)
-    const key = `${key}-${tableColumns.filter((column) => column.key.match(metadataKeyStub)).length}`;
+    const key = temporaryMetadataKey(tableColumns);
 
     const metadataColumn = {
       key,
       title: () => (
         <MetadataPopover
           onCreate={(name) => {
-            updateMetadataColumn(name);
+            initializeMetadataColumn(name);
           }}
           onCancel={() => {
             deleteMetadataColumn(key);
@@ -232,12 +236,13 @@ const ProjectDetails = ({ width, height }) => {
     setTableColumns([...tableColumns, metadataColumn]);
   };
 
-  const deleteMetadataColumn = (key) => {
-    setTableColumns([...tableColumns.filter((name) => name !== key)]);
+  const deleteMetadataColumn = (name) => {
+    setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
+    dispatch(deleteMetadataTrack(name, activeProjectUuid));
   };
 
-  const updateMetadataColumn = (name) => {
-    const key = `${metadataKeyStub}-${name.trim().replace(/\s+/g, '-').toLowerCase()}`;
+  const initializeMetadataColumn = (name) => {
+    const key = metadataNameToKey(name);
 
     const updatedMetadataColumn = {
       key,
@@ -245,7 +250,8 @@ const ProjectDetails = ({ width, height }) => {
         <Space>
           <EditableField
             deleteEnabled
-            onDelete={() => deleteMetadataColumn(key)}
+            onDelete={(e, currentName) => deleteMetadataColumn(currentName)}
+            onAfterSubmit={(newName) => dispatch(updateMetadataTrack(key, newName, activeProjectUuid))}
             value={name}
           />
           <MetadataEditor massEdit>
@@ -260,6 +266,7 @@ const ProjectDetails = ({ width, height }) => {
     };
 
     setTableColumns([...tableColumns, updatedMetadataColumn]);
+    dispatch(createMetadataTrack(name, activeProjectUuid));
   };
 
   useEffect(() => {
