@@ -92,7 +92,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
         ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>
       <Panel header='Select Data' key='15'>
-        {config ? (
+        {config && !cellSets.loading && !cellSets.error ? (
           <SelectData
             config={config}
             onUpdate={updatePlotWithChanges}

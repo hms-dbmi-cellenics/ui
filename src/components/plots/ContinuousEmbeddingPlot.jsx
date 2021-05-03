@@ -25,7 +25,7 @@ const ContinuousEmbeddingPlot = (props) => {
   const {
     data: embeddingData,
     loading, error,
-  } = useSelector((state) => state.embeddings[embeddingSettings.method]) || {};
+  } = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
   const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
@@ -51,9 +51,11 @@ const ContinuousEmbeddingPlot = (props) => {
     setPlotSpec(spec);
   }, [config]);
 
-  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-  }
+  useEffect(() => {
+    if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
+      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+    }
+  }, [experimentId, config?.shownGene, fetching, highestDispersionGene]);
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
@@ -63,21 +65,21 @@ const ContinuousEmbeddingPlot = (props) => {
       dispatch(loadProcessingSettings(experimentId, embeddingType));
     }
 
-    if (!embeddingData && embeddingSettings.method) {
+    if (!embeddingData && embeddingSettings?.method) {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
-  }, [experimentId, embeddingSettings.method]);
+  }, [experimentId, cellSets.loading, cellSets.error, embeddingSettings?.method]);
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
       dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
     }
-  }, [highestDispersionGene, config]);
+  }, [experimentId, highestDispersionGene, config?.shownGene]);
   useEffect(() => {
     if (config?.shownGene !== 'notSelected' && config) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
-  }, [highestDispersionGene, config?.shownGene]);
+  }, [experimentId, highestDispersionGene, config?.shownGene]);
 
   useEffect(() => {
     if (plotData) {
