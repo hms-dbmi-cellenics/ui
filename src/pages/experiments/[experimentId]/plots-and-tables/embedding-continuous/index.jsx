@@ -14,7 +14,6 @@ import {
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import Header from '../../../../../components/plots/Header';
 import ContinuousEmbeddingPlot from '../../../../../components/plots/ContinuousEmbeddingPlot';
-import Loader from '../../../../../components/Loader';
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -111,7 +110,6 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
         plotUuid={plotUuid}
         experimentId={experimentId}
         finalRoute={route}
-        onUpdate={updatePlotWithChanges}
       />
       <Row gutter={16}>
         <Col span={16}>
@@ -130,7 +128,12 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} renderExtraPanels={renderExtraPanels} />
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={renderExtraPanels}
+            />
           </Space>
         </Col>
       </Row>

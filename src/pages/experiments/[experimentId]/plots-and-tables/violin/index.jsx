@@ -159,7 +159,6 @@ const ViolinIndex = ({ experimentId }) => {
         plotUuid={plotUuid}
         experimentId={experimentId}
         finalRoute={route}
-        onUpdate={updatePlotWithChanges}
       />
       <Row gutter={16}>
         <Col span={16}>
