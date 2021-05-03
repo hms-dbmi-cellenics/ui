@@ -2,6 +2,7 @@ import fetchAPI from '../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+  EXPERIMENT_SETTINGS_PIPELINE_START,
 } from '../../actionTypes/experimentSettings';
 import loadPipelineStatus from '../experimentSettings/loadPipelineStatus';
 
@@ -41,6 +42,11 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
     );
 
     if (response.ok) {
+      dispatch({
+        type: EXPERIMENT_SETTINGS_PIPELINE_START,
+        payload: {},
+      });
+
       dispatch(loadPipelineStatus(experimentId));
 
       return;
