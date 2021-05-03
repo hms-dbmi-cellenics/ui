@@ -6,6 +6,7 @@ import {
   DIFF_EXPR_COMPARISON_TYPE_SET,
   DIFF_EXPR_COMPARISON_GROUP_SET,
 } from '../../actionTypes/differentialExpression';
+import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
 
 import differentialExpressionLoading from './differentialExpressionLoading';
 import differentialExpressionLoaded from './differentialExpressionLoaded';
@@ -29,6 +30,9 @@ const differentialExpressionReducer = (state = initialState, action) => {
     }
     case DIFF_EXPR_COMPARISON_GROUP_SET: {
       return differentialExpressionSetGroup(state, action);
+    }
+    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+      return initialState;
     }
     default: {
       return state;

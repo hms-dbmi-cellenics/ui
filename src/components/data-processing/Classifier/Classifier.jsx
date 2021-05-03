@@ -23,7 +23,7 @@ const { Panel } = Collapse;
 
 const Classifier = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
   const filterName = 'classifier';
@@ -124,6 +124,7 @@ const Classifier = (props) => {
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
                 plotType='unused'
+                stepDisabled={stepDisabled}
               >
                 <CalculationConfig />
               </CalculationConfigContainer>
@@ -148,6 +149,11 @@ Classifier.propTypes = {
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  stepDisabled: PropTypes.bool,
+};
+
+Classifier.defaultProps = {
+  stepDisabled: false,
 };
 
 export default Classifier;

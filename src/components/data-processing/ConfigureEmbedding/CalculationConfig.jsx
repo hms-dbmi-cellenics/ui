@@ -18,6 +18,8 @@ import {
 import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
 import { loadEmbedding } from '../../../redux/actions/embedding';
 
+import SliderWithInput from '../../SliderWithInput';
+
 const { Option } = Select;
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -26,6 +28,12 @@ const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to com
   + 'Larger values ensure embedded points are more evenly distributed, while '
   + 'smaller values allow the algorithm to optimise more accurately with regard '
   + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
+
+const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some information and there are several methods available. '
+  + 'PCA (Principal component analysis) is fast and preserves the global structure of the data, whereas nonlinear techniques '
+  + 'such as t-SNE and UMAP are very effective for visualizing clusters or groups of data points and their relative proximities.'
+  + 'It is usually a good idea to have a look at both types. '
+  + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
   const { experimentId, onPipelineRun } = props;
@@ -155,7 +163,31 @@ const CalculationConfig = (props) => {
             onBlur={(e) => setMinimumDistance(e.target.value)}
           />
         </Form.Item>
-        <Form.Item label='Distance metric'>
+        <Form.Item label={(
+          <span>
+            Distance metric&nbsp;
+            <Tooltip overlay={(
+              <span>
+                A metric determines how similarity between cells is measured.
+                "Euclidean" is the standard for most normalized datasets.
+                Cosine might be a good choice for unnormalized data.
+                More information
+                <a
+                  href='https://satijalab.org/seurat/reference/runumap'
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  {' '}
+                  <code>here</code>
+                </a>
+              </span>
+            )}
+            >
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </span>
+        )}
+        >
           <Select
             value={umap.distanceMetric}
             onChange={(value) => setDistanceMetric(value)}
@@ -196,6 +228,13 @@ const CalculationConfig = (props) => {
             onPressEnter={(e) => e.preventDefault()}
             onBlur={(e) => setPerplexity(e.target.value)}
           />
+          <Tooltip title='Determines how to much emphasis should be on local or global aspects of your data.
+          The parameter is, in a sense, a guess about the number of close neighbors each cell has.
+          In most implementations, perplexity defaults to 30. This focuses the attention of t-SNE on preserving the
+          distances to its 30 nearest neighbors and puts virtually no weight on preserving distances to the remaining points.
+          The perplexity value has a complex effect on the resulting pictures.'>
+            <QuestionCircleOutlined />
+          </Tooltip>
         </Form.Item>
         <Form.Item label='Learning rate'>
           <InputNumber
@@ -208,6 +247,10 @@ const CalculationConfig = (props) => {
             onPressEnter={(e) => e.preventDefault()}
             onBlur={(e) => setLearningRate(e.target.value)}
           />
+          <Tooltip title='If the learning rate is too high, the data may look like a "ball" with any point approximately equidistant from its nearest neighbours.
+          If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'>
+            <QuestionCircleOutlined />
+          </Tooltip>
         </Form.Item>
       </>
     );
@@ -226,7 +269,39 @@ const CalculationConfig = (props) => {
               <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
             </Form.Item>
           )}
-          <Form.Item label='Method'>
+          <Form.Item label={(
+            <span>
+              Method&nbsp;
+              <Tooltip overlay={(
+                <span>
+                  {EMBEDD_METHOD_TEXT}
+                  More info for
+                  <a
+                    href='https://satijalab.org/seurat/reference/runumap'
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    {' '}
+                    <code>UMAP</code>
+                    {' '}
+                  </a>
+                  or
+                  <a
+                    href='https://satijalab.org/seurat/reference/runtsne'
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    {' '}
+                    <code>t-SNE</code>
+                  </a>
+                </span>
+              )}
+              >
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          )}
+          >
             <Select
               value={changes.embeddingSettings.method}
               // changes.({ embeddingSettings: { method: value } })
@@ -238,6 +313,8 @@ const CalculationConfig = (props) => {
               <Option value='umap'>UMAP</Option>
               <Option value='tsne'>t-SNE</Option>
             </Select>
+
+
           </Form.Item>
           {changes.embeddingSettings.method === 'umap' && renderUMAPSettings()}
           {changes.embeddingSettings.method === 'tsne' && renderTSNESettings()}
@@ -259,7 +336,31 @@ const CalculationConfig = (props) => {
       </Panel>
       <Panel header='Clustering settings' key='clustering-settings'>
         <Form size='small'>
-          <Form.Item label='Clustering method'>
+          <Form.Item label={(
+            <span>
+              Clustering method&nbsp;
+              <Tooltip overlay={(
+                <span>
+                  Louvain and Leiden are graph-based clustering methods which are the most popular
+                  clustering algorithm in scRNA-seq data analysis since they have been reported to have outperformed other
+                  clustering methods in many situations.
+                  They are also more efficient than other cluster methods which is crucial large scRNA-seq datasets.
+                  <a
+                    href='https://en.wikipedia.org/wiki/Louvain_method'
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    {' '}
+                    <code>here</code>
+                  </a>
+                </span>
+              )}
+              >
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          )}
+          >
             <Select
               value={clusteringMethod}
               onChange={(value) => updateSettings(
@@ -279,16 +380,30 @@ const CalculationConfig = (props) => {
               </Option>
             </Select>
           </Form.Item>
-          <Form.Item label='Resolution'>
-            <Slider
-              value={resolution}
+          <Form.Item label={(
+            <span>
+              Resolution&nbsp;
+              <Tooltip overlay={(
+                <span>
+                  Resolution is a parameter for the Louvain community detection algorithm that affects the size of the recovered clusters.
+                  Smaller resolutions recover smaller, and therefore more clusters,
+                  and conversely, larger values recover fewer clusters containing more data points.
+                  Default: 0.3
+                </span>
+              )}
+              >
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          )}
+          >
+            <SliderWithInput
               min={0}
               max={2}
               step={0.1}
-              onChange={(value) => {
+              value={resolution}
+              onUpdate={(value) => {
                 setResolution(value);
-              }}
-              onAfterChange={(value) => {
                 updateSettings({
                   clusteringSettings: {
                     methodSettings: {

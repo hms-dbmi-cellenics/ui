@@ -21,7 +21,7 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 const { Panel } = Collapse;
 const DoubletScores = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
   const filterName = 'doubletScores';
@@ -128,6 +128,7 @@ const DoubletScores = (props) => {
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
                 plotType='bin step'
+                stepDisabled={stepDisabled}
               >
                 <CalculationConfig />
               </CalculationConfigContainer>
@@ -152,6 +153,11 @@ DoubletScores.propTypes = {
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  stepDisabled: PropTypes.bool,
+};
+
+DoubletScores.defaultProps = {
+  stepDisabled: false,
 };
 
 export default DoubletScores;
