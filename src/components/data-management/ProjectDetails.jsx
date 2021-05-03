@@ -34,6 +34,7 @@ const ProjectDetails = ({ width, height }) => {
     getFromApiExpectOK,
   );
   const [tableData, setTableData] = useState([]);
+  const [tableColumns, setTableColumns] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
@@ -200,10 +201,13 @@ const ProjectDetails = ({ width, height }) => {
     </Text>
   );
 
-  const createMetadataColumn = (name, id) => {
+  const createMetadataColumn = () => {
+    const name = 'metadata';
+    const id = 'metadata';
+
     const dataIndex = `metadata-${id}`;
 
-    return ({
+    const metadataColumn = {
       title: () => (
         <Space>
           <EditableField
@@ -219,50 +223,52 @@ const ProjectDetails = ({ width, height }) => {
       dataIndex,
       render: (value) => renderEditableFieldCell(dataIndex, value),
       width: 200,
-    });
+    };
+
+    setTableColumns([...tableColumns, metadataColumn]);
   };
 
-  const columns = [
-    {
-      title: 'Sample',
-      dataIndex: 'name',
-      fixed: true,
-      render: renderSampleCells,
-    },
-    {
-      title: 'Barcodes.csv',
-      dataIndex: 'barcodes',
-      render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
-    },
-    {
-      title: 'Genes.csv',
-      dataIndex: 'genes',
-      render: (tableCellData) => renderUploadCell('genes', tableCellData),
-    },
-    {
-      title: 'Matrix.mtx',
-      dataIndex: 'matrix',
-      render: (tableCellData) => renderUploadCell('matrix', tableCellData),
-    },
-    {
-      title: () => (
-        <Space>
-          <Text>Species</Text>
-          <MetadataEditor massEdit>
-            <SpeciesSelector data={sortedSpeciesData} />
-          </MetadataEditor>
-        </Space>
-      ),
-      fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
-      dataIndex: 'species',
-      render: (text) => renderEditableFieldCell('species', text),
-      width: 200,
-    },
-    createMetadataColumn('Tissue', 'tissue'),
-    createMetadataColumn('Patient ID', 'patient'),
-    createMetadataColumn('Collection date', 'collection-date'),
-    createMetadataColumn('Sequencing date', 'sequencing-date'),
-  ];
+  useEffect(() => {
+    const columns = [
+      {
+        title: 'Sample',
+        dataIndex: 'name',
+        fixed: true,
+        render: renderSampleCells,
+      },
+      {
+        title: 'Barcodes.csv',
+        dataIndex: 'barcodes',
+        render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
+      },
+      {
+        title: 'Genes.csv',
+        dataIndex: 'genes',
+        render: (tableCellData) => renderUploadCell('genes', tableCellData),
+      },
+      {
+        title: 'Matrix.mtx',
+        dataIndex: 'matrix',
+        render: (tableCellData) => renderUploadCell('matrix', tableCellData),
+      },
+      {
+        title: () => (
+          <Space>
+            <Text>Species</Text>
+            <MetadataEditor massEdit>
+              <SpeciesSelector data={sortedSpeciesData} />
+            </MetadataEditor>
+          </Space>
+        ),
+        fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
+        dataIndex: 'species',
+        render: (text) => renderEditableFieldCell('species', text),
+        width: 200,
+      },
+    ];
+
+    setTableColumns(columns);
+  }, []);
 
   useEffect(() => {
     if (samples.ids.length === 0 || projects.ids.length === 0) {
@@ -307,7 +313,7 @@ const ProjectDetails = ({ width, height }) => {
           title={activeProject.name}
           extra={[
             <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
-            <Button>Add metadata</Button>,
+            <Button onClick={() => createMetadataColumn()}>Add metadata</Button>,
             <Button type='primary'>Launch analysis</Button>,
           ]}
         >
@@ -329,7 +335,7 @@ const ProjectDetails = ({ width, height }) => {
             y: height - 250,
           }}
           bordered
-          columns={columns}
+          columns={tableColumns}
           dataSource={tableData}
           sticky
           pagination={false}
