@@ -91,7 +91,7 @@ const Header = (props) => {
         dispatch(savePlotConfig(experimentId, plotUuid));
       }
     };
-    if (!router?.asPath || !router?.events) {
+    if (!router) {
       return;
     }
     router.events.on('routeChangeStart', showPopupWhenUnsaved);
@@ -99,7 +99,7 @@ const Header = (props) => {
     return () => {
       router.events.off('routeChangeStart', showPopupWhenUnsaved);
     };
-  }, [router.asPath, router.events, saved]);
+  }, [router?.asPath, router?.events, saved]);
 
   const { data } = useSWR(
     `/v1/experiments/${experimentId}`,
