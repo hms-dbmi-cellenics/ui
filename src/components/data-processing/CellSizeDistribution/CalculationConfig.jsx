@@ -14,7 +14,7 @@ import SliderWithInput from '../../SliderWithInput';
 
 const CellSizeDistributionConfig = (props) => {
   const {
-    config, disabled, updateSettings,
+    config, disabled, updateSettings, highestUmi,
   } = props;
 
   return (
@@ -27,11 +27,16 @@ const CellSizeDistributionConfig = (props) => {
           </Tooltip>
           <InputNumber
             value={config.minCellSize}
-            onChange={(value) => updateSettings({ minCellSize: value })}
+            onChange={(value) => {
+              const adjustedCellSize = Math.max(Math.min(value, highestUmi), 0);
+              updateSettings({ minCellSize: adjustedCellSize });
+            }}
             onPressEnter={(e) => updateSettings({ minCellSize: e.target.value })}
             placeholder={10800}
             step={100}
             disabled={disabled}
+            max={highestUmi}
+            min={0}
           />
         </Space>
       </Form.Item>
@@ -54,6 +59,7 @@ CellSizeDistributionConfig.propTypes = {
   updateSettings: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   disabled: PropTypes.bool.isRequired,
+  highestUmi: PropTypes.number.isRequired,
 };
 
 export default CellSizeDistributionConfig;

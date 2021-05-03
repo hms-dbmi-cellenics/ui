@@ -7,14 +7,14 @@ import generateSpec from '../../utils/plotSpecs/generateCellSizeDistributionHist
 
 const CellSizeDistributionHistogram = (props) => {
   const {
-    config, plotData, actions,
+    config, plotData, actions, highestUmi,
   } = props;
 
   const [plotSpec, setPlotSpec] = useState(config);
 
   useEffect(() => {
     if (config && plotData) {
-      setPlotSpec(generateSpec(config, plotData));
+      setPlotSpec(generateSpec(config, plotData, highestUmi));
     }
   }, [config, plotData]);
 
@@ -46,11 +46,13 @@ CellSizeDistributionHistogram.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
+  highestUmi: PropTypes.number,
 };
 
 CellSizeDistributionHistogram.defaultProps = {
   plotData: null,
   actions: true,
+  highestUmi: 17000,
 };
 
 export default CellSizeDistributionHistogram;

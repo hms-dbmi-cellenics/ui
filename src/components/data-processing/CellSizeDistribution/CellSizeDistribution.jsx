@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState, useEffect, useCallback, useRef,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -78,6 +80,7 @@ const CellSizeDistribution = (props) => {
           config={config}
           plotData={plotData}
           actions={actions}
+          highestUmi={highestUmiRef.current}
         />
       ),
     },
@@ -93,6 +96,16 @@ const CellSizeDistribution = (props) => {
   const plotData = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
   );
+
+  const histogramPlotData = useSelector(
+    (state) => state.componentConfig[plots.histogram.plotUuid]?.plotData,
+  );
+
+  const highestUmiRef = useRef(0);
+
+  useEffect(() => {
+    highestUmiRef.current = _.maxBy(histogramPlotData, (datum) => datum.u)?.u ?? 0;
+  }, [histogramPlotData]);
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
@@ -196,7 +209,7 @@ const CellSizeDistribution = (props) => {
                 plotType='bin step'
                 stepDisabled={stepDisabled}
               >
-                <CalculationConfig />
+                <CalculationConfig highestUmi={highestUmiRef.current} />
               </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
