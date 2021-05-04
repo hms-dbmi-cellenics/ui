@@ -20,7 +20,7 @@ import { initialPlotConfigStates } from '../../redux/reducers/componentConfig/in
 
 const Header = (props) => {
   const {
-    experimentId, plotUuid, finalRoute, testing,
+    experimentId, plotUuid, finalRoute,
   } = props;
 
   const dispatch = useDispatch();
@@ -105,7 +105,8 @@ const Header = (props) => {
     `/v1/experiments/${experimentId}`,
     getFromApiExpectOK,
   );
-  if ((!data && !testing) || !config) {
+  console.log('data from api is ', data);
+  if (!data || !config) {
     return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
   }
 
@@ -146,7 +147,6 @@ const Header = (props) => {
     setResetDisabled(true);
   };
   return (
-
     <Row>
       <Col span={16}>
         <PageHeader
@@ -158,7 +158,6 @@ const Header = (props) => {
             <Space>
               <FeedbackButton key='feedback' />
               <Button
-                id='resetButton'
                 key='reset'
                 type='primary'
                 onClick={onClickReset}
@@ -173,12 +172,8 @@ const Header = (props) => {
     </Row>
   );
 };
-Header.defaultProps = {
-  testing: false,
-};
 
 Header.propTypes = {
-  testing: PropTypes.bool,
   finalRoute: PropTypes.object.isRequired,
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,

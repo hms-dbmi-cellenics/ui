@@ -1,20 +1,16 @@
 import React from 'react';
 import thunk from 'redux-thunk';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import { Button } from 'antd';
-import { initial } from 'lodash';
-import { act } from 'react-dom/test-utils';
+import * as rtl from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
-
 import Header from '../../../components/plots/Header';
-import waitForComponentToPaint from '../../../utils/tests/waitForComponentToPaint';
+import { LOAD_CONFIG } from '../../../redux/actionTypes/componentConfig';
 
+enableFetchMocks();
 jest.mock('localforage');
-configure({ adapter: new Adapter() });
 const mockStore = configureMockStore([thunk]);
 
 describe('Tests for the header in plots and tables ', () => {
@@ -23,21 +19,7 @@ describe('Tests for the header in plots and tables ', () => {
     path: 'embedding-continuous',
     breadcrumbName: 'Continuous Embedding',
   };
-  let component;
-  beforeAll(async () => {
-    await preloadAll();
 
-    component = mount(
-      <Provider store={store}>
-        <Header
-          experimentId='a'
-          testing
-          plotUuid='embeddingContinuousMain'
-          finalRoute={route}
-        />
-      </Provider>,
-    );
-  });
   const store = mockStore({
     componentConfig: {
       embeddingContinuousMain: {
@@ -52,11 +34,26 @@ describe('Tests for the header in plots and tables ', () => {
       },
     },
   });
-  it('Reset button resets to default config', () => {
-    const button = component.find('#resetButton').at(0);
-    expect(button.length).toEqual(1);
-    act(() => { button.simulate('click'); });
-    expect(store.getActions()[0].type).toEqual('componentConfig/load');
+
+  beforeAll(async () => {
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResponse(JSON.stringify({ something: 'some value' }));
+    rtl.render(
+      <Provider store={store}>
+        <Header
+          experimentId='a'
+          plotUuid='embeddingContinuousMain'
+          finalRoute={route}
+        />
+      </Provider>,
+    );
+  });
+
+  it('Reset button resets to default config', async () => {
+    const reset = await rtl.screen.findByText('Reset');
+    userEvent.click(reset);
+    expect(store.getActions()[0].type).toEqual(LOAD_CONFIG);
     expect(store.getActions()[0].payload.config).toEqual(initialConfig);
   });
 });
