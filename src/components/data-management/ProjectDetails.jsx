@@ -185,24 +185,27 @@ const ProjectDetails = ({ width, height }) => {
     }
   };
 
-  const renderEditableFieldCell = (text) => (
-    <div style={{ whiteSpace: 'nowrap' }}>
+  const renderEditableFieldCell = (initialText, cellText, record, dataIndex, rowIdx) => (
+    <div key={`cell-${dataIndex}-${rowIdx}`} style={{ whiteSpace: 'nowrap' }}>
       <Space>
         <EditableField
           deleteEnabled={false}
-          value={text}
+          value={cellText || initialText}
+          onAfterSubmit={(value) => {
+            dispatch(updateSample(record.uuid, { metadata: { [dataIndex]: value } }));
+          }}
         />
       </Space>
     </div>
   );
 
-  const renderSampleCells = (text, el, idx) => (
+  const renderSampleCells = (text, record, idx) => (
     <Text strong key={`sample-cell-${idx}`}>
       <EditableField
         deleteEnabled
         value={text}
-        onAfterSubmit={(name) => dispatch(updateSample(el.uuid, { name }))}
-        onDelete={() => dispatch(deleteSamples(el.uuid))}
+        onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
+        onDelete={() => dispatch(deleteSamples(record.uuid))}
         validationFunc={(name) => validateSampleName(name, sampleNames)}
       />
     </Text>
@@ -262,7 +265,7 @@ const ProjectDetails = ({ width, height }) => {
       fillInBy: <Input />,
       width: 200,
       dataIndex: key,
-      render: (value) => renderEditableFieldCell('N.A.', value),
+      render: (cellValue, record, rowIdx) => renderEditableFieldCell('N.A.', cellValue, record, key, rowIdx),
     };
 
     setTableColumns([...tableColumns, updatedMetadataColumn]);
@@ -336,7 +339,7 @@ const ProjectDetails = ({ width, height }) => {
         barcodes: barcodesUpload,
         genes: genesUpload,
         matrix: matrixUpload,
-        species: 'dataMissing',
+        species: 'N.A.',
       };
     });
 
