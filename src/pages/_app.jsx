@@ -7,6 +7,8 @@ import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import Amplify from 'aws-amplify';
 import _ from 'lodash';
+import AWS from 'aws-sdk';
+import { Credentials } from '@aws-amplify/core';
 import ContentWrapper from '../components/ContentWrapper';
 import NotFoundPage from './404';
 import Error from './_error';
@@ -15,6 +17,23 @@ import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 import CustomError from '../utils/customError';
 
+const mockCredentialsForInframock = () => {
+  // Mock credentials so that it works with inframock
+  Credentials.get = async () => (
+    new AWS.Credentials({
+      accessKeyId: 'asd',
+      secretAccessKey: 'asfdsa',
+    })
+  );
+
+  Credentials.shear = () => (
+    new AWS.Credentials({
+      accessKeyId: 'asd',
+      secretAccessKey: 'asfdsa',
+    })
+  );
+};
+
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
@@ -22,6 +41,8 @@ Router.events.on('routeChangeError', () => NProgress.done());
 Amplify.configure({
   ssr: true,
 });
+
+mockCredentialsForInframock();
 
 const WrappedApp = ({ Component, pageProps }) => {
   const { httpError, amplifyConfig } = pageProps;
