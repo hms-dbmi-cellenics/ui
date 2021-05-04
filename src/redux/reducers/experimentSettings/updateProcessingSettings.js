@@ -26,7 +26,7 @@ const updateProcessingSettings = (state, action) => {
       ...initialState.processing,
       ...state.processing,
       [settingName]: {
-        ...initialState.processing[settingName],
+        ...state.processing[settingName],
         ...newConfig,
       },
     },
