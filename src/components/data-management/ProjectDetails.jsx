@@ -4,7 +4,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
-import _ from 'lodash';
+import _, { sample } from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 
@@ -33,6 +33,8 @@ import UploadStatus from '../../utils/UploadStatus';
 const { Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
+  const defaultNA = 'N.A.';
+
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const dispatch = useDispatch();
 
@@ -266,7 +268,31 @@ const ProjectDetails = ({ width, height }) => {
             )}
             value={name}
           />
-          <MetadataEditor massEdit>
+          <MetadataEditor
+            onReplaceEmpty={(value) => {
+              projects[activeProjectUuid].samples.forEach(
+                (sampleUuid) => {
+                  if (
+                    !samples[sampleUuid].metadata[key]
+                    || samples[sampleUuid].metadata[key] === defaultNA
+                  ) {
+                    dispatch(updateSample(sampleUuid, { metadata: { [key]: value } }));
+                  }
+                },
+              );
+            }}
+            onReplaceAll={(value) => {
+              projects[activeProjectUuid].samples.forEach(
+                (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: value } })),
+              );
+            }}
+            onClearAll={() => {
+              projects[activeProjectUuid].samples.forEach(
+                (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: defaultNA } })),
+              );
+            }}
+            massEdit
+          >
             <Input />
           </MetadataEditor>
         </Space>
@@ -275,7 +301,7 @@ const ProjectDetails = ({ width, height }) => {
       width: 200,
       dataIndex: key,
       render: (cellValue, record, rowIdx) => renderEditableFieldCell(
-        'N.A.',
+        defaultNA,
         cellValue,
         record,
         key,
@@ -319,7 +345,31 @@ const ProjectDetails = ({ width, height }) => {
       title: () => (
         <Space>
           <Text>Species</Text>
-          <MetadataEditor massEdit>
+          <MetadataEditor
+            onReplaceEmpty={(value) => {
+              projects[activeProjectUuid].samples.forEach(
+                (sampleUuid) => {
+                  if (
+                    !samples[sampleUuid].species
+                    || samples[sampleUuid].species === defaultNA
+                  ) {
+                    dispatch(updateSample(sampleUuid, { species: value }));
+                  }
+                },
+              );
+            }}
+            onReplaceAll={(value) => {
+              projects[activeProjectUuid].samples.forEach(
+                (sampleUuid) => dispatch(updateSample(sampleUuid, { species: value })),
+              );
+            }}
+            onClearAll={() => {
+              projects[activeProjectUuid].samples.forEach(
+                (sampleUuid) => dispatch(updateSample(sampleUuid, { species: defaultNA })),
+              );
+            }}
+            massEdit
+          >
             <SpeciesSelector data={sortedSpeciesData} />
           </MetadataEditor>
         </Space>
@@ -327,7 +377,7 @@ const ProjectDetails = ({ width, height }) => {
       fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
       dataIndex: 'species',
       render: (text, record, rowIdx) => renderEditableFieldCell(
-        'species',
+        defaultNA,
         text,
         record,
         'species',
@@ -370,7 +420,7 @@ const ProjectDetails = ({ width, height }) => {
         barcodes: barcodesUpload,
         genes: genesUpload,
         matrix: matrixUpload,
-        species: 'N.A.',
+        species: samples[sampleUuid].species || defaultNA,
         ...samples[sampleUuid].metadata,
       };
     });

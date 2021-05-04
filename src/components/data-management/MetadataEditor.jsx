@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Popover, Button, Space, Divider,
@@ -7,20 +7,40 @@ import { FormatPainterOutlined } from '@ant-design/icons';
 
 const MetadataEditor = (props) => {
   const {
-    onCreate, onCancel, children, massEdit, ...restOfProps
+    onReplaceEmpty,
+    onReplaceAll,
+    onClearAll,
+    massEdit,
+    children,
+    ...restOfProps
   } = props;
+
+  const [value, setValue] = useState('');
+
+  const onChange = (e) => setValue(e?.target?.value || e);
 
   const getContent = () => (
     <Space direction='vertical'>
-      {children}
+      {React.cloneElement(children, {
+        onChange,
+      })}
       <Divider style={{ margin: '4px 0' }} />
 
       {massEdit
         ? (
           <Space>
-            <Button type='primary' size='small'>Fill all missing</Button>
-            <Button size='small'>Replace all</Button>
-            <Button type='warning' size='small'>Clear all</Button>
+            <Button
+              type='primary'
+              size='small'
+              onClick={() => {
+                onReplaceEmpty(value);
+              }}
+            >
+              Fill all missing
+
+            </Button>
+            <Button size='small' onClick={() => onReplaceAll(value)}> Replace all</Button>
+            <Button type='warning' size='small' onClick={() => onClearAll()}> Clear all</Button>
           </Space>
         )
         : (
@@ -41,9 +61,15 @@ const MetadataEditor = (props) => {
 };
 
 MetadataEditor.propTypes = {
-  onCreate: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
+  onReplaceEmpty: PropTypes.func.isRequired,
+  onReplaceAll: PropTypes.func.isRequired,
+  onClearAll: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
+  massEdit: PropTypes.bool,
+};
+
+MetadataEditor.defaultProps = {
+  massEdit: false,
 };
 
 export default MetadataEditor;
