@@ -294,7 +294,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   label: labelBaseState,
-  selectedSample: 'All',
+  selectedSample: 'sample',
 };
 
 // EMBEDDING PREVIEW - Config for doublet score
@@ -321,7 +321,7 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   label: labelBaseState,
-  selectedSample: 'All',
+  selectedSample: 'sample',
 };
 
 const interactiveHeatmapInitialConfig = {
