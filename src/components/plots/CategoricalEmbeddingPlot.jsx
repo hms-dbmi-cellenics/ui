@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
+import { fastLoad } from '../Loader';
 
-import { Skeleton } from 'antd';
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { loadEmbedding } from '../../redux/actions/embedding';
@@ -16,22 +16,24 @@ const CategoricalEmbeddingPlot = (props) => {
   } = props;
   const dispatch = useDispatch();
 
-  const defaultEmbeddingType = 'umap';
-
   const cellSets = useSelector((state) => state.cellSets);
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
   );
-  const { data: embeddingData, loading, error } = useSelector(
-    (state) => state.embeddings[embeddingSettings?.method],
+  const {
+    data: embeddingData,
+    loading: embeddingLoading,
+    error: embeddingError,
+  } = useSelector(
+    (state) => state.embeddings[embeddingSettings.method],
   ) || {};
 
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
     if (!embeddingSettings) {
-      dispatch(loadProcessingSettings(experimentId, defaultEmbeddingType));
+      dispatch(loadProcessingSettings(experimentId));
     }
 
     if (cellSets.loading && !cellSets.error) {
@@ -56,19 +58,19 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [config, cellSets, embeddingData, config]);
 
   const render = () => {
-    if (error) {
+    if (embeddingError) {
       return (
         <PlatformError
-          error={error}
+          error={embeddingError}
           onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings.method)); }}
         />
       );
     }
 
-    if (cellSets.loading || !embeddingData || loading || !config) {
+    if (cellSets.loading || !embeddingData || embeddingLoading || !config) {
       return (
         <center>
-          <Skeleton.Image style={{ width: 400, height: 400 }} />
+          { fastLoad()}
         </center>
       );
     }
