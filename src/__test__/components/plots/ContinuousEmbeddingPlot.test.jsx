@@ -13,33 +13,12 @@ import initialCellSetsState from '../../../redux/reducers/cellSets/initialState'
 import initialGeneExpressionState from '../../../redux/reducers/genes/initialState';
 import initialExperimentState from '../../experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
+import { mockCellSets1 } from '../../cellSets.mock';
 
 jest.mock('localforage');
 
 const mockCellSets = {
-  properties: {
-    test: {
-      name: 'Test',
-      cellIds: 'Set()',
-    },
-    'test-1': {
-      name: 'Test-1',
-      cellIds: 'Set(1, 2, 3)',
-    },
-    'test-2': {
-      name: 'Test-1',
-      cellIds: 'Set(4, 5, 6)',
-    },
-  },
-  hierarchy: [
-    {
-      key: 'test',
-      children: [
-        { key: 'test-1' },
-        { key: 'test-2' },
-      ],
-    },
-  ],
+  ...mockCellSets1,
   loading: false,
   error: false,
 };
