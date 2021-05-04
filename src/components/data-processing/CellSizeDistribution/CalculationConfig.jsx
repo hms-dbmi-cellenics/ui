@@ -17,6 +17,8 @@ const CellSizeDistributionConfig = (props) => {
     config, disabled, updateSettings, highestUmi,
   } = props;
 
+  const withinRange = (cellSize) => Math.max(Math.min(cellSize, highestUmi ?? 17000), 0);
+
   return (
     <>
 
@@ -28,14 +30,15 @@ const CellSizeDistributionConfig = (props) => {
           <InputNumber
             value={config.minCellSize}
             onChange={(value) => {
-              const adjustedCellSize = Math.max(Math.min(value, highestUmi), 0);
-              updateSettings({ minCellSize: adjustedCellSize });
+              updateSettings({ minCellSize: withinRange(value) });
             }}
-            onPressEnter={(e) => updateSettings({ minCellSize: e.target.value })}
+            onPressEnter={(e) => {
+              updateSettings({ minCellSize: withinRange(e.target.value) });
+            }}
             placeholder={10800}
             step={100}
             disabled={disabled}
-            max={highestUmi}
+            max={highestUmi ?? 17000}
             min={0}
           />
         </Space>

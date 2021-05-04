@@ -101,10 +101,10 @@ const CellSizeDistribution = (props) => {
     (state) => state.componentConfig[plots.histogram.plotUuid]?.plotData,
   );
 
-  const highestUmiRef = useRef(0);
+  const highestUmiRef = useRef(null);
 
   useEffect(() => {
-    highestUmiRef.current = _.maxBy(histogramPlotData, (datum) => datum.u)?.u ?? 0;
+    highestUmiRef.current = _.maxBy(histogramPlotData, (datum) => datum.u)?.u ?? null;
   }, [histogramPlotData]);
 
   useEffect(() => {
