@@ -12,6 +12,7 @@ import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
+import UploadDetailsModal from './UploadDetailsModal';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import {
@@ -27,6 +28,7 @@ const { Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const dispatch = useDispatch();
 
   const { data: speciesData } = useSWR(
@@ -86,7 +88,7 @@ const ProjectDetails = ({ width, height }) => {
 
     if (status === UploadStatus.UPLOADED) {
       return (
-        <Space>
+        <Space onClick={() => setUploadDetailsModalVisible(true)}>
           <div style={{
             whiteSpace: 'nowrap',
             height: '35px',
@@ -124,7 +126,7 @@ const ProjectDetails = ({ width, height }) => {
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
         <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
-          <Space>
+          <Space onClick={() => { setUploadDetailsModalVisible(true); }}>
             <Text type='danger'>{status.message()}</Text>
             <Tooltip placement='bottom' title='Retry' mouseLeaveDelay={0}>
               <Button
@@ -301,6 +303,12 @@ const ProjectDetails = ({ width, height }) => {
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
         onUpload={uploadFiles}
+      />
+      <UploadDetailsModal
+        visible={uploadDetailsModalVisible}
+        onRetry={() => { }}
+        onReplace={() => { }}
+        onCancel={() => setUploadDetailsModalVisible(false)}
       />
       <div width={width} height={height}>
         <PageHeader

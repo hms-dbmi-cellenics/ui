@@ -57,8 +57,6 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
 
     try {
       await putInS3(bucketKey, loadedFile, dispatch, sample, file);
-      console.log('StorageGetDebug');
-      console.log(await Storage.get(bucketKey));
     } catch (e) {
       dispatch(updateSampleFile(sample.uuid, {
         ...file,
