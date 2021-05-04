@@ -26,7 +26,7 @@ import {
 } from '../../redux/actions/projects';
 import processUpload from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
-import { metadataNameToKey, temporaryMetadataKey } from '../../utils/metadataUtils';
+import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
 import UploadStatus from '../../utils/UploadStatus';
 
@@ -185,15 +185,20 @@ const ProjectDetails = ({ width, height }) => {
     }
   };
 
-  const renderEditableFieldCell = (initialText, cellText, record, dataIndex, rowIdx) => (
+  const renderEditableFieldCell = (
+    initialText,
+    cellText,
+    record,
+    dataIndex,
+    rowIdx,
+    onAfterSubmit,
+  ) => (
     <div key={`cell-${dataIndex}-${rowIdx}`} style={{ whiteSpace: 'nowrap' }}>
       <Space>
         <EditableField
           deleteEnabled={false}
           value={cellText || initialText}
-          onAfterSubmit={(value) => {
-            dispatch(updateSample(record.uuid, { metadata: { [dataIndex]: value } }));
-          }}
+          onAfterSubmit={(value) => onAfterSubmit(value, cellText, record, dataIndex, rowIdx)}
         />
       </Space>
     </div>
@@ -219,7 +224,9 @@ const ProjectDetails = ({ width, height }) => {
       title: () => (
         <MetadataPopover
           onCreate={(name) => {
-            initializeMetadataColumn(name);
+            const newMetadataColumn = createInitializedMetadataColumn(name);
+            setTableColumns([...tableColumns, newMetadataColumn]);
+            dispatch(createMetadataTrack(name, activeProjectUuid));
           }}
           onCancel={() => {
             deleteMetadataColumn(key);
@@ -244,17 +251,19 @@ const ProjectDetails = ({ width, height }) => {
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
   };
 
-  const initializeMetadataColumn = (name) => {
+  const createInitializedMetadataColumn = (name) => {
     const key = metadataNameToKey(name);
 
-    const updatedMetadataColumn = {
+    const newMetadataColumn = {
       key,
       title: () => (
         <Space>
           <EditableField
             deleteEnabled
             onDelete={(e, currentName) => deleteMetadataColumn(currentName)}
-            onAfterSubmit={(newName) => dispatch(updateMetadataTrack(key, newName, activeProjectUuid))}
+            onAfterSubmit={(newName) => dispatch(
+              updateMetadataTrack(key, newName, activeProjectUuid),
+            )}
             value={name}
           />
           <MetadataEditor massEdit>
@@ -265,59 +274,73 @@ const ProjectDetails = ({ width, height }) => {
       fillInBy: <Input />,
       width: 200,
       dataIndex: key,
-      render: (cellValue, record, rowIdx) => renderEditableFieldCell('N.A.', cellValue, record, key, rowIdx),
+      render: (cellValue, record, rowIdx) => renderEditableFieldCell(
+        'N.A.',
+        cellValue,
+        record,
+        key,
+        rowIdx,
+        (newValue) => {
+          dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
+        },
+      ),
     };
-
-    setTableColumns([...tableColumns, updatedMetadataColumn]);
-    dispatch(createMetadataTrack(name, activeProjectUuid));
+    return newMetadataColumn;
   };
 
-  useEffect(() => {
-    const columns = [
-      {
-        key: 'sample',
-        title: 'Sample',
-        dataIndex: 'name',
-        fixed: true,
-        render: renderSampleCells,
-      },
-      {
-        key: 'barcodes',
-        title: 'Barcodes.csv',
-        dataIndex: 'barcodes',
-        render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
-      },
-      {
-        key: 'genes',
-        title: 'Genes.csv',
-        dataIndex: 'genes',
-        render: (tableCellData) => renderUploadCell('genes', tableCellData),
-      },
-      {
-        key: 'matrix',
-        title: 'Matrix.mtx',
-        dataIndex: 'matrix',
-        render: (tableCellData) => renderUploadCell('matrix', tableCellData),
-      },
-      {
-        key: 'species',
-        title: () => (
-          <Space>
-            <Text>Species</Text>
-            <MetadataEditor massEdit>
-              <SpeciesSelector data={sortedSpeciesData} />
-            </MetadataEditor>
-          </Space>
-        ),
-        fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
-        dataIndex: 'species',
-        render: (text) => renderEditableFieldCell('species', text),
-        width: 200,
-      },
-    ];
+  const columns = [
+    {
+      key: 'sample',
+      title: 'Sample',
+      dataIndex: 'name',
+      fixed: true,
+      render: renderSampleCells,
+    },
+    {
+      key: 'barcodes',
+      title: 'Barcodes.csv',
+      dataIndex: 'barcodes',
+      render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
+    },
+    {
+      key: 'genes',
+      title: 'Genes.csv',
+      dataIndex: 'genes',
+      render: (tableCellData) => renderUploadCell('genes', tableCellData),
+    },
+    {
+      key: 'matrix',
+      title: 'Matrix.mtx',
+      dataIndex: 'matrix',
+      render: (tableCellData) => renderUploadCell('matrix', tableCellData),
+    },
+    {
+      key: 'species',
+      title: () => (
+        <Space>
+          <Text>Species</Text>
+          <MetadataEditor massEdit>
+            <SpeciesSelector data={sortedSpeciesData} />
+          </MetadataEditor>
+        </Space>
+      ),
+      fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
+      dataIndex: 'species',
+      render: (text, record, rowIdx) => renderEditableFieldCell(
+        'species',
+        text,
+        record,
+        'species',
+        rowIdx,
+        (newValue) => dispatch(updateSample(record.uuid, { species: newValue })),
+      ),
+      width: 200,
+    },
+  ];
 
-    setTableColumns(columns);
-  }, []);
+  // useEffect(() => {
+
+  // }, [activeProjectUuid]);
 
   useEffect(() => {
     if (samples.ids.length === 0 || projects.ids.length === 0) {
@@ -325,6 +348,14 @@ const ProjectDetails = ({ width, height }) => {
       return;
     }
 
+    // Set table columns
+    const metadataColumns = projects[activeProjectUuid]?.metadataKeys.map(
+      (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
+    ) || [];
+
+    setTableColumns([...columns, ...metadataColumns]);
+
+    // Set table data
     const newData = projects[activeProjectUuid].samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
@@ -340,6 +371,7 @@ const ProjectDetails = ({ width, height }) => {
         genes: genesUpload,
         matrix: matrixUpload,
         species: 'N.A.',
+        ...samples[sampleUuid].metadata,
       };
     });
 
@@ -361,13 +393,16 @@ const ProjectDetails = ({ width, height }) => {
         <PageHeader
           title={activeProject.name}
           extra={[
-            <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
+            <Button onClick={() => setUploadModalVisible(true)}>Add samples</Button>,
             <Tooltip
               title='Add samples to add metadata'
               trigger='hover'
             >
               <Button
-                disabled={samples.ids.length === 0}
+                disabled={
+                  projects[activeProjectUuid]?.samples
+                  && projects[activeProjectUuid]?.samples.length === 0
+                }
                 onClick={() => createMetadataColumn()}
               >
                 Add metadata
