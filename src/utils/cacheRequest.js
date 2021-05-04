@@ -69,16 +69,23 @@ const fetchCachedWork = async (experimentId, timeout, body, workerPipelineStatus
   }
 
   const { pipeline: { startDate, status } } = workerPipelineStatus;
+  const environment = process.env.NODE_ENV;
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 
-  if (!startDate) {
-    throw new Error('Cannot submit work before the data processing pipeline has been started.');
+  if (environment === 'development') {
+    console.log('You are working locally. Therefore, you can fetch results for data exploration & plots and tables without having to run the platform first.');
+  } else {
+    if (!startDate) {
+      throw new Error('Cannot submit work before the data processing pipeline has been started.');
+    }
+
+    if (pipelineErrors.includes(status)) {
+      throw new Error('Cannot submit work before the data processing pipeline has been started.');
+    }
   }
 
-  if (pipelineErrors.includes(status)) {
-    throw new Error('Cannot submit work before the data processing pipeline has been started.');
-  }
-
+  // there is a hidden bug in this code: it assumes that we will never have to fetch gene expression before having to fetch gene properties
+  // while this is true at the moment, it can change in the future and then the user will be able to get expression for genes without running the platform first
   if (body.name === 'GeneExpression') {
     return fetchCachedGeneExpressionWork(experimentId, timeout, body, workerPipelineStatus);
   }
