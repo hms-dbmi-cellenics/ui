@@ -3,7 +3,11 @@ import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const TIMEOUT_SECONDS = 90;
 
-const loadEmbedding = (experimentId, embeddingType, forceReload) => async (dispatch, getState) => {
+const loadEmbedding = (
+  experimentId,
+  embeddingType,
+  forceReload = false,
+) => async (dispatch, getState) => {
   // If a previous load was initiated, hold off on it until that one is executed.
   if (!forceReload && (
     getState().embeddings[embeddingType]?.loading
