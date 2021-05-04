@@ -5,7 +5,7 @@ import { DefaultSeo } from 'next-seo';
 import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
-import Amplify from 'aws-amplify';
+import Amplify, { Storage } from 'aws-amplify';
 import _ from 'lodash';
 import AWS from 'aws-sdk';
 import { Credentials } from '@aws-amplify/core';
@@ -40,6 +40,13 @@ Router.events.on('routeChangeError', () => NProgress.done());
 
 Amplify.configure({
   ssr: true,
+});
+
+// Configure Amplify to not use prefix when uploading to public folder, instead of '/'
+Storage.configure({
+  customPrefix: {
+    public: '',
+  },
 });
 
 mockCredentialsForInframock();
