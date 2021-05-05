@@ -40,10 +40,10 @@ const CategoricalEmbeddingPlot = (props) => {
       dispatch(loadCellSets(experimentId));
     }
 
-    if (!embeddingData) {
+    if (!embeddingData && embeddingSettings?.method) {
       dispatch(loadEmbedding(experimentId, embeddingSettings.method));
     }
-  }, [experimentId, embeddingSettings.method]);
+  }, [experimentId, embeddingSettings?.method]);
 
   useEffect(() => {
     if (!config
