@@ -8,7 +8,7 @@ const samplesMetadataDelete = (state, action) => {
     ...state,
     [sampleUuid]: {
       ...state[sampleUuid],
-      metadataKey,
+      metadata: newMetadata,
     },
   };
 };

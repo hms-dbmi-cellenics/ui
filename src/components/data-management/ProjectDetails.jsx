@@ -4,7 +4,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
-import _, { sample } from 'lodash';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 
@@ -264,7 +264,7 @@ const ProjectDetails = ({ width, height }) => {
             deleteEnabled
             onDelete={(e, currentName) => deleteMetadataColumn(currentName)}
             onAfterSubmit={(newName) => dispatch(
-              updateMetadataTrack(key, newName, activeProjectUuid),
+              updateMetadataTrack(name, newName, activeProjectUuid),
             )}
             value={name}
           />
@@ -387,10 +387,6 @@ const ProjectDetails = ({ width, height }) => {
       width: 200,
     },
   ];
-
-  // useEffect(() => {
-
-  // }, [activeProjectUuid]);
 
   useEffect(() => {
     if (samples.ids.length === 0 || projects.ids.length === 0) {
