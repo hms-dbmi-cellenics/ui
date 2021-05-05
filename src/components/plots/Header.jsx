@@ -43,7 +43,9 @@ const Header = (props) => {
       // config fields that are set dynamically on component render should not be compared to their initial values
       frequency: ['proportionGrouping', 'xAxisGrouping'],
       embeddingContinuous: ['shownGene'],
+      violin: ['shownGene'],
     };
+
     const currentKey = Object.keys(config).find((key) => config[key] === otherValue || false);
     if (ignoredFields[plotType]?.includes(currentKey)) {
       return true;
