@@ -83,6 +83,10 @@ const ProjectDetails = ({ width, height }) => {
     setSortedSpeciesData(d);
   }, [speciesData]);
 
+  const setUploadDetailsModalValues = (sampleUuid) => {
+    const a = samples[sampleUuid].files;
+  };
+
   const renderUploadCell = (columnId, tableCellData) => {
     const { status, progress = null } = tableCellData;
 
@@ -306,7 +310,12 @@ const ProjectDetails = ({ width, height }) => {
       />
       <UploadDetailsModal
         visible={uploadDetailsModalVisible}
-        onRetry={() => { }}
+        onRetry={() => {
+          // onRetry={(sampleUuid, fileName) => {
+          // const { bundle } = samples[sampleUuid];
+
+          setUploadDetailsModalVisible(false);
+        }}
         onReplace={() => { }}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />

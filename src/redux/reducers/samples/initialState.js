@@ -8,7 +8,7 @@ const sampleTemplate = {
   lastModified: null,
   complete: false,
   error: false,
-  fileNames: [],
+  fileNames: new Set(),
   files: {},
 };
 
