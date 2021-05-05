@@ -4,18 +4,18 @@ import React, {
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Collapse, InputNumber, Form, Select, Typography, Tooltip, Slider, Button, Alert,
+  Collapse, InputNumber, Form, Select, Typography, Tooltip, Button, Alert,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import PreloadContent from '../../PreloadContent';
-
 import {
   updateProcessingSettings,
   saveProcessingSettings,
 } from '../../../redux/actions/experimentSettings';
 
 import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
+import { loadEmbedding } from '../../../redux/actions/embedding';
 
 import SliderWithInput from '../../SliderWithInput';
 
@@ -118,7 +118,7 @@ const CalculationConfig = (props) => {
   const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
-    onPipelineRun();
+    dispatch(loadEmbedding(experimentId, embeddingMethod, true));
   };
   const newChanges = changes;
 
@@ -402,6 +402,8 @@ const CalculationConfig = (props) => {
               step={0.1}
               value={resolution}
               onUpdate={(value) => {
+                if (value === resolution) { return; }
+
                 setResolution(value);
                 updateSettings({
                   clusteringSettings: {

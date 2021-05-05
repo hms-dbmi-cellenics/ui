@@ -475,6 +475,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                       steps[stepIdx].key,
                       { enabled: !processingConfig[steps[stepIdx].key]?.enabled },
                     ));
+                    dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
                     setChangesOutstanding(true);
                   }}>
                   {
