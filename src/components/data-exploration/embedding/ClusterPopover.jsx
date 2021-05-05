@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
 import EditableField from '../../EditableField';
 import colorProvider from '../../../utils/colorProvider';
 
-const MetadataPopover = (props) => {
+const ClusterPopover = (props) => {
   const {
     popoverPosition, onCreate, onCancel, message, children, ...restOfProps
   } = props;
@@ -54,13 +54,13 @@ const MetadataPopover = (props) => {
   /* eslint-enable react/jsx-props-no-spreading */
 };
 
-MetadataPopover.defaultProps = {
+ClusterPopover.defaultProps = {
   popoverPosition: null,
   message: 'Add cell set',
   children: null,
 };
 
-MetadataPopover.propTypes = {
+ClusterPopover.propTypes = {
   onCreate: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   popoverPosition: PropTypes.object,
@@ -68,4 +68,4 @@ MetadataPopover.propTypes = {
   message: PropTypes.string,
 };
 
-export default MetadataPopover;
+export default ClusterPopover;
