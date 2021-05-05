@@ -72,11 +72,11 @@ const initialState = {
       },
       'louvain-0': {
         name: 'louvain 0',
-        cellIds: [5, 6, 7],
+        cellIds: new Set([5, 6, 7]),
       },
       'louvain-1': {
         name: 'louvain 1',
-        cellIds: [1, 2, 3],
+        cellIds: new Set([1, 2, 3]),
       },
     },
     hidden: new Set([5]),

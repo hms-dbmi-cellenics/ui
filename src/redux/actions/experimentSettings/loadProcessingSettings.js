@@ -23,7 +23,6 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
 
     if (response.ok) {
       const data = await response.json();
-
       dispatch({
         type: EXPERIMENT_SETTINGS_PROCESSING_LOAD,
         payload: {

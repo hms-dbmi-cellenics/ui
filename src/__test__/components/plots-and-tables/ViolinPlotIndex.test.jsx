@@ -91,16 +91,17 @@ describe('ViolinIndex', () => {
     await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(2));
   };
 
-  const getCanvasStrings = () => {
-    const canvas = rtl.screen.getByRole('graphics-document').children[0];
+  const expectOcurrencesInCanvas = async (str, ocurrences) => {
+    const getCanvas = () => rtl.screen.getByRole('graphics-document').children[0];
     // eslint-disable-next-line no-underscore-dangle
-    return canvas.getContext('2d').__getEvents()
+    const getCanvasStrings = (canvas) => canvas.getContext('2d').__getEvents()
       .filter((event) => event.type === 'fillText')
       .map((event) => event.props.text);
-  };
-  const ocurrencesInCanvas = (str) => {
-    const strings = getCanvasStrings();
-    return strings.filter((inCanvas) => inCanvas.includes(str)).length;
+    const canvas = getCanvas();
+    await rtl.waitFor(() => {
+      const strings = getCanvasStrings(canvas);
+      expect(strings.filter((inCanvas) => inCanvas.includes(str)).length).toBe(ocurrences);
+    });
   };
   it('loads by default the gene with the highest dispersion, allows another to be selected, and updates the plot\'s title', async () => {
     await renderViolinIndex();
@@ -120,7 +121,7 @@ describe('ViolinIndex', () => {
     expect(store.getState().componentConfig[plotUuid].config.shownGene).toBe(newGeneShown);
 
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
-    expect(getCanvasStrings()).toContain(newGeneShown);
+    await expectOcurrencesInCanvas(newGeneShown, 1);
   });
 
   it('allows selection of the grouping/points, defaulting to louvain and All', async () => {
@@ -156,12 +157,12 @@ describe('ViolinIndex', () => {
     expect(inputFields[1].parentNode.parentNode).toHaveTextContent('All');
 
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
-    expect(getCanvasStrings()).toContain('cluster a');
+    await expectOcurrencesInCanvas('cluster a', 1);
 
     // Testing the effect of grouping by sample
     store.dispatch(updatePlotConfig(plotUuid, { selectedCellSet: 'sample' }));
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
-    expect(getCanvasStrings()).toContain('Sample 1');
+    await expectOcurrencesInCanvas('Sample 1', 1);
   });
   it('has a Data Tranformation panel', async () => {
     await renderViolinIndex();
@@ -174,13 +175,13 @@ describe('ViolinIndex', () => {
     // Normalization
     const weAreAbleToGetRawValue = false; // TO-DO
     if (weAreAbleToGetRawValue) {
-      expect(getCanvasStrings()).toContain('Normalised Expression');
+      await expectOcurrencesInCanvas('Normalised Expression', 1);
       const radioButtons = rtl.getAllByRole(panelContainer, 'radio');
       expect(radioButtons[0].parentNode.parentNode).toHaveTextContent('Normalised');
       expect(radioButtons[1].parentNode.parentNode).toHaveTextContent('Raw values');
       userEvent.click(radioButtons[1]);
       await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
-      expect(getCanvasStrings()).toContain('Raw Expression');
+      await expectOcurrencesInCanvas('Raw Expression', 1);
     }
 
     // Slider
@@ -231,7 +232,7 @@ describe('ViolinIndex', () => {
     expect(radioButtons[1].parentNode.parentNode).toHaveTextContent('Hide');
 
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
-    expect(ocurrencesInCanvas('cluster a')).toBe(1);
+    await expectOcurrencesInCanvas('cluster a', 1);
 
     userEvent.click(radioButtons[0]);
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
@@ -241,7 +242,7 @@ describe('ViolinIndex', () => {
     expect(radioButtons[2]).toBeChecked();
     expect(radioButtons[2].parentNode.parentNode).toHaveTextContent('Top');
 
-    expect(ocurrencesInCanvas('cluster a')).toBe(2);
+    await expectOcurrencesInCanvas('cluster a', 2);
   });
 
   it('allows the gene name to be overriden as the title and clears the override upon new gene selection', async () => {
@@ -257,13 +258,13 @@ describe('ViolinIndex', () => {
     let panelContainer = mainSchema.parentElement;
     const titleInput = rtl.getByRole(panelContainer, 'textbox');
     expect(titleInput).toHaveValue('');
-    expect(ocurrencesInCanvas('MockGeneWithHighestDispersion')).toBe(1);
+    await expectOcurrencesInCanvas('MockGeneWithHighestDispersion', 1);
 
     const titleOverride = 'Title Override';
     generateSpecSpy.mockClear();
     userEvent.type(titleInput, titleOverride);
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalled());
-    expect(ocurrencesInCanvas('MockGeneWithHighestDispersion')).toBe(0);
+    await expectOcurrencesInCanvas('MockGeneWithHighestDispersion', 0);
     // Cannot look for title ocurrence because of re-draw being triggered by firts letters typed
     // expect(ocurrencesInCanvas(titleOverride)).toBe(1);
 
@@ -276,7 +277,7 @@ describe('ViolinIndex', () => {
     userEvent.type(geneInput, `{selectall}{del}${newGeneShown}`);
     userEvent.click(rtl.getByRole(panelContainer, 'button'));
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalled());
-    expect(ocurrencesInCanvas(newGeneShown)).toBe(1);
+    await expectOcurrencesInCanvas(newGeneShown, 1);
   });
 
   it.skip('has an Axis and Margins panel (TO-DO)', async () => {
@@ -300,7 +301,7 @@ describe('ViolinIndex', () => {
     expect(radioButtons[1].parentNode.parentNode).toHaveTextContent('Hide');
 
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
-    expect(ocurrencesInCanvas('cluster a')).toBe(1);
+    await expectOcurrencesInCanvas('cluster a', 1);
 
     userEvent.click(radioButtons[0]);
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
@@ -310,6 +311,6 @@ describe('ViolinIndex', () => {
     expect(radioButtons[2]).toBeChecked();
     expect(radioButtons[2].parentNode.parentNode).toHaveTextContent('Top');
 
-    expect(ocurrencesInCanvas('cluster a')).toBe(2);
+    await expectOcurrencesInCanvas('cluster a', 2);
   });
 });

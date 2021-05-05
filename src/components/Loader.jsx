@@ -42,7 +42,7 @@ const fastLoad = (message) => (
     </div>
     <p>
       <Text>
-        {message || 'We&apos;re getting your data...'}
+        {message || "We're getting your data..."}
       </Text>
     </p>
   </>
