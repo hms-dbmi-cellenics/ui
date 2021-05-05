@@ -124,7 +124,6 @@ describe('ViolinIndex', () => {
   });
 
   it('allows selection of the grouping/points, defaulting to louvain and All', async () => {
-    jest.setTimeout(30000);
     await renderViolinIndex();
 
     const dataSelection = rtl.screen.getAllByRole('tab')[1];

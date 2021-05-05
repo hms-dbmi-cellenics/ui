@@ -105,7 +105,7 @@ const Header = (props) => {
     `/v1/experiments/${experimentId}`,
     getFromApiExpectOK,
   );
-  console.log('data from api is ', data);
+
   if (!data || !config) {
     return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
   }
