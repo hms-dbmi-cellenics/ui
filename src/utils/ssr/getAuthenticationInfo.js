@@ -58,7 +58,7 @@ const getAuthenticationInfo = async () => {
     ),
   ]);
 
-  const sandboxId = process.env.SANDBOX_ID || 'develop';
+  const sandboxId = process.env.SANDBOX_ID || 'default';
 
   /**
    * NOTE: if no environment is supplied (i.e. local development)

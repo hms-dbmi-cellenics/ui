@@ -1,9 +1,12 @@
 import experimentSettingsReducer from '../../../redux/reducers/experimentSettings';
 import initialState from '../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState from '../../experimentSettings.mock';
+
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
+  EXPERIMENT_SETTINGS_SAMPLE_UPDATE,
 } from '../../../redux/actionTypes/experimentSettings';
 
 import errorTypes from '../../../redux/actions/experimentSettings/errorTypes';
@@ -84,6 +87,41 @@ describe('experimentSettingsReducer', () => {
       });
 
     expect(newState.processing.configureEmbedding.embeddingSettings.newProperty).toEqual({ name: 'a', value: 'b' });
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Updates sample settings properly', () => {
+    const newState = experimentSettingsReducer(initialExperimentState,
+      {
+        type: EXPERIMENT_SETTINGS_SAMPLE_UPDATE,
+        payload:
+        {
+          settingName: 'cellSizeDistribution',
+          sampleId: 'sample-KO',
+          diff: { filterSettings: { binStep: 400 } },
+        },
+      });
+
+    const expectedCellSizeDistribution = {
+      enabled: true,
+      auto: true,
+      filterSettings: {
+        minCellSize: 10800,
+        binStep: 200,
+      },
+      'sample-KO': {
+        auto: true,
+        filterSettings: {
+          minCellSize: 10800,
+          binStep: 400,
+        },
+      },
+    };
+
+    // New entry is created for sample-KO with the new binStep while default value isn't changed
+    expect(newState.processing.cellSizeDistribution).toEqual(expectedCellSizeDistribution);
+
+    // Nothing else changes
     expect(newState).toMatchSnapshot();
   });
 });

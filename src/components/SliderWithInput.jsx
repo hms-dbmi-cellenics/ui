@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   Slider, InputNumber,
 } from 'antd';
+
+import _ from 'lodash';
 
 import useUpdateThrottled from '../utils/customHooks/useUpdateThrottled';
 
@@ -15,8 +17,12 @@ const SliderWithInput = (props) => {
 
   const [localValue, setLocalValue] = useState(value);
 
+  const debouncedOnChange = useCallback(
+    _.debounce((changedValue) => handleChange(changedValue), 1000), [],
+  );
+
   useEffect(() => {
-    setLocalValue(value);
+    setLocalValue(parseFloat(value));
   }, [value]);
 
   const stepToSet = step ?? max / 200;
@@ -39,11 +45,18 @@ const SliderWithInput = (props) => {
         min={min}
         max={max}
         onChange={(changedValue) => {
+          if (changedValue === value) { return; }
+
           const changedValueWithinBounds = Math.min(Math.max(changedValue, min), max);
+
           setLocalValue(changedValueWithinBounds);
+
+          debouncedOnChange(changedValueWithinBounds);
         }}
         onPressEnter={() => { handleChange(localValue); }}
-        onStep={() => { handleChange(localValue); }}
+        onStep={(newValue) => {
+          handleChange(newValue);
+        }}
         step={stepToSet}
         disabled={disabled}
         style={{ width: 80, display: 'inline-block' }}

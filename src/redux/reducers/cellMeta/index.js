@@ -3,6 +3,7 @@ import {
   CELL_META_LOADED,
   CELL_META_ERROR,
 } from '../../actionTypes/cellMeta';
+import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
 
 import initialState from './initialState';
 
@@ -15,15 +16,15 @@ const cellMetaReducer = (state = initialState, action) => {
     case CELL_META_LOADING: {
       return cellMetaLoading(state, action);
     }
-
     case CELL_META_LOADED: {
       return cellMetaLoaded(state, action);
     }
-
     case CELL_META_ERROR: {
       return cellMetaError(state, action);
     }
-
+    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+      return initialState;
+    }
     default: {
       return state;
     }
