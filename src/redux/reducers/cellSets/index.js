@@ -7,6 +7,7 @@ import {
   CELL_SETS_ERROR,
   CELL_SETS_CLUSTERING_UPDATING, CELL_SETS_CLUSTERING_UPDATED,
 } from '../../actionTypes/cellSets';
+import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
 
 import initialState from './initialState';
 
@@ -27,55 +28,45 @@ const cellSetsReducer = (state = initialState, action) => {
     case CELL_SETS_LOADING: {
       return cellSetsLoading(state, action);
     }
-
     case CELL_SETS_LOADED: {
       return cellSetsLoaded(state, action);
     }
-
     case CELL_SETS_UPDATE_PROPERTY: {
       return cellSetsUpdateProperty(state, action);
     }
-
     case CELL_SETS_DELETE: {
       return cellSetsDelete(state, action);
     }
-
     case CELL_SETS_UPDATE_HIERARCHY: {
       return cellSetsUpdateHierarchy(state, action);
     }
-
     case CELL_SETS_CREATE: {
       return cellSetsCreate(state, action);
     }
-
     case CELL_SETS_SET_SELECTED: {
       return cellSetsSetSelected(state, action);
     }
-
     case CELL_SETS_HIDE: {
       return cellSetsHide(state, action);
     }
-
     case CELL_SETS_UNHIDE: {
       return cellSetsUnhide(state, action);
     }
-
     case CELL_SETS_UNHIDE_ALL: {
       return cellSetsUnhideAll(state, action);
     }
-
     case CELL_SETS_CLUSTERING_UPDATING: {
       return cellSetsClusteringUpdating(state, action);
     }
-
     case CELL_SETS_CLUSTERING_UPDATED: {
       return cellSetsClusteringUpdated(state, action);
     }
-
     case CELL_SETS_ERROR: {
       return cellSetsError(state, action);
     }
-
+    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+      return initialState;
+    }
     default: {
       return state;
     }

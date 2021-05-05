@@ -3,12 +3,13 @@ import {
   EMBEDDINGS_LOADED,
   EMBEDDINGS_LOADING,
   EMBEDDINGS_ERROR,
-  EMBEDDINGS_RESET,
 } from '../../actionTypes/embeddings';
+
+import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
+
 import embeddingsLoading from './embeddingsLoading';
 import embeddingsLoaded from './embeddingsLoaded';
 import embeddingsError from './embeddingsError';
-import embeddingsReset from './embeddingsReset';
 
 const notificationsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -24,8 +25,8 @@ const notificationsReducer = (state = initialState, action) => {
       return embeddingsError(state, action);
     }
 
-    case EMBEDDINGS_RESET: {
-      return embeddingsReset(state, action);
+    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+      return initialState;
     }
 
     default: {

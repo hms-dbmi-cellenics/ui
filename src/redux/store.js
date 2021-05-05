@@ -15,10 +15,9 @@ const bindMiddleware = (middleware) => {
   return applyMiddleware(...middleware);
 };
 
-const getStore = (initialState) => {
+const makeStore = () => {
   const store = createStore(
     rootReducer,
-    initialState,
     bindMiddleware([thunk]),
   );
 
@@ -26,13 +25,13 @@ const getStore = (initialState) => {
   if (module.hot) {
     module.hot.accept('./reducers', () => {
       const createNextReducer = require('./reducers').default;
-      store.replaceReducer(createNextReducer(initialState));
+      store.replaceReducer(createNextReducer(rootReducer));
     });
   }
 
   return store;
 };
 
-const wrapper = createWrapper(getStore, { debug: true });
+const wrapper = createWrapper(makeStore);
 
-export default wrapper;
+export { wrapper, makeStore };

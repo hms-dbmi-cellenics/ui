@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config, plotData, plotDataCategoryName) => {
+const generateSpec = (config, plotData) => {
   let legend = [];
 
   const colorFieldName = plotData[0]?.color ? 'color' : 'col';
@@ -13,7 +13,7 @@ const generateSpec = (config, plotData, plotDataCategoryName) => {
     legend = [
       {
         fill: 'cellSetColors',
-        title: 'Cluster Name',
+        title: config?.legend.title || 'Cluster Name',
         titleColor: config?.colour.masterColour,
         type: 'symbol',
         orient: config?.legend.position,
@@ -57,7 +57,7 @@ const generateSpec = (config, plotData, plotDataCategoryName) => {
         source: 'values',
         transform: [
           {
-            type: 'aggregate', groupby: [plotDataCategoryName], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
+            type: 'aggregate', groupby: ['cluster'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
           },
         ],
       },
@@ -84,13 +84,13 @@ const generateSpec = (config, plotData, plotDataCategoryName) => {
         name: 'cellSetColors',
         type: 'ordinal',
         range: { data: 'values', field: colorFieldName },
-        domain: { data: 'values', field: plotDataCategoryName, sort: true },
+        domain: { data: 'values', field: 'cluster', sort: true },
       },
       {
         name: 'sampleToName',
         type: 'ordinal',
-        range: { data: 'values', field: plotDataCategoryName },
-        domain: { data: 'values', field: plotDataCategoryName },
+        range: { data: 'values', field: 'cluster' },
+        domain: { data: 'values', field: 'cluster' },
       },
     ],
     axes: [
@@ -143,8 +143,8 @@ const generateSpec = (config, plotData, plotDataCategoryName) => {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
             size: { value: config?.marker.size },
-            stroke: { scale: 'cellSetColors', field: plotDataCategoryName },
-            fill: { scale: 'cellSetColors', field: plotDataCategoryName },
+            stroke: { scale: 'cellSetColors', field: 'cluster' },
+            fill: { scale: 'cellSetColors', field: 'cluster' },
             shape: { value: config?.marker.shape },
             fillOpacity: { value: config?.marker.opacity / 10 },
           },
@@ -157,7 +157,7 @@ const generateSpec = (config, plotData, plotDataCategoryName) => {
           enter: {
             x: { scale: 'x', field: 'meanX' },
             y: { scale: 'y', field: 'meanY' },
-            text: { scale: 'sampleToName', field: plotDataCategoryName },
+            text: { scale: 'sampleToName', field: 'cluster' },
             fontSize: { value: config?.label.size },
             strokeWidth: { value: 1.2 },
             fill: { value: config?.colour.masterColour },
@@ -196,7 +196,7 @@ const filterCells = (cellSets, selectedCellSet) => {
 
     return cells.map((cellId) => ({
       cellId,
-      sample: cellSets.properties[key].name,
+      cluster: cellSets.properties[key].name,
       color: cellSets.properties[key].color,
     }));
   });
@@ -208,13 +208,18 @@ const filterCells = (cellSets, selectedCellSet) => {
 const generateData = (cellSets, selectedCellSet, embeddingData) => {
   const newCellSets = filterCells(cellSets, selectedCellSet);
 
-  const test = newCellSets.filter((d) => d.cellId < embeddingData.length).map((data) => (
-    {
-      ...data,
-      x: embeddingData[data.cellId][0],
-      y: embeddingData[data.cellId][1],
-    }
-  ));
+  const test = newCellSets
+    .filter((d) => d.cellId < embeddingData.length)
+    .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
+    .map((data) => {
+      const { cellId, ...leftOverData } = data;
+
+      return {
+        ...leftOverData,
+        x: embeddingData[cellId][0],
+        y: embeddingData[cellId][1],
+      };
+    });
 
   return test;
 };

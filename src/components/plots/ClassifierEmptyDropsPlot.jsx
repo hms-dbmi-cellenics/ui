@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
@@ -7,14 +7,14 @@ import generateSpec from '../../utils/plotSpecs/generateClassifierEmptyDropsPlot
 
 const ClassifierEmptyDropsPlot = (props) => {
   const {
-    config, plotData, actions,
+    config, expConfig, plotData, actions,
   } = props;
 
   const [plotSpec, setPlotSpec] = useState(config);
 
   useEffect(() => {
-    setPlotSpec(generateSpec(config, plotData));
-  }, [config, plotData]);
+    setPlotSpec(generateSpec(config, expConfig, plotData));
+  }, [config, expConfig, plotData]);
 
   const render = () => {
     if (!plotData.length) {
@@ -39,6 +39,7 @@ const ClassifierEmptyDropsPlot = (props) => {
 
 ClassifierEmptyDropsPlot.propTypes = {
   config: PropTypes.object.isRequired,
+  expConfig: PropTypes.object.isRequired,
   plotData: PropTypes.array,
   actions: PropTypes.oneOfType([
     PropTypes.bool,

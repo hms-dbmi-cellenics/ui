@@ -80,7 +80,6 @@ describe('SelectionIndicator', () => {
     );
     const button = component.find(Button);
     const text = component.find(Text);
-
     // There should be two buttons.
     expect(button.length).toEqual(3);
 

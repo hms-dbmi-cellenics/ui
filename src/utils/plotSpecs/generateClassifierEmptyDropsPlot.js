@@ -1,4 +1,4 @@
-const generateSpec = (config, plotData) => ({
+const generateSpec = (config, expConfig, plotData) => ({
   $schema: 'https://vega.github.io/schema/vega/v5.json',
   width: config.dimensions.width,
   height: config.dimensions.height,
@@ -25,13 +25,13 @@ const generateSpec = (config, plotData) => ({
           size: [{ signal: 'width' }, { signal: 'height' }],
           x: { expr: "scale('x', datum.log_u)" },
           y: { expr: "scale('y', datum.FDR)" },
-          bandwidth: [config.bandwidth, config.bandwidth],
-          cellSize: 25,
+          bandwidth: [15, 15],
+          cellSize: 15,
         },
         {
           type: 'isocontour',
           field: 'grid',
-          levels: 10,
+          levels: 6,
         },
       ],
     },
@@ -124,19 +124,19 @@ const generateSpec = (config, plotData) => ({
         },
       ],
     },
-    // {
-    //   type: 'rule',
-    //   encode: {
-    //     update: {
-    //       x: { value: 0 },
-    //       x2: { field: { group: 'width' } },
-    //       y: { scale: 'y', value: config.minProbability, round: false },
-    //       strokeWidth: { value: 2 },
-    //       strokeDash: { value: [8, 4] },
-    //       stroke: { value: 'red' },
-    //     },
-    //   },
-    // },
+    {
+      type: 'rule',
+      encode: {
+        update: {
+          x: { value: 0 },
+          x2: { field: { group: 'width' } },
+          y: { scale: 'y', value: expConfig.FDR, round: false },
+          strokeWidth: { value: 2 },
+          strokeDash: { value: [8, 4] },
+          stroke: { value: 'red' },
+        },
+      },
+    },
   ],
   title:
   {

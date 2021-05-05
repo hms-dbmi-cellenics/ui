@@ -1,6 +1,11 @@
 const EXPERIMENT_SETTINGS = 'experimentSettings';
 
 /**
+ * Loaded general information about the experiment.
+ */
+const EXPERIMENT_SETTINGS_INFO_UPDATE = `${EXPERIMENT_SETTINGS}/updateInfo`;
+
+/**
  * Sets the state of the processing component to a state displayable by the system.
  */
 const EXPERIMENT_SETTINGS_PROCESSING_LOAD = `${EXPERIMENT_SETTINGS}/loadProcessing`;
@@ -16,9 +21,19 @@ const EXPERIMENT_SETTINGS_PROCESSING_ERROR = `${EXPERIMENT_SETTINGS}/errorProces
 const EXPERIMENT_SETTINGS_PROCESSING_UPDATE = `${EXPERIMENT_SETTINGS}/updateProcessing`;
 
 /**
+ * Updates the processing component's configuration.
+ */
+const EXPERIMENT_SETTINGS_SAMPLE_UPDATE = `${EXPERIMENT_SETTINGS}/updateSampleSettings`;
+
+/**
  * Saves the current state of the configuration to DynamoDB.
  */
 const EXPERIMENT_SETTINGS_PROCESSING_SAVE = `${EXPERIMENT_SETTINGS}/saveProcessing`;
+
+/**
+ * Signals that a pipeline run was initiated by the user.
+ */
+const EXPERIMENT_SETTINGS_PIPELINE_START = `${EXPERIMENT_SETTINGS}/startPipeline`;
 
 /**
  * Starts loading pipeline status from the API.
@@ -36,11 +51,14 @@ const EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED = `${EXPERIMENT_SETTINGS}/pipel
 const EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR = `${EXPERIMENT_SETTINGS}/pipelineStatusError`;
 
 export {
+  EXPERIMENT_SETTINGS_INFO_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+  EXPERIMENT_SETTINGS_SAMPLE_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_SAVE,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+  EXPERIMENT_SETTINGS_PIPELINE_START,
 };

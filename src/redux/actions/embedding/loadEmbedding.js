@@ -3,16 +3,16 @@ import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const TIMEOUT_SECONDS = 90;
 
-const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState) => {
+const loadEmbedding = (
+  experimentId,
+  embeddingType,
+  forceReload = false,
+) => async (dispatch, getState) => {
   // If a previous load was initiated, hold off on it until that one is executed.
-  if (getState().embeddings[embeddingType]?.loading
-    || getState().embeddings[embeddingType]?.data.length) {
-    return null;
-  }
-
-  const { pipeline } = getState().experimentSettings.pipelineStatus.status;
-
-  if (!pipeline?.startDate) {
+  if (!forceReload && (
+    getState().embeddings[embeddingType]?.loading
+    || getState().embeddings[embeddingType]?.data.length
+  )) {
     return null;
   }
 
@@ -41,11 +41,13 @@ const loadEmbedding = (experimentId, embeddingType) => async (dispatch, getState
     name: 'GetEmbedding',
     type: embeddingType,
     config: methodSettings[embeddingType],
-    lastRun: pipeline.startDate,
   };
 
   try {
-    const data = await fetchCachedWork(experimentId, TIMEOUT_SECONDS, body, 3600, 1);
+    const data = await fetchCachedWork(
+      experimentId, TIMEOUT_SECONDS, body,
+      getState().experimentSettings.pipelineStatus.status,
+    );
     return dispatch({
       type: EMBEDDINGS_LOADED,
       payload: {

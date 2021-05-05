@@ -10,8 +10,6 @@ Object {
 }
 `;
 
-exports[`embeddingsReducer Resets embedding correctly 1`] = `Object {}`;
-
 exports[`embeddingsReducer Sets error conditions 1`] = `
 Object {
   "fghfgdh": Object {

@@ -6,12 +6,12 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { Vega } from 'react-vega';
 
-import { Skeleton } from 'antd';
+import { ClipLoader } from 'react-spinners';
 
 import CategoricalEmbeddingPlot from '../../../components/plots/CategoricalEmbeddingPlot';
 import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
 import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
-import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentState from '../../experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 
 jest.mock('localforage');
@@ -93,7 +93,7 @@ describe('Categorical embedding', () => {
       </Provider>,
     );
 
-    const spin = component.find(Skeleton.Image);
+    const spin = component.find(ClipLoader);
 
     // There should be a spinner for loading state.
     expect(spin.length).toEqual(1);
@@ -112,7 +112,7 @@ describe('Categorical embedding', () => {
     );
 
     // There should no spinner anymore.
-    const spin = component.find(Skeleton.Image);
+    const spin = component.find(ClipLoader);
     expect(spin.length).toEqual(0);
 
     // There should be a form loaded.

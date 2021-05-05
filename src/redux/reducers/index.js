@@ -12,6 +12,7 @@ import layoutReducer from './layout/layout';
 import notificationsReducer from './notificationsReducer';
 import projectsReducer from './projects';
 import sampleReducer from './samples';
+import networkResourcesReducer from './networkResources';
 
 export default combineReducers({
   cellInfo: cellInfoReducer,
@@ -26,4 +27,5 @@ export default combineReducers({
   notifications: notificationsReducer,
   projects: projectsReducer,
   samples: sampleReducer,
+  networkResources: networkResourcesReducer,
 });

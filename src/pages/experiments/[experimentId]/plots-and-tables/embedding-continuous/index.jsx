@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Row, Col, Space, Collapse, Input, Skeleton,
 } from 'antd';
@@ -12,9 +12,9 @@ import {
   loadPlotConfig,
 } from '../../../../../redux/actions/componentConfig/index';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
+import { loadGeneExpression, loadPaginatedGeneProperties } from '../../../../../redux/actions/genes';
 import Header from '../../../../../components/plots/Header';
 import ContinuousEmbeddingPlot from '../../../../../components/plots/ContinuousEmbeddingPlot';
-import Loader from '../../../../../components/Loader';
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -37,6 +37,39 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, [experimentId]);
+
+  const geneExpression = useSelector((state) => state.genes.expression);
+  const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);
+  const highestDispersionGene = useSelector(
+    (state) => state.genes.properties.views[plotUuid]?.data[0],
+  );
+  const PROPERTIES = ['dispersions'];
+  const tableState = {
+    pagination: {
+      current: 1, pageSize: 1, showSizeChanger: true, total: 0,
+    },
+    geneNamesFilter: null,
+    sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
+  };
+
+  const [shownGene, setShownGene] = useState('notSelected');
+
+  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+  }
+
+  useEffect(() => {
+    if (config?.shownGene === 'notSelected' && highestDispersionGene) {
+      dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
+      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
+      setShownGene(highestDispersionGene);
+    }
+
+    if (config?.shownGene !== 'notSelected' && config) {
+      dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
+      setShownGene(config.shownGene);
+    }
+  }, [highestDispersionGene, config]);
 
   // updateField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updateField) => {
@@ -76,7 +109,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     },
   ];
 
-  const changeDislayedGene = (geneName) => {
+  const changeDisplayedGene = (geneName) => {
     updatePlotWithChanges({ shownGene: geneName });
   };
 
@@ -88,7 +121,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
             style={{ width: '100%' }}
             enterButton='Search'
             defaultValue={config.shownGene}
-            onSearch={(val) => changeDislayedGene(val)}
+            onSearch={(val) => changeDisplayedGene(val)}
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>
@@ -111,18 +144,20 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
         plotUuid={plotUuid}
         experimentId={experimentId}
         finalRoute={route}
-        onUpdate={updatePlotWithChanges}
       />
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
-
                 <ContinuousEmbeddingPlot
                   experimentId={experimentId}
                   config={config}
                   plotUuid={plotUuid}
+                  plotData={geneExpression.data[shownGene]?.expression}
+                  loading={geneExpression.loading.length > 0}
+                  error={geneExpression.error}
+                  reloadPlotData={() => loadGeneExpression(experimentId, [shownGene], plotUuid)}
                 />
               </Panel>
             </Collapse>

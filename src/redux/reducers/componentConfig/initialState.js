@@ -176,6 +176,40 @@ const frequencyInitialConfig = {
   geneexpLegendloc: '',
 };
 
+// PLOTS & TABLES - Violin
+const violinConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top',
+    enabled: false,
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  shownGene: 'notSelected',
+  selectedCellSet: 'louvain',
+  selectedPoints: 'All',
+  selectedPointsVisible: true,
+  statisticsVisible: false,
+  kdeBandwidth: 0.3,
+  normalised: 'normalised',
+};
 // EMBEDDING PREVIEW - Coloured by sample
 const embeddingPreviewBySampleInitialConfig = {
   spec: '1.0.0',
@@ -260,7 +294,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   label: labelBaseState,
-  selectedSample: 'All',
+  selectedSample: 'sample',
 };
 
 // EMBEDDING PREVIEW - Config for doublet score
@@ -287,7 +321,7 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   label: labelBaseState,
-  selectedSample: 'All',
+  selectedSample: 'sample',
 };
 
 const interactiveHeatmapInitialConfig = {
@@ -341,7 +375,7 @@ const cellSizeDistributionKneePlot = {
   axes: {
     ...axesBaseState,
     xAxisText: 'Cell rank',
-    yAxisText: '#UMIs in cell',
+    yAxisText: 'log #UMIs in cell',
   },
   title: {
     ...titleBaseState,
@@ -429,7 +463,7 @@ const classifierEmptyDropsPlot = {
   axes: {
     ...axesBaseState,
     xAxisText: 'log10[ cell size (UMIs) ]',
-    yAxisText: 'classifier prob',
+    yAxisText: 'FDR (emptyDrops)',
     gridOpacity: 10,
   },
   title: {
@@ -620,6 +654,7 @@ const initialPlotConfigStates = {
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
+  violin: violinConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,

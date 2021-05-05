@@ -74,8 +74,7 @@ const cellSets = {
     },
   ],
 };
-const { properties } = cellSets;
-const data = [
+const embeddingData = [
   [-1.2343500852584839, -0.6240003705024719],
   [18.337648391723633, -4.259221076965332],
   [12.77301025390625, 9.594305038452148],
@@ -90,14 +89,14 @@ const data = [
   [18, 10],
 ];
 const config = initialPlotConfigStates.embeddingContinuous;
-const expression = [0.844880940781665, 0, 0, 0, 0, 0, 1, 2, 1.0892605007475098,
-  0.9444651009182008, 0, 0, 0.9955310761799436, 0, 0];
+const expression = [0.844880940781665, 0, 0, 0, 0, 0, 1, 2,
+  1.0892605007475098, 0.9444651009182008, 0, 0, 0.9955310761799436, 0, 0];
 
 const initialState = {
   cellSets,
   embeddings: {
     umap: {
-      data,
+      embeddingData,
     },
   },
   genes: {
@@ -114,7 +113,10 @@ const store = mockStore(initialState);
 let component;
 
 const spec = generateSpec(config,
-  generateData(expression, config.selectedSample, data, properties));
+  generateData(cellSets,
+    config.selectedSample,
+    expression,
+    embeddingData));
 
 const testPlot = () => mount(
   <Provider store={store}>

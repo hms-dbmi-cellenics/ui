@@ -40,7 +40,6 @@ const CellSizeDistributionKneePlot = (props) => {
 };
 
 CellSizeDistributionKneePlot.propTypes = {
-  experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
   actions: PropTypes.oneOfType([

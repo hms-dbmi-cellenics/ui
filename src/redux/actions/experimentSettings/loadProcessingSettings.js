@@ -1,11 +1,10 @@
+import fetchAPI from '../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../actionTypes/experimentSettings';
 
 import pushNotificationMessage from '../pushNotificationMessage';
-
-import getApiEndpoint from '../../../utils/apiEndpoint';
 import errorTypes from './errorTypes';
 
 const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
@@ -18,13 +17,12 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(
-      `${getApiEndpoint()}/v1/experiments/${experimentId}/processingConfig`,
+    const response = await fetchAPI(
+      `/v1/experiments/${experimentId}/processingConfig`,
     );
 
     if (response.ok) {
       const data = await response.json();
-
       dispatch({
         type: EXPERIMENT_SETTINGS_PROCESSING_LOAD,
         payload: {

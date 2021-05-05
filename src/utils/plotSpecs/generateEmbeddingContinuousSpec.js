@@ -140,24 +140,65 @@ const generateSpec = (config, plotData) => {
   };
 };
 
-const generateData = (
-  selectedExpression,
-  selectedSample,
-  embeddingData,
-  cellSetProperties,
-) => {
-  let filteredData = embeddingData.map((coord, cellId) => ({
-    x: coord[0],
-    y: coord[1],
-    value: selectedExpression[cellId],
-  }));
+const filterCells = (cellSets, selectedSample, embeddingData) => {
+  let newCellSets = [];
 
-  if (selectedSample !== 'All') {
-    const cellIds = Array.from(cellSetProperties[selectedSample].cellIds);
-    filteredData = filteredData.filter((val, idx) => cellIds.includes(idx));
+  const cellSetHierarchyKeys = cellSets.hierarchy.map((value) => value.key);
+
+  // Filter by cellSet
+  if (cellSetHierarchyKeys.includes(selectedSample)) {
+    newCellSets = cellSets.hierarchy.find(
+      (rootNode) => rootNode.key === selectedSample,
+    )?.children || [];
+
+    // Build up the data source based on the properties. Note that the child nodes
+    // in the hierarchy are /objects/ with a `key` property, hence the destructuring
+    // in the function.
+    newCellSets = newCellSets.flatMap(({ key }) => {
+      const cells = Array.from(cellSets.properties[key].cellIds);
+
+      return cells.map((cellId) => ({
+        cellId,
+      }));
+    });
+
+    // Filter by sample
+  } else {
+    newCellSets = embeddingData.map((_, cellId) => ({
+      cellId,
+    }));
+
+    if (selectedSample !== 'All') {
+      const cellIds = Array.from(cellSets.properties[selectedSample].cellIds);
+      newCellSets = newCellSets.filter((val) => cellIds.includes(val.cellId));
+    }
   }
 
-  return filteredData;
+  return newCellSets;
+};
+
+const generateData = (
+  cellSets,
+  selectedSample,
+  plotData,
+  embeddingData,
+) => {
+  const newCellSets = filterCells(cellSets, selectedSample, embeddingData);
+
+  const cells = newCellSets
+    .filter((d) => d.cellId < embeddingData.length)
+    .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
+    .map((data) => {
+      const { cellId } = data;
+
+      return {
+        x: embeddingData[cellId][0],
+        y: embeddingData[cellId][1],
+        value: plotData[cellId],
+      };
+    });
+
+  return cells;
 };
 
 export {

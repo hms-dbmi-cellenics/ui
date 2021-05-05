@@ -11,6 +11,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json package-lock.json /app/
 
 # install dependencies
+RUN apk add --no-cache git
 RUN npm ci --only=production
 
 # copy rest of app

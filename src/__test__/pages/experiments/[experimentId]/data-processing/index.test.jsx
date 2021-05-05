@@ -11,10 +11,9 @@ import _ from 'lodash';
 import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
 
 import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
-import initialExperimentSettingsState from '../../../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentSettingsState from '../../../../experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
-import { EMBEDDINGS_RESET } from '../../../../../redux/actionTypes/embeddings';
 import { EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING } from '../../../../../redux/actionTypes/experimentSettings';
 
 configure({ adapter: new Adapter() });
@@ -198,7 +197,7 @@ describe('DataProcessingPage', () => {
     page.update();
 
     // Pipeline is triggered on clicking run button
-    await waitForActions(store, [EMBEDDINGS_RESET, EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING]);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING]);
 
     // Run filter is disabled after triggering the pipeline
     expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);
