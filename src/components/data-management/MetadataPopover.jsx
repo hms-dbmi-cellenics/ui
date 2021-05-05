@@ -26,11 +26,7 @@ const MetadataPopover = (props) => {
       deleteEnabled={false}
       value='Track name'
       defaultEditing
-      validationFunc={(value) => {
-        console.log(`value length : ${value.length}`);
-        console.log(`existing metadata includes value : ${!existingMetadata.includes((value))}`);
-        return value.length > 0 && !existingMetadata.includes(metadataNameToKey(value));
-      }}
+      validationFunc={(value) => value.length > 0 && !existingMetadata.includes(metadataNameToKey(value))}
     />
   );
 
