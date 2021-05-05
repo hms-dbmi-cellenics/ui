@@ -45,7 +45,7 @@ describe('Embedding', () => {
         },
         cluster1: {
           color: '#ff0000',
-          cellIds: [2, 3],
+          cellIds: new Set([2, 3]),
         },
       },
       hierarchy: [
@@ -143,7 +143,7 @@ describe('Embedding', () => {
     const scatterplot = component.find(Scatterplot);
     expect(component.find('ClusterPopover').length).toEqual(0);
 
-    const selectedCellIds = new Set(['1', '2']);
+    const selectedCellIds = new Set([1, 2]);
     // lasso select cells 1 and 2
     act(() => {
       scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
@@ -178,7 +178,7 @@ describe('Embedding', () => {
   it('does not render cell info and crosshair when the popover is open', () => {
     const scatterplot = component.find(Scatterplot);
     // lasso select cells 1 and 2
-    const selectedCellIds = new Set(['1', '2']);
+    const selectedCellIds = new Set([1, 2]);
     act(() => {
       scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
     });

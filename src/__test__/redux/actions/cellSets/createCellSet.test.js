@@ -13,7 +13,7 @@ describe('createCellSet action', () => {
   const experimentId = '1234';
 
   const cellSet = {
-    name: 'one', color: '#ff0000', cellIds: ['1', '2', '3'],
+    name: 'one', color: '#ff0000', cellIds: new Set([1, 2, 3]),
   };
 
   beforeEach(() => {
