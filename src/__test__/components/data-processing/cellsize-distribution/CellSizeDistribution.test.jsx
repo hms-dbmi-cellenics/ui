@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import CalculationConfig from '../../../../components/data-processing/CellSizeDistribution/CalculationConfig';
-import initialExperimentState from '../../../experimentSettings.mock';
+import initialExperimentState from '../../../test-utils/experimentSettings.mock';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
