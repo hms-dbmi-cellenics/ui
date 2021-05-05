@@ -46,13 +46,12 @@ CellSizeDistributionHistogram.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
-  highestUmi: PropTypes.number,
+  highestUmi: PropTypes.number.isRequired,
 };
 
 CellSizeDistributionHistogram.defaultProps = {
   plotData: null,
   actions: true,
-  highestUmi: 17000,
 };
 
 export default CellSizeDistributionHistogram;

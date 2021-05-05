@@ -12,12 +12,14 @@ import {
 } from '@ant-design/icons';
 import SliderWithInput from '../../SliderWithInput';
 
+const MIN_CELL_SIZE_PLACEHOLDER = 10800;
+
 const CellSizeDistributionConfig = (props) => {
   const {
     config, disabled, updateSettings, highestUmi,
   } = props;
 
-  const withinRange = (cellSize) => Math.max(Math.min(cellSize, highestUmi ?? 17000), 0);
+  const withinRange = (cellSize) => Math.max(Math.min(cellSize, highestUmi), 0);
 
   return (
     <>
@@ -35,10 +37,10 @@ const CellSizeDistributionConfig = (props) => {
             onPressEnter={(e) => {
               updateSettings({ minCellSize: withinRange(e.target.value) });
             }}
-            placeholder={10800}
+            placeholder={MIN_CELL_SIZE_PLACEHOLDER}
             step={100}
             disabled={disabled}
-            max={highestUmi ?? 17000}
+            max={highestUmi}
             min={0}
           />
         </Space>

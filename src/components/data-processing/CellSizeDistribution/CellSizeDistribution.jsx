@@ -28,6 +28,9 @@ import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
+
+const HIGHEST_UMI_DEFAULT = 17000;
+
 const CellSizeDistribution = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
@@ -104,7 +107,7 @@ const CellSizeDistribution = (props) => {
   const highestUmiRef = useRef(null);
 
   useEffect(() => {
-    highestUmiRef.current = _.maxBy(histogramPlotData, (datum) => datum.u)?.u ?? null;
+    highestUmiRef.current = _.maxBy(histogramPlotData, (datum) => datum.u)?.u ?? HIGHEST_UMI_DEFAULT;
   }, [histogramPlotData]);
 
   useEffect(() => {
