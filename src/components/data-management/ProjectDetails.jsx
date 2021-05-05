@@ -455,7 +455,15 @@ const ProjectDetails = ({ width, height }) => {
             >
               Add metadata
             </Button>,
-            <Button type='primary'>Launch analysis</Button>,
+            <Button
+              type='primary'
+              disabled={
+                projects.ids.length === 0
+                || projects[activeProjectUuid]?.samples.length === 0
+              }
+            >
+              Launch analysis
+            </Button>,
           ]}
         >
           <Space direction='vertical' size='small'>
