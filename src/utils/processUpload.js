@@ -5,7 +5,7 @@ import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
 import UploadStatus from './UploadStatus';
 
-const putInS3 = (bucketKey, loadedFile, dispatch, sample, file) => (
+const putInS3 = (bucketKey, loadedFile, dispatch, sampleUuid, file) => (
   Storage.put(
     bucketKey,
     loadedFile,
@@ -13,8 +13,8 @@ const putInS3 = (bucketKey, loadedFile, dispatch, sample, file) => (
       progressCallback(progress) {
         const percentProgress = Math.round((progress.loaded / progress.total) * 100);
 
-        dispatch(updateSampleFile(sample.uuid, {
-          ...file,
+        dispatch(updateSampleFile(sampleUuid, file.name, {
+          // ...file,
           upload: {
             status: UploadStatus.UPLOADING,
             progress: percentProgress ?? 0,
@@ -24,6 +24,45 @@ const putInS3 = (bucketKey, loadedFile, dispatch, sample, file) => (
     },
   )
 );
+
+// const compressAndUploadSingleFile = (sampleUuid, fileName, bundleToUpload) => {
+//   const uncompressed = bundleToUpload.type !== 'application/gzip';
+
+//   const newFileName = fileName.endsWith('.gz') ? fileName : `${fileName}.gz`;
+
+//   if ()
+
+//   return result;
+// };
+
+// const compressAndUploadSingleFile = async (bucketKey, bundle, sampleUuid, dispatch) => {
+//   let loadedFile = null;
+//   try {
+//     loadedFile = await loadAndCompressIfNecessary(bundle);
+//   } catch (e) {
+//     const fileErrorStatus = e === 'aborted' ?
+// UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+
+//     dispatch(updateSampleFile(sampleUuid, {
+//       ...file,
+//       upload: { status: fileErrorStatus },
+//     }));
+//   }
+
+//   try {
+//     await putInS3(bucketKey, loadedFile, dispatch, sampleUuid, file);
+//   } catch (e) {
+//     dispatch(updateSampleFile(sampleUuid, {
+//       ...file,
+//       upload: { status: UploadStatus.UPLOAD_ERROR },
+//     }));
+//   }
+
+//   dispatch(updateSampleFile(sampleUuid, {
+//     ...file,
+//     upload: { status: UploadStatus.UPLOADED },
+//   }));
+// };
 
 const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
@@ -43,12 +82,12 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
     let loadedFile = null;
     try {
-      loadedFile = await loadAndCompressIfNecessary(file);
+      loadedFile = await loadAndCompressIfNecessary(file.bundle);
     } catch (e) {
       const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
-      dispatch(updateSampleFile(sample.uuid, {
-        ...file,
+      dispatch(updateSampleFile(sample.uuid, file.name, {
+        // ...file,
         upload: { status: fileErrorStatus },
       }));
     }
@@ -56,16 +95,16 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
     const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
 
     try {
-      await putInS3(bucketKey, loadedFile, dispatch, sample, file);
+      await putInS3(bucketKey, loadedFile, dispatch, sample.uuid, file);
     } catch (e) {
-      dispatch(updateSampleFile(sample.uuid, {
-        ...file,
+      dispatch(updateSampleFile(sample.uuid, file.name, {
+        // ...file,
         upload: { status: UploadStatus.UPLOAD_ERROR },
       }));
     }
 
-    dispatch(updateSampleFile(sample.uuid, {
-      ...file,
+    dispatch(updateSampleFile(sample.uuid, file.name, {
+      // ...file,
       upload: { status: UploadStatus.UPLOADED },
     }));
   });
@@ -111,7 +150,8 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
 
     Object.values(sample.files).forEach((file) => {
-      dispatch(updateSampleFile(sample.uuid, {
+      // Create files
+      dispatch(updateSampleFile(sample.uuid, file.name, {
         ...file,
         path: `${activeProjectUuid}/${file.name.replace(name, sample.uuid)}`,
       }));

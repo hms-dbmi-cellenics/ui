@@ -1,10 +1,24 @@
 import _ from 'lodash';
 
 const samplesFileUpdate = (state, action) => {
-  const { sampleUuid, file, lastModified } = action.payload;
+  const {
+    sampleUuid, fileName, fileDiff, lastModified,
+  } = action.payload;
+
+  const overwriteIfArray = (objValue, srcValue) => {
+    if (_.isArray(objValue) && srcValue) {
+      return srcValue;
+    }
+  };
+
+  const oldFile = state[sampleUuid].files?.[fileName];
+  let newFile = fileDiff;
+  if (oldFile) {
+    newFile = _.mergeWith(oldFile, fileDiff, overwriteIfArray);
+  }
 
   const newFileNames = _.clone(state[sampleUuid].fileNames);
-  newFileNames.add(file.name);
+  newFileNames.add(fileName);
 
   return {
     ...state,
@@ -13,7 +27,7 @@ const samplesFileUpdate = (state, action) => {
       fileNames: newFileNames,
       files: {
         ...state[sampleUuid].files,
-        [file.name]: file,
+        [fileName]: newFile,
       },
       lastModified,
     },

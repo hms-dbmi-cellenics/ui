@@ -5,8 +5,8 @@ function uintArrayToBuffer(array) {
   return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
 }
 
-const loadAndCompressIfNecessary = async (file) => {
-  const inGzipFormat = file.bundle.mime === 'application/gzip';
+const loadAndCompressIfNecessary = async (bundle) => {
+  const inGzipFormat = bundle.mime === 'application/gzip';
 
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -28,7 +28,7 @@ const loadAndCompressIfNecessary = async (file) => {
       }
     };
 
-    reader.readAsArrayBuffer(file.bundle);
+    reader.readAsArrayBuffer(bundle);
   });
 };
 

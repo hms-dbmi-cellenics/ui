@@ -6,7 +6,8 @@ import {
 
 const updateSampleFile = (
   sampleUuid,
-  file,
+  fileName,
+  fileDiff,
 ) => async (dispatch) => {
   const updatedAt = moment().toISOString();
 
@@ -15,7 +16,8 @@ const updateSampleFile = (
     payload: {
       sampleUuid,
       lastModified: updatedAt,
-      file,
+      fileName,
+      fileDiff,
     },
   });
 };
