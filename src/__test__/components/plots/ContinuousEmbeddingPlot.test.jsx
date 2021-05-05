@@ -13,7 +13,7 @@ import initialCellSetsState from '../../../redux/reducers/cellSets/initialState'
 import initialGeneExpressionState from '../../../redux/reducers/genes/initialState';
 import initialExperimentState from '../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
-import { mockCellSets1 } from '../../cellSets.mock';
+import { mockCellSets1 } from '../../test-utils/cellSets.mock';
 
 jest.mock('localforage');
 
