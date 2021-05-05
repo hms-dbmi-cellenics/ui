@@ -84,8 +84,6 @@ const fetchCachedWork = async (experimentId, timeout, body, workerPipelineStatus
     }
   }
 
-  // there is a hidden bug in this code: it assumes that we will never have to fetch gene expression before having to fetch gene properties
-  // while this is true at the moment, it can change in the future and then the user will be able to get expression for genes without running the platform first
   if (body.name === 'GeneExpression') {
     return fetchCachedGeneExpressionWork(experimentId, timeout, body, workerPipelineStatus);
   }
