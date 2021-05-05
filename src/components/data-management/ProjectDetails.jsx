@@ -1,7 +1,7 @@
 import {
   Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
 } from 'antd';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -19,7 +19,7 @@ import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
 import { updateProject } from '../../redux/actions/projects';
-import processUpload from '../../utils/processUpload';
+import processUpload, { compressAndUploadSingleFile } from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 
 import UploadStatus from '../../utils/UploadStatus';
@@ -29,6 +29,8 @@ const { Text, Paragraph } = Typography;
 const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
+  const uploadDetailsModalDataRef = useRef(null);
+
   const dispatch = useDispatch();
 
   const { data: speciesData } = useSWR(
@@ -83,16 +85,25 @@ const ProjectDetails = ({ width, height }) => {
     setSortedSpeciesData(d);
   }, [speciesData]);
 
-  const setUploadDetailsModalValues = (sampleUuid) => {
-    const a = samples[sampleUuid].files;
-  };
-
   const renderUploadCell = (columnId, tableCellData) => {
-    const { status, progress = null } = tableCellData;
+    const {
+      status,
+      progress = null,
+      sampleUuid,
+      fileName,
+      pathTo,
+    } = tableCellData;
 
     if (status === UploadStatus.UPLOADED) {
       return (
-        <Space onClick={() => setUploadDetailsModalVisible(true)}>
+        <Space onClick={() => {
+          uploadDetailsModalDataRef.current = {
+            sampleUuid, fileName, pathTo, error: status.message(),
+          };
+
+          setUploadDetailsModalVisible(true);
+        }}
+        >
           <div style={{
             whiteSpace: 'nowrap',
             height: '35px',
@@ -270,6 +281,18 @@ const ProjectDetails = ({ width, height }) => {
     createMetadataColumn('Sequencing date', 'sequencing-date'),
   ];
 
+  const errorCellDataFrom = (sampleUuid, file) => {
+    const cellData = {
+      status: file?.upload?.status,
+      progress: file?.upload?.progress,
+      sampleUuid,
+      fileName: file?.name,
+      pathTo: file?.bundle?.path,
+    };
+
+    return cellData;
+  };
+
   useEffect(() => {
     if (samples.ids.length === 0 || projects.ids.length === 0) {
       setTableData([]);
@@ -279,17 +302,21 @@ const ProjectDetails = ({ width, height }) => {
     const newData = projects[activeProjectUuid].samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
-      const barcodesUpload = sampleFiles['barcodes.tsv.gz']?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const genesUpload = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz'])?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const matrixUpload = sampleFiles['matrix.mtx.gz']?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const genesFile = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz']) ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
+
+      const barcodesData = errorCellDataFrom(sampleUuid, barcodesFile);
+      const genesData = errorCellDataFrom(sampleUuid, genesFile);
+      const matrixData = errorCellDataFrom(sampleUuid, matrixFile);
 
       return {
         key: idx,
         name: samples[sampleUuid].name,
         uuid: sampleUuid,
-        barcodes: barcodesUpload,
-        genes: genesUpload,
-        matrix: matrixUpload,
+        barcodes: barcodesData,
+        genes: genesData,
+        matrix: matrixData,
         species: 'dataMissing',
       };
     });
@@ -309,10 +336,18 @@ const ProjectDetails = ({ width, height }) => {
         onUpload={uploadFiles}
       />
       <UploadDetailsModal
+        sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
+        fileName={uploadDetailsModalDataRef.current?.fileName}
+        pathTo={uploadDetailsModalDataRef.current?.pathTo}
+        error={uploadDetailsModalDataRef.current?.error}
         visible={uploadDetailsModalVisible}
         onRetry={() => {
-          // onRetry={(sampleUuid, fileName) => {
-          // const { bundle } = samples[sampleUuid];
+          const { sampleUuid, fileName } = uploadDetailsModalDataRef.current;
+          const { bundle } = samples[sampleUuid].files[fileName];
+
+          const bucketKey = `${activeProjectUuid}/${sampleUuid}/${fileName}`;
+
+          compressAndUploadSingleFile(bucketKey, sampleUuid, fileName, bundle, dispatch);
 
           setUploadDetailsModalVisible(false);
         }}

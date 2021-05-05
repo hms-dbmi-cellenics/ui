@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Modal, Button, Col, Row, Space, Upload,
+  Modal, Button, Col, Row, Upload,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
 const UploadDetailsModal = (props) => {
   const {
-    visible, onRetry, onReplace, onCancel,
+    sampleName, fileName, pathTo, error, visible, onRetry, onReplace, onCancel,
   } = props;
 
   return (
@@ -17,30 +17,35 @@ const UploadDetailsModal = (props) => {
       onCancel={onCancel}
       width='40%'
       footer={(
-        <Space style={{ width: '100%', justifyContent: 'center' }}>
-          <Button
-            type='primary'
-            key='retry'
-            block
-            onClick={() => {
-              onRetry();
-            }}
-            style={{ marginRight: '30px' }}
-          >
-            Retry upload
-          </Button>
-          <Button
-            type='primary'
-            key='replace'
-            block
-            onClick={() => {
-              onReplace();
-            }}
-            style={{ marginLeft: '30px' }}
-          >
-            Replace file
-          </Button>
-        </Space>
+        <Row style={{ width: '100%', justifyContent: 'center' }}>
+          <Col>
+            <Button
+              type='primary'
+              key='retry'
+              block
+              onClick={() => {
+                onRetry();
+              }}
+              style={{ width: '140px', marginBottom: '10px' }}
+            >
+              Retry upload
+            </Button>
+          </Col>
+          <Col span='2' />
+          <Col>
+            <Button
+              type='primary'
+              key='replace'
+              block
+              onClick={() => {
+                onReplace();
+              }}
+              style={{ width: '140px', marginBottom: '10px' }}
+            >
+              Replace file
+            </Button>
+          </Col>
+        </Row>
       )}
     >
       <div style={{ width: '100%', marginLeft: '15px' }}>
@@ -49,25 +54,26 @@ const UploadDetailsModal = (props) => {
         </Row>
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Sample</Col>
-          <Col span={10}>Sample 1</Col>
+          <Col span={10}>{sampleName}</Col>
         </Row>
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Category</Col>
-          <Col span={10}>matrix.mtx</Col>
+          <Col span={10}>{fileName}</Col>
         </Row>
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Filename</Col>
-          <Col span={10}>sample1/matrix.mtx</Col>
+          <Col span={10}>{pathTo}</Col>
         </Row>
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Error</Col>
-          <Col span={10}>Invalid file type</Col>
+          <Col span={10}>{error}</Col>
         </Row>
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Replace with</Col>
           <Col span={10} style={{ display: 'flex', flexDirection: 'row' }}>
             <div style={{ marginRight: '50px' }}>/User/username/file.mtx</div>
-
+          </Col>
+          <Col>
             <Upload>
               <Button icon={<UploadOutlined />}>Select file</Button>
             </Upload>
@@ -79,6 +85,10 @@ const UploadDetailsModal = (props) => {
 };
 
 UploadDetailsModal.propTypes = {
+  sampleName: PropTypes.string,
+  fileName: PropTypes.string,
+  pathTo: PropTypes.string,
+  error: PropTypes.string,
   visible: PropTypes.bool,
   onRetry: PropTypes.func,
   onReplace: PropTypes.func,
@@ -86,6 +96,10 @@ UploadDetailsModal.propTypes = {
 };
 
 UploadDetailsModal.defaultProps = {
+  sampleName: '',
+  fileName: '',
+  pathTo: '',
+  error: '',
   visible: true,
   onRetry: null,
   onReplace: null,

@@ -5,16 +5,15 @@ import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
 import UploadStatus from './UploadStatus';
 
-const putInS3 = (bucketKey, loadedFile, dispatch, sampleUuid, file) => (
+const putInS3 = (bucketKey, loadedFileData, dispatch, sampleUuid, fileName) => (
   Storage.put(
     bucketKey,
-    loadedFile,
+    loadedFileData,
     {
       progressCallback(progress) {
         const percentProgress = Math.round((progress.loaded / progress.total) * 100);
 
-        dispatch(updateSampleFile(sampleUuid, file.name, {
-          // ...file,
+        dispatch(updateSampleFile(sampleUuid, fileName, {
           upload: {
             status: UploadStatus.UPLOADING,
             progress: percentProgress ?? 0,
@@ -25,44 +24,51 @@ const putInS3 = (bucketKey, loadedFile, dispatch, sampleUuid, file) => (
   )
 );
 
-// const compressAndUploadSingleFile = (sampleUuid, fileName, bundleToUpload) => {
-//   const uncompressed = bundleToUpload.type !== 'application/gzip';
+const compressAndUploadSingleFile = async (bucketKey, sampleUuid, fileName, bundle, dispatch) => {
+  dispatch(
+    updateSampleFile(
+      sampleUuid,
+      fileName,
+      { upload: { status: UploadStatus.UPLOADING, progress: 0 } },
+    ),
+  );
 
-//   const newFileName = fileName.endsWith('.gz') ? fileName : `${fileName}.gz`;
+  let loadedFile = null;
 
-//   if ()
+  try {
+    loadedFile = await loadAndCompressIfNecessary(bundle);
+  } catch (e) {
+    const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
-//   return result;
-// };
+    dispatch(
+      updateSampleFile(
+        sampleUuid,
+        fileName,
+        { upload: { status: fileErrorStatus } },
+      ),
+    );
+  }
 
-// const compressAndUploadSingleFile = async (bucketKey, bundle, sampleUuid, dispatch) => {
-//   let loadedFile = null;
-//   try {
-//     loadedFile = await loadAndCompressIfNecessary(bundle);
-//   } catch (e) {
-//     const fileErrorStatus = e === 'aborted' ?
-// UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+  try {
+    await putInS3(bucketKey, loadedFile, dispatch, sampleUuid, fileName);
+  } catch (e) {
+    dispatch(
+      updateSampleFile(
+        sampleUuid,
+        fileName,
+        { upload: { status: UploadStatus.UPLOAD_ERROR } },
+      ),
+    );
+  }
 
-//     dispatch(updateSampleFile(sampleUuid, {
-//       ...file,
-//       upload: { status: fileErrorStatus },
-//     }));
-//   }
-
-//   try {
-//     await putInS3(bucketKey, loadedFile, dispatch, sampleUuid, file);
-//   } catch (e) {
-//     dispatch(updateSampleFile(sampleUuid, {
-//       ...file,
-//       upload: { status: UploadStatus.UPLOAD_ERROR },
-//     }));
-//   }
-
-//   dispatch(updateSampleFile(sampleUuid, {
-//     ...file,
-//     upload: { status: UploadStatus.UPLOADED },
-//   }));
-// };
+  dispatch(
+    updateSampleFile(
+      sampleUuid,
+      fileName,
+      { upload: { status: UploadStatus.UPLOADED } },
+    ),
+  );
+};
 
 const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
@@ -87,7 +93,6 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
       const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
       dispatch(updateSampleFile(sample.uuid, file.name, {
-        // ...file,
         upload: { status: fileErrorStatus },
       }));
     }
@@ -95,16 +100,14 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
     const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
 
     try {
-      await putInS3(bucketKey, loadedFile, dispatch, sample.uuid, file);
+      await putInS3(bucketKey, loadedFile, dispatch, sample.uuid, file.name);
     } catch (e) {
       dispatch(updateSampleFile(sample.uuid, file.name, {
-        // ...file,
         upload: { status: UploadStatus.UPLOAD_ERROR },
       }));
     }
 
     dispatch(updateSampleFile(sample.uuid, file.name, {
-      // ...file,
       upload: { status: UploadStatus.UPLOADED },
     }));
   });
@@ -159,4 +162,5 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   });
 };
 
+export { compressAndUploadSingleFile };
 export default processUpload;
