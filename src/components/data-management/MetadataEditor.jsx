@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Popover, Button, Space, Divider,
+  Popover, Button, Space, Divider, Tooltip,
 } from 'antd';
 import { FormatPainterOutlined } from '@ant-design/icons';
 
@@ -53,9 +53,11 @@ const MetadataEditor = (props) => {
   );
 
   return (
-    <Popover title='Fill metadata' content={getContent()} placement='bottom'>
-      <Button size='small' shape='circle' icon={<FormatPainterOutlined />} {...restOfProps} />
-    </Popover>
+    <Tooltip placement='bottom' title='Fill'>
+      <Popover title='Fill metadata' content={getContent()} placement='bottom' trigger='click'>
+        <Button size='small' shape='circle' icon={<FormatPainterOutlined />} {...restOfProps} />
+      </Popover>
+    </Tooltip>
   );
   /* eslint-enable react/jsx-props-no-spreading */
 };

@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
 import EditableField from '../EditableField';
+import { metadataNameToKey } from '../../utils/metadataUtils';
 
-const ClusterPopover = (props) => {
+const MetadataPopover = (props) => {
   const {
-    popoverPosition, onCreate, onCancel, message, children, ...restOfProps
+    existingMetadata,
+    popoverPosition,
+    onCreate,
+    onCancel,
+    message,
+    children,
+    ...restOfProps
   } = props;
 
   const getContent = () => (
@@ -19,6 +26,11 @@ const ClusterPopover = (props) => {
       deleteEnabled={false}
       value='Track name'
       defaultEditing
+      validationFunc={(value) => {
+        console.log(`value length : ${value.length}`);
+        console.log(`existing metadata includes value : ${!existingMetadata.includes((value))}`);
+        return value.length > 0 && !existingMetadata.includes(metadataNameToKey(value));
+      }}
     />
   );
 
@@ -50,21 +62,22 @@ const ClusterPopover = (props) => {
       </Popover>
     </div>
   );
-  /* eslint-enable react/jsx-props-no-spreading */
 };
 
-ClusterPopover.defaultProps = {
+MetadataPopover.defaultProps = {
   popoverPosition: null,
   message: 'Add cell set',
   children: null,
+  existingMetadata: [],
 };
 
-ClusterPopover.propTypes = {
+MetadataPopover.propTypes = {
   onCreate: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   popoverPosition: PropTypes.object,
   children: PropTypes.object,
   message: PropTypes.string,
+  existingMetadata: PropTypes.arrayOf(PropTypes.string),
 };
 
-export default ClusterPopover;
+export default MetadataPopover;

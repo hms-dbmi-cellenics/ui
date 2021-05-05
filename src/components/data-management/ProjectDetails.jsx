@@ -225,6 +225,7 @@ const ProjectDetails = ({ width, height }) => {
       key,
       title: () => (
         <MetadataPopover
+          existingMetadata={projects[activeProjectUuid].metadataKeys}
           onCreate={(name) => {
             const newMetadataColumn = createInitializedMetadataColumn(name);
             setTableColumns([...tableColumns, newMetadataColumn]);
@@ -439,21 +440,21 @@ const ProjectDetails = ({ width, height }) => {
         <PageHeader
           title={activeProject.name}
           extra={[
-            <Button onClick={() => setUploadModalVisible(true)}>Add samples</Button>,
-            <Tooltip
-              title='Add samples to add metadata'
-              trigger='hover'
+            <Button
+              disabled={projects.ids.length === 0}
+              onClick={() => setUploadModalVisible(true)}
             >
-              <Button
-                disabled={
-                  projects[activeProjectUuid]?.samples
-                  && projects[activeProjectUuid]?.samples.length === 0
-                }
-                onClick={() => createMetadataColumn()}
-              >
-                Add metadata
-              </Button>
-            </Tooltip>,
+              Add samples
+            </Button>,
+            <Button
+              disabled={
+                projects.ids.length === 0
+                || projects[activeProjectUuid]?.samples.length === 0
+              }
+              onClick={() => createMetadataColumn()}
+            >
+              Add metadata
+            </Button>,
             <Button type='primary'>Launch analysis</Button>,
           ]}
         >

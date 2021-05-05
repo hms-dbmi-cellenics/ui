@@ -1,11 +1,9 @@
 /* eslint-disable no-param-reassign */
-const keyStub = 'metadata';
+const metadataKeyToName = (key) => key.replace('-', ' ');
 
-const metadataKeyToName = (key, stub) => key.replace(`${stub || keyStub}-`, '').replace('-', ' ');
+const metadataNameToKey = (name) => `${name.trim().replace(/\s+/g, '-')}`;
 
-const metadataNameToKey = (name, stub) => `${stub || keyStub}-${name.trim().replace(/\s+/g, '-')}`;
-
-const temporaryMetadataKey = (columns) => `${keyStub}-${columns.filter((column) => column.key.match(keyStub)).length}`;
+const temporaryMetadataKey = (columns) => `metadata-${columns.length}`;
 
 export {
   metadataKeyToName,
