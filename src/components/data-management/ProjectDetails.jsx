@@ -225,7 +225,7 @@ const ProjectDetails = ({ width, height }) => {
       key,
       title: () => (
         <MetadataPopover
-          existingMetadata={projects[activeProjectUuid].metadataKeys}
+          existingMetadata={activeProject.metadataKeys}
           onCreate={(name) => {
             const newMetadataColumn = createInitializedMetadataColumn(name);
             setTableColumns([...tableColumns, newMetadataColumn]);
@@ -271,7 +271,7 @@ const ProjectDetails = ({ width, height }) => {
           />
           <MetadataEditor
             onReplaceEmpty={(value) => {
-              projects[activeProjectUuid].samples.forEach(
+              activeProject.samples.forEach(
                 (sampleUuid) => {
                   if (
                     !samples[sampleUuid].metadata[key]
@@ -283,12 +283,12 @@ const ProjectDetails = ({ width, height }) => {
               );
             }}
             onReplaceAll={(value) => {
-              projects[activeProjectUuid].samples.forEach(
+              activeProject.samples.forEach(
                 (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: value } })),
               );
             }}
             onClearAll={() => {
-              projects[activeProjectUuid].samples.forEach(
+              activeProject.samples.forEach(
                 (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: defaultNA } })),
               );
             }}
@@ -348,7 +348,7 @@ const ProjectDetails = ({ width, height }) => {
           <Text>Species</Text>
           <MetadataEditor
             onReplaceEmpty={(value) => {
-              projects[activeProjectUuid].samples.forEach(
+              activeProject.samples.forEach(
                 (sampleUuid) => {
                   if (
                     !samples[sampleUuid].species
@@ -360,12 +360,12 @@ const ProjectDetails = ({ width, height }) => {
               );
             }}
             onReplaceAll={(value) => {
-              projects[activeProjectUuid].samples.forEach(
+              activeProject.samples.forEach(
                 (sampleUuid) => dispatch(updateSample(sampleUuid, { species: value })),
               );
             }}
             onClearAll={() => {
-              projects[activeProjectUuid].samples.forEach(
+              activeProject.samples.forEach(
                 (sampleUuid) => dispatch(updateSample(sampleUuid, { species: defaultNA })),
               );
             }}
@@ -396,14 +396,14 @@ const ProjectDetails = ({ width, height }) => {
     }
 
     // Set table columns
-    const metadataColumns = projects[activeProjectUuid]?.metadataKeys.map(
+    const metadataColumns = activeProject?.metadataKeys.map(
       (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
     ) || [];
 
     setTableColumns([...columns, ...metadataColumns]);
 
     // Set table data
-    const newData = projects[activeProjectUuid].samples.map((sampleUuid, idx) => {
+    const newData = activeProject.samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
       const barcodesUpload = sampleFiles['barcodes.tsv.gz']?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
@@ -449,7 +449,7 @@ const ProjectDetails = ({ width, height }) => {
             <Button
               disabled={
                 projects.ids.length === 0
-                || projects[activeProjectUuid]?.samples.length === 0
+                || activeProject?.samples.length === 0
               }
               onClick={() => createMetadataColumn()}
             >
@@ -459,22 +459,25 @@ const ProjectDetails = ({ width, height }) => {
               type='primary'
               disabled={
                 projects.ids.length === 0
-                || projects[activeProjectUuid]?.samples.length === 0
+                || activeProject?.samples.length === 0
               }
             >
               Launch analysis
             </Button>,
           ]}
         >
-          <Space direction='vertical' size='small'>
-            <Text strong>Description:</Text>
-            <Paragraph
-              editable={{ onChange: changeDescription }}
-            >
-              {activeProject.description}
+          {activeProjectUuid
+            && (
+              <Space direction='vertical' size='small'>
+                <Text strong>Description:</Text>
+                <Paragraph
+                  editable={{ onChange: changeDescription }}
+                >
+                  {activeProject.description}
 
-            </Paragraph>
-          </Space>
+                </Paragraph>
+              </Space>
+            )}
         </PageHeader>
 
         <Table
