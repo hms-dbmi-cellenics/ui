@@ -8,6 +8,7 @@ import {
   SAMPLES_LOADED,
   SAMPLES_ERROR,
   SAMPLES_DELETE,
+  SAMPLES_METADATA_DELETE,
 } from '../../../redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
@@ -141,6 +142,7 @@ describe('samplesReducer', () => {
 
     expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
     expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
+    expect(newState).toMatchSnapshot();
   });
 
   it('Loads samples correctly', () => {
@@ -158,6 +160,7 @@ describe('samplesReducer', () => {
     expect(newState.ids).toEqual([mockUuid1, mockUuid2]);
     expect(newState.meta.loading).toEqual(false);
     expect(newState.meta.error).toEqual(false);
+    expect(newState).toMatchSnapshot();
   });
 
   it('Handles errors correctly', () => {
@@ -172,5 +175,80 @@ describe('samplesReducer', () => {
 
     expect(newState.meta.loading).toEqual(false);
     expect(newState.meta.error).toEqual(error);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Inserts sample metadata correctly', () => {
+    const metadataKey = 'metadata-test';
+    const metadataValue = 'value';
+
+    const sampleWithMetadata = {
+      ...oneSampleState,
+      [oneSampleState[mockUuid1]]: {
+        metadata: {},
+      },
+    };
+
+    const newState = samplesReducer(sampleWithMetadata, {
+      type: SAMPLES_UPDATE,
+      payload: {
+        sampleUuid: mockUuid1,
+        sample: { metadata: { [metadataKey]: metadataValue } },
+      },
+    });
+
+    expect(newState[mockUuid1].metadata[metadataKey]).toEqual(metadataValue);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Updates sample metadata correctly', () => {
+    const metadataKey = 'metadata-test';
+    const oldValue = 'old-value';
+    const newValue = 'new-value';
+
+    const sampleWithMetadata = {
+      ...oneSampleState,
+      [oneSampleState[mockUuid1]]: {
+        metadata: {
+          [metadataKey]: oldValue,
+        },
+      },
+    };
+
+    const newState = samplesReducer(sampleWithMetadata, {
+      type: SAMPLES_UPDATE,
+      payload: {
+        sampleUuid: mockUuid1,
+        sample: { metadata: { [metadataKey]: newValue } },
+      },
+    });
+
+    expect(newState[mockUuid1].metadata[metadataKey]).toEqual(newValue);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Deletes sample metadata correctly', () => {
+    const metadataKey = 'metadata-test';
+    const metadataValue = 'old-value';
+
+    const sampleWithMetadata = {
+      ...oneSampleState,
+      [oneSampleState[mockUuid1]]: {
+        metadata: {
+          [metadataKey]: metadataValue,
+        },
+      },
+    };
+
+    const newState = samplesReducer(sampleWithMetadata, {
+      type: SAMPLES_METADATA_DELETE,
+      payload: {
+        sampleUuid: mockUuid1,
+        metadataKey,
+      },
+    });
+
+    expect(newState[mockUuid1].metadata[metadataKey]).toBeUndefined();
+    expect(newState).toMatchSnapshot();
   });
 });

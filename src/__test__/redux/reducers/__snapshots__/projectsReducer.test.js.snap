@@ -34,6 +34,113 @@ Object {
 }
 `;
 
+exports[`projectsReducer Correctly creates project metadata 1`] = `
+Object {
+  "[object Object]": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "metadataKeys": Array [],
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "project-1",
+  },
+  "ids": Array [
+    "project-1",
+  ],
+  "meta": Object {
+    "activeProjectUuid": "project-1",
+  },
+  "project-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "metadataKeys": Array [
+      "metadata-test",
+    ],
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "project-1",
+  },
+}
+`;
+
+exports[`projectsReducer Correctly deletes project metadata 1`] = `
+Object {
+  "[object Object]": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "metadataKeys": Array [
+      "metadata-old",
+    ],
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "project-1",
+  },
+  "ids": Array [
+    "project-1",
+  ],
+  "meta": Object {
+    "activeProjectUuid": "project-1",
+  },
+  "project-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "metadataKeys": Array [],
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "project-1",
+  },
+}
+`;
+
+exports[`projectsReducer Correctly updates project metadata 1`] = `
+Object {
+  "[object Object]": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "metadataKeys": Array [
+      "metadata-old",
+    ],
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "project-1",
+  },
+  "ids": Array [
+    "project-1",
+  ],
+  "meta": Object {
+    "activeProjectUuid": "project-1",
+  },
+  "project-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "metadataKeys": Array [
+      "metadata-new",
+    ],
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "project-1",
+  },
+}
+`;
+
 exports[`projectsReducer Deletes projects correctly 1`] = `
 Object {
   "ids": Array [
