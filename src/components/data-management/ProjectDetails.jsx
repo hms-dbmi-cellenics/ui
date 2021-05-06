@@ -468,8 +468,8 @@ const ProjectDetails = ({ width, height }) => {
             </Button>,
           ]}
         >
-          {activeProjectUuid
-            && (
+          {
+            activeProjectUuid && (
               <Space direction='vertical' size='small'>
                 <Text strong>Description:</Text>
                 <Paragraph
@@ -479,7 +479,8 @@ const ProjectDetails = ({ width, height }) => {
 
                 </Paragraph>
               </Space>
-            )}
+            )
+          }
         </PageHeader>
 
         <Table
