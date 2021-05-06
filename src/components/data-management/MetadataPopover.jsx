@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
@@ -35,15 +36,6 @@ const MetadataPopover = (props) => {
   let style = {};
   if (popoverPosition) {
     style = { position: 'absolute', left: popoverPosition.current.x + 20, top: popoverPosition.current.y + 20 };
-  }
-
-  /* eslint-disable react/jsx-props-no-spreading */
-  if (!children) {
-    return (
-      <div style={style}>
-        <Popover title={message} content={content} {...restOfProps} />
-      </div>
-    );
   }
 
   return (
