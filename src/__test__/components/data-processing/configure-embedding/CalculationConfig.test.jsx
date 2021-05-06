@@ -17,7 +17,7 @@ import { EMBEDDINGS_LOADING } from '../../../../redux/actionTypes/embeddings';
 
 import CalculationConfig from '../../../../components/data-processing/ConfigureEmbedding/CalculationConfig';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import initialExperimentState from '../../../experimentSettings.mock';
+import initialExperimentState from '../../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');
 enableFetchMocks();
@@ -37,20 +37,6 @@ describe('Data Processing CalculationConfig', () => {
 
   beforeEach(async () => {
     await preloadAll();
-
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
 
     const response = new Response(
       JSON.stringify(

@@ -4,7 +4,7 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
 import updateProcessingSettings from '../../../../redux/actions/experimentSettings/updateProcessingSettings';
-import initialState from '../../../experimentSettings.mock';
+import initialState from '../../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');
 

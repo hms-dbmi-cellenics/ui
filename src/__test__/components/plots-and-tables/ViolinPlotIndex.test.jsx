@@ -19,7 +19,7 @@ import { updatePlotConfig } from '../../../redux/actions/componentConfig/index';
 import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
-import { mockCellSets1 as cellSets } from '../../cellSets.mock';
+import { mockCellSets1 as cellSets } from '../../test-utils/cellSets.mock';
 
 jest.mock('localforage');
 enableFetchMocks();
