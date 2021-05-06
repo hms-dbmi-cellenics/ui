@@ -7,7 +7,7 @@ import { UploadOutlined } from '@ant-design/icons';
 
 const UploadDetailsModal = (props) => {
   const {
-    sampleName, fileName, pathTo, error, visible, onUpload, onCancel,
+    sampleName, fileName, pathTo, status, visible, onUpload, onCancel,
   } = props;
 
   const inputFileRef = useRef(null);
@@ -87,7 +87,7 @@ const UploadDetailsModal = (props) => {
         </Row>
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Error</Col>
-          <Col span={10}>{error}</Col>
+          <Col span={10}>{status?.message()}</Col>
         </Row>
       </div>
     </Modal>
@@ -98,7 +98,7 @@ UploadDetailsModal.propTypes = {
   sampleName: PropTypes.string,
   fileName: PropTypes.string,
   pathTo: PropTypes.string,
-  error: PropTypes.string,
+  status: PropTypes.object,
   visible: PropTypes.bool,
   onUpload: PropTypes.func,
   onCancel: PropTypes.func,
@@ -108,7 +108,7 @@ UploadDetailsModal.defaultProps = {
   sampleName: '',
   fileName: '',
   pathTo: '',
-  error: '',
+  status: null,
   visible: true,
   onUpload: null,
   onCancel: null,

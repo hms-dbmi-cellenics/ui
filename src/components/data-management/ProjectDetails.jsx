@@ -94,19 +94,35 @@ const ProjectDetails = ({ width, height }) => {
       pathTo,
     } = tableCellData;
 
+    const showSuccessDetails = () => {
+      uploadDetailsModalDataRef.current = {
+        sampleUuid,
+        fileName,
+        pathTo,
+        status,
+        bundle: samples[sampleUuid]?.files[fileName]?.bundle,
+      };
+
+      setUploadDetailsModalVisible(true);
+    };
+
+    const showErrorDetails = () => {
+      uploadDetailsModalDataRef.current = {
+        sampleUuid,
+        fileName,
+        pathTo,
+        status,
+        bundle: samples[sampleUuid]?.files[fileName]?.bundle,
+      };
+
+      setUploadDetailsModalVisible(true);
+    };
+
     if (status === UploadStatus.UPLOADED) {
       return (
-        <Space onClick={() => {
-          uploadDetailsModalDataRef.current = {
-            sampleUuid,
-            fileName,
-            pathTo,
-            error: status.message(),
-            bundle: samples[sampleUuid]?.files[fileName]?.bundle,
-          };
-
-          setUploadDetailsModalVisible(true);
-        }}
+        <Space
+          onClick={showSuccessDetails}
+          onKeyDown={showSuccessDetails}
         >
           <div style={{
             whiteSpace: 'nowrap',
@@ -144,7 +160,11 @@ const ProjectDetails = ({ width, height }) => {
 
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
-        <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
+        <div
+          onClick={showErrorDetails}
+          onKeyDown={showErrorDetails}
+          style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}
+        >
           <Space onClick={() => { setUploadDetailsModalVisible(true); }}>
             <Text type='danger'>{status.message()}</Text>
             <Tooltip placement='bottom' title='Retry' mouseLeaveDelay={0}>
@@ -355,7 +375,7 @@ const ProjectDetails = ({ width, height }) => {
         sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
         fileName={uploadDetailsModalDataRef.current?.fileName}
         pathTo={uploadDetailsModalDataRef.current?.pathTo}
-        error={uploadDetailsModalDataRef.current?.error}
+        status={uploadDetailsModalDataRef.current?.status}
         visible={uploadDetailsModalVisible}
         onUpload={uploadFileBundle}
         onCancel={() => setUploadDetailsModalVisible(false)}
