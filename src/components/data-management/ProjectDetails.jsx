@@ -7,7 +7,8 @@ import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons'
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
-
+import { saveAs } from 'file-saver';
+import { Storage } from 'aws-amplify';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
@@ -356,6 +357,18 @@ const ProjectDetails = ({ width, height }) => {
     setUploadDetailsModalVisible(false);
   };
 
+  const downloadFile = async () => {
+    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
+
+    const downloadedS3Object = await Storage.get(bucketKey, { download: true });
+
+    const bundleName = file?.bundle.name;
+    const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
+
+    saveAs(downloadedS3Object.Body, fileNameToSaveWith);
+  };
+
   return (
     <>
       <FileUploadModal
@@ -368,6 +381,7 @@ const ProjectDetails = ({ width, height }) => {
         file={uploadDetailsModalDataRef.current?.file}
         visible={uploadDetailsModalVisible}
         onUpload={uploadFileBundle}
+        onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
       <div width={width} height={height}>

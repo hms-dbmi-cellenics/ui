@@ -9,7 +9,7 @@ import UploadStatus from '../../utils/UploadStatus';
 
 const UploadDetailsModal = (props) => {
   const {
-    sampleName, file, visible, onUpload, onCancel,
+    sampleName, file, visible, onUpload, onDownload, onCancel,
   } = props;
 
   const {
@@ -32,6 +32,62 @@ const UploadDetailsModal = (props) => {
 
   const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);
 
+  const retryButton = () => (
+    <Button
+      type='primary'
+      key='retry'
+      block
+      onClick={() => {
+        onUpload(bundle);
+      }}
+      style={{ width: '140px', marginBottom: '10px' }}
+    >
+      Retry upload
+    </Button>
+  );
+
+  const replaceButton = () => (
+    <>
+      <input
+        type='file'
+        id='file'
+        ref={inputFileRef}
+        style={{ display: 'none' }}
+        onChange={
+          (event) => {
+            setReplacementFileBundle(event.target.files[0]);
+          }
+        }
+      />
+      <Button
+        type='primary'
+        key='replace'
+        block
+        icon={<UploadOutlined />}
+        onClick={() => {
+          inputFileRef.current.click();
+        }}
+        style={{ width: '140px', marginBottom: '10px' }}
+      >
+        Replace file
+      </Button>
+    </>
+  );
+
+  const downloadButton = () => (
+    <Button
+      type='primary'
+      key='retry'
+      block
+      onClick={() => {
+        onDownload();
+      }}
+      style={{ width: '140px', marginBottom: '10px' }}
+    >
+      Download
+    </Button>
+  );
+
   return (
     <Modal
       title={isSuccessModal ? 'Upload successful' : 'Upload error'}
@@ -41,44 +97,11 @@ const UploadDetailsModal = (props) => {
       footer={(
         <Row style={{ width: '100%', justifyContent: 'center' }}>
           <Col>
-            <Button
-              type='primary'
-              key='retry'
-              block
-              onClick={() => {
-                onUpload(bundle);
-              }}
-              style={{ width: '140px', marginBottom: '10px' }}
-            >
-              Retry upload
-            </Button>
+            {isSuccessModal ? downloadButton() : retryButton()}
           </Col>
           <Col span='2' />
-          <Col>
-            <input
-              type='file'
-              id='file'
-              ref={inputFileRef}
-              style={{ display: 'none' }}
-              onChange={
-                (event) => {
-                  setReplacementFileBundle(event.target.files[0]);
-                }
-              }
-            />
-            <Button
-              type='primary'
-              key='replace'
-              block
-              icon={<UploadOutlined />}
-              onClick={() => {
-                inputFileRef.current.click();
-              }}
-              style={{ width: '140px', marginBottom: '10px' }}
-            >
-              Replace file
-            </Button>
-          </Col>
+          {replaceButton()}
+          <Col />
         </Row>
       )}
     >
@@ -136,6 +159,7 @@ UploadDetailsModal.propTypes = {
   file: PropTypes.object,
   visible: PropTypes.bool,
   onUpload: PropTypes.func,
+  onDownload: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
@@ -143,8 +167,9 @@ UploadDetailsModal.defaultProps = {
   sampleName: '',
   file: {},
   visible: true,
-  onUpload: null,
-  onCancel: null,
+  onUpload: () => { },
+  onDownload: () => { },
+  onCancel: () => { },
 };
 
 export default UploadDetailsModal;
