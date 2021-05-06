@@ -226,9 +226,9 @@ const ProjectDetails = ({ width, height }) => {
 
     const metadataColumn = {
       key,
+      fixed: 'right',
       title: () => (
         <MetadataPopover
-          popupContainer={table}
           existingMetadata={activeProject.metadataKeys}
           onCreate={(name) => {
             const newMetadataColumn = createInitializedMetadataColumn(name);
