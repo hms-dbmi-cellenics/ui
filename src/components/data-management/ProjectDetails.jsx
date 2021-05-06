@@ -98,7 +98,11 @@ const ProjectDetails = ({ width, height }) => {
       return (
         <Space onClick={() => {
           uploadDetailsModalDataRef.current = {
-            sampleUuid, fileName, pathTo, error: status.message(),
+            sampleUuid,
+            fileName,
+            pathTo,
+            error: status.message(),
+            bundle: samples[sampleUuid]?.files[fileName]?.bundle,
           };
 
           setUploadDetailsModalVisible(true);
@@ -342,8 +346,7 @@ const ProjectDetails = ({ width, height }) => {
         error={uploadDetailsModalDataRef.current?.error}
         visible={uploadDetailsModalVisible}
         onRetry={() => {
-          const { sampleUuid, fileName } = uploadDetailsModalDataRef.current;
-          const { bundle } = samples[sampleUuid].files[fileName];
+          const { sampleUuid = '', fileName = '', bundle = null } = uploadDetailsModalDataRef.current;
 
           const bucketKey = `${activeProjectUuid}/${sampleUuid}/${fileName}`;
 
@@ -351,7 +354,15 @@ const ProjectDetails = ({ width, height }) => {
 
           setUploadDetailsModalVisible(false);
         }}
-        onReplace={() => { }}
+        onReplace={(replacementBundle) => {
+          const { sampleUuid, fileName } = uploadDetailsModalDataRef.current;
+
+          const bucketKey = `${activeProjectUuid}/${sampleUuid}/${fileName}`;
+
+          compressAndUploadSingleFile(bucketKey, sampleUuid, fileName, replacementBundle, dispatch);
+
+          setUploadDetailsModalVisible(false);
+        }}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
       <div width={width} height={height}>

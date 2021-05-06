@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Modal, Button, Col, Row, Upload,
+  Modal, Button, Col, Row,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
@@ -9,6 +9,15 @@ const UploadDetailsModal = (props) => {
   const {
     sampleName, fileName, pathTo, error, visible, onRetry, onReplace, onCancel,
   } = props;
+
+  const inputFileRef = useRef(null);
+  const [replacementFileBundle, setReplacementFileBundle] = useState(null);
+
+  useEffect(() => {
+    if (replacementFileBundle) {
+      onReplace(replacementFileBundle);
+    }
+  }, [replacementFileBundle]);
 
   return (
     <Modal
@@ -33,12 +42,25 @@ const UploadDetailsModal = (props) => {
           </Col>
           <Col span='2' />
           <Col>
+            <input
+              type='file'
+              id='file'
+              ref={inputFileRef}
+              style={{ display: 'none' }}
+              onChange={
+                (event) => {
+                  setReplacementFileBundle(event.target.files[0]);
+                }
+              }
+            />
             <Button
               type='primary'
               key='replace'
               block
+              icon={<UploadOutlined />}
               onClick={() => {
-                onReplace();
+                inputFileRef.current.click();
+                // onReplace();
               }}
               style={{ width: '140px', marginBottom: '10px' }}
             >
@@ -67,17 +89,6 @@ const UploadDetailsModal = (props) => {
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Error</Col>
           <Col span={10}>{error}</Col>
-        </Row>
-        <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-          <Col span={5}>Replace with</Col>
-          <Col span={10} style={{ display: 'flex', flexDirection: 'row' }}>
-            <div style={{ marginRight: '50px' }}>/User/username/file.mtx</div>
-          </Col>
-          <Col>
-            <Upload>
-              <Button icon={<UploadOutlined />}>Select file</Button>
-            </Upload>
-          </Col>
         </Row>
       </div>
     </Modal>

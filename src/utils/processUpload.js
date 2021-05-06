@@ -29,7 +29,7 @@ const compressAndUploadSingleFile = async (bucketKey, sampleUuid, fileName, bund
     updateSampleFile(
       sampleUuid,
       fileName,
-      { upload: { status: UploadStatus.UPLOADING, progress: 0 } },
+      { bundle, upload: { status: UploadStatus.UPLOADING, progress: 0 } },
     ),
   );
 
