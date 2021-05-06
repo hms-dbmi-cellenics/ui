@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import {
   Modal, Button, Col, Row,
 } from 'antd';
@@ -31,6 +32,16 @@ const UploadDetailsModal = (props) => {
   const isSuccessModal = status === UploadStatus.UPLOADED;
 
   const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);
+
+  const fromISODateToFormatted = (ISOStringDate) => {
+    const date = moment(ISOStringDate);
+
+    const weekDayName = date.format('dddd');
+
+    const fullDate = date.local().format('DD MMM YYYY');
+
+    return `${weekDayName}, ${fullDate}`;
+  };
 
   const retryButton = () => (
     <Button
@@ -138,7 +149,7 @@ const UploadDetailsModal = (props) => {
               </Row>
               <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
                 <Col span={5}>Upload date</Col>
-                <Col span={10}>NOT IMPLEMENTED YET</Col>
+                <Col span={10}>{fromISODateToFormatted(file.lastModified)}</Col>
               </Row>
             </>
           )

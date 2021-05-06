@@ -12,7 +12,7 @@ const samplesFileUpdate = (state, action) => {
   };
 
   const oldFile = state[sampleUuid].files?.[fileName];
-  let newFile = fileDiff;
+  let newFile = { lastModified, ...fileDiff };
   if (oldFile) {
     newFile = _.mergeWith(oldFile, fileDiff, overwriteIfArray);
   }
