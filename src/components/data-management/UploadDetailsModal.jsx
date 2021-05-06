@@ -7,7 +7,7 @@ import { UploadOutlined } from '@ant-design/icons';
 
 const UploadDetailsModal = (props) => {
   const {
-    sampleName, fileName, pathTo, error, visible, onRetry, onReplace, onCancel,
+    sampleName, fileName, pathTo, error, visible, onUpload, onCancel,
   } = props;
 
   const inputFileRef = useRef(null);
@@ -15,7 +15,7 @@ const UploadDetailsModal = (props) => {
 
   useEffect(() => {
     if (replacementFileBundle) {
-      onReplace(replacementFileBundle);
+      onUpload(replacementFileBundle);
     }
   }, [replacementFileBundle]);
 
@@ -33,7 +33,7 @@ const UploadDetailsModal = (props) => {
               key='retry'
               block
               onClick={() => {
-                onRetry();
+                onUpload();
               }}
               style={{ width: '140px', marginBottom: '10px' }}
             >
@@ -60,7 +60,6 @@ const UploadDetailsModal = (props) => {
               icon={<UploadOutlined />}
               onClick={() => {
                 inputFileRef.current.click();
-                // onReplace();
               }}
               style={{ width: '140px', marginBottom: '10px' }}
             >
@@ -101,8 +100,7 @@ UploadDetailsModal.propTypes = {
   pathTo: PropTypes.string,
   error: PropTypes.string,
   visible: PropTypes.bool,
-  onRetry: PropTypes.func,
-  onReplace: PropTypes.func,
+  onUpload: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
@@ -112,8 +110,7 @@ UploadDetailsModal.defaultProps = {
   pathTo: '',
   error: '',
   visible: true,
-  onRetry: null,
-  onReplace: null,
+  onUpload: null,
   onCancel: null,
 };
 

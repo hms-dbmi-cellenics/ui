@@ -332,6 +332,18 @@ const ProjectDetails = ({ width, height }) => {
     dispatch(updateProject(activeProjectUuid, { description }));
   };
 
+  const uploadFileBundle = (replacementBundle = null) => {
+    const { sampleUuid = '', fileName = '', bundle = null } = uploadDetailsModalDataRef.current;
+
+    const bundleToUpload = replacementBundle ?? bundle;
+
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${fileName}`;
+
+    compressAndUploadSingleFile(bucketKey, sampleUuid, fileName, bundleToUpload, dispatch);
+
+    setUploadDetailsModalVisible(false);
+  };
+
   return (
     <>
       <FileUploadModal
@@ -345,24 +357,7 @@ const ProjectDetails = ({ width, height }) => {
         pathTo={uploadDetailsModalDataRef.current?.pathTo}
         error={uploadDetailsModalDataRef.current?.error}
         visible={uploadDetailsModalVisible}
-        onRetry={() => {
-          const { sampleUuid = '', fileName = '', bundle = null } = uploadDetailsModalDataRef.current;
-
-          const bucketKey = `${activeProjectUuid}/${sampleUuid}/${fileName}`;
-
-          compressAndUploadSingleFile(bucketKey, sampleUuid, fileName, bundle, dispatch);
-
-          setUploadDetailsModalVisible(false);
-        }}
-        onReplace={(replacementBundle) => {
-          const { sampleUuid, fileName } = uploadDetailsModalDataRef.current;
-
-          const bucketKey = `${activeProjectUuid}/${sampleUuid}/${fileName}`;
-
-          compressAndUploadSingleFile(bucketKey, sampleUuid, fileName, replacementBundle, dispatch);
-
-          setUploadDetailsModalVisible(false);
-        }}
+        onUpload={uploadFileBundle}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
       <div width={width} height={height}>
