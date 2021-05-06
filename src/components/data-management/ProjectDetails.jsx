@@ -396,8 +396,9 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   useEffect(() => {
-    if (samples.ids.length === 0 || projects.ids.length === 0) {
+    if (projects.ids.length === 0 || samples.ids.length === 0) {
       setTableData([]);
+      setTableColumns([]);
       return;
     }
 
