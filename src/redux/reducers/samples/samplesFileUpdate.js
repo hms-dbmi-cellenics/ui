@@ -12,10 +12,13 @@ const samplesFileUpdate = (state, action) => {
   };
 
   const oldFile = state[sampleUuid].files?.[fileName];
-  let newFile = { lastModified, ...fileDiff };
+  let newFile = fileDiff;
+
   if (oldFile) {
     newFile = _.mergeWith(oldFile, fileDiff, overwriteIfArray);
   }
+
+  newFile.lastModified = lastModified;
 
   const newFileNames = _.clone(state[sampleUuid].fileNames);
   newFileNames.add(fileName);
