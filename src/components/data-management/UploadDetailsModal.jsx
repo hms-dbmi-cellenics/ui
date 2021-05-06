@@ -30,7 +30,7 @@ const UploadDetailsModal = (props) => {
 
   const isSuccessModal = status === UploadStatus.UPLOADED;
 
-  const toMBytes = (sizeInBytes) => (sizeInBytes / (1024 * 1024)).toFixed(2);
+  const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);
 
   return (
     <Modal
