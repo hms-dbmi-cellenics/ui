@@ -87,20 +87,16 @@ const ProjectDetails = ({ width, height }) => {
 
   const renderUploadCell = (columnId, tableCellData) => {
     const {
-      status,
-      progress = null,
       sampleUuid,
-      fileName,
-      pathTo,
+      file,
     } = tableCellData;
+
+    const { status = null, progress = null } = file?.upload ?? {};
 
     const showSuccessDetails = () => {
       uploadDetailsModalDataRef.current = {
         sampleUuid,
-        fileName,
-        pathTo,
-        status,
-        bundle: samples[sampleUuid]?.files[fileName]?.bundle,
+        file,
       };
 
       setUploadDetailsModalVisible(true);
@@ -109,10 +105,7 @@ const ProjectDetails = ({ width, height }) => {
     const showErrorDetails = () => {
       uploadDetailsModalDataRef.current = {
         sampleUuid,
-        fileName,
-        pathTo,
-        status,
-        bundle: samples[sampleUuid]?.files[fileName]?.bundle,
+        file,
       };
 
       setUploadDetailsModalVisible(true);
@@ -305,13 +298,10 @@ const ProjectDetails = ({ width, height }) => {
     createMetadataColumn('Sequencing date', 'sequencing-date'),
   ];
 
-  const errorCellDataFrom = (sampleUuid, file) => {
+  const cellDataFrom = (sampleUuid, file) => {
     const cellData = {
-      status: file?.upload?.status,
-      progress: file?.upload?.progress,
       sampleUuid,
-      fileName: file?.name,
-      pathTo: file?.bundle?.path,
+      file,
     };
 
     return cellData;
@@ -330,9 +320,9 @@ const ProjectDetails = ({ width, height }) => {
       const genesFile = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz']) ?? { status: UploadStatus.FILE_NOT_FOUND };
       const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
 
-      const barcodesData = errorCellDataFrom(sampleUuid, barcodesFile);
-      const genesData = errorCellDataFrom(sampleUuid, genesFile);
-      const matrixData = errorCellDataFrom(sampleUuid, matrixFile);
+      const barcodesData = cellDataFrom(sampleUuid, barcodesFile);
+      const genesData = cellDataFrom(sampleUuid, genesFile);
+      const matrixData = cellDataFrom(sampleUuid, matrixFile);
 
       return {
         key: idx,
@@ -352,14 +342,16 @@ const ProjectDetails = ({ width, height }) => {
     dispatch(updateProject(activeProjectUuid, { description }));
   };
 
-  const uploadFileBundle = (replacementBundle = null) => {
-    const { sampleUuid = '', fileName = '', bundle = null } = uploadDetailsModalDataRef.current;
+  const uploadFileBundle = (bundleToUpload) => {
+    if (!uploadDetailsModalDataRef.current) {
+      return;
+    }
 
-    const bundleToUpload = replacementBundle ?? bundle;
+    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
 
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${fileName}`;
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
 
-    compressAndUploadSingleFile(bucketKey, sampleUuid, fileName, bundleToUpload, dispatch);
+    compressAndUploadSingleFile(bucketKey, sampleUuid, file.name, bundleToUpload, dispatch);
 
     setUploadDetailsModalVisible(false);
   };
@@ -373,9 +365,7 @@ const ProjectDetails = ({ width, height }) => {
       />
       <UploadDetailsModal
         sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
-        fileName={uploadDetailsModalDataRef.current?.fileName}
-        pathTo={uploadDetailsModalDataRef.current?.pathTo}
-        status={uploadDetailsModalDataRef.current?.status}
+        file={uploadDetailsModalDataRef.current?.file}
         visible={uploadDetailsModalVisible}
         onUpload={uploadFileBundle}
         onCancel={() => setUploadDetailsModalVisible(false)}

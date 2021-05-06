@@ -5,10 +5,19 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
+import UploadStatus from '../../utils/UploadStatus';
+
 const UploadDetailsModal = (props) => {
   const {
-    sampleName, fileName, pathTo, status, visible, onUpload, onCancel,
+    sampleName, file, visible, onUpload, onCancel,
   } = props;
+
+  const {
+    name: fileName = null, upload = {}, bundle = {},
+  } = file;
+
+  const status = upload?.status;
+  const bundleName = bundle?.name;
 
   const inputFileRef = useRef(null);
   const [replacementFileBundle, setReplacementFileBundle] = useState(null);
@@ -19,9 +28,13 @@ const UploadDetailsModal = (props) => {
     }
   }, [replacementFileBundle]);
 
+  const isSuccessModal = status === UploadStatus.UPLOADED;
+
+  const toMBytes = (sizeInBytes) => (sizeInBytes / (1024 * 1024)).toFixed(2);
+
   return (
     <Modal
-      title='Upload error'
+      title={isSuccessModal ? 'Upload successful' : 'Upload error'}
       visible={visible}
       onCancel={onCancel}
       width='40%'
@@ -33,7 +46,7 @@ const UploadDetailsModal = (props) => {
               key='retry'
               block
               onClick={() => {
-                onUpload();
+                onUpload(bundle);
               }}
               style={{ width: '140px', marginBottom: '10px' }}
             >
@@ -70,9 +83,12 @@ const UploadDetailsModal = (props) => {
       )}
     >
       <div style={{ width: '100%', marginLeft: '15px' }}>
-        <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-          The following file has failed to upload
-        </Row>
+        {!isSuccessModal
+          && (
+            <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
+              The following file has failed to upload
+            </Row>
+          )}
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Sample</Col>
           <Col span={10}>{sampleName}</Col>
@@ -83,12 +99,33 @@ const UploadDetailsModal = (props) => {
         </Row>
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Filename</Col>
-          <Col span={10}>{pathTo}</Col>
+          <Col span={10}>{bundleName}</Col>
         </Row>
-        <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-          <Col span={5}>Error</Col>
-          <Col span={10}>{status?.message()}</Col>
-        </Row>
+
+        {
+          isSuccessModal ? (
+            <>
+              <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
+                <Col span={5}>File size</Col>
+                <Col span={10}>
+                  {toMBytes(bundle.size)}
+                  {' '}
+                  MB
+                </Col>
+              </Row>
+              <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
+                <Col span={5}>Upload date</Col>
+                <Col span={10}>NOT IMPLEMENTED YET</Col>
+              </Row>
+            </>
+          )
+            : (
+              <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
+                <Col span={5}>Error</Col>
+                <Col span={10}>{status?.message()}</Col>
+              </Row>
+            )
+        }
       </div>
     </Modal>
   );
@@ -96,9 +133,7 @@ const UploadDetailsModal = (props) => {
 
 UploadDetailsModal.propTypes = {
   sampleName: PropTypes.string,
-  fileName: PropTypes.string,
-  pathTo: PropTypes.string,
-  status: PropTypes.object,
+  file: PropTypes.object,
   visible: PropTypes.bool,
   onUpload: PropTypes.func,
   onCancel: PropTypes.func,
@@ -106,9 +141,7 @@ UploadDetailsModal.propTypes = {
 
 UploadDetailsModal.defaultProps = {
   sampleName: '',
-  fileName: '',
-  pathTo: '',
-  status: null,
+  file: {},
   visible: true,
   onUpload: null,
   onCancel: null,
