@@ -25,7 +25,7 @@ import UploadStatus from '../../utils/UploadStatus';
 
 const { Text, Paragraph } = Typography;
 
-const ProjectDetails = ({ width, height }) => {
+const DataPanel = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const dispatch = useDispatch();
 
@@ -339,9 +339,9 @@ const ProjectDetails = ({ width, height }) => {
   );
 };
 
-ProjectDetails.propTypes = {
+DataPanel.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };
 
-export default ProjectDetails;
+export default DataPanel;

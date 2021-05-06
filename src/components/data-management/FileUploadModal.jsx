@@ -194,7 +194,7 @@ const NewProjectModal = (props) => {
               </Title>
               <Select style={{ width: 250 }} defaultValue={selectedTech} onChange={(value) => setSelectedTech(value)}>
                 {Object.keys(techOptions).map((val, idx) => (
-                  <Option key={idx} value={val}>{val}</Option>
+                  <Option key={`key-${idx}`} value={val}>{val}</Option>
                 ))}
               </Select>
             </Space>
