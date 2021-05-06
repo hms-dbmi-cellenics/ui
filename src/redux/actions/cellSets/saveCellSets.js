@@ -42,7 +42,7 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
       },
     });
   } catch (e) {
-    dispatch(pushNotificationMessage('error', messages.saveCellSets, 5));
+    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
   }
 };
 
