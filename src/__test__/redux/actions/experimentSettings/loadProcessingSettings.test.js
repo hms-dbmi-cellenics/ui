@@ -7,7 +7,7 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../../../redux/actionTypes/experimentSettings';
 import loadProcessingSettings from '../../../../redux/actions/experimentSettings/loadProcessingSettings';
-import initialState from '../../../experimentSettings.mock';
+import initialState from '../../../test-utils/experimentSettings.mock';
 
 import {
   NOTIFICATIONS_PUSH_MESSAGE,

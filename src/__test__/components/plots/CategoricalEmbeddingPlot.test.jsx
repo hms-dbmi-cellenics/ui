@@ -11,7 +11,7 @@ import { ClipLoader } from 'react-spinners';
 import CategoricalEmbeddingPlot from '../../../components/plots/CategoricalEmbeddingPlot';
 import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
 import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
-import initialExperimentState from '../../experimentSettings.mock';
+import initialExperimentState from '../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 
 jest.mock('localforage');

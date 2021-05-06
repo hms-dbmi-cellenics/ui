@@ -1,5 +1,4 @@
 // From https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
-// TO-DO: we mock 'matchMedia' in several files
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

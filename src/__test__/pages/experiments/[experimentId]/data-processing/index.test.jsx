@@ -11,7 +11,7 @@ import _ from 'lodash';
 import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
 
 import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
-import initialExperimentSettingsState from '../../../../experimentSettings.mock';
+import initialExperimentSettingsState from '../../../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
 import { EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING } from '../../../../../redux/actionTypes/experimentSettings';
@@ -125,22 +125,6 @@ const getStore = (settings = {}) => {
 
 describe('DataProcessingPage', () => {
   const experimentData = {};
-
-  beforeEach(() => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-  });
 
   it('renders correctly', () => {
     const store = getStore();
