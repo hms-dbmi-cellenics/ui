@@ -36,6 +36,7 @@ const ProjectDetails = ({ width, height }) => {
   const defaultNA = 'N.A.';
 
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
 
   const { data: speciesData } = useSWR(
@@ -138,7 +139,7 @@ const ProjectDetails = ({ width, height }) => {
         <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
           <Space>
             <Text type='danger'>{status.message()}</Text>
-            <Tooltip placement='bottom' title='Retry' mouseLeaveDelay={0}>
+            <Tooltip title='Retry' mouseLeaveDelay={0}>
               <Button
                 size='small'
                 shape='link'
@@ -162,7 +163,7 @@ const ProjectDetails = ({ width, height }) => {
         <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
           <Space>
             <Text type='danger'>{status.message()}</Text>
-            <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
+            <Tooltip title='Upload missing' mouseLeaveDelay={0}>
               <Button
                 size='small'
                 shape='link'
@@ -227,14 +228,17 @@ const ProjectDetails = ({ width, height }) => {
       key,
       title: () => (
         <MetadataPopover
+          popupContainer={table}
           existingMetadata={activeProject.metadataKeys}
           onCreate={(name) => {
             const newMetadataColumn = createInitializedMetadataColumn(name);
             setTableColumns([...tableColumns, newMetadataColumn]);
             dispatch(createMetadataTrack(name, activeProjectUuid));
+            setIsAddingMetadata(false);
           }}
           onCancel={() => {
             deleteMetadataColumn(key);
+            setIsAddingMetadata(false);
           }}
           message='Provide new metadata track name'
           visible
@@ -452,8 +456,12 @@ const ProjectDetails = ({ width, height }) => {
               disabled={
                 projects.ids.length === 0
                 || activeProject?.samples.length === 0
+                || isAddingMetadata
               }
-              onClick={() => createMetadataColumn()}
+              onClick={() => {
+                setIsAddingMetadata(true);
+                createMetadataColumn();
+              }}
             >
               Add metadata
             </Button>,

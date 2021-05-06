@@ -13,6 +13,7 @@ const MetadataPopover = (props) => {
     onCancel,
     message,
     children,
+    popupContainer,
     ...restOfProps
   } = props;
 
@@ -27,7 +28,11 @@ const MetadataPopover = (props) => {
       deleteEnabled={false}
       value='Track name'
       defaultEditing
-      validationFunc={(value) => value.length > 0 && !existingMetadata.includes(metadataNameToKey(value))}
+      validationFunc={
+        (value) => value.length > 0
+          && !existingMetadata.map((metadataKey) => metadataKey.toLowerCase())
+            .includes(metadataNameToKey(value.toLowerCase()))
+      }
     />
   );
 
@@ -44,7 +49,7 @@ const MetadataPopover = (props) => {
         title={message}
         content={content}
         {...restOfProps}
-
+        autoAdjustOverflow
       >
         {children}
       </Popover>

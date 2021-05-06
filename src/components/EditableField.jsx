@@ -89,11 +89,11 @@ const EditableField = (props) => {
             onKeyDown={onKeyDown}
           />
 
-          <Tooltip placement='bottom' title='Save' mouseLeaveDelay={0}>
+          <Tooltip placement='top' title='Save' mouseLeaveDelay={0}>
             <Button size='small' shape='circle' icon={<CheckOutlined />} onClick={onSubmit} />
           </Tooltip>
 
-          <Tooltip placement='bottom' title='Cancel' mouseLeaveDelay={0}>
+          <Tooltip placement='top' title='Cancel' mouseLeaveDelay={0}>
             <Button size='small' shape='circle' icon={<CloseOutlined />} onClick={onCancel} />
           </Tooltip>
 
@@ -107,7 +107,7 @@ const EditableField = (props) => {
         {
           showEdit
             ? (
-              <Tooltip placement='bottom' title='Edit' mouseLeaveDelay={0}>
+              <Tooltip placement='top' title='Edit' mouseLeaveDelay={0}>
                 <Button size='small' shape='circle' icon={<EditOutlined />} onClick={toggleEditing} />
               </Tooltip>
             ) : <></>
@@ -124,7 +124,7 @@ const EditableField = (props) => {
           {
             deleteEnabled
               ? (
-                <Tooltip placement='bottom' title='Delete' mouseLeaveDelay={0}>
+                <Tooltip placement='top' title='Delete' mouseLeaveDelay={0}>
                   <Button size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
                 </Tooltip>
               ) : <></>

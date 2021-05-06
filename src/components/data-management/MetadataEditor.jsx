@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -53,8 +54,8 @@ const MetadataEditor = (props) => {
   );
 
   return (
-    <Tooltip placement='bottom' title='Fill'>
-      <Popover title='Fill metadata' content={getContent()} placement='bottom' trigger='click'>
+    <Tooltip title='Fill'>
+      <Popover title='Fill metadata' content={getContent()} trigger='click'>
         <Button size='small' shape='circle' icon={<FormatPainterOutlined />} {...restOfProps} />
       </Popover>
     </Tooltip>
