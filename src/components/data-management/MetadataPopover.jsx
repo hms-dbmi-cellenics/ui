@@ -26,7 +26,7 @@ const MetadataPopover = (props) => {
         onCancel();
       }}
       deleteEnabled={false}
-      value='Track name'
+      value={`Track ${existingMetadata.filter((key) => key.match('Track-')).length + 1}`}
       defaultEditing
       validationFunc={
         (value) => value.length > 0
