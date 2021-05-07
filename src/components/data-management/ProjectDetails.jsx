@@ -299,15 +299,6 @@ const ProjectDetails = ({ width, height }) => {
     createMetadataColumn('Sequencing date', 'sequencing-date'),
   ];
 
-  const cellDataFrom = (sampleUuid, file) => {
-    const cellData = {
-      sampleUuid,
-      file,
-    };
-
-    return cellData;
-  };
-
   useEffect(() => {
     if (samples.ids.length === 0 || projects.ids.length === 0) {
       setTableData([]);
@@ -321,9 +312,9 @@ const ProjectDetails = ({ width, height }) => {
       const genesFile = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz']) ?? { status: UploadStatus.FILE_NOT_FOUND };
       const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
 
-      const barcodesData = cellDataFrom(sampleUuid, barcodesFile);
-      const genesData = cellDataFrom(sampleUuid, genesFile);
-      const matrixData = cellDataFrom(sampleUuid, matrixFile);
+      const barcodesData = { sampleUuid, file: barcodesFile };
+      const genesData = { sampleUuid, file: genesFile };
+      const matrixData = { sampleUuid, file: matrixFile };
 
       return {
         key: idx,
