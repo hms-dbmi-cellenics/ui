@@ -99,7 +99,9 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
     const sampleName = pathToArray[0];
-    const fileName = _.last(pathToArray);
+    let fileName = _.last(pathToArray);
+
+    fileName = fileName.replace('genes', 'features');
 
     // Update the file name so that instead of being saved as
     // e.g. WT13/matrix.tsv.gz, we save it as matrix.tsv.gz

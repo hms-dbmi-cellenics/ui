@@ -309,7 +309,7 @@ const ProjectDetails = ({ width, height }) => {
       const sampleFiles = samples[sampleUuid].files;
 
       const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const genesFile = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz']) ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const genesFile = sampleFiles['features.tsv.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
       const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
 
       const barcodesData = { sampleUuid, file: barcodesFile };
