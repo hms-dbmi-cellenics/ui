@@ -18,7 +18,6 @@ import '../../assets/nprogress.css';
 import CustomError from '../utils/customError';
 
 const mockCredentialsForInframock = () => {
-  // Mock credentials so that it works with inframock
   Credentials.get = async () => (
     new AWS.Credentials({
       accessKeyId: 'asd',
@@ -49,8 +48,6 @@ Storage.configure({
   },
 });
 
-mockCredentialsForInframock();
-
 const WrappedApp = ({ Component, pageProps }) => {
   const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
@@ -58,8 +55,14 @@ const WrappedApp = ({ Component, pageProps }) => {
   const { experimentId } = router.query;
   const experimentData = useSelector((state) => (experimentId ? state.experimentSettings.info : {}));
 
+  const environment = useSelector((state) => state.networkResources.environment);
+
   useEffect(() => {
     Amplify.configure(amplifyConfig);
+
+    if (environment === 'development') {
+      mockCredentialsForInframock();
+    }
   }, [amplifyConfig]);
 
   const mainContent = () => {
