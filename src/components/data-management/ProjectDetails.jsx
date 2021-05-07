@@ -20,7 +20,7 @@ import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
 import { updateProject } from '../../redux/actions/projects';
-import processUpload, { compressAndUploadSingleFile } from '../../utils/processUpload';
+import processUpload, { compressAndUploadSingleFile, metadataFor } from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 
 import UploadStatus from '../../utils/UploadStatus';
@@ -343,7 +343,12 @@ const ProjectDetails = ({ width, height }) => {
 
     const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
 
-    compressAndUploadSingleFile(bucketKey, sampleUuid, file.name, bundleToUpload, dispatch);
+    const metadata = metadataFor(bundleToUpload);
+
+    compressAndUploadSingleFile(
+      bucketKey, sampleUuid, file.name,
+      bundleToUpload, dispatch, metadata,
+    );
 
     setUploadDetailsModalVisible(false);
   };

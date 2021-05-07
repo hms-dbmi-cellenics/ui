@@ -5,11 +5,12 @@ import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
 import UploadStatus from './UploadStatus';
 
-const putInS3 = (bucketKey, loadedFileData, dispatch, sampleUuid, fileName) => (
+const putInS3 = (bucketKey, loadedFileData, dispatch, sampleUuid, fileName, metadata) => (
   Storage.put(
     bucketKey,
     loadedFileData,
     {
+      metadata,
       progressCallback(progress) {
         const percentProgress = Math.round((progress.loaded / progress.total) * 100);
 
@@ -24,7 +25,22 @@ const putInS3 = (bucketKey, loadedFileData, dispatch, sampleUuid, fileName) => (
   )
 );
 
-const compressAndUploadSingleFile = async (bucketKey, sampleUuid, fileName, bundle, dispatch) => {
+const metadataFor = (bundle) => {
+  const metadata = {};
+
+  if (bundle.name.includes('genes')) {
+    metadata.cellranger_version = 'v2';
+  } else if (bundle.name.includes('features')) {
+    metadata.cellranger_version = 'v3';
+  }
+
+  return metadata;
+};
+
+const compressAndUploadSingleFile = async (
+  bucketKey, sampleUuid, fileName,
+  bundle, dispatch, metadata = {},
+) => {
   dispatch(
     updateSampleFile(
       sampleUuid,
@@ -50,7 +66,7 @@ const compressAndUploadSingleFile = async (bucketKey, sampleUuid, fileName, bund
   }
 
   try {
-    await putInS3(bucketKey, loadedFile, dispatch, sampleUuid, fileName);
+    await putInS3(bucketKey, loadedFile, dispatch, sampleUuid, fileName, metadata);
   } catch (e) {
     dispatch(
       updateSampleFile(
@@ -88,7 +104,12 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
     const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
 
-    await compressAndUploadSingleFile(bucketKey, sample.uuid, fileName, file.bundle, dispatch);
+    const metadata = metadataFor(file.bundle);
+
+    await compressAndUploadSingleFile(
+      bucketKey, sample.uuid, fileName,
+      file.bundle, dispatch, metadata,
+    );
   });
 
   return updatedSampleFiles;
@@ -101,6 +122,7 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     const sampleName = pathToArray[0];
     let fileName = _.last(pathToArray);
 
+    // We rename genes.tsv files to features.tsv (for a single entry)
     fileName = fileName.replace('genes', 'features');
 
     // Update the file name so that instead of being saved as
@@ -143,5 +165,5 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   });
 };
 
-export { compressAndUploadSingleFile };
+export { compressAndUploadSingleFile, metadataFor };
 export default processUpload;
