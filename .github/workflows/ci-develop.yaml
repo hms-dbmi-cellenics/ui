@@ -1,8 +1,11 @@
-name: Build and deploy the UI
+name: Build and deploy the UI to develop
 on:
   push:
     branches:
-      - master
+      - develop
+  pull_request:
+    branches:
+      - develop
 jobs:
   build:
     name: Build website
@@ -130,7 +133,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment: ['production', 'staging']
+        environment: ['develop', 'staging']
     steps:
       - id: checkout
         name: Check out source code
@@ -161,7 +164,7 @@ jobs:
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
           echo "::set-output name=ref-dashed::$REF_DASHED"
 
-          if [ "${{ matrix.environment }}" = "production" ]; then
+          if [ "${{ matrix.environment }}" = "develop" ]; then
             SANDBOX_ID="default"
             CHART_REF="master"
           fi
@@ -179,21 +182,15 @@ jobs:
           | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "glob:$REF_DASHED-*" \
           | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.chart.ref "$CHART_REF" \
-          | yq w -d1 - spec.values.kubernetes.env "${{ matrix.environment }}" \
+          | yq w -d1 - spec.values.kubernetes.env "staging" \
           | yq w -d1 - spec.values.biomageCi.repo "$GITHUB_REPOSITORY" \
           | yq w -d1 - spec.values.biomageCi.sandboxId "$SANDBOX_ID" \
           | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
           | yq w -d1 - spec.values.image.repository "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.values.image.tag "$REF_DASHED-$GITHUB_SHA" \
-          | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/ui-role-${{ matrix.environment }}" \
-          > $DEPLOYMENT_NAME-without-host.yaml
+          | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/ui-role-staging" \
+          > $DEPLOYMENT_NAME.yaml
 
-          if [ "${{ matrix.environment }}" = "production" ]
-          then
-            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp.biomage.net" > $DEPLOYMENT_NAME.yaml
-          else
-            mv $DEPLOYMENT_NAME-without-host.yaml $DEPLOYMENT_NAME.yaml
-          fi
 
           cat $DEPLOYMENT_NAME.yaml
         env:
@@ -209,16 +206,16 @@ jobs:
           enforce_admins: false
           retries: 8
 
-      - name: Push production deployment to iac for deployment
+      - name: Push develop deployment to iac for deployment
         if:
-          github.ref == 'refs/heads/master' && github.event_name == 'push' && matrix.environment == 'production'
+          github.ref == 'refs/heads/develop' && github.event_name == 'push' && matrix.environment == 'develop'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           source_file: '${{ steps.fill-metadata.outputs.deployment-name }}.yaml'
           destination_repo: '${{ github.repository_owner }}/iac'
-          destination_folder: 'releases/${{ matrix.environment }}'
+          destination_folder: 'releases/staging'
           user_email: 'ci@biomage.net'
           user_name: 'Biomage CI/CD'
 
