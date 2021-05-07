@@ -10,6 +10,7 @@ const updateSampleFile = (
   file,
 ) => async (dispatch, getState) => {
   const updatedAt = moment().toISOString();
+
   const { projectUuid } = getState().samples[sampleUuid];
 
   dispatch({
