@@ -126,12 +126,16 @@ Object {
     "files": Object {
       "features.tsv": Object {
         "error": false,
+        "lastModified": "newLastModified",
         "mime": "",
         "name": "features.tsv",
         "objectKey": "",
         "path": "",
         "size": 0,
         "success": false,
+        "upload": Object {
+          "status": null,
+        },
       },
     },
     "lastModified": "newLastModified",

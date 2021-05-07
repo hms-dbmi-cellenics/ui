@@ -136,7 +136,7 @@ describe('samplesReducer', () => {
       payload: {
         sampleUuid: mockUuid1,
         fileName,
-        file: mockFile,
+        fileDiff: mockFile,
         lastModified: 'newLastModified',
       },
     });

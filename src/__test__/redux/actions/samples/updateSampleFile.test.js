@@ -62,7 +62,8 @@ describe('updateSampleFile action', () => {
 
     await store.dispatch(updateSampleFile(mockUuid, mockFile.name, mockFile));
 
-    const { file } = store.getActions()[0].payload;
-    expect(file.name).toEqual(fileName);
+    const { fileDiff } = store.getActions()[0].payload;
+
+    expect(fileDiff.name).toEqual(fileName);
   });
 });
