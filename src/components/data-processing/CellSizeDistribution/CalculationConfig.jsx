@@ -12,10 +12,14 @@ import {
 } from '@ant-design/icons';
 import SliderWithInput from '../../SliderWithInput';
 
+const MIN_CELL_SIZE_PLACEHOLDER = 10800;
+
 const CellSizeDistributionConfig = (props) => {
   const {
-    config, disabled, updateSettings,
+    config, disabled, updateSettings, highestUmi,
   } = props;
+
+  const withinRange = (cellSize) => Math.max(Math.min(cellSize, highestUmi), 0);
 
   return (
     <>
@@ -27,11 +31,17 @@ const CellSizeDistributionConfig = (props) => {
           </Tooltip>
           <InputNumber
             value={config.minCellSize}
-            onChange={(value) => updateSettings({ minCellSize: value })}
-            onPressEnter={(e) => updateSettings({ minCellSize: e.target.value })}
-            placeholder={10800}
+            onChange={(value) => {
+              updateSettings({ minCellSize: withinRange(value) });
+            }}
+            onPressEnter={(e) => {
+              updateSettings({ minCellSize: withinRange(e.target.value) });
+            }}
+            placeholder={MIN_CELL_SIZE_PLACEHOLDER}
             step={100}
             disabled={disabled}
+            max={highestUmi}
+            min={0}
           />
         </Space>
       </Form.Item>
@@ -54,6 +64,7 @@ CellSizeDistributionConfig.propTypes = {
   updateSettings: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   disabled: PropTypes.bool.isRequired,
+  highestUmi: PropTypes.number.isRequired,
 };
 
 export default CellSizeDistributionConfig;

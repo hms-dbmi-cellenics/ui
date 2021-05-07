@@ -267,6 +267,7 @@ const DataIntegration = (props) => {
       // Show a confirmation dialog. Prevent moving away if the user decides not to.
       // eslint-disable-next-line no-alert
       if (
+        // eslint-disable-next-line no-alert
         !window.confirm(
           'You have unsaved changes. Do you wish to save?',
         )

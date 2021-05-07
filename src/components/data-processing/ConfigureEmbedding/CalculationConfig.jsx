@@ -15,6 +15,7 @@ import {
 } from '../../../redux/actions/experimentSettings';
 
 import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
+import { loadEmbedding } from '../../../redux/actions/embedding';
 
 import SliderWithInput from '../../SliderWithInput';
 
@@ -117,7 +118,7 @@ const CalculationConfig = (props) => {
   const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
-    onPipelineRun();
+    dispatch(loadEmbedding(experimentId, embeddingMethod, true));
   };
   const newChanges = changes;
 

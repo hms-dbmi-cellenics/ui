@@ -16,46 +16,46 @@ const cellSets = {
     'cluster-a': {
       name: 'cluster a',
       key: 'cluster-a',
-      cellIds: [0, 1, 2, 3, 4, 5],
+      cellIds: new Set([0, 1, 2, 3, 4, 5]),
       color: '#00FF00',
     },
     'cluster-b': {
       name: 'cluster b',
       key: 'cluster-b',
-      cellIds: [6, 7, 8, 9, 10],
+      cellIds: new Set([6, 7, 8, 9, 10]),
       color: '#FF0000',
     },
     'sample-a': {
       name: 'sample a',
       key: 'sample-a',
-      cellIds: [0, 2, 7, 8],
+      cellIds: new Set([0, 2, 7, 8]),
       color: '#00FF00',
     },
     'sample-b': {
       name: 'sample b',
       key: 'sample-b',
-      cellIds: [1, 3, 4, 6, 7, 8, 5],
+      cellIds: new Set([1, 3, 4, 6, 7, 8, 5]),
       color: '#FF0000',
     },
     louvain: {
       name: 'Louvain clusters',
       key: 'louvain',
       type: 'cellSets',
-      cellIds: [],
+      cellIds: new Set(),
       rootNode: true,
     },
     scratchpad: {
       name: 'Custom selections',
       key: 'scratchpad',
       type: 'cellSets',
-      cellIds: [],
+      cellIds: new Set(),
       rootNode: true,
     },
     sample: {
       name: 'Samples',
       key: 'sample',
       type: 'metadataCategorical',
-      cellIds: [],
+      cellIds: new Set(),
       rootNode: true,
     },
   },
@@ -74,8 +74,7 @@ const cellSets = {
     },
   ],
 };
-const { properties } = cellSets;
-const data = [
+const embeddingData = [
   [-1.2343500852584839, -0.6240003705024719],
   [18.337648391723633, -4.259221076965332],
   [12.77301025390625, 9.594305038452148],
@@ -97,7 +96,7 @@ const initialState = {
   cellSets,
   embeddings: {
     umap: {
-      data,
+      embeddingData,
     },
   },
   genes: {
@@ -114,7 +113,10 @@ const store = mockStore(initialState);
 let component;
 
 const spec = generateSpec(config,
-  generateData(expression, config.selectedSample, data, properties));
+  generateData(cellSets,
+    config.selectedSample,
+    expression,
+    embeddingData));
 
 const testPlot = () => mount(
   <Provider store={store}>

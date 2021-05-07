@@ -66,17 +66,17 @@ const store = mockStore({
       'cluster-a': {
         name: 'Name of Cluster A',
         key: 'cluster-a',
-        cellIds: new Set(['1', '2']),
+        cellIds: new Set([1, 2]),
         color: '#00FF00',
       },
       'cluster-b': {
         name: 'Name of Cluster B',
         key: 'cluster-b',
-        cellIds: new Set(['2', '3', '4', '5']),
+        cellIds: new Set([2, 3, 4, 5]),
         color: '#FF0000',
       },
       'scratchpad-a': {
-        cellIds: new Set(['3']),
+        cellIds: new Set([3]),
         key: 'scratchpad-a',
         name: 'Name of Scratchpad A',
         color: '#ff00ff',
@@ -146,22 +146,6 @@ const store = mockStore({
 describe('DiffExprResults', () => {
   beforeAll(async () => {
     await preloadAll();
-  });
-
-  beforeEach(() => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
   });
 
   configure({ adapter: new Adapter() });

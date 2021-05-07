@@ -8,50 +8,50 @@ import getFromApiExpectOK from '../utils/getFromApiExpectOK';
 
 const { Text } = Typography;
 
+const slowLoad = () => (
+  <>
+    <div style={{ padding: 25 }}>
+      <center>
+        <BounceLoader
+          size={50}
+          color='#8f0b10'
+          css={{ display: 'block' }}
+        />
+      </center>
+    </div>
+    <p>
+      <Text>
+        This will take a few minutes...
+      </Text>
+    </p>
+    <p>
+      <Text type='secondary'>
+        We&apos;re setting up your analysis after a period of inactivity. Please wait.
+      </Text>
+    </p>
+  </>
+);
+
+const fastLoad = (message) => (
+  <>
+    <div style={{ padding: 25 }}>
+      <ClipLoader
+        size={50}
+        color='#8f0b10'
+      />
+    </div>
+    <p>
+      <Text>
+        {message || "We're getting your data..."}
+      </Text>
+    </p>
+  </>
+);
+
 const Loader = ({ experimentId }) => {
   const { data: workerStatus, error } = useSWR(
     () => (experimentId ? `/v1/experiments/${experimentId}/pipelines` : null),
     getFromApiExpectOK,
-  );
-
-  const slowLoad = () => (
-    <>
-      <div style={{ padding: 25 }}>
-        <center>
-          <BounceLoader
-            size={50}
-            color='#8f0b10'
-            css={{ display: 'block' }}
-          />
-        </center>
-      </div>
-      <p>
-        <Text>
-          This will take a few minutes...
-        </Text>
-      </p>
-      <p>
-        <Text type='secondary'>
-          We&apos;re setting up your analysis after a period of inactivity. Please wait.
-        </Text>
-      </p>
-    </>
-  );
-
-  const fastLoad = () => (
-    <>
-      <div style={{ padding: 25 }}>
-        <ClipLoader
-          size={50}
-          color='#8f0b10'
-        />
-      </div>
-      <p>
-        <Text>
-          We&apos;re getting your data...
-        </Text>
-      </p>
-    </>
   );
 
   if (!workerStatus) {
@@ -83,3 +83,4 @@ Loader.propTypes = {
 };
 
 export default Loader;
+export { fastLoad, slowLoad };

@@ -1,6 +1,6 @@
 import experimentSettingsReducer from '../../../redux/reducers/experimentSettings';
 import initialState from '../../../redux/reducers/experimentSettings/initialState';
-import initialExperimentState from '../../experimentSettings.mock';
+import initialExperimentState from '../../test-utils/experimentSettings.mock';
 
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,

@@ -168,7 +168,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 };
 
 WrappedApp.propTypes = {
-  Component: PropTypes.element.isRequired,
+  Component: PropTypes.func.isRequired,
   pageProps: PropTypes.object.isRequired,
 };
 
