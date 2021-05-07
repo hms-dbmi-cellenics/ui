@@ -8,6 +8,8 @@ import {
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
+import saveSamples from './saveSamples';
+import saveProject from '../projects/saveProject';
 
 import { sampleTemplate } from '../../reducers/samples/initialState';
 
@@ -46,6 +48,9 @@ const createSample = (
       },
     },
   });
+
+  dispatch(saveSamples(projectUuid));
+  dispatch(saveProject(projectUuid));
 
   return Promise.resolve(newSampleUuid);
 };

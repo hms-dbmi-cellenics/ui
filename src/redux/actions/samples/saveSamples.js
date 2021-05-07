@@ -1,0 +1,43 @@
+/* eslint-disable no-param-reassign */
+import fetchAPI from '../../../utils/fetchAPI';
+import pushNotificationMessage from '../notifications';
+import messages from '../../../components/notification/messages';
+
+const saveSamples = (projectUuid) => async (dispatch, getState) => {
+  const project = getState().projects[projectUuid];
+  const { samples } = getState();
+
+  // Get all samples for the project
+  const payload = {
+    ids: project.samples,
+  };
+  payload.ids.reduce((acc, sampleUuid) => {
+    acc[sampleUuid] = samples[sampleUuid];
+    return acc;
+  }, payload);
+
+  // This is set right now as there is only one experiment per project
+  // Should be changed when we support multiple experiments per project
+  const activeExperimentId = project.experiments[0];
+
+  try {
+    await fetchAPI(
+      `/v1/projects/${projectUuid}/samples`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectUuid,
+          experimentId: activeExperimentId,
+          samples: payload,
+        }),
+      },
+    );
+  } catch (e) {
+    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
+  }
+};
+
+export default saveSamples;

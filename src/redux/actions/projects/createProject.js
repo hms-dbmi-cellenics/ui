@@ -1,8 +1,6 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import fetchAPI from '../../../utils/fetchAPI';
-import pushNotificationMessage from '../notifications';
-import messages from '../../../components/notification/messages';
+import saveProject from './saveProject';
 
 import {
   PROJECTS_CREATE,
@@ -22,30 +20,19 @@ const createProject = (
     name: projectName,
     description: projectDescription,
     uuid: newProjectUuid,
-    experimentId: newExperimentId,
+    // This is only for one sample per experiment
+    // Should be changed when we support multiple samples per project
+    experiments: [newExperimentId],
     createdDate: createdAt,
     lastModified: createdAt,
   };
 
-  try {
-    await fetchAPI(
-      `/v1/projects/${newProjectUuid}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newProject),
-      },
-    );
+  dispatch({
+    type: PROJECTS_CREATE,
+    payload: { project: newProject },
+  });
 
-    dispatch({
-      type: PROJECTS_CREATE,
-      payload: { project: newProject },
-    });
-  } catch (e) {
-    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
-  }
+  dispatch(saveProject(newProjectUuid));
 };
 
 export default createProject;

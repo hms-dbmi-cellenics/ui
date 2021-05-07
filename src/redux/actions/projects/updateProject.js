@@ -4,6 +4,7 @@ import moment from 'moment';
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
+import saveProject from './saveProject';
 
 const updateProject = (
   projectUuid,
@@ -23,6 +24,8 @@ const updateProject = (
       project,
     },
   });
+
+  dispatch(saveProject(projectUuid));
 };
 
 export default updateProject;

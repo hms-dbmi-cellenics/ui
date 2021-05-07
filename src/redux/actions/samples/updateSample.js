@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import moment from 'moment';
+import saveSamples from './saveSamples';
 
 import {
   SAMPLES_UPDATE,
@@ -23,6 +24,8 @@ const updateSample = (
       sample,
     },
   });
+
+  dispatch(saveSamples(currentSample.projectUuid));
 };
 
 export default updateSample;

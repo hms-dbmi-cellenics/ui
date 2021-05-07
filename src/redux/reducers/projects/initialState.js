@@ -2,7 +2,7 @@ const projectTemplate = {
   name: null,
   description: null,
   uuid: null,
-  experimentId: null,
+  experiments: [],
   createdDate: null,
   lastModified: null,
   samples: [],
