@@ -86,30 +86,9 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   }, {});
 
   Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
-    let loadedFile = null;
-    try {
-      loadedFile = await loadAndCompressIfNecessary(file.bundle);
-    } catch (e) {
-      const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
-
-      dispatch(updateSampleFile(sample.uuid, file.name, {
-        upload: { status: fileErrorStatus },
-      }));
-    }
-
     const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
 
-    try {
-      await putInS3(bucketKey, loadedFile, dispatch, sample.uuid, file.name);
-    } catch (e) {
-      dispatch(updateSampleFile(sample.uuid, file.name, {
-        upload: { status: UploadStatus.UPLOAD_ERROR },
-      }));
-    }
-
-    dispatch(updateSampleFile(sample.uuid, file.name, {
-      upload: { status: UploadStatus.UPLOADED },
-    }));
+    await compressAndUploadSingleFile(bucketKey, sample.uuid, fileName, file.bundle, dispatch);
   });
 
   return updatedSampleFiles;
