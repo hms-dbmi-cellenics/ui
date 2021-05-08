@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button, Input, Space, Tooltip, Typography,
@@ -25,6 +25,8 @@ const EditableField = (props) => {
   const [editing, setEditing] = useState(defaultEditing);
   const [editedValue, setEditedValue] = useState(value);
   const [isValid, setIsValid] = useState(true);
+  const saveButton = useRef(null);
+  const editButton = useRef(null);
 
   useEffect(() => {
     setEditedValue(value);
@@ -89,8 +91,8 @@ const EditableField = (props) => {
             onKeyDown={onKeyDown}
           />
 
-          <Tooltip placement='top' title='Save' mouseLeaveDelay={0}>
-            <Button size='small' shape='circle' icon={<CheckOutlined />} onClick={onSubmit} />
+          <Tooltip placement='top' title='Save' mouseLeaveDelay={0} ref={saveButton}>
+            <Button size='small' shape='circle' icon={<CheckOutlined />} onClick={(e) => { saveButton.current.onMouseLeave(); toggleEditing(e); }} />
           </Tooltip>
 
           <Tooltip placement='top' title='Cancel' mouseLeaveDelay={0}>
@@ -107,8 +109,8 @@ const EditableField = (props) => {
         {
           showEdit
             ? (
-              <Tooltip placement='top' title='Edit' mouseLeaveDelay={0}>
-                <Button size='small' shape='circle' icon={<EditOutlined />} onClick={toggleEditing} />
+              <Tooltip placement='top' title='Edit' mouseLeaveDelay={0} ref={editButton}>
+                <Button size='small' shape='circle' icon={<EditOutlined />} onClick={(e) => { editButton.current.onMouseLeave(); toggleEditing(e); }} />
               </Tooltip>
             ) : <></>
         }
