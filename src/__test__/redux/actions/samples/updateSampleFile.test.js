@@ -2,8 +2,12 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateSampleFile from '../../../../redux/actions/samples/updateSampleFile';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../../redux/reducers/samples/initialState';
+import saveSamples from '../../../../redux/actions/samples/saveSamples';
 
 import { SAMPLES_FILE_UPDATE } from '../../../../redux/actionTypes/samples';
+
+jest.mock('../../../../redux/actions/samples/saveSamples');
+saveSamples.mockImplementation(() => async () => { });
 
 const mockStartTime = '4022-01-01T00:00:00.000Z';
 const mockEndTime = '4021-01-01T00:00:00.000Z';
@@ -66,5 +70,12 @@ describe('updateSampleFile action', () => {
     }));
     const { file } = store.getActions()[0].payload;
     expect(file.name).toEqual(fileName);
+  });
+
+  it('Dispatches call to save sample', async () => {
+    const store = mockStore(mockState);
+    await store.dispatch(updateSampleFile(mockUuid, mockSample));
+
+    expect(saveSamples).toHaveBeenCalled();
   });
 });

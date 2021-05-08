@@ -3,8 +3,12 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateProject from '../../../../redux/actions/projects/updateProject';
 import initialState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
+import saveProject from '../../../../redux/actions/projects/saveProject';
 
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
+
+jest.mock('../../../../redux/actions/projects/saveProject');
+saveProject.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
@@ -56,5 +60,16 @@ describe('updateProject action', () => {
     await store.dispatch(updateProject(mockUuid, mockProject));
 
     expect(store.getActions().length).toEqual(0);
+  });
+
+  it('Dispatches call to save project', async () => {
+    const store = mockStore({
+      projects: {
+        [initialState.uuid]: initialState,
+      },
+    });
+    await store.dispatch(saveProject(mockProject));
+
+    expect(saveProject).toHaveBeenCalled();
   });
 });
