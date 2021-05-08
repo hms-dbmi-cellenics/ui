@@ -3,8 +3,12 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateSample from '../../../../redux/actions/samples/updateSample';
 import initialState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
+import saveSamples from '../../../../redux/actions/samples/saveSamples';
 
 import { SAMPLES_UPDATE } from '../../../../redux/actionTypes/samples';
+
+jest.mock('../../../../redux/actions/samples/saveSamples');
+saveSamples.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
@@ -53,5 +57,12 @@ describe('updateSample action', () => {
     await store.dispatch(updateSample(mockUuid, mockSample));
 
     expect(store.getActions().length).toEqual(0);
+  });
+
+  it('Dispatches call to save sample', async () => {
+    const store = mockStore(mockState);
+    await store.dispatch(updateSample(mockUuid, updatedSample));
+
+    expect(saveSamples).toHaveBeenCalled();
   });
 });
