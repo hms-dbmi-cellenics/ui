@@ -12,11 +12,13 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
     );
     if (response.ok) {
       const data = await response.json();
+      const config = _.merge({}, initialPlotConfigStates[plotType], data.config);
       dispatch({
         type: LOAD_CONFIG,
         payload: {
           ...data,
-          config: _.merge(initialPlotConfigStates[plotType], data.config),
+          plotType,
+          config,
         },
       });
     } else if (response.status === 404) {

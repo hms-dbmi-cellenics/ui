@@ -10,7 +10,7 @@ import _ from 'lodash';
 import rootReducer from '../../../redux/reducers/index';
 
 import CalculationConfigContainer from '../../../components/data-processing/CalculationConfigContainer';
-import initialExperimentState from '../../experimentSettings.mock';
+import initialExperimentState from '../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');
 

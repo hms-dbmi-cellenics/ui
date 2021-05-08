@@ -1,4 +1,4 @@
-const generateSpec = (config, plotData) => {
+const generateSpec = (config, plotData, highestUmi) => {
   let legend = null;
 
   const coloringExpressionPlot = `(datum.bin1 < ${config.minCellSize}) ? 'low' : 'high'`;
@@ -57,7 +57,7 @@ const generateSpec = (config, plotData) => {
           {
             type: 'bin',
             field: 'u',
-            extent: [0, 17000],
+            extent: [0, highestUmi],
             step: config.binStep,
             nice: false,
           },
@@ -83,7 +83,7 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: [1000, 17000],
+        domain: [1000, highestUmi],
       },
       {
         name: 'yscale',
