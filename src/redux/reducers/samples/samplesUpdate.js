@@ -5,6 +5,10 @@ const samplesUpdate = (state, action) => {
     [sampleUuid]: {
       ...state[sampleUuid],
       ...sample,
+      metadata: {
+        ...state[sampleUuid].metadata || {},
+        ...sample.metadata,
+      },
     },
   };
 };

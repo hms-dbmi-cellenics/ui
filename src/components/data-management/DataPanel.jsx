@@ -13,16 +13,24 @@ import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
-import AnalysisModal from './AnalaysisModal';
+import AnalysisModal from './AnalysisModal';
+import MetadataPopover from './MetadataPopover';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
-import { updateProject } from '../../redux/actions/projects';
+
+import {
+  updateProject,
+  createMetadataTrack,
+  updateMetadataTrack,
+  deleteMetadataTrack,
+} from '../../redux/actions/projects';
 import { createExperiment } from '../../redux/actions/experimentSettings';
 import processUpload from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
+import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
 import UploadStatus from '../../utils/UploadStatus';
 import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
@@ -30,7 +38,9 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 const { Text, Paragraph } = Typography;
 
 const DataPanel = ({ width, height }) => {
+  const defaultNA = 'N.A.';
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
   const analysisPath = '/experiments/[experimentId]/data-processing';
@@ -40,6 +50,7 @@ const DataPanel = ({ width, height }) => {
     getFromApiExpectOK,
   );
   const [tableData, setTableData] = useState([]);
+  const [tableColumns, setTableColumns] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
@@ -57,8 +68,10 @@ const DataPanel = ({ width, height }) => {
   useEffect(() => {
     if (activeProject) {
       setSampleNames(new Set(activeProject.samples.map((id) => samples[id].name.trim())));
+    } else {
+      setSampleNames([]);
     }
-  }, [samples, projects]);
+  }, [samples, activeProject]);
 
   useEffect(() => {
     if (!speciesData) {
@@ -134,7 +147,7 @@ const DataPanel = ({ width, height }) => {
         <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
           <Space>
             <Text type='danger'>{status.message()}</Text>
-            <Tooltip placement='bottom' title='Retry' mouseLeaveDelay={0}>
+            <Tooltip title='Retry' mouseLeaveDelay={0}>
               <Button
                 size='small'
                 shape='link'
@@ -158,7 +171,7 @@ const DataPanel = ({ width, height }) => {
         <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
           <Space>
             <Text type='danger'>{status.message()}</Text>
-            <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
+            <Tooltip title='Upload missing' mouseLeaveDelay={0}>
               <Button
                 size='small'
                 shape='link'
@@ -177,7 +190,7 @@ const DataPanel = ({ width, height }) => {
           <Space>
             <Text type='danger'>Data missing</Text>
             <MetadataEditor size='small' shape='link' icon={<EditOutlined />}>
-              {_.find(columns, { dataIndex: columnId }).fillInBy}
+              {_.find(tableColumns, { dataIndex: columnId }).fillInBy}
             </MetadataEditor>
           </Space>
         </div>
@@ -185,91 +198,209 @@ const DataPanel = ({ width, height }) => {
     }
   };
 
-  const renderEditableFieldCell = (text) => (
-    <div style={{ whiteSpace: 'nowrap' }}>
+  const renderEditableFieldCell = (
+    initialText,
+    cellText,
+    record,
+    dataIndex,
+    rowIdx,
+    onAfterSubmit,
+  ) => (
+    <div key={`cell-${dataIndex}-${rowIdx}`} style={{ whiteSpace: 'nowrap' }}>
       <Space>
         <EditableField
           deleteEnabled={false}
-          value={text}
+          value={cellText || initialText}
+          onAfterSubmit={(value) => onAfterSubmit(value, cellText, record, dataIndex, rowIdx)}
         />
       </Space>
     </div>
   );
 
-  const renderSampleCells = (text, el, idx) => (
+  const renderSampleCells = (text, record, idx) => (
     <Text strong key={`sample-cell-${idx}`}>
       <EditableField
         deleteEnabled
         value={text}
-        onAfterSubmit={(name) => dispatch(updateSample(el.uuid, { name }))}
-        onDelete={() => dispatch(deleteSamples(el.uuid))}
+        onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
+        onDelete={() => dispatch(deleteSamples(record.uuid))}
         validationFunc={(name) => validateSampleName(name, sampleNames)}
       />
     </Text>
   );
 
-  const createMetadataColumn = (name, id) => {
-    const dataIndex = `metadata-${id}`;
+  const createMetadataColumn = () => {
+    const key = temporaryMetadataKey(tableColumns);
 
-    return ({
+    const metadataColumn = {
+      key,
+      fixed: 'right',
+      title: () => (
+        <MetadataPopover
+          existingMetadata={activeProject.metadataKeys}
+          onCreate={(name) => {
+            const newMetadataColumn = createInitializedMetadataColumn(name);
+            setTableColumns([...tableColumns, newMetadataColumn]);
+            dispatch(createMetadataTrack(name, activeProjectUuid));
+            setIsAddingMetadata(false);
+          }}
+          onCancel={() => {
+            deleteMetadataColumn(key);
+            setIsAddingMetadata(false);
+          }}
+          message='Provide new metadata track name'
+          visible
+        >
+          <Space>
+            New Metadata Track
+          </Space>
+        </MetadataPopover>
+      ),
+      fillInBy: <Input />,
+      width: 200,
+    };
+
+    setTableColumns([...tableColumns, metadataColumn]);
+  };
+
+  const deleteMetadataColumn = (name) => {
+    setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
+    dispatch(deleteMetadataTrack(name, activeProjectUuid));
+  };
+
+  const createInitializedMetadataColumn = (name) => {
+    const key = metadataNameToKey(name);
+
+    const newMetadataColumn = {
+      key,
       title: () => (
         <Space>
           <EditableField
             deleteEnabled
+            onDelete={(e, currentName) => deleteMetadataColumn(currentName)}
+            onAfterSubmit={(newName) => dispatch(
+              updateMetadataTrack(name, newName, activeProjectUuid),
+            )}
             value={name}
           />
-          <MetadataEditor massEdit>
+          <MetadataEditor
+            onReplaceEmpty={(value) => {
+              activeProject.samples.forEach(
+                (sampleUuid) => {
+                  if (
+                    !samples[sampleUuid].metadata[key]
+                    || samples[sampleUuid].metadata[key] === defaultNA
+                  ) {
+                    dispatch(updateSample(sampleUuid, { metadata: { [key]: value } }));
+                  }
+                },
+              );
+            }}
+            onReplaceAll={(value) => {
+              activeProject.samples.forEach(
+                (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: value } })),
+              );
+            }}
+            onClearAll={() => {
+              activeProject.samples.forEach(
+                (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: defaultNA } })),
+              );
+            }}
+            massEdit
+          >
             <Input />
           </MetadataEditor>
         </Space>
       ),
       fillInBy: <Input />,
-      dataIndex,
-      render: (value) => renderEditableFieldCell(dataIndex, value),
       width: 200,
-    });
+      dataIndex: key,
+      render: (cellValue, record, rowIdx) => renderEditableFieldCell(
+        defaultNA,
+        cellValue,
+        record,
+        key,
+        rowIdx,
+        (newValue) => {
+          dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
+        },
+      ),
+    };
+    return newMetadataColumn;
   };
 
   const columns = [
     {
+      key: 'sample',
       title: 'Sample',
       dataIndex: 'name',
       fixed: true,
       render: renderSampleCells,
     },
     {
+      key: 'barcodes',
       title: 'Barcodes.csv',
       dataIndex: 'barcodes',
       render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
     },
     {
+      key: 'genes',
       title: 'Genes.csv',
       dataIndex: 'genes',
       render: (tableCellData) => renderUploadCell('genes', tableCellData),
     },
     {
+      key: 'matrix',
       title: 'Matrix.mtx',
       dataIndex: 'matrix',
       render: (tableCellData) => renderUploadCell('matrix', tableCellData),
     },
     {
+      key: 'species',
       title: () => (
         <Space>
           <Text>Species</Text>
-          <MetadataEditor massEdit>
+          <MetadataEditor
+            onReplaceEmpty={(value) => {
+              activeProject.samples.forEach(
+                (sampleUuid) => {
+                  if (
+                    !samples[sampleUuid].species
+                    || samples[sampleUuid].species === defaultNA
+                  ) {
+                    dispatch(updateSample(sampleUuid, { species: value }));
+                  }
+                },
+              );
+            }}
+            onReplaceAll={(value) => {
+              activeProject.samples.forEach(
+                (sampleUuid) => dispatch(updateSample(sampleUuid, { species: value })),
+              );
+            }}
+            onClearAll={() => {
+              activeProject.samples.forEach(
+                (sampleUuid) => dispatch(updateSample(sampleUuid, { species: defaultNA })),
+              );
+            }}
+            massEdit
+          >
             <SpeciesSelector data={sortedSpeciesData} />
           </MetadataEditor>
         </Space>
       ),
       fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
       dataIndex: 'species',
-      render: (text) => renderEditableFieldCell('species', text),
+      render: (text, record, rowIdx) => renderEditableFieldCell(
+        defaultNA,
+        text,
+        record,
+        'species',
+        rowIdx,
+        (newValue) => dispatch(updateSample(record.uuid, { species: newValue })),
+      ),
       width: 200,
     },
-    createMetadataColumn('Tissue', 'tissue'),
-    createMetadataColumn('Patient ID', 'patient'),
-    createMetadataColumn('Collection date', 'collection-date'),
-    createMetadataColumn('Sequencing date', 'sequencing-date'),
   ];
 
   const checkLaunchAnalysis = () => {
@@ -310,10 +441,19 @@ const DataPanel = ({ width, height }) => {
   useEffect(() => {
     if (projects.ids.length === 0 || samples.ids.length === 0) {
       setTableData([]);
+      setTableColumns([]);
       return;
     }
 
-    const newData = projects[activeProjectUuid].samples.map((sampleUuid, idx) => {
+    // Set table columns
+    const metadataColumns = activeProject?.metadataKeys.map(
+      (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
+    ) || [];
+
+    setTableColumns([...columns, ...metadataColumns]);
+
+    // Set table data
+    const newData = activeProject.samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
       const barcodesUpload = sampleFiles['barcodes.tsv.gz']?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
@@ -327,7 +467,8 @@ const DataPanel = ({ width, height }) => {
         barcodes: barcodesUpload,
         genes: genesUpload,
         matrix: matrixUpload,
-        species: 'dataMissing',
+        species: samples[sampleUuid].species || defaultNA,
+        ...samples[sampleUuid].metadata,
       };
     });
 
@@ -369,20 +510,51 @@ const DataPanel = ({ width, height }) => {
         <PageHeader
           title={activeProject.name}
           extra={[
-            <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
-            <Button>Add metadata</Button>,
-            <Button type='primary' disabled={!canLaunchAnalysis} onClick={() => launchAnalysis()}>Launch analysis</Button>,
+            <Button
+              disabled={projects.ids.length === 0}
+              onClick={() => setUploadModalVisible(true)}
+            >
+              Add samples
+            </Button>,
+            <Button
+              disabled={
+                projects.ids.length === 0
+                || activeProject?.samples.length === 0
+                || isAddingMetadata
+              }
+              onClick={() => {
+                setIsAddingMetadata(true);
+                createMetadataColumn();
+              }}
+            >
+              Add metadata
+            </Button>,
+            <Button
+              type='primary'
+              disabled={
+                projects.ids.length === 0
+                || activeProject?.samples.length === 0
+                || !canLaunchAnalysis
+              }
+              onClick={() => launchAnalysis()}
+            >
+              Launch analysis
+            </Button>,
           ]}
         >
-          <Space direction='vertical' size='small'>
-            <Text strong>Description:</Text>
-            <Paragraph
-              editable={{ onChange: changeDescription }}
-            >
-              {activeProject.description}
+          {
+            activeProjectUuid && (
+              <Space direction='vertical' size='small'>
+                <Text strong>Description:</Text>
+                <Paragraph
+                  editable={{ onChange: changeDescription }}
+                >
+                  {activeProject.description}
 
-            </Paragraph>
-          </Space>
+                </Paragraph>
+              </Space>
+            )
+          }
         </PageHeader>
 
         <Table
@@ -392,7 +564,7 @@ const DataPanel = ({ width, height }) => {
             y: height - 250,
           }}
           bordered
-          columns={columns}
+          columns={tableColumns}
           dataSource={tableData}
           sticky
           pagination={false}

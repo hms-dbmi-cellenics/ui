@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import mime from 'mime-types';
-import path from 'path';
 
 import {
   Modal,
   Button,
   Typography,
-  Select,
   Space,
   Row,
   Col,
   List,
 } from 'antd';
-import TextArea from 'antd/lib/input/TextArea';
 
 const { Text, Title } = Typography;
-const { Option } = Select;
 
 const NewExperimentModal = (props) => {
   const {
@@ -90,6 +84,7 @@ const NewExperimentModal = (props) => {
                       <Col>
                         <Button
                           type='primary'
+                          disabled={!validExperimentName}
                           onClick={() => onLaunch(item.experimentId)}
                         >
                           Launch
