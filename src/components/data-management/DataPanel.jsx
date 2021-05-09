@@ -19,6 +19,7 @@ import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
 import { updateProject } from '../../redux/actions/projects';
+import { createExperiment } from '../../redux/actions/experimentSettings';
 import processUpload from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 
@@ -45,6 +46,7 @@ const DataPanel = ({ width, height }) => {
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
   const [sampleNames, setSampleNames] = useState(new Set());
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
+  const [createNewExperiment, setCreateNewExperiment] = useState(true);
 
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
@@ -322,11 +324,14 @@ const DataPanel = ({ width, height }) => {
   };
 
   const launchAnalysis = () => {
-    // Change this when multiple experiments in a project is supported
-    const chosenExperimentId = activeProject.experiments[0];
-
-    // Check upload status of all files
     if (canLaunchAnalysis) {
+      // Change the line below when multiple experiments in a project is supported
+      const chosenExperimentId = activeProject.experiments[0];
+
+      if (createNewExperiment) {
+        createExperiment(activeProjectUuid, 'test', chosenExperimentId);
+      }
+
       router.push(analysisPath.replace('[experimentId]', chosenExperimentId));
     }
   };
