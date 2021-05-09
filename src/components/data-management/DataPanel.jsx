@@ -1,7 +1,8 @@
+import React, { useState, useEffect } from 'react';
 import {
   Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
 } from 'antd';
-import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -22,12 +23,15 @@ import processUpload from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 
 import UploadStatus from '../../utils/UploadStatus';
+import filesToCheck from '../../utils/sampleFilesPerTechnology';
 
 const { Text, Paragraph } = Typography;
 
 const DataPanel = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const dispatch = useDispatch();
+  const router = useRouter();
+  const analysisPath = '/experiments/[experimentId]/data-processing';
 
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
@@ -40,6 +44,7 @@ const DataPanel = ({ width, height }) => {
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
   const [sampleNames, setSampleNames] = useState(new Set());
+  const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
 
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
@@ -264,8 +269,28 @@ const DataPanel = ({ width, height }) => {
     createMetadataColumn('Sequencing date', 'sequencing-date'),
   ];
 
+  const checkLaunchAnalysis = () => {
+    const canLaunch = activeProject?.samples.length > 0
+      && activeProject?.samples.every((sampleUuid) => {
+        const checkedSample = samples[sampleUuid];
+
+        if (!_.isEqual(
+          Array.from(new Set(checkedSample.fileNames)),
+          filesToCheck[checkedSample.type],
+        )) { return false; }
+
+        return checkedSample.fileNames.every((fileName) => {
+          const checkedFile = checkedSample.files[fileName];
+
+          return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
+        });
+      });
+
+    setCanLaunchAnalysis(canLaunch);
+  };
+
   useEffect(() => {
-    if (samples.ids.length === 0 || projects.ids.length === 0) {
+    if (projects.ids.length === 0 || samples.ids.length === 0) {
       setTableData([]);
       return;
     }
@@ -288,11 +313,22 @@ const DataPanel = ({ width, height }) => {
       };
     });
 
+    checkLaunchAnalysis();
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
   const changeDescription = (description) => {
     dispatch(updateProject(activeProjectUuid, { description }));
+  };
+
+  const launchAnalysis = () => {
+    // Change this when multiple experiments in a project is supported
+    const chosenExperimentId = activeProject.experiments[0];
+
+    // Check upload status of all files
+    if (canLaunchAnalysis) {
+      router.push(analysisPath.replace('[experimentId]', chosenExperimentId));
+    }
   };
 
   return (
@@ -308,7 +344,7 @@ const DataPanel = ({ width, height }) => {
           extra={[
             <Button onClick={() => setUploadModalVisible(true)}>Add sample</Button>,
             <Button>Add metadata</Button>,
-            <Button type='primary'>Launch analysis</Button>,
+            <Button type='primary' disabled={!canLaunchAnalysis} onClick={() => launchAnalysis()}>Launch analysis</Button>,
           ]}
         >
           <Space direction='vertical' size='small'>

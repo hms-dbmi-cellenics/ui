@@ -5,7 +5,7 @@ const samplesFileUpdate = (state, action) => {
     ...state,
     [sampleUuid]: {
       ...state[sampleUuid],
-      fileNames: [...state[sampleUuid].fileNames, file.name],
+      fileNames: Array.from(new Set([...state[sampleUuid].fileNames, file.name])),
       files: {
         ...state[sampleUuid].files,
         [file.name]: file,

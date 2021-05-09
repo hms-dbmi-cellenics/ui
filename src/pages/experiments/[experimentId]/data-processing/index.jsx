@@ -551,8 +551,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           </Row>
         </Col>
       </Row>
-
-
     </>
   );
 
