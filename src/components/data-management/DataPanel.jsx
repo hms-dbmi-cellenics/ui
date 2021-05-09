@@ -13,6 +13,7 @@ import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
+import AnalysisModal from './AnalaysisModal';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import {
@@ -24,7 +25,7 @@ import processUpload from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 
 import UploadStatus from '../../utils/UploadStatus';
-import filesToCheck from '../../utils/sampleFilesPerTechnology';
+import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 const { Text, Paragraph } = Typography;
 
@@ -46,7 +47,7 @@ const DataPanel = ({ width, height }) => {
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
   const [sampleNames, setSampleNames] = useState(new Set());
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
-  const [createNewExperiment, setCreateNewExperiment] = useState(true);
+  const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
@@ -272,21 +273,36 @@ const DataPanel = ({ width, height }) => {
   ];
 
   const checkLaunchAnalysis = () => {
-    const canLaunch = activeProject?.samples.length > 0
-      && activeProject?.samples.every((sampleUuid) => {
-        const checkedSample = samples[sampleUuid];
+    if (activeProject?.samples.length === 0) return false;
 
-        if (!_.isEqual(
-          Array.from(new Set(checkedSample.fileNames)),
-          filesToCheck[checkedSample.type],
-        )) { return false; }
+    const allSampleFilesUploaded = (sample) => {
+      // Check if all files for a given tech has been uploaded
+      if (!_.isEqual(
+        Array.from(new Set(sample.fileNames)),
+        fileUploadSpecifications[sample.type].requiredFiles,
+      )) { return false; }
 
-        return checkedSample.fileNames.every((fileName) => {
-          const checkedFile = checkedSample.files[fileName];
+      return sample.fileNames.every((fileName) => {
+        const checkedFile = sample.files[fileName];
 
-          return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
-        });
+        return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
       });
+    };
+
+    const allSampleMetadataInserted = (sample) => {
+      if (activeProject?.metadataKeys.length === 0) return true;
+
+      if (Object.keys(sample.metadata).length !== activeProject.metadataKeys.length) return false;
+
+      return Object.values(sample.metadata).every((value) => value.length > 0);
+    };
+
+    const canLaunch = activeProject?.samples.every((sampleUuid) => {
+      const checkedSample = samples[sampleUuid];
+
+      return allSampleFilesUploaded(checkedSample)
+        && allSampleMetadataInserted(checkedSample);
+    });
 
     setCanLaunchAnalysis(canLaunch);
   };
@@ -326,13 +342,7 @@ const DataPanel = ({ width, height }) => {
   const launchAnalysis = () => {
     if (canLaunchAnalysis) {
       // Change the line below when multiple experiments in a project is supported
-      const chosenExperimentId = activeProject.experiments[0];
-
-      if (createNewExperiment) {
-        createExperiment(activeProjectUuid, 'test', chosenExperimentId);
-      }
-
-      router.push(analysisPath.replace('[experimentId]', chosenExperimentId));
+      setAnalysisModalVisible(true);
     }
   };
 
@@ -342,6 +352,18 @@ const DataPanel = ({ width, height }) => {
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
         onUpload={uploadFiles}
+      />
+      <AnalysisModal
+        visible={analysisModalVisible}
+        onLaunch={(experimentId, experimentInfo) => {
+          createExperiment(activeProjectUuid, experimentInfo, experimentId);
+          router.push(analysisPath.replace('[experimentId]', experimentId));
+        }}
+        onChange={() => {
+          // Update experiments details
+        }}
+        onCancel={() => { setAnalysisModalVisible(false); }}
+        activeProject={activeProject}
       />
       <div width={width} height={height}>
         <PageHeader

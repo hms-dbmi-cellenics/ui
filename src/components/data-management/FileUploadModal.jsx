@@ -18,7 +18,7 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
-
+import techOptions from '../../utils/fileUploadSpecifications';
 import UploadStatus from '../../utils/UploadStatus';
 
 const { Text, Title, Paragraph } = Typography;
@@ -32,28 +32,6 @@ const NewProjectModal = (props) => {
   const [selectedTech, setSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
-
-  const techOptions = {
-    '10X Chromium': {
-      acceptedFiles: [
-        'barcodes.tsv',
-        'barcodes.tsv.gz',
-        'features.tsv',
-        'features.tsv.gz',
-        'genes.tsv',
-        'genes.tsv.gz',
-        'matrix.mtx',
-        'matrix.mtx.gz',
-      ],
-      validMimeTypes: ['text/tsv', 'application/gzip', 'text/tab-separated-values'],
-      validExtensionTypes: ['.mtx'],
-      inputInfo: [
-        ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
-        ['barcodes.tsv', 'barcodes.tsv.gz'],
-        ['matrix.mtx', 'matrix.mtx.gz'],
-      ],
-    },
-  };
 
   useEffect(() => {
     setCanUpload(filesList.length && filesList.every((file) => file.valid));
