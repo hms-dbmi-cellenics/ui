@@ -92,7 +92,7 @@ const EditableField = (props) => {
           />
 
           <Tooltip placement='top' title='Save' mouseLeaveDelay={0} ref={saveButton}>
-            <Button size='small' shape='circle' icon={<CheckOutlined />} onClick={(e) => { saveButton.current.onMouseLeave(); toggleEditing(e); }} />
+            <Button size='small' shape='circle' icon={<CheckOutlined />} onClick={(e) => { saveButton.current.onMouseLeave(); onSubmit(e); }} />
           </Tooltip>
 
           <Tooltip placement='top' title='Cancel' mouseLeaveDelay={0}>
