@@ -77,6 +77,11 @@ const CalculationConfig = (props) => {
       text: 'Fast MNN',
       disabled: false,
     },
+    {
+      value: 'noIntegration',
+      text: 'No integration',
+      disabled: false,
+    },
   ];
 
   const [numPCs, setNumPCs] = useState(dimensionalityReduction.numPCs);
