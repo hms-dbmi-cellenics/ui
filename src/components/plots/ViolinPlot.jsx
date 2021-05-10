@@ -38,14 +38,16 @@ const ViolinPlot = (props) => {
     sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
   };
 
-  if (config?.shownGene === 'notSelected' && !highestDispersionLoading && !highestDispersionGene) {
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-  }
+  useEffect(() => {
+    if (config?.shownGene === 'notSelected' && !highestDispersionLoading && !highestDispersionGene) {
+      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+    }
+  }, [experimentId, config?.shownGene, highestDispersionLoading, highestDispersionGene]);
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
-  }, [experimentId]);
+  }, [experimentId, cellSets.loading, cellSets.error]);
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
@@ -54,7 +56,7 @@ const ViolinPlot = (props) => {
     if (config?.shownGene !== 'notSelected' && config) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
-  }, [highestDispersionGene, config?.shownGene]);
+  }, [experimentId, highestDispersionGene, config?.shownGene]);
 
   useEffect(() => {
     if (plotData) {
@@ -76,7 +78,7 @@ const ViolinPlot = (props) => {
       );
       setPlotSpec(generateSpec(config, generatedPlotData));
     }
-  }, [config, plotData, geneExpression, cellSets]);
+  }, [experimentId, config, plotData, geneExpression, cellSets]);
 
   const render = () => {
     if (cellSets.error) {
