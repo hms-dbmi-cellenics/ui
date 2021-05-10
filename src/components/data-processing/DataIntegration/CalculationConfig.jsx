@@ -75,7 +75,7 @@ const CalculationConfig = (props) => {
     {
       value: 'fastMNN',
       text: 'Fast MNN',
-      disabled: true,
+      disabled: false,
     },
   ];
 
