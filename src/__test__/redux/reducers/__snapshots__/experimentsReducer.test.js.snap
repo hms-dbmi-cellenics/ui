@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`experimentsReducer Inserts a new experiment correctly 1`] = `
+Object {
+  "ids": Array [
+    "project-1",
+  ],
+  "meta": Object {},
+  "project-1": Object {
+    "createdAt": null,
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "project-1",
+    "lastViewed": "01-01-2021",
+    "name": "test project",
+    "projectUuid": null,
+  },
+}
+`;
+
+exports[`experimentsReducer Updates a project correctly 1`] = `
+Object {
+  "ids": Array [
+    "project-1",
+  ],
+  "meta": Object {},
+  "project-1": Object {
+    "createdAt": null,
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "project-1",
+    "lastModified": "02-01-2021",
+    "lastViewed": "01-01-2021",
+    "name": "updated name",
+    "projectUuid": null,
+  },
+}
+`;

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`saveExperiment action Dispatches a notification when fetch fails. 1`] = `
+Object {
+  "payload": Object {
+    "message": "We couldn't connect to the server to save your current processing settings, retrying...",
+    "time": 3,
+    "type": "error",
+  },
+  "type": "notifications/pushMessage",
+}
+`;
