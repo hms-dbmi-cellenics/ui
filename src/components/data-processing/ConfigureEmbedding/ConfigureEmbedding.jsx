@@ -4,15 +4,14 @@ import { useRouter } from 'next/router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, PageHeader, Collapse, Empty, Alert, Skeleton,
+  Row, Col, Space, PageHeader, Collapse, Empty, Alert,
 } from 'antd';
 
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
 
 import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
-import DoubletScoresPlot from '../../plots/DoubletScoresPlot';
-import MitochondrialContentPlot from '../../plots/MitochondrialContentPlot';
+import ContinuousEmbeddingPlot from '../../plots/ContinuousEmbeddingPlot';
 
 import {
   updatePlotConfig,
@@ -24,7 +23,9 @@ import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
+import loadCellMeta from '../../../redux/actions/cellMeta';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
+import Loader from '../../Loader';
 
 const { Panel } = Collapse;
 
@@ -32,6 +33,7 @@ const ConfigureEmbedding = (props) => {
   const { experimentId, onPipelineRun } = props;
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
+  const cellMeta = useSelector((state) => state.cellMeta);
   const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector((state) => state.experimentSettings.processing.meta);
   const filterName = 'configureEmbedding';
 
@@ -46,16 +48,25 @@ const ConfigureEmbedding = (props) => {
     [],
   );
 
+  const continuousEmbeddingPlots = ['mitochondrialContent', 'doubletScores'];
+
+  useEffect(() => {
+    continuousEmbeddingPlots.forEach((dataName) => {
+      if (cellMeta[dataName].loading && !cellMeta[dataName].error) {
+        dispatch(loadCellMeta(experimentId, dataName));
+      }
+    });
+  }, [experimentId]);
+
   const plots = {
     cellCluster: {
       title: 'Colored by CellSets',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'embeddingPreviewByCellSets',
-      plot: (config, plotData, actions) => (
+      plot: (config, [], actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={config}
-          plotData={plotData}
           actions={actions}
         />
       )
@@ -65,7 +76,7 @@ const ConfigureEmbedding = (props) => {
       title: 'Colored by Samples',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'embeddingPreviewBySample',
-      plot: (config, plotData, actions) => (
+      plot: (config, [], actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={{
@@ -76,7 +87,6 @@ const ConfigureEmbedding = (props) => {
             },
             selectedCellSet: 'sample',
           }}
-          plotData={plotData}
           actions={actions}
         />
       ),
@@ -85,12 +95,16 @@ const ConfigureEmbedding = (props) => {
       title: 'Mitochondrial fraction reads',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
       plotType: 'embeddingPreviewMitochondrialContent',
-      plot: (config, plotData, actions) => (
-        <MitochondrialContentPlot
+      plot: (config, [], actions) => (
+        <ContinuousEmbeddingPlot
           experimentId={experimentId}
           config={config}
-          plotData={plotData}
           actions={actions}
+          plotUuid={generateDataProcessingPlotUuid(null, filterName, 2)}
+          plotData={cellMeta.mitochondrialContent.data}
+          loading={cellMeta.mitochondrialContent.loading}
+          error={cellMeta.mitochondrialContent.error}
+          reloadPlotData={() => loadCellMeta(experimentId, 'mitochondrialContent')}
         />
       ),
     },
@@ -98,12 +112,16 @@ const ConfigureEmbedding = (props) => {
       title: 'Cell doublet score',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 3),
       plotType: 'embeddingPreviewDoubletScore',
-      plot: (config, plotData, actions) => (
-        <DoubletScoresPlot
+      plot: (config, [], actions) => (
+        <ContinuousEmbeddingPlot
           experimentId={experimentId}
           config={config}
-          plotData={plotData}
           actions={actions}
+          plotUuid={generateDataProcessingPlotUuid(null, filterName, 2)}
+          plotData={cellMeta.doubletScores.data}
+          loading={cellMeta.doubletScores.loading}
+          error={cellMeta.doubletScores.error}
+          reloadPlotData={() => loadCellMeta(experimentId, 'doubletScores')}
         />
       ),
     },
@@ -326,7 +344,7 @@ const ConfigureEmbedding = (props) => {
     if (!selectedConfig) {
       return (
         <center>
-          <Skeleton.Image style={{ width: 400, height: 400 }} />
+          <Loader />
         </center>
       );
     }

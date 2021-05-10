@@ -1,20 +1,22 @@
-// aa
-
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Select, Typography, Space, Divider, Skeleton,
 } from 'antd';
-import React from 'react';
 import _ from 'lodash';
 
 const { Text } = Typography;
 
-const SpeciesSelector = ({ data }) => {
+const SpeciesSelector = (props) => {
+  const { data, onChange } = props;
+
   if (!data) {
     return <Skeleton.Input style={{ width: 300 }} size='small' />;
   }
 
   return (
     <Select
+      onChange={(value, option) => onChange(option.displayName)}
       style={{ width: '100%' }}
       dropdownMatchSelectWidth={400}
       labelInValue
@@ -49,6 +51,8 @@ const SpeciesSelector = ({ data }) => {
       options={
         data.map((organism) => ({
           value: organism.id,
+          displayName: organism.display_name,
+          scientificName: organism.scientific_name,
           searchQuery: `${organism.display_name} ${organism.scientific_name}`.toLowerCase(),
           label: (
             <Space direction='vertical'>
@@ -62,6 +66,15 @@ const SpeciesSelector = ({ data }) => {
       }
     />
   );
+};
+
+SpeciesSelector.propTypes = {
+  data: PropTypes.array.isRequired,
+  onChange: PropTypes.func,
+};
+
+SpeciesSelector.defaultProps = {
+  onChange: () => { },
 };
 
 export default SpeciesSelector;

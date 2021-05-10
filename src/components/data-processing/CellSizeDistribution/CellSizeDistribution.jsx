@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState, useEffect, useCallback, useRef,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -26,9 +28,12 @@ import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
+
+const HIGHEST_UMI_DEFAULT = 17000;
+
 const CellSizeDistribution = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
   const filterName = 'cellSizeDistribution';
@@ -78,6 +83,7 @@ const CellSizeDistribution = (props) => {
           config={config}
           plotData={plotData}
           actions={actions}
+          highestUmi={highestUmiRef.current}
         />
       ),
     },
@@ -93,6 +99,16 @@ const CellSizeDistribution = (props) => {
   const plotData = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
   );
+
+  const histogramPlotData = useSelector(
+    (state) => state.componentConfig[plots.histogram.plotUuid]?.plotData,
+  );
+
+  const highestUmiRef = useRef(null);
+
+  useEffect(() => {
+    highestUmiRef.current = _.maxBy(histogramPlotData, (datum) => datum.u)?.u ?? HIGHEST_UMI_DEFAULT;
+  }, [histogramPlotData]);
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
@@ -194,8 +210,9 @@ const CellSizeDistribution = (props) => {
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
                 plotType='bin step'
+                stepDisabled={stepDisabled}
               >
-                <CalculationConfig />
+                <CalculationConfig highestUmi={highestUmiRef.current} />
               </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
@@ -218,6 +235,11 @@ CellSizeDistribution.propTypes = {
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  stepDisabled: PropTypes.bool,
+};
+
+CellSizeDistribution.defaultProps = {
+  stepDisabled: false,
 };
 
 export default CellSizeDistribution;

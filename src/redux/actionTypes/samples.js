@@ -18,7 +18,7 @@ const SAMPLES_DELETE = `${SAMPLES}/delete`;
 /**
  * Update files in sample.
  */
-const SAMPLES_FILE_UPDATE = `${SAMPLES}/file_update`;
+const SAMPLES_FILE_UPDATE = `${SAMPLES}/fileUpdate`;
 
 /**
  * Load sample.
@@ -30,6 +30,11 @@ const SAMPLES_LOADED = `${SAMPLES}/loaded`;
  */
 const SAMPLES_ERROR = `${SAMPLES}/error`;
 
+/**
+ * Delete metada from sample.
+ */
+const SAMPLES_METADATA_DELETE = `${SAMPLES}/metadataDelete`;
+
 export {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
@@ -37,4 +42,5 @@ export {
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_ERROR,
+  SAMPLES_METADATA_DELETE,
 };

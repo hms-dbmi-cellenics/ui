@@ -1,0 +1,17 @@
+name: Prevent pull requests modifying Flux CI paths
+
+on:
+  pull_request:
+    types: [opened]
+    branches:
+    - master
+jobs:
+  run:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: superbrothers/close-pull-request@v2
+      with:
+        comment: |-
+            Pull requests to master are not allowed, merge into develop.
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

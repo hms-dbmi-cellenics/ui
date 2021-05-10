@@ -24,7 +24,7 @@ import UploadStatus from '../../utils/UploadStatus';
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
-const NewProjectModal = (props) => {
+const FileUploadModal = (props) => {
   const { visible, onUpload, onCancel } = props;
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1qX6no9od4pi-Wy87Q06hmjnLNECwItKJ/view?usp=sharing';
@@ -254,16 +254,16 @@ const NewProjectModal = (props) => {
   );
 };
 
-NewProjectModal.propTypes = {
+FileUploadModal.propTypes = {
   visible: PropTypes.bool,
   onUpload: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
-NewProjectModal.defaultProps = {
+FileUploadModal.defaultProps = {
   visible: true,
   onUpload: null,
   onCancel: null,
 };
 
-export default NewProjectModal;
+export default FileUploadModal;

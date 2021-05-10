@@ -4,6 +4,7 @@ import {
   EXPERIMENT_SETTINGS_INFO_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+  EXPERIMENT_SETTINGS_SAMPLE_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED,
@@ -11,6 +12,7 @@ import {
 } from '../../actionTypes/experimentSettings';
 import updateExperimentInfo from './updateExperimentInfo';
 import updateProcessingSettings from './updateProcessingSettings';
+import updateSampleSettings from './updateSampleSettings';
 import loadProcessingSettings from './loadProcessingSettings';
 import processingSettingsError from './processingSettingsError';
 import pipelineStatusLoading from './pipelineStatusLoading';
@@ -27,6 +29,9 @@ const experimentSettingsReducer = (state = initialState, action) => {
     }
     case EXPERIMENT_SETTINGS_PROCESSING_UPDATE: {
       return updateProcessingSettings(state, action);
+    }
+    case EXPERIMENT_SETTINGS_SAMPLE_UPDATE: {
+      return updateSampleSettings(state, action);
     }
     case EXPERIMENT_SETTINGS_PROCESSING_ERROR: {
       return processingSettingsError(state, action);

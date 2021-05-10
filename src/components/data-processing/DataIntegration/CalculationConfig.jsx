@@ -34,7 +34,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun,
+    experimentId, onPipelineRun, disabled,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -102,6 +102,7 @@ const CalculationConfig = (props) => {
         config={dataIntegration.methodSettings.seuratv4}
         onUpdate={updateSettings}
         onChange={() => setChangesOutstanding(true)}
+        disabled={disabled}
       />
     ),
   };
@@ -145,6 +146,7 @@ const CalculationConfig = (props) => {
               <Select
                 value={dataIntegration.method}
                 onChange={(val) => updateSettings({ dataIntegration: { method: val } })}
+                disabled={disabled}
               >
                 {
                   methods.map((el) => (
@@ -182,21 +184,31 @@ const CalculationConfig = (props) => {
                 onBlur={(e) => updateSettings(
                   { dimensionalityReduction: { numPCs: parseInt(e.target.value, 0) } },
                 )}
+                disabled={disabled}
               />
             </Form.Item>
             <Form.Item label='% variation explained'>
               <InputNumber
                 value={roundedVariationExplained()}
-                disabled
+                disabled={disabled}
                 readOnly
               />
             </Form.Item>
             <Form.Item label='Exclude genes categories'>
+              <Tooltip title='Normalization can be biased by certain gene categories such the ones listed here.
+              Checking them will ignore those categories.
+              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day. 
+              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences 
+              in expression between cell types.
+              This is not implemented yet'>
+                <QuestionCircleOutlined />
+              </Tooltip>
               <Checkbox.Group
                 onChange={(val) => updateSettings(
                   { dimensionalityReduction: { excludeGeneCategories: val } },
                 )}
                 value={dimensionalityReduction.excludeGeneCategories}
+                disabled={disabled}
               >
                 <Space direction='vertical'>
                   <Checkbox value='ribosomal'>ribosomal</Checkbox>
@@ -205,14 +217,48 @@ const CalculationConfig = (props) => {
                 </Space>
               </Checkbox.Group>
             </Form.Item>
-            <Form.Item label='Method'>
+            <Form.Item label={(
+              <span>
+                Method&nbsp;
+                <Tooltip overlay={(
+                  <span>
+                    To integrate data, dimensional reduction is performed to find so called "anchors".
+                    cross-dataset pairs of cells that are in a matched biological state (‘anchors’), can are both to correct for technical
+                    differences between datasets
+                    (i.e. batch effect correction), and to perform comparative scRNA-seq analysis across experimental conditions.
+                    CCA is well-suitedn cell types are conserved, but there are very substantial differences
+                    in gene expression across experiments.
+                    However, CCA-based integration may also lead to overcorrection, especially when a large proportion of cells are
+                    non-overlapping across datasets.
+
+                    RPCA-based integration runs significantly faster, and also represents a more conservative approach where
+                    cells in different biological states are less likely to ‘align’ after integration.
+                    More info
+                    <a
+                      href='https://satijalab.org/seurat/articles/integration_rpca.html'
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      {' '}
+                      <code>here</code>
+                    </a>
+                  </span>
+                )}
+                >
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            )}
+            >
               <Select
                 value={dimensionalityReduction.method}
                 onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
+                disabled={disabled}
               >
                 <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
                 <Option key='cca' value='cca'>Cannonical Correlation Analysis (CCA)</Option>
               </Select>
+
             </Form.Item>
             <Form.Item>
               <Row>
@@ -234,13 +280,18 @@ const CalculationConfig = (props) => {
           </div>
         </Form>
       </Panel>
-    </Collapse>
+    </Collapse >
   );
 };
 
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+};
+
+CalculationConfig.defaultProps = {
+  disabled: false,
 };
 
 export default CalculationConfig;

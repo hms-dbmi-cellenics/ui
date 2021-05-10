@@ -11,7 +11,7 @@ import _ from 'lodash';
 import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
 
 import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
-import initialExperimentSettingsState from '../../../../experimentSettings.mock';
+import initialExperimentSettingsState from '../../../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
 import { EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING } from '../../../../../redux/actionTypes/experimentSettings';
@@ -58,27 +58,27 @@ const getStore = (settings = {}) => {
       properties: {
         test: {
           name: 'Test',
-          cellIds: 'Set()',
+          cellIds: new Set(),
         },
         'test-1': {
           name: 'Test-1',
-          cellIds: 'Set(1, 2, 3)',
+          cellIds: new Set([1, 2, 3]),
         },
         'test-2': {
           name: 'Test-1',
-          cellIds: 'Set(4, 5, 6)',
+          cellIds: new Set([4, 5, 6]),
         },
         sample: {
           name: 'Test',
-          cellIds: 'Set()',
+          cellIds: new Set(),
         },
         'sample-1': {
           name: 'Test-1',
-          cellIds: 'Set(2, 3)',
+          cellIds: new Set([2, 3]),
         },
         'sample-2': {
           name: 'Test-1',
-          cellIds: 'Set(1, 4, 5, 6)',
+          cellIds: new Set([1, 4, 5, 6]),
         },
       },
       hierarchy: [
@@ -125,22 +125,6 @@ const getStore = (settings = {}) => {
 
 describe('DataProcessingPage', () => {
   const experimentData = {};
-
-  beforeEach(() => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-  });
 
   it('renders correctly', () => {
     const store = getStore();

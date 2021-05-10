@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import Classifier from '../../../../components/data-processing/Classifier/Classifier';
 import CalculationConfig from '../../../../components/data-processing/Classifier/CalculationConfig';
-import initialExperimentState from '../../../experimentSettings.mock';
+import initialExperimentState from '../../../test-utils/experimentSettings.mock';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
@@ -63,22 +63,6 @@ const withData = {
 describe('Classifier', () => {
   beforeAll(async () => {
     await preloadAll();
-  });
-
-  beforeEach(async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
   });
 
   configure({ adapter: new Adapter() });

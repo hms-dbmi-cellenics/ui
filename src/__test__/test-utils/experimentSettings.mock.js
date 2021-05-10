@@ -1,7 +1,7 @@
 import initialState, {
   initialPipelineState,
   initialWorkerState,
-} from '../redux/reducers/experimentSettings/initialState';
+} from '../../redux/reducers/experimentSettings/initialState';
 
 const testableProcessingConfig = {
   cellSizeDistribution: {
