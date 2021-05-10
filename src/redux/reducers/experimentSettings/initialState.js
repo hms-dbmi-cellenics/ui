@@ -22,9 +22,6 @@ const initialState = {
   info: {
     experimentId: null,
     experimentName: null,
-    projectId: null,
-    createdAt: null,
-    lastViewed: null,
   },
   processing: {
     meta: {

@@ -29,7 +29,9 @@ const NewExperimentModal = (props) => {
   const [experimentsList, setExperimentsList] = useState([]);
 
   useEffect(() => {
-    setExperimentsList(activeProject?.experiments?.map((experimentId) => experiments[experimentId]));
+    setExperimentsList(
+      activeProject?.experiments?.map((experimentId) => experiments[experimentId]),
+    );
   }, [activeProject]);
 
   const checkNameValidity = (name) => {

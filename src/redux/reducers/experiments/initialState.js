@@ -4,7 +4,7 @@ const experimentTemplate = {
   description: null,
   id: null,
   createdAt: null,
-  lastVisited: null,
+  lastViewed: null,
 };
 
 const initialState = {

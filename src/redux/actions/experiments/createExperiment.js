@@ -15,7 +15,8 @@ const createExperiment = (
   projectUuid,
 ) => async (dispatch, getState) => {
   const { experiments } = getState();
-  const existingExperiments = getState().projects[projectUuid]?.experiments.map((experimentId) => experiments[experimentId]);
+  const existingExperiments = getState().projects[projectUuid]?.experiments
+    .map((experimentId) => experiments[experimentId]);
 
   const numUnnamedExperiments = !existingExperiments ? 0
     : existingExperiments.filter((experiment) => experiment.name.match(`${unnamedExperimentName} `)).length;
@@ -39,7 +40,7 @@ const createExperiment = (
     },
   });
 
-  // dispatch(saveExperiment(newExperiment));
+  dispatch(saveExperiment(newExperiment.id));
 
   return Promise.resolve(newExperiment);
 };

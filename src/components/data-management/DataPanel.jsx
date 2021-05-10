@@ -8,6 +8,7 @@ import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons'
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
+import moment from 'moment';
 
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
@@ -27,7 +28,8 @@ import {
   updateMetadataTrack,
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
-import { createExperiment } from '../../redux/actions/experiments';
+import { updateExperiment } from '../../redux/actions/experiments';
+import { updateExperimentInfo } from '../../redux/actions/experimentSettings';
 import processUpload from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
@@ -39,24 +41,23 @@ const { Text, Paragraph } = Typography;
 
 const DataPanel = ({ width, height }) => {
   const defaultNA = 'N.A.';
-  const [uploadModalVisible, setUploadModalVisible] = useState(false);
-  const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
   const analysisPath = '/experiments/[experimentId]/data-processing';
-
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromApiExpectOK,
   );
-  const [tableData, setTableData] = useState([]);
-  const [tableColumns, setTableColumns] = useState([]);
-  const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [isAddingMetadata, setIsAddingMetadata] = useState(false);
+  const [tableData, setTableData] = useState([]);
+  const [tableColumns, setTableColumns] = useState([]);
+  const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const [sampleNames, setSampleNames] = useState(new Set());
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
@@ -500,6 +501,14 @@ const DataPanel = ({ width, height }) => {
         experiments={experiments}
         visible={analysisModalVisible}
         onLaunch={(experimentId) => {
+          dispatch(updateExperiment(experimentId, { lastViewed: moment().toISOString() }));
+          dispatch(
+            updateExperimentInfo({
+              experimentId,
+              experimentName: experiments[experimentId].name,
+              projectUuid: experiments[experimentId].projectUuid,
+            }),
+          );
           router.push(analysisPath.replace('[experimentId]', experimentId));
         }}
         onChange={() => {

@@ -15,7 +15,7 @@ const updateExperiment = (
     },
   });
 
-  // dispatch(saveExperiment(experiment));
+  dispatch(saveExperiment(experimentId));
 };
 
 export default updateExperiment;
