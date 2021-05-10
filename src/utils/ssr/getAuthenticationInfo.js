@@ -14,7 +14,6 @@ import {
 import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
 import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 import configure from '../amplify-config';
-import Environment, { ssrGetCurrentEnvironment } from '../environment';
 
 const getAuthenticationInfo = async () => {
   // if (
@@ -79,7 +78,7 @@ const getAuthenticationInfo = async () => {
   );
 
   const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes(
-    `${ssrGetCurrentEnvironment() !== Environment.DEVELOPMENT ? `cluster-${sandboxId}` : 'local'}`,
+    `cluster-${sandboxId}`,
   )).ClientId;
 
   const [{ UserPoolClient: userPoolClientDetails }, { UserPool: { Domain } }] = await Promise.all([
