@@ -20,6 +20,9 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
   try {
     const response = await fetchAPI(`/v1/experiments/${experimentId}/cellSets`);
     const json = await response.json();
+    if (!response.ok) {
+      throw new Error('HTTP status code was not 200.');
+    }
     dispatch({
       type: CELL_SETS_LOADED,
       payload: {
