@@ -27,7 +27,7 @@ import {
   updateMetadataTrack,
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
-import { createExperiment } from '../../redux/actions/experimentSettings';
+import { createExperiment } from '../../redux/actions/experiments';
 import processUpload from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
@@ -53,6 +53,7 @@ const DataPanel = ({ width, height }) => {
   const [tableColumns, setTableColumns] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
+  const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -495,16 +496,16 @@ const DataPanel = ({ width, height }) => {
         onUpload={uploadFiles}
       />
       <AnalysisModal
+        activeProject={activeProject}
+        experiments={experiments}
         visible={analysisModalVisible}
-        onLaunch={(experimentId, experimentInfo) => {
-          createExperiment(activeProjectUuid, experimentInfo, experimentId);
+        onLaunch={(experimentId) => {
           router.push(analysisPath.replace('[experimentId]', experimentId));
         }}
         onChange={() => {
           // Update experiments details
         }}
         onCancel={() => { setAnalysisModalVisible(false); }}
-        activeProject={activeProject}
       />
       <div width={width} height={height}>
         <PageHeader

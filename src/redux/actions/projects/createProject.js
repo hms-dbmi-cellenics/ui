@@ -6,6 +6,7 @@ import {
   PROJECTS_CREATE,
 } from '../../actionTypes/projects';
 import { projectTemplate } from '../../reducers/projects/initialState';
+import createExperiment from '../experiments/createExperiment';
 
 const createProject = (
   projectName, projectDescription,
@@ -13,16 +14,17 @@ const createProject = (
   const createdAt = moment().toISOString();
 
   const newProjectUuid = uuidv4();
-  const newExperimentId = uuidv4();
+
+  // Always create an experiment for a new project
+  // required because samples DynamoDB require experimentId
+  const newExperiment = await dispatch(createExperiment(newProjectUuid));
 
   const newProject = {
     ...projectTemplate,
     name: projectName,
     description: projectDescription,
     uuid: newProjectUuid,
-    // This is only for one sample per experiment
-    // Should be changed when we support multiple samples per project
-    experiments: [newExperimentId],
+    experiments: [newExperiment.id],
     createdDate: createdAt,
     lastModified: createdAt,
   };

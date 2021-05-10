@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-
 import {
   Modal,
   Button,
@@ -10,52 +10,33 @@ import {
   Col,
   List,
 } from 'antd';
+import EditableField from '../EditableField';
+import { updateExperiment } from '../../redux/actions/experiments';
 
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 const NewExperimentModal = (props) => {
   const {
-    visible, onChange, onLaunch, onCancel, activeProject,
+    visible,
+    onLaunch,
+    onCancel,
+    activeProject,
+    experiments,
   } = props;
-  const [name, setName] = useState('Experiment Name');
-  const [description, setDescription] = useState('Description');
-  const [validExperimentName, setValidExperimentName] = useState(false);
-  const [experiments, setExperiments] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const [experimentsList, setExperimentsList] = useState([]);
 
   useEffect(() => {
-    const longerThanZero = name.length === 0;
-    const OnlyAlphaNumDashUnderscoreSpace = name.match(/[^\w\s+_-]/gm) === null;
-
-    setValidExperimentName(
-      longerThanZero
-      && OnlyAlphaNumDashUnderscoreSpace,
-    );
-  }, [name]);
-
-  // change this when we support multiple experiments
-  const experimentDetails = {
-    [activeProject.experiments[0]]: {
-      experimentId: experiments[0],
-      name,
-      description,
-    },
-  };
-
-  useEffect(() => {
-    if (activeProject.experiments.length === 0) return;
-
-    setExperiments(activeProject.experiments.map((experimentId) => ({
-      ...experimentDetails[experimentId],
-    })));
+    setExperimentsList(activeProject?.experiments?.map((experimentId) => experiments[experimentId]));
   }, [activeProject]);
 
-  const data = [
-    {
-      experimentId: '12345',
-      name: 'Test',
-      description: 'Lorem ipsum sip dolor amet',
-    },
-  ];
+  const checkNameValidity = (name) => {
+    const longerThanZero = name.trim().length > 0;
+    const OnlyAlphaNumDashUnderscoreSpace = name.match(/[^\w\s+_-]/gm) === null;
+    return longerThanZero && OnlyAlphaNumDashUnderscoreSpace;
+  };
 
   return (
     <Modal
@@ -74,7 +55,7 @@ const NewExperimentModal = (props) => {
             <List
               size='small'
               bordered
-              dataSource={data}
+              dataSource={experimentsList}
               itemLayout='vertical'
               renderItem={(item) => (
                 <List.Item
@@ -84,8 +65,7 @@ const NewExperimentModal = (props) => {
                       <Col>
                         <Button
                           type='primary'
-                          disabled={!validExperimentName}
-                          onClick={() => onLaunch(item.experimentId)}
+                          onClick={() => onLaunch(item.id)}
                         >
                           Launch
                         </Button>
@@ -94,8 +74,23 @@ const NewExperimentModal = (props) => {
                   )}
                 >
                   <Space direction='vertical' size='small'>
-                    <Text><strong level={6}>{item.name}</strong></Text>
-                    <Text>{item.description}</Text>
+                    <strong>
+                      <EditableField
+                        onAfterSubmit={(name) => dispatch(
+                          updateExperiment(item.id, { name: name.trim() }),
+                        )}
+                        value={item.name}
+                        validationFunc={(name) => checkNameValidity(name)}
+                        deleteEnabled={false}
+                      />
+                    </strong>
+                    <EditableField
+                      onAfterSubmit={(description) => dispatch(
+                        updateExperiment(item.id, { description: description.trim() }),
+                      )}
+                      value={item.description}
+                      deleteEnabled={false}
+                    />
                   </Space>
                 </List.Item>
               )}
@@ -110,18 +105,16 @@ const NewExperimentModal = (props) => {
 
 NewExperimentModal.propTypes = {
   visible: PropTypes.bool,
-  onChange: PropTypes.func,
   onCancel: PropTypes.func,
   onLaunch: PropTypes.func,
-  activeProject: PropTypes.object,
+  activeProject: PropTypes.object.isRequired,
+  experiments: PropTypes.object.isRequired,
 };
 
 NewExperimentModal.defaultProps = {
   visible: true,
-  onChange: null,
   onCancel: null,
   onLaunch: null,
-  activeProject: {},
 };
 
 export default NewExperimentModal;
