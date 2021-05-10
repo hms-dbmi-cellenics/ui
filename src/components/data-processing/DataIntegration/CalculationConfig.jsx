@@ -73,12 +73,12 @@ const CalculationConfig = (props) => {
       disabled: true,
     },
     {
-      value: 'fastMNN',
+      value: 'fastmnn',
       text: 'Fast MNN',
       disabled: false,
     },
     {
-      value: 'noIntegration',
+      value: 'unisample',
       text: 'No integration',
       disabled: false,
     },
