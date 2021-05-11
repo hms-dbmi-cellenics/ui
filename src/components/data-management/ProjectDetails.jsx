@@ -203,16 +203,17 @@ const ProjectDetails = ({ width, height }) => {
       ].includes(status)
     ) {
       return (
-        <Space>
-          <div style={{
-            whiteSpace: 'nowrap',
-            height: '35px',
-            minWidth: '90px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          >
+        <div style={{
+          whiteSpace: 'nowrap',
+          height: '35px',
+          minWidth: '90px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        >
+          <Space>
+            <Text type='danger'>{messageFor(status)}</Text>
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
               <Button
                 size='small'
@@ -221,8 +222,8 @@ const ProjectDetails = ({ width, height }) => {
                 onClick={() => setUploadModalVisible(true)}
               />
             </Tooltip>
-          </div>
-        </Space>
+          </Space>
+        </div>
       );
     }
 
