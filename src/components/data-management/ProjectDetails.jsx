@@ -131,25 +131,25 @@ const ProjectDetails = ({ width, height }) => {
 
     if (status === UploadStatus.UPLOADED) {
       return (
-        <Space
-          onClick={showSuccessDetails}
-          onKeyDown={showSuccessDetails}
+        <div
+          style={{
+            whiteSpace: 'nowrap',
+            height: '35px',
+            minWidth: '90px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          className='hoverSelectCursor'
         >
-          <div
-            style={{
-              whiteSpace: 'nowrap',
-              height: '35px',
-              minWidth: '90px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            className='hoverSelectCursor'
+          <Space
+            onClick={showSuccessDetails}
+            onKeyDown={showSuccessDetails}
           >
             <Text type='success'>{messageFor(status)}</Text>
             <FileSearchOutlined style={{ marginLeft: '10px' }} />
-          </div>
-        </Space>
+          </Space>
+        </div>
       );
     }
 
@@ -174,24 +174,24 @@ const ProjectDetails = ({ width, height }) => {
 
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
-        <Space>
-          <div
-            className='hoverSelectCursor'
-            onClick={showErrorDetails}
-            onKeyDown={showErrorDetails}
-            style={{
-              whiteSpace: 'nowrap',
-              height: '35px',
-              minWidth: '90px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+        <div
+          className='hoverSelectCursor'
+          onClick={showErrorDetails}
+          onKeyDown={showErrorDetails}
+          style={{
+            whiteSpace: 'nowrap',
+            height: '35px',
+            minWidth: '90px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Space>
             <Text type='danger'>{messageFor(status)}</Text>
             <FileSearchOutlined style={{ marginLeft: '10px' }} />
-          </div>
-        </Space>
+          </Space>
+        </div>
       );
     }
 
@@ -203,16 +203,16 @@ const ProjectDetails = ({ width, height }) => {
       ].includes(status)
     ) {
       return (
-        <div style={{
-          whiteSpace: 'nowrap',
-          height: '35px',
-          minWidth: '90px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
-          <Space>
+        <Space>
+          <div style={{
+            whiteSpace: 'nowrap',
+            height: '35px',
+            minWidth: '90px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          >
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
               <Button
                 size='small'
@@ -221,8 +221,8 @@ const ProjectDetails = ({ width, height }) => {
                 onClick={() => setUploadModalVisible(true)}
               />
             </Tooltip>
-          </Space>
-        </div>
+          </div>
+        </Space>
       );
     }
 
