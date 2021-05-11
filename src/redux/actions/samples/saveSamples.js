@@ -2,6 +2,9 @@
 import fetchAPI from '../../../utils/fetchAPI';
 import pushNotificationMessage from '../notifications';
 import messages from '../../../components/notification/messages';
+import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/samples';
+
+import errorTypes from './errorTypes';
 
 const saveSamples = (projectUuid) => async (dispatch, getState) => {
   const project = getState().projects[projectUuid];
@@ -20,6 +23,10 @@ const saveSamples = (projectUuid) => async (dispatch, getState) => {
   // Should be changed when we support multiple experiments per project
   const activeExperimentId = project.experiments[0];
 
+  dispatch({
+    type: SAMPLES_SAVING,
+  });
+
   try {
     await fetchAPI(
       `/v1/projects/${projectUuid}/samples`,
@@ -35,8 +42,19 @@ const saveSamples = (projectUuid) => async (dispatch, getState) => {
         }),
       },
     );
+
+    dispatch({
+      type: SAMPLES_SAVED,
+    });
   } catch (e) {
     dispatch(pushNotificationMessage('error', messages.connectionError, 5));
+
+    dispatch({
+      type: SAMPLES_ERROR,
+      payload: {
+        error: errorTypes.SAVE_SAMPLES,
+      },
+    });
   }
 };
 

@@ -1,6 +1,6 @@
 import initialState from './initialState';
 
-const samplesError = (state, action) => {
+const projectsError = (state, action) => {
   const { error } = action.payload;
   return {
     ...initialState,
@@ -13,4 +13,4 @@ const samplesError = (state, action) => {
   };
 };
 
-export default samplesError;
+export default projectsError;

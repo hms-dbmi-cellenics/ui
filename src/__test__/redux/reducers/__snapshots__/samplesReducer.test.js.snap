@@ -22,6 +22,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
   "qwe234": Object {
     "complete": false,
@@ -60,6 +61,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;
@@ -85,6 +87,125 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
+  },
+}
+`;
+
+exports[`samplesReducer Restore a specific state correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+    "qwe234",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+    "saving": false,
+  },
+  "qwe234": Object {
+    "complete": false,
+    "createdDate": "2021-01-02T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-02T14:48:00.000Z",
+    "name": "test sample 2",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "qwe234",
+  },
+}
+`;
+
+exports[`samplesReducer Sets up saved state correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`samplesReducer Sets up saving state correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": true,
+  },
+}
+`;
+
+exports[`samplesReducer Stores error state correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": "Error message",
+    "loading": false,
+    "saving": false,
   },
 }
 `;
@@ -110,6 +231,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;
@@ -147,6 +269,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;

@@ -50,16 +50,9 @@ describe('updateProject action', () => {
     const store = mockStore(mockState);
     await store.dispatch(updateProject(mockUuid, updatedProject));
 
-    const { project } = store.getActions()[0].payload;
-    expect(project.lastModified).not.toEqual(originalModifiedDate);
-    expect(_.omit(project, 'lastModified')).toEqual(_.omit(updatedProject, 'lastModified'));
-  });
-
-  it('Does not dispatch event if object contents are the same', async () => {
-    const store = mockStore(mockState);
-    await store.dispatch(updateProject(mockUuid, mockProject));
-
-    expect(store.getActions().length).toEqual(0);
+    const { diff } = store.getActions()[0].payload;
+    expect(diff.lastModified).not.toEqual(originalModifiedDate);
+    expect(_.omit(diff, 'lastModified')).toEqual(_.omit(updatedProject, 'lastModified'));
   });
 
   it('Dispatches call to save project', async () => {

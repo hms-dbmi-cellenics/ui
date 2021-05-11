@@ -27,6 +27,7 @@ const initialState = {
   meta: {
     loading: true,
     error: false,
+    saving: false,
   },
 };
 

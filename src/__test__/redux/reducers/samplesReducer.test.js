@@ -8,6 +8,9 @@ import {
   SAMPLES_LOADED,
   SAMPLES_ERROR,
   SAMPLES_DELETE,
+  SAMPLES_SAVING,
+  SAMPLES_SAVED,
+  SAMPLES_RESTORE,
 } from '../../../redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
@@ -92,7 +95,7 @@ describe('samplesReducer', () => {
       type: SAMPLES_UPDATE,
       payload: {
         sampleUuid: mockUuid1,
-        sample: updateActionResult,
+        diff: updateActionResult,
       },
     });
 
@@ -160,17 +163,76 @@ describe('samplesReducer', () => {
     expect(newState.meta.error).toEqual(false);
   });
 
-  it('Handles errors correctly', () => {
-    const error = 'Failed uploading samples';
+  it('Sets up saving state correctly', () => {
+    const newState = samplesReducer({
+      ...oneSampleState,
+      meta: {
+        ...oneSampleState[sample1.uuid].meta,
+        loading: false,
+        saving: false,
+        error: false,
+      },
+    }, { type: SAMPLES_SAVING });
 
-    const newState = samplesReducer(oneSampleState, {
+    expect(newState.meta.error).toBe(false);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(true);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Sets up saved state correctly', () => {
+    const newState = samplesReducer({
+      ...oneSampleState,
+      meta: {
+        ...oneSampleState[sample1.uuid].meta,
+        loading: false,
+        saving: true,
+        error: true,
+      },
+    }, { type: SAMPLES_SAVED });
+
+    expect(newState.meta.error).toBe(false);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(false);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Stores error state correctly', () => {
+    const errMsg = 'Error message';
+
+    const newState = samplesReducer({
+      ...oneSampleState,
+      meta: {
+        ...oneSampleState[sample1.uuid].meta,
+        loading: false,
+        saving: true,
+        error: true,
+      },
+    }, {
       type: SAMPLES_ERROR,
       payload: {
-        error,
+        error: errMsg,
       },
     });
 
-    expect(newState.meta.loading).toEqual(false);
-    expect(newState.meta.error).toEqual(error);
+    expect(newState.meta.error).not.toBe(false);
+    expect(newState.meta.error).toBe(errMsg);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(false);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Restore a specific state correctly', () => {
+    const newState = samplesReducer(oneSampleState, {
+      type: SAMPLES_RESTORE,
+      payload: {
+        state: twoSamplesState,
+      },
+    });
+
+    expect(newState.ids).toEqual([sample1.uuid, sample2.uuid]);
+    expect(newState[sample1.uuid]).toEqual(sample1);
+    expect(newState[sample2.uuid]).toEqual(sample2);
+    expect(newState).toMatchSnapshot();
   });
 });

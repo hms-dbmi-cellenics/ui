@@ -2,7 +2,14 @@ import projectsReducer from '../../../redux/reducers/projects';
 import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 
 import {
-  PROJECTS_CREATE, PROJECTS_UPDATE, PROJECTS_SET_ACTIVE, PROJECTS_DELETE,
+  PROJECTS_CREATE,
+  PROJECTS_UPDATE,
+  PROJECTS_SET_ACTIVE,
+  PROJECTS_DELETE,
+  PROJECTS_SAVING,
+  PROJECTS_SAVED,
+  PROJECTS_ERROR,
+  PROJECTS_RESTORE,
 } from '../../../redux/actionTypes/projects';
 
 describe('projectsReducer', () => {
@@ -92,7 +99,7 @@ describe('projectsReducer', () => {
       type: PROJECTS_UPDATE,
       payload: {
         projectUuid: projectUuid1,
-        project: updatedProject1,
+        diff: updatedProject1,
       },
     });
 
@@ -123,6 +130,79 @@ describe('projectsReducer', () => {
 
     expect(newState.ids).toEqual([project1.uuid]);
     expect(newState[project2.uuid]).toBeUndefined();
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Sets up saving state correctly', () => {
+    const newState = projectsReducer({
+      ...oneProjectState,
+      meta: {
+        ...oneProjectState[projectUuid1].meta,
+        loading: false,
+        saving: false,
+        error: false,
+      },
+    }, { type: PROJECTS_SAVING });
+
+    expect(newState.meta.error).toBe(false);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(true);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Sets up saved state correctly', () => {
+    const newState = projectsReducer({
+      ...oneProjectState,
+      meta: {
+        ...oneProjectState[projectUuid1].meta,
+        loading: false,
+        saving: true,
+        error: true,
+      },
+    }, { type: PROJECTS_SAVED });
+
+    expect(newState.meta.error).toBe(false);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(false);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Stores error state correctly', () => {
+    const errMsg = 'Error message';
+
+    const newState = projectsReducer({
+      ...oneProjectState,
+      meta: {
+        ...oneProjectState[projectUuid1].meta,
+        loading: false,
+        saving: true,
+        error: false,
+      },
+    }, {
+      type: PROJECTS_ERROR,
+      payload: {
+        error: errMsg,
+      },
+    });
+
+    expect(newState.meta.error).not.toBe(false);
+    expect(newState.meta.error).toBe(errMsg);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(false);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Restore a specific state correctly', () => {
+    const newState = projectsReducer(oneProjectState, {
+      type: PROJECTS_RESTORE,
+      payload: {
+        state: twoProjectsState,
+      },
+    });
+
+    expect(newState.ids).toEqual([project1.uuid, project2.uuid]);
+    expect(newState[projectUuid1]).toEqual(project1);
+    expect(newState[projectUuid2]).toEqual(project2);
     expect(newState).toMatchSnapshot();
   });
 });

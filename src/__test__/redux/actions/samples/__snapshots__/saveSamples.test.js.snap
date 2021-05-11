@@ -2,11 +2,6 @@
 
 exports[`saveSamples action Dispatches a notification when fetch fails. 1`] = `
 Object {
-  "payload": Object {
-    "message": "Could not connect to the server. Check your internet connection.",
-    "time": 5,
-    "type": "error",
-  },
-  "type": "notifications/pushMessage",
+  "type": "samples/saving",
 }
 `;

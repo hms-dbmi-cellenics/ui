@@ -4,7 +4,10 @@ import {
   SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
+  SAMPLES_SAVING,
+  SAMPLES_SAVED,
   SAMPLES_ERROR,
+  SAMPLES_RESTORE,
 } from '../../actionTypes/samples';
 import initialState from './initialState';
 import samplesCreate from './samplesCreate';
@@ -12,7 +15,10 @@ import samplesUpdate from './samplesUpdate';
 import samplesDelete from './samplesDelete';
 import samplesFileUpdate from './samplesFileUpdate';
 import samplesLoaded from './samplesLoaded';
+import samplesSaving from './samplesSaving';
 import samplesError from './samplesError';
+import samplesSaved from './samplesSaved';
+import samplesRestore from './samplesRestore';
 
 const samplesReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -36,8 +42,20 @@ const samplesReducer = (state = initialState, action) => {
       return samplesLoaded(state, action);
     }
 
+    case SAMPLES_SAVING: {
+      return samplesSaving(state, action);
+    }
+
+    case SAMPLES_SAVED: {
+      return samplesSaved(state, action);
+    }
+
     case SAMPLES_ERROR: {
       return samplesError(state, action);
+    }
+
+    case SAMPLES_RESTORE: {
+      return samplesRestore(state, action);
     }
 
     default: {

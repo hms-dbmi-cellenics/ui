@@ -6,6 +6,8 @@ import {
   PROJECTS_CREATE,
 } from '../../actionTypes/projects';
 import { projectTemplate } from '../../reducers/projects/initialState';
+import pushNotificationMessage from '../notifications';
+import errorTypes from './errorTypes';
 
 const createProject = (
   projectName, projectDescription,
@@ -20,19 +22,21 @@ const createProject = (
     name: projectName,
     description: projectDescription,
     uuid: newProjectUuid,
-    // This is only for one sample per experiment
-    // Should be changed when we support multiple samples per project
     experiments: [newExperimentId],
     createdDate: createdAt,
     lastModified: createdAt,
   };
 
-  dispatch({
-    type: PROJECTS_CREATE,
-    payload: { project: newProject },
-  });
+  try {
+    dispatch(saveProject(newProjectUuid, newProject));
 
-  dispatch(saveProject(newProjectUuid));
+    dispatch({
+      type: PROJECTS_CREATE,
+      payload: { project: newProject },
+    });
+  } catch (e) {
+    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+  }
 };
 
 export default createProject;
