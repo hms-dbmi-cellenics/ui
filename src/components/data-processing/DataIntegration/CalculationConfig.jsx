@@ -24,6 +24,8 @@ import {
 import _ from 'lodash';
 
 import SeuratV4Options from './SeuratV4Options';
+import FastMNNOptions from './FastMNNOptions';
+import UnisampleOptions from './UnisampleOptions';
 
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
@@ -53,6 +55,16 @@ const CalculationConfig = (props) => {
       disabled: false,
     },
     {
+      value: 'fastmnn',
+      text: 'Fast MNN',
+      disabled: false,
+    },
+    {
+      value: 'unisample',
+      text: 'No integration',
+      disabled: false,
+    },
+    {
       value: 'seuratv3',
       text: 'Seurat v3',
       disabled: true,
@@ -71,16 +83,6 @@ const CalculationConfig = (props) => {
       value: 'liger',
       text: 'Liger',
       disabled: true,
-    },
-    {
-      value: 'fastmnn',
-      text: 'Fast MNN',
-      disabled: false,
-    },
-    {
-      value: 'unisample',
-      text: 'No integration',
-      disabled: false,
     },
   ];
 
@@ -105,6 +107,22 @@ const CalculationConfig = (props) => {
     seuratv4: () => (
       <SeuratV4Options
         config={dataIntegration.methodSettings.seuratv4}
+        onUpdate={updateSettings}
+        onChange={() => setChangesOutstanding(true)}
+        disabled={disabled}
+      />
+    ),
+    fastmnn: () => (
+      <FastMNNOptions
+        config={dataIntegration.methodSettings.fastmnn}
+        onUpdate={updateSettings}
+        onChange={() => setChangesOutstanding(true)}
+        disabled={disabled}
+      />
+    ),
+    unisample: () => (
+      <UnisampleOptions
+        config={dataIntegration.methodSettings.unisample}
         onUpdate={updateSettings}
         onChange={() => setChangesOutstanding(true)}
         disabled={disabled}
