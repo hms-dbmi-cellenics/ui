@@ -57,7 +57,7 @@ const projectsReducer = (state = initialState, action) => {
     case PROJECTS_RESTORE: {
       return projectsRestore(state, action);
     }
-      
+
     case PROJECTS_METADATA_CREATE: {
       return projectsMetadataCreate(state, action);
     }

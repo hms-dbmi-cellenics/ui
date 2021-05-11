@@ -236,8 +236,6 @@ describe('samplesReducer', () => {
     expect(newState.ids).toEqual([sample1.uuid, sample2.uuid]);
     expect(newState[sample1.uuid]).toEqual(sample1);
     expect(newState[sample2.uuid]).toEqual(sample2);
-    expect(newState.meta.loading).toEqual(false);
-    expect(newState.meta.error).toEqual(error);
     expect(newState).toMatchSnapshot();
   });
 
