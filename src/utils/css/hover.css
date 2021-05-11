@@ -1,0 +1,6 @@
+.hoverSelectCursor {
+}
+ 
+.hoverSelectCursor:hover {
+    cursor: pointer;
+}

@@ -3,7 +3,9 @@ import {
 } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
+import {
+  ReloadOutlined, UploadOutlined, EditOutlined, FileSearchOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
@@ -24,6 +26,8 @@ import processUpload, { compressAndUploadSingleFile, metadataFor } from '../../u
 import validateSampleName from '../../utils/validateSampleName';
 
 import UploadStatus, { messageFor } from '../../utils/UploadStatus';
+
+import '../../utils/css/hover.css';
 
 const { Text, Paragraph } = Typography;
 
@@ -118,16 +122,19 @@ const ProjectDetails = ({ width, height }) => {
           onClick={showSuccessDetails}
           onKeyDown={showSuccessDetails}
         >
-          <div style={{
-            whiteSpace: 'nowrap',
-            height: '35px',
-            minWidth: '90px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          <div
+            style={{
+              whiteSpace: 'nowrap',
+              height: '35px',
+              minWidth: '90px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            className='hoverSelectCursor'
           >
             <Text type='success'>{messageFor(status)}</Text>
+            <FileSearchOutlined style={{ marginLeft: '10px' }} />
           </div>
         </Space>
       );
@@ -154,23 +161,24 @@ const ProjectDetails = ({ width, height }) => {
 
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
-        <div
-          onClick={showErrorDetails}
-          onKeyDown={showErrorDetails}
-          style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}
-        >
-          <Space onClick={() => { setUploadDetailsModalVisible(true); }}>
+        <Space>
+          <div
+            className='hoverSelectCursor'
+            onClick={showErrorDetails}
+            onKeyDown={showErrorDetails}
+            style={{
+              whiteSpace: 'nowrap',
+              height: '35px',
+              minWidth: '90px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <Text type='danger'>{messageFor(status)}</Text>
-            <Tooltip placement='bottom' title='Retry' mouseLeaveDelay={0}>
-              <Button
-                size='small'
-                shape='link'
-                icon={<ReloadOutlined />}
-                onClick={() => setUploadModalVisible(true)}
-              />
-            </Tooltip>
-          </Space>
-        </div>
+            <FileSearchOutlined style={{ marginLeft: '10px' }} />
+          </div>
+        </Space>
       );
     }
 
@@ -182,7 +190,15 @@ const ProjectDetails = ({ width, height }) => {
       ].includes(status)
     ) {
       return (
-        <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
+        <div style={{
+          whiteSpace: 'nowrap',
+          height: '35px',
+          minWidth: '90px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        >
           <Space>
             <Text type='danger'>{messageFor(status)}</Text>
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
