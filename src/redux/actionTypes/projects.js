@@ -41,7 +41,7 @@ const PROJECTS_ERROR = `${PROJECTS}/error`;
 const PROJECTS_RESTORE = `${PROJECTS}/restore`;
 
 /**
-* Add project metadata.
+ * Add project metadata.
  */
 const PROJECTS_METADATA_CREATE = `${PROJECTS}/metadataCreate`;
 

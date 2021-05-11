@@ -25,12 +25,13 @@ const SingleComponentMultipleDataContainer = (props) => {
 
 SingleComponentMultipleDataContainer.propTypes = {
   defaultActiveKey: PropTypes.array,
-  inputsList: PropTypes.array.isRequired,
+  inputsList: PropTypes.array,
   baseComponentRenderer: PropTypes.func.isRequired,
 };
 
 SingleComponentMultipleDataContainer.defaultProps = {
   defaultActiveKey: '',
+  inputsList: [],
 };
 
 export default SingleComponentMultipleDataContainer;

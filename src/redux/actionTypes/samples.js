@@ -46,7 +46,7 @@ const SAMPLES_ERROR = `${SAMPLES}/error`;
 const SAMPLES_RESTORE = `${SAMPLES}/restore`;
 
 /**
-* Delete metada from sample.
+ * Delete metada from sample.
  */
 const SAMPLES_METADATA_DELETE = `${SAMPLES}/metadataDelete`;
 

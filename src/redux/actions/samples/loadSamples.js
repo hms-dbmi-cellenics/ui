@@ -10,6 +10,9 @@ const loadSamples = (
   try {
     const response = await fetchAPI(`/v1/experiments/${experimentId}/samples`);
     const json = await response.json();
+    if (!response.ok) {
+      throw new Error('HTTP status code was not 200.');
+    }
     dispatch({
       type: SAMPLES_LOADED,
       payload: {
