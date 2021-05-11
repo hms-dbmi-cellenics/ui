@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
 } from 'antd';
-import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  ReloadOutlined, UploadOutlined, EditOutlined, FileSearchOutlined,
+  UploadOutlined, EditOutlined, FileSearchOutlined,
 } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
