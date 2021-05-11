@@ -48,7 +48,7 @@ const NewProjectModal = (props) => {
         'matrix.mtx',
         'matrix.mtx.gz',
       ],
-      validMimeTypes: ['text/tsv', 'application/gzip', 'text/tab-separated-values'],
+      validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
       validExtensionTypes: ['.mtx'],
       inputInfo: [
         ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
@@ -71,7 +71,7 @@ const NewProjectModal = (props) => {
     const acceptedFilesRegexp = `(${techOptions[selectedTech].acceptedFiles.join('|')})$`;
 
     // Remove all files that aren't in a folder
-    const filteredFiles = acceptedFiles.filter((file) => file.path[0] === '/');
+    const filteredFiles = acceptedFiles.filter((file) => file.path.includes('/'));
 
     if (filteredFiles.length !== acceptedFiles.length) {
       dispatch(pushNotificationMessage('error', 'Only folders are accepted', 1));
@@ -214,10 +214,10 @@ const NewProjectModal = (props) => {
 
         {/* eslint-disable react/jsx-props-no-spreading */}
         <Col span={24}>
-          <Dropzone onDrop={onDrop}>
+          <Dropzone onDrop={onDrop} multiple>
             {({ getRootProps, getInputProps }) => (
               <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
-                <input {...getInputProps()} />
+                <input {...getInputProps()} webkitdirectory='' />
                 <Empty description='Drag and drop folders here or click to browse.' image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             )}

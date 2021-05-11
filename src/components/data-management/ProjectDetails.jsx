@@ -23,7 +23,7 @@ import { updateProject } from '../../redux/actions/projects';
 import processUpload, { compressAndUploadSingleFile, metadataFor } from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 
-import UploadStatus from '../../utils/UploadStatus';
+import UploadStatus, { messageFor } from '../../utils/UploadStatus';
 
 const { Text, Paragraph } = Typography;
 
@@ -127,7 +127,7 @@ const ProjectDetails = ({ width, height }) => {
             alignItems: 'center',
           }}
           >
-            <Text type='success'>{status.message()}</Text>
+            <Text type='success'>{messageFor(status)}</Text>
           </div>
         </Space>
       );
@@ -145,7 +145,7 @@ const ProjectDetails = ({ width, height }) => {
         }}
         >
           <Space direction='vertical' size={[1, 1]}>
-            <Text type='warning'>{`${status.message()}`}</Text>
+            <Text type='warning'>{`${messageFor(status)}`}</Text>
             {progress ? (<Progress percent={progress} size='small' />) : <div />}
           </Space>
         </div>
@@ -160,7 +160,7 @@ const ProjectDetails = ({ width, height }) => {
           style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}
         >
           <Space onClick={() => { setUploadDetailsModalVisible(true); }}>
-            <Text type='danger'>{status.message()}</Text>
+            <Text type='danger'>{messageFor(status)}</Text>
             <Tooltip placement='bottom' title='Retry' mouseLeaveDelay={0}>
               <Button
                 size='small'
@@ -184,7 +184,7 @@ const ProjectDetails = ({ width, height }) => {
       return (
         <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
           <Space>
-            <Text type='danger'>{status.message()}</Text>
+            <Text type='danger'>{messageFor(status)}</Text>
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
               <Button
                 size='small'

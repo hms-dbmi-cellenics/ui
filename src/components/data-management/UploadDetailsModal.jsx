@@ -6,7 +6,7 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
-import UploadStatus from '../../utils/UploadStatus';
+import UploadStatus, { messageFor } from '../../utils/UploadStatus';
 
 const UploadDetailsModal = (props) => {
   const {
@@ -29,7 +29,7 @@ const UploadDetailsModal = (props) => {
     }
   }, [replacementFileBundle]);
 
-  const isSuccessModal = status === UploadStatus.UPLOADED;
+  const isSuccessModal = status == UploadStatus.UPLOADED;
 
   const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);
 
@@ -156,7 +156,7 @@ const UploadDetailsModal = (props) => {
             : (
               <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
                 <Col span={5}>Error</Col>
-                <Col span={10}>{status?.message()}</Col>
+                <Col span={10}>{messageFor(status)}</Col>
               </Row>
             )
         }

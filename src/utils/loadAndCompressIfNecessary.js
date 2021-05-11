@@ -6,7 +6,7 @@ function uintArrayToBuffer(array) {
 }
 
 const loadAndCompressIfNecessary = async (bundle) => {
-  const inGzipFormat = bundle.mime === 'application/gzip';
+  const inGzipFormat = ['application/gzip', 'application/x-gzip'].includes(bundle.type);
 
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

@@ -88,7 +88,7 @@ const compressAndUploadSingleFile = async (
 
 const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
-    const uncompressed = file.bundle.type !== 'application/gzip';
+    const uncompressed = !['application/gzip', 'application/x-gzip'].includes(file.bundle.type);
 
     const newFileName = uncompressed ? `${fileName}.gz` : fileName;
     const newFile = {
