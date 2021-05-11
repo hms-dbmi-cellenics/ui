@@ -45,6 +45,11 @@ const SAMPLES_ERROR = `${SAMPLES}/error`;
  */
 const SAMPLES_RESTORE = `${SAMPLES}/restore`;
 
+/**
+* Delete metada from sample.
+ */
+const SAMPLES_METADATA_DELETE = `${SAMPLES}/metadataDelete`;
+
 export {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
@@ -55,4 +60,5 @@ export {
   SAMPLES_ERROR,
   SAMPLES_SAVED,
   SAMPLES_RESTORE,
+  SAMPLES_METADATA_DELETE,
 };

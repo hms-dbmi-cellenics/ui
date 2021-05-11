@@ -11,7 +11,7 @@ import { createProject } from '../../redux/actions/projects';
 import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
-import DataPanel from '../../components/data-management/DataPanel';
+import ProjectDetails from '../../components/data-management/ProjectDetails';
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ const DataManagementPage = ({ route }) => {
     'Data Management': {
       toolbarControls: [],
       component: (width, height) => (
-        <DataPanel width={width} height={height} />
+        <ProjectDetails width={width} height={height} />
       ),
     },
   };

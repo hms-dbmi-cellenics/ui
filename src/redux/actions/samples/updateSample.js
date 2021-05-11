@@ -10,19 +10,19 @@ import errorTypes from './errorTypes';
 
 const updateSample = (
   sampleUuid,
-  diff,
+  sample,
 ) => async (dispatch, getState) => {
   const currentSampleState = getState().samples;
 
   // eslint-disable-next-line no-param-reassign
-  diff.lastModified = moment().toISOString();
+  sample.lastModified = moment().toISOString();
 
   try {
     dispatch({
       type: SAMPLES_UPDATE,
       payload: {
         sampleUuid,
-        diff,
+        sample,
       },
     });
 

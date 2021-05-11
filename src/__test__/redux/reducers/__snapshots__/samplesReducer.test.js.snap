@@ -9,6 +9,7 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
@@ -31,6 +32,7 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
+    "metadata": Object {},
     "name": "test sample 2",
     "projectUuid": null,
     "species": null,
@@ -49,6 +51,39 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+    "saving": false,
+  },
+}
+`;
+
+exports[`samplesReducer Deletes sample metadata correctly 1`] = `
+Object {
+  "[object Object]": Object {
+    "metadata": Object {
+      "metadata-test": "old-value",
+    },
+  },
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
@@ -75,6 +110,7 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
@@ -92,6 +128,80 @@ Object {
 }
 `;
 
+exports[`samplesReducer Inserts sample metadata correctly 1`] = `
+Object {
+  "[object Object]": Object {
+    "metadata": Object {},
+  },
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {
+      "metadata-test": "value",
+    },
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+    "saving": false,
+  },
+}
+`;
+
+exports[`samplesReducer Loads samples correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+    "qwe234",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+  "qwe234": Object {
+    "complete": false,
+    "createdDate": "2021-01-02T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-02T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample 2",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "qwe234",
+  },
+}
+`;
+
 exports[`samplesReducer Restore a specific state correctly 1`] = `
 Object {
   "asd123": Object {
@@ -101,6 +211,7 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
@@ -123,6 +234,7 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
+    "metadata": Object {},
     "name": "test sample 2",
     "projectUuid": null,
     "species": null,
@@ -141,6 +253,7 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
@@ -167,6 +280,7 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
@@ -193,6 +307,7 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
@@ -219,6 +334,7 @@ Object {
     "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
     "name": "updated name",
     "projectUuid": null,
     "species": null,
@@ -257,6 +373,80 @@ Object {
       },
     },
     "lastModified": "newLastModified",
+    "metadata": Object {},
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+    "saving": false,
+  },
+}
+`;
+
+exports[`samplesReducer Updates sample files correctly 2`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [
+      "features.tsv",
+    ],
+    "files": Object {
+      "features.tsv": Object {
+        "error": false,
+        "mime": "",
+        "name": "features.tsv",
+        "objectKey": "",
+        "path": "",
+        "size": 0,
+        "success": false,
+      },
+    },
+    "lastModified": "newLastModified",
+    "metadata": Object {},
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+    "saving": false,
+  },
+}
+`;
+
+exports[`samplesReducer Updates sample metadata correctly 1`] = `
+Object {
+  "[object Object]": Object {
+    "metadata": Object {
+      "metadata-test": "old-value",
+    },
+  },
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {
+      "metadata-test": "new-value",
+    },
     "name": "test sample",
     "projectUuid": null,
     "species": null,

@@ -1,10 +1,14 @@
 const samplesUpdate = (state, action) => {
-  const { sampleUuid, diff } = action.payload;
+  const { sampleUuid, sample } = action.payload;
   return {
     ...state,
     [sampleUuid]: {
       ...state[sampleUuid],
-      ...diff,
+      ...sample,
+      metadata: {
+        ...state[sampleUuid].metadata || {},
+        ...sample.metadata,
+      },
     },
   };
 };

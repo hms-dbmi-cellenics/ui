@@ -7,6 +7,9 @@ import {
   PROJECTS_SAVED,
   PROJECTS_ERROR,
   PROJECTS_RESTORE,
+  PROJECTS_METADATA_CREATE,
+  PROJECTS_METADATA_UPDATE,
+  PROJECTS_METADATA_DELETE,
 } from '../../actionTypes/projects';
 import initialState from './initialState';
 import projectsCreate from './projectsCreate';
@@ -17,6 +20,9 @@ import projectsSaving from './projectsSaving';
 import projectsSaved from './projectsSaved';
 import projectsError from './projectsError';
 import projectsRestore from './projectsRestore';
+import projectsMetadataCreate from './projectsMetadataCreate';
+import projectsMetadataUpdate from './projectsMetadataUpdate';
+import projectsMetadataDelete from './projectsMetadataDelete';
 
 const projectsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -50,6 +56,18 @@ const projectsReducer = (state = initialState, action) => {
 
     case PROJECTS_RESTORE: {
       return projectsRestore(state, action);
+    }
+
+    case PROJECTS_METADATA_CREATE: {
+      return projectsMetadataCreate(state, action);
+    }
+
+    case PROJECTS_METADATA_UPDATE: {
+      return projectsMetadataUpdate(state, action);
+    }
+
+    case PROJECTS_METADATA_DELETE: {
+      return projectsMetadataDelete(state, action);
     }
 
     default: {

@@ -10,19 +10,19 @@ import saveProject from './saveProject';
 
 const updateProject = (
   projectUuid,
-  diff,
+  project,
 ) => async (dispatch, getState) => {
   const oldState = getState().projects;
 
   // eslint-disable-next-line no-param-reassign
-  diff.lastModified = moment().toISOString();
+  project.lastModified = moment().toISOString();
 
   try {
     dispatch({
       type: PROJECTS_UPDATE,
       payload: {
         projectUuid,
-        diff,
+        project,
       },
     });
     dispatch(saveProject(projectUuid));

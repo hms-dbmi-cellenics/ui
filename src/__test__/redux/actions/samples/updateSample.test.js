@@ -47,9 +47,9 @@ describe('updateSample action', () => {
     const store = mockStore(mockState);
     await store.dispatch(updateSample(mockUuid, updatedSample));
 
-    const { diff } = store.getActions()[0].payload;
-    expect(diff.lastModified).not.toEqual(originalModifiedDate);
-    expect(_.omit(diff, 'lastModified')).toEqual(_.omit(updatedSample, 'lastModified'));
+    const { sample } = store.getActions()[0].payload;
+    expect(sample.lastModified).not.toEqual(originalModifiedDate);
+    expect(_.omit(sample, 'lastModified')).toEqual(_.omit(updatedSample, 'lastModified'));
   });
 
   it('Dispatches call to save sample', async () => {
