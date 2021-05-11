@@ -29,7 +29,7 @@ const deleteProject = (
   if (projectUuid === activeProjectUuid) {
     dispatch({
       type: PROJECTS_SET_ACTIVE,
-      payload: { projectUuid: projects.ids[0] || null },
+      payload: { projectUuid: projects.ids.length > 1 ? projects.ids[0] : null },
     });
   }
 };

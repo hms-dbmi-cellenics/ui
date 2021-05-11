@@ -1,25 +1,38 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
-import EditableField from '../../EditableField';
-import colorProvider from '../../../utils/colorProvider';
+import EditableField from '../EditableField';
+import { metadataNameToKey } from '../../utils/metadataUtils';
 
-const ClusterPopover = (props) => {
+const MetadataPopover = (props) => {
   const {
-    popoverPosition, onCreate, onCancel, message, children, ...restOfProps
+    existingMetadata,
+    popoverPosition,
+    onCreate,
+    onCancel,
+    message,
+    children,
+    popupContainer,
+    ...restOfProps
   } = props;
 
   const getContent = () => (
     <EditableField
-      onAfterSubmit={(e) => {
-        onCreate(e, colorProvider.getColor());
+      onAfterSubmit={(value) => {
+        onCreate(value);
       }}
       onAfterCancel={() => {
         onCancel();
       }}
       deleteEnabled={false}
-      value='New Cluster'
+      value={`Track ${existingMetadata.filter((key) => key.match('Track-')).length + 1}`}
       defaultEditing
+      validationFunc={
+        (value) => value.length > 0
+          && !existingMetadata.map((metadataKey) => metadataKey.toLowerCase())
+            .includes(metadataNameToKey(value.toLowerCase()))
+      }
     />
   );
 
@@ -30,42 +43,34 @@ const ClusterPopover = (props) => {
     style = { position: 'absolute', left: popoverPosition.current.x + 20, top: popoverPosition.current.y + 20 };
   }
 
-  /* eslint-disable react/jsx-props-no-spreading */
-  if (!children) {
-    return (
-      <div style={style}>
-        <Popover title={message} content={content} {...restOfProps} />
-      </div>
-    );
-  }
-
   return (
     <div style={style}>
       <Popover
         title={message}
         content={content}
         {...restOfProps}
-
+        autoAdjustOverflow
       >
         {children}
       </Popover>
     </div>
   );
-  /* eslint-enable react/jsx-props-no-spreading */
 };
 
-ClusterPopover.defaultProps = {
+MetadataPopover.defaultProps = {
   popoverPosition: null,
   message: 'Add cell set',
   children: null,
+  existingMetadata: [],
 };
 
-ClusterPopover.propTypes = {
+MetadataPopover.propTypes = {
   onCreate: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   popoverPosition: PropTypes.object,
   children: PropTypes.object,
   message: PropTypes.string,
+  existingMetadata: PropTypes.arrayOf(PropTypes.string),
 };
 
-export default ClusterPopover;
+export default MetadataPopover;

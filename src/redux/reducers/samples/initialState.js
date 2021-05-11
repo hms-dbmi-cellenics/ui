@@ -10,6 +10,7 @@ const sampleTemplate = {
   error: false,
   fileNames: new Set(),
   files: {},
+  metadata: {},
 };
 
 const sampleFileTemplate = {

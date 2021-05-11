@@ -1,6 +1,7 @@
 const projectTemplate = {
   name: null,
   description: null,
+  metadataKeys: [],
   uuid: null,
   createdDate: null,
   lastModified: null,
