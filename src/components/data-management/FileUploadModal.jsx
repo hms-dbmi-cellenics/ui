@@ -74,7 +74,7 @@ const FileUploadModal = (props) => {
     const filteredFiles = acceptedFiles.filter((file) => file.path.includes('/'));
 
     if (filteredFiles.length !== acceptedFiles.length) {
-      dispatch(pushNotificationMessage('error', 'Only folders are accepted', 1));
+      dispatch(pushNotificationMessage('error', 'Only files contained in folder are accepted', 1));
     }
 
     filteredFiles.forEach((file) => {
