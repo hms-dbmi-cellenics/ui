@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Form, InputNumber, Select, Tooltip, Typography } from 'antd';
+import {
+  Form, InputNumber, Select, Tooltip, Typography,
+} from 'antd';
 
 import {
   QuestionCircleOutlined,
@@ -9,9 +11,9 @@ import {
 const { Option } = Select;
 const { Text } = Typography;
 
-const FastMNNOptions = (props) => {
+const NormalisationOptions = (props) => {
   const {
-    config, onUpdate, onChange, disabled,
+    config, onUpdate, onChange, disabled, methodId,
   } = props;
 
   const [numGenes, setNumGenes] = useState(config.numGenes);
@@ -31,7 +33,7 @@ const FastMNNOptions = (props) => {
           onStep={(value) => onUpdate({
             dataIntegration: {
               methodSettings: {
-                fastmnn: {
+                [methodId]: {
                   numGenes: value,
                 },
               },
@@ -40,7 +42,7 @@ const FastMNNOptions = (props) => {
           onBlur={(e) => onUpdate({
             dataIntegration: {
               methodSettings: {
-                fastmnn: {
+                [methodId]: {
                   numGenes: parseInt(e.target.value, 0),
                 },
               },
@@ -101,7 +103,7 @@ const FastMNNOptions = (props) => {
           onChange={(val) => onUpdate({
             dataIntegration: {
               methodSettings: {
-                fastmnn: { normalization: val },
+                [methodId]: { normalization: val },
               },
             },
           })}
@@ -116,14 +118,16 @@ const FastMNNOptions = (props) => {
   );
 };
 
-FastMNNOptions.propTypes = {
+NormalisationOptions.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired,
+  methodId: PropTypes.oneOf(['seuratv4', 'unisample', 'fastmnn']).isRequired,
   onChange: PropTypes.func,
 };
 
-FastMNNOptions.defaultProps = {
+NormalisationOptions.defaultProps = {
   onChange: null,
 };
 
-export default FastMNNOptions;
+export default NormalisationOptions;

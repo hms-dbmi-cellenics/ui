@@ -23,9 +23,7 @@ import {
 
 import _ from 'lodash';
 
-import SeuratV4Options from './SeuratV4Options';
-import FastMNNOptions from './FastMNNOptions';
-import UnisampleOptions from './UnisampleOptions';
+import NormalisationOptions from './NormalisationOptions';
 
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
@@ -103,33 +101,6 @@ const CalculationConfig = (props) => {
     onPipelineRun();
   };
 
-  const methodOptions = {
-    seuratv4: () => (
-      <SeuratV4Options
-        config={dataIntegration.methodSettings.seuratv4}
-        onUpdate={updateSettings}
-        onChange={() => setChangesOutstanding(true)}
-        disabled={disabled}
-      />
-    ),
-    fastmnn: () => (
-      <FastMNNOptions
-        config={dataIntegration.methodSettings.fastmnn}
-        onUpdate={updateSettings}
-        onChange={() => setChangesOutstanding(true)}
-        disabled={disabled}
-      />
-    ),
-    unisample: () => (
-      <UnisampleOptions
-        config={dataIntegration.methodSettings.unisample}
-        onUpdate={updateSettings}
-        onChange={() => setChangesOutstanding(true)}
-        disabled={disabled}
-      />
-    ),
-  };
-
   const roundedVariationExplained = () => {
     const variationExplained = data?.length
       ? data.slice(0, dimensionalityReduction.numPCs).reduce(
@@ -179,9 +150,13 @@ const CalculationConfig = (props) => {
               </Select>
             </Form.Item>
 
-            {
-              methodOptions[dataIntegration.method]()
-            }
+            <NormalisationOptions
+              config={dataIntegration.methodSettings[dataIntegration.method]}
+              onUpdate={updateSettings}
+              methodId={dataIntegration.method}
+              onChange={() => setChangesOutstanding(true)}
+              disabled={disabled}
+            />
 
           </div>
           <Form.Item>
@@ -220,10 +195,11 @@ const CalculationConfig = (props) => {
             <Form.Item label='Exclude genes categories'>
               <Tooltip title='Normalization can be biased by certain gene categories such the ones listed here.
               Checking them will ignore those categories.
-              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day. 
-              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences 
+              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day.
+              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences
               in expression between cell types.
-              This is not implemented yet'>
+              This is not implemented yet'
+              >
                 <QuestionCircleOutlined />
               </Tooltip>
               <Checkbox.Group
@@ -303,7 +279,7 @@ const CalculationConfig = (props) => {
           </div>
         </Form>
       </Panel>
-    </Collapse >
+    </Collapse>
   );
 };
 
