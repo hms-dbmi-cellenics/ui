@@ -1,10 +1,9 @@
 import React from 'react';
 import { Result, Button, Typography } from 'antd';
-
-import PropTypes from 'prop-types';
+import UserButton from '../components/UserButton';
 import FeedbackButton from '../components/FeedbackButton';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 const NotFoundPage = ({ title, subTitle, hint }) => (
   <Result

@@ -1,13 +1,8 @@
 import CustomError from './customError';
 import fetchAPI from './fetchAPI';
 
-const getFromApiExpectOK = async (url) => {
-  let response = null;
-  if (url[0] === '/') {
-    response = await fetchAPI(url);
-  } else {
-    response = await fetch(url);
-  }
+const getFromApiExpectOK = async (url, ...extras) => {
+  const response = await fetchAPI(url, ...extras);
 
   if (response.ok) {
     const data = await response.json();

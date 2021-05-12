@@ -1,8 +1,7 @@
-import getApiEndpoint from '../apiEndpoint';
 import updateExperimentInfo from '../../redux/actions/experimentSettings/updateExperimentInfo';
 import getFromApiExpectOK from '../getFromApiExpectOK';
 
-const getExperimentInfo = async (context, store) => {
+const getExperimentInfo = async (context, store, Auth) => {
   const { req, query } = context;
   const { experimentId } = query;
 
@@ -13,9 +12,14 @@ const getExperimentInfo = async (context, store) => {
     return;
   }
 
+  const user = await Auth.currentAuthenticatedUser();
+  const jwt = user.getSignInUserSession().getIdToken().getJwtToken();
+
+  console.log(`beautiful jwt ${jwt}`);
+
   const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-  const apiUrl = getApiEndpoint(url);
-  const experimentData = await getFromApiExpectOK(`${apiUrl}/v1/experiments/${experimentId}`);
+  const experimentData = await getFromApiExpectOK(`/v1/experiments/${experimentId}`,
+    {}, { uiUrl: url, jwt });
 
   store.dispatch(updateExperimentInfo(experimentData));
   return {};
