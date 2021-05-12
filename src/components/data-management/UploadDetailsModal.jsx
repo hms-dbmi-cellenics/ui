@@ -6,7 +6,7 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
-import UploadStatus, { messageFor } from '../../utils/UploadStatus';
+import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
 
 const UploadDetailsModal = (props) => {
   const {
@@ -39,8 +39,9 @@ const UploadDetailsModal = (props) => {
     const weekDayName = date.format('dddd');
 
     const fullDate = date.local().format('DD MMM YYYY');
+    const fullTime = date.local().format('HH:mm');
 
-    return `${weekDayName}, ${fullDate}`;
+    return `${weekDayName}, ${fullDate} at ${fullTime}`;
   };
 
   const retryButton = () => (
@@ -156,7 +157,7 @@ const UploadDetailsModal = (props) => {
             : (
               <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
                 <Col span={5}>Error</Col>
-                <Col span={10}>{messageFor(status)}</Col>
+                <Col span={10}>{messageForStatus(status)}</Col>
               </Row>
             )
         }

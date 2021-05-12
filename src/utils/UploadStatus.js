@@ -18,7 +18,7 @@ const message = {
   [UploadStatus.FILE_READ_ABORTED]: 'File read aborted',
 };
 
-const messageFor = (uploadStatus) => message[uploadStatus];
+const messageForStatus = (uploadStatus) => message[uploadStatus];
 
-export { messageFor };
+export { messageForStatus };
 export default UploadStatus;

@@ -25,7 +25,7 @@ const putInS3 = (bucketKey, loadedFileData, dispatch, sampleUuid, fileName, meta
   )
 );
 
-const metadataFor = (bundle) => {
+const metadataForBundle = (bundle) => {
   const metadata = {};
 
   if (bundle.name.includes('genes')) {
@@ -104,7 +104,7 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
     const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
 
-    const metadata = metadataFor(file.bundle);
+    const metadata = metadataForBundle(file.bundle);
 
     await compressAndUploadSingleFile(
       bucketKey, sample.uuid, fileName,
@@ -165,5 +165,5 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   });
 };
 
-export { compressAndUploadSingleFile, metadataFor };
+export { compressAndUploadSingleFile, metadataForBundle };
 export default processUpload;

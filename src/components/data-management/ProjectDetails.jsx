@@ -28,11 +28,11 @@ import {
   updateMetadataTrack,
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
-import processUpload, { compressAndUploadSingleFile, metadataFor } from '../../utils/processUpload';
+import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
-import UploadStatus, { messageFor } from '../../utils/UploadStatus';
+import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
 
 import '../../utils/css/hover.css';
 
@@ -132,6 +132,7 @@ const ProjectDetails = ({ width, height }) => {
     if (status === UploadStatus.UPLOADED) {
       return (
         <div
+          className='hoverSelectCursor'
           style={{
             whiteSpace: 'nowrap',
             height: '35px',
@@ -140,13 +141,12 @@ const ProjectDetails = ({ width, height }) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}
-          className='hoverSelectCursor'
         >
           <Space
             onClick={showSuccessDetails}
             onKeyDown={showSuccessDetails}
           >
-            <Text type='success'>{messageFor(status)}</Text>
+            <Text type='success'>{messageForStatus(status)}</Text>
             <FileSearchOutlined style={{ marginLeft: '10px' }} />
           </Space>
         </div>
@@ -165,7 +165,7 @@ const ProjectDetails = ({ width, height }) => {
         }}
         >
           <Space direction='vertical' size={[1, 1]}>
-            <Text type='warning'>{`${messageFor(status)}`}</Text>
+            <Text type='warning'>{`${messageForStatus(status)}`}</Text>
             {progress ? (<Progress percent={progress} size='small' />) : <div />}
           </Space>
         </div>
@@ -188,7 +188,7 @@ const ProjectDetails = ({ width, height }) => {
           }}
         >
           <Space>
-            <Text type='danger'>{messageFor(status)}</Text>
+            <Text type='danger'>{messageForStatus(status)}</Text>
             <FileSearchOutlined style={{ marginLeft: '10px' }} />
           </Space>
         </div>
@@ -213,7 +213,7 @@ const ProjectDetails = ({ width, height }) => {
         }}
         >
           <Space>
-            <Text type='danger'>{messageFor(status)}</Text>
+            <Text type='danger'>{messageForStatus(status)}</Text>
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
               <Button
                 size='small'
@@ -500,7 +500,7 @@ const ProjectDetails = ({ width, height }) => {
 
     const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
 
-    const metadata = metadataFor(bundleToUpload);
+    const metadata = metadataForBundle(bundleToUpload);
 
     compressAndUploadSingleFile(
       bucketKey, sampleUuid, file.name,
