@@ -14,19 +14,8 @@ const updateSampleFile = (
   const updatedAt = moment().toISOString();
   const sample = getState().samples[sampleUuid];
 
-  const { projectUuid } = sample[sampleUuid];
-
-  const newSample = {
-    ...sample,
-    fileNames: new Set([...sample.fileNames, file.name]),
-    files: {
-      ...sample.files,
-      [file.name]: file,
-    },
-  };
-
   try {
-    dispatch(saveSamples(projectUuid, newSample));
+    dispatch(saveSamples(sample.projectUuid));
 
     dispatch({
       type: SAMPLES_FILE_UPDATE,

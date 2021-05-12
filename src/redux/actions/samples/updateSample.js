@@ -16,7 +16,7 @@ const updateSample = (
   const sample = getState().samples[sampleUuid];
 
   // eslint-disable-next-line no-param-reassign
-  sample.lastModified = moment().toISOString();
+  diff.lastModified = moment().toISOString();
 
   const newSample = mergeObjectWithArrays(sample, diff);
 

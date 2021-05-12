@@ -12,10 +12,17 @@ import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
+import LoadingModal from '../../components/LoadingModal';
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
   const projectsList = useSelector(((state) => state.projects));
+  const {
+    saving: projectSaving,
+  } = projectsList.meta;
+  const {
+    saving: sampleSaving,
+  } = useSelector((state) => state.samples.meta);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
 
   useEffect(() => {
@@ -72,6 +79,10 @@ const DataManagementPage = ({ route }) => {
       <Header
         route={route}
         title='Data Management'
+      />
+      <LoadingModal
+        visible={projectSaving || sampleSaving}
+        message={projectSaving ? 'Saving project...' : 'Saving sample...'}
       />
       <NewProjectModal
         visible={newProjectModalVisible}

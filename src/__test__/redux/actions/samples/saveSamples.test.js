@@ -63,7 +63,7 @@ describe('saveSamples action', () => {
     delete payload.meta;
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v1/projects/${mockprojectUuid}/samples`,
+      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify({
           projectUuid: mockProject.uuid,

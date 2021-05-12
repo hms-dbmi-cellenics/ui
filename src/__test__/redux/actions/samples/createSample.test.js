@@ -64,9 +64,12 @@ describe('createSample action', () => {
   it('Dispatches call to save sample', async () => {
     const store = mockStore({
       projects: {
-        [initialState.uuid]: initialState,
+        [mockProject.uuid]: mockProject,
       },
     });
+
+    console.log(store.getState());
+
     await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
 
     expect(saveSamples).toHaveBeenCalled();
@@ -75,7 +78,7 @@ describe('createSample action', () => {
   it('Dispatches call to save project', async () => {
     const store = mockStore({
       projects: {
-        [initialState.uuid]: initialState,
+        [mockProject.uuid]: mockProject,
       },
     });
     await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));

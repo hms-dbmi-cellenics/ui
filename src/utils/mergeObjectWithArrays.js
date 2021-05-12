@@ -7,12 +7,10 @@ const mergeObjectWithArrays = (source, diff) => {
     }
   };
 
-  return _.cloneDeep(
-    _.mergeWith(
-      source,
-      diff,
-      arrayMerge,
-    ),
+  return _.mergeWith(
+    source,
+    diff,
+    arrayMerge,
   );
 };
 
