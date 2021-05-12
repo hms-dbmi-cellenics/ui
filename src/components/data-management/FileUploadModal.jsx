@@ -70,10 +70,20 @@ const FileUploadModal = (props) => {
 
     const acceptedFilesRegexp = `(${techOptions[selectedTech].acceptedFiles.join('|')})$`;
 
-    // Remove all files that aren't in a folder
-    const filteredFiles = acceptedFiles.filter((file) => file.path.includes('/'));
+    let filesNotInFolder = false;
+    const filteredFiles = acceptedFiles
+      // Remove all hidden files
+      .filter((file) => !file.name.startsWith('.'))
+      // Remove all files that aren't in a folder
+      .filter((file) => {
+        const inFolder = file.path.includes('/');
 
-    if (filteredFiles.length !== acceptedFiles.length) {
+        filesNotInFolder ||= !inFolder;
+
+        return inFolder;
+      });
+
+    if (filesNotInFolder) {
       dispatch(pushNotificationMessage('error', 'Only files contained in folder are accepted', 1));
     }
 
