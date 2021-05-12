@@ -11,14 +11,14 @@ import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateProject = (
   projectUuid,
-  project,
+  diff,
 ) => async (dispatch, getState) => {
   const currentProject = getState().projects[projectUuid];
 
   // eslint-disable-next-line no-param-reassign
-  project.lastModified = moment().toISOString();
+  diff.lastModified = moment().toISOString();
 
-  const newProject = mergeObjectWithArrays(currentProject, project);
+  const newProject = mergeObjectWithArrays(currentProject, diff);
 
   try {
     dispatch(saveProject(projectUuid, newProject));
@@ -27,7 +27,7 @@ const updateProject = (
       type: PROJECTS_UPDATE,
       payload: {
         projectUuid,
-        project,
+        diff,
       },
     });
   } catch (e) {

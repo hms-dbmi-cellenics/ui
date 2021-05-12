@@ -25,10 +25,13 @@ const saveSamples = (projectUuid, newSample) => async (dispatch, getState) => {
   // add new sample to payload
   if (newSample) {
     payload = {
+      ...payload,
       ids: [...payload.ids, newSample.uuid],
-      [newSample]: newSample,
+      [newSample.uuid]: newSample,
     };
   }
+
+  console.log(payload);
 
   // This is set right now as there is only one experiment per project
   // Should be changed when we support multiple experiments per project

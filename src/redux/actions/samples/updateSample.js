@@ -7,25 +7,29 @@ import {
 import pushNotificationMessage from '../notifications';
 import errorTypes from './errorTypes';
 
+import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
+
 const updateSample = (
   sampleUuid,
-  sample,
+  diff,
 ) => async (dispatch, getState) => {
-  const currentSampleState = getState().samples;
+  const sample = getState().samples[sampleUuid];
 
   // eslint-disable-next-line no-param-reassign
   sample.lastModified = moment().toISOString();
 
+  const newSample = mergeObjectWithArrays(sample, diff);
+
   try {
+    dispatch(saveSamples(sample.projectUuid, newSample));
+
     dispatch({
       type: SAMPLES_UPDATE,
       payload: {
         sampleUuid,
-        sample,
+        diff,
       },
     });
-
-    dispatch(saveSamples(currentSampleState[sampleUuid].projectUuid));
   } catch (e) {
     pushNotificationMessage('error', errorTypes.SAVE_SAMPLES);
   }
