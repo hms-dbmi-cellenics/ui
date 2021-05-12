@@ -1,6 +1,5 @@
 import React from 'react';
 import { Result, Button, Typography } from 'antd';
-import UserButton from '../components/UserButton';
 import FeedbackButton from '../components/FeedbackButton';
 
 const { Title } = Typography;

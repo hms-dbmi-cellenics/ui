@@ -28,7 +28,9 @@ const WrappedApp = ({ Component, pageProps }) => {
   const router = useRouter();
 
   const { experimentId } = router.query;
-  const experimentData = useSelector((state) => (experimentId ? state.experimentSettings.info : {}));
+  const experimentData = useSelector(
+    (state) => (experimentId ? state.experimentSettings.info : {}),
+  );
 
   useEffect(() => {
     Amplify.configure(amplifyConfig);
@@ -112,6 +114,7 @@ const WrappedApp = ({ Component, pageProps }) => {
   );
 };
 
+/* eslint-disable global-require */
 WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const {
     store, req, query, res,
@@ -160,6 +163,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     throw e;
   }
 };
+/* eslint-enable global-require */
 
 WrappedApp.propTypes = {
   Component: PropTypes.func.isRequired,
