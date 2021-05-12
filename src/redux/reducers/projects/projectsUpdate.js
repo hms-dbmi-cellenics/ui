@@ -1,10 +1,10 @@
 const projectsUpdate = (state, action) => {
-  const { projectUuid, sample } = action.payload;
+  const { projectUuid, project } = action.payload;
   return {
     ...state,
     [projectUuid]: {
       ...state[projectUuid],
-      ...sample,
+      ...project,
     },
   };
 };

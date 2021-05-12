@@ -49,7 +49,7 @@ const createSample = (
       payload: {
         projectUuid,
         project: {
-          samples: [...currentProjectState?.samples || [], newSampleUuid],
+          samples: [...currentProjectState[projectUuid]?.samples || [], newSampleUuid],
         },
       },
     });

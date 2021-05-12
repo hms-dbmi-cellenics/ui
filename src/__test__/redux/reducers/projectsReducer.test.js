@@ -102,7 +102,7 @@ describe('projectsReducer', () => {
       type: PROJECTS_UPDATE,
       payload: {
         projectUuid: projectUuid1,
-        sample: updatedProject1,
+        project: updatedProject1,
       },
     });
 
