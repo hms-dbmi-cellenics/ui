@@ -6,29 +6,33 @@ import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/
 
 import errorTypes from './errorTypes';
 
-const saveSamples = (projectUuid) => async (dispatch, getState) => {
-  const project = getState().projects[projectUuid];
-  const { samples } = getState();
-
-  // Get all samples for the project
-
+// Get all samples and ids for a project
+const getProjectSamples = (projects, projectUuid, samples) => {
   const payload = {
-    ids: project.samples,
+    ids: projects[projectUuid]?.samples || [],
   };
-  payload.ids.reduce((acc, sampleUuid) => {
-    const sampleToSave = samples[sampleUuid];
-
-    // convert fileNames which is a Set,
-    // into an array because Swagger does not support sets
-    sampleToSave.fileNames = Array.from(samples[sampleUuid].fileNames);
-
-    acc[sampleUuid] = sampleToSave;
+  return payload.ids.reduce((acc, sampleUuid) => {
+    acc[sampleUuid] = samples[sampleUuid];
     return acc;
   }, payload);
+};
+
+const saveSamples = (projectUuid, newSample) => async (dispatch, getState) => {
+  const { projects, samples } = getState();
+
+  let payload = getProjectSamples(projects, projectUuid, samples);
+
+  // add new sample to payload
+  if (newSample) {
+    payload = {
+      ids: [...payload.ids, newSample.uuid],
+      [newSample]: newSample,
+    };
+  }
 
   // This is set right now as there is only one experiment per project
   // Should be changed when we support multiple experiments per project
-  const activeExperimentId = project.experiments[0];
+  const experimentId = projects[projectUuid].experiments[0];
 
   dispatch({
     type: SAMPLES_SAVING,
@@ -36,7 +40,7 @@ const saveSamples = (projectUuid) => async (dispatch, getState) => {
 
   try {
     await fetchAPI(
-      `/v1/projects/${projectUuid}/samples`,
+      `/v1/projects/${projectUuid}/${experimentId}/samples`,
       {
         method: 'PUT',
         headers: {
@@ -44,7 +48,7 @@ const saveSamples = (projectUuid) => async (dispatch, getState) => {
         },
         body: JSON.stringify({
           projectUuid,
-          experimentId: activeExperimentId,
+          experimentId,
           samples: payload,
         }),
       },

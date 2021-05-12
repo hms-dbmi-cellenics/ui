@@ -2,11 +2,10 @@ import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-  SAMPLES_CREATE, SAMPLES_RESTORE,
+  SAMPLES_CREATE,
 } from '../../actionTypes/samples';
 
 import {
-  PROJECTS_RESTORE,
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
 import saveSamples from './saveSamples';
@@ -21,8 +20,7 @@ const createSample = (
   name,
   type,
 ) => async (dispatch, getState) => {
-  const currentProjectState = getState().projects;
-  const currentSampleState = getState().samples;
+  const project = getState().projects[projectUuid];
 
   const createdAt = moment().toISOString();
 
@@ -38,7 +36,15 @@ const createSample = (
     lastModified: createdAt,
   };
 
+  const newProject = {
+    ...project[projectUuid],
+    samples: [...project?.samples || [], newSampleUuid],
+  };
+
   try {
+    dispatch(saveSamples(projectUuid, newSample));
+    dispatch(saveProject(projectUuid, newProject));
+
     dispatch({
       type: SAMPLES_CREATE,
       payload: { sample: newSample },
@@ -48,26 +54,11 @@ const createSample = (
       type: PROJECTS_UPDATE,
       payload: {
         projectUuid,
-        project: {
-          samples: [...currentProjectState[projectUuid]?.samples || [], newSampleUuid],
-        },
+        project: newProject,
       },
     });
-
-    dispatch(saveSamples(projectUuid));
-    dispatch(saveProject(projectUuid));
   } catch (e) {
     pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
-
-    dispatch({
-      type: PROJECTS_RESTORE,
-      state: currentProjectState,
-    });
-
-    dispatch({
-      type: SAMPLES_RESTORE,
-      state: currentSampleState,
-    });
   }
 
   return Promise.resolve(newSampleUuid);

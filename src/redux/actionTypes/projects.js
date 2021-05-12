@@ -36,11 +36,6 @@ const PROJECTS_SAVED = `${PROJECTS}/saved`;
 const PROJECTS_ERROR = `${PROJECTS}/error`;
 
 /**
- * Rollback project to a previous state
- */
-const PROJECTS_RESTORE = `${PROJECTS}/restore`;
-
-/**
  * Add project metadata.
  */
 const PROJECTS_METADATA_CREATE = `${PROJECTS}/metadataCreate`;
@@ -63,7 +58,6 @@ export {
   PROJECTS_ERROR,
   PROJECTS_SAVED,
   PROJECTS_SAVING,
-  PROJECTS_RESTORE,
   PROJECTS_METADATA_CREATE,
   PROJECTS_METADATA_UPDATE,
   PROJECTS_METADATA_DELETE,

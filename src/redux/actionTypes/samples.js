@@ -41,11 +41,6 @@ const SAMPLES_SAVED = `${SAMPLES}/saved`;
 const SAMPLES_ERROR = `${SAMPLES}/error`;
 
 /**
- * Error loading/saving sample.
- */
-const SAMPLES_RESTORE = `${SAMPLES}/restore`;
-
-/**
  * Delete metada from sample.
  */
 const SAMPLES_METADATA_DELETE = `${SAMPLES}/metadataDelete`;
@@ -59,6 +54,5 @@ export {
   SAMPLES_SAVING,
   SAMPLES_ERROR,
   SAMPLES_SAVED,
-  SAMPLES_RESTORE,
   SAMPLES_METADATA_DELETE,
 };

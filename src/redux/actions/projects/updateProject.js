@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 import {
-  PROJECTS_RESTORE,
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
 import pushNotificationMessage from '../notifications';
@@ -11,9 +10,7 @@ import saveProject from './saveProject';
 const updateProject = (
   projectUuid,
   project,
-) => async (dispatch, getState) => {
-  const oldState = getState().projects;
-
+) => async (dispatch) => {
   // eslint-disable-next-line no-param-reassign
   project.lastModified = moment().toISOString();
 
@@ -28,10 +25,6 @@ const updateProject = (
     dispatch(saveProject(projectUuid));
   } catch (e) {
     pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
-    dispatch({
-      type: PROJECTS_RESTORE,
-      state: oldState,
-    });
   }
 };
 

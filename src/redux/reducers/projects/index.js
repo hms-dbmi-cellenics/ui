@@ -6,7 +6,6 @@ import {
   PROJECTS_SAVING,
   PROJECTS_SAVED,
   PROJECTS_ERROR,
-  PROJECTS_RESTORE,
   PROJECTS_METADATA_CREATE,
   PROJECTS_METADATA_UPDATE,
   PROJECTS_METADATA_DELETE,
@@ -19,7 +18,6 @@ import projectsSetActive from './projectsSetActive';
 import projectsSaving from './projectsSaving';
 import projectsSaved from './projectsSaved';
 import projectsError from './projectsError';
-import projectsRestore from './projectsRestore';
 import projectsMetadataCreate from './projectsMetadataCreate';
 import projectsMetadataUpdate from './projectsMetadataUpdate';
 import projectsMetadataDelete from './projectsMetadataDelete';
@@ -52,10 +50,6 @@ const projectsReducer = (state = initialState, action) => {
 
     case PROJECTS_ERROR: {
       return projectsError(state, action);
-    }
-
-    case PROJECTS_RESTORE: {
-      return projectsRestore(state, action);
     }
 
     case PROJECTS_METADATA_CREATE: {

@@ -7,7 +7,6 @@ import {
   SAMPLES_SAVING,
   SAMPLES_SAVED,
   SAMPLES_ERROR,
-  SAMPLES_RESTORE,
   SAMPLES_METADATA_DELETE,
 } from '../../actionTypes/samples';
 import initialState from './initialState';
@@ -19,7 +18,6 @@ import samplesLoaded from './samplesLoaded';
 import samplesSaving from './samplesSaving';
 import samplesError from './samplesError';
 import samplesSaved from './samplesSaved';
-import samplesRestore from './samplesRestore';
 import samplesMetadataDelete from './samplesMetadataDelete';
 
 const samplesReducer = (state = initialState, action) => {
@@ -54,10 +52,6 @@ const samplesReducer = (state = initialState, action) => {
 
     case SAMPLES_ERROR: {
       return samplesError(state, action);
-    }
-
-    case SAMPLES_RESTORE: {
-      return samplesRestore(state, action);
     }
 
     case SAMPLES_METADATA_DELETE: {

@@ -11,6 +11,12 @@ const sampleTemplate = {
   fileNames: new Set(),
   files: {},
   metadata: {},
+  toJSON() {
+    return {
+      ...this,
+      fileNames: [...this.fileNames],
+    };
+  },
 };
 
 const sampleFileTemplate = {

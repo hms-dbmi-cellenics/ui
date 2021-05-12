@@ -2,7 +2,6 @@ import moment from 'moment';
 import saveSamples from './saveSamples';
 
 import {
-  SAMPLES_RESTORE,
   SAMPLES_UPDATE,
 } from '../../actionTypes/samples';
 import pushNotificationMessage from '../notifications';
@@ -29,11 +28,6 @@ const updateSample = (
     dispatch(saveSamples(currentSampleState[sampleUuid].projectUuid));
   } catch (e) {
     pushNotificationMessage('error', errorTypes.SAVE_SAMPLES);
-
-    dispatch({
-      type: SAMPLES_RESTORE,
-      state: currentSampleState,
-    });
   }
 };
 

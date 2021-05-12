@@ -10,7 +10,6 @@ import {
   SAMPLES_DELETE,
   SAMPLES_SAVING,
   SAMPLES_SAVED,
-  SAMPLES_RESTORE,
   SAMPLES_METADATA_DELETE,
 } from '../../../redux/actionTypes/samples';
 
@@ -222,20 +221,6 @@ describe('samplesReducer', () => {
     expect(newState.meta.error).toBe(errMsg);
     expect(newState.meta.loading).toBe(false);
     expect(newState.meta.saving).toBe(false);
-    expect(newState).toMatchSnapshot();
-  });
-
-  it('Restore a specific state correctly', () => {
-    const newState = samplesReducer(oneSampleState, {
-      type: SAMPLES_RESTORE,
-      payload: {
-        state: twoSamplesState,
-      },
-    });
-
-    expect(newState.ids).toEqual([sample1.uuid, sample2.uuid]);
-    expect(newState[sample1.uuid]).toEqual(sample1);
-    expect(newState[sample2.uuid]).toEqual(sample2);
     expect(newState).toMatchSnapshot();
   });
 

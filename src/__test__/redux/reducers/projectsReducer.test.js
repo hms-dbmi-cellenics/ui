@@ -9,7 +9,6 @@ import {
   PROJECTS_SAVING,
   PROJECTS_SAVED,
   PROJECTS_ERROR,
-  PROJECTS_RESTORE,
   PROJECTS_METADATA_CREATE,
   PROJECTS_METADATA_UPDATE,
   PROJECTS_METADATA_DELETE,
@@ -263,20 +262,6 @@ describe('projectsReducer', () => {
     expect(newState.meta.error).toBe(errMsg);
     expect(newState.meta.loading).toBe(false);
     expect(newState.meta.saving).toBe(false);
-    expect(newState).toMatchSnapshot();
-  });
-
-  it('Restore a specific state correctly', () => {
-    const newState = projectsReducer(oneProjectState, {
-      type: PROJECTS_RESTORE,
-      payload: {
-        state: twoProjectsState,
-      },
-    });
-
-    expect(newState.ids).toEqual([project1.uuid, project2.uuid]);
-    expect(newState[projectUuid1]).toEqual(project1);
-    expect(newState[projectUuid2]).toEqual(project2);
     expect(newState).toMatchSnapshot();
   });
 });
