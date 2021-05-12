@@ -37,7 +37,8 @@ const createSample = (
   };
 
   const newProject = {
-    ...project?.[projectUuid] || {},
+    uuid: projectUuid,
+    ...project || {},
     samples: [...project?.samples || [], newSampleUuid],
   };
 

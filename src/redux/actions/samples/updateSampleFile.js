@@ -6,6 +6,7 @@ import {
 } from '../../actionTypes/samples';
 import pushNotificationMessage from '../notifications';
 import errorTypes from './errorTypes';
+import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateSampleFile = (
   sampleUuid,
@@ -14,8 +15,17 @@ const updateSampleFile = (
   const updatedAt = moment().toISOString();
   const sample = getState().samples[sampleUuid];
 
+  const diffObject = {
+    fileNames: sample.fileNames.add(file.name),
+    files: {
+      [file.name]: file,
+    },
+  };
+
+  const newSample = mergeObjectWithArrays(sample, diffObject);
+
   try {
-    dispatch(saveSamples(sample.projectUuid));
+    dispatch(saveSamples(sample.projectUuid, newSample));
 
     dispatch({
       type: SAMPLES_FILE_UPDATE,
