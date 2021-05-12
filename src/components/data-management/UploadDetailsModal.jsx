@@ -8,6 +8,12 @@ import { UploadOutlined } from '@ant-design/icons';
 
 import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
 
+const acceptedFiles = {
+  features: ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
+  barcodes: ['barcodes.tsv', 'barcodes.tsv.gz'],
+  matrix: ['matrix.mtx', 'matrix.mtx.gz'],
+};
+
 const UploadDetailsModal = (props) => {
   const {
     sampleName, file, visible, onUpload, onDownload, onCancel,
@@ -29,7 +35,7 @@ const UploadDetailsModal = (props) => {
     }
   }, [replacementFileBundle]);
 
-  const isSuccessModal = status == UploadStatus.UPLOADED;
+  const isSuccessModal = status === UploadStatus.UPLOADED;
 
   const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);
 

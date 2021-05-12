@@ -1,6 +1,7 @@
 const UploadStatus = {
   UPLOADED: 'uploaded',
   UPLOADING: 'uploading',
+  COMPRESSING: 'compressing',
   UPLOAD_ERROR: 'uploadError',
   FILE_NOT_FOUND: 'fileNotFound',
   DATA_MISSING: 'dataMissing',
@@ -11,6 +12,7 @@ const UploadStatus = {
 const message = {
   [UploadStatus.UPLOADED]: 'Uploaded',
   [UploadStatus.UPLOADING]: 'Uploading...',
+  [UploadStatus.COMPRESSING]: 'Compressing...',
   [UploadStatus.UPLOAD_ERROR]: 'Upload error',
   [UploadStatus.FILE_NOT_FOUND]: 'File not found',
   [UploadStatus.DATA_MISSING]: 'Data missing',

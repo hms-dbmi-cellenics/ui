@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  UploadOutlined, EditOutlined, FileSearchOutlined,
+  UploadOutlined, EditOutlined,
 } from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -147,13 +147,17 @@ const ProjectDetails = ({ width, height }) => {
             onKeyDown={showSuccessDetails}
           >
             <Text type='success'>{messageForStatus(status)}</Text>
-            <FileSearchOutlined style={{ marginLeft: '10px' }} />
           </Space>
         </div>
       );
     }
 
-    if (status === UploadStatus.UPLOADING) {
+    if (
+      [
+        UploadStatus.UPLOADING,
+        UploadStatus.COMPRESSING,
+      ].includes(status)
+    ) {
       return (
         <div style={{
           whiteSpace: 'nowrap',
@@ -189,7 +193,6 @@ const ProjectDetails = ({ width, height }) => {
         >
           <Space>
             <Text type='danger'>{messageForStatus(status)}</Text>
-            <FileSearchOutlined style={{ marginLeft: '10px' }} />
           </Space>
         </div>
       );

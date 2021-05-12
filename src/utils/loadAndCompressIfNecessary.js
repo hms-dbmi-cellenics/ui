@@ -5,7 +5,7 @@ function uintArrayToBuffer(array) {
   return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
 }
 
-const loadAndCompressIfNecessary = async (bundle) => {
+const loadAndCompressIfNecessary = async (bundle, onCompression = () => { }) => {
   const inGzipFormat = ['application/gzip', 'application/x-gzip'].includes(bundle.type);
 
   return new Promise((resolve, reject) => {
@@ -18,6 +18,8 @@ const loadAndCompressIfNecessary = async (bundle) => {
       if (inGzipFormat) {
         resolve(loadedFile);
       } else {
+        onCompression();
+
         const loadedFileUint = Buffer.from(loadedFile);
 
         gzip(loadedFileUint, {}, (error, compressedFile) => {

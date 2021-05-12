@@ -45,14 +45,25 @@ const compressAndUploadSingleFile = async (
     updateSampleFile(
       sampleUuid,
       fileName,
-      { bundle, upload: { status: UploadStatus.UPLOADING, progress: 0 } },
+      { bundle, upload: { status: UploadStatus.LOADING, progress: 0 } },
     ),
   );
 
   let loadedFile = null;
 
   try {
-    loadedFile = await loadAndCompressIfNecessary(bundle);
+    loadedFile = await loadAndCompressIfNecessary(
+      bundle,
+      () => (
+        dispatch(
+          updateSampleFile(
+            sampleUuid,
+            fileName,
+            { upload: { status: UploadStatus.COMPRESSING } },
+          ),
+        )
+      ),
+    );
   } catch (e) {
     const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
