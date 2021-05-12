@@ -115,7 +115,7 @@ describe('samplesReducer', () => {
       },
     });
 
-    expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
+    expect(newState[sample1.uuid].fileNames).toEqual(new Set([fileName]));
     expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
     expect(newState).toMatchSnapshot();
   });
@@ -143,7 +143,7 @@ describe('samplesReducer', () => {
       },
     });
 
-    expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
+    expect(newState[sample1.uuid].fileNames).toEqual(new Set([fileName]));
     expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
     expect(newState).toMatchSnapshot();
   });
