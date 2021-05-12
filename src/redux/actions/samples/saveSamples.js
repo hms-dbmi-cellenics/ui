@@ -11,11 +11,18 @@ const saveSamples = (projectUuid) => async (dispatch, getState) => {
   const { samples } = getState();
 
   // Get all samples for the project
+
   const payload = {
     ids: project.samples,
   };
   payload.ids.reduce((acc, sampleUuid) => {
-    acc[sampleUuid] = samples[sampleUuid];
+    const sampleToSave = samples[sampleUuid];
+
+    // convert fileNames which is a Set,
+    // into an array because Swagger does not support sets
+    sampleToSave.fileNames = Array.from(samples[sampleUuid].fileNames);
+
+    acc[sampleUuid] = sampleToSave;
     return acc;
   }, payload);
 
