@@ -130,7 +130,6 @@ describe('NewProjectModal', () => {
     expect(component.find(TextArea).props().disabled).toEqual(false);
 
     // It has an error text
-    console.log(component.find(Text));
     expect(component.find(Text).last().text()).toEqual(errMsg);
   });
 });

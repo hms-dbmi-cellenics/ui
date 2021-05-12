@@ -31,8 +31,6 @@ const saveSamples = (projectUuid, newSample) => async (dispatch, getState) => {
     };
   }
 
-  console.log(payload);
-
   // This is set right now as there is only one experiment per project
   // Should be changed when we support multiple experiments per project
   const experimentId = projects[projectUuid].experiments[0];

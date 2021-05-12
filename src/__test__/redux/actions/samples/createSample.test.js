@@ -68,8 +68,6 @@ describe('createSample action', () => {
       },
     });
 
-    console.log(store.getState());
-
     await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
 
     expect(saveSamples).toHaveBeenCalled();
