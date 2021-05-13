@@ -10,12 +10,14 @@ import {
 
 import errorTypes from './errorTypes';
 
-const saveProject = (projectUuid, newProject) => async (dispatch, getState) => {
+const saveProject = (projectUuid, newProject, notifySave = true) => async (dispatch, getState) => {
   const project = newProject ?? getState().projects[projectUuid];
 
-  dispatch({
-    type: PROJECTS_SAVING,
-  });
+  if (notifySave) {
+    dispatch({
+      type: PROJECTS_SAVING,
+    });
+  }
 
   try {
     await fetchAPI(
@@ -29,9 +31,11 @@ const saveProject = (projectUuid, newProject) => async (dispatch, getState) => {
       },
     );
 
-    dispatch({
-      type: PROJECTS_SAVED,
-    });
+    if (notifySave) {
+      dispatch({
+        type: PROJECTS_SAVED,
+      });
+    }
   } catch (e) {
     dispatch(pushNotificationMessage('error', messages.connectionError, 5));
 

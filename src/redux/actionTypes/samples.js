@@ -16,6 +16,16 @@ const SAMPLES_UPDATE = `${SAMPLES}/update`;
 const SAMPLES_DELETE = `${SAMPLES}/delete`;
 
 /**
+ * Deleting sample.
+ */
+const SAMPLES_DELETING = `${SAMPLES}/deleting`;
+
+/**
+ * Sample deleted.
+ */
+const SAMPLES_DELETED = `${SAMPLES}/deleted`;
+
+/**
  * Update files in sample.
  */
 const SAMPLES_FILE_UPDATE = `${SAMPLES}/fileUpdate`;
@@ -49,6 +59,8 @@ export {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
   SAMPLES_DELETE,
+  SAMPLES_DELETING,
+  SAMPLES_DELETED,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_SAVING,

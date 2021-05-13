@@ -3,8 +3,8 @@ import thunk from 'redux-thunk';
 import createSample from '../../../../redux/actions/samples/createSample';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
-import saveProject from '../../../../redux/actions/projects/saveProject';
-import saveSamples from '../../../../redux/actions/samples/saveSamples';
+import { saveProject } from '../../../../redux/actions/projects';
+import { saveSamples } from '../../../../redux/actions/samples';
 
 import { SAMPLES_CREATE } from '../../../../redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';

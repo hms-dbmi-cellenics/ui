@@ -5,39 +5,42 @@ import messages from '../../../components/notification/messages';
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/samples';
 
 import errorTypes from './errorTypes';
+import getProjectSamples from '../../../utils/getProjectSamples';
 
-// Get all samples and ids for a project
-const getProjectSamples = (projects, projectUuid, samples) => {
-  const payload = {
-    ids: projects[projectUuid]?.samples || [],
-  };
-  return payload.ids.reduce((acc, sampleUuid) => {
-    acc[sampleUuid] = samples[sampleUuid];
-    return acc;
-  }, payload);
-};
-
-const saveSamples = (projectUuid, newSample) => async (dispatch, getState) => {
+const saveSamples = (
+  projectUuid,
+  newSample,
+  notifySave = true,
+  addSample = true,
+) => async (dispatch, getState) => {
   const { projects, samples } = getState();
 
-  let payload = getProjectSamples(projects, projectUuid, samples);
+  let payload;
 
   // add new sample to payload
-  if (newSample) {
+  if (addSample) {
+    payload = getProjectSamples(projects, projectUuid, samples);
     payload = {
       ...payload,
-      ids: [...payload.ids, newSample.uuid],
       [newSample.uuid]: newSample,
+      ids: payload?.ids.includes(newSample.uuid) ? payload.ids
+        : [...payload.ids || [], newSample.uuid],
     };
+  } else {
+    payload = newSample;
   }
 
   // This is set right now as there is only one experiment per project
   // Should be changed when we support multiple experiments per project
   const experimentId = projects[projectUuid].experiments[0];
 
-  dispatch({
-    type: SAMPLES_SAVING,
-  });
+  console.log(payload);
+
+  if (notifySave) {
+    dispatch({
+      type: SAMPLES_SAVING,
+    });
+  }
 
   try {
     await fetchAPI(
@@ -55,9 +58,11 @@ const saveSamples = (projectUuid, newSample) => async (dispatch, getState) => {
       },
     );
 
-    dispatch({
-      type: SAMPLES_SAVED,
-    });
+    if (notifySave) {
+      dispatch({
+        type: SAMPLES_SAVED,
+      });
+    }
   } catch (e) {
     dispatch(pushNotificationMessage('error', messages.connectionError, 5));
 

@@ -4,6 +4,7 @@ import {
   PROJECTS_SET_ACTIVE,
   PROJECTS_DELETING,
   PROJECTS_DELETED,
+  PROJECTS_ERROR,
 } from '../../actionTypes/projects';
 
 import {
@@ -60,6 +61,13 @@ const deleteProject = (
     }
   } catch (e) {
     pushNotificationMessage('error', errorTypes.PROJECTS_DELETE);
+
+    dispatch({
+      type: PROJECTS_ERROR,
+      payload: {
+        error: errorTypes.PROJECTS_DELETE,
+      },
+    });
   }
 };
 

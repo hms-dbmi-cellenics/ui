@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
-import saveSamples from '../../../../redux/actions/samples/saveSamples';
+import { saveSamples } from '../../../../redux/actions/samples';
 
 jest.mock('localforage');
 

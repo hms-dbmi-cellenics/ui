@@ -3,7 +3,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateProject from '../../../../redux/actions/projects/updateProject';
 import initialState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
-import saveProject from '../../../../redux/actions/projects/saveProject';
+import { saveProject } from '../../../../redux/actions/projects';
 
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
 

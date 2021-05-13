@@ -20,8 +20,6 @@ const updateProject = (
 
   const newProject = mergeObjectWithArrays(currentProject, diff);
 
-  console.log(newProject);
-
   try {
     dispatch(saveProject(projectUuid, newProject));
 

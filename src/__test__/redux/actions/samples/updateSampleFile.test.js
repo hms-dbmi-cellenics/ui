@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateSampleFile from '../../../../redux/actions/samples/updateSampleFile';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../../redux/reducers/samples/initialState';
-import saveSamples from '../../../../redux/actions/samples/saveSamples';
+import { saveSamples } from '../../../../redux/actions/samples';
 import UploadStatus from '../../../../utils/UploadStatus';
 
 import { SAMPLES_FILE_UPDATE } from '../../../../redux/actionTypes/samples';

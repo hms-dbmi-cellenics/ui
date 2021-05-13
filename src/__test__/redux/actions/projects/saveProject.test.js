@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialProjectState from '../../../../redux/reducers/projects/initialState';
-import saveProject from '../../../../redux/actions/projects/saveProject';
+import { saveProject } from '../../../../redux/actions/projects';
 
 jest.mock('localforage');
 

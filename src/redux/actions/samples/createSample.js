@@ -9,7 +9,7 @@ import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
 import saveSamples from './saveSamples';
-import saveProject from '../projects/saveProject';
+import { saveProject } from '../projects';
 import pushNotificationMessage from '../pushNotificationMessage';
 import errorTypes from './errorTypes';
 
