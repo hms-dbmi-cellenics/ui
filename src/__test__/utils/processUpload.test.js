@@ -12,31 +12,34 @@ const validFilesList = [
   {
     name: 'WT13/features.tsv.gz',
     bundle: {
+      name: 'features.tsv.gz',
       path: '/WT13/features.tsv.gz',
       type: 'application/gzip',
+      valid: true,
     },
     upload: { status: UploadStatus.UPLOADING },
-    valid: true,
     errors: '',
   },
   {
     name: 'WT13/barcodes.tsv.gz',
     bundle: {
+      name: 'features.tsv.gz',
       path: '/WT13/barcodes.tsv.gz',
       type: 'application/gzip',
+      valid: true,
     },
     upload: { status: UploadStatus.UPLOADING },
-    valid: true,
     errors: '',
   },
   {
     name: 'WT13/matrix.mtx.gz',
     bundle: {
+      name: 'features.tsv.gz',
       path: '/WT13/matrix.mtx.gz',
       type: 'application/gzip',
+      valid: true,
     },
     upload: { status: UploadStatus.UPLOADING },
-    valid: true,
     errors: '',
   },
 ];
@@ -57,8 +60,8 @@ const mockStore = configureMockStore([thunk]);
 
 jest.mock('../../utils/loadAndCompressIfNecessary',
   () => jest.fn().mockImplementation(
-    (file) => {
-      if (!file.valid) {
+    (bundle) => {
+      if (!bundle.valid) {
         return Promise.reject(new Error('error'));
       }
 
@@ -93,7 +96,7 @@ describe('processUpload (in development)', () => {
 
   beforeEach(() => {
     // eslint-disable-next-line no-param-reassign
-    validFilesList.forEach((file) => { file.valid = true; });
+    validFilesList.forEach((file) => { file.bundle.valid = true; });
   });
 
   it('Uploads and updates redux correctly when there are no errors', async () => {
@@ -125,18 +128,23 @@ describe('processUpload (in development)', () => {
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.upload.status);
+    const filesStatuses = fileUpdateActions.map((action) => action.payload.fileDiff.upload.status);
 
-    const firstThreeFilesStatuses = filesStatuses.slice(0, 2);
-    const secondThreeFilesStatuses = filesStatuses.slice(3);
+    const uploadingFileStatuses = filesStatuses.filter(
+      (status) => status === UploadStatus.UPLOADING,
+    );
+
+    const uploadedFilesStatuses = filesStatuses.filter(
+      (status) => status === UploadStatus.UPLOADED,
+    );
 
     // The first 3 files actions are with status uploading
-    firstThreeFilesStatuses.forEach((status) => {
+    uploadingFileStatuses.forEach((status) => {
       expect(status).toEqual(UploadStatus.UPLOADING);
     });
 
     // After uploading ends successfully the statuses are uploaded
-    secondThreeFilesStatuses.forEach((status) => {
+    uploadedFilesStatuses.forEach((status) => {
       expect(status).toEqual(UploadStatus.UPLOADED);
     });
   });
@@ -151,7 +159,7 @@ describe('processUpload (in development)', () => {
     });
 
     // eslint-disable-next-line no-param-reassign
-    validFilesList.forEach((file) => { file.valid = false; });
+    validFilesList.forEach((file) => { file.bundle.valid = false; });
 
     processUpload(validFilesList, sampleType, samples, activeProjectUuid, store.dispatch);
 
@@ -165,7 +173,7 @@ describe('processUpload (in development)', () => {
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.upload.status);
+    const filesStatuses = fileUpdateActions.map((action) => action.payload.fileDiff.upload.status);
 
     const uploadingFileStatuses = filesStatuses.filter(
       (status) => status === UploadStatus.UPLOADING,
@@ -176,7 +184,7 @@ describe('processUpload (in development)', () => {
     );
 
     // There are 3 files actions with status uploading
-    expect(uploadingFileStatuses.length).toEqual(3);
+    expect(uploadingFileStatuses.length).toEqual(6);
 
     // There are 3 files actions with status upload error
     expect(errorFileStatuses.length).toEqual(3);
@@ -203,7 +211,7 @@ describe('processUpload (in development)', () => {
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.file.upload.status);
+    const filesStatuses = fileUpdateActions.map((action) => action.payload.fileDiff.upload.status);
 
     const uploadingFileStatuses = filesStatuses.filter(
       (status) => status === UploadStatus.UPLOADING,
@@ -214,7 +222,7 @@ describe('processUpload (in development)', () => {
     );
 
     // There are 3 files actions with status uploading
-    expect(uploadingFileStatuses.length).toEqual(3);
+    expect(uploadingFileStatuses.length).toEqual(6);
 
     // There are 3 files actions with status upload error
     expect(errorFileStatuses.length).toEqual(3);

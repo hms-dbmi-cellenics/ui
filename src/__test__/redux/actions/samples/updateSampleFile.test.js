@@ -26,7 +26,7 @@ describe('updateSampleFile action', () => {
     uuid: mockUuid,
     lastModified: mockStartTime,
     filesNames: [fileName],
-    [fileName]: mockFile,
+    files: { [fileName]: mockFile },
   };
 
   const mockState = {
@@ -39,7 +39,7 @@ describe('updateSampleFile action', () => {
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateSampleFile(mockUuid, mockSample));
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, mockFile));
 
     // action updates the files
     const secondAction = store.getActions()[0];
@@ -49,7 +49,7 @@ describe('updateSampleFile action', () => {
   it('Updates the sample lastModified field', async () => {
     const originalModifiedDate = mockSample.lastModified;
     const store = mockStore(mockState);
-    await store.dispatch(updateSampleFile(mockUuid, mockFile));
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, mockFile));
 
     const { lastModified } = store.getActions()[0].payload;
 
@@ -60,11 +60,10 @@ describe('updateSampleFile action', () => {
   it('Inserts file into sample', async () => {
     const store = mockStore(mockState);
 
-    await store.dispatch(updateSampleFile(mockUuid, {
-      mockFile,
-      name: fileName,
-    }));
-    const { file } = store.getActions()[0].payload;
-    expect(file.name).toEqual(fileName);
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, mockFile));
+
+    const { fileDiff } = store.getActions()[0].payload;
+
+    expect(fileDiff.name).toEqual(fileName);
   });
 });

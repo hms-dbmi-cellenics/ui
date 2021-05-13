@@ -8,7 +8,7 @@ const sampleTemplate = {
   lastModified: null,
   complete: false,
   error: false,
-  fileNames: [],
+  fileNames: new Set(),
   files: {},
   metadata: {},
 };
@@ -21,6 +21,10 @@ const sampleFileTemplate = {
   path: '',
   success: false,
   error: false,
+  lastModified: '',
+  upload: {
+    status: null,
+  },
 };
 
 const initialState = {
