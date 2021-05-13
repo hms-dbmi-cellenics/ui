@@ -221,10 +221,17 @@ describe('processUpload (in development)', () => {
       (status) => status === UploadStatus.UPLOAD_ERROR,
     );
 
+    const uploadedFileStatuses = filesStatuses.filter(
+      (status) => status === UploadStatus.UPLOADED,
+    );
+
     // There are 3 files actions with status uploading
     expect(uploadingFileStatuses.length).toEqual(6);
 
     // There are 3 files actions with status upload error
     expect(errorFileStatuses.length).toEqual(3);
+
+    // There are no file actions with status successfully uploaded
+    expect(uploadedFileStatuses.length).toEqual(0);
   });
 });
