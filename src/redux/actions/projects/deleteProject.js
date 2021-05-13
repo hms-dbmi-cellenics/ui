@@ -2,9 +2,9 @@ import fetchAPI from '../../../utils/fetchAPI';
 import {
   PROJECTS_DELETE,
   PROJECTS_SET_ACTIVE,
-  PROJECTS_DELETING,
-  PROJECTS_DELETED,
   PROJECTS_ERROR,
+  PROJECTS_SAVING,
+  PROJECTS_SAVED,
 } from '../../actionTypes/projects';
 
 import {
@@ -22,7 +22,10 @@ const deleteProject = (
   const { activeProjectUuid } = projects.meta;
 
   dispatch({
-    type: PROJECTS_DELETING,
+    type: PROJECTS_SAVING,
+    payload: {
+      message: 'Deleting project...',
+    },
   });
 
   try {
@@ -49,7 +52,7 @@ const deleteProject = (
     });
 
     dispatch({
-      type: PROJECTS_DELETED,
+      type: PROJECTS_SAVED,
     });
 
     // If deleted project is the same as the active project, choose another project

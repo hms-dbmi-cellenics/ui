@@ -10,8 +10,9 @@ import getProjectSamples from '../../../utils/getProjectSamples';
 const saveSamples = (
   projectUuid,
   newSample,
-  notifySave = true,
   addSample = true,
+  notifySave = true,
+  message = 'Saving sample...',
 ) => async (dispatch, getState) => {
   const { projects, samples } = getState();
 
@@ -34,11 +35,12 @@ const saveSamples = (
   // Should be changed when we support multiple experiments per project
   const experimentId = projects[projectUuid].experiments[0];
 
-  console.log(payload);
-
   if (notifySave) {
     dispatch({
       type: SAMPLES_SAVING,
+      payload: {
+        message,
+      },
     });
   }
 

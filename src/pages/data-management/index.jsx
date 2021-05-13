@@ -82,7 +82,7 @@ const DataManagementPage = ({ route }) => {
       />
       <LoadingModal
         visible={projectSaving || sampleSaving}
-        message={projectSaving ? 'Saving project...' : 'Saving sample...'}
+        message={projectSaving || sampleSaving}
       />
       <NewProjectModal
         visible={newProjectModalVisible}

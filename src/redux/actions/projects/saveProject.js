@@ -10,12 +10,20 @@ import {
 
 import errorTypes from './errorTypes';
 
-const saveProject = (projectUuid, newProject, notifySave = true) => async (dispatch, getState) => {
+const saveProject = (
+  projectUuid,
+  newProject,
+  notifySave = true,
+  message = 'Saving project...',
+) => async (dispatch, getState) => {
   const project = newProject ?? getState().projects[projectUuid];
 
   if (notifySave) {
     dispatch({
       type: PROJECTS_SAVING,
+      payload: {
+        message,
+      },
     });
   }
 

@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import {
   SAMPLES_DELETE,
-  SAMPLES_DELETING,
-  SAMPLES_DELETED,
   SAMPLES_ERROR,
+  SAMPLES_SAVING,
+  SAMPLES_SAVED,
 } from '../../actionTypes/samples';
 
 import {
@@ -42,7 +42,10 @@ const deleteSamples = (
   }, {});
 
   dispatch({
-    type: SAMPLES_DELETING,
+    type: SAMPLES_SAVING,
+    payload: {
+      message: 'Deleting sample...',
+    },
   });
 
   try {
@@ -77,7 +80,7 @@ const deleteSamples = (
     });
 
     dispatch({
-      type: SAMPLES_DELETED,
+      type: SAMPLES_SAVED,
     });
   } catch (e) {
     pushNotificationMessage('error', errorTypes.DELETE_SAMPLES);
