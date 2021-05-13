@@ -340,7 +340,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = (stepKey) => {
-    console.log('=======' + stepKey);
     setChangesOutstanding(false);
     dispatch((runPipeline(experimentId, stepKey)))
   }
