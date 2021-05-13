@@ -78,7 +78,7 @@ const WrappedApp = ({ Component, pageProps }) => {
           <NotFoundPage
             title={'Analysis doesn\'t exist.'}
             subTitle={'We searched, but we couldn\'t find the analysis you\'re looking for.'}
-            hint='It may have been deleted by the project owner. Go home to see your own priejcts and analyses.'
+            hint='It may have been deleted by the project owner. Go home to see your own projects and analyses.'
           />
         );
       }
