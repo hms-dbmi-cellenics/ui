@@ -77,8 +77,12 @@ const UploadDetailsModal = (props) => {
         style={{ display: 'none' }}
         onChange={
           (event) => {
-            const newFile = event.target.files[0];
             const acceptedFileNames = acceptedFileNamesByCategory[fileCategory];
+            const newFile = event.target.files[0];
+
+            if (!newFile) {
+              return;
+            }
 
             if (acceptedFileNames.includes(newFile.name)) {
               setReplacementFileBundle(newFile);
