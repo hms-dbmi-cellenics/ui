@@ -130,16 +130,21 @@ describe('processUpload (in development)', () => {
 
     const filesStatuses = fileUpdateActions.map((action) => action.payload.fileDiff.upload.status);
 
-    const firstSixFilesStatuses = filesStatuses.slice(0, 5);
-    const secondThreeFilesStatuses = filesStatuses.slice(6);
+    const uploadingFileStatuses = filesStatuses.filter(
+      (status) => status === UploadStatus.UPLOADING,
+    );
+
+    const uploadedFilesStatuses = filesStatuses.filter(
+      (status) => status === UploadStatus.UPLOADED,
+    );
 
     // The first 3 files actions are with status uploading
-    firstSixFilesStatuses.forEach((status) => {
+    uploadingFileStatuses.forEach((status) => {
       expect(status).toEqual(UploadStatus.UPLOADING);
     });
 
     // After uploading ends successfully the statuses are uploaded
-    secondThreeFilesStatuses.forEach((status) => {
+    uploadedFilesStatuses.forEach((status) => {
       expect(status).toEqual(UploadStatus.UPLOADED);
     });
   });
