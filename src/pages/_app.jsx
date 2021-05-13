@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DefaultSeo } from 'next-seo';
 import PropTypes from 'prop-types';
@@ -32,8 +32,11 @@ const WrappedApp = ({ Component, pageProps }) => {
     (state) => (experimentId ? state.experimentSettings.info : {}),
   );
 
+  const [amplifyConfigured, setAmplifyConfigured] = useState(false);
+
   useEffect(() => {
     Amplify.configure(amplifyConfig);
+    setAmplifyConfigured(true);
   }, [amplifyConfig]);
 
   const mainContent = () => {
@@ -75,6 +78,10 @@ const WrappedApp = ({ Component, pageProps }) => {
       }
 
       return <Error statusCode={httpError} />;
+    }
+
+    if (!amplifyConfigured) {
+      return <></>;
     }
 
     // Otherwise, load the page inside the content wrapper.
@@ -145,7 +152,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
       const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
 
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);
-      results.merge(experimentInfo);
+      results = _.merge(results, experimentInfo);
     }
 
     return { pageProps: { ...pageProps, ...results } };

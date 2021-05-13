@@ -3,7 +3,6 @@ import getAuthJWT from './getAuthJWT';
 
 const fetchAPI = async (path, params = {}, extras = {}) => {
   const headers = params.headers ? params.headers : {};
-
   const authJWT = extras.jwt || await getAuthJWT();
 
   const parameters = {
