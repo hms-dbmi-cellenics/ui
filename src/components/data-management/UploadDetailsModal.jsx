@@ -6,25 +6,29 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
+import { useDispatch } from 'react-redux';
+import pushNotificationMessage from '../../redux/actions/notifications';
 import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
 
-const acceptedFiles = {
-  features: ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
+const acceptedFileNamesByCategory = {
+  genes: ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
   barcodes: ['barcodes.tsv', 'barcodes.tsv.gz'],
   matrix: ['matrix.mtx', 'matrix.mtx.gz'],
 };
 
 const UploadDetailsModal = (props) => {
   const {
-    sampleName, file, visible, onUpload, onDownload, onCancel,
+    sampleName, file, visible, fileCategory, onUpload, onDownload, onCancel,
   } = props;
 
   const {
-    name: fileName = null, upload = {}, bundle = {},
+    upload = {}, bundle = {},
   } = file;
 
   const status = upload?.status;
   const bundleName = bundle?.name;
+
+  const dispatch = useDispatch();
 
   const inputFileRef = useRef(null);
   const [replacementFileBundle, setReplacementFileBundle] = useState(null);
@@ -73,7 +77,14 @@ const UploadDetailsModal = (props) => {
         style={{ display: 'none' }}
         onChange={
           (event) => {
-            setReplacementFileBundle(event.target.files[0]);
+            const newFile = event.target.files[0];
+            const acceptedFileNames = acceptedFileNamesByCategory[fileCategory];
+
+            if (acceptedFileNames.includes(newFile.name)) {
+              setReplacementFileBundle(newFile);
+            } else {
+              dispatch(pushNotificationMessage('error', 'Selected file\'s name doesn\'t match the expected category', 2));
+            }
           }
         }
       />
@@ -136,7 +147,7 @@ const UploadDetailsModal = (props) => {
         </Row>
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Category</Col>
-          <Col span={10}>{fileName}</Col>
+          <Col span={10}>{fileCategory}</Col>
         </Row>
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
           <Col span={5}>Filename</Col>
@@ -173,6 +184,7 @@ const UploadDetailsModal = (props) => {
 };
 
 UploadDetailsModal.propTypes = {
+  fileCategory: PropTypes.string.isRequired,
   sampleName: PropTypes.string,
   file: PropTypes.object,
   visible: PropTypes.bool,

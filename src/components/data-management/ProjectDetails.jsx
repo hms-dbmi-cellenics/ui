@@ -114,6 +114,7 @@ const ProjectDetails = ({ width, height }) => {
     const showSuccessDetails = () => {
       uploadDetailsModalDataRef.current = {
         sampleUuid,
+        fileCategory: columnId,
         file,
       };
 
@@ -123,6 +124,7 @@ const ProjectDetails = ({ width, height }) => {
     const showErrorDetails = () => {
       uploadDetailsModalDataRef.current = {
         sampleUuid,
+        fileCategory: columnId,
         file,
       };
 
@@ -535,6 +537,7 @@ const ProjectDetails = ({ width, height }) => {
       <UploadDetailsModal
         sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
         file={uploadDetailsModalDataRef.current?.file}
+        fileCategory={uploadDetailsModalDataRef.current?.fileCategory}
         visible={uploadDetailsModalVisible}
         onUpload={uploadFileBundle}
         onDownload={downloadFile}
