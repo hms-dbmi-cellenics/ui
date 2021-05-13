@@ -77,13 +77,17 @@ const UploadDetailsModal = (props) => {
         style={{ display: 'none' }}
         onChange={
           (event) => {
-            const newFile = event.target.files[0];
             const acceptedFileNames = acceptedFileNamesByCategory[fileCategory];
+            const newFile = event.target.files[0];
+
+            if (!newFile) {
+              return;
+            }
 
             if (acceptedFileNames.includes(newFile.name)) {
               setReplacementFileBundle(newFile);
             } else {
-              dispatch(pushNotificationMessage('error', 'Selected file\'s name doesn\'t match the expected category', 2));
+              dispatch(pushNotificationMessage('error', 'The selected file name does not match the expected category.', 2));
             }
           }
         }
