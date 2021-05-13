@@ -77,7 +77,7 @@ const NormalisationOptions = (props) => {
           Normalization&nbsp;
           <Tooltip overlay={(
             <span>
-              Normalization aims to remove technical factors, like sequencing depth for example.
+              Normalization aims to remove technical variation that is not biologically relevant, e.g. sequencing depth.
               There are several methods to achieve normalization.
               "sctransform" claims to recover sharper biological distinction compared to log-normalization.
               Normalization is applied to each sample before integration.
