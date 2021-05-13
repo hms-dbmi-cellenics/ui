@@ -1,10 +1,17 @@
+import fetchAPI from '../../../utils/fetchAPI';
 import {
-  PROJECTS_DELETE, PROJECTS_SET_ACTIVE,
+  PROJECTS_DELETE,
+  PROJECTS_SET_ACTIVE,
+  PROJECTS_DELETING,
+  PROJECTS_DELETED,
 } from '../../actionTypes/projects';
 
 import {
   SAMPLES_DELETE,
 } from '../../actionTypes/samples';
+
+import pushNotificationMessage from '../notifications';
+import errorTypes from './errorTypes';
 
 const deleteProject = (
   projectUuid,
@@ -14,23 +21,45 @@ const deleteProject = (
   const { activeProjectUuid } = projects.meta;
 
   dispatch({
-    type: SAMPLES_DELETE,
-    payload: {
-      sampleUuids: projects[projectUuid].samples,
-    },
+    type: PROJECTS_DELETING,
   });
 
-  dispatch({
-    type: PROJECTS_DELETE,
-    payload: { projectUuid },
-  });
+  try {
+    await fetchAPI(
+      `/v1/projects/${projectUuid}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
 
-  // If deleted project is the same as the active project, choose another project
-  if (projectUuid === activeProjectUuid) {
     dispatch({
-      type: PROJECTS_SET_ACTIVE,
-      payload: { projectUuid: projects.ids.length > 1 ? projects.ids[0] : null },
+      type: SAMPLES_DELETE,
+      payload: {
+        sampleUuids: projects[projectUuid].samples,
+      },
     });
+
+    dispatch({
+      type: PROJECTS_DELETE,
+      payload: { projectUuid },
+    });
+
+    dispatch({
+      type: PROJECTS_DELETED,
+    });
+
+    // If deleted project is the same as the active project, choose another project
+    if (projectUuid === activeProjectUuid) {
+      dispatch({
+        type: PROJECTS_SET_ACTIVE,
+        payload: { projectUuid: projects.ids.length > 1 ? projects.ids[0] : null },
+      });
+    }
+  } catch (e) {
+    pushNotificationMessage('error', errorTypes.PROJECTS_DELETE);
   }
 };
 

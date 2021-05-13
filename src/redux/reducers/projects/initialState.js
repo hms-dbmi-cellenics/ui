@@ -6,14 +6,8 @@ const projectTemplate = {
   experiments: [],
   createdDate: null,
   lastModified: null,
-  samples: new Set(),
+  samples: [],
   lastAnalyzed: null,
-  toJSON() {
-    return {
-      ...this,
-      samples: [...this.samples],
-    };
-  },
 };
 
 const initialState = {

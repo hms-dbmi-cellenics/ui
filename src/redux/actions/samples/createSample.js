@@ -39,7 +39,8 @@ const createSample = (
   const newProject = {
     uuid: projectUuid,
     ...project || {},
-    samples: new Set([...project?.samples || [], newSampleUuid]),
+    samples: project?.samples.includes(newSampleUuid) ? project.samples
+      : [...project?.samples || [], newSampleUuid],
   };
 
   try {

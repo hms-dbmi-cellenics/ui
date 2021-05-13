@@ -21,6 +21,16 @@ const PROJECTS_SET_ACTIVE = `${PROJECTS}/setActive`;
 const PROJECTS_DELETE = `${PROJECTS}/delete`;
 
 /**
+ * Delete project.
+ */
+const PROJECTS_DELETING = `${PROJECTS}/deleting`;
+
+/**
+ * Delete project.
+ */
+const PROJECTS_DELETED = `${PROJECTS}/deleted`;
+
+/**
  * Saving project.
  */
 const PROJECTS_SAVING = `${PROJECTS}/saving`;
@@ -55,6 +65,8 @@ export {
   PROJECTS_UPDATE,
   PROJECTS_SET_ACTIVE,
   PROJECTS_DELETE,
+  PROJECTS_DELETING,
+  PROJECTS_DELETED,
   PROJECTS_ERROR,
   PROJECTS_SAVED,
   PROJECTS_SAVING,
