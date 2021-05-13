@@ -2,6 +2,9 @@
 
 exports[`saveProject action Dispatches a notification when fetch fails. 1`] = `
 Object {
+  "payload": Object {
+    "message": "Saving project...",
+  },
   "type": "projects/saving",
 }
 `;

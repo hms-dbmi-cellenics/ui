@@ -47,6 +47,12 @@ describe('saveSamples action', () => {
     },
   };
 
+  const newSample = {
+    ...mockSample,
+    uuid: 'sample-2',
+    name: 'sample-2',
+  };
+
   beforeEach(() => {
     const response = new Response(JSON.stringify({ one: 'one' }));
 
@@ -55,9 +61,10 @@ describe('saveSamples action', () => {
     fetchMock.mockResolvedValueOnce(response);
   });
 
-  it('Dispatches fetch correctly.', async () => {
+  it('Dispatches fetch correctly', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(saveSamples(mockprojectUuid));
+
+    await store.dispatch(saveSamples(mockprojectUuid, newSample));
 
     const payload = initialState.samples;
     delete payload.meta;
@@ -68,7 +75,11 @@ describe('saveSamples action', () => {
         body: JSON.stringify({
           projectUuid: mockProject.uuid,
           experimentId: mockProject.experiments[0],
-          samples: payload,
+          samples: {
+            ...payload,
+            ids: [...payload.ids, newSample.uuid],
+            [newSample.uuid]: newSample,
+          },
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +94,7 @@ describe('saveSamples action', () => {
     fetchMock.mockReject(new Error('some weird error that happened'));
 
     const store = mockStore(initialState);
-    await store.dispatch(saveSamples(mockprojectUuid));
+    await store.dispatch(saveSamples(mockprojectUuid, newSample));
 
     const firstAction = store.getActions()[0];
     expect(firstAction).toMatchSnapshot();

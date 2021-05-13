@@ -207,19 +207,24 @@ describe('projectsReducer', () => {
   });
 
   it('Sets up saving state correctly', () => {
+    const savingMsg = 'Saving';
+
     const newState = projectsReducer({
       ...oneProjectState,
       meta: {
         ...oneProjectState[projectUuid1].meta,
         loading: false,
-        saving: false,
+        saving: savingMsg,
         error: false,
       },
-    }, { type: PROJECTS_SAVING });
+    }, {
+      type: PROJECTS_SAVING,
+      payload: { message: savingMsg },
+    });
 
     expect(newState.meta.error).toBe(false);
     expect(newState.meta.loading).toBe(false);
-    expect(newState.meta.saving).toBe(true);
+    expect(newState.meta.saving).toBe(savingMsg);
     expect(newState).toMatchSnapshot();
   });
 

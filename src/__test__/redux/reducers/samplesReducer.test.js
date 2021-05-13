@@ -168,6 +168,8 @@ describe('samplesReducer', () => {
   });
 
   it('Sets up saving state correctly', () => {
+    const savingMsg = 'Saving';
+
     const newState = samplesReducer({
       ...oneSampleState,
       meta: {
@@ -176,11 +178,14 @@ describe('samplesReducer', () => {
         saving: false,
         error: false,
       },
-    }, { type: SAMPLES_SAVING });
+    }, {
+      type: SAMPLES_SAVING,
+      payload: { message: savingMsg },
+    });
 
     expect(newState.meta.error).toBe(false);
     expect(newState.meta.loading).toBe(false);
-    expect(newState.meta.saving).toBe(true);
+    expect(newState.meta.saving).toBe(savingMsg);
     expect(newState).toMatchSnapshot();
   });
 

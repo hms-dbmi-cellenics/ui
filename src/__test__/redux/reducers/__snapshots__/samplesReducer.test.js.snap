@@ -261,7 +261,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": false,
-    "saving": true,
+    "saving": "Saving",
   },
 }
 `;
