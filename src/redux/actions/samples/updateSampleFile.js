@@ -10,15 +10,19 @@ import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateSampleFile = (
   sampleUuid,
-  file,
+  fileName,
+  fileDiff,
 ) => async (dispatch, getState) => {
   const updatedAt = moment().toISOString();
   const sample = getState().samples[sampleUuid];
 
   const diffObject = {
-    fileNames: sample.fileNames.add(file.name),
+    fileNames: sample.fileNames.add(fileName),
     files: {
-      [file.name]: file,
+      [fileName]: {
+        ...sample.files[fileName],
+        fileDiff,
+      },
     },
   };
 
@@ -32,7 +36,8 @@ const updateSampleFile = (
       payload: {
         sampleUuid,
         lastModified: updatedAt,
-        file,
+        fileName,
+        fileDiff,
       },
     });
   } catch (e) {

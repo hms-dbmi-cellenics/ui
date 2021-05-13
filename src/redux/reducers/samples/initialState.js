@@ -27,6 +27,10 @@ const sampleFileTemplate = {
   path: '',
   success: false,
   error: false,
+  lastModified: '',
+  upload: {
+    status: null,
+  },
 };
 
 const initialState = {

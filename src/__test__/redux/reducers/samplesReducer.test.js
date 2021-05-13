@@ -109,7 +109,8 @@ describe('samplesReducer', () => {
       type: SAMPLES_FILE_UPDATE,
       payload: {
         sampleUuid: mockUuid1,
-        file: mockFile,
+        fileName,
+        fileDiff: mockFile,
         lastModified: 'newLastModified',
       },
     });
@@ -137,7 +138,8 @@ describe('samplesReducer', () => {
       type: SAMPLES_FILE_UPDATE,
       payload: {
         sampleUuid: mockUuid1,
-        file: mockFile,
+        fileName,
+        fileDiff: mockFile,
         lastModified: 'newLastModified',
       },
     });
