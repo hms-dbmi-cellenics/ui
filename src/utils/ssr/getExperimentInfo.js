@@ -15,8 +15,6 @@ const getExperimentInfo = async (context, store, Auth) => {
   const user = await Auth.currentAuthenticatedUser();
   const jwt = user.getSignInUserSession().getIdToken().getJwtToken();
 
-  console.log(`beautiful jwt ${jwt}`);
-
   const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
   const experimentData = await getFromApiExpectOK(`/v1/experiments/${experimentId}`,
     {}, { uiUrl: url, jwt });
