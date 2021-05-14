@@ -27,7 +27,7 @@ const updateSampleFile = (
           lastModified: updatedAt,
           [fileName]: {
             ...sample.files[fileName],
-            fileDiff,
+            ...fileDiff,
           },
         },
       };
