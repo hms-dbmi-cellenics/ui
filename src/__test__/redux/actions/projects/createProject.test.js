@@ -5,6 +5,7 @@ import initialState from '../../../../redux/reducers/projects';
 import { saveProject } from '../../../../redux/actions/projects';
 
 import { PROJECTS_CREATE } from '../../../../redux/actionTypes/projects';
+import { EXPERIMENTS_CREATE } from '../../../../redux/actionTypes/experiments';
 
 const mockStore = configureStore([thunk]);
 
@@ -21,21 +22,15 @@ describe('createProject action', () => {
   };
 
   it('Dispatches event correctly', async () => {
-    const store = mockStore(initialState);
-    await store.dispatch(createProject(mockProject));
-
-    const firstAction = store.getActions()[0];
-    expect(firstAction.type).toEqual(PROJECTS_CREATE);
-  });
-
-  it('Dispatches call to save project', async () => {
     const store = mockStore({
-      projects: {
-        [initialState.uuid]: initialState,
-      },
+      projects: {},
     });
-    await store.dispatch(createProject(mockProject));
+    await store.dispatch(createProject(mockProject.name, mockProject));
 
-    expect(saveProject).toHaveBeenCalled();
+    const actions = store.getActions();
+
+    // Create experiment in the first step
+    expect(actions[0].type).toEqual(EXPERIMENTS_CREATE);
+    expect(actions[1].type).toEqual(PROJECTS_CREATE);
   });
 });

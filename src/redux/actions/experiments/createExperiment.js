@@ -5,8 +5,11 @@ import hash from 'object-hash';
 import saveExperiment from './saveExperiment';
 import {
   EXPERIMENTS_CREATE,
+  EXPERIMENTS_ERROR,
 } from '../../actionTypes/experiments';
 import { experimentTemplate } from '../../reducers/experiments/initialState';
+import pushNotificationMessage from '../notifications';
+import errorTypes from './errorTypes';
 
 const unnamedExperimentName = 'Unnamed Experiment';
 const defaultDescription = 'Add description here';
@@ -33,14 +36,25 @@ const createExperiment = (
     createdAt,
   };
 
-  dispatch({
-    type: EXPERIMENTS_CREATE,
-    payload: {
-      experiment: newExperiment,
-    },
-  });
+  try {
+    dispatch(saveExperiment(newExperiment.id, newExperiment));
 
-  dispatch(saveExperiment(newExperiment.id));
+    dispatch({
+      type: EXPERIMENTS_CREATE,
+      payload: {
+        experiment: newExperiment,
+      },
+    });
+  } catch (e) {
+    pushNotificationMessage('error', errorTypes.SAVE_EXPERIMENT);
+
+    dispatch({
+      type: EXPERIMENTS_ERROR,
+      payload: {
+        error: errorTypes.SAVE_EXPERIMENT,
+      },
+    });
+  }
 
   return Promise.resolve(newExperiment);
 };

@@ -4,8 +4,9 @@ import pushNotificationMessage from '../pushNotificationMessage';
 
 const saveExperiment = (
   experimentId,
+  newExperiment,
 ) => async (dispatch, getState) => {
-  const experiment = getState().experiments[experimentId];
+  const payload = newExperiment || getState().experiments[experimentId];
 
   try {
     const response = await fetchAPI(
@@ -15,7 +16,7 @@ const saveExperiment = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(experiment),
+        body: JSON.stringify(payload),
       },
     );
 

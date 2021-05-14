@@ -2,17 +2,22 @@ import initialState from './initialState';
 import {
   EXPERIMENTS_CREATE,
   EXPERIMENTS_UPDATE,
+  EXPERIMENTS_ERROR,
 } from '../../actionTypes/experiments';
-import experimentCreate from './experimentsCreate';
-import experimentUpdate from './experimentsUpdate';
+import experimentsCreate from './experimentsCreate';
+import experimentsUpdate from './experimentsUpdate';
+import experimentsError from './experimentsError';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {
     case EXPERIMENTS_CREATE: {
-      return experimentCreate(state, action);
+      return experimentsCreate(state, action);
     }
     case EXPERIMENTS_UPDATE: {
-      return experimentUpdate(state, action);
+      return experimentsUpdate(state, action);
+    }
+    case EXPERIMENTS_ERROR: {
+      return experimentsError(state, action);
     }
     default: {
       return state;

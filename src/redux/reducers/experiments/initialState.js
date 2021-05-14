@@ -8,7 +8,9 @@ const experimentTemplate = {
 };
 
 const initialState = {
-  meta: {},
+  meta: {
+    error: false,
+  },
   ids: [],
 };
 

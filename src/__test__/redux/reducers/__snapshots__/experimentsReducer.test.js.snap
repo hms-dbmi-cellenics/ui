@@ -5,7 +5,9 @@ Object {
   "ids": Array [
     "project-1",
   ],
-  "meta": Object {},
+  "meta": Object {
+    "error": false,
+  },
   "project-1": Object {
     "createdAt": null,
     "createdDate": "01-01-2021",
@@ -23,7 +25,9 @@ Object {
   "ids": Array [
     "project-1",
   ],
-  "meta": Object {},
+  "meta": Object {
+    "error": false,
+  },
   "project-1": Object {
     "createdAt": null,
     "createdDate": "01-01-2021",
