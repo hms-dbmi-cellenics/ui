@@ -51,7 +51,8 @@ const ContinuousEmbeddingPlot = (props) => {
       && config
       && plotData?.length > 0
       && !cellSets.loading
-      && !cellSets.error) {
+      && !cellSets.error
+      && embeddingData?.length) {
       setPlotSpec(
         generateSpec(
           config,

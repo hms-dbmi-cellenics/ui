@@ -74,6 +74,8 @@ const compressAndUploadSingleFile = async (
         { upload: { status: fileErrorStatus } },
       ),
     );
+
+    return;
   }
 
   try {
@@ -86,6 +88,8 @@ const compressAndUploadSingleFile = async (
         { upload: { status: UploadStatus.UPLOAD_ERROR } },
       ),
     );
+
+    return;
   }
 
   dispatch(

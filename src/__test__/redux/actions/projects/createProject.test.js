@@ -33,4 +33,15 @@ describe('createProject action', () => {
     expect(actions[0].type).toEqual(EXPERIMENTS_CREATE);
     expect(actions[1].type).toEqual(PROJECTS_CREATE);
   });
+
+  it('Dispatches call to save project', async () => {
+    const store = mockStore({
+      projects: {
+        [initialState.uuid]: initialState,
+      },
+    });
+    await store.dispatch(createProject(mockProject));
+
+    expect(saveProject).toHaveBeenCalled();
+  });
 });
