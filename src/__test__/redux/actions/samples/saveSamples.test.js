@@ -4,6 +4,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import { saveSamples } from '../../../../redux/actions/samples';
+import { SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
 
 jest.mock('localforage');
 
@@ -98,5 +99,23 @@ describe('saveSamples action', () => {
 
     const firstAction = store.getActions()[0];
     expect(firstAction).toMatchSnapshot();
+  });
+
+  it('Dispatches project guards correctly', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(saveSamples(mockprojectUuid, newSample));
+
+    const actions = store.getActions();
+    expect(actions.length).toEqual(2);
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+    expect(actions[1].type).toEqual(SAMPLES_SAVED);
+  });
+
+  it('Does not dispatch guards if disabled', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(saveSamples(mockprojectUuid, newSample, true, false));
+
+    const actions = store.getActions();
+    expect(actions.length).toEqual(0);
   });
 });

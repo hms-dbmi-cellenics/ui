@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialProjectState from '../../../../redux/reducers/projects/initialState';
 import { saveProject } from '../../../../redux/actions/projects';
+import { PROJECTS_SAVED, PROJECTS_SAVING } from '../../../../redux/actionTypes/projects';
 
 jest.mock('localforage');
 
@@ -41,7 +42,7 @@ describe('saveProject action', () => {
 
   it('Dispatches fetch correctly.', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(saveProject(mockProject.uuid));
+    await store.dispatch(saveProject(mockProject.uuid, mockProject));
 
     expect(fetchMock).toHaveBeenCalledWith(
       `http://localhost:3000/v1/projects/${mockProject.uuid}`,
@@ -60,9 +61,28 @@ describe('saveProject action', () => {
     fetchMock.mockReject(new Error('some weird error that happened'));
 
     const store = mockStore(initialState);
-    await store.dispatch(saveProject(mockProject.uuid));
+    await store.dispatch(saveProject(mockProject.uuid, mockProject));
 
     const firstAction = store.getActions()[0];
     expect(firstAction).toMatchSnapshot();
+  });
+
+  it('Dispatches project guards correctly', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(saveProject(mockProject.uuid, mockProject));
+
+    const actions = store.getActions();
+
+    expect(actions.length).toEqual(2);
+    expect(actions[0].type).toEqual(PROJECTS_SAVING);
+    expect(actions[1].type).toEqual(PROJECTS_SAVED);
+  });
+
+  it('Does not dispatch guards if disabled', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(saveProject(mockProject.uuid, mockProject, false));
+
+    const actions = store.getActions();
+    expect(actions.length).toEqual(0);
   });
 });

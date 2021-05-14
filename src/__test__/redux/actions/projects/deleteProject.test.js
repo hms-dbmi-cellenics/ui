@@ -150,4 +150,22 @@ describe('deleteProject action', () => {
     // Switch active proejct
     expect(actions[4].type).toEqual(PROJECTS_SET_ACTIVE);
   });
+
+  it('Dispatches fetch correctly.', async () => {
+    const response = new Response(JSON.stringify({}));
+    fetchMock.mockResolvedValueOnce(response);
+
+    const store = mockStore(initialStateUniSample);
+    await store.dispatch(deleteProject(mockProjectUuid1));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v1/projects/${mockProject.uuid}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+  });
 });
