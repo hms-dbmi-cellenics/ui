@@ -1,12 +1,19 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
+import uuid from 'uuid';
 
 import { Storage } from 'aws-amplify';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { SAMPLES_FILE_UPDATE } from '../../redux/actionTypes/samples';
+
+import initialSampleState, { sampleTemplate } from '../../redux/reducers/samples/initialState';
+import initialProjectState, { projectTemplate } from '../../redux/reducers/projects/initialState';
 
 import processUpload from '../../utils/processUpload';
 import UploadStatus from '../../utils/UploadStatus';
+
+enableFetchMocks();
 
 const validFilesList = [
   {
@@ -46,15 +53,38 @@ const validFilesList = [
 
 const sampleType = '10X Chromium';
 
-const samples = {
-  ids: [],
-  meta: {
-    loading: true,
-    error: false,
+const mockSampleUuid = 'sample-uuid';
+const mockProjectUuid = 'project-uuid';
+
+jest.mock('uuid', () => jest.fn());
+uuid.v4 = jest.fn(() => 'sample-uuid');
+
+const initialState = {
+  projects: {
+    ...initialProjectState,
+    ids: [mockProjectUuid],
+    meta: {
+      activeProjectUuid: mockProjectUuid,
+    },
+    [mockProjectUuid]: {
+      ...projectTemplate,
+      samples: [mockSampleUuid],
+    },
+  },
+  samples: {
+    ...initialSampleState,
+    ids: [mockSampleUuid],
+    meta: {
+      loading: true,
+      error: false,
+    },
+    [mockSampleUuid]: {
+      ...sampleTemplate,
+      uuid: [mockSampleUuid],
+      projectUuid: mockProjectUuid,
+    },
   },
 };
-
-const activeProjectUuid = 'activeProjectUuid';
 
 const mockStore = configureMockStore([thunk]);
 
@@ -75,13 +105,17 @@ jest.mock('../../utils/environment', () => ({
   ssrGetCurrentEnvironment: () => 'development',
 }));
 
+jest.mock('../../redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
+  type: 'samples/saved',
+})));
+
 let mockStorageCalls = [];
 
 Storage.put = jest.fn().mockImplementation(
   (bucketKey, file) => {
     mockStorageCalls.push({ bucketKey, file });
     if (bucketKey.includes('errorProjectUuid')) {
-      return Promise.reject(new Error());
+      return Promise.reject(new Error('error'));
     }
 
     return Promise.resolve(null);
@@ -97,18 +131,24 @@ describe('processUpload (in development)', () => {
   beforeEach(() => {
     // eslint-disable-next-line no-param-reassign
     validFilesList.forEach((file) => { file.bundle.valid = true; });
+
+    const response = new Response({});
+
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResolvedValue(response);
   });
 
   it('Uploads and updates redux correctly when there are no errors', async () => {
-    const store = mockStore({
-      projects: {
-        [activeProjectUuid]: {
-          samples: [],
-        },
-      },
-    });
+    const store = mockStore(initialState);
 
-    processUpload(validFilesList, sampleType, samples, activeProjectUuid, store.dispatch);
+    processUpload(
+      validFilesList,
+      sampleType,
+      store.getState().samples,
+      mockProjectUuid,
+      store.dispatch,
+    );
 
     await waitForActions(
       store,
@@ -150,18 +190,18 @@ describe('processUpload (in development)', () => {
   });
 
   it('Updates redux correctly when there are file load and compress errors', async () => {
-    const store = mockStore({
-      projects: {
-        [activeProjectUuid]: {
-          samples: [],
-        },
-      },
-    });
+    const store = mockStore(initialState);
 
     // eslint-disable-next-line no-param-reassign
     validFilesList.forEach((file) => { file.bundle.valid = false; });
 
-    processUpload(validFilesList, sampleType, samples, activeProjectUuid, store.dispatch);
+    processUpload(
+      validFilesList,
+      sampleType,
+      store.getState().samples,
+      mockProjectUuid,
+      store.dispatch,
+    );
 
     await waitForActions(
       store,
@@ -191,20 +231,20 @@ describe('processUpload (in development)', () => {
   });
 
   it('Updates redux correctly when there are file upload errors', async () => {
-    const store = mockStore({
-      projects: {
-        errorProjectUuid: {
-          samples: [],
-        },
-      },
-    });
+    const store = mockStore(initialState);
 
-    processUpload(validFilesList, sampleType, samples, 'errorProjectUuid', store.dispatch);
+    processUpload(
+      validFilesList,
+      sampleType,
+      store.getState().samples,
+      'errorProjectUuid',
+      store.dispatch,
+    );
 
     await waitForActions(
       store,
-      new Array(6).fill(SAMPLES_FILE_UPDATE),
-      { matcher: waitForActions.matchers.containing, throttleWait: 2 },
+      new Array(12).fill(SAMPLES_FILE_UPDATE),
+      { matcher: waitForActions.matchers.containing, throttleWait: 20 },
     );
 
     const fileUpdateActions = store.getActions().filter(

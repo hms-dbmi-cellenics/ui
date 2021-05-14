@@ -6,13 +6,14 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -23,18 +24,20 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
   "qwe234": Object {
     "complete": false,
     "createdDate": "2021-01-02T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample 2",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "qwe234",
   },
@@ -47,13 +50,14 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -63,6 +67,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;
@@ -78,13 +83,14 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -94,32 +100,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
-  },
-}
-`;
-
-exports[`samplesReducer Handles errors correctly 1`] = `
-Object {
-  "asd123": Object {
-    "complete": false,
-    "createdDate": "2021-01-01T14:48:00.000Z",
-    "error": false,
-    "fileNames": Set {},
-    "files": Object {},
-    "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": Object {},
-    "name": "test sample",
-    "projectUuid": null,
-    "species": null,
-    "type": null,
-    "uuid": "asd123",
-  },
-  "ids": Array [
-    "asd123",
-  ],
-  "meta": Object {
-    "error": "Failed uploading samples",
-    "loading": false,
+    "saving": false,
   },
 }
 `;
@@ -130,13 +111,14 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -146,6 +128,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;
@@ -159,7 +142,7 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {
@@ -168,6 +151,7 @@ Object {
     "name": "test sample",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -177,6 +161,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;
@@ -187,13 +172,14 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -204,20 +190,106 @@ Object {
   "meta": Object {
     "error": false,
     "loading": false,
+    "saving": false,
   },
   "qwe234": Object {
     "complete": false,
     "createdDate": "2021-01-02T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample 2",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "qwe234",
+  },
+}
+`;
+
+exports[`samplesReducer Sets up saved state correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "toJSON": [Function],
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`samplesReducer Sets up saving state correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "toJSON": [Function],
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": "Saving",
+  },
+}
+`;
+
+exports[`samplesReducer Stores error state correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample",
+    "projectUuid": null,
+    "species": null,
+    "toJSON": [Function],
+    "type": null,
+    "uuid": "asd123",
+  },
+  "ids": Array [
+    "asd123",
+  ],
+  "meta": Object {
+    "error": "Error message",
+    "loading": false,
+    "saving": false,
   },
 }
 `;
@@ -228,13 +300,14 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "updated name",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -244,6 +317,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;
@@ -254,9 +328,9 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {
+    "fileNames": Array [
       "features.tsv",
-    },
+    ],
     "files": Object {
       "features.tsv": Object {
         "error": false,
@@ -277,6 +351,7 @@ Object {
     "name": "test sample",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -286,6 +361,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;
@@ -296,9 +372,9 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {
+    "fileNames": Array [
       "features.tsv",
-    },
+    ],
     "files": Object {
       "features.tsv": Object {
         "error": false,
@@ -319,6 +395,7 @@ Object {
     "name": "test sample",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -328,6 +405,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;
@@ -343,7 +421,7 @@ Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
-    "fileNames": Set {},
+    "fileNames": Array [],
     "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {
@@ -352,6 +430,7 @@ Object {
     "name": "test sample",
     "projectUuid": null,
     "species": null,
+    "toJSON": [Function],
     "type": null,
     "uuid": "asd123",
   },
@@ -361,6 +440,7 @@ Object {
   "meta": Object {
     "error": false,
     "loading": true,
+    "saving": false,
   },
 }
 `;

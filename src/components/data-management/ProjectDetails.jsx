@@ -67,10 +67,10 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   useEffect(() => {
-    if (activeProject) {
-      setSampleNames(new Set(activeProject.samples.map((id) => samples[id].name.trim())));
+    if (activeProject && activeProject.samples.length > 0) {
+      setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
     } else {
-      setSampleNames([]);
+      setSampleNames(new Set());
     }
   }, [samples, activeProject]);
 

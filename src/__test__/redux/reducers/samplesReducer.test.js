@@ -8,6 +8,8 @@ import {
   SAMPLES_LOADED,
   SAMPLES_ERROR,
   SAMPLES_DELETE,
+  SAMPLES_SAVING,
+  SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
 } from '../../../redux/actionTypes/samples';
 
@@ -165,18 +167,67 @@ describe('samplesReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Handles errors correctly', () => {
-    const error = 'Failed uploading samples';
+  it('Sets up saving state correctly', () => {
+    const savingMsg = 'Saving';
 
-    const newState = samplesReducer(oneSampleState, {
+    const newState = samplesReducer({
+      ...oneSampleState,
+      meta: {
+        ...oneSampleState[sample1.uuid].meta,
+        loading: false,
+        saving: false,
+        error: false,
+      },
+    }, {
+      type: SAMPLES_SAVING,
+      payload: { message: savingMsg },
+    });
+
+    expect(newState.meta.error).toBe(false);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(savingMsg);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Sets up saved state correctly', () => {
+    const newState = samplesReducer({
+      ...oneSampleState,
+      meta: {
+        ...oneSampleState[sample1.uuid].meta,
+        loading: false,
+        saving: true,
+        error: true,
+      },
+    }, { type: SAMPLES_SAVED });
+
+    expect(newState.meta.error).toBe(false);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(false);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Stores error state correctly', () => {
+    const errMsg = 'Error message';
+
+    const newState = samplesReducer({
+      ...oneSampleState,
+      meta: {
+        ...oneSampleState[sample1.uuid].meta,
+        loading: false,
+        saving: true,
+        error: true,
+      },
+    }, {
       type: SAMPLES_ERROR,
       payload: {
-        error,
+        error: errMsg,
       },
     });
 
-    expect(newState.meta.loading).toEqual(false);
-    expect(newState.meta.error).toEqual(error);
+    expect(newState.meta.error).not.toBe(false);
+    expect(newState.meta.error).toBe(errMsg);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(false);
     expect(newState).toMatchSnapshot();
   });
 

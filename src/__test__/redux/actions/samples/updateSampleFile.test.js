@@ -2,8 +2,13 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateSampleFile from '../../../../redux/actions/samples/updateSampleFile';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../../redux/reducers/samples/initialState';
+import { saveSamples } from '../../../../redux/actions/samples';
+import UploadStatus from '../../../../utils/UploadStatus';
 
 import { SAMPLES_FILE_UPDATE } from '../../../../redux/actionTypes/samples';
+
+jest.mock('../../../../redux/actions/samples/saveSamples');
+saveSamples.mockImplementation(() => async () => { });
 
 const mockStartTime = '4022-01-01T00:00:00.000Z';
 const mockEndTime = '4021-01-01T00:00:00.000Z';
@@ -65,5 +70,41 @@ describe('updateSampleFile action', () => {
     const { fileDiff } = store.getActions()[0].payload;
 
     expect(fileDiff.name).toEqual(fileName);
+  });
+
+  it('Does not dispatch call by default', async () => {
+    const store = mockStore(mockState);
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, mockFile));
+
+    expect(saveSamples).not.toHaveBeenCalled();
+  });
+
+  it('Dispatches call to save samples on upload success', async () => {
+    const store = mockStore(mockState);
+
+    const successFile = {
+      ...mockFile,
+      upload: {
+        status: UploadStatus.UPLOADED,
+      },
+    };
+
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, successFile));
+
+    expect(saveSamples).toHaveBeenCalled();
+  });
+
+  it('Dispatches call to save samples on upload error', async () => {
+    const errorFile = {
+      ...mockFile,
+      upload: {
+        status: UploadStatus.UPLOAD_ERROR,
+      },
+    };
+
+    const store = mockStore(mockState);
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, errorFile));
+
+    expect(saveSamples).toHaveBeenCalled();
   });
 });
