@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import mime from 'mime-types';
@@ -21,6 +22,8 @@ import Dropzone from 'react-dropzone';
 import techOptions from '../../utils/fileUploadSpecifications';
 import UploadStatus from '../../utils/UploadStatus';
 
+import pushNotificationMessage from '../../redux/actions/notifications';
+
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
@@ -33,6 +36,8 @@ const FileUploadModal = (props) => {
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     setCanUpload(filesList.length && filesList.every((file) => file.valid));
   }, [filesList]);
@@ -43,18 +48,31 @@ const FileUploadModal = (props) => {
 
     const acceptedFilesRegexp = `(${techOptions[selectedTech].acceptedFiles.join('|')})$`;
 
-    acceptedFiles.forEach((file) => {
+    let filesNotInFolder = false;
+    const filteredFiles = acceptedFiles
+      // Remove all hidden files
+      .filter((file) => !file.name.startsWith('.'))
+      // Remove all files that aren't in a folder
+      .filter((file) => {
+        const inFolder = file.path.includes('/');
+
+        filesNotInFolder ||= !inFolder;
+
+        return inFolder;
+      });
+
+    if (filesNotInFolder) {
+      dispatch(pushNotificationMessage('error', 'Only files contained in folder are accepted', 1));
+    }
+
+    filteredFiles.forEach((file) => {
       let fileName = null;
       const error = [];
 
       // First character of file.path === '/' means a directory is uploaded
       // Remove initial slash so that it does not create an empty directory in S3
-      if (file.path[0] === '/') {
-        const paths = file.path.split('/');
-        fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
-      } else {
-        fileName = file.path;
-      }
+      const paths = file.path.split('/');
+      fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
 
       const isValidType = (
         techOptions[selectedTech].validMimeTypes
@@ -170,7 +188,11 @@ const FileUploadModal = (props) => {
                 Technology:
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
-              <Select style={{ width: 250 }} defaultValue={selectedTech} onChange={(value) => setSelectedTech(value)}>
+              <Select
+                style={{ width: 250 }}
+                defaultValue={selectedTech}
+                onChange={(value) => setSelectedTech(value)}
+              >
                 {Object.keys(techOptions).map((val, idx) => (
                   <Option key={`key-${idx}`} value={val}>{val}</Option>
                 ))}
@@ -184,10 +206,10 @@ const FileUploadModal = (props) => {
 
         {/* eslint-disable react/jsx-props-no-spreading */}
         <Col span={24}>
-          <Dropzone onDrop={onDrop}>
+          <Dropzone onDrop={onDrop} multiple>
             {({ getRootProps, getInputProps }) => (
               <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
-                <input {...getInputProps()} />
+                <input {...getInputProps()} webkitdirectory='' />
                 <Empty description='Drag and drop folders here or click to browse.' image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             )}

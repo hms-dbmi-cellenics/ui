@@ -7,6 +7,8 @@ import {
 } from '../../actionTypes/projects';
 import { projectTemplate } from '../../reducers/projects/initialState';
 import createExperiment from '../experiments/createExperiment';
+import pushNotificationMessage from '../notifications';
+import errorTypes from './errorTypes';
 
 const createProject = (
   projectName, projectDescription,
@@ -29,12 +31,16 @@ const createProject = (
     lastModified: createdAt,
   };
 
-  dispatch({
-    type: PROJECTS_CREATE,
-    payload: { project: newProject },
-  });
+  try {
+    dispatch(saveProject(newProjectUuid, newProject));
 
-  dispatch(saveProject(newProjectUuid));
+    dispatch({
+      type: PROJECTS_CREATE,
+      payload: { project: newProject },
+    });
+  } catch (e) {
+    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+  }
 };
 
 export default createProject;

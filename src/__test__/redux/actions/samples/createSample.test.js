@@ -3,8 +3,8 @@ import thunk from 'redux-thunk';
 import createSample from '../../../../redux/actions/samples/createSample';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
-import saveProject from '../../../../redux/actions/projects/saveProject';
-import saveSamples from '../../../../redux/actions/samples/saveSamples';
+import { saveProject } from '../../../../redux/actions/projects';
+import { saveSamples } from '../../../../redux/actions/samples';
 
 import { SAMPLES_CREATE } from '../../../../redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
@@ -64,9 +64,10 @@ describe('createSample action', () => {
   it('Dispatches call to save sample', async () => {
     const store = mockStore({
       projects: {
-        [initialState.uuid]: initialState,
+        [mockProject.uuid]: mockProject,
       },
     });
+
     await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
 
     expect(saveSamples).toHaveBeenCalled();
@@ -75,7 +76,7 @@ describe('createSample action', () => {
   it('Dispatches call to save project', async () => {
     const store = mockStore({
       projects: {
-        [initialState.uuid]: initialState,
+        [mockProject.uuid]: mockProject,
       },
     });
     await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));

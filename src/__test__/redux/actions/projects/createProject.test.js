@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import createProject from '../../../../redux/actions/projects/createProject';
 import initialState from '../../../../redux/reducers/projects';
-import saveProject from '../../../../redux/actions/projects/saveProject';
+import { saveProject } from '../../../../redux/actions/projects';
 
 import { PROJECTS_CREATE } from '../../../../redux/actionTypes/projects';
 

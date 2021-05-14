@@ -26,6 +26,16 @@ const SAMPLES_FILE_UPDATE = `${SAMPLES}/fileUpdate`;
 const SAMPLES_LOADED = `${SAMPLES}/loaded`;
 
 /**
+ * Saving samples.
+ */
+const SAMPLES_SAVING = `${SAMPLES}/saving`;
+
+/**
+ * Samples saved successfully.
+ */
+const SAMPLES_SAVED = `${SAMPLES}/saved`;
+
+/**
  * Error loading/saving sample.
  */
 const SAMPLES_ERROR = `${SAMPLES}/error`;
@@ -41,6 +51,8 @@ export {
   SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
+  SAMPLES_SAVING,
   SAMPLES_ERROR,
+  SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
 };

@@ -2,7 +2,8 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateSampleFile from '../../../../redux/actions/samples/updateSampleFile';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../../redux/reducers/samples/initialState';
-import saveSamples from '../../../../redux/actions/samples/saveSamples';
+import { saveSamples } from '../../../../redux/actions/samples';
+import UploadStatus from '../../../../utils/UploadStatus';
 
 import { SAMPLES_FILE_UPDATE } from '../../../../redux/actionTypes/samples';
 
@@ -30,7 +31,7 @@ describe('updateSampleFile action', () => {
     uuid: mockUuid,
     lastModified: mockStartTime,
     filesNames: [fileName],
-    [fileName]: mockFile,
+    files: { [fileName]: mockFile },
   };
 
   const mockState = {
@@ -43,7 +44,7 @@ describe('updateSampleFile action', () => {
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateSampleFile(mockUuid, mockSample));
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, mockFile));
 
     // action updates the files
     const secondAction = store.getActions()[0];
@@ -53,7 +54,7 @@ describe('updateSampleFile action', () => {
   it('Updates the sample lastModified field', async () => {
     const originalModifiedDate = mockSample.lastModified;
     const store = mockStore(mockState);
-    await store.dispatch(updateSampleFile(mockUuid, mockFile));
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, mockFile));
 
     const { lastModified } = store.getActions()[0].payload;
 
@@ -64,17 +65,45 @@ describe('updateSampleFile action', () => {
   it('Inserts file into sample', async () => {
     const store = mockStore(mockState);
 
-    await store.dispatch(updateSampleFile(mockUuid, {
-      mockFile,
-      name: fileName,
-    }));
-    const { file } = store.getActions()[0].payload;
-    expect(file.name).toEqual(fileName);
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, mockFile));
+
+    const { fileDiff } = store.getActions()[0].payload;
+
+    expect(fileDiff.name).toEqual(fileName);
   });
 
-  it('Dispatches call to save sample', async () => {
+  it('Does not dispatch call by default', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateSampleFile(mockUuid, mockSample));
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, mockFile));
+
+    expect(saveSamples).not.toHaveBeenCalled();
+  });
+
+  it('Dispatches call to save samples on upload success', async () => {
+    const store = mockStore(mockState);
+
+    const successFile = {
+      ...mockFile,
+      upload: {
+        status: UploadStatus.UPLOADED,
+      },
+    };
+
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, successFile));
+
+    expect(saveSamples).toHaveBeenCalled();
+  });
+
+  it('Dispatches call to save samples on upload error', async () => {
+    const errorFile = {
+      ...mockFile,
+      upload: {
+        status: UploadStatus.UPLOAD_ERROR,
+      },
+    };
+
+    const store = mockStore(mockState);
+    await store.dispatch(updateSampleFile(mockUuid, mockFile.name, errorFile));
 
     expect(saveSamples).toHaveBeenCalled();
   });

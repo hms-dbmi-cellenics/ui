@@ -10,17 +10,12 @@ const fileUploadSpecifications = {
       'matrix.mtx',
       'matrix.mtx.gz',
     ],
-    validMimeTypes: ['text/tsv', 'application/gzip', 'text/tab-separated-values'],
+    validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
     validExtensionTypes: ['.mtx'],
     inputInfo: [
       ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
       ['barcodes.tsv', 'barcodes.tsv.gz'],
       ['matrix.mtx', 'matrix.mtx.gz'],
-    ],
-    requiredFiles: [
-      'features.tsv.gz',
-      'barcodes.tsv.gz',
-      'matrix.mtx.gz',
     ],
   },
 

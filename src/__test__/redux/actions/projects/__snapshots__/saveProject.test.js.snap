@@ -3,10 +3,8 @@
 exports[`saveProject action Dispatches a notification when fetch fails. 1`] = `
 Object {
   "payload": Object {
-    "message": "Could not connect to the server. Check your internet connection.",
-    "time": 5,
-    "type": "error",
+    "message": "Saving project...",
   },
-  "type": "notifications/pushMessage",
+  "type": "projects/saving",
 }
 `;

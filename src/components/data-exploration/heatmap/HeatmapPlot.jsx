@@ -91,7 +91,9 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    const data = populateHeatmapData(cellSets, heatmapSettings, expressionData, selectedGenes, true);
+    const data = populateHeatmapData(
+      cellSets, heatmapSettings, expressionData, selectedGenes, true,
+    );
     setDataDebounce(data);
   }, [loadingGenes,
     hidden,

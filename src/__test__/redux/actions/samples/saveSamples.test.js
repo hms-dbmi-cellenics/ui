@@ -3,7 +3,8 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
-import saveSamples from '../../../../redux/actions/samples/saveSamples';
+import { saveSamples } from '../../../../redux/actions/samples';
+import { SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
 
 jest.mock('localforage');
 
@@ -47,6 +48,12 @@ describe('saveSamples action', () => {
     },
   };
 
+  const newSample = {
+    ...mockSample,
+    uuid: 'sample-2',
+    name: 'sample-2',
+  };
+
   beforeEach(() => {
     const response = new Response(JSON.stringify({ one: 'one' }));
 
@@ -55,20 +62,25 @@ describe('saveSamples action', () => {
     fetchMock.mockResolvedValueOnce(response);
   });
 
-  it('Dispatches fetch correctly.', async () => {
+  it('Dispatches fetch correctly', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(saveSamples(mockprojectUuid));
+
+    await store.dispatch(saveSamples(mockprojectUuid, newSample));
 
     const payload = initialState.samples;
     delete payload.meta;
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v1/projects/${mockprojectUuid}/samples`,
+      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify({
           projectUuid: mockProject.uuid,
           experimentId: mockProject.experiments[0],
-          samples: payload,
+          samples: {
+            ...payload,
+            ids: [...payload.ids, newSample.uuid],
+            [newSample.uuid]: newSample,
+          },
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -83,9 +95,27 @@ describe('saveSamples action', () => {
     fetchMock.mockReject(new Error('some weird error that happened'));
 
     const store = mockStore(initialState);
-    await store.dispatch(saveSamples(mockprojectUuid));
+    await store.dispatch(saveSamples(mockprojectUuid, newSample));
 
     const firstAction = store.getActions()[0];
     expect(firstAction).toMatchSnapshot();
+  });
+
+  it('Dispatches project guards correctly', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(saveSamples(mockprojectUuid, newSample));
+
+    const actions = store.getActions();
+    expect(actions.length).toEqual(2);
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+    expect(actions[1].type).toEqual(SAMPLES_SAVED);
+  });
+
+  it('Does not dispatch guards if disabled', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(saveSamples(mockprojectUuid, newSample, true, false));
+
+    const actions = store.getActions();
+    expect(actions.length).toEqual(0);
   });
 });

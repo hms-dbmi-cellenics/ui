@@ -14,6 +14,9 @@ const initialState = {
   ids: [],
   meta: {
     activeProjectUuid: null,
+    loading: true,
+    error: false,
+    saving: false,
   },
 };
 
