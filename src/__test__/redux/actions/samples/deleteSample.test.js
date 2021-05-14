@@ -4,7 +4,7 @@ import deleteSamples from '../../../../redux/actions/samples/deleteSamples';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 
-import { SAMPLES_DELETE } from '../../../../redux/actionTypes/samples';
+import { SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
 
 const mockStore = configureStore([thunk]);
@@ -44,12 +44,17 @@ describe('deleteSample action', () => {
     const store = mockStore(initialState);
     await store.dispatch(deleteSamples(mockSampleUuid));
 
-    // Create sample
-    const action1 = store.getActions()[0];
-    expect(action1.type).toEqual(SAMPLES_DELETE);
+    // Sets up loading state for saving project
+    const actions = store.getActions();
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
 
-    // Update project.samples
-    const action2 = store.getActions()[1];
-    expect(action2.type).toEqual(PROJECTS_UPDATE);
+    // Delete sample
+    expect(actions[1].type).toEqual(SAMPLES_DELETE);
+
+    // Delete project
+    expect(actions[2].type).toEqual(PROJECTS_UPDATE);
+
+    // Resolve loading state
+    expect(actions[3].type).toEqual(SAMPLES_SAVED);
   });
 });

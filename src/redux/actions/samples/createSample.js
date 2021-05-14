@@ -8,6 +8,10 @@ import {
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
+import saveSamples from './saveSamples';
+import { saveProject } from '../projects';
+import pushNotificationMessage from '../pushNotificationMessage';
+import errorTypes from './errorTypes';
 
 import { sampleTemplate } from '../../reducers/samples/initialState';
 
@@ -32,20 +36,32 @@ const createSample = (
     lastModified: createdAt,
   };
 
-  dispatch({
-    type: SAMPLES_CREATE,
-    payload: { sample: newSample },
-  });
+  const newProject = {
+    uuid: projectUuid,
+    ...project || {},
+    samples: project?.samples.includes(newSampleUuid) ? project.samples
+      : [...project?.samples || [], newSampleUuid],
+  };
 
-  dispatch({
-    type: PROJECTS_UPDATE,
-    payload: {
-      projectUuid,
-      project: {
-        samples: [...project?.samples, newSampleUuid],
+  try {
+    dispatch(saveSamples(projectUuid, newSample));
+    dispatch(saveProject(projectUuid, newProject));
+
+    dispatch({
+      type: SAMPLES_CREATE,
+      payload: { sample: newSample },
+    });
+
+    dispatch({
+      type: PROJECTS_UPDATE,
+      payload: {
+        projectUuid,
+        project: newProject,
       },
-    },
-  });
+    });
+  } catch (e) {
+    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+  }
 
   return Promise.resolve(newSampleUuid);
 };

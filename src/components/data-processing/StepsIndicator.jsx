@@ -9,7 +9,12 @@ const StepsIndicator = (props) => {
     completed: '#1890ff', // blue
   };
   return (
-    <div>
+    <div
+      role='progressbar'
+      aria-valuemin='0'
+      aria-valuemax={allSteps.length}
+      aria-valuenow={completedSteps}
+    >
       {allSteps.map((step, index) => {
         let color = colors.completed;
         if (index === currentStep) {
