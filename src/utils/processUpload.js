@@ -92,7 +92,13 @@ const compressAndUploadSingleFile = async (
     updateSampleFile(
       sampleUuid,
       fileName,
-      { upload: { status: UploadStatus.UPLOADED } },
+      {
+        upload:
+        {
+          status: UploadStatus.UPLOADED,
+          progress: 100,
+        },
+      },
     ),
   );
 };
