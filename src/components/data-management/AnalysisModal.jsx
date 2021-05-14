@@ -59,15 +59,15 @@ const NewExperimentModal = (props) => {
               bordered
               dataSource={experimentsList}
               itemLayout='vertical'
-              renderItem={(item) => (
+              renderItem={(experiment) => (
                 <List.Item
-                  key={`${item.name}`}
+                  key={`${experiment.name}`}
                   extra={(
                     <Row type='flex' align='middle'>
                       <Col>
                         <Button
                           type='primary'
-                          onClick={() => onLaunch(item.id)}
+                          onClick={() => onLaunch(experiment.id)}
                         >
                           Launch
                         </Button>
@@ -79,18 +79,18 @@ const NewExperimentModal = (props) => {
                     <strong>
                       <EditableField
                         onAfterSubmit={(name) => dispatch(
-                          updateExperiment(item.id, { name: name.trim() }),
+                          updateExperiment(experiment.id, { name: name.trim() }),
                         )}
-                        value={item.name}
+                        value={experiment.name}
                         validationFunc={(name) => checkNameValidity(name)}
                         deleteEnabled={false}
                       />
                     </strong>
                     <EditableField
                       onAfterSubmit={(description) => dispatch(
-                        updateExperiment(item.id, { description: description.trim() }),
+                        updateExperiment(experiment.id, { description: description.trim() }),
                       )}
-                      value={item.description}
+                      value={experiment.description}
                       deleteEnabled={false}
                     />
                   </Space>

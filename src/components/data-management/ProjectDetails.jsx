@@ -35,7 +35,7 @@ import {
 } from '../../redux/actions/projects';
 
 import { updateExperiment } from '../../redux/actions/experiments';
-import { updateExperimentInfo } from '../../redux/actions/experimentSettings';
+import { loadPipelineStatus, updateExperimentInfo } from '../../redux/actions/experimentSettings';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
@@ -469,12 +469,14 @@ const ProjectDetails = ({ width, height }) => {
 
     const allSampleFilesUploaded = (sample) => {
       // Check if all files for a given tech has been uploaded
+      const fileNamesArray = Array.from(sample.fileNames);
+
       if (!_.isEqual(
-        Array.from(new Set(sample.fileNames)),
+        fileNamesArray,
         fileUploadSpecifications[sample.type].requiredFiles,
       )) { return false; }
 
-      return sample.fileNames.every((fileName) => {
+      return fileNamesArray.every((fileName) => {
         const checkedFile = sample.files[fileName];
 
         return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
@@ -483,9 +485,7 @@ const ProjectDetails = ({ width, height }) => {
 
     const allSampleMetadataInserted = (sample) => {
       if (activeProject?.metadataKeys.length === 0) return true;
-
       if (Object.keys(sample.metadata).length !== activeProject.metadataKeys.length) return false;
-
       return Object.values(sample.metadata).every((value) => value.length > 0);
     };
 
@@ -603,6 +603,7 @@ const ProjectDetails = ({ width, height }) => {
               projectUuid: experiments[experimentId].projectUuid,
             }),
           );
+          dispatch(loadPipelineStatus(experimentId));
           router.push(analysisPath.replace('[experimentId]', experimentId));
         }}
         onChange={() => {

@@ -26,7 +26,7 @@ const saveExperiment = (
     dispatch(
       pushNotificationMessage(
         'error',
-        'We couldn\'t connect to the server to save your current processing settings, retrying...',
+        'We couldn\'t connect to the server to save your current experiment, retrying...',
         3,
       ),
     );

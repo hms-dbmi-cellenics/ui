@@ -17,6 +17,11 @@ const fileUploadSpecifications = {
       ['barcodes.tsv', 'barcodes.tsv.gz'],
       ['matrix.mtx', 'matrix.mtx.gz'],
     ],
+    requiredFiles: [
+      'features.tsv.gz',
+      'barcodes.tsv.gz',
+      'matrix.mtx.gz',
+    ],
   },
 
 };
