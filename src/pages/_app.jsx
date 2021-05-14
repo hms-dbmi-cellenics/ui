@@ -5,8 +5,10 @@ import { DefaultSeo } from 'next-seo';
 import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
-import Amplify, { withSSRContext } from 'aws-amplify';
+import Amplify, { Storage, withSSRContext } from 'aws-amplify';
 import _ from 'lodash';
+import AWS from 'aws-sdk';
+import { Credentials } from '@aws-amplify/core';
 import ContentWrapper from '../components/ContentWrapper';
 import NotFoundPage from './404';
 import Error from './_error';
@@ -15,12 +17,35 @@ import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 import CustomError from '../utils/customError';
 
+const mockCredentialsForInframock = () => {
+  Credentials.get = async () => (
+    new AWS.Credentials({
+      accessKeyId: 'asd',
+      secretAccessKey: 'asfdsa',
+    })
+  );
+
+  Credentials.shear = () => (
+    new AWS.Credentials({
+      accessKeyId: 'asd',
+      secretAccessKey: 'asfdsa',
+    })
+  );
+};
+
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 Amplify.configure({
   ssr: true,
+});
+
+// Configure Amplify to not use prefix when uploading to public folder, instead of '/'
+Storage.configure({
+  customPrefix: {
+    public: '',
+  },
 });
 
 const WrappedApp = ({ Component, pageProps }) => {
@@ -34,8 +59,15 @@ const WrappedApp = ({ Component, pageProps }) => {
 
   const [amplifyConfigured, setAmplifyConfigured] = useState(false);
 
+  const environment = useSelector((state) => state.networkResources.environment);
+
   useEffect(() => {
     Amplify.configure(amplifyConfig);
+    
+    if (environment === 'development') {
+      mockCredentialsForInframock();
+    }
+    
     setAmplifyConfigured(true);
   }, [amplifyConfig]);
 
@@ -52,7 +84,7 @@ const WrappedApp = ({ Component, pageProps }) => {
           <NotFoundPage
             title={'Analysis doesn\'t exist'}
             subTitle={'We searched, but we couldn\'t find the analysis you\'re looking for.'}
-            hint='It may have been deleted by the project owner. Go home to see your own priejcts and analyses.'
+            hint='It may have been deleted by the project owner. Go home to see your own projects and analyses.'
           />
         );
       }

@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
+import { enableFetchMocks } from 'jest-fetch-mock';
 import { Empty } from 'antd';
 // eslint-disable-next-line import/no-named-as-default
 import HeatmapPlot from '../../../../components/data-exploration/heatmap/HeatmapPlot';
@@ -14,6 +15,7 @@ import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
 jest.mock('localforage');
 jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
+enableFetchMocks();
 
 const mockStore = configureMockStore([thunk]);
 configure({ adapter: new Adapter() });

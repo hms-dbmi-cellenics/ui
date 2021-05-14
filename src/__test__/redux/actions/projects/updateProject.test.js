@@ -3,8 +3,12 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateProject from '../../../../redux/actions/projects/updateProject';
 import initialState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
+import { saveProject } from '../../../../redux/actions/projects';
 
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
+
+jest.mock('../../../../redux/actions/projects/saveProject');
+saveProject.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
@@ -46,15 +50,19 @@ describe('updateProject action', () => {
     const store = mockStore(mockState);
     await store.dispatch(updateProject(mockUuid, updatedProject));
 
-    const { project } = store.getActions()[0].payload;
-    expect(project.lastModified).not.toEqual(originalModifiedDate);
-    expect(_.omit(project, 'lastModified')).toEqual(_.omit(updatedProject, 'lastModified'));
+    const { diff } = store.getActions()[0].payload;
+    expect(diff.lastModified).not.toEqual(originalModifiedDate);
+    expect(_.omit(diff, 'lastModified')).toEqual(_.omit(updatedProject, 'lastModified'));
   });
 
-  it('Does not dispatch event if object contents are the same', async () => {
-    const store = mockStore(mockState);
-    await store.dispatch(updateProject(mockUuid, mockProject));
+  it('Dispatches call to save project', async () => {
+    const store = mockStore({
+      projects: {
+        [initialState.uuid]: initialState,
+      },
+    });
+    await store.dispatch(saveProject(mockProject));
 
-    expect(store.getActions().length).toEqual(0);
+    expect(saveProject).toHaveBeenCalled();
   });
 });

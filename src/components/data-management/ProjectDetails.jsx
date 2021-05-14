@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { ReloadOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
+import {
+  UploadOutlined, EditOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
-
+import { saveAs } from 'file-saver';
+import { Storage } from 'aws-amplify';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
+import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
 import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
@@ -24,11 +28,13 @@ import {
   updateMetadataTrack,
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
-import processUpload from '../../utils/processUpload';
+import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
-import UploadStatus from '../../utils/UploadStatus';
+import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
+
+import '../../utils/css/hover.css';
 
 const { Text, Paragraph } = Typography;
 
@@ -36,6 +42,9 @@ const ProjectDetails = ({ width, height }) => {
   const defaultNA = 'N.A.';
 
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
+  const uploadDetailsModalDataRef = useRef(null);
+
   const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
 
@@ -58,10 +67,10 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   useEffect(() => {
-    if (activeProject) {
-      setSampleNames(new Set(activeProject.samples.map((id) => samples[id].name.trim())));
+    if (activeProject && activeProject.samples.length > 0) {
+      setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
     } else {
-      setSampleNames([]);
+      setSampleNames(new Set());
     }
   }, [samples, activeProject]);
 
@@ -95,12 +104,38 @@ const ProjectDetails = ({ width, height }) => {
   }, [speciesData]);
 
   const renderUploadCell = (columnId, tableCellData) => {
-    const { status, progress = null } = tableCellData;
+    const {
+      sampleUuid,
+      file,
+    } = tableCellData;
+
+    const { status = null, progress = null } = file?.upload ?? {};
+
+    const showSuccessDetails = () => {
+      uploadDetailsModalDataRef.current = {
+        sampleUuid,
+        fileCategory: columnId,
+        file,
+      };
+
+      setUploadDetailsModalVisible(true);
+    };
+
+    const showErrorDetails = () => {
+      uploadDetailsModalDataRef.current = {
+        sampleUuid,
+        fileCategory: columnId,
+        file,
+      };
+
+      setUploadDetailsModalVisible(true);
+    };
 
     if (status === UploadStatus.UPLOADED) {
       return (
-        <Space>
-          <div style={{
+        <div
+          className='hoverSelectCursor'
+          style={{
             whiteSpace: 'nowrap',
             height: '35px',
             minWidth: '90px',
@@ -108,14 +143,23 @@ const ProjectDetails = ({ width, height }) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}
+        >
+          <Space
+            onClick={showSuccessDetails}
+            onKeyDown={showSuccessDetails}
           >
-            <Text type='success'>{status.message()}</Text>
-          </div>
-        </Space>
+            <Text type='success'>{messageForStatus(status)}</Text>
+          </Space>
+        </div>
       );
     }
 
-    if (status === UploadStatus.UPLOADING) {
+    if (
+      [
+        UploadStatus.UPLOADING,
+        UploadStatus.COMPRESSING,
+      ].includes(status)
+    ) {
       return (
         <div style={{
           whiteSpace: 'nowrap',
@@ -127,7 +171,7 @@ const ProjectDetails = ({ width, height }) => {
         }}
         >
           <Space direction='vertical' size={[1, 1]}>
-            <Text type='warning'>{`${status.message()}`}</Text>
+            <Text type='warning'>{`${messageForStatus(status)}`}</Text>
             {progress ? (<Progress percent={progress} size='small' />) : <div />}
           </Space>
         </div>
@@ -136,17 +180,21 @@ const ProjectDetails = ({ width, height }) => {
 
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
-        <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
+        <div
+          className='hoverSelectCursor'
+          onClick={showErrorDetails}
+          onKeyDown={showErrorDetails}
+          style={{
+            whiteSpace: 'nowrap',
+            height: '35px',
+            minWidth: '90px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <Space>
-            <Text type='danger'>{status.message()}</Text>
-            <Tooltip title='Retry' mouseLeaveDelay={0}>
-              <Button
-                size='small'
-                shape='link'
-                icon={<ReloadOutlined />}
-                onClick={() => setUploadModalVisible(true)}
-              />
-            </Tooltip>
+            <Text type='danger'>{messageForStatus(status)}</Text>
           </Space>
         </div>
       );
@@ -160,10 +208,18 @@ const ProjectDetails = ({ width, height }) => {
       ].includes(status)
     ) {
       return (
-        <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
+        <div style={{
+          whiteSpace: 'nowrap',
+          height: '35px',
+          minWidth: '90px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        >
           <Space>
-            <Text type='danger'>{status.message()}</Text>
-            <Tooltip title='Upload missing' mouseLeaveDelay={0}>
+            <Text type='danger'>{messageForStatus(status)}</Text>
+            <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
               <Button
                 size='small'
                 shape='link'
@@ -413,17 +469,21 @@ const ProjectDetails = ({ width, height }) => {
     const newData = activeProject.samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
-      const barcodesUpload = sampleFiles['barcodes.tsv.gz']?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const genesUpload = (sampleFiles['genes.tsv.gz'] ?? sampleFiles['features.tsv.gz'])?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const matrixUpload = sampleFiles['matrix.mtx.gz']?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const genesFile = sampleFiles['features.tsv.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
+
+      const barcodesData = { sampleUuid, file: barcodesFile };
+      const genesData = { sampleUuid, file: genesFile };
+      const matrixData = { sampleUuid, file: matrixFile };
 
       return {
         key: idx,
         name: samples[sampleUuid].name,
         uuid: sampleUuid,
-        barcodes: barcodesUpload,
-        genes: genesUpload,
-        matrix: matrixUpload,
+        barcodes: barcodesData,
+        genes: genesData,
+        matrix: matrixData,
         species: samples[sampleUuid].species || defaultNA,
         ...samples[sampleUuid].metadata,
       };
@@ -436,12 +496,52 @@ const ProjectDetails = ({ width, height }) => {
     dispatch(updateProject(activeProjectUuid, { description }));
   };
 
+  const uploadFileBundle = (bundleToUpload) => {
+    if (!uploadDetailsModalDataRef.current) {
+      return;
+    }
+
+    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
+
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
+
+    const metadata = metadataForBundle(bundleToUpload);
+
+    compressAndUploadSingleFile(
+      bucketKey, sampleUuid, file.name,
+      bundleToUpload, dispatch, metadata,
+    );
+
+    setUploadDetailsModalVisible(false);
+  };
+
+  const downloadFile = async () => {
+    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
+
+    const downloadedS3Object = await Storage.get(bucketKey, { download: true });
+
+    const bundleName = file?.bundle.name;
+    const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
+
+    saveAs(downloadedS3Object.Body, fileNameToSaveWith);
+  };
+
   return (
     <>
       <FileUploadModal
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
         onUpload={uploadFiles}
+      />
+      <UploadDetailsModal
+        sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
+        file={uploadDetailsModalDataRef.current?.file}
+        fileCategory={uploadDetailsModalDataRef.current?.fileCategory}
+        visible={uploadDetailsModalVisible}
+        onUpload={uploadFileBundle}
+        onDownload={downloadFile}
+        onCancel={() => setUploadDetailsModalVisible(false)}
       />
       <div width={width} height={height}>
         <PageHeader

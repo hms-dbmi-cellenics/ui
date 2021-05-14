@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Modal, Button, Input, Space, Typography, Form,
 } from 'antd';
-
+import { ClipLoader } from 'react-spinners';
 import validateProjectName from '../../utils/validateProjectName';
 
 const { Text, Title, Paragraph } = Typography;
@@ -19,14 +20,18 @@ const NewProjectModal = (props) => {
   } = props;
 
   const [projectNames, setProjectNames] = useState(new Set());
+  const [projectName, setProjectName] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
+  const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
     setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
   }, [projects.ids]);
 
-  const [projectName, setProjectName] = useState('');
-  const [projectDescription, setProjectDescription] = useState('');
-  const [isValid, setIsValid] = useState(false);
+  const {
+    saving,
+    error,
+  } = useSelector((state) => state.projects.meta);
 
   return (
     <Modal
@@ -92,6 +97,7 @@ const NewProjectModal = (props) => {
                 }}
                 placeholder='Ex.: Lung gamma delta T cells'
                 value={projectName}
+                disabled={saving}
               />
             </Form.Item>
             <Form.Item
@@ -101,9 +107,28 @@ const NewProjectModal = (props) => {
                 onChange={(e) => { setProjectDescription(e.target.value); }}
                 placeholder='Type description'
                 autoSize={{ minRows: 3, maxRows: 5 }}
+                disabled={saving}
               />
             </Form.Item>
           </Form>
+
+          {saving && (
+            <center>
+              <Space direction='vertical'>
+                <ClipLoader
+                  size={50}
+                  color='#8f0b10'
+                />
+                <Text>Creating project...</Text>
+              </Space>
+            </center>
+          )}
+
+          {error && (
+            <Text type='danger' style={{ fontSize: 14 }}>
+              {error}
+            </Text>
+          )}
 
         </Space>
       </Space>

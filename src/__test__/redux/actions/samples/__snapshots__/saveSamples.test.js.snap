@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`saveSamples action Dispatches a notification when fetch fails. 1`] = `
+Object {
+  "payload": Object {
+    "message": "Saving sample...",
+  },
+  "type": "samples/saving",
+}
+`;

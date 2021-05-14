@@ -1,22 +1,12 @@
-/* eslint-disable import/no-named-as-default-member */
-import _ from 'lodash';
 import initialState from './initialState';
+import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateProcessingSettings = (state, action) => {
   const { settingName, configChange } = action.payload;
 
-  const arrayMerge = (obj, src) => {
-    if (_.isArray(obj)) {
-      return src;
-    }
-  };
-
-  const newConfig = _.cloneDeep(
-    _.mergeWith(
-      state.processing[settingName],
-      configChange,
-      arrayMerge,
-    ),
+  const newConfig = mergeObjectWithArrays(
+    state.processing[settingName],
+    configChange,
   );
 
   return {

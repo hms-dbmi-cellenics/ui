@@ -1,10 +1,18 @@
+import fetchAPI from '../../../utils/fetchAPI';
 import {
-  PROJECTS_DELETE, PROJECTS_SET_ACTIVE,
+  PROJECTS_DELETE,
+  PROJECTS_SET_ACTIVE,
+  PROJECTS_ERROR,
+  PROJECTS_SAVING,
+  PROJECTS_SAVED,
 } from '../../actionTypes/projects';
 
 import {
   SAMPLES_DELETE,
 } from '../../actionTypes/samples';
+
+import pushNotificationMessage from '../notifications';
+import errorTypes from './errorTypes';
 
 const deleteProject = (
   projectUuid,
@@ -14,22 +22,54 @@ const deleteProject = (
   const { activeProjectUuid } = projects.meta;
 
   dispatch({
-    type: SAMPLES_DELETE,
+    type: PROJECTS_SAVING,
     payload: {
-      sampleUuids: projects[projectUuid].samples,
+      message: 'Deleting project...',
     },
   });
 
-  dispatch({
-    type: PROJECTS_DELETE,
-    payload: { projectUuid },
-  });
+  try {
+    await fetchAPI(
+      `/v1/projects/${projectUuid}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
 
-  // If deleted project is the same as the active project, choose another project
-  if (projectUuid === activeProjectUuid) {
     dispatch({
-      type: PROJECTS_SET_ACTIVE,
-      payload: { projectUuid: projects.ids.length > 1 ? projects.ids[0] : null },
+      type: SAMPLES_DELETE,
+      payload: {
+        sampleUuids: projects[projectUuid].samples,
+      },
+    });
+
+    dispatch({
+      type: PROJECTS_DELETE,
+      payload: { projectUuid },
+    });
+
+    dispatch({
+      type: PROJECTS_SAVED,
+    });
+
+    // If deleted project is the same as the active project, choose another project
+    if (projectUuid === activeProjectUuid) {
+      dispatch({
+        type: PROJECTS_SET_ACTIVE,
+        payload: { projectUuid: projects.ids.length > 1 ? projects.ids[0] : null },
+      });
+    }
+  } catch (e) {
+    pushNotificationMessage('error', errorTypes.PROJECTS_DELETE);
+
+    dispatch({
+      type: PROJECTS_ERROR,
+      payload: {
+        error: errorTypes.PROJECTS_DELETE,
+      },
     });
   }
 };

@@ -3,6 +3,7 @@ import updateSample from './updateSample';
 import updateSampleFile from './updateSampleFile';
 import loadSamples from './loadSamples';
 import deleteSamples from './deleteSamples';
+import saveSamples from './saveSamples';
 
 export {
   createSample,
@@ -10,4 +11,5 @@ export {
   updateSampleFile,
   loadSamples,
   deleteSamples,
+  saveSamples,
 };
