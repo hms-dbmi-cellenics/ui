@@ -4,6 +4,7 @@ import waitForActions from 'redux-mock-store-await-actions';
 import uuid from 'uuid';
 
 import { Storage } from 'aws-amplify';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { SAMPLES_FILE_UPDATE } from '../../redux/actionTypes/samples';
 
 import initialSampleState, { sampleTemplate } from '../../redux/reducers/samples/initialState';
@@ -11,6 +12,8 @@ import initialProjectState, { projectTemplate } from '../../redux/reducers/proje
 
 import processUpload from '../../utils/processUpload';
 import UploadStatus from '../../utils/UploadStatus';
+
+enableFetchMocks();
 
 const validFilesList = [
   {
@@ -51,7 +54,7 @@ const validFilesList = [
 const sampleType = '10X Chromium';
 
 const mockSampleUuid = 'sample-uuid';
-const mockProjectUuid = 'sample-uuid';
+const mockProjectUuid = 'project-uuid';
 
 jest.mock('uuid', () => jest.fn());
 uuid.v4 = jest.fn(() => 'sample-uuid');
@@ -102,13 +105,17 @@ jest.mock('../../utils/environment', () => ({
   ssrGetCurrentEnvironment: () => 'development',
 }));
 
+jest.mock('../../redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
+  type: 'samples/saved',
+})));
+
 let mockStorageCalls = [];
 
 Storage.put = jest.fn().mockImplementation(
   (bucketKey, file) => {
     mockStorageCalls.push({ bucketKey, file });
     if (bucketKey.includes('errorProjectUuid')) {
-      return Promise.reject(new Error());
+      return Promise.reject(new Error('error'));
     }
 
     return Promise.resolve(null);
@@ -124,6 +131,12 @@ describe('processUpload (in development)', () => {
   beforeEach(() => {
     // eslint-disable-next-line no-param-reassign
     validFilesList.forEach((file) => { file.bundle.valid = true; });
+
+    const response = new Response({});
+
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResolvedValue(response);
   });
 
   it('Uploads and updates redux correctly when there are no errors', async () => {
@@ -230,8 +243,8 @@ describe('processUpload (in development)', () => {
 
     await waitForActions(
       store,
-      new Array(6).fill(SAMPLES_FILE_UPDATE),
-      { matcher: waitForActions.matchers.containing, throttleWait: 2 },
+      new Array(12).fill(SAMPLES_FILE_UPDATE),
+      { matcher: waitForActions.matchers.containing, throttleWait: 20 },
     );
 
     const fileUpdateActions = store.getActions().filter(
