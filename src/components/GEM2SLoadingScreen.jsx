@@ -1,0 +1,98 @@
+import React from 'react';
+import {
+  Result, Button, Progress, Row, Col, Typography, Space,
+} from 'antd';
+import Link from 'next/link';
+import PropTypes from 'prop-types';
+
+const { Title, Text } = Typography;
+
+const GEM2SLoadingScreen = ({ pipelineStatus, completedSteps, steps }) => {
+  const path = '/data-management';
+
+  const texts = {
+    error: {
+      status: 'error',
+      title: 'We\'ve had an issue while launching your experiment.',
+      subTitle: 'Please go to Data Management and try again.',
+      showProgress: false,
+    },
+    running: {
+      status: 'info',
+      showProgress: true,
+    },
+    toBeRun: {
+      status: 'info',
+      title: 'Let\'s upload your data.',
+      subTitle: 'You need to upload your data before it can be explored. To begin, go to Data Management.',
+      showProgress: false,
+    },
+  };
+
+  const { status, title, subTitle } = texts[pipelineStatus];
+
+  const renderExtra = () => {
+    if (pipelineStatus !== 'running') {
+      return (
+        <Link as={path} href={path} passHref>
+          <Button type='primary' key='console'>
+            Go to Data Management
+          </Button>
+        </Link>
+      );
+    }
+
+    return (
+      <Row>
+        <Col span={8} offset={8}>
+          <Space direction='vertical' size='large'>
+            <br />
+            <div>
+              <Space direction='vertical' style={{ width: '100%' }}>
+                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / steps.length) * 100)} />
+                <Text type='secondary'>{steps[completedSteps.length - 1]}</Text>
+              </Space>
+            </div>
+            <div>
+              <Title level={3}>We're launching your analysis...</Title>
+              <Text type='secondary'>You can wait or leave this screen and check again later</Text>
+            </div>
+          </Space>
+        </Col>
+      </Row>
+    );
+  };
+
+  return (
+    <Result
+      status={status}
+      title={title}
+      subTitle={subTitle}
+      icon={(
+        <img
+          width={250}
+          height={250}
+          alt='A woman fitting an oversized clipboard next to other clipboards (illustration).'
+          src='/undraw_Timeline_re_aw6g.svg'
+          style={{
+            display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%',
+          }}
+        />
+      )}
+      extra={renderExtra()}
+    />
+  );
+};
+
+GEM2SLoadingScreen.propTypes = {
+  pipelineStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
+  completedSteps: PropTypes.array,
+  steps: PropTypes.array,
+};
+
+GEM2SLoadingScreen.defaultProps = {
+  completedSteps: [],
+  steps: [],
+};
+
+export default GEM2SLoadingScreen;
