@@ -8,9 +8,15 @@ const sampleTemplate = {
   lastModified: null,
   complete: false,
   error: false,
-  fileNames: [],
+  fileNames: new Set(),
   files: {},
   metadata: {},
+  toJSON() {
+    return {
+      ...this,
+      fileNames: [...this.fileNames],
+    };
+  },
 };
 
 const sampleFileTemplate = {
@@ -21,6 +27,10 @@ const sampleFileTemplate = {
   path: '',
   success: false,
   error: false,
+  lastModified: '',
+  upload: {
+    status: null,
+  },
 };
 
 const initialState = {
@@ -28,6 +38,7 @@ const initialState = {
   meta: {
     loading: true,
     error: false,
+    saving: false,
   },
 };
 

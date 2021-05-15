@@ -61,6 +61,14 @@ const testableProcessingConfig = {
           numGenes: 2000,
           normalization: 'logNormalize',
         },
+        fastmnn: {
+          numGenes: 2000,
+          normalization: 'logNormalize',
+        },
+        unisample: {
+          numGenes: 2000,
+          normalization: 'logNormalize',
+        },
       },
     },
     dimensionalityReduction: {

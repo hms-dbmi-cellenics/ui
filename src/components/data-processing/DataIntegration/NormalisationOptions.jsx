@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Form, InputNumber, Select, Tooltip, Typography } from 'antd';
+import {
+  Form, InputNumber, Select, Tooltip, Typography,
+} from 'antd';
 
 import {
   QuestionCircleOutlined,
@@ -9,9 +11,9 @@ import {
 const { Option } = Select;
 const { Text } = Typography;
 
-const SeuratV4Options = (props) => {
+const NormalisationOptions = (props) => {
   const {
-    config, onUpdate, onChange, disabled,
+    config, onUpdate, onChange, disabled, methodId,
   } = props;
 
   const [numGenes, setNumGenes] = useState(config.numGenes);
@@ -31,7 +33,7 @@ const SeuratV4Options = (props) => {
           onStep={(value) => onUpdate({
             dataIntegration: {
               methodSettings: {
-                seuratv4: {
+                [methodId]: {
                   numGenes: value,
                 },
               },
@@ -40,7 +42,7 @@ const SeuratV4Options = (props) => {
           onBlur={(e) => onUpdate({
             dataIntegration: {
               methodSettings: {
-                seuratv4: {
+                [methodId]: {
                   numGenes: parseInt(e.target.value, 0),
                 },
               },
@@ -75,8 +77,8 @@ const SeuratV4Options = (props) => {
           Normalization&nbsp;
           <Tooltip overlay={(
             <span>
-              Normalization aims to remove technical factors including sequencing depth.
-              There are several methods to achive normalization.
+              Normalization aims to remove technical variation that is not biologically relevant, e.g. sequencing depth.
+              There are several methods to achieve normalization.
               "sctransform" claims to recover sharper biological distinction compared to log-normalization.
               Normalization is applied to each sample before integration.
               Further info can be found
@@ -101,7 +103,7 @@ const SeuratV4Options = (props) => {
           onChange={(val) => onUpdate({
             dataIntegration: {
               methodSettings: {
-                seuratv4: { normalization: val },
+                [methodId]: { normalization: val },
               },
             },
           })}
@@ -116,14 +118,16 @@ const SeuratV4Options = (props) => {
   );
 };
 
-SeuratV4Options.propTypes = {
+NormalisationOptions.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired,
+  methodId: PropTypes.oneOf(['seuratv4', 'unisample', 'fastmnn']).isRequired,
   onChange: PropTypes.func,
 };
 
-SeuratV4Options.defaultProps = {
+NormalisationOptions.defaultProps = {
   onChange: null,
 };
 
-export default SeuratV4Options;
+export default NormalisationOptions;

@@ -1,7 +1,7 @@
 const PROJECTS = 'projects';
 
 /**
- * Save project.
+ * Create project.
  */
 const PROJECTS_CREATE = `${PROJECTS}/create`;
 
@@ -18,7 +18,22 @@ const PROJECTS_SET_ACTIVE = `${PROJECTS}/setActive`;
 /**
  * Delete project.
  */
-const PROJECTS_DELETE = `${PROJECTS}/delete`;
+const PROJECTS_DELETE = `${PROJECTS}/deleted`;
+
+/**
+ * Saving project.
+ */
+const PROJECTS_SAVING = `${PROJECTS}/saving`;
+
+/**
+ * Project saved.
+ */
+const PROJECTS_SAVED = `${PROJECTS}/saved`;
+
+/**
+ * Error saving or updating project.
+ */
+const PROJECTS_ERROR = `${PROJECTS}/error`;
 
 /**
  * Add project metadata.
@@ -40,6 +55,9 @@ export {
   PROJECTS_UPDATE,
   PROJECTS_SET_ACTIVE,
   PROJECTS_DELETE,
+  PROJECTS_ERROR,
+  PROJECTS_SAVED,
+  PROJECTS_SAVING,
   PROJECTS_METADATA_CREATE,
   PROJECTS_METADATA_UPDATE,
   PROJECTS_METADATA_DELETE,
