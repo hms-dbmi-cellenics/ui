@@ -5,6 +5,7 @@ const experimentError = (state, action) => {
     ...state,
     meta: {
       ...state.meta,
+      saving: false,
       error,
     },
   };

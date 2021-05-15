@@ -9,7 +9,9 @@ const experimentTemplate = {
 
 const initialState = {
   meta: {
+    loading: false,
     error: false,
+    saving: false,
   },
   ids: [],
 };

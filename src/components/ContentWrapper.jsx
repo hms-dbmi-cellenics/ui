@@ -221,9 +221,9 @@ const ContentWrapper = (props) => {
         return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='running' />;
       }
 
-      // if (process.env.NODE_ENV === 'development') {
-      //   return children;
-      // }
+      if (process.env.NODE_ENV === 'development') {
+        return children;
+      }
 
       if (pipelineStatusKey === 'NotCreated' && !route.includes('data-processing')) {
         return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='toBeRun' />;

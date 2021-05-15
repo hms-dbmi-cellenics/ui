@@ -81,7 +81,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
-    unisample: ['dataIntegration']
+    unisample: []
   }
 
   const disabledConditionMessage = {
