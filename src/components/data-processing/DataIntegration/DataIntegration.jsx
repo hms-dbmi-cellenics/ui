@@ -34,6 +34,12 @@ const DataIntegration = (props) => {
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
 
+  const sampleKeys = cellSets.hierarchy?.find(
+    (rootNode) => (rootNode.key === 'sample'),
+  )?.children.map(
+    (child) => child.key,
+  );
+
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
 
@@ -368,6 +374,7 @@ const DataIntegration = (props) => {
             config={calculationConfig}
             onPipelineRun={onPipelineRun}
             disabled={stepDisabled}
+            disableDataIntegration={sampleKeys && sampleKeys.length === 1}
           />
           <Collapse>
             <Panel header='Plot styling' key='styling'>

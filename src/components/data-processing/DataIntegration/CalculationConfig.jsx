@@ -34,7 +34,10 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun, disabled,
+    experimentId,
+    onPipelineRun,
+    disabled,
+    disableDataIntegration,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -102,7 +105,7 @@ const CalculationConfig = (props) => {
         config={dataIntegration.methodSettings.seuratv4}
         onUpdate={updateSettings}
         onChange={() => setChangesOutstanding(true)}
-        disabled={disabled}
+        disabled={disableDataIntegration || disabled}
       />
     ),
   };
@@ -146,7 +149,7 @@ const CalculationConfig = (props) => {
               <Select
                 value={dataIntegration.method}
                 onChange={(val) => updateSettings({ dataIntegration: { method: val } })}
-                disabled={disabled}
+                disabled={disableDataIntegration || disabled}
               >
                 {
                   methods.map((el) => (
@@ -197,10 +200,11 @@ const CalculationConfig = (props) => {
             <Form.Item label='Exclude genes categories'>
               <Tooltip title='Normalization can be biased by certain gene categories such the ones listed here.
               Checking them will ignore those categories.
-              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day. 
-              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences 
+              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day.
+              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences
               in expression between cell types.
-              This is not implemented yet'>
+              This is not implemented yet'
+              >
                 <QuestionCircleOutlined />
               </Tooltip>
               <Checkbox.Group
@@ -280,7 +284,7 @@ const CalculationConfig = (props) => {
           </div>
         </Form>
       </Panel>
-    </Collapse >
+    </Collapse>
   );
 };
 
@@ -288,10 +292,12 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
+  disableDataIntegration: PropTypes.bool,
 };
 
 CalculationConfig.defaultProps = {
   disabled: false,
+  disableDataIntegration: false,
 };
 
 export default CalculationConfig;
