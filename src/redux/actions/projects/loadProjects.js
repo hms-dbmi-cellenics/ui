@@ -1,5 +1,5 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import { PROJECTS_LOAD } from '../../actionTypes/projects';
+import { PROJECTS_ERROR, PROJECTS_LOAD } from '../../actionTypes/projects';
 import pushNotificationMessage from '../notifications';
 import messages from '../../../components/notification/messages';
 import loadSamples from '../samples/loadSamples';
@@ -23,6 +23,12 @@ const loadProjects = () => async (dispatch) => {
     });
   } catch (e) {
     dispatch(pushNotificationMessage('error', messages.connectionError, 10));
+    dispatch({
+      type: PROJECTS_ERROR,
+      payload: {
+        error: e,
+      },
+    });
   }
 };
 export default loadProjects;
