@@ -1,5 +1,6 @@
 const samplesLoad = (state, action) => {
   const { samples } = action.payload;
+
   return {
     ...state,
     meta: {
@@ -8,6 +9,7 @@ const samplesLoad = (state, action) => {
       error: false,
     },
     ...samples,
+    ids: [...state.ids, ...samples.ids],
   };
 };
 

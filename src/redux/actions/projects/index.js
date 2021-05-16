@@ -6,6 +6,7 @@ import setActiveProject from './setActiveProject';
 import createMetadataTrack from './createMetadataTrack';
 import updateMetadataTrack from './updateMetadataTrack';
 import deleteMetadataTrack from './deleteMetadataTrack';
+import loadProjects from './loadProjects';
 
 export {
   createProject,
@@ -16,4 +17,5 @@ export {
   createMetadataTrack,
   updateMetadataTrack,
   deleteMetadataTrack,
+  loadProjects,
 };

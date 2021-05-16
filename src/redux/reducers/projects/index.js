@@ -9,6 +9,7 @@ import {
   PROJECTS_METADATA_CREATE,
   PROJECTS_METADATA_UPDATE,
   PROJECTS_METADATA_DELETE,
+  PROJECTS_LOAD,
 } from '../../actionTypes/projects';
 import initialState from './initialState';
 import projectsCreate from './projectsCreate';
@@ -21,6 +22,7 @@ import projectsError from './projectsError';
 import projectsMetadataCreate from './projectsMetadataCreate';
 import projectsMetadataUpdate from './projectsMetadataUpdate';
 import projectsMetadataDelete from './projectsMetadataDelete';
+import projectsLoad from './projectsLoad';
 
 const projectsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -62,6 +64,10 @@ const projectsReducer = (state = initialState, action) => {
 
     case PROJECTS_METADATA_DELETE: {
       return projectsMetadataDelete(state, action);
+    }
+
+    case PROJECTS_LOAD: {
+      return projectsLoad(state, action);
     }
 
     default: {

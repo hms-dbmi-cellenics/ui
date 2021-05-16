@@ -6,7 +6,7 @@ import { Button, Space } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
-import { createProject } from '../../redux/actions/projects';
+import { createProject, loadProjects } from '../../redux/actions/projects';
 
 import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
@@ -24,6 +24,10 @@ const DataManagementPage = ({ route }) => {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
+
+  useEffect(() => {
+    dispatch(loadProjects());
+  }, []);
 
   useEffect(() => {
     if (projectsList.ids.length) {

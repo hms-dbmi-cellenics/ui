@@ -452,7 +452,7 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   useEffect(() => {
-    if (projects.ids.length === 0 || samples.ids.length === 0) {
+    if (projects.ids.length === 0 || !samples.ids.includes(activeProject.samples[0])) {
       setTableData([]);
       setTableColumns([]);
       return;
