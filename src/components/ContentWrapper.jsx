@@ -56,15 +56,6 @@ const ContentWrapper = (props) => {
   const gem2sRunningError = backendErrors.includes(pipelineStatusKey);
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
-  const gem2sStepsInfo = [
-    'Downloading sample files',
-    'Preprocessing samples',
-    'Computing metrics',
-    'Converting samples',
-    'Preparing experiment',
-    'Uploading completed data',
-  ];
-
   // This is used to prevent a race condition where the page would start loading immediately
   // when the pipeline status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadPipelineStatus` action, the time between the
@@ -234,7 +225,7 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunning) {
-        return <GEM2SLoadingScreen pipelineStatus='running' completedSteps={completedGem2sSteps} steps={gem2sStepsInfo} />;
+        return <GEM2SLoadingScreen pipelineStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
       if (gem2sStatusKey === 'NotCreated') {

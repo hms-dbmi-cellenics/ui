@@ -10,6 +10,18 @@ const { Title, Text } = Typography;
 const GEM2SLoadingScreen = ({ pipelineStatus, completedSteps, steps }) => {
   const path = '/data-management';
 
+  const gem2sStepsInfo = [
+    'Downloading sample files',
+    'Preprocessing samples',
+    'Computing metrics',
+    'Converting samples',
+    'Preparing experiment',
+    'Uploading completed data',
+  ];
+
+  // eslint-disable-next-line no-param-reassign
+  steps = steps || gem2sStepsInfo;
+
   const texts = {
     toBeRun: {
       status: 'info',
