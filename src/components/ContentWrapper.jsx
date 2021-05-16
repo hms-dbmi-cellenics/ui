@@ -51,16 +51,12 @@ const ContentWrapper = (props) => {
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
   const pipelineRunningError = backendErrors.includes(pipelineStatusKey);
 
-  const gem2sRunningError = false;
-  const gem2sRunning = false;
-  const gem2sStatusKey = 'Created';
-  const completedGem2sSteps = [
-    'Downloading sample files',
-    'Preprocessing samples',
-    'Computing metrics',
-  ];
+  const gem2sStatusKey = backendStatus.gem2s?.status;
+  const gem2sRunning = gem2sStatusKey === 'RUNNING';
+  const gem2sRunningError = backendErrors.includes(pipelineStatusKey);
+  const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
-  const gem2sSteps = [
+  const gem2sStepsInfo = [
     'Downloading sample files',
     'Preprocessing samples',
     'Computing metrics',
@@ -238,7 +234,7 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunning) {
-        return <GEM2SLoadingScreen pipelineStatus='running' completedSteps={completedGem2sSteps} steps={gem2sSteps} />;
+        return <GEM2SLoadingScreen pipelineStatus='running' completedSteps={completedGem2sSteps} steps={gem2sStepsInfo} />;
       }
 
       if (gem2sStatusKey === 'NotCreated') {

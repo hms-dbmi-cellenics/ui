@@ -11,20 +11,22 @@ const GEM2SLoadingScreen = ({ pipelineStatus, completedSteps, steps }) => {
   const path = '/data-management';
 
   const texts = {
-    error: {
-      status: 'error',
-      title: 'We\'ve had an issue while launching your experiment.',
-      subTitle: 'Please go to Data Management and try again.',
-      showProgress: false,
-    },
-    running: {
-      status: 'info',
-      showProgress: true,
-    },
     toBeRun: {
       status: 'info',
       title: 'Let\'s upload your data.',
       subTitle: 'You need to upload your data before it can be explored. To begin, go to Data Management.',
+      showProgress: false,
+    },
+    running: {
+      status: 'running',
+      showProgress: true,
+      title: '',
+      subTitle: '',
+    },
+    error: {
+      status: 'error',
+      title: 'We\'ve had an issue while launching your experiment.',
+      subTitle: 'Please go to Data Management and try again.',
       showProgress: false,
     },
   };
