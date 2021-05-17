@@ -1,16 +1,23 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+// import { enableFetchMocks } from 'jest-fetch-mock';
 import createProject from '../../../../redux/actions/projects/createProject';
 import initialState from '../../../../redux/reducers/projects';
 import { saveProject } from '../../../../redux/actions/projects';
-
+import { createExperiment } from '../../../../redux/actions/experiments';
 import { PROJECTS_CREATE } from '../../../../redux/actionTypes/projects';
-import { EXPERIMENTS_CREATE } from '../../../../redux/actionTypes/experiments';
 
 const mockStore = configureStore([thunk]);
+// enableFetchMocks();
 
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
+
+jest.mock('../../../../redux/actions/experiments/createExperiment');
+createExperiment.mockImplementation(() => async () => ({
+  name: 'New project',
+  uuid: 'new-project',
+}));
 
 describe('createProject action', () => {
   const mockProject = {
@@ -29,9 +36,8 @@ describe('createProject action', () => {
 
     const actions = store.getActions();
 
-    // Create experiment in the first step
-    expect(actions[0].type).toEqual(EXPERIMENTS_CREATE);
-    expect(actions[1].type).toEqual(PROJECTS_CREATE);
+    // And then create and save projects
+    expect(actions[0].type).toEqual(PROJECTS_CREATE);
   });
 
   it('Dispatches call to save project', async () => {

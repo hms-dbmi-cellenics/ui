@@ -66,14 +66,14 @@ const saveSamples = (
       });
     }
   } catch (e) {
-    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
-
     dispatch({
       type: SAMPLES_ERROR,
       payload: {
         error: errorTypes.SAVE_SAMPLES,
       },
     });
+
+    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
   }
 };
 

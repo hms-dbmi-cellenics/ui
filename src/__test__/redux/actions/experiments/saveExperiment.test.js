@@ -3,6 +3,8 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialExperimenttState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
 import saveExperiment from '../../../../redux/actions/experiments/saveExperiment';
+import { EXPERIMENTS_SAVING, EXPERIMENTS_ERROR } from '../../../../redux/actionTypes/experiments';
+import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
 
 jest.mock('localforage');
 
@@ -56,7 +58,15 @@ describe('saveExperiment action', () => {
     const store = mockStore(initialState);
     await store.dispatch(saveExperiment(mockExperiment.id));
 
-    const firstAction = store.getActions()[0];
-    expect(firstAction).toMatchSnapshot();
+    const actions = store.getActions();
+
+    // First action sets up saving status
+    expect(actions[0].type).toBe(EXPERIMENTS_SAVING);
+
+    // Second state saves error
+    expect(actions[1].type).toBe(EXPERIMENTS_ERROR);
+
+    // Thirdd state emits notification
+    expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
   });
 });

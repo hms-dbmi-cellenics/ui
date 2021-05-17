@@ -38,6 +38,13 @@ const saveExperiment = (
       type: EXPERIMENTS_SAVED,
     });
   } catch (e) {
+    dispatch({
+      type: EXPERIMENTS_ERROR,
+      payload: {
+        error: errorTypes.SAVE_EXPERIMENT,
+      },
+    });
+
     dispatch(
       pushNotificationMessage(
         'error',
@@ -45,13 +52,6 @@ const saveExperiment = (
         3,
       ),
     );
-
-    dispatch({
-      type: EXPERIMENTS_ERROR,
-      payload: {
-        error: errorTypes.SAVE_EXPERIMENT,
-      },
-    });
   }
 };
 

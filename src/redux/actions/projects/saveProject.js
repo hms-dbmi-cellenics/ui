@@ -45,14 +45,14 @@ const saveProject = (
       });
     }
   } catch (e) {
-    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
-
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
         error: errorTypes.SAVE_PROJECT,
       },
     });
+
+    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
   }
 };
 
