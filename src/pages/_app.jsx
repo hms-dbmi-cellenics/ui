@@ -63,11 +63,11 @@ const WrappedApp = ({ Component, pageProps }) => {
 
   useEffect(() => {
     Amplify.configure(amplifyConfig);
-    
+
     if (environment === 'development') {
       mockCredentialsForInframock();
     }
-    
+
     setAmplifyConfigured(true);
   }, [amplifyConfig]);
 
