@@ -189,6 +189,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
+    console.error(e);
     if (e instanceof CustomError) {
       if (res && e.payload.status) {
         res.statusCode = e.payload.status;
