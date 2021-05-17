@@ -51,7 +51,7 @@ const deleteSamples = (
     Object.entries(projectSamples).forEach(([projectUuid, samplesToDelete]) => {
       const samplesForAProject = getProjectSamples(projects, projectUuid, samples);
       const newSample = _.omit(samplesForAProject, samplesToDelete);
-      newSample.ids = _.difference(samplesForAProject.ids, samplesToDelete.ids);
+      newSample.ids = _.difference(samplesForAProject.ids, samplesToDelete);
 
       const newProject = {
         ...projects[projectUuid],
