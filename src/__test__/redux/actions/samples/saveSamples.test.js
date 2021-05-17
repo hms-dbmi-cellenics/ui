@@ -119,13 +119,15 @@ describe('saveSamples action', () => {
     expect(actions.length).toEqual(2);
     expect(actions[0].type).toEqual(SAMPLES_SAVING);
     expect(actions[1].type).toEqual(SAMPLES_SAVED);
+    expect(actions).toMatchSnapshot();
   });
 
-  it('Does not dispatch guards if disabled', async () => {
+  it('Does not dispatch pre and post actions if disabled', async () => {
     const store = mockStore(initialState);
     await store.dispatch(saveSamples(mockprojectUuid, newSample, true, false));
 
     const actions = store.getActions();
     expect(actions.length).toEqual(0);
+    expect(actions).toMatchSnapshot();
   });
 });

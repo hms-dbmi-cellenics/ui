@@ -1,7 +1,7 @@
 import initialState from './initialState';
 import {
   EXPERIMENTS_CREATED,
-  EXPERIMENTS_UPDATE,
+  EXPERIMENTS_UPDATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVED,
   EXPERIMENTS_SAVING,
@@ -17,7 +17,7 @@ const experimentSettingsReducer = (state = initialState, action) => {
     case EXPERIMENTS_CREATED: {
       return experimentsCreate(state, action);
     }
-    case EXPERIMENTS_UPDATE: {
+    case EXPERIMENTS_UPDATED: {
       return experimentsUpdate(state, action);
     }
     case EXPERIMENTS_ERROR: {

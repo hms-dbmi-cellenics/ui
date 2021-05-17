@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {
-  EXPERIMENTS_UPDATE,
+  EXPERIMENTS_UPDATED,
 } from '../../../../redux/actionTypes/experiments';
 import { updateExperiment, saveExperiment } from '../../../../redux/actions/experiments';
 import initialExperimentState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
@@ -40,7 +40,9 @@ describe('updateExperiment', () => {
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(EXPERIMENTS_UPDATE);
+    expect(actions[0].type).toEqual(EXPERIMENTS_UPDATED);
+
+    expect(actions).toMatchSnapshot();
   });
 
   it('Dispatches call to save experiment', async () => {

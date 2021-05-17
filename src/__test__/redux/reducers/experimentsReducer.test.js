@@ -3,7 +3,7 @@ import initialState, { experimentTemplate } from '../../../redux/reducers/experi
 
 import {
   EXPERIMENTS_CREATED,
-  EXPERIMENTS_UPDATE,
+  EXPERIMENTS_UPDATED,
 } from '../../../redux/actionTypes/experiments';
 
 describe('experimentsReducer', () => {
@@ -27,6 +27,7 @@ describe('experimentsReducer', () => {
   const oneExperimentState = {
     ...initialState,
     ids: [experimentId1],
+    [experimentId1]: experiment1,
   };
 
   it('Reduces identical state on unknown action', () => expect(
@@ -49,9 +50,9 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Updates a project correctly', () => {
+  it('Updates an experiment correctly', () => {
     const newState = experimentsReducer(oneExperimentState, {
-      type: EXPERIMENTS_UPDATE,
+      type: EXPERIMENTS_UPDATED,
       payload: {
         experimentId: experiment1.id,
         experiment: updatedExperiment,
@@ -60,6 +61,27 @@ describe('experimentsReducer', () => {
 
     expect(newState.ids).toEqual([experiment1.id]);
     expect(newState[experiment1.id]).toEqual(updatedExperiment);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Returns state if experiment does not exist when updating', () => {
+    const invalidExperimentState = {
+      ...oneExperimentState,
+    };
+
+    delete invalidExperimentState[experimentId1];
+
+    const newState = experimentsReducer(invalidExperimentState, {
+      type: EXPERIMENTS_UPDATED,
+      payload: {
+        experimentId: experiment1.id,
+        experiment: updatedExperiment,
+      },
+    });
+
+    expect(newState.ids).toEqual([experiment1.id]);
+    expect(newState[experiment1.id]).toBe(undefined);
+    expect(newState).toEqual(invalidExperimentState);
     expect(newState).toMatchSnapshot();
   });
 });

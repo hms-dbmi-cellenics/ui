@@ -6,9 +6,9 @@ const EXPERIMENTS = 'experiments';
 const EXPERIMENTS_CREATED = `${EXPERIMENTS}/created`;
 
 /**
- * Update experiments
+ * Experiments updated
  */
-const EXPERIMENTS_UPDATE = `${EXPERIMENTS}/update`;
+const EXPERIMENTS_UPDATED = `${EXPERIMENTS}/updated`;
 
 /**
  * Saving experiment
@@ -27,7 +27,7 @@ const EXPERIMENTS_ERROR = `${EXPERIMENTS}/error`;
 
 export {
   EXPERIMENTS_CREATED,
-  EXPERIMENTS_UPDATE,
+  EXPERIMENTS_UPDATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_SAVED,

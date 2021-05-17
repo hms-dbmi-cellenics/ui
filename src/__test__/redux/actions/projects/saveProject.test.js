@@ -74,6 +74,8 @@ describe('saveProject action', () => {
 
     // Thirdd state emits notification
     expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
+
+    expect(actions).toMatchSnapshot();
   });
 
   it('Dispatches project pre and post actions correctly', async () => {
@@ -85,13 +87,17 @@ describe('saveProject action', () => {
     expect(actions.length).toEqual(2);
     expect(actions[0].type).toEqual(PROJECTS_SAVING);
     expect(actions[1].type).toEqual(PROJECTS_SAVED);
+
+    expect(actions).toMatchSnapshot();
   });
 
-  it('Does not dispatch guards if disabled', async () => {
+  it('Does not dispatch pre and post actions if disabled', async () => {
     const store = mockStore(initialState);
     await store.dispatch(saveProject(mockProject.uuid, mockProject, false));
 
     const actions = store.getActions();
     expect(actions.length).toEqual(0);
+
+    expect(actions).toMatchSnapshot();
   });
 });

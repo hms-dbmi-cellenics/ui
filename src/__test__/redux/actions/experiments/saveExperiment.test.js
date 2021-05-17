@@ -3,7 +3,11 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialExperimenttState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
 import saveExperiment from '../../../../redux/actions/experiments/saveExperiment';
-import { EXPERIMENTS_SAVING, EXPERIMENTS_ERROR } from '../../../../redux/actionTypes/experiments';
+import {
+  EXPERIMENTS_SAVING,
+  EXPERIMENTS_SAVED,
+  EXPERIMENTS_ERROR,
+} from '../../../../redux/actionTypes/experiments';
 import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
 
 jest.mock('localforage');
@@ -51,6 +55,22 @@ describe('saveExperiment action', () => {
     );
   });
 
+  it('Dispatches correct actions when action is successful', async () => {
+    const store = mockStore(initialState);
+
+    await store.dispatch(saveExperiment(mockExperiment.id));
+
+    const actions = store.getActions();
+
+    // First action sets up saving status
+    expect(actions[0].type).toBe(EXPERIMENTS_SAVING);
+
+    // Second state saves error
+    expect(actions[1].type).toBe(EXPERIMENTS_SAVED);
+
+    expect(actions).toMatchSnapshot();
+  });
+
   it('Dispatches a notification when fetch fails.', async () => {
     fetchMock.resetMocks();
     fetchMock.mockReject(new Error('some weird error that happened'));
@@ -68,5 +88,7 @@ describe('saveExperiment action', () => {
 
     // Thirdd state emits notification
     expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
+
+    expect(actions).toMatchSnapshot();
   });
 });

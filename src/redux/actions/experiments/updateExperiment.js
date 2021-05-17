@@ -1,6 +1,6 @@
 import saveExperiment from './saveExperiment';
 import {
-  EXPERIMENTS_UPDATE,
+  EXPERIMENTS_UPDATED,
 } from '../../actionTypes/experiments';
 import pushNotificationMessage from '../notifications';
 import errorTypes from './errorTypes';
@@ -13,7 +13,7 @@ const updateExperiment = (
     dispatch(saveExperiment(experimentId));
 
     dispatch({
-      type: EXPERIMENTS_UPDATE,
+      type: EXPERIMENTS_UPDATED,
       payload: {
         experimentId,
         experiment,

@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`saveProject action Dispatches a notification when fetch fails. 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "message": "Saving project...",
+    },
+    "type": "projects/saving",
+  },
+  Object {
+    "payload": Object {
+      "error": "Error saving project",
+    },
+    "type": "projects/error",
+  },
+  Object {
+    "payload": Object {
+      "message": "Could not connect to the server. Check your internet connection and refresh the page.",
+      "time": 5,
+      "type": "error",
+    },
+    "type": "notifications/pushMessage",
+  },
+]
+`;
+
+exports[`saveProject action Dispatches project pre and post actions correctly 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "message": "Saving project...",
+    },
+    "type": "projects/saving",
+  },
+  Object {
+    "type": "projects/saved",
+  },
+]
+`;
+
+exports[`saveProject action Does not dispatch pre and post actions if disabled 1`] = `Array []`;
