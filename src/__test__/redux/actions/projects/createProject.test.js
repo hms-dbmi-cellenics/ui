@@ -1,6 +1,5 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-// import { enableFetchMocks } from 'jest-fetch-mock';
 import createProject from '../../../../redux/actions/projects/createProject';
 import initialState from '../../../../redux/reducers/projects';
 import { saveProject } from '../../../../redux/actions/projects';
@@ -8,7 +7,6 @@ import { createExperiment } from '../../../../redux/actions/experiments';
 import { PROJECTS_CREATE } from '../../../../redux/actionTypes/projects';
 
 const mockStore = configureStore([thunk]);
-// enableFetchMocks();
 
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });

@@ -110,7 +110,7 @@ describe('saveSamples action', () => {
     expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
   });
 
-  it('Dispatches project guards correctly', async () => {
+  it('Dispatches samples pre and post actions correctly', async () => {
     const store = mockStore(initialState);
     await store.dispatch(saveSamples(mockprojectUuid, newSample));
 

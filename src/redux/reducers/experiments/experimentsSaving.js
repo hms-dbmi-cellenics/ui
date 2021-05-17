@@ -3,6 +3,7 @@ const experimentSaving = (state) => ({
   meta: {
     ...state.meta,
     saving: false,
+    error: false,
   },
 });
 

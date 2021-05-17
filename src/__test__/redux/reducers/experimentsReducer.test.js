@@ -2,7 +2,7 @@ import experimentsReducer from '../../../redux/reducers/experiments';
 import initialState, { experimentTemplate } from '../../../redux/reducers/experiments/initialState';
 
 import {
-  EXPERIMENTS_CREATE,
+  EXPERIMENTS_CREATED,
   EXPERIMENTS_UPDATE,
 } from '../../../redux/actionTypes/experiments';
 
@@ -38,7 +38,7 @@ describe('experimentsReducer', () => {
 
   it('Inserts a new experiment correctly', () => {
     const newState = experimentsReducer(initialState, {
-      type: EXPERIMENTS_CREATE,
+      type: EXPERIMENTS_CREATED,
       payload: {
         experiment: experiment1,
       },

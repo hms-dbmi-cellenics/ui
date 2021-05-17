@@ -1,7 +1,7 @@
 const experimentTemplate = {
   projectUuid: null,
   name: null,
-  description: null,
+  description: 'Project description',
   id: null,
   createdAt: null,
   lastViewed: null,

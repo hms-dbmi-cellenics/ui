@@ -11,7 +11,9 @@ import pushNotificationMessage from '../notifications';
 import errorTypes from './errorTypes';
 
 const createProject = (
-  projectName, projectDescription,
+  projectName,
+  projectDescription,
+  newExperimentName,
 ) => async (dispatch) => {
   const createdAt = moment().toISOString();
 
@@ -19,7 +21,7 @@ const createProject = (
 
   // Always create an experiment for a new project
   // required because samples DynamoDB require experimentId
-  const newExperiment = await dispatch(createExperiment(newProjectUuid));
+  const newExperiment = await dispatch(createExperiment(newProjectUuid, newExperimentName));
 
   const newProject = {
     ...projectTemplate,

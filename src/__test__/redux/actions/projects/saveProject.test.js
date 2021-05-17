@@ -76,7 +76,7 @@ describe('saveProject action', () => {
     expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
   });
 
-  it('Dispatches project guards correctly', async () => {
+  it('Dispatches project pre and post actions correctly', async () => {
     const store = mockStore(initialState);
     await store.dispatch(saveProject(mockProject.uuid, mockProject));
 

@@ -38,8 +38,9 @@ describe('updateExperiment', () => {
     const store = mockStore(mockState);
     await store.dispatch(updateExperiment(experimentId, updatedExperiment));
 
-    const action = store.getActions();
-    expect(action[0].type).toEqual(EXPERIMENTS_UPDATE);
+    const actions = store.getActions();
+
+    expect(actions[0].type).toEqual(EXPERIMENTS_UPDATE);
   });
 
   it('Dispatches call to save experiment', async () => {

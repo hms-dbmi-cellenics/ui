@@ -3,7 +3,7 @@ const EXPERIMENTS = 'experiments';
 /**
  * Create experiments
  */
-const EXPERIMENTS_CREATE = `${EXPERIMENTS}/create`;
+const EXPERIMENTS_CREATED = `${EXPERIMENTS}/created`;
 
 /**
  * Update experiments
@@ -26,7 +26,7 @@ const EXPERIMENTS_SAVED = `${EXPERIMENTS}/saved`;
 const EXPERIMENTS_ERROR = `${EXPERIMENTS}/error`;
 
 export {
-  EXPERIMENTS_CREATE,
+  EXPERIMENTS_CREATED,
   EXPERIMENTS_UPDATE,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,

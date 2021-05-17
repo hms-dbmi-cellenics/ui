@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {
-  EXPERIMENTS_CREATE,
+  EXPERIMENTS_CREATED,
 } from '../../../../redux/actionTypes/experiments';
 import { createExperiment, saveExperiment } from '../../../../redux/actions/experiments';
 import initialExperimentState from '../../../../redux/reducers/experiments/initialState';
@@ -36,7 +36,7 @@ describe('createExperiment', () => {
     await store.dispatch(createExperiment(projectUuid));
 
     const action = store.getActions();
-    expect(action[0].type).toEqual(EXPERIMENTS_CREATE);
+    expect(action[0].type).toEqual(EXPERIMENTS_CREATED);
   });
 
   it('Dispatches call to save experiment', async () => {
