@@ -1,11 +1,14 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import { PROJECTS_ERROR, PROJECTS_LOAD } from '../../actionTypes/projects';
+import { PROJECTS_ERROR, PROJECTS_LOADED, PROJECTS_LOADING } from '../../actionTypes/projects';
 import pushNotificationMessage from '../notifications';
 import messages from '../../../components/notification/messages';
 import loadSamples from '../samples/loadSamples';
 
 const loadProjects = () => async (dispatch) => {
   try {
+    dispatch({
+      type: PROJECTS_LOADING,
+    });
     const response = await fetchAPI('/v1/projects');
     const data = await response.json();
 
@@ -17,7 +20,7 @@ const loadProjects = () => async (dispatch) => {
       }
     });
     dispatch({
-      type: PROJECTS_LOAD,
+      type: PROJECTS_LOADED,
       payload: {
         projects: data,
         ids,

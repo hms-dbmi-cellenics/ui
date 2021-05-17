@@ -1,4 +1,4 @@
-const projectsLoad = (state, action) => {
+const projectsLoaded = (state, action) => {
   const { projects, ids } = action.payload;
 
   const newProjects = {};
@@ -9,10 +9,11 @@ const projectsLoad = (state, action) => {
   return {
     ...state,
     ids,
+    loading: false,
     ...newProjects,
     meta: {
       activeProjectUuid: projects[0]?.uuid,
     },
   };
 };
-export default projectsLoad;
+export default projectsLoaded;

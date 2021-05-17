@@ -57,7 +57,6 @@ const deleteSamples = (
         ...projects[projectUuid],
         samples: _.difference(projects[projectUuid].samples, samplesToDelete),
       };
-
       dispatch(saveSamples(projectUuid, newSample, false, false));
       dispatch(saveProject(projectUuid, newProject, false));
 

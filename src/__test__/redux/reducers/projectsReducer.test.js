@@ -12,7 +12,7 @@ import {
   PROJECTS_METADATA_CREATE,
   PROJECTS_METADATA_UPDATE,
   PROJECTS_METADATA_DELETE,
-  PROJECTS_LOAD,
+  PROJECTS_LOADED,
 } from '../../../redux/actionTypes/projects';
 
 describe('projectsReducer', () => {
@@ -98,7 +98,7 @@ describe('projectsReducer', () => {
   });
   it('Loads projects correctly', () => {
     const newState = projectsReducer(initialState, {
-      type: PROJECTS_LOAD,
+      type: PROJECTS_LOADED,
       payload: {
         projects: [
           project1, project2,

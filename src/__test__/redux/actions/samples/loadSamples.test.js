@@ -40,7 +40,7 @@ describe('loadSample action', () => {
     await store.dispatch(loadSamples(experimentId));
 
     // LOAD SAMPLE
-    const action1 = store.getActions()[0];
+    const action1 = store.getActions()[1];
     expect(action1.type).toEqual(SAMPLES_LOADED);
   });
 
@@ -51,7 +51,7 @@ describe('loadSample action', () => {
     await store.dispatch(loadSamples(experimentId));
 
     // LOAD SAMPLE
-    const action1 = store.getActions()[0];
+    const action1 = store.getActions()[1];
     expect(action1.type).toEqual(SAMPLES_ERROR);
   });
 });

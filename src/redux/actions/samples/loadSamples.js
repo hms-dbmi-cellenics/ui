@@ -2,6 +2,7 @@ import fetchAPI from '../../../utils/fetchAPI';
 import {
   SAMPLES_LOADED,
   SAMPLES_ERROR,
+  SAMPLES_LOADING,
 } from '../../actionTypes/samples';
 
 const loadSamples = (
@@ -9,7 +10,9 @@ const loadSamples = (
 ) => async (dispatch) => {
   try {
     let response = false;
-
+    dispatch({
+      type: SAMPLES_LOADING,
+    });
     if (experimentId) {
       response = await fetchAPI(`/v1/experiments/${experimentId}/samples`);
     } else {

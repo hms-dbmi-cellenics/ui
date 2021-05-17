@@ -194,6 +194,7 @@ Object {
     "project-1",
     "project-2",
   ],
+  "loading": false,
   "meta": Object {
     "activeProjectUuid": "project-1",
   },
