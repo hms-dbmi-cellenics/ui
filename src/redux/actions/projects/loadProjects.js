@@ -8,7 +8,9 @@ const loadProjects = () => async (dispatch) => {
   try {
     const response = await fetchAPI('/v1/projects');
     const data = await response.json();
+
     const ids = data.map((project) => project.uuid);
+
     data.forEach((entry) => {
       if (entry.samples.length) {
         dispatch(loadSamples(false, entry.uuid));
@@ -22,13 +24,13 @@ const loadProjects = () => async (dispatch) => {
       },
     });
   } catch (e) {
-    dispatch(pushNotificationMessage('error', messages.connectionError, 10));
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
         error: e,
       },
     });
+    dispatch(pushNotificationMessage('error', messages.connectionError, 10));
   }
 };
 export default loadProjects;

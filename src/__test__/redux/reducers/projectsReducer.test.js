@@ -12,6 +12,7 @@ import {
   PROJECTS_METADATA_CREATE,
   PROJECTS_METADATA_UPDATE,
   PROJECTS_METADATA_DELETE,
+  PROJECTS_LOAD,
 } from '../../../redux/actionTypes/projects';
 
 describe('projectsReducer', () => {
@@ -93,6 +94,20 @@ describe('projectsReducer', () => {
     expect(newState.meta.activeProjectUuid).toEqual(project2.uuid);
     expect(newState[project1.uuid]).toEqual(project1);
     expect(newState[project2.uuid]).toEqual(project2);
+    expect(newState).toMatchSnapshot();
+  });
+  it('Loads projects correctly', () => {
+    const newState = projectsReducer(initialState, {
+      type: PROJECTS_LOAD,
+      payload: {
+        projects: [
+          project1, project2,
+        ],
+        ids: [project1.uuid, project2.uuid],
+      },
+    });
+    expect(newState.ids).toEqual([project1.uuid, project2.uuid]);
+    expect(newState.meta.activeProjectUuid).toEqual(project1.uuid);
     expect(newState).toMatchSnapshot();
   });
 

@@ -1,0 +1,46 @@
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { PROJECTS_LOAD, PROJECTS_ERROR } from '../../../../redux/actionTypes/projects';
+import { projectTemplate } from '../../../../redux/reducers/projects/initialState';
+import { loadProjects } from '../../../../redux/actions/projects';
+
+enableFetchMocks();
+
+const mockStore = configureStore([thunk]);
+
+describe('load projects ', () => {
+  const initialState = {
+    projects: {
+      ...projectTemplate,
+    },
+  };
+
+  const response = new Response(
+    JSON.stringify(
+      [
+        { name: 'I am project', samples: ['Best sample so far', 'and another one'] },
+        { name: 'project am I', samples: ['tired of unit testing honestly'] },
+      ],
+    ),
+  );
+
+  fetchMock.resetMocks();
+  fetchMock.doMock();
+  fetchMock.mockResolvedValue(response);
+
+  it('Dispatches load action correctly', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(loadProjects());
+    const action = store.getActions()[0];
+    expect(action.type).toEqual(PROJECTS_LOAD);
+  });
+
+  it('Dispatches error correctly', async () => {
+    fetchMock.mockReject(new Error('Something went wrong :/'));
+    const store = mockStore(initialState);
+    await store.dispatch(loadProjects());
+    const action = store.getActions()[0];
+    expect(action.type).toEqual(PROJECTS_ERROR);
+  });
+});

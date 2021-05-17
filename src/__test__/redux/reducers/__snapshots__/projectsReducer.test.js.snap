@@ -188,6 +188,40 @@ Object {
 }
 `;
 
+exports[`projectsReducer Loads projects correctly 1`] = `
+Object {
+  "ids": Array [
+    "project-1",
+    "project-2",
+  ],
+  "meta": Object {
+    "activeProjectUuid": "project-1",
+  },
+  "project-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "metadataKeys": Array [],
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "project-1",
+  },
+  "project-2": Object {
+    "createdDate": "01-01-2021",
+    "description": "This is another test description :)",
+    "experiments": Array [],
+    "lastAnalyzed": null,
+    "lastModified": "01-01-2021",
+    "metadataKeys": Array [],
+    "name": "test project 2",
+    "samples": Array [],
+    "uuid": "project-2",
+  },
+}
+`;
+
 exports[`projectsReducer Sets an active project correctly 1`] = `
 Object {
   "ids": Array [
