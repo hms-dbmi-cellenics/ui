@@ -7,8 +7,8 @@ const rules = {
 };
 
 const errorMessages = {
-  [rules.MIN_1_CHAR]: 'Min 8 alphanumeric characters',
-  [rules.MIN_8_CHARS]: 'MIN_8_CHARS',
+  [rules.MIN_1_CHAR]: 'Min 1 alphanumeric characters',
+  [rules.MIN_8_CHARS]: 'Min 8 alphanumeric characters',
   [rules.MIN_2_SEQUENTIAL_CHARS]: 'Min. 2 characters in sequence',
   [rules.ALPHANUM_DASH_SPACE]: 'Only letters, numbers, space, _, and - allowed',
   [rules.UNIQUE_NAME]: 'Name is already used',

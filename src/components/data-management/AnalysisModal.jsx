@@ -12,6 +12,7 @@ import {
 } from 'antd';
 import EditableField from '../EditableField';
 import { updateExperiment } from '../../redux/actions/experiments';
+import validateInputs, { rules } from '../../utils/validateInputs';
 
 const { Title } = Typography;
 
@@ -35,11 +36,10 @@ const NewExperimentModal = (props) => {
     );
   }, [activeProject]);
 
-  const checkNameValidity = (name) => {
-    const longerThanZero = name.trim().length > 0;
-    const OnlyAlphaNumDashUnderscoreSpace = name.match(/[^\w\s+_-]/gm) === null;
-    return longerThanZero && OnlyAlphaNumDashUnderscoreSpace;
-  };
+  const validationChecks = [
+    rules.MIN_1_CHAR,
+    rules.ALPHANUM_DASH_SPACE,
+  ];
 
   return (
     <Modal
@@ -86,7 +86,7 @@ const NewExperimentModal = (props) => {
                         }}
                         onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
                         value={experiment.name}
-                        validationFunc={(name) => checkNameValidity(name)}
+                        validationFunc={(name) => validateInputs(name, validationChecks)[0]}
                         deleteEnabled={false}
                         onEditing={(editing) => { if (editing) setNumFieldsEditing(numFieldsEditing + 1); }}
                       />

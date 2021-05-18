@@ -36,7 +36,7 @@ import {
 
 import { updateExperiment } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
-import validateInputs from '../../utils/validateInputs';
+import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
 import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
@@ -75,9 +75,9 @@ const ProjectDetails = ({ width, height }) => {
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
   const validationChecks = [
-    'MIN_1_CHAR',
-    'ALPHANUM_DASH_SPACE',
-    'UNIQUE_NAME',
+    rules.MIN_1_CHAR,
+    rules.ALPHANUM_DASH_SPACE,
+    rules.UNIQUE_NAME,
   ];
 
   const validationParams = {

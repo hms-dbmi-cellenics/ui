@@ -5,7 +5,7 @@ import {
   Modal, Button, Input, Space, Typography, Form,
 } from 'antd';
 import { ClipLoader } from 'react-spinners';
-import validateInputs from '../../utils/validateInputs';
+import validateInputs, { rules } from '../../utils/validateInputs';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -34,10 +34,10 @@ const NewProjectModal = (props) => {
   } = useSelector((state) => state.projects.meta);
 
   const validationChecks = [
-    'MIN_8_CHARS',
-    'MIN_2_SEQUENTIAL_CHARS',
-    'ALPHANUM_DASH_SPACE',
-    'UNIQUE_NAME',
+    rules.MIN_8_CHARS,
+    rules.MIN_2_SEQUENTIAL_CHARS,
+    rules.ALPHANUM_DASH_SPACE,
+    rules.UNIQUE_NAME,
   ];
 
   const validationParams = {

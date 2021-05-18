@@ -15,7 +15,7 @@ import { setActiveProject, updateProject, deleteProject as deleteProjectAction }
 import PrettyTime from '../PrettyTime';
 
 import processUpload from '../../utils/processUpload';
-import validateInputs from '../../utils/validateInputs';
+import validateInputs, { rules } from '../../utils/validateInputs';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
@@ -50,10 +50,10 @@ const ProjectsListContainer = (props) => {
   };
 
   const validationChecks = [
-    'MIN_8_CHARS',
-    'MIN_2_SEQUENTIAL_CHARS',
-    'ALPHANUM_DASH_SPACE',
-    'UNIQUE_NAME',
+    rules.MIN_8_CHARS,
+    rules.MIN_2_SEQUENTIAL_CHARS,
+    rules.ALPHANUM_DASH_SPACE,
+    rules.UNIQUE_NAME,
   ];
 
   const validationParams = {
