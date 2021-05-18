@@ -35,7 +35,6 @@ import {
 } from '../../redux/actions/projects';
 
 import { updateExperiment } from '../../redux/actions/experiments';
-import { loadPipelineStatus, updateExperimentInfo } from '../../redux/actions/experimentSettings';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
 import validateSampleName from '../../utils/validateSampleName';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
@@ -44,6 +43,7 @@ import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
 import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
+import runGem2s from '../../redux/actions/pipeline/runGem2s';
 
 const { Text, Paragraph } = Typography;
 
@@ -596,14 +596,7 @@ const ProjectDetails = ({ width, height }) => {
         visible={analysisModalVisible}
         onLaunch={(experimentId) => {
           dispatch(updateExperiment(experimentId, { lastViewed: moment().toISOString() }));
-          dispatch(
-            updateExperimentInfo({
-              experimentId,
-              experimentName: experiments[experimentId].name,
-              projectUuid: experiments[experimentId].projectUuid,
-            }),
-          );
-          dispatch(loadPipelineStatus(experimentId));
+          dispatch(runGem2s(experimentId));
           router.push(analysisPath.replace('[experimentId]', experimentId));
         }}
         onChange={() => {
