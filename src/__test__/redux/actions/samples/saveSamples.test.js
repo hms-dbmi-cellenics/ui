@@ -56,7 +56,7 @@ describe('saveSamples action', () => {
   };
 
   beforeEach(() => {
-    const response = new Response(JSON.stringify({ one: 'one' }));
+    const response = new Response(JSON.stringify({}));
 
     fetchMock.resetMocks();
     fetchMock.doMock();

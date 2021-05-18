@@ -28,7 +28,7 @@ const saveProject = (
   }
 
   try {
-    await fetchAPI(
+    const response = await fetchAPI(
       `/v1/projects/${projectUuid}`,
       {
         method: 'PUT',
@@ -38,6 +38,10 @@ const saveProject = (
         body: JSON.stringify(project),
       },
     );
+
+    if (!response.ok) {
+      throw new Error('HTTP status code was not 200.');
+    }
 
     if (notifySave) {
       dispatch({

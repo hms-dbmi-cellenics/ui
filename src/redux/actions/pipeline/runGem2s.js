@@ -28,27 +28,26 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
       },
     );
 
-    if (response.ok) {
-      dispatch({
-        type: EXPERIMENT_SETTINGS_PIPELINE_START,
-        payload: {},
-      });
-
-      dispatch(loadPipelineStatus(experimentId));
-
-      dispatch({
-        type: EXPERIMENT_SETTINGS_INFO_UPDATE,
-        payload: {
-          experimentId,
-          experimentName: experiments[experimentId].name,
-          projectUuid: experiments[experimentId].projectUuid,
-        },
-      });
-
-      return;
+    if (!response.ok) {
+      console.log('errored out shown');
+      throw new Error('HTTP status code was not 200.');
     }
 
-    throw new Error('HTTP status code was not 200.');
+    dispatch({
+      type: EXPERIMENT_SETTINGS_PIPELINE_START,
+      payload: {},
+    });
+
+    dispatch(loadPipelineStatus(experimentId));
+
+    dispatch({
+      type: EXPERIMENT_SETTINGS_INFO_UPDATE,
+      payload: {
+        experimentId,
+        experimentName: experiments[experimentId].name,
+        projectUuid: experiments[experimentId].projectUuid,
+      },
+    });
   } catch (e) {
     dispatch({
       type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
