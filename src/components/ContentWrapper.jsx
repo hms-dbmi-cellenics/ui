@@ -43,7 +43,7 @@ const ContentWrapper = (props) => {
     loading: backendLoading,
     error: backendError,
     status: backendStatus,
-  } = useSelector((state) => state.experimentSettings.pipelineStatus);
+  } = useSelector((state) => state.experimentSettings.backendStatus);
 
   const backendErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 

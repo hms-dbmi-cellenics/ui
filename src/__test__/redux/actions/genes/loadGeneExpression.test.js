@@ -23,7 +23,7 @@ describe('loadGeneExpression action', () => {
   const loadingGenes = ['a', 'b', 'c'];
 
   const experimentSettings = {
-    pipelineStatus: {
+    backendStatus: {
       status: {
         pipeline: {
           status: 'SUCCEEDED',
@@ -198,7 +198,7 @@ describe('loadGeneExpression action', () => {
         ...initialState,
       },
       experimentSettings: {
-        pipelineStatus: {
+        backendStatus: {
           status: {
             pipeline: {
               status: 'NotCreated',

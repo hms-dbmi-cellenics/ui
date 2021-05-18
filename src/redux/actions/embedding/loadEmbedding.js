@@ -46,7 +46,7 @@ const loadEmbedding = (
   try {
     const data = await fetchCachedWork(
       experimentId, TIMEOUT_SECONDS, body,
-      getState().experimentSettings.pipelineStatus.status,
+      getState().experimentSettings.backendStatus.status,
     );
     return dispatch({
       type: EMBEDDINGS_LOADED,

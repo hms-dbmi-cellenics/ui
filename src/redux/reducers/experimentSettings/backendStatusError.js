@@ -6,7 +6,7 @@ const backendStatusError = (state, action) => {
   return {
     ...initialState,
     ...state,
-    pipelineStatus: {
+    backendStatus: {
       status: {},
       loading: false,
       error,

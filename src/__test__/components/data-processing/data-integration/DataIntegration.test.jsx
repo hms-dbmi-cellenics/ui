@@ -80,7 +80,7 @@ const createStore = (completedSteps) => mockStore({
   },
   experimentSettings: {
     ...initialExperimentState,
-    pipelineStatus: { status: { pipeline: { completedSteps } } },
+    backendStatus: { status: { pipeline: { completedSteps } } },
   },
   componentConfig: {
     dataIntegrationFrequency: {

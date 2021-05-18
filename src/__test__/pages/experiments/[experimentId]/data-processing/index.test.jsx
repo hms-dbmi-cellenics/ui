@@ -36,7 +36,7 @@ const getStore = (settings = {}) => {
           completingStepError: false,
         },
       },
-      pipelineStatus: {
+      backendStatus: {
         loading: false,
         error: false,
         status: {
