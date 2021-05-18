@@ -25,8 +25,8 @@ const GEM2SLoadingScreen = ({ pipelineStatus, completedSteps, steps }) => {
   const texts = {
     toBeRun: {
       status: 'info',
-      title: 'Let\'s upload your data.',
-      subTitle: 'You need to upload your data before it can be explored. To begin, go to Data Management.',
+      title: 'Let\'s upload and pre-process data your data.',
+      subTitle: 'Your data needs to be uploaded and pre-processed before it can be explored. To begin, go to Data Management.',
       showProgress: false,
     },
     running: {
