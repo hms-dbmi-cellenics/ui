@@ -4,7 +4,7 @@ import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_START,
 } from '../../actionTypes/experimentSettings';
-import loadPipelineStatus from '../experimentSettings/loadPipelineStatus';
+import loadBackendStatus from '../experimentSettings/loadBackendStatus';
 
 const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) => {
   dispatch({
@@ -47,7 +47,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
         payload: {},
       });
 
-      dispatch(loadPipelineStatus(experimentId));
+      dispatch(loadBackendStatus(experimentId));
 
       return;
     }

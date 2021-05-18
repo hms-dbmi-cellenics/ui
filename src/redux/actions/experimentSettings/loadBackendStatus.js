@@ -5,7 +5,7 @@ import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
 } from '../../actionTypes/experimentSettings';
 
-const loadPipelineStatus = (experimentId) => async (dispatch) => {
+const loadBackendStatus = (experimentId) => async (dispatch) => {
   dispatch({
     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
@@ -44,4 +44,4 @@ const loadPipelineStatus = (experimentId) => async (dispatch) => {
   }
 };
 
-export default loadPipelineStatus;
+export default loadBackendStatus;

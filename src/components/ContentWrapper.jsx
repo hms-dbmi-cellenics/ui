@@ -17,7 +17,7 @@ import {
 } from '@ant-design/icons';
 import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
-import { loadPipelineStatus } from '../redux/actions/experimentSettings';
+import { loadBackendStatus } from '../redux/actions/experimentSettings';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 
@@ -57,8 +57,8 @@ const ContentWrapper = (props) => {
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
   // This is used to prevent a race condition where the page would start loading immediately
-  // when the pipeline status was previously loaded. In that case, `backendLoading` is `false`
-  // and would be set to true only in the `loadPipelineStatus` action, the time between the
+  // when the backend status was previously loaded. In that case, `backendLoading` is `false`
+  // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
 
@@ -68,7 +68,7 @@ const ContentWrapper = (props) => {
       return;
     }
 
-    dispatch(loadPipelineStatus(experimentId));
+    dispatch(loadBackendStatus(experimentId));
 
     updateSocket.current = initUpdateSocket(experimentId, experimentUpdatesHandler(dispatch));
   }, [experimentId]);
@@ -221,15 +221,15 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <GEM2SLoadingScreen pipelineStatus='error' />;
+        return <GEM2SLoadingScreen gem2sStatus='error' />;
       }
 
       if (gem2sRunning) {
-        return <GEM2SLoadingScreen pipelineStatus='running' completedSteps={completedGem2sSteps} />;
+        return <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
       if (gem2sStatusKey === 'NotCreated') {
-        return <GEM2SLoadingScreen pipelineStatus='toBeRun' />;
+        return <GEM2SLoadingScreen gem2sStatus='toBeRun' />;
       }
 
       if (pipelineRunningError && !route.includes('data-processing')) {
