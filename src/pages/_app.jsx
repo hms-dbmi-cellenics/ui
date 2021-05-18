@@ -50,7 +50,7 @@ Storage.configure({
 
 const WrappedApp = ({ Component, pageProps }) => {
   console.log(`WrappedApp.1 ${Component}`);
-  console.log(`WrappedApp.2 ${pageProps}`);
+  console.log(`WrappedApp.2 ${JSON.stringify(pageProps, null, 2)}`);
   const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
 
@@ -178,11 +178,11 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
   try {
     let results = await Promise.all(promises.map((f) => f(ctx, store)));
-    console.log(`Results form promises in getInitialProps ${results}`);
+    console.log(`Results form promises in getInitialProps ${JSON.stringify(results, null, 2)}`);
     results = _.merge(...results);
 
     const { Auth } = withSSRContext(ctx);
-    console.log(`Auth from withSSRContext: ${Auth}`);
+    console.log(`Auth from withSSRContext: ${JSON.stringify(Auth, null, 2)}`);
     Auth.configure(results.amplifyConfig.Auth);
 
     if (req && query?.experimentId) {
@@ -195,8 +195,9 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
-    console.log('Error raised in getInitialProps');
+    console.log('Error raised in getInitialProps.1');
     console.error(e);
+    console.log('Error raised in getInitialProps.2');
     if (e instanceof CustomError) {
       if (res && e.payload.status) {
         res.statusCode = e.payload.status;

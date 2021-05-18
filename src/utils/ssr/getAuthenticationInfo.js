@@ -14,7 +14,6 @@ import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 import configure from '../amplify-config';
 
 const getAuthenticationInfo = async () => {
-  console.log('getAuthenticationInfo');
   let additionalClientParams = {};
 
   if (process.env.NODE_ENV !== 'development') {
@@ -81,7 +80,7 @@ const getAuthenticationInfo = async () => {
       new DescribeUserPoolCommand({ UserPoolId: userPoolId }),
     ),
   ]);
-  console.log(`getAuthenticationInfo ${Domain} - ${userPoolClientDetails}`);
+  console.log(`getAuthenticationInfo ${Domain} - ${JSON.stringify(userPoolClientDetails)}`);
 
   const amplifyConfig = configure(
     userPoolId,
