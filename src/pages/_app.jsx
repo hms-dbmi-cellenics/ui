@@ -182,7 +182,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     results = _.merge(...results);
 
     const { Auth } = withSSRContext(ctx);
-    console.log(`Auth from withSSRContext: ${JSON.stringify(Auth, null, 2)}`);
+    console.log(`Auth from withSSRContext: ${Auth}`);
     Auth.configure(results.amplifyConfig.Auth);
 
     if (req && query?.experimentId) {
