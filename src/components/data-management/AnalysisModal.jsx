@@ -27,6 +27,7 @@ const NewExperimentModal = (props) => {
   const dispatch = useDispatch();
 
   const [experimentsList, setExperimentsList] = useState([]);
+  const [numFieldsEditing, setNumFieldsEditing] = useState(0);
 
   useEffect(() => {
     setExperimentsList(
@@ -68,6 +69,7 @@ const NewExperimentModal = (props) => {
                         <Button
                           type='primary'
                           onClick={() => onLaunch(experiment.id)}
+                          disabled={numFieldsEditing > 0}
                         >
                           Launch
                         </Button>
@@ -78,20 +80,26 @@ const NewExperimentModal = (props) => {
                   <Space direction='vertical' size='small'>
                     <strong>
                       <EditableField
-                        onAfterSubmit={(name) => dispatch(
-                          updateExperiment(experiment.id, { name: name.trim() }),
-                        )}
+                        onAfterSubmit={(name) => {
+                          dispatch(updateExperiment(experiment.id, { name: name.trim() }));
+                          setNumFieldsEditing(numFieldsEditing - 1);
+                        }}
+                        onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
                         value={experiment.name}
                         validationFunc={(name) => checkNameValidity(name)}
                         deleteEnabled={false}
+                        onEditing={(editing) => { if (editing) setNumFieldsEditing(numFieldsEditing + 1); }}
                       />
                     </strong>
                     <EditableField
-                      onAfterSubmit={(description) => dispatch(
-                        updateExperiment(experiment.id, { description: description.trim() }),
-                      )}
+                      onAfterSubmit={(name) => {
+                        dispatch(updateExperiment(experiment.id, { name: name.trim() }));
+                        setNumFieldsEditing(numFieldsEditing - 1);
+                      }}
+                      onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
                       value={experiment.description}
                       deleteEnabled={false}
+                      onEditing={(editing) => { if (editing) setNumFieldsEditing(numFieldsEditing + 1); }}
                     />
                   </Space>
                 </List.Item>

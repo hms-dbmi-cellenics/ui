@@ -20,6 +20,7 @@ const EditableField = (props) => {
     renderBold,
     defaultEditing,
     validationFunc,
+    onEditing,
   } = props;
 
   const [editing, setEditing] = useState(defaultEditing);
@@ -31,6 +32,12 @@ const EditableField = (props) => {
   useEffect(() => {
     setEditedValue(value);
   }, [value]);
+
+  useEffect(() => {
+    if (!onEditing) return;
+
+    onEditing(editing);
+  }, [editing]);
 
   const deleteEditableField = (e) => {
     props.onDelete(e, editedValue);
@@ -146,6 +153,7 @@ EditableField.defaultProps = {
   onAfterSubmit: () => null,
   onAfterCancel: () => null,
   onDelete: () => null,
+  onEditing: undefined,
   validationFunc: undefined,
   renderBold: false,
   value: null,
@@ -159,6 +167,7 @@ EditableField.propTypes = {
   onAfterSubmit: PropTypes.func,
   onAfterCancel: PropTypes.func,
   onDelete: PropTypes.func,
+  onEditing: PropTypes.func,
   validationFunc: PropTypes.func,
   deleteEnabled: PropTypes.bool,
   showEdit: PropTypes.bool,

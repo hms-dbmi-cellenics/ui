@@ -14,7 +14,7 @@ Array [
       },
       "experimentId": "experiment-1",
     },
-    "type": "experiments/update",
+    "type": "experiments/updated",
   },
 ]
 `;
