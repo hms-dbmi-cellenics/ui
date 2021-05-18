@@ -49,6 +49,8 @@ Storage.configure({
 });
 
 const WrappedApp = ({ Component, pageProps }) => {
+  console.log(`WrappedApp.1 ${Component}`);
+  console.log(`WrappedApp.2 ${pageProps}`);
   const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
 
@@ -62,6 +64,7 @@ const WrappedApp = ({ Component, pageProps }) => {
   const environment = useSelector((state) => state.networkResources.environment);
 
   useEffect(() => {
+    console.log(`Configuring amplify with ${amplifyConfig}`);
     Amplify.configure(amplifyConfig);
 
     if (environment === 'development') {
@@ -175,20 +178,24 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
   try {
     let results = await Promise.all(promises.map((f) => f(ctx, store)));
+    console.log(`Results form promises in getInitialProps ${results}`);
     results = _.merge(...results);
 
     const { Auth } = withSSRContext(ctx);
+    console.log(`Auth from withSSRContext: ${Auth}`);
     Auth.configure(results.amplifyConfig.Auth);
 
     if (req && query?.experimentId) {
       const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
 
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);
+      console.log(`ExperimentInfo: ${experimentInfo}`);
       results = _.merge(results, experimentInfo);
     }
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
+    console.log('Error raised in getInitialProps');
     console.error(e);
     if (e instanceof CustomError) {
       if (res && e.payload.status) {
