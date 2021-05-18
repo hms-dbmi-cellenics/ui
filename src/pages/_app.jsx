@@ -196,7 +196,13 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
     console.log('Error raised in getInitialProps.1');
-    console.error(e);
+    console.error(JSON.stringify(e, null, 2));
+    if (e === 'The user is not authenticated') {
+      console.log('Creating custom error');
+      // eslint-disable-next-line no-ex-assign
+      e = new CustomError(e, res);
+      e.payload.status = 401;
+    }
     console.log('Error raised in getInitialProps.2');
     if (e instanceof CustomError) {
       if (res && e.payload.status) {
