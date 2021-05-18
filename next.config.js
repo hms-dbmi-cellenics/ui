@@ -158,7 +158,7 @@ module.exports = withBundleAnalyzer(
                       comments: false,
                     },
                     compress: {
-                      drop_console: true, // remove console
+                      drop_console: false, // remove console
                     },
                     ie8: false,
                   },
