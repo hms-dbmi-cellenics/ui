@@ -303,7 +303,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           experimentId={expId}
           key={key}
           onPipelineRun={() => onPipelineRun(key)}
-          stepDisabled={!processingConfig[key].enabled}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
         />
       ),
