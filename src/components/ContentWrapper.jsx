@@ -19,6 +19,7 @@ import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
 import { loadPipelineStatus } from '../redux/actions/experimentSettings';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
+import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
@@ -39,22 +40,27 @@ const ContentWrapper = (props) => {
   const route = router?.route || '';
 
   const {
-    loading: pipelineLoading,
-    error: pipelineError,
-    status: workerAndPipelineStatus,
+    loading: backendLoading,
+    error: backendError,
+    status: backendStatus,
   } = useSelector((state) => state.experimentSettings.pipelineStatus);
 
-  const pipelineStatusKey = workerAndPipelineStatus.pipeline?.status;
-  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+  const backendErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
 
+  const pipelineStatusKey = backendStatus.pipeline?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
-  const pipelineRunningError = pipelineErrors.includes(pipelineStatusKey);
+  const pipelineRunningError = backendErrors.includes(pipelineStatusKey);
+
+  const gem2sStatusKey = backendStatus.gem2s?.status;
+  const gem2sRunning = gem2sStatusKey === 'RUNNING';
+  const gem2sRunningError = backendErrors.includes(pipelineStatusKey);
+  const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
   // This is used to prevent a race condition where the page would start loading immediately
-  // when the pipeline status was previously loaded. In that case, `pipelineLoading` is `false`
+  // when the pipeline status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadPipelineStatus` action, the time between the
   // two events would allow pages to load.
-  const [pipelineStatusRequested, setPipelineStatusRequested] = useState(false);
+  const [backendStatusRequested, setBackendStatusRequested] = useState(false);
 
   const updateSocket = useRef(null);
   useEffect(() => {
@@ -68,12 +74,12 @@ const ContentWrapper = (props) => {
   }, [experimentId]);
 
   useEffect(() => {
-    if (pipelineStatusRequested) {
+    if (backendStatusRequested) {
       return;
     }
 
-    setPipelineStatusRequested(true);
-  }, [pipelineLoading]);
+    setBackendStatusRequested(true);
+  }, [backendLoading]);
 
   const BigLogo = () => (
     <div
@@ -205,12 +211,25 @@ const ContentWrapper = (props) => {
 
   const renderContent = () => {
     if (experimentId) {
-      if (pipelineLoading || !pipelineStatusRequested) {
+      if (
+        backendLoading || !backendStatusRequested) {
         return <PreloadContent />;
       }
 
-      if (pipelineError) {
-        return <Error errorText='Could not get current pipeline settings.' />;
+      if (backendError) {
+        return <Error errorText='Could not get backend settings.' />;
+      }
+
+      if (gem2sRunningError) {
+        return <GEM2SLoadingScreen pipelineStatus='error' />;
+      }
+
+      if (gem2sRunning) {
+        return <GEM2SLoadingScreen pipelineStatus='running' completedSteps={completedGem2sSteps} />;
+      }
+
+      if (gem2sStatusKey === 'NotCreated') {
+        return <GEM2SLoadingScreen pipelineStatus='toBeRun' />;
       }
 
       if (pipelineRunningError && !route.includes('data-processing')) {
@@ -220,7 +239,7 @@ const ContentWrapper = (props) => {
       if (pipelineRunning && !route.includes('data-processing')) {
         return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='running' />;
       }
-      
+
       if (process.env.NODE_ENV === 'development') {
         return children;
       }
@@ -229,7 +248,7 @@ const ContentWrapper = (props) => {
         return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='toBeRun' />;
       }
     }
-    
+
     return children;
   };
 
@@ -238,7 +257,7 @@ const ContentWrapper = (props) => {
   }) => {
     const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
     const pipelineStatusDisable = disabledByPipelineStatus && (
-      pipelineError || pipelineRunning || pipelineRunningError
+      backendError || pipelineRunning || pipelineRunningError
     );
 
     return (
