@@ -65,6 +65,6 @@ describe('GEM2SLoadingScreen', () => {
     expect(display.find(Progress).length).toEqual(1);
 
     // Display step information as shown in steps
-    expect(display.find('span.ant-typography').first().text()).toEqual(steps[completedSteps.length - 1]);
+    expect(display.find('span.ant-typography').first().text()).toEqual(steps[completedSteps.length]);
   });
 });
