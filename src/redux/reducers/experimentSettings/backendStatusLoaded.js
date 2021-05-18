@@ -1,17 +1,21 @@
 import initialState from './initialState';
 
-import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
-
 const backendStatusLoaded = (state, action) => {
   const { status } = action.payload;
 
-  const newStatus = mergeObjectWithArrays(state.backendStatus.status ?? {}, status);
+  const previousStatus = state.backendStatus?.status;
+
+  const newStatus = {
+    pipeline: status.pipeline ?? previousStatus?.pipeline,
+    gem2s: status.gem2s ?? previousStatus?.gem2s,
+    worker: status.worker ?? previousStatus?.worker,
+  };
 
   return {
     ...initialState,
     ...state,
     backendStatus: {
-      newStatus,
+      status: newStatus,
       loading: false,
       error: false,
     },
