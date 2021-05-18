@@ -27,8 +27,6 @@ const rules = {
   ALPHANUM_DASH_SPACE(input) {
     const errMsg = 'Only letters, numbers, space, _, and - allowed';
 
-    console.log(input);
-
     if (input.match(/[^a-zA-Z\s\d-_]/gm)) return errMsg;
     return true;
   },
@@ -61,8 +59,6 @@ const validateInput = (input, checks, params, renderer) => {
   if (renderer) {
     results = renderer(results);
   }
-
-  console.log(results);
 
   return [isValid, results];
 };

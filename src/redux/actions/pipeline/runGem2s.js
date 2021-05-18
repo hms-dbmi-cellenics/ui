@@ -29,7 +29,6 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
     );
 
     if (!response.ok) {
-      console.log('errored out shown');
       throw new Error('HTTP status code was not 200.');
     }
 
