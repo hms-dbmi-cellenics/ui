@@ -64,7 +64,7 @@ const GEM2SLoadingScreen = ({ pipelineStatus, completedSteps, steps }) => {
             <div>
               <Space direction='vertical' style={{ width: '100%' }}>
                 <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / steps.length) * 100)} />
-                <Text type='secondary'>{(steps[Math.min(completedSteps.length, steps.length)])}</Text>
+                <Text type='secondary'>{(steps[Math.min(completedSteps.length, steps.length - 1)])}</Text>
               </Space>
             </div>
             <div>
