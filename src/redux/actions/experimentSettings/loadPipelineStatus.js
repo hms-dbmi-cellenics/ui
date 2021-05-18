@@ -1,13 +1,13 @@
 import fetchAPI from '../../../utils/fetchAPI';
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED,
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
 } from '../../actionTypes/experimentSettings';
 
 const loadPipelineStatus = (experimentId) => async (dispatch) => {
   dispatch({
-    type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
+    type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
       experimentId,
     },
@@ -22,7 +22,7 @@ const loadPipelineStatus = (experimentId) => async (dispatch) => {
       const status = await response.json();
 
       dispatch({
-        type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED,
+        type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
         payload: {
           experimentId,
           status,
@@ -35,9 +35,9 @@ const loadPipelineStatus = (experimentId) => async (dispatch) => {
     throw new Error('HTTP status code was not 200.');
   } catch (e) {
     dispatch({
-      type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+      type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
       payload: {
-        error: 'Could not get the status of the pipeline.',
+        error: 'Could not get the status of the backend.',
         errorType: e,
       },
     });
