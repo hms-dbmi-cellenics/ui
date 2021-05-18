@@ -36,7 +36,7 @@ import {
 
 import { updateExperiment } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
-import validateSampleName from '../../utils/validateSampleName';
+import validateInputs from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
 import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
@@ -73,6 +73,16 @@ const ProjectDetails = ({ width, height }) => {
   const [sampleNames, setSampleNames] = useState(new Set());
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
+
+  const validationChecks = [
+    'MIN_1_CHAR',
+    'ALPHANUM_DASH_SPACE',
+    'UNIQUE_NAME',
+  ];
+
+  const validationParams = {
+    existingNames: sampleNames,
+  };
 
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
@@ -285,7 +295,7 @@ const ProjectDetails = ({ width, height }) => {
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
         onDelete={() => dispatch(deleteSamples(record.uuid))}
-        validationFunc={(name) => validateSampleName(name, sampleNames)}
+        validationFunc={(name) => validateInputs(name, validationChecks, validationParams)[0]}
       />
     </Text>
   );

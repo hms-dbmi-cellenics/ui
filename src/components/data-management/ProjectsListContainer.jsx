@@ -15,7 +15,7 @@ import { setActiveProject, updateProject, deleteProject as deleteProjectAction }
 import PrettyTime from '../PrettyTime';
 
 import processUpload from '../../utils/processUpload';
-import validateProjectName from '../../utils/validateProjectName';
+import validateInputs from '../../utils/validateInputs';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
@@ -47,6 +47,17 @@ const ProjectsListContainer = (props) => {
   const deleteProject = () => {
     dispatch(deleteProjectAction(deleteProjectUuid));
     setDeleteModalVisible(false);
+  };
+
+  const validationChecks = [
+    'MIN_8_CHARS',
+    'MIN_2_SEQUENTIAL_CHARS',
+    'ALPHANUM_DASH_SPACE',
+    'UNIQUE_NAME',
+  ];
+
+  const validationParams = {
+    existingNames: projectNames,
   };
 
   return (
@@ -91,7 +102,13 @@ const ProjectsListContainer = (props) => {
                       setDeleteProjectUuid(uuid);
                       setDeleteModalVisible(true);
                     }}
-                    validationFunc={(name) => validateProjectName(name, projectNames)}
+                    validationFunc={
+                      (name) => validateInputs(
+                        name,
+                        validationChecks,
+                        validationParams,
+                      )[0]
+                    }
                   />
                 )}
               >
