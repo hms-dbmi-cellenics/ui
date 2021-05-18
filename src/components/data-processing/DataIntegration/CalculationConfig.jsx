@@ -34,7 +34,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun, disabled,
+    experimentId, onPipelineRun, disabled, disableDataIntegration,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -140,7 +140,7 @@ const CalculationConfig = (props) => {
               <Select
                 value={dataIntegration.method}
                 onChange={(val) => updateSettings({ dataIntegration: { method: val } })}
-                disabled={disabled}
+                disabled={disableDataIntegration || disabled}
               >
                 {
                   methods.map((el) => (
@@ -155,7 +155,7 @@ const CalculationConfig = (props) => {
               onUpdate={updateSettings}
               methodId={dataIntegration.method}
               onChange={() => setChangesOutstanding(true)}
-              disabled={disabled}
+              disabled={disableDataIntegration || disabled}
             />
 
           </div>
@@ -287,10 +287,12 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
+  disableDataIntegration: PropTypes.bool,
 };
 
 CalculationConfig.defaultProps = {
   disabled: false,
+  disableDataIntegration: false,
 };
 
 export default CalculationConfig;
