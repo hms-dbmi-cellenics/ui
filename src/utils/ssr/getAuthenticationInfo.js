@@ -80,7 +80,6 @@ const getAuthenticationInfo = async () => {
       new DescribeUserPoolCommand({ UserPoolId: userPoolId }),
     ),
   ]);
-  console.log(`getAuthenticationInfo ${Domain} - ${JSON.stringify(userPoolClientDetails)}`);
 
   const amplifyConfig = configure(
     userPoolId,
