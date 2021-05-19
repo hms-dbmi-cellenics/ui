@@ -6,7 +6,7 @@ Array [
     "payload": Object {
       "experiment": Object {
         "createdAt": null,
-        "description": "Project description",
+        "description": "Analysis description",
         "id": "experiment-1",
         "lastViewed": null,
         "name": "updated-experiment",
