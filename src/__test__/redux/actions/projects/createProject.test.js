@@ -3,13 +3,19 @@ import thunk from 'redux-thunk';
 import createProject from '../../../../redux/actions/projects/createProject';
 import initialState from '../../../../redux/reducers/projects';
 import { saveProject } from '../../../../redux/actions/projects';
-
+import { createExperiment } from '../../../../redux/actions/experiments';
 import { PROJECTS_CREATE } from '../../../../redux/actionTypes/projects';
 
 const mockStore = configureStore([thunk]);
 
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
+
+jest.mock('../../../../redux/actions/experiments/createExperiment');
+createExperiment.mockImplementation(() => async () => ({
+  name: 'New project',
+  uuid: 'new-project',
+}));
 
 describe('createProject action', () => {
   const mockProject = {
@@ -21,11 +27,15 @@ describe('createProject action', () => {
   };
 
   it('Dispatches event correctly', async () => {
-    const store = mockStore(initialState);
-    await store.dispatch(createProject(mockProject));
+    const store = mockStore({
+      projects: {},
+    });
+    await store.dispatch(createProject(mockProject.name, mockProject));
 
-    const firstAction = store.getActions()[0];
-    expect(firstAction.type).toEqual(PROJECTS_CREATE);
+    const actions = store.getActions();
+
+    // And then create and save projects
+    expect(actions[0].type).toEqual(PROJECTS_CREATE);
   });
 
   it('Dispatches call to save project', async () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, mount, configure } from 'enzyme';
+import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import EditableField from '../../components/EditableField';
 
@@ -150,5 +150,47 @@ describe('EditableField', () => {
 
     // The callback should have been called
     expect(mockOnDelete).toHaveBeenCalledTimes(1);
+  });
+
+  test('onEditing should reflect editing state.', () => {
+    const mockOnEditing = jest.fn().mockImplementation((editing) => editing);
+
+    const component = mount(
+      <EditableField value='Cluster X' onEditing={mockOnEditing} />,
+    );
+
+    // Click edit button.
+    component.find('Button').at(0).simulate('click', eventStub);
+    component.update();
+
+    // Click save button
+    component.find('Button').at(0).simulate('click', eventStub);
+    component.update();
+
+    // Click edit button to open the field again
+    component.find('Button').at(0).simulate('click', eventStub);
+    component.update();
+
+    // Click cancel button
+    component.find('Button').at(1).simulate('click', eventStub);
+    component.update();
+
+    // The callback should have been called, returning editing state true
+    expect(mockOnEditing).toHaveBeenCalledTimes(5);
+
+    // First call is when component is initializing
+    expect(mockOnEditing.mock.results[0].value).toBe(false);
+
+    // True on first open
+    expect(mockOnEditing.mock.results[1].value).toBe(true);
+
+    // False on saving
+    expect(mockOnEditing.mock.results[2].value).toBe(false);
+
+    // True on second open
+    expect(mockOnEditing.mock.results[3].value).toBe(true);
+
+    // False on close by cancel
+    expect(mockOnEditing.mock.results[4].value).toBe(false);
   });
 });

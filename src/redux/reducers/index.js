@@ -6,6 +6,7 @@ import cellSetsReducer from './cellSets';
 import componentConfigReducer from './componentConfig/index';
 import differentialExpressionReducer from './differentialExpression';
 import embeddingsReducer from './embeddings';
+import experimentsReducer from './experiments';
 import experimentSettingsReducer from './experimentSettings';
 import genesReducer from './genes';
 import layoutReducer from './layout/layout';
@@ -21,6 +22,7 @@ export default combineReducers({
   componentConfig: componentConfigReducer,
   differentialExpression: differentialExpressionReducer,
   embeddings: embeddingsReducer,
+  experiments: experimentsReducer,
   experimentSettings: experimentSettingsReducer,
   genes: genesReducer,
   layout: layoutReducer,

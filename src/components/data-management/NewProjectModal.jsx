@@ -5,7 +5,7 @@ import {
   Modal, Button, Input, Space, Typography, Form,
 } from 'antd';
 import { ClipLoader } from 'react-spinners';
-import validateProjectName from '../../utils/validateProjectName';
+import validateInputs, { rules } from '../../utils/validateInputs';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -32,6 +32,17 @@ const NewProjectModal = (props) => {
     saving,
     error,
   } = useSelector((state) => state.projects.meta);
+
+  const validationChecks = [
+    rules.MIN_8_CHARS,
+    rules.MIN_2_SEQUENTIAL_CHARS,
+    rules.ALPHANUM_DASH_SPACE,
+    rules.UNIQUE_NAME,
+  ];
+
+  const validationParams = {
+    existingNames: projectNames,
+  };
 
   return (
     <Modal
@@ -71,8 +82,22 @@ const NewProjectModal = (props) => {
 
           <Form layout='vertical'>
             <Form.Item
-              validateStatus={validateProjectName(projectName, projectNames) !== true && 'error'}
-              help={validateProjectName(projectName, projectNames)}
+              validateStatus={validateInputs(
+                projectName,
+                validationChecks,
+                validationParams,
+              ).isValid ? 'success' : 'error'}
+              help={(
+                <ul>
+                  {validateInputs(
+                    projectName,
+                    validationChecks,
+                    validationParams,
+                  ).results
+                    .filter((msg) => msg !== true)
+                    .map((msg) => <li>{msg}</li>)}
+                </ul>
+              )}
               label={(
                 <span>
                   Project name
@@ -86,7 +111,13 @@ const NewProjectModal = (props) => {
               <Input
                 onChange={(e) => {
                   setProjectName(e.target.value);
-                  setIsValid(validateProjectName(e.target.value, projectNames) === true);
+                  setIsValid(
+                    validateInputs(
+                      projectName,
+                      validationChecks,
+                      validationParams,
+                    ).isValid,
+                  );
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && isValid) {
@@ -112,23 +143,27 @@ const NewProjectModal = (props) => {
             </Form.Item>
           </Form>
 
-          {saving && (
-            <center>
-              <Space direction='vertical'>
-                <ClipLoader
-                  size={50}
-                  color='#8f0b10'
-                />
-                <Text>Creating project...</Text>
-              </Space>
-            </center>
-          )}
+          {
+            saving && (
+              <center>
+                <Space direction='vertical'>
+                  <ClipLoader
+                    size={50}
+                    color='#8f0b10'
+                  />
+                  <Text>Creating project...</Text>
+                </Space>
+              </center>
+            )
+          }
 
-          {error && (
-            <Text type='danger' style={{ fontSize: 14 }}>
-              {error}
-            </Text>
-          )}
+          {
+            error && (
+              <Text type='danger' style={{ fontSize: 14 }}>
+                {error}
+              </Text>
+            )
+          }
 
         </Space>
       </Space>
