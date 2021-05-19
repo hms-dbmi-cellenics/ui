@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
 } from 'antd';
+import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   UploadOutlined, EditOutlined,
@@ -9,12 +10,15 @@ import {
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
+import moment from 'moment';
+
 import { saveAs } from 'file-saver';
 import { Storage } from 'aws-amplify';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
+import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
@@ -22,19 +26,24 @@ import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
+
 import {
   updateProject,
   createMetadataTrack,
   updateMetadataTrack,
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
+
+import { updateExperiment } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
-import validateSampleName from '../../utils/validateSampleName';
+import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
 import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
+import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
+import runGem2s from '../../redux/actions/pipeline/runGem2s';
 
 const { Text, Paragraph } = Typography;
 
@@ -47,19 +56,33 @@ const ProjectDetails = ({ width, height }) => {
 
   const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
-
+  const router = useRouter();
+  const analysisPath = '/experiments/[experimentId]/data-processing';
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromApiExpectOK,
   );
-  const [tableData, setTableData] = useState([]);
-  const [tableColumns, setTableColumns] = useState([]);
-  const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const projects = useSelector((state) => state.projects);
+  const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+  const [tableData, setTableData] = useState([]);
+  const [tableColumns, setTableColumns] = useState([]);
+  const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const [sampleNames, setSampleNames] = useState(new Set());
+  const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
+  const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
+
+  const validationChecks = [
+    rules.MIN_1_CHAR,
+    rules.ALPHANUM_DASH_SPACE,
+    rules.UNIQUE_NAME,
+  ];
+
+  const validationParams = {
+    existingNames: sampleNames,
+  };
 
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
@@ -272,7 +295,7 @@ const ProjectDetails = ({ width, height }) => {
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
         onDelete={() => dispatch(deleteSamples(record.uuid))}
-        validationFunc={(name) => validateSampleName(name, sampleNames)}
+        validationFunc={(name) => validateInputs(name, validationChecks, validationParams).isValid}
       />
     </Text>
   );
@@ -451,6 +474,41 @@ const ProjectDetails = ({ width, height }) => {
     },
   ];
 
+  const checkLaunchAnalysis = () => {
+    if (activeProject?.samples.length === 0) return false;
+
+    const allSampleFilesUploaded = (sample) => {
+      // Check if all files for a given tech has been uploaded
+      const fileNamesArray = Array.from(sample.fileNames);
+
+      if (!_.isEqual(
+        fileNamesArray,
+        fileUploadSpecifications[sample.type].requiredFiles,
+      )) { return false; }
+
+      return fileNamesArray.every((fileName) => {
+        const checkedFile = sample.files[fileName];
+
+        return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
+      });
+    };
+
+    const allSampleMetadataInserted = (sample) => {
+      if (activeProject?.metadataKeys.length === 0) return true;
+      if (Object.keys(sample.metadata).length !== activeProject.metadataKeys.length) return false;
+      return Object.values(sample.metadata).every((value) => value.length > 0);
+    };
+
+    const canLaunch = activeProject?.samples.every((sampleUuid) => {
+      const checkedSample = samples[sampleUuid];
+
+      return allSampleFilesUploaded(checkedSample)
+        && allSampleMetadataInserted(checkedSample);
+    });
+
+    setCanLaunchAnalysis(canLaunch);
+  };
+
   useEffect(() => {
     if (projects.ids.length === 0 || samples.ids.length === 0) {
       setTableData([]);
@@ -489,6 +547,7 @@ const ProjectDetails = ({ width, height }) => {
       };
     });
 
+    checkLaunchAnalysis();
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
@@ -527,12 +586,33 @@ const ProjectDetails = ({ width, height }) => {
     saveAs(downloadedS3Object.Body, fileNameToSaveWith);
   };
 
+  const launchAnalysis = () => {
+    if (canLaunchAnalysis) {
+      // Change the line below when multiple experiments in a project is supported
+      setAnalysisModalVisible(true);
+    }
+  };
+
   return (
     <>
       <FileUploadModal
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
         onUpload={uploadFiles}
+      />
+      <AnalysisModal
+        activeProject={activeProject}
+        experiments={experiments}
+        visible={analysisModalVisible}
+        onLaunch={(experimentId) => {
+          dispatch(updateExperiment(experimentId, { lastViewed: moment().toISOString() }));
+          dispatch(runGem2s(experimentId));
+          router.push(analysisPath.replace('[experimentId]', experimentId));
+        }}
+        onChange={() => {
+          // Update experiments details
+        }}
+        onCancel={() => { setAnalysisModalVisible(false); }}
       />
       <UploadDetailsModal
         sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
@@ -571,7 +651,9 @@ const ProjectDetails = ({ width, height }) => {
               disabled={
                 projects.ids.length === 0
                 || activeProject?.samples.length === 0
+                || !canLaunchAnalysis
               }
+              onClick={() => launchAnalysis()}
             >
               Launch analysis
             </Button>,

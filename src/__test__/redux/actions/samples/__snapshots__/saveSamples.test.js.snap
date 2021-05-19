@@ -1,10 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`saveSamples action Dispatches a notification when fetch fails. 1`] = `
-Object {
-  "payload": Object {
-    "message": "Saving sample...",
+exports[`saveSamples action Dispatches samples pre and post actions correctly 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "message": "Saving sample...",
+    },
+    "type": "samples/saving",
   },
-  "type": "samples/saving",
-}
+  Object {
+    "type": "samples/saved",
+  },
+]
 `;
+
+exports[`saveSamples action Does not dispatch pre and post actions if disabled 1`] = `Array []`;

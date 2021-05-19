@@ -3,7 +3,8 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialProjectState from '../../../../redux/reducers/projects/initialState';
 import { saveProject } from '../../../../redux/actions/projects';
-import { PROJECTS_SAVED, PROJECTS_SAVING } from '../../../../redux/actionTypes/projects';
+import { PROJECTS_ERROR, PROJECTS_SAVED, PROJECTS_SAVING } from '../../../../redux/actionTypes/projects';
+import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
 
 jest.mock('localforage');
 
@@ -63,11 +64,21 @@ describe('saveProject action', () => {
     const store = mockStore(initialState);
     await store.dispatch(saveProject(mockProject.uuid, mockProject));
 
-    const firstAction = store.getActions()[0];
-    expect(firstAction).toMatchSnapshot();
+    const actions = store.getActions();
+
+    // First action sets up saving status
+    expect(actions[0].type).toBe(PROJECTS_SAVING);
+
+    // Second state saves error
+    expect(actions[1].type).toBe(PROJECTS_ERROR);
+
+    // Thirdd state emits notification
+    expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
+
+    expect(actions).toMatchSnapshot();
   });
 
-  it('Dispatches project guards correctly', async () => {
+  it('Dispatches project pre and post actions correctly', async () => {
     const store = mockStore(initialState);
     await store.dispatch(saveProject(mockProject.uuid, mockProject));
 
@@ -76,13 +87,17 @@ describe('saveProject action', () => {
     expect(actions.length).toEqual(2);
     expect(actions[0].type).toEqual(PROJECTS_SAVING);
     expect(actions[1].type).toEqual(PROJECTS_SAVED);
+
+    expect(actions).toMatchSnapshot();
   });
 
-  it('Does not dispatch guards if disabled', async () => {
+  it('Does not dispatch pre and post actions if disabled', async () => {
     const store = mockStore(initialState);
     await store.dispatch(saveProject(mockProject.uuid, mockProject, false));
 
     const actions = store.getActions();
     expect(actions.length).toEqual(0);
+
+    expect(actions).toMatchSnapshot();
   });
 });

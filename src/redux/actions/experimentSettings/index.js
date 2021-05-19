@@ -4,6 +4,7 @@ import saveProcessingSettings from './saveProcessingSettings';
 import loadProcessingSettings from './loadProcessingSettings';
 import loadBackendStatus from './loadBackendStatus';
 import updateBackendStatus from './updateBackendStatus';
+import updateExperimentInfo from './updateExperimentInfo';
 
 export {
   loadProcessingSettings,
@@ -12,4 +13,5 @@ export {
   saveProcessingSettings,
   loadBackendStatus,
   updateBackendStatus,
+  updateExperimentInfo,
 };
