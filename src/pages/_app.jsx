@@ -59,19 +59,21 @@ const WrappedApp = ({ Component, pageProps }) => {
     (state) => (experimentId ? state.experimentSettings.info : {}),
   );
 
-  const [amplifyConfigured, setAmplifyConfigured] = useState(false);
+  const [amplifyConfigured, setAmplifyConfigured] = useState(!amplifyConfig);
 
   const environment = useSelector((state) => state.networkResources.environment);
 
   useEffect(() => {
-    console.log(`Configuring amplify with ${amplifyConfig}`);
-    Amplify.configure(amplifyConfig);
+    if (amplifyConfig) {
+      console.log(`Configuring amplify with ${amplifyConfig}`);
+      Amplify.configure(amplifyConfig);
 
-    if (environment === 'development') {
-      mockCredentialsForInframock();
+      if (environment === 'development') {
+        mockCredentialsForInframock();
+      }
+
+      setAmplifyConfigured(true);
     }
-
-    setAmplifyConfigured(true);
   }, [amplifyConfig]);
 
   const mainContent = () => {
