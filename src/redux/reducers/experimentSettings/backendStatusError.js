@@ -1,12 +1,12 @@
 import initialState from './initialState';
 
-const pipelineStatusError = (state, action) => {
+const backendStatusError = (state, action) => {
   const { error } = action.payload;
 
   return {
     ...initialState,
     ...state,
-    pipelineStatus: {
+    backendStatus: {
       status: {},
       loading: false,
       error,
@@ -14,4 +14,4 @@ const pipelineStatusError = (state, action) => {
   };
 };
 
-export default pipelineStatusError;
+export default backendStatusError;

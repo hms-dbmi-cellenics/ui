@@ -70,7 +70,7 @@ const initialState = {
     },
   },
   experimentSettings: {
-    pipelineStatus: {
+    backendStatus: {
       status: {
         pipeline: {
           status: 'SUCCEEDED',
@@ -160,7 +160,7 @@ describe('GeneListTool', () => {
         orderDirection: 'ASC',
         selectFields: ['gene_names', 'dispersions'],
       },
-      initialState.experimentSettings.pipelineStatus.status,
+      initialState.experimentSettings.backendStatus.status,
     );
 
     expect(store.getActions()[0]).toMatchSnapshot();
