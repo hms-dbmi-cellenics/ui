@@ -4,7 +4,8 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import { saveSamples } from '../../../../redux/actions/samples';
-import { SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
+import { SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
+import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
 
 jest.mock('localforage');
 
@@ -55,7 +56,7 @@ describe('saveSamples action', () => {
   };
 
   beforeEach(() => {
-    const response = new Response(JSON.stringify({ one: 'one' }));
+    const response = new Response(JSON.stringify({}));
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -97,25 +98,36 @@ describe('saveSamples action', () => {
     const store = mockStore(initialState);
     await store.dispatch(saveSamples(mockprojectUuid, newSample));
 
-    const firstAction = store.getActions()[0];
-    expect(firstAction).toMatchSnapshot();
+    const actions = store.getActions();
+
+    // First action sets up saving status
+    expect(actions[0].type).toBe(SAMPLES_SAVING);
+
+    // Second state generates error
+    expect(actions[1].type).toBe(SAMPLES_ERROR);
+
+    // Thirdd state emits notification
+    expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
   });
 
-  it('Dispatches project guards correctly', async () => {
+  it('Dispatches samples pre and post actions correctly', async () => {
     const store = mockStore(initialState);
     await store.dispatch(saveSamples(mockprojectUuid, newSample));
 
     const actions = store.getActions();
+
     expect(actions.length).toEqual(2);
     expect(actions[0].type).toEqual(SAMPLES_SAVING);
     expect(actions[1].type).toEqual(SAMPLES_SAVED);
+    expect(actions).toMatchSnapshot();
   });
 
-  it('Does not dispatch guards if disabled', async () => {
+  it('Does not dispatch pre and post actions if disabled', async () => {
     const store = mockStore(initialState);
     await store.dispatch(saveSamples(mockprojectUuid, newSample, true, false));
 
     const actions = store.getActions();
     expect(actions.length).toEqual(0);
+    expect(actions).toMatchSnapshot();
   });
 });

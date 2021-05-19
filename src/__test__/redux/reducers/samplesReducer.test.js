@@ -197,7 +197,7 @@ describe('samplesReducer', () => {
         ...oneSampleState[sample1.uuid].meta,
         loading: false,
         saving: true,
-        error: true,
+        error: false,
       },
     }, { type: SAMPLES_SAVED });
 

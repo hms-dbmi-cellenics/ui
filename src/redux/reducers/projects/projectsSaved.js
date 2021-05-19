@@ -6,7 +6,6 @@ const projectsSaved = (state) => ({
   meta: {
     ...state.meta,
     saving: false,
-    error: false,
   },
 });
 

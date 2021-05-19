@@ -23,7 +23,7 @@ Object {
   ],
   "meta": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
     "saving": false,
   },
   "qwe234": Object {
@@ -66,7 +66,7 @@ Object {
   ],
   "meta": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
     "saving": false,
   },
 }
@@ -99,7 +99,7 @@ Object {
   ],
   "meta": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
     "saving": false,
   },
 }
@@ -127,7 +127,7 @@ Object {
   ],
   "meta": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
     "saving": false,
   },
 }
@@ -160,7 +160,7 @@ Object {
   ],
   "meta": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
     "saving": false,
   },
 }
@@ -317,7 +317,7 @@ Object {
   ],
   "meta": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
     "saving": false,
   },
 }
@@ -361,7 +361,7 @@ Object {
   ],
   "meta": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
     "saving": false,
   },
 }
@@ -405,7 +405,7 @@ Object {
   ],
   "meta": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
     "saving": false,
   },
 }
@@ -440,7 +440,7 @@ Object {
   ],
   "meta": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
     "saving": false,
   },
 }

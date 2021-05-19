@@ -81,7 +81,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
-    unisample: ['dataIntegration']
+    unisample: []
   }
 
   const disabledConditionMessage = {
@@ -303,7 +303,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           experimentId={expId}
           key={key}
           onPipelineRun={() => onPipelineRun(key)}
-          stepDisabled={!processingConfig[key].enabled}
+          disableDataIntegration={sampleKeys && sampleKeys.length === 1}
         />
       ),
     },

@@ -97,8 +97,7 @@ const compressAndUploadSingleFile = async (
       sampleUuid,
       fileName,
       {
-        upload:
-        {
+        upload: {
           status: UploadStatus.UPLOADED,
           progress: 100,
         },
