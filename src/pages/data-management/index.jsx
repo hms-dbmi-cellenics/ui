@@ -24,10 +24,9 @@ const DataManagementPage = ({ route }) => {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
-  const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
   const activeProjectUuid = useSelector((state) => state.projects.meta.activeProjectUuid);
-  const activeProject = projects[activeProjectUuid];
+  const activeProject = projectsList[activeProjectUuid];
 
   const existingExperiments = activeProject?.experiments
     .map((experimentId) => experiments[experimentId]);

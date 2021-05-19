@@ -21,6 +21,7 @@ const loadSamples = (
       });
     }
     const json = await response.json();
+
     if (!response.ok) {
       throw new Error('HTTP status code was not 200.');
     }
