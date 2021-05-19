@@ -34,7 +34,7 @@ const NewExperimentModal = (props) => {
     setExperimentsList(
       activeProject?.experiments?.map((experimentId) => experiments[experimentId]),
     );
-  }, [activeProject]);
+  }, [activeProject, experiments]);
 
   const validationChecks = [
     rules.MIN_1_CHAR,
@@ -86,7 +86,7 @@ const NewExperimentModal = (props) => {
                         }}
                         onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
                         value={experiment.name}
-                        validationFunc={(name) => validateInputs(name, validationChecks)[0]}
+                        validationFunc={(name) => validateInputs(name, validationChecks).isValid}
                         deleteEnabled={false}
                         onEditing={(editing) => { if (editing) setNumFieldsEditing(numFieldsEditing + 1); }}
                       />

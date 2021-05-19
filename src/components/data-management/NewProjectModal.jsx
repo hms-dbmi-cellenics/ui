@@ -86,16 +86,17 @@ const NewProjectModal = (props) => {
                 projectName,
                 validationChecks,
                 validationParams,
-              )[0] ? 'success' : 'error'}
-              help={validateInputs(
-                projectName,
-                validationChecks,
-                validationParams,
-                (errMsg) => (
-                  <ul>
-                    {errMsg.filter((msg) => msg !== true).map((msg) => <li>{msg}</li>)}
-                  </ul>
-                ),
+              ).isValid ? 'success' : 'error'}
+              help={(
+                <ul>
+                  {validateInputs(
+                    projectName,
+                    validationChecks,
+                    validationParams,
+                  ).results
+                    .filter((msg) => msg !== true)
+                    .map((msg) => <li>{msg}</li>)}
+                </ul>
               )}
               label={(
                 <span>
@@ -110,12 +111,13 @@ const NewProjectModal = (props) => {
               <Input
                 onChange={(e) => {
                   setProjectName(e.target.value);
-                  const [valid] = validateInputs(
-                    projectName,
-                    validationChecks,
-                    validationParams,
+                  setIsValid(
+                    validateInputs(
+                      projectName,
+                      validationChecks,
+                      validationParams,
+                    ).isValid,
                   );
-                  setIsValid(valid);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && isValid) {

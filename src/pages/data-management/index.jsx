@@ -38,7 +38,7 @@ const DataManagementPage = ({ route }) => {
     }
   }, [projectsList]);
 
-  const unnamedExperimentName = 'Unnamed Experiment';
+  const unnamedExperimentName = 'Unnamed Analysis';
 
   const createNewProject = (newProjectName, newProjectDescription) => {
     const numUnnamedExperiments = !existingExperiments ? 0

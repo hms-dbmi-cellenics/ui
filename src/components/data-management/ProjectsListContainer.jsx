@@ -107,7 +107,7 @@ const ProjectsListContainer = (props) => {
                         name,
                         validationChecks,
                         validationParams,
-                      )[0]
+                      ).isValid
                     }
                   />
                 )}

@@ -7,10 +7,10 @@ describe('validateUnit unit test', () => {
     const input = 'Input';
     const checks = [];
 
-    const [isValid, result] = validateInputs(input, checks);
+    const { isValid, results } = validateInputs(input, checks);
 
     expect(isValid).toEqual(true);
-    expect(result).toEqual([]);
+    expect(results).toEqual([]);
   });
 
   it('Each check is checked', () => {
@@ -22,23 +22,23 @@ describe('validateUnit unit test', () => {
     ];
 
     // eslint-disable-next-line no-unused-vars
-    const [_, result] = validateInputs(input, checks);
+    const { isValid, results } = validateInputs(input, checks);
 
-    expect(result.length).toEqual(checks.length);
+    expect(results.length).toEqual(checks.length);
   });
 
   it('Correctly validates minimal 1 char ', () => {
     const validName = 'Project 1';
     const checks = [rules.MIN_1_CHAR];
 
-    const [isValid, validResult] = validateInputs(validName, checks);
+    const { isValid, results: validResult } = validateInputs(validName, checks);
 
     expect(isValid).toEqual(true);
     expect(validResult).toEqual([true]);
 
     const inValidName = '';
 
-    const [isInvalid, invalidResult] = validateInputs(inValidName, checks);
+    const { isValid: isInvalid, results: invalidResult } = validateInputs(inValidName, checks);
 
     expect(isInvalid).not.toEqual(true);
     expect(invalidResult).toEqual([errorMessages.MIN_1_CHAR]);
@@ -48,14 +48,14 @@ describe('validateUnit unit test', () => {
     const validName = 'Project 1';
     const checks = [rules.MIN_8_CHARS];
 
-    const [isValid, validResult] = validateInputs(validName, checks);
+    const { isValid, results: validResult } = validateInputs(validName, checks);
 
     expect(isValid).toEqual(true);
     expect(validResult).toEqual([true]);
 
     const inValidName = 'asd';
 
-    const [isInvalid, invalidResult] = validateInputs(inValidName, checks);
+    const { isValid: isInvalid, results: invalidResult } = validateInputs(inValidName, checks);
 
     expect(isInvalid).not.toEqual(true);
     expect(invalidResult).toEqual([errorMessages.MIN_8_CHARS]);
@@ -65,14 +65,14 @@ describe('validateUnit unit test', () => {
     const validName = ' ab  cd  ef  gh';
     const checks = [rules.MIN_2_SEQUENTIAL_CHARS];
 
-    const [isValid, validResult] = validateInputs(validName, checks);
+    const { isValid, results: validResult } = validateInputs(validName, checks);
 
     expect(isValid).toEqual(true);
     expect(validResult).toEqual([true]);
 
-    const inValidName = 'a b c d e f g h';
+    const invalidName = 'a b c d e f g h';
 
-    const [isInvalid, invalidResult] = validateInputs(inValidName, checks);
+    const { isValid: isInvalid, results: invalidResult } = validateInputs(invalidName, checks);
 
     expect(isInvalid).not.toEqual(true);
     expect(invalidResult).toEqual([errorMessages.MIN_2_SEQUENTIAL_CHARS]);
@@ -82,7 +82,7 @@ describe('validateUnit unit test', () => {
     const invalidName = 'Yumm: A great project!';
     const checks = [rules.ALPHANUM_DASH_SPACE];
 
-    const [isInvalid, invalidResult] = validateInputs(invalidName, checks);
+    const { isValid: isInvalid, results: invalidResult } = validateInputs(invalidName, checks);
 
     expect(isInvalid).not.toEqual(true);
     expect(invalidResult).toEqual([errorMessages.ALPHANUM_DASH_SPACE]);
@@ -99,14 +99,14 @@ describe('validateUnit unit test', () => {
 
     const checks = [rules.UNIQUE_NAME];
 
-    const [isValid, validResult] = validateInputs(
+    const { isValid, results } = validateInputs(
       validName, checks, { existingNames: projectNames },
     );
 
     expect(isValid).toEqual(true);
-    expect(validResult).toEqual([true]);
+    expect(results).toEqual([true]);
 
-    const [isInvalid, invalidResult] = validateInputs(
+    const { isValid: isInvalid, results: invalidResult } = validateInputs(
       invalidName, checks, { existingNames: projectNames },
     );
 

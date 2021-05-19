@@ -295,7 +295,7 @@ const ProjectDetails = ({ width, height }) => {
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
         onDelete={() => dispatch(deleteSamples(record.uuid))}
-        validationFunc={(name) => validateInputs(name, validationChecks, validationParams)[0]}
+        validationFunc={(name) => validateInputs(name, validationChecks, validationParams).isValid}
       />
     </Text>
   );

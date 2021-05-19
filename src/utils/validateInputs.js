@@ -55,18 +55,21 @@ const validationFns = {
   },
 };
 
-const validateInput = (input, checks, params, renderer) => {
-  if (checks.length === 0) return [true, []];
-
-  let results = checks.map((checkName) => validationFns[checkName](checkName, input, params));
-  const isValid = results.every((check) => check === true);
-
-  // Renderer function can be specified to return Reach node
-  if (renderer) {
-    results = renderer(results);
+const validateInput = (input, checks, params) => {
+  if (checks.length === 0) {
+    return {
+      isValid: true,
+      results: [],
+    };
   }
 
-  return [isValid, results];
+  const results = checks.map((checkName) => validationFns[checkName](checkName, input, params));
+  const isValid = results.every((check) => check === true);
+
+  return {
+    isValid,
+    results,
+  };
 };
 
 export default validateInput;
