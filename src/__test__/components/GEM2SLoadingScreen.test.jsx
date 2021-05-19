@@ -14,13 +14,13 @@ describe('GEM2SLoadingScreen', () => {
     await preloadAll();
   });
 
-  it('Does not render without pipeline status', () => {
+  it('Does not render without gem2s status', () => {
     expect(() => shallow(<GEM2SLoadingScreen />)).toThrow();
   });
 
   it('Renders toBeRun state correctly', () => {
     const component = mount(
-      <GEM2SLoadingScreen pipelineStatus='toBeRun' />,
+      <GEM2SLoadingScreen gem2sStatus='toBeRun' />,
     );
 
     const display = component.find(Result);
@@ -32,7 +32,7 @@ describe('GEM2SLoadingScreen', () => {
 
   it('Renders error state correctly', () => {
     const component = mount(
-      <GEM2SLoadingScreen pipelineStatus='error' />,
+      <GEM2SLoadingScreen gem2sStatus='error' />,
     );
 
     const display = component.find(Result);
@@ -55,7 +55,7 @@ describe('GEM2SLoadingScreen', () => {
     ];
 
     const component = mount(
-      <GEM2SLoadingScreen pipelineStatus='running' completedSteps={completedSteps} steps={steps} />,
+      <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedSteps} steps={steps} />,
     );
 
     const display = component.find(Result);

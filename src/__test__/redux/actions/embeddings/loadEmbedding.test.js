@@ -25,7 +25,7 @@ describe('loadEmbedding action', () => {
   const experimentId = '1234';
   const experimentSettings = {
     ...initialExperimentState,
-    pipelineStatus: {
+    backendStatus: {
       status: {
         pipeline: {
           ...initialPipelineState,
@@ -210,8 +210,8 @@ describe('loadEmbedding action', () => {
         embeddings: {},
         experimentSettings: {
           ...experimentSettings,
-          pipelineStatus: {
-            ...experimentSettings.pipelineStatus,
+          backendStatus: {
+            ...experimentSettings.backendStatus,
             status: {},
           },
         },

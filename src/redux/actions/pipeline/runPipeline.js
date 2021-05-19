@@ -1,14 +1,14 @@
 import fetchAPI from '../../../utils/fetchAPI';
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_START,
 } from '../../actionTypes/experimentSettings';
-import loadPipelineStatus from '../experimentSettings/loadPipelineStatus';
+import loadBackendStatus from '../experimentSettings/loadBackendStatus';
 
 const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) => {
   dispatch({
-    type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
+    type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
       experimentId,
     },
@@ -47,7 +47,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
         payload: {},
       });
 
-      dispatch(loadPipelineStatus(experimentId));
+      dispatch(loadBackendStatus(experimentId));
 
       return;
     }
@@ -55,7 +55,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
     throw new Error('HTTP status code was not 200.');
   } catch (e) {
     dispatch({
-      type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+      type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
       payload: {
         error: 'Could not start the pipeline.',
         errorType: e,

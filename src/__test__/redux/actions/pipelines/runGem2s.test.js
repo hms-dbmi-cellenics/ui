@@ -2,13 +2,13 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialExperimentsState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
-import loadPipelineStatus from '../../../../redux/actions/experimentSettings/loadPipelineStatus';
+import loadBackendStatus from '../../../../redux/actions/experimentSettings/loadBackendStatus';
 
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_INFO_UPDATE,
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
 } from '../../../../redux/actionTypes/experimentSettings';
 
 import { runGem2s } from '../../../../redux/actions/pipeline';
@@ -16,7 +16,7 @@ import { runGem2s } from '../../../../redux/actions/pipeline';
 const mockStore = configureStore([thunk]);
 enableFetchMocks();
 
-jest.mock('../../../../redux/actions/experimentSettings/loadPipelineStatus',
+jest.mock('../../../../redux/actions/experimentSettings/loadBackendStatus',
   () => jest.fn().mockImplementation(() => async () => { }));
 
 const experimentId = 'experiment-id';
@@ -51,9 +51,9 @@ describe('runGem2s action', () => {
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING);
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING);
     expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
-    expect(loadPipelineStatus).toHaveBeenCalled();
+    expect(loadBackendStatus).toHaveBeenCalled();
 
     expect(actions[2].type).toEqual(EXPERIMENT_SETTINGS_INFO_UPDATE);
     expect(actions).toMatchSnapshot();
@@ -68,9 +68,9 @@ describe('runGem2s action', () => {
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING);
-    expect(loadPipelineStatus).not.toHaveBeenCalled();
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR);
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING);
+    expect(loadBackendStatus).not.toHaveBeenCalled();
+    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR);
 
     expect(actions).toMatchSnapshot();
   });

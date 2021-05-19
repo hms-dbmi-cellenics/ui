@@ -33,7 +33,7 @@ const mockStore = configureMockStore([thunk]);
 const store = mockStore({
   notifications: {},
   experimentSettings: {
-    pipelineStatus: {
+    backendStatus: {
       loading: false,
       error: false,
       status: {},
@@ -109,7 +109,7 @@ describe('ContentWrapper', () => {
     const testStore = mockStore({
       notifications: {},
       experimentSettings: {
-        pipelineStatus: {
+        backendStatus: {
           loading: false,
           error: false,
           status: { pipeline: { status: 'RUNNING' } },

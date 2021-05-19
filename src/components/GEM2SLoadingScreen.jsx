@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 const { Title, Text } = Typography;
 
-const GEM2SLoadingScreen = ({ pipelineStatus, completedSteps, steps }) => {
+const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
   const path = '/data-management';
 
   const gem2sStepsInfo = [
@@ -43,10 +43,10 @@ const GEM2SLoadingScreen = ({ pipelineStatus, completedSteps, steps }) => {
     },
   };
 
-  const { status, title, subTitle } = texts[pipelineStatus];
+  const { status, title, subTitle } = texts[gem2sStatus];
 
   const renderExtra = () => {
-    if (pipelineStatus !== 'running') {
+    if (gem2sStatus !== 'running') {
       return (
         <Link as={path} href={path} passHref>
           <Button type='primary' key='console'>
@@ -99,7 +99,7 @@ const GEM2SLoadingScreen = ({ pipelineStatus, completedSteps, steps }) => {
 };
 
 GEM2SLoadingScreen.propTypes = {
-  pipelineStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
+  gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
   completedSteps: PropTypes.array,
   steps: PropTypes.array,
 };

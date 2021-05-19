@@ -8,14 +8,10 @@ import {
   Card,
 } from 'antd';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import {
-  LoadingOutlined,
   DownOutlined,
-  StopOutlined,
-  PauseCircleOutlined,
-  WarningOutlined,
   CheckCircleOutlined,
 } from '@ant-design/icons';
 
@@ -26,7 +22,7 @@ const { Text, Paragraph } = Typography;
 const StatusIndicator = () => {
   const {
     status: { pipeline },
-  } = useSelector((state) => state.experimentSettings.pipelineStatus);
+  } = useSelector((state) => state.experimentSettings.backendStatus);
 
   const { startDate, stopDate, status } = pipeline;
 
