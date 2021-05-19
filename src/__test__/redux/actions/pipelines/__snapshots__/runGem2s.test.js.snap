@@ -6,7 +6,7 @@ Array [
     "payload": Object {
       "experimentId": "experiment-id",
     },
-    "type": "experimentSettings/pipelineStatusLoading",
+    "type": "experimentSettings/backendStatusLoading",
   },
   Object {
     "payload": Object {},
@@ -29,14 +29,14 @@ Array [
     "payload": Object {
       "experimentId": "experiment-id",
     },
-    "type": "experimentSettings/pipelineStatusLoading",
+    "type": "experimentSettings/backendStatusLoading",
   },
   Object {
     "payload": Object {
       "error": "Could not start gem2s.",
       "errorType": [Error: some weird error that happened],
     },
-    "type": "experimentSettings/pipelineStatusError",
+    "type": "experimentSettings/backendStatusError",
   },
 ]
 `;
