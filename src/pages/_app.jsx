@@ -165,7 +165,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   } = ctx;
 
   // Do nothing if not server-side
-  if (!req) { return {}; }
+  if (!req) { return { pageProps: {} }; }
 
   const pageProps = Component.getInitialProps
     ? await Component.getInitialProps(ctx)
