@@ -1,11 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DefaultSeo } from 'next-seo';
 import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
-import Amplify, { Storage } from 'aws-amplify';
+import Amplify, { Storage, withSSRContext } from 'aws-amplify';
 import _ from 'lodash';
 import AWS from 'aws-sdk';
 import { Credentials } from '@aws-amplify/core';
@@ -53,7 +53,11 @@ const WrappedApp = ({ Component, pageProps }) => {
   const router = useRouter();
 
   const { experimentId } = router.query;
-  const experimentData = useSelector((state) => (experimentId ? state.experimentSettings.info : {}));
+  const experimentData = useSelector(
+    (state) => (experimentId ? state.experimentSettings.info : {}),
+  );
+
+  const [amplifyConfigured, setAmplifyConfigured] = useState(false);
 
   const environment = useSelector((state) => state.networkResources.environment);
 
@@ -63,6 +67,8 @@ const WrappedApp = ({ Component, pageProps }) => {
     if (environment === 'development') {
       mockCredentialsForInframock();
     }
+
+    setAmplifyConfigured(true);
   }, [amplifyConfig]);
 
   const mainContent = () => {
@@ -76,14 +82,38 @@ const WrappedApp = ({ Component, pageProps }) => {
       if (httpError === 404) {
         return (
           <NotFoundPage
-            title={'Analysis doesn\'t exist.'}
+            title={'Analysis doesn\'t exist'}
             subTitle={'We searched, but we couldn\'t find the analysis you\'re looking for.'}
             hint='It may have been deleted by the project owner. Go home to see your own projects and analyses.'
           />
         );
       }
 
+      if (httpError === 403) {
+        return (
+          <NotFoundPage
+            title='Analysis not found'
+            subTitle={'You don\'t have access to this analysis. The owner may have made it private.'}
+            hint='If somebody gave you this link, they may need to invite you to their project.'
+          />
+        );
+      }
+
+      if (httpError === 401) {
+        return (
+          <NotFoundPage
+            title='Analysis not found'
+            subTitle={'You don\'t have access to this analysis.'}
+            hint='You may be able to view it by logging in.'
+          />
+        );
+      }
+
       return <Error statusCode={httpError} />;
+    }
+
+    if (!amplifyConfigured) {
+      return <></>;
     }
 
     // Otherwise, load the page inside the content wrapper.
@@ -123,6 +153,7 @@ const WrappedApp = ({ Component, pageProps }) => {
   );
 };
 
+/* eslint-disable global-require */
 WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const {
     store, req, query, res,
@@ -140,19 +171,25 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
     promises.push(getAuthenticationInfo);
-
-    if (query?.experimentId) {
-      const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
-      promises.push(getExperimentInfo);
-    }
   }
 
   try {
     let results = await Promise.all(promises.map((f) => f(ctx, store)));
     results = _.merge(...results);
 
+    const { Auth } = withSSRContext(ctx);
+    Auth.configure(results.amplifyConfig.Auth);
+
+    if (req && query?.experimentId) {
+      const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
+
+      const experimentInfo = await getExperimentInfo(ctx, store, Auth);
+      results = _.merge(results, experimentInfo);
+    }
+
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
+    console.error(e);
     if (e instanceof CustomError) {
       if (res && e.payload.status) {
         res.statusCode = e.payload.status;
@@ -166,6 +203,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     throw e;
   }
 };
+/* eslint-enable global-require */
 
 WrappedApp.propTypes = {
   Component: PropTypes.func.isRequired,
