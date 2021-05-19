@@ -221,7 +221,7 @@ module.exports = withBundleAnalyzer(
           return [
             {
               source: '/',
-              destination: '/experiments/e52b39624588791a7889e39c617f669e/data-exploration', // pragma: allowlist secret
+              destination: '/data-management',
               permanent: false,
             },
             {
