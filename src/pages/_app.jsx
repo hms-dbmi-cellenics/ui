@@ -49,8 +49,6 @@ Storage.configure({
 });
 
 const WrappedApp = ({ Component, pageProps }) => {
-  console.log(`WrappedApp.1 ${Component}`);
-  console.log(`WrappedApp.2 ${JSON.stringify(pageProps, null, 2)}`);
   const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
 
@@ -65,7 +63,6 @@ const WrappedApp = ({ Component, pageProps }) => {
 
   useEffect(() => {
     if (amplifyConfig) {
-      console.log(`Configuring amplify with ${amplifyConfig}`);
       Amplify.configure(amplifyConfig);
 
       if (environment === 'development') {
@@ -181,32 +178,26 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
   try {
     let results = await Promise.all(promises.map((f) => f(ctx, store)));
-    console.log(`Results form promises in getInitialProps ${JSON.stringify(results, null, 2)}`);
     results = _.merge(...results);
 
     const { Auth } = withSSRContext(ctx);
-    console.log(`Auth from withSSRContext: ${Auth}`);
     Auth.configure(results.amplifyConfig.Auth);
 
     if (query?.experimentId) {
       const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
 
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);
-      console.log(`ExperimentInfo: ${experimentInfo}`);
       results = _.merge(results, experimentInfo);
     }
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
-    console.log('Error raised in getInitialProps.1');
-    console.error(JSON.stringify(e, null, 2));
+    console.error('Error in WrappedApp.getInitialProps', e);
     if (e === 'The user is not authenticated') {
-      console.log('Creating custom error');
       // eslint-disable-next-line no-ex-assign
       e = new CustomError(e, res);
       e.payload.status = 401;
     }
-    console.log('Error raised in getInitialProps.2');
     if (e instanceof CustomError) {
       if (res && e.payload.status) {
         res.statusCode = e.payload.status;
