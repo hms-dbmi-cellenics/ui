@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { metadataNameToKey } from '../../../utils/metadataUtils';
 import {
   PROJECTS_METADATA_DELETE,
@@ -6,27 +7,56 @@ import {
 import {
   SAMPLES_METADATA_DELETE,
 } from '../../actionTypes/samples';
+import pushNotificationMessage from '../notifications';
+import { saveSamples } from '../samples';
+import errorTypes from './errorTypes';
+import saveProject from './saveProject';
 
 const deleteMetadataTrack = (
   name, projectUuid,
 ) => async (dispatch, getState) => {
-  const { samples } = getState().projects[projectUuid];
+  const { samples } = getState();
+  const project = getState().projects[projectUuid];
 
-  dispatch({
-    type: PROJECTS_METADATA_DELETE,
-    payload: {
-      key: metadataNameToKey(name),
-      projectUuid,
-    },
+  const metadataKey = metadataNameToKey(name);
+
+  const newProject = _.cloneDeep(project);
+  newProject.metadataKeys = project.metadataKeys.filter((key) => key !== metadataKey);
+
+  const newSamples = project.samples.reduce((curr, sampleUuid) => {
+    const updatedSample = samples[sampleUuid];
+    delete updatedSample.metadata[name];
+
+    return {
+      ...curr,
+      [sampleUuid]: updatedSample,
+    };
+  }, {
+    ids: project.samples,
   });
 
-  samples.forEach((sampleUuid) => dispatch({
-    type: SAMPLES_METADATA_DELETE,
-    payload: {
-      sampleUuid,
-      metadataKey: metadataNameToKey(name),
-    },
-  }));
+  try {
+    dispatch(saveProject(projectUuid, newProject, false));
+    dispatch(saveSamples(projectUuid, newSamples, false));
+
+    dispatch({
+      type: PROJECTS_METADATA_DELETE,
+      payload: {
+        key: metadataKey,
+        projectUuid,
+      },
+    });
+
+    project.samples.forEach((sampleUuid) => dispatch({
+      type: SAMPLES_METADATA_DELETE,
+      payload: {
+        sampleUuid,
+        metadataKey,
+      },
+    }));
+  } catch (e) {
+    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+  }
 };
 
 export default deleteMetadataTrack;

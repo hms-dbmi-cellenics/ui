@@ -93,10 +93,10 @@ const DataManagementPage = ({ route }) => {
         route={route}
         title='Data Management'
       />
-      <LoadingModal
+      {/* <LoadingModal
         visible={projectSaving || sampleSaving}
         message={projectSaving || sampleSaving || ''}
-      />
+      /> */}
       <NewProjectModal
         visible={newProjectModalVisible}
         firstTimeFlow={projectsList.ids.length === 0}
