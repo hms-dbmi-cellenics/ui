@@ -11,6 +11,7 @@ import errorTypes from './errorTypes';
 const saveExperiment = (
   experimentId,
   newExperiment,
+  alreadyExists = true,
 ) => async (dispatch, getState) => {
   const payload = newExperiment || getState().experiments[experimentId];
 
@@ -22,7 +23,7 @@ const saveExperiment = (
     const response = await fetchAPI(
       `/v1/experiments/${experimentId}`,
       {
-        method: 'PUT',
+        method: alreadyExists ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },

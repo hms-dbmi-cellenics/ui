@@ -25,7 +25,7 @@ const createExperiment = (
   };
 
   try {
-    dispatch(saveExperiment(newExperiment.id, newExperiment));
+    dispatch(saveExperiment(newExperiment.id, newExperiment, false));
 
     dispatch({
       type: EXPERIMENTS_CREATED,
@@ -39,7 +39,7 @@ const createExperiment = (
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: errorTypes.SAVE_EXPERIMENT,
+        error: errorTypes.CREATE_EXPERIMENT,
       },
     });
   }
