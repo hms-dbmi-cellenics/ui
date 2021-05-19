@@ -181,16 +181,18 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     console.log(`Results form promises in getInitialProps ${JSON.stringify(results, null, 2)}`);
     results = _.merge(...results);
 
-    const { Auth } = withSSRContext(ctx);
-    console.log(`Auth from withSSRContext: ${Auth}`);
-    Auth.configure(results.amplifyConfig.Auth);
+    if (req) {
+      const { Auth } = withSSRContext(ctx);
+      console.log(`Auth from withSSRContext: ${Auth}`);
+      Auth.configure(results.amplifyConfig.Auth);
 
-    if (req && query?.experimentId) {
-      const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
+      if (query?.experimentId) {
+        const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
 
-      const experimentInfo = await getExperimentInfo(ctx, store, Auth);
-      console.log(`ExperimentInfo: ${experimentInfo}`);
-      results = _.merge(results, experimentInfo);
+        const experimentInfo = await getExperimentInfo(ctx, store, Auth);
+        console.log(`ExperimentInfo: ${experimentInfo}`);
+        results = _.merge(results, experimentInfo);
+      }
     }
 
     return { pageProps: { ...pageProps, ...results } };
