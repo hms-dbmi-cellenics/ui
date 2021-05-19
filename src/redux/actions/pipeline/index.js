@@ -1,4 +1,7 @@
 import runPipeline from './runPipeline';
+import runGem2s from './runGem2s';
 
-// eslint-disable-next-line import/prefer-default-export
-export { runPipeline };
+export {
+  runPipeline,
+  runGem2s,
+};

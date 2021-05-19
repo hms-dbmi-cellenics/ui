@@ -2,15 +2,10 @@ import {
   EXPERIMENT_SETTINGS_INFO_UPDATE,
 } from '../../actionTypes/experimentSettings';
 
-const updateExperimentInfo = (experimentData) => async (dispatch) => {
-  const { experimentId, experimentName } = experimentData;
-
+const updateExperimentInfo = (experimentInfo) => async (dispatch) => {
   dispatch({
     type: EXPERIMENT_SETTINGS_INFO_UPDATE,
-    payload: {
-      experimentId,
-      experimentName,
-    },
+    payload: experimentInfo,
   });
 };
 

@@ -6,7 +6,6 @@ const samplesSaved = (state) => ({
   meta: {
     ...state.meta,
     saving: false,
-    error: false,
   },
 });
 

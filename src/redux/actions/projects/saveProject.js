@@ -28,7 +28,7 @@ const saveProject = (
   }
 
   try {
-    await fetchAPI(
+    const response = await fetchAPI(
       `/v1/projects/${projectUuid}`,
       {
         method: 'PUT',
@@ -39,20 +39,24 @@ const saveProject = (
       },
     );
 
+    if (!response.ok) {
+      throw new Error('HTTP status code was not 200.');
+    }
+
     if (notifySave) {
       dispatch({
         type: PROJECTS_SAVED,
       });
     }
   } catch (e) {
-    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
-
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
         error: errorTypes.SAVE_PROJECT,
       },
     });
+
+    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
   }
 };
 

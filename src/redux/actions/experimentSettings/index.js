@@ -4,6 +4,7 @@ import saveProcessingSettings from './saveProcessingSettings';
 import loadProcessingSettings from './loadProcessingSettings';
 import loadPipelineStatus from './loadPipelineStatus';
 import updatePipelineStatus from './updatePipelineStatus';
+import updateExperimentInfo from './updateExperimentInfo';
 
 export {
   loadProcessingSettings,
@@ -12,4 +13,5 @@ export {
   saveProcessingSettings,
   loadPipelineStatus,
   updatePipelineStatus,
+  updateExperimentInfo,
 };

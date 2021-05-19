@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`validateProjectName unit test project name should not be the same with existing projects 1`] = `true`;
-
-exports[`validateProjectName unit test project name should not contain invalid characters 1`] = `"Only letters, numbers, space, _, and - allowed"`;
-
-exports[`validateProjectName unit test project names has to at least have two consequent letters 1`] = `"Min. 2 characters in sequence"`;
-
-exports[`validateProjectName unit test project names minimal 8 char  1`] = `"Min. 8 characters required"`;

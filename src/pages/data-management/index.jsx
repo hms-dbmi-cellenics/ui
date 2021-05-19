@@ -24,6 +24,13 @@ const DataManagementPage = ({ route }) => {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
+  const projects = useSelector((state) => state.projects);
+  const experiments = useSelector((state) => state.experiments);
+  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProjectUuid);
+  const activeProject = projects[activeProjectUuid];
+
+  const existingExperiments = activeProject?.experiments
+    .map((experimentId) => experiments[experimentId]);
 
   useEffect(() => {
     if (projectsList.ids.length) {
@@ -31,8 +38,14 @@ const DataManagementPage = ({ route }) => {
     }
   }, [projectsList]);
 
+  const unnamedExperimentName = 'Unnamed Analysis';
+
   const createNewProject = (newProjectName, newProjectDescription) => {
-    dispatch(createProject(newProjectName, newProjectDescription));
+    const numUnnamedExperiments = !existingExperiments ? 0
+      : existingExperiments.filter((experiment) => experiment.name.match(`${unnamedExperimentName} `)).length;
+    const newExperimentName = `${unnamedExperimentName} ${numUnnamedExperiments + 1}`;
+
+    dispatch(createProject(newProjectName, newProjectDescription, newExperimentName));
     setNewProjectModalVisible(false);
   };
 
@@ -82,7 +95,7 @@ const DataManagementPage = ({ route }) => {
       />
       <LoadingModal
         visible={projectSaving || sampleSaving}
-        message={projectSaving || sampleSaving}
+        message={projectSaving || sampleSaving || ''}
       />
       <NewProjectModal
         visible={newProjectModalVisible}

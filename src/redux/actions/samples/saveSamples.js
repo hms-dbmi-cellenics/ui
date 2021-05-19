@@ -45,7 +45,7 @@ const saveSamples = (
   }
 
   try {
-    await fetchAPI(
+    const response = await fetchAPI(
       `/v1/projects/${projectUuid}/${experimentId}/samples`,
       {
         method: 'PUT',
@@ -60,20 +60,24 @@ const saveSamples = (
       },
     );
 
+    if (!response.ok) {
+      throw new Error('HTTP status code was not 200.');
+    }
+
     if (notifySave) {
       dispatch({
         type: SAMPLES_SAVED,
       });
     }
   } catch (e) {
-    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
-
     dispatch({
       type: SAMPLES_ERROR,
       payload: {
         error: errorTypes.SAVE_SAMPLES,
       },
     });
+
+    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
   }
 };
 

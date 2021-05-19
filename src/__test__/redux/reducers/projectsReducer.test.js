@@ -215,7 +215,7 @@ describe('projectsReducer', () => {
         ...oneProjectState[projectUuid1].meta,
         loading: false,
         saving: savingMsg,
-        error: false,
+        error: true,
       },
     }, {
       type: PROJECTS_SAVING,
@@ -235,7 +235,7 @@ describe('projectsReducer', () => {
         ...oneProjectState[projectUuid1].meta,
         loading: false,
         saving: true,
-        error: true,
+        error: false,
       },
     }, { type: PROJECTS_SAVED });
 
