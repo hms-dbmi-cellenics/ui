@@ -5,7 +5,6 @@ const projectsLoaded = (state, action) => {
   projects.forEach((project) => {
     newProjects[project.uuid] = project;
   });
-
   return {
     ...state,
     ids,

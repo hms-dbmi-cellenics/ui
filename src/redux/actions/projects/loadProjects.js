@@ -11,7 +11,6 @@ const loadProjects = () => async (dispatch) => {
     });
     const response = await fetchAPI('/v1/projects');
     const data = await response.json();
-
     const ids = data.map((project) => project.uuid);
 
     data.forEach((entry) => {
@@ -19,6 +18,7 @@ const loadProjects = () => async (dispatch) => {
         dispatch(loadSamples(false, entry.uuid));
       }
     });
+
     dispatch({
       type: PROJECTS_LOADED,
       payload: {

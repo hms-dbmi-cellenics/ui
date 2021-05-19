@@ -27,7 +27,7 @@ const loadSamples = (
     dispatch({
       type: SAMPLES_LOADED,
       payload: {
-        samples: json.samples,
+        samples: json[0].samples,
       },
     });
   } catch (e) {
