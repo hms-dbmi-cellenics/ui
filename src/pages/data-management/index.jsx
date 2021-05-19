@@ -44,7 +44,7 @@ const DataManagementPage = ({ route }) => {
   const unnamedExperimentName = 'Unnamed Analysis';
 
   const createNewProject = (newProjectName, newProjectDescription) => {
-    const numUnnamedExperiments = !existingExperiments ? 0
+    const numUnnamedExperiments = !existingExperiments[0] ? 0
       : existingExperiments.filter((experiment) => experiment.name.match(`${unnamedExperimentName} `)).length;
     const newExperimentName = `${unnamedExperimentName} ${numUnnamedExperiments + 1}`;
 
