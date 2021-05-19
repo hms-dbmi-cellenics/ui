@@ -8,7 +8,7 @@ import {
   SAMPLES_METADATA_DELETE,
 } from '../../actionTypes/samples';
 import pushNotificationMessage from '../notifications';
-import { saveSamples } from '../samples';
+import saveSamples from '../samples/saveSamples';
 import errorTypes from './errorTypes';
 import saveProject from './saveProject';
 
