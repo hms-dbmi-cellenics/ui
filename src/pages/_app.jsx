@@ -71,8 +71,6 @@ const WrappedApp = ({ Component, pageProps }) => {
 
       setAmplifyConfigured(true);
     }
-
-    setAmplifyConfigured(true);
   }, [amplifyConfig]);
 
   const mainContent = () => {
