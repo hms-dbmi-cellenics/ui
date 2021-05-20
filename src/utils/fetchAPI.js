@@ -1,10 +1,9 @@
 import getApiEndpoint from './apiEndpoint';
 import getAuthJWT from './getAuthJWT';
 
-const fetchAPI = async (path, params = {}) => {
+const fetchAPI = async (path, params = {}, extras = {}) => {
   const headers = params.headers ? params.headers : {};
-
-  const authJWT = await getAuthJWT();
+  const authJWT = extras.jwt || await getAuthJWT();
 
   const parameters = {
     ...params,
@@ -14,8 +13,9 @@ const fetchAPI = async (path, params = {}) => {
     },
   };
 
-  const url = getApiEndpoint() + path;
+  const url = getApiEndpoint(extras.uiUrl) + path;
   const result = await fetch(url, parameters);
+
   return result;
 };
 export default fetchAPI;
