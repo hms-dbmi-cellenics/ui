@@ -192,8 +192,8 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
-    console.error('Error in WrappedApp.getInitialProps', e);
     if (e === 'The user is not authenticated') {
+      console.error(`User not authenticated ${req.url}`);
       // eslint-disable-next-line no-ex-assign
       e = new CustomError(e, res);
       e.payload.status = 401;
@@ -207,6 +207,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
       return { pageProps: { ...pageProps, httpError: e.payload.status || true } };
     }
+    console.error('Error in WrappedApp.getInitialProps', e);
 
     throw e;
   }
