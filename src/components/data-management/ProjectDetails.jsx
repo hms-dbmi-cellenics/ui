@@ -469,7 +469,6 @@ const ProjectDetails = ({ width, height }) => {
         'species',
         rowIdx,
         (newValue) => {
-          console.log(`${record.uuid} - ${newValue}`);
           dispatch(updateSample(record.uuid, { species: newValue }));
         },
       ),
