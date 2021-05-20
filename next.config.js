@@ -158,7 +158,7 @@ module.exports = withBundleAnalyzer(
                       comments: false,
                     },
                     compress: {
-                      drop_console: true, // remove console
+                      drop_console: false, // remove console
                     },
                     ie8: false,
                   },
@@ -221,7 +221,7 @@ module.exports = withBundleAnalyzer(
           return [
             {
               source: '/',
-              destination: '/experiments/e52b39624588791a7889e39c617f669e/data-exploration', // pragma: allowlist secret
+              destination: '/data-management',
               permanent: false,
             },
             {
