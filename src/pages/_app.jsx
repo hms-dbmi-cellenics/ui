@@ -57,15 +57,19 @@ const WrappedApp = ({ Component, pageProps }) => {
     (state) => (experimentId ? state.experimentSettings.info : {}),
   );
 
-  const [amplifyConfigured, setAmplifyConfigured] = useState(false);
+  const [amplifyConfigured, setAmplifyConfigured] = useState(!amplifyConfig);
 
   const environment = useSelector((state) => state.networkResources.environment);
 
   useEffect(() => {
-    Amplify.configure(amplifyConfig);
+    if (amplifyConfig) {
+      Amplify.configure(amplifyConfig);
 
-    if (environment === 'development') {
-      mockCredentialsForInframock();
+      if (environment === 'development') {
+        mockCredentialsForInframock();
+      }
+
+      setAmplifyConfigured(true);
     }
 
     setAmplifyConfigured(true);
@@ -159,19 +163,20 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     store, req, query, res,
   } = ctx;
 
+  // Do nothing if not server-side
+  if (!req) { return { pageProps: {} }; }
+
   const pageProps = Component.getInitialProps
     ? await Component.getInitialProps(ctx)
     : {};
 
   const promises = [];
 
-  if (req) {
-    const { default: getEnvironmentInfo } = require('../utils/ssr/getEnvironmentInfo');
-    promises.push(getEnvironmentInfo);
+  const { default: getEnvironmentInfo } = require('../utils/ssr/getEnvironmentInfo');
+  promises.push(getEnvironmentInfo);
 
-    const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
-    promises.push(getAuthenticationInfo);
-  }
+  const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
+  promises.push(getAuthenticationInfo);
 
   try {
     let results = await Promise.all(promises.map((f) => f(ctx, store)));
@@ -180,7 +185,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     const { Auth } = withSSRContext(ctx);
     Auth.configure(results.amplifyConfig.Auth);
 
-    if (req && query?.experimentId) {
+    if (query?.experimentId) {
       const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
 
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);
@@ -189,7 +194,12 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
-    console.error(e);
+    if (e === 'The user is not authenticated') {
+      console.error(`User not authenticated ${req.url}`);
+      // eslint-disable-next-line no-ex-assign
+      e = new CustomError(e, res);
+      e.payload.status = 401;
+    }
     if (e instanceof CustomError) {
       if (res && e.payload.status) {
         res.statusCode = e.payload.status;
@@ -199,6 +209,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
       return { pageProps: { ...pageProps, httpError: e.payload.status || true } };
     }
+    console.error('Error in WrappedApp.getInitialProps', e);
 
     throw e;
   }
