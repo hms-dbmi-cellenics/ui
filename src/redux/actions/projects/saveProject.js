@@ -57,6 +57,8 @@ const saveProject = (
     });
 
     dispatch(pushNotificationMessage('error', messages.connectionError, 5));
+
+    throw new Error(messages.connectionError);
   }
 };
 

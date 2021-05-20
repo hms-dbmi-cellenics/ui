@@ -36,8 +36,8 @@ const deleteMetadataTrack = (
   });
 
   try {
-    dispatch(saveProject(projectUuid, newProject, false));
-    dispatch(saveSamples(projectUuid, newSamples, false, false));
+    await dispatch(saveProject(projectUuid, newProject, false));
+    await dispatch(saveSamples(projectUuid, newSamples, false, false));
 
     dispatch({
       type: PROJECTS_METADATA_DELETE,
@@ -55,7 +55,7 @@ const deleteMetadataTrack = (
       },
     }));
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    dispatch(pushNotificationMessage('error', errorTypes.SAVE_PROJECT));
   }
 };
 

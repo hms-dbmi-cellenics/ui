@@ -42,8 +42,8 @@ const updateMetadataTrack = (
   });
 
   try {
-    dispatch(saveProject(projectUuid, newProject, false));
-    dispatch(saveSamples(projectUuid, newSamples));
+    await dispatch(saveProject(projectUuid, newProject, false));
+    await dispatch(saveSamples(projectUuid, newSamples));
 
     dispatch({
       type: PROJECTS_METADATA_UPDATE,
@@ -72,7 +72,7 @@ const updateMetadataTrack = (
       });
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    dispatch(pushNotificationMessage('error', errorTypes.SAVE_PROJECT));
   }
 };
 

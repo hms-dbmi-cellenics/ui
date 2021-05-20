@@ -1,10 +1,18 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
-import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
+import initialProjectState, {
+  projectTemplate,
+} from '../../../../redux/reducers/projects/initialState';
+import initialSampleState, {
+  sampleTemplate,
+} from '../../../../redux/reducers/samples/initialState';
 import { saveSamples } from '../../../../redux/actions/samples';
-import { SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
+import {
+  SAMPLES_ERROR,
+  SAMPLES_SAVED,
+  SAMPLES_SAVING,
+} from '../../../../redux/actionTypes/samples';
 import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
 
 jest.mock('localforage');
@@ -36,7 +44,6 @@ describe('saveSamples action', () => {
   };
 
   const initialState = {
-
     projects: {
       ...initialProjectState,
       ids: [mockprojectUuid],
@@ -96,7 +103,15 @@ describe('saveSamples action', () => {
     fetchMock.mockReject(new Error('some weird error that happened'));
 
     const store = mockStore(initialState);
-    await store.dispatch(saveSamples(mockprojectUuid, newSample));
+
+    try {
+      await store.dispatch(saveSamples(mockprojectUuid, newSample));
+    } catch (e) {
+      expect(e).toBeDefined();
+      expect(e).toMatchInlineSnapshot(
+        '[Error: Could not connect to the server. Check your internet connection and refresh the page.]',
+      );
+    }
 
     const actions = store.getActions();
 

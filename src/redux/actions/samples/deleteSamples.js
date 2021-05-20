@@ -49,35 +49,39 @@ const deleteSamples = (
   });
 
   try {
-    Object.entries(projectSamples).forEach(([projectUuid, samplesToDelete]) => {
-      const samplesForAProject = getProjectSamples(projects, projectUuid, samples);
+    const deleteSamplesPromise = Object.entries(projectSamples).map(
+      async ([projectUuid, samplesToDelete]) => {
+        const samplesForAProject = getProjectSamples(projects, projectUuid, samples);
 
-      const newSample = _.omit(samplesForAProject, samplesToDelete);
-      newSample.ids = _.difference(samplesForAProject.ids, samplesToDelete);
+        const newSample = _.omit(samplesForAProject, samplesToDelete);
+        newSample.ids = _.difference(samplesForAProject.ids, samplesToDelete);
 
-      const newProject = {
-        ...projects[projectUuid],
-        samples: _.difference(projects[projectUuid].sampels, samplesToDelete),
-      };
+        const newProject = {
+          ...projects[projectUuid],
+          samples: _.difference(projects[projectUuid].sampels, samplesToDelete),
+        };
 
-      dispatch(saveSamples(projectUuid, newSample, false, false));
-      dispatch(saveProject(projectUuid, newProject, false));
+        await dispatch(saveSamples(projectUuid, newSample, false, false));
+        await dispatch(saveProject(projectUuid, newProject, false));
 
-      dispatch({
-        type: SAMPLES_DELETE,
-        payload: { sampleUuids: samplesToDelete },
-      });
+        dispatch({
+          type: SAMPLES_DELETE,
+          payload: { sampleUuids: samplesToDelete },
+        });
 
-      dispatch({
-        type: PROJECTS_UPDATE,
-        payload: {
-          projectUuid,
-          project: {
-            samples: _.difference(projects[projectUuid].samples, samplesToDelete),
+        dispatch({
+          type: PROJECTS_UPDATE,
+          payload: {
+            projectUuid,
+            project: {
+              samples: _.difference(projects[projectUuid].samples, samplesToDelete),
+            },
           },
-        },
-      });
-    });
+        });
+      },
+    );
+
+    await Promise.all(deleteSamplesPromise);
 
     dispatch({
       type: SAMPLES_SAVED,

@@ -15,11 +15,10 @@ const createMetadataTrack = (
   const metadataKey = metadataNameToKey(name);
 
   const newProject = _.cloneDeep(project);
-
   newProject.metadataKeys.push(metadataKey);
 
   try {
-    dispatch(saveProject(projectUuid, newProject, false));
+    await dispatch(saveProject(projectUuid, newProject));
 
     dispatch({
       type: PROJECTS_METADATA_CREATE,
@@ -29,7 +28,7 @@ const createMetadataTrack = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    dispatch(pushNotificationMessage('error', errorTypes.SAVE_PROJECT));
   }
 };
 
