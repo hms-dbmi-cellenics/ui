@@ -24,8 +24,8 @@ const deleteMetadataTrack = (
   newProject.metadataKeys = project.metadataKeys.filter((key) => key !== metadataKey);
 
   const newSamples = project.samples.reduce((curr, sampleUuid) => {
-    const updatedSample = samples[sampleUuid];
-    delete updatedSample.metadata[name];
+    const updatedSample = _.cloneDeep(samples[sampleUuid]);
+    delete updatedSample.metadata[metadataKey];
 
     return {
       ...curr,
@@ -37,7 +37,7 @@ const deleteMetadataTrack = (
 
   try {
     dispatch(saveProject(projectUuid, newProject, false));
-    dispatch(saveSamples(projectUuid, newSamples, false));
+    dispatch(saveSamples(projectUuid, newSamples, false, false));
 
     dispatch({
       type: PROJECTS_METADATA_DELETE,
