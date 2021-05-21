@@ -10,6 +10,11 @@ const loadProjects = () => async (dispatch) => {
       type: PROJECTS_LOADING,
     });
     const response = await fetchAPI('/v1/projects');
+    if (!response.ok) {
+      const status = `${response.status} ${response.statusText}`;
+      console.log(`Failed to get projects: ${status}`);
+      throw status;
+    }
     const data = await response.json();
     const ids = data.map((project) => project.uuid);
 
