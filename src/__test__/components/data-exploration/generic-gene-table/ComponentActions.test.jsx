@@ -67,7 +67,7 @@ const initialState = {
     selected: ['A'],
   },
   experimentSettings: {
-    pipelineStatus: {
+    backendStatus: {
       status: {
         pipeline: {
           status: 'SUCCEEDED',

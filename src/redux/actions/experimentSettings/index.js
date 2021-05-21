@@ -2,8 +2,8 @@ import updateProcessingSettings from './updateProcessingSettings';
 import updateSampleSettings from './updateSampleSettings';
 import saveProcessingSettings from './saveProcessingSettings';
 import loadProcessingSettings from './loadProcessingSettings';
-import loadPipelineStatus from './loadPipelineStatus';
-import updatePipelineStatus from './updatePipelineStatus';
+import loadBackendStatus from './loadBackendStatus';
+import updateBackendStatus from './updateBackendStatus';
 import updateExperimentInfo from './updateExperimentInfo';
 
 export {
@@ -11,7 +11,7 @@ export {
   updateProcessingSettings,
   updateSampleSettings,
   saveProcessingSettings,
-  loadPipelineStatus,
-  updatePipelineStatus,
+  loadBackendStatus,
+  updateBackendStatus,
   updateExperimentInfo,
 };

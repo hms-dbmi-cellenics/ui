@@ -1,19 +1,14 @@
 import CustomError from './customError';
 import fetchAPI from './fetchAPI';
 
-const getFromApiExpectOK = async (url) => {
-  let response = null;
-  if (url[0] === '/') {
-    response = await fetchAPI(url);
-  } else {
-    response = await fetch(url);
-  }
+const getFromApiExpectOK = async (url, ...extras) => {
+  const response = await fetchAPI(url, ...extras);
 
   if (response.ok) {
     const data = await response.json();
     return data;
   }
-
+  console.error(`Error fetching ${url}. ${response.status} ${response.statusText}`);
   throw new CustomError('There has been an error fetching the data.', response);
 };
 

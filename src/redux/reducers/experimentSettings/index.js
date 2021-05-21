@@ -6,18 +6,18 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
   EXPERIMENT_SETTINGS_SAMPLE_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED,
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
 } from '../../actionTypes/experimentSettings';
 import updateExperimentInfo from './updateExperimentInfo';
 import updateProcessingSettings from './updateProcessingSettings';
 import updateSampleSettings from './updateSampleSettings';
 import loadProcessingSettings from './loadProcessingSettings';
 import processingSettingsError from './processingSettingsError';
-import pipelineStatusLoading from './pipelineStatusLoading';
-import pipelineStatusLoaded from './pipelineStatusLoaded';
-import pipelineStatusError from './pipelineStatusError';
+import backendStatusLoading from './backendStatusLoading';
+import backendStatusLoaded from './backendStatusLoaded';
+import backendStatusError from './backendStatusError';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -36,14 +36,14 @@ const experimentSettingsReducer = (state = initialState, action) => {
     case EXPERIMENT_SETTINGS_PROCESSING_ERROR: {
       return processingSettingsError(state, action);
     }
-    case EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING: {
-      return pipelineStatusLoading(state, action);
+    case EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING: {
+      return backendStatusLoading(state, action);
     }
-    case EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADED: {
-      return pipelineStatusLoaded(state, action);
+    case EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED: {
+      return backendStatusLoaded(state, action);
     }
-    case EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR: {
-      return pipelineStatusError(state, action);
+    case EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR: {
+      return backendStatusError(state, action);
     }
     case HYDRATE: {
       const experimentInfo = action.payload.experimentSettings.info;

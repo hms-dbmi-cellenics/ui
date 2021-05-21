@@ -1,4 +1,6 @@
 import moment from 'moment';
+import _ from 'lodash';
+
 import saveSamples from './saveSamples';
 
 import {
@@ -13,7 +15,7 @@ const updateSample = (
   sampleUuid,
   diff,
 ) => async (dispatch, getState) => {
-  const sample = getState().samples[sampleUuid];
+  const sample = _.cloneDeep(getState().samples[sampleUuid]);
 
   // eslint-disable-next-line no-param-reassign
   diff.lastModified = moment().toISOString();

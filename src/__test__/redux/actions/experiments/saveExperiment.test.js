@@ -39,7 +39,7 @@ describe('saveExperiment action', () => {
     fetchMock.mockResolvedValueOnce(response);
   });
 
-  it('Dispatches fetch correctly.', async () => {
+  it('Dispatches PUT fetch correctly by default.', async () => {
     const store = mockStore(initialState);
     await store.dispatch(saveExperiment(mockExperiment.id));
 
@@ -51,6 +51,22 @@ describe('saveExperiment action', () => {
           'Content-Type': 'application/json',
         },
         method: 'PUT',
+      },
+    );
+  });
+
+  it('Dispatches POST fetch correctly when experiment doesnt already exist.', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(saveExperiment(mockExperiment.id, mockExperiment, false));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v1/experiments/${mockExperiment.id}`,
+      {
+        body: JSON.stringify(mockExperiment),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
       },
     );
   });

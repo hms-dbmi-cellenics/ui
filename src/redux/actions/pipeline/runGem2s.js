@@ -1,17 +1,17 @@
 import fetchAPI from '../../../utils/fetchAPI';
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_INFO_UPDATE,
 } from '../../actionTypes/experimentSettings';
-import loadPipelineStatus from '../experimentSettings/loadPipelineStatus';
+import loadBackendStatus from '../experimentSettings/loadBackendStatus';
 
 const runGem2s = (experimentId) => async (dispatch, getState) => {
   const { experiments } = getState();
 
   dispatch({
-    type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
+    type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
       experimentId,
     },
@@ -37,7 +37,7 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
       payload: {},
     });
 
-    dispatch(loadPipelineStatus(experimentId));
+    dispatch(loadBackendStatus(experimentId));
 
     dispatch({
       type: EXPERIMENT_SETTINGS_INFO_UPDATE,
@@ -49,7 +49,7 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
     });
   } catch (e) {
     dispatch({
-      type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+      type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
       payload: {
         error: 'Could not start gem2s.',
         errorType: e,

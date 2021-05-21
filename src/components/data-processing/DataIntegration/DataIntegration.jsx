@@ -210,7 +210,7 @@ const DataIntegration = (props) => {
   const selectedConfig = plotConfigs[plots[selectedPlot].plotUuid];
 
   const completedSteps = useSelector(
-    (state) => state.experimentSettings.pipelineStatus.status.pipeline?.completedSteps,
+    (state) => state.experimentSettings.backendStatus.status.pipeline?.completedSteps,
   );
 
   const configureEmbeddingFinished = useRef(null);

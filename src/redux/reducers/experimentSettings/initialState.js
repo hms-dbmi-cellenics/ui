@@ -13,7 +13,7 @@ const initialWorkerState = {
 };
 
 const initialState = {
-  pipelineStatus: {
+  backendStatus: {
     loading: false,
     error: false,
     status: {
