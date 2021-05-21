@@ -11,7 +11,7 @@ import {
 } from '../../actionTypes/projects';
 
 import saveSamples from './saveSamples';
-import { saveProject } from '../projects';
+import saveProject from '../projects/saveProject';
 
 import pushNotificationMessage from '../notifications';
 import getProjectSamples from '../../../utils/getProjectSamples';
@@ -40,7 +40,6 @@ const deleteSamples = (
       ],
     };
   }, {});
-
   dispatch({
     type: SAMPLES_SAVING,
     payload: {
@@ -51,15 +50,13 @@ const deleteSamples = (
   try {
     Object.entries(projectSamples).forEach(([projectUuid, samplesToDelete]) => {
       const samplesForAProject = getProjectSamples(projects, projectUuid, samples);
-
       const newSample = _.omit(samplesForAProject, samplesToDelete);
       newSample.ids = _.difference(samplesForAProject.ids, samplesToDelete);
 
       const newProject = {
         ...projects[projectUuid],
-        samples: _.difference(projects[projectUuid].sampels, samplesToDelete),
+        samples: _.difference(projects[projectUuid].samples, samplesToDelete),
       };
-
       dispatch(saveSamples(projectUuid, newSample, false, false));
       dispatch(saveProject(projectUuid, newProject, false));
 
