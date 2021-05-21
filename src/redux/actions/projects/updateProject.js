@@ -21,7 +21,7 @@ const updateProject = (
   const newProject = mergeObjectWithArrays(currentProject, diff);
 
   try {
-    await dispatch(saveProject(projectUuid, newProject));
+    dispatch(saveProject(projectUuid, newProject));
 
     dispatch({
       type: PROJECTS_UPDATE,

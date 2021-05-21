@@ -44,8 +44,8 @@ const createSample = (
   };
 
   try {
-    await dispatch(saveSamples(projectUuid, newSample));
-    await dispatch(saveProject(projectUuid, newProject));
+    dispatch(saveSamples(projectUuid, newSample));
+    dispatch(saveProject(projectUuid, newProject));
 
     dispatch({
       type: SAMPLES_CREATE,

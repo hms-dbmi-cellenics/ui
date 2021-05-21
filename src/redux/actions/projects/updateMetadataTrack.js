@@ -29,7 +29,7 @@ const updateMetadataTrack = (
   newProject.metadataKeys.push(newMetadataKey);
 
   const newSamples = project.samples.reduce((curr, sampleUuid) => {
-    const updatedSample = samples[sampleUuid];
+    const updatedSample = _.cloneDeep(samples[sampleUuid]);
     updatedSample.metadata[newMetadataKey] = samples[sampleUuid].metadata[oldMetadataKey];
     delete updatedSample.metadata[oldMetadataKey];
 
@@ -43,7 +43,7 @@ const updateMetadataTrack = (
 
   try {
     await dispatch(saveProject(projectUuid, newProject, false));
-    await dispatch(saveSamples(projectUuid, newSamples));
+    await dispatch(saveSamples(projectUuid, newSamples, false, false));
 
     dispatch({
       type: PROJECTS_METADATA_UPDATE,
