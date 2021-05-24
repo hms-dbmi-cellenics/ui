@@ -50,6 +50,12 @@ const PROJECTS_METADATA_UPDATE = `${PROJECTS}/metadataUpdate`;
  */
 const PROJECTS_METADATA_DELETE = `${PROJECTS}/metadataDelete`;
 
+/**
+ * Load the projects
+ */
+const PROJECTS_LOADED = `${PROJECTS}/loaded`;
+
+const PROJECTS_LOADING = `${PROJECTS}/loading`;
 export {
   PROJECTS_CREATE,
   PROJECTS_UPDATE,
@@ -61,4 +67,6 @@ export {
   PROJECTS_METADATA_CREATE,
   PROJECTS_METADATA_UPDATE,
   PROJECTS_METADATA_DELETE,
+  PROJECTS_LOADED,
+  PROJECTS_LOADING,
 };

@@ -45,6 +45,7 @@ const SAMPLES_ERROR = `${SAMPLES}/error`;
  */
 const SAMPLES_METADATA_DELETE = `${SAMPLES}/metadataDelete`;
 
+const SAMPLES_LOADING = `${SAMPLES}/loading`;
 export {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
@@ -55,4 +56,5 @@ export {
   SAMPLES_ERROR,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
+  SAMPLES_LOADING,
 };

@@ -22,4 +22,9 @@ spec:
     path: charts/nodejs
     ref: FILLED_IN_BY_CI
   values:
+    readinessProbe:
+      path: "/data-management"
+    livenessProbe:
+      path: "/data-management"
+
     # filled in by CI. do not modify.
