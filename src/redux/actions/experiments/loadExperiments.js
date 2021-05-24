@@ -20,6 +20,10 @@ const loadExperiments = (
 
     const data = await response.json();
 
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+
     dispatch({
       type: EXPERIMENTS_LOADED,
       payload: {
@@ -30,7 +34,7 @@ const loadExperiments = (
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: e,
+        error: e.message,
       },
     });
   }
