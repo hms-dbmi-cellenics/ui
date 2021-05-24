@@ -29,7 +29,9 @@ const Header = (props) => {
   const router = useRouter();
   const plotType = useSelector((state) => state.componentConfig[plotUuid]?.plotType);
   const { config } = useSelector((state) => state.componentConfig[plotUuid]) || {};
-  const debounceSave = useCallback(_.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), []);
+  const debounceSave = useCallback(
+    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
   const [resetDisabled, setResetDisabled] = useState(true);
 
   useBeforeunload((e) => {
@@ -40,7 +42,8 @@ const Header = (props) => {
 
   const checkIfDefaultConfig = (objValue, otherValue) => {
     const ignoredFields = {
-      // config fields that are set dynamically on component render should not be compared to their initial values
+      // config fields that are set dynamically on component render
+      // should not be compared to their initial values
       frequency: ['proportionGrouping', 'xAxisGrouping'],
       embeddingContinuous: ['shownGene'],
       violin: ['shownGene'],

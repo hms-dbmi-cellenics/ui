@@ -374,7 +374,9 @@ const ProjectDetails = ({ width, height }) => {
             }}
             onClearAll={() => {
               activeProject.samples.forEach(
-                (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: defaultNA } })),
+                (sampleUuid) => dispatch(
+                  updateSample(sampleUuid, { metadata: { [key]: defaultNA } }),
+                ),
               );
             }}
             massEdit
@@ -510,7 +512,9 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   useEffect(() => {
-    if (projects.ids.length === 0 || !activeProject || !samples.ids.includes(activeProject.samples[0])) {
+    if (projects.ids.length === 0
+      || !activeProject
+      || !samples.ids.includes(activeProject.samples[0])) {
       setTableData([]);
       setTableColumns([]);
       return;
