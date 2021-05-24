@@ -1,9 +1,7 @@
 import CustomError from './customError';
 import fetchAPI from './fetchAPI';
 
-const getFromApiExpectOK = async (url, ...extras) => {
-  const response = await fetchAPI(url, ...extras);
-
+const handleResponse = async (url, response) => {
   if (response.ok) {
     const data = await response.json();
     return data;
@@ -12,4 +10,19 @@ const getFromApiExpectOK = async (url, ...extras) => {
   throw new CustomError('There has been an error fetching the data.', response);
 };
 
-export default getFromApiExpectOK;
+const getFromApiExpectOK = async (url, ...extras) => {
+  const response = await fetchAPI(url, ...extras);
+  const data = await handleResponse(url, response);
+  return data;
+};
+
+const getFromUrlExpectOK = async (url) => {
+  const response = await fetch(url);
+  const data = await handleResponse(url, response);
+  return data;
+};
+
+export {
+  getFromApiExpectOK,
+  getFromUrlExpectOK,
+};

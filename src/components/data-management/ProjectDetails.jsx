@@ -22,7 +22,7 @@ import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
-import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
+import { getFromUrlExpectOK } from '../../utils/getFromApiExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
@@ -60,7 +60,7 @@ const ProjectDetails = ({ width, height }) => {
   const analysisPath = '/experiments/[experimentId]/data-processing';
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
-    getFromApiExpectOK,
+    getFromUrlExpectOK,
   );
   const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
