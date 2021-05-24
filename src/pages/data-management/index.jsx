@@ -7,6 +7,7 @@ import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
 import { createProject, loadProjects } from '../../redux/actions/projects';
+import { loadExperiments } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
@@ -32,8 +33,16 @@ const DataManagementPage = ({ route }) => {
     .map((experimentId) => experiments[experimentId]);
 
   useEffect(() => {
-    dispatch(loadProjects());
+    if (projectsList.ids.length === 0) dispatch(loadProjects());
   }, []);
+
+  useEffect(() => {
+    if (!activeProjectUuid || activeProject?.experiments.every(
+      (experimentId) => experiments.ids.includes(experimentId),
+    )) return;
+
+    dispatch(loadExperiments(activeProjectUuid));
+  }, [activeProject]);
 
   useEffect(() => {
     if (projectsList.ids.length) {
