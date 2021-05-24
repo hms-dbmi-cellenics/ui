@@ -481,10 +481,11 @@ const ProjectDetails = ({ width, height }) => {
       // Check if all files for a given tech has been uploaded
       const fileNamesArray = Array.from(sample.fileNames);
 
-      if (!_.isEqual(
-        fileNamesArray,
-        fileUploadSpecifications[sample.type].requiredFiles,
-      )) { return false; }
+      if (
+        fileUploadSpecifications[sample.type].requiredFiles.every(
+          (file) => !fileNamesArray.includes(file),
+        )
+      ) { return false; }
 
       return fileNamesArray.every((fileName) => {
         const checkedFile = sample.files[fileName];
