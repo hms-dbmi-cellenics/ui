@@ -4,7 +4,14 @@ const experimentsLoaded = (state, action) => {
   const newExperiments = experiments.reduce((acc, curr) => ({
     ...acc,
     ids: [...acc.ids, curr.experimentId],
-    [curr.experimentId]: curr,
+    [curr.experimentId]: {
+      projectUuid: curr.projectId,
+      name: curr.experimentName,
+      description: curr.description,
+      id: curr.experimentId,
+      createdAt: curr.createdAt,
+      lastViewed: curr.lastViewed,
+    },
   }), { ids: [...state.ids] });
 
   return {
