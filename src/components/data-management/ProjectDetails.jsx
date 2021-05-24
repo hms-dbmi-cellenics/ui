@@ -22,7 +22,7 @@ import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
-import { getFromUrlExpectOK } from '../../utils/getFromApiExpectOK';
+import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';

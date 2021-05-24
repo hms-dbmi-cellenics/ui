@@ -1,5 +1,5 @@
 import updateExperimentInfo from '../../redux/actions/experimentSettings/updateExperimentInfo';
-import { getFromApiExpectOK } from '../getFromApiExpectOK';
+import { getFromApiExpectOK } from '../getDataExpectOK';
 
 const getExperimentInfo = async (context, store, Auth) => {
   const { req, query } = context;

@@ -4,7 +4,7 @@ import { ClipLoader, BounceLoader } from 'react-spinners';
 import { Typography } from 'antd';
 import useSWR from 'swr';
 
-import { getFromApiExpectOK } from '../utils/getFromApiExpectOK';
+import { getFromApiExpectOK } from '../utils/getDataExpectOK';
 
 const { Text } = Typography;
 
