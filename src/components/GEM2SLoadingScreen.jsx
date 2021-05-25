@@ -7,7 +7,9 @@ import PropTypes from 'prop-types';
 
 const { Title, Text } = Typography;
 
-const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
+const GEM2SLoadingScreen = (props) => {
+  const { gem2sStatus, completedSteps } = props;
+
   const path = '/data-management';
 
   const gem2sStepsInfo = [
@@ -18,9 +20,6 @@ const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
     'Preparing experiment',
     'Uploading completed data',
   ];
-
-  // eslint-disable-next-line no-param-reassign
-  steps = steps || gem2sStepsInfo;
 
   const texts = {
     toBeRun: {
@@ -63,8 +62,8 @@ const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
             <br />
             <div>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / steps.length) * 100)} />
-                <Text type='secondary'>{(steps[Math.min(completedSteps.length, steps.length - 1)])}</Text>
+                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / gem2sStepsInfo.length) * 100)} />
+                <Text type='secondary'>{(gem2sStepsInfo[completedSteps.length])}</Text>
               </Space>
             </div>
             <div>
@@ -106,7 +105,7 @@ GEM2SLoadingScreen.propTypes = {
 
 GEM2SLoadingScreen.defaultProps = {
   completedSteps: [],
-  steps: [],
+  steps: null,
 };
 
 export default GEM2SLoadingScreen;
