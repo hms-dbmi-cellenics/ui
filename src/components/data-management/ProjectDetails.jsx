@@ -22,7 +22,7 @@ import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
-import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
+import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
@@ -60,7 +60,7 @@ const ProjectDetails = ({ width, height }) => {
   const analysisPath = '/experiments/[experimentId]/data-processing';
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
-    getFromApiExpectOK,
+    getFromUrlExpectOK,
   );
   const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
@@ -374,7 +374,9 @@ const ProjectDetails = ({ width, height }) => {
             }}
             onClearAll={() => {
               activeProject.samples.forEach(
-                (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: defaultNA } })),
+                (sampleUuid) => dispatch(
+                  updateSample(sampleUuid, { metadata: { [key]: defaultNA } }),
+                ),
               );
             }}
             massEdit
@@ -483,10 +485,11 @@ const ProjectDetails = ({ width, height }) => {
       // Check if all files for a given tech has been uploaded
       const fileNamesArray = Array.from(sample.fileNames);
 
-      if (!_.isEqual(
-        fileNamesArray,
-        fileUploadSpecifications[sample.type].requiredFiles,
-      )) { return false; }
+      if (
+        fileUploadSpecifications[sample.type].requiredFiles.every(
+          (file) => !fileNamesArray.includes(file),
+        )
+      ) { return false; }
 
       return fileNamesArray.every((fileName) => {
         const checkedFile = sample.files[fileName];
@@ -512,7 +515,9 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   useEffect(() => {
-    if (projects.ids.length === 0 || samples.ids.length === 0) {
+    if (projects.ids.length === 0
+      || !activeProject
+      || !samples.ids.includes(activeProject.samples[0])) {
       setTableData([]);
       setTableColumns([]);
       return;
@@ -638,7 +643,7 @@ const ProjectDetails = ({ width, height }) => {
             <Button
               disabled={
                 projects.ids.length === 0
-                || activeProject?.samples.length === 0
+                || activeProject?.samples?.length === 0
                 || isAddingMetadata
               }
               onClick={() => {
@@ -652,7 +657,7 @@ const ProjectDetails = ({ width, height }) => {
               type='primary'
               disabled={
                 projects.ids.length === 0
-                || activeProject?.samples.length === 0
+                || activeProject?.samples?.length === 0
                 || !canLaunchAnalysis
               }
               onClick={() => launchAnalysis()}

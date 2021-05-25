@@ -6,7 +6,8 @@ import { Button, Space } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
-import { createProject } from '../../redux/actions/projects';
+import { createProject, loadProjects } from '../../redux/actions/projects';
+import { loadExperiments } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
@@ -24,13 +25,24 @@ const DataManagementPage = ({ route }) => {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
-  const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
   const activeProjectUuid = useSelector((state) => state.projects.meta.activeProjectUuid);
-  const activeProject = projects[activeProjectUuid];
+  const activeProject = projectsList[activeProjectUuid];
 
   const existingExperiments = activeProject?.experiments
     .map((experimentId) => experiments[experimentId]);
+
+  useEffect(() => {
+    if (projectsList.ids.length === 0) dispatch(loadProjects());
+  }, []);
+
+  useEffect(() => {
+    if (!activeProjectUuid || activeProject?.experiments.every(
+      (experimentId) => experiments.ids.includes(experimentId),
+    )) return;
+
+    dispatch(loadExperiments(activeProjectUuid));
+  }, [activeProject]);
 
   useEffect(() => {
     if (projectsList.ids.length) {
@@ -41,7 +53,7 @@ const DataManagementPage = ({ route }) => {
   const unnamedExperimentName = 'Unnamed Analysis';
 
   const createNewProject = (newProjectName, newProjectDescription) => {
-    const numUnnamedExperiments = !existingExperiments ? 0
+    const numUnnamedExperiments = !existingExperiments?.[0] ? 0
       : existingExperiments.filter((experiment) => experiment.name.match(`${unnamedExperimentName} `)).length;
     const newExperimentName = `${unnamedExperimentName} ${numUnnamedExperiments + 1}`;
 
@@ -97,6 +109,7 @@ const DataManagementPage = ({ route }) => {
         visible={projectSaving || sampleSaving}
         message={projectSaving || sampleSaving || ''}
       />
+
       <NewProjectModal
         visible={newProjectModalVisible}
         firstTimeFlow={projectsList.ids.length === 0}

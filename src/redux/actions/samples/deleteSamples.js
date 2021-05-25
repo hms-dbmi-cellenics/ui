@@ -11,7 +11,7 @@ import {
 } from '../../actionTypes/projects';
 
 import saveSamples from './saveSamples';
-import { saveProject } from '../projects';
+import saveProject from '../projects/saveProject';
 
 import pushNotificationMessage from '../notifications';
 import getProjectSamples from '../../../utils/getProjectSamples';
@@ -40,7 +40,6 @@ const deleteSamples = (
       ],
     };
   }, {});
-
   dispatch({
     type: SAMPLES_SAVING,
     payload: {

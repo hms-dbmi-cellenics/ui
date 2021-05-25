@@ -150,12 +150,13 @@ describe('samplesReducer', () => {
   });
 
   it('Loads samples correctly', () => {
-    const newState = samplesReducer(oneSampleState, {
+    const newState = samplesReducer(initialState, {
       type: SAMPLES_LOADED,
       payload: {
         samples: {
           ids: [sample1.uuid, sample2.uuid],
           [sample1.uuid]: sample1,
+
           [sample2.uuid]: sample2,
         },
       },
