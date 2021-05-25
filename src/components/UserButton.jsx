@@ -5,7 +5,7 @@ import {
   Menu,
   Dropdown,
 } from 'antd';
-
+import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { Auth, Hub } from 'aws-amplify';
 import messages from './notification/messages';
@@ -45,7 +45,11 @@ const UserButton = () => {
     <Menu>
       <Menu.ItemGroup key='g1' title={`Signed in as ${user.attributes.name}`} />
       <Menu.Item key='profile' disabled>Your profile</Menu.Item>
-      <Menu.Item key='settings' disabled>Settings</Menu.Item>
+      <Menu.Item key='settings'>
+        <Link href='/settings/profile'>
+          Settings
+        </Link>
+      </Menu.Item>
       <Menu.Divider />
       <Menu.Item key='logout' onClick={async () => Auth.signOut()}>Sign out</Menu.Item>
     </Menu>
