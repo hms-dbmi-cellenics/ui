@@ -1,23 +1,65 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`experimentsReducer Error state inserts error correctly 1`] = `
+Object {
+  "ids": Array [],
+  "meta": Object {
+    "error": "Error message",
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
 exports[`experimentsReducer Inserts a new experiment correctly 1`] = `
 Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "lastViewed": "01-01-2021",
+    "name": "test project",
+    "projectUuid": "project-1",
+  },
   "ids": Array [
-    "project-1",
+    "experiment-1",
   ],
   "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
   },
-  "project-1": Object {
-    "createdAt": null,
+}
+`;
+
+exports[`experimentsReducer Loading state changes meta state 1`] = `
+Object {
+  "ids": Array [],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Loads an experiment correct 1`] = `
+Object {
+  "experiment-1": Object {
     "createdDate": "01-01-2021",
     "description": "this is a test description",
-    "id": "project-1",
+    "id": "experiment-1",
     "lastViewed": "01-01-2021",
     "name": "test project",
-    "projectUuid": null,
+    "projectUuid": "project-1",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
   },
 }
 `;
@@ -25,7 +67,7 @@ Object {
 exports[`experimentsReducer Returns state if experiment does not exist when updating 1`] = `
 Object {
   "ids": Array [
-    "project-1",
+    "experiment-1",
   ],
   "meta": Object {
     "error": false,
@@ -37,23 +79,22 @@ Object {
 
 exports[`experimentsReducer Updates an experiment correctly 1`] = `
 Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "lastModified": "02-01-2021",
+    "lastViewed": "01-01-2021",
+    "name": "updated name",
+    "projectUuid": "project-1",
+  },
   "ids": Array [
-    "project-1",
+    "experiment-1",
   ],
   "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-  },
-  "project-1": Object {
-    "createdAt": null,
-    "createdDate": "01-01-2021",
-    "description": "this is a test description",
-    "id": "project-1",
-    "lastModified": "02-01-2021",
-    "lastViewed": "01-01-2021",
-    "name": "updated name",
-    "projectUuid": null,
   },
 }
 `;

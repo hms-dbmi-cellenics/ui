@@ -9,12 +9,12 @@ const experimentsLoaded = (state, action) => {
       name: curr.experimentName,
       description: curr.description,
       id: curr.experimentId,
-      createdAt: curr.createdAt,
+      createdDate: curr.createdDate,
       lastViewed: curr.lastViewed,
     };
 
     return acc;
-  });
+  }, { ids: [] });
 
   return {
     ...state,

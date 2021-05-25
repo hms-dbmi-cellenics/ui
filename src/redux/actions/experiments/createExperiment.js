@@ -21,7 +21,7 @@ const createExperiment = (
     id: hash.MD5(createdAt),
     name: newExperimentName,
     projectUuid,
-    createdAt,
+    createdDate: createdAt,
   };
 
   try {
