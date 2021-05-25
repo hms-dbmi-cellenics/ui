@@ -17,7 +17,7 @@ const gem2sStepsInfo = [
 ];
 
 const GEM2SLoadingScreen = (props) => {
-  const { gem2sStatus, completedSteps, steps } = props;
+  const { gem2sStatus, completedSteps } = props;
 
   const path = '/data-management';
 
@@ -62,12 +62,12 @@ const GEM2SLoadingScreen = (props) => {
             <br />
             <div>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / steps.length) * 100)} />
-                <Text type='secondary'>{(steps[completedSteps.length])}</Text>
+                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / gem2sStepsInfo.length) * 100)} />
+                <Text type='secondary'>{(gem2sStepsInfo[completedSteps.length])}</Text>
               </Space>
             </div>
             <div>
-              <Title level={3}>We&apos.re launching your analysis...</Title>
+              <Title level={3}>We&apos;re launching your analysis...</Title>
               <Text type='secondary'>You can wait or leave this screen and check again later</Text>
             </div>
           </Space>
@@ -100,12 +100,10 @@ const GEM2SLoadingScreen = (props) => {
 GEM2SLoadingScreen.propTypes = {
   gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
   completedSteps: PropTypes.array,
-  steps: PropTypes.array,
 };
 
 GEM2SLoadingScreen.defaultProps = {
   completedSteps: [],
-  steps: gem2sStepsInfo,
 };
 
 export default GEM2SLoadingScreen;
