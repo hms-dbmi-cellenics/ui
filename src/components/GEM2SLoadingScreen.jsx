@@ -7,19 +7,19 @@ import PropTypes from 'prop-types';
 
 const { Title, Text } = Typography;
 
+const gem2sStepsInfo = [
+  'Downloading sample files',
+  'Preprocessing samples',
+  'Computing metrics',
+  'Converting samples',
+  'Preparing experiment',
+  'Uploading completed data',
+];
+
 const GEM2SLoadingScreen = (props) => {
-  const { gem2sStatus, completedSteps } = props;
+  const { gem2sStatus, completedSteps, steps } = props;
 
   const path = '/data-management';
-
-  const gem2sStepsInfo = [
-    'Downloading sample files',
-    'Preprocessing samples',
-    'Computing metrics',
-    'Converting samples',
-    'Preparing experiment',
-    'Uploading completed data',
-  ];
 
   const texts = {
     toBeRun: {
@@ -62,12 +62,12 @@ const GEM2SLoadingScreen = (props) => {
             <br />
             <div>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / gem2sStepsInfo.length) * 100)} />
-                <Text type='secondary'>{(gem2sStepsInfo[completedSteps.length])}</Text>
+                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / steps.length) * 100)} />
+                <Text type='secondary'>{(steps[completedSteps.length])}</Text>
               </Space>
             </div>
             <div>
-              <Title level={3}>We're launching your analysis...</Title>
+              <Title level={3}>We&apos.re launching your analysis...</Title>
               <Text type='secondary'>You can wait or leave this screen and check again later</Text>
             </div>
           </Space>
@@ -105,7 +105,7 @@ GEM2SLoadingScreen.propTypes = {
 
 GEM2SLoadingScreen.defaultProps = {
   completedSteps: [],
-  steps: null,
+  steps: gem2sStepsInfo,
 };
 
 export default GEM2SLoadingScreen;
