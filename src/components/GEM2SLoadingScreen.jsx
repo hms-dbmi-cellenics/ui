@@ -7,20 +7,19 @@ import PropTypes from 'prop-types';
 
 const { Title, Text } = Typography;
 
-const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
+const gem2sStepsInfo = [
+  'Downloading sample files',
+  'Preprocessing samples',
+  'Computing metrics',
+  'Converting samples',
+  'Preparing experiment',
+  'Uploading completed data',
+];
+
+const GEM2SLoadingScreen = (props) => {
+  const { gem2sStatus, completedSteps } = props;
+
   const path = '/data-management';
-
-  const gem2sStepsInfo = [
-    'Downloading sample files',
-    'Preprocessing samples',
-    'Computing metrics',
-    'Converting samples',
-    'Preparing experiment',
-    'Uploading completed data',
-  ];
-
-  // eslint-disable-next-line no-param-reassign
-  steps = steps || gem2sStepsInfo;
 
   const texts = {
     toBeRun: {
@@ -63,12 +62,12 @@ const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
             <br />
             <div>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / steps.length) * 100)} />
-                <Text type='secondary'>{(steps[Math.min(completedSteps.length, steps.length - 1)])}</Text>
+                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / gem2sStepsInfo.length) * 100)} />
+                <Text type='secondary'>{(gem2sStepsInfo[completedSteps.length])}</Text>
               </Space>
             </div>
             <div>
-              <Title level={3}>We're launching your analysis...</Title>
+              <Title level={3}>We&apos;re launching your analysis...</Title>
               <Text type='secondary'>You can wait or leave this screen and check again later</Text>
             </div>
           </Space>
@@ -101,12 +100,10 @@ const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
 GEM2SLoadingScreen.propTypes = {
   gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
   completedSteps: PropTypes.array,
-  steps: PropTypes.array,
 };
 
 GEM2SLoadingScreen.defaultProps = {
   completedSteps: [],
-  steps: [],
 };
 
 export default GEM2SLoadingScreen;

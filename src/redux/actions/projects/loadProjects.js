@@ -16,6 +16,11 @@ const loadProjects = () => async (dispatch) => {
       throw status;
     }
     const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+
     const ids = data.map((project) => project.uuid);
 
     data.forEach((entry) => {
@@ -35,7 +40,7 @@ const loadProjects = () => async (dispatch) => {
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
-        error: e,
+        error: e.message,
       },
     });
     dispatch(pushNotificationMessage('error', messages.connectionError, 10));
