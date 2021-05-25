@@ -36,10 +36,8 @@ const saveProject = (
       },
     );
 
-    const data = await response.json();
-
     if (!response.ok) {
-      throw new Error(data.message);
+      throw new Error(await response.json().message);
     }
 
     if (notifySave) {
@@ -48,9 +46,6 @@ const saveProject = (
       });
     }
   } catch (e) {
-    console.log('in saveProject');
-    console.log(e);
-
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
