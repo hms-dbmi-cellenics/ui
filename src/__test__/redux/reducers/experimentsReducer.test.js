@@ -11,12 +11,24 @@ import {
 
 describe('experimentsReducer', () => {
   const experimentId1 = 'experiment-1';
-  const projectUuid = 'project-1';
+  const projectUuid1 = 'project-1';
+
+  const experimentId2 = 'experiment-2';
+  const projectUuid2 = 'project-2';
 
   const rawExperiment1 = {
     experimentId: experimentId1,
-    experimentName: 'test project',
-    projectId: projectUuid,
+    experimentName: 'experiment 1',
+    projectId: projectUuid1,
+    description: 'this is a test description',
+    createdDate: '01-01-2021',
+    lastViewed: '01-01-2021',
+  };
+
+  const rawExperiment2 = {
+    experimentId: experimentId2,
+    experimentName: 'experiment 2',
+    projectId: projectUuid2,
     description: 'this is a test description',
     createdDate: '01-01-2021',
     lastViewed: '01-01-2021',
@@ -24,9 +36,19 @@ describe('experimentsReducer', () => {
 
   const experiment1 = {
     ...experimentTemplate,
-    projectUuid,
-    name: 'test project',
+    projectUuid: projectUuid1,
+    name: 'experiment 1',
     id: experimentId1,
+    description: 'this is a test description',
+    createdDate: '01-01-2021',
+    lastViewed: '01-01-2021',
+  };
+
+  const experiment2 = {
+    ...experimentTemplate,
+    projectUuid: projectUuid2,
+    name: 'experiment 2',
+    id: experimentId2,
     description: 'this is a test description',
     createdDate: '01-01-2021',
     lastViewed: '01-01-2021',
@@ -61,6 +83,19 @@ describe('experimentsReducer', () => {
 
     expect(newState.ids).toEqual([experiment1.id]);
     expect(newState[experiment1.id]).toEqual(experiment1);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Loads experiment correctly on existing state', () => {
+    const newState = experimentsReducer(oneExperimentState, {
+      type: EXPERIMENTS_LOADED,
+      payload: {
+        experiments: [rawExperiment2],
+      },
+    });
+
+    expect(newState.ids).toEqual([experiment1.id, experiment2.id]);
+    expect(newState[experiment2.id]).toEqual(experiment2);
     expect(newState).toMatchSnapshot();
   });
 

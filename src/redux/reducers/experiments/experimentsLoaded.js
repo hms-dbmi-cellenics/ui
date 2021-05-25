@@ -2,7 +2,7 @@ const experimentsLoaded = (state, action) => {
   const { experiments } = action.payload;
 
   const newExperiments = experiments.reduce((acc, curr) => {
-    acc.ids.push(curr.experimentId);
+    if (!acc.ids.includes(curr.experimentId)) acc.ids.push(curr.experimentId);
 
     acc[curr.experimentId] = {
       projectUuid: curr.projectId,
@@ -14,7 +14,7 @@ const experimentsLoaded = (state, action) => {
     };
 
     return acc;
-  }, { ids: [] });
+  }, { ids: [...state.ids] });
 
   return {
     ...state,

@@ -18,7 +18,7 @@ Object {
     "description": "this is a test description",
     "id": "experiment-1",
     "lastViewed": "01-01-2021",
-    "name": "test project",
+    "name": "experiment 1",
     "projectUuid": "project-1",
   },
   "ids": Array [
@@ -50,11 +50,41 @@ Object {
     "description": "this is a test description",
     "id": "experiment-1",
     "lastViewed": "01-01-2021",
-    "name": "test project",
+    "name": "experiment 1",
     "projectUuid": "project-1",
   },
   "ids": Array [
     "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Loads experiment correctly on existing state 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "lastViewed": "01-01-2021",
+    "name": "experiment 1",
+    "projectUuid": "project-1",
+  },
+  "experiment-2": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-2",
+    "lastViewed": "01-01-2021",
+    "name": "experiment 2",
+    "projectUuid": "project-2",
+  },
+  "ids": Array [
+    "experiment-1",
+    "experiment-2",
   ],
   "meta": Object {
     "error": false,
