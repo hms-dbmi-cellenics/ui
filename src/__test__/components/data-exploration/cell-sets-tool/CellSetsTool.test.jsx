@@ -285,7 +285,7 @@ describe('CellSetsTool', () => {
     // We should have found the union operation.
     expect.hasAssertions();
   });
-  it('selected cell sets show selected in both tabs', () => {
+  it('selected cell sets show selected in both tabs including disclaimer', () => {
     const store = mockStore(
       {
         ...storeState,
@@ -312,7 +312,7 @@ describe('CellSetsTool', () => {
     const text = component.find('#selectedCellSets').first();
     expect(text.text()).toEqual('3 cells selected');
     tabs.props().onChange('metadataCategorical');
-    expect(text.text()).toEqual('4 cells selected');
+    expect(text.text()).toEqual('4 cells selected (including filtered cells)');
     tabs.props().onChange('cellSets');
     expect(text.text()).toEqual('3 cells selected');
   });
