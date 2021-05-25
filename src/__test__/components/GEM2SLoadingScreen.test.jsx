@@ -49,9 +49,9 @@ describe('GEM2SLoadingScreen', () => {
     ];
 
     const steps = [
-      'step 1',
-      'step 2',
-      'step 3',
+      'Downloading sample files',
+      'Preprocessing samples',
+      'Computing metrics',
     ];
 
     const component = mount(
