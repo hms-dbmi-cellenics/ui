@@ -20,13 +20,11 @@ const DataManagementPage = ({ route }) => {
   const projectsList = useSelector(((state) => state.projects));
   const {
     saving: projectSaving,
-    loading: projectLoading,
-    error: projectError,
   } = projectsList.meta;
   const {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
-  const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
+  const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
   const experiments = useSelector((state) => state.experiments);
   const activeProjectUuid = useSelector((state) => state.projects.meta.activeProjectUuid);
   const activeProject = projectsList[activeProjectUuid];
@@ -47,8 +45,8 @@ const DataManagementPage = ({ route }) => {
   }, [activeProject]);
 
   useEffect(() => {
-    if (!projectLoading.loading && !projectError.error && !projectsList.ids.length) {
-      setNewProjectModalVisible(true);
+    if (projectsList.ids.length) {
+      setNewProjectModalVisible(false);
     }
   }, [projectsList]);
 
