@@ -48,6 +48,9 @@ const saveProject = (
       });
     }
   } catch (e) {
+    console.log('in saveProject');
+    console.log(e);
+
     dispatch({
       type: PROJECTS_ERROR,
       payload: {

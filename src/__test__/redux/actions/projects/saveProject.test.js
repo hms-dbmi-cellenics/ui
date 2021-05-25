@@ -58,11 +58,18 @@ describe('saveProject action', () => {
   });
 
   it('Dispatches a notification when fetch fails.', async () => {
+    const errorMsg = 'some weird error that happened';
+
     fetchMock.resetMocks();
-    fetchMock.mockReject(new Error('some weird error that happened'));
+    fetchMock.mockReject(new Error(errorMsg));
 
     const store = mockStore(initialState);
-    await store.dispatch(saveProject(mockProject.uuid, mockProject));
+
+    try {
+      await store.dispatch(saveProject(mockProject.uuid, mockProject));
+    } catch (e) {
+      expect(e).toEqual(errorMsg);
+    }
 
     const actions = store.getActions();
 
