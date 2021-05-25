@@ -1,14 +1,11 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
 import pushNotificationMessage from '../notifications';
-import messages from '../../../components/notification/messages';
 import {
   PROJECTS_ERROR,
   PROJECTS_SAVING,
   PROJECTS_SAVED,
 } from '../../actionTypes/projects';
-
-import errorTypes from './errorTypes';
 
 const saveProject = (
   projectUuid,
@@ -40,7 +37,7 @@ const saveProject = (
     );
 
     if (!response.ok) {
-      throw new Error('HTTP status code was not 200.');
+      throw new Error(await response.json().message);
     }
 
     if (notifySave) {
@@ -52,11 +49,12 @@ const saveProject = (
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
-        error: errorTypes.SAVE_PROJECT,
+        error: e.message,
       },
     });
 
-    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
+    dispatch(pushNotificationMessage('error', `Error saving project: ${e.message}`, 5));
+    return Promise.reject(e.message);
   }
 };
 
