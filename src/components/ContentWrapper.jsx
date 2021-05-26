@@ -25,7 +25,7 @@ import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
 import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
-import pipelineStatus from '../utils/pipelineStatus';
+import pipelineStatus from '../utils/pipelineStatusValues';
 
 const { Sider, Footer } = Layout;
 

@@ -26,7 +26,7 @@ import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
-import pipelineStatus from '../../utils/pipelineStatus';
+import pipelineStatus from '../../utils/pipelineStatusValues';
 
 import {
   updateProject,

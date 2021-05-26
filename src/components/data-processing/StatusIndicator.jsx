@@ -16,7 +16,7 @@ import {
 } from '@ant-design/icons';
 
 import PrettyTime from '../PrettyTime';
-import pipelineStatus from '../../utils/pipelineStatus';
+import pipelineStatus from '../../utils/pipelineStatusValues';
 
 const { Text, Paragraph } = Typography;
 
