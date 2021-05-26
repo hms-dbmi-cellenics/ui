@@ -684,6 +684,7 @@ const ProjectDetails = ({ width, height }) => {
           {
             activeProjectUuid && (
               <Space direction='vertical' size='small'>
+                <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
                 <Text strong>Description:</Text>
                 <Paragraph
                   editable={{ onChange: changeDescription }}
