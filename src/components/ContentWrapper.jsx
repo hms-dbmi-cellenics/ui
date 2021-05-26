@@ -25,6 +25,7 @@ import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
 import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
+import pipelineStatus from '../utils/pipelineStatus';
 
 const { Sider, Footer } = Layout;
 
@@ -45,7 +46,7 @@ const ContentWrapper = (props) => {
     status: backendStatus,
   } = useSelector((state) => state.experimentSettings.backendStatus);
 
-  const backendErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+  const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus.pipeline?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
@@ -228,7 +229,7 @@ const ContentWrapper = (props) => {
         return <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
-      if (gem2sStatusKey === 'NotCreated') {
+      if (gem2sStatusKey === pipelineStatus.NOT_CREATED) {
         return <GEM2SLoadingScreen gem2sStatus='toBeRun' />;
       }
 
@@ -244,7 +245,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineStatusKey === 'NotCreated' && !route.includes('data-processing')) {
+      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && !route.includes('data-processing')) {
         return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='toBeRun' />;
       }
     }
