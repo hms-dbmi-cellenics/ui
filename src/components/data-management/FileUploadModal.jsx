@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import mime from 'mime-types';
@@ -35,8 +34,6 @@ const FileUploadModal = (props) => {
   const [selectedTech, setSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     setCanUpload(filesList.length && filesList.every((file) => file.valid));
