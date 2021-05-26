@@ -7,9 +7,11 @@ import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVED,
   EXPERIMENTS_SAVING,
+  EXPERIMENTS_DELETED,
 } from '../../actionTypes/experiments';
 import experimentsCreate from './experimentsCreate';
 import experimentsUpdate from './experimentsUpdate';
+import experimentsDelete from './experimentsDelete';
 import experimentsLoading from './experimentsLoading';
 import experimentsLoaded from './experimentsLoaded';
 import experimentsError from './experimentsError';
@@ -24,6 +26,10 @@ const experimentsReducer = (state = initialState, action) => {
 
     case EXPERIMENTS_UPDATED: {
       return experimentsUpdate(state, action);
+    }
+
+    case EXPERIMENTS_DELETED: {
+      return experimentsDelete(state, action);
     }
 
     case EXPERIMENTS_LOADING: {
