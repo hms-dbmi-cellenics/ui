@@ -50,7 +50,7 @@ const fastLoad = (message) => (
 
 const Loader = ({ experimentId }) => {
   const { data: workerStatus } = useSWR(
-    () => (experimentId ? `/v1/experiments/${experimentId}/pipelines` : null),
+    () => (experimentId ? `/v1/experiments/${experimentId}/backendStatus` : null),
     getFromApiExpectOK,
   );
 

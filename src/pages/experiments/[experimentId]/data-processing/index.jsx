@@ -53,21 +53,19 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const {
-    status: pipelineStatus,
-  } = useSelector((state) => state.experimentSettings.backendStatus);
+  const pipelineStatus = useSelector((state) => state.experimentSettings.backendStatus.status.pipeline);
 
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const samples = useSelector((state) => state.samples)
 
-  const pipelineStatusKey = pipelineStatus.pipeline?.status;
+  const pipelineStatusKey = pipelineStatus?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
 
   // Pipeline is not loaded (either running or in an errored state)
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
   const pipelineNotFinished = pipelineRunning || pipelineErrors.includes(pipelineStatusKey);
 
-  const completedSteps = pipelineStatus.pipeline?.completedSteps;
+  const completedSteps = pipelineStatus?.completedSteps;
 
   const cellSets = useSelector((state) => state.cellSets);
 
