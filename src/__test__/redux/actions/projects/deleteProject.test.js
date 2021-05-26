@@ -10,6 +10,7 @@ import { SAMPLES_DELETE } from '../../../../redux/actionTypes/samples';
 import {
   PROJECTS_DELETE, PROJECTS_SAVED, PROJECTS_SAVING, PROJECTS_SET_ACTIVE,
 } from '../../../../redux/actionTypes/projects';
+import { EXPERIMENTS_DELETED } from '../../../../redux/actionTypes/experiments';
 
 jest.mock('../../../../redux/actions/projects/saveProject', () => { });
 
@@ -102,14 +103,17 @@ describe('deleteProject action', () => {
     const actions = store.getActions();
     expect(actions[0].type).toEqual(PROJECTS_SAVING);
 
+    // Delete experiments
+    expect(actions[1].type).toEqual(EXPERIMENTS_DELETED);
+
     // Delete sample
-    expect(actions[1].type).toEqual(SAMPLES_DELETE);
+    expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
     // Delete project
-    expect(actions[2].type).toEqual(PROJECTS_DELETE);
+    expect(actions[3].type).toEqual(PROJECTS_DELETE);
 
     // Resolve loading state
-    expect(actions[3].type).toEqual(PROJECTS_SAVED);
+    expect(actions[4].type).toEqual(PROJECTS_SAVED);
   });
 
   it('Dispatches event correctly for multiple samples', async () => {
@@ -120,14 +124,17 @@ describe('deleteProject action', () => {
     const actions = store.getActions();
     expect(actions[0].type).toEqual(PROJECTS_SAVING);
 
+    // Delete experiments
+    expect(actions[1].type).toEqual(EXPERIMENTS_DELETED);
+
     // Delete sample
-    expect(actions[1].type).toEqual(SAMPLES_DELETE);
+    expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
     // Delete project
-    expect(actions[2].type).toEqual(PROJECTS_DELETE);
+    expect(actions[3].type).toEqual(PROJECTS_DELETE);
 
     // Resolve loading state
-    expect(actions[3].type).toEqual(PROJECTS_SAVED);
+    expect(actions[4].type).toEqual(PROJECTS_SAVED);
   });
 
   it('Switches to activeProjectUuid to another project if multiple project exists', async () => {
@@ -138,17 +145,20 @@ describe('deleteProject action', () => {
     const actions = store.getActions();
     expect(actions[0].type).toEqual(PROJECTS_SAVING);
 
+    // Delete experiments
+    expect(actions[1].type).toEqual(EXPERIMENTS_DELETED);
+
     // Delete sample
-    expect(actions[1].type).toEqual(SAMPLES_DELETE);
+    expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
     // Delete project
-    expect(actions[2].type).toEqual(PROJECTS_DELETE);
+    expect(actions[3].type).toEqual(PROJECTS_DELETE);
 
     // Resolve loading state
-    expect(actions[3].type).toEqual(PROJECTS_SAVED);
+    expect(actions[4].type).toEqual(PROJECTS_SAVED);
 
     // Switch active proejct
-    expect(actions[4].type).toEqual(PROJECTS_SET_ACTIVE);
+    expect(actions[5].type).toEqual(PROJECTS_SET_ACTIVE);
   });
 
   it('Dispatches fetch correctly.', async () => {
