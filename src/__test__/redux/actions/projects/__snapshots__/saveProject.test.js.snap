@@ -1,5 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`saveProject action Dispatches a notification when fetch fails. 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "message": "Saving project...",
+    },
+    "type": "projects/saving",
+  },
+  Object {
+    "payload": Object {
+      "error": "some weird error that happened",
+    },
+    "type": "projects/error",
+  },
+  Object {
+    "payload": Object {
+      "message": "Error saving project: some weird error that happened",
+      "time": 5,
+      "type": "error",
+    },
+    "type": "notifications/pushMessage",
+  },
+]
+`;
+
 exports[`saveProject action Dispatches a notification when fetch fails. 2`] = `
 Array [
   Object {
