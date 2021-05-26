@@ -15,7 +15,7 @@ const createProject = (
   projectDescription,
   newExperimentName,
 ) => async (dispatch) => {
-  const createdAt = moment().toISOString();
+  const createdDate = moment().toISOString();
 
   const newProjectUuid = uuidv4();
 
@@ -29,8 +29,8 @@ const createProject = (
     description: projectDescription,
     uuid: newProjectUuid,
     experiments: [newExperiment.id],
-    createdDate: createdAt,
-    lastModified: createdAt,
+    createdDate,
+    lastModified: createdDate,
   };
 
   try {
