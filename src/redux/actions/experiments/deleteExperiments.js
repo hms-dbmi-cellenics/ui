@@ -4,7 +4,7 @@ import {
 import pushNotificationMessage from '../notifications';
 import errorTypes from './errorTypes';
 
-const updateExperiment = (
+const deleteExperiments = (
   experimentIds,
 ) => async (dispatch) => {
   if (!Array.isArray(experimentIds)) {
@@ -24,4 +24,4 @@ const updateExperiment = (
   }
 };
 
-export default updateExperiment;
+export default deleteExperiments;
