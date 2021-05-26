@@ -6,13 +6,11 @@ import {
   Dropdown,
 } from 'antd';
 
-import { useDispatch } from 'react-redux';
 import { Auth, Hub } from 'aws-amplify';
 import messages from './notification/messages';
-import pushNotificationMessage from '../redux/actions/notifications';
+import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const UserButton = () => {
-  const dispatch = useDispatch();
   const [user, setUser] = useState();
 
   const getUser = () => Auth.currentAuthenticatedUser()

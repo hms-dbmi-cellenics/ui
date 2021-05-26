@@ -21,7 +21,7 @@ import Dropzone from 'react-dropzone';
 import techOptions from '../../utils/fileUploadSpecifications';
 import UploadStatus from '../../utils/UploadStatus';
 
-import pushNotificationMessage from '../../redux/actions/notifications';
+import pushNotificationMessage from '../../utils/pushNotificationMessage';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;

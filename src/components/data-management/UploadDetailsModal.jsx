@@ -6,8 +6,7 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
-import { useDispatch } from 'react-redux';
-import pushNotificationMessage from '../../redux/actions/notifications';
+import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
 
 const acceptedFileNamesByCategory = {
@@ -27,8 +26,6 @@ const UploadDetailsModal = (props) => {
 
   const status = upload?.status;
   const bundleName = bundle?.name;
-
-  const dispatch = useDispatch();
 
   const inputFileRef = useRef(null);
   const [replacementFileBundle, setReplacementFileBundle] = useState(null);

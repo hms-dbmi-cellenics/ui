@@ -9,11 +9,11 @@ import {
 import loadProcessingSettings from '../../../../redux/actions/experimentSettings/loadProcessingSettings';
 import initialState from '../../../test-utils/experimentSettings.mock';
 
-import {
-  NOTIFICATIONS_PUSH_MESSAGE,
-} from '../../../../redux/actionTypes/notifications';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
 jest.mock('localforage');
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
@@ -82,10 +82,11 @@ describe('loadProcessingSettings action', () => {
 
     const actions = store.getActions();
 
-    expect(actions.length).toEqual(2);
+    expect(actions.length).toEqual(1);
 
-    expect(actions[0].type).toEqual(NOTIFICATIONS_PUSH_MESSAGE);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_ERROR);
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_ERROR);
+
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 
   it('Redispatches if called on error', async () => {

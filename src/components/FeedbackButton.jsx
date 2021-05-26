@@ -2,15 +2,13 @@ import React, { useState } from 'react';
 import {
   Button, Dropdown, Card, Input, Space,
 } from 'antd';
-import { useDispatch } from 'react-redux';
 import { CommentOutlined, DownOutlined } from '@ant-design/icons';
 import messages from './notification/messages';
-import pushNotificationMessage from '../redux/actions/notifications';
+import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const { TextArea } = Input;
 
 const FeedbackButton = () => {
-  const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
 
