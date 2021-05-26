@@ -54,9 +54,9 @@ const FeedbackButton = () => {
         throw new Error('Invalid status code returned.');
       }
       setFeedbackText('');
-      dispatch(pushNotificationMessage('success', messages.feedbackSuccessful, 5));
+      pushNotificationMessage('success', messages.feedbackSuccessful, 5);
     } catch {
-      dispatch(pushNotificationMessage('error', messages.feedbackError, 5));
+      pushNotificationMessage('error', messages.feedbackError, 5);
     }
   };
 

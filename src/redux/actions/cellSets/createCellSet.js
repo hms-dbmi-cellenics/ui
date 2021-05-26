@@ -21,7 +21,7 @@ const createCellSet = (experimentId, name, color, cellIds) => (dispatch, getStat
   };
 
   if (data.cellIds.size === 0) {
-    dispatch(pushNotificationMessage('info', messages.emptyClusterNotCreated, 5));
+    pushNotificationMessage('info', messages.emptyClusterNotCreated, 5);
     return;
   }
 
@@ -34,7 +34,7 @@ const createCellSet = (experimentId, name, color, cellIds) => (dispatch, getStat
   });
 
   dispatch(saveCellSets(experimentId));
-  dispatch(pushNotificationMessage('info', messages.newClusterCreated, 5));
+  pushNotificationMessage('info', messages.newClusterCreated, 5);
 };
 
 export default createCellSet;

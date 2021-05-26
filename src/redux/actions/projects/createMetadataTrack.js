@@ -28,7 +28,7 @@ const createMetadataTrack = (
       },
     });
   } catch (e) {
-    dispatch(pushNotificationMessage('error', errorTypes.SAVE_PROJECT));
+    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
   }
 };
 

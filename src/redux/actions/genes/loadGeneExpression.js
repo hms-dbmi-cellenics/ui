@@ -66,7 +66,7 @@ const loadGeneExpression = (
       experimentId, 30, body, getState().experimentSettings.backendStatus.status,
     );
     if (data[genesToFetch[0]]?.error) {
-      dispatch(pushNotificationMessage('error', data[genesToFetch[0]].message, 3));
+      pushNotificationMessage('error', data[genesToFetch[0]].message, 3);
       dispatch({
         type: GENES_EXPRESSION_LOADED,
         payload: {

@@ -39,7 +39,7 @@ const loadExperiments = (
       },
     });
 
-    dispatch(pushNotificationMessage('error', e.message));
+    pushNotificationMessage('error', e.message);
   }
 };
 
