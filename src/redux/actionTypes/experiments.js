@@ -21,6 +21,11 @@ const EXPERIMENTS_LOADED = `${EXPERIMENTS}/loaded`;
 const EXPERIMENTS_UPDATED = `${EXPERIMENTS}/updated`;
 
 /**
+ * Delete experiments
+ */
+const EXPERIMENTS_DELETED = `${EXPERIMENTS}/deleted`;
+
+/**
  * Saving experiment
  */
 const EXPERIMENTS_SAVING = `${EXPERIMENTS}/saving`;
@@ -41,6 +46,7 @@ export {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_LOADING,
   EXPERIMENTS_LOADED,
+  EXPERIMENTS_DELETED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_SAVED,
 };
