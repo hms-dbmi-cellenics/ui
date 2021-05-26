@@ -12,13 +12,10 @@ import {
 import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import CellSetOperation from '../../../../components/data-exploration/cell-sets-tool/CellSetOperation';
 import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
-import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
 const { TabPane } = Tabs;
 
 jest.mock('localforage');
-
-jest.mock('../../../../utils/pushNotificationMessage');
 
 const mockStore = configureStore([thunk]);
 
