@@ -1,7 +1,12 @@
 import _ from 'lodash';
 
 const experimentsDelete = (state, action) => {
-  const { experimentIds } = action.payload;
+  let { experimentIds } = action.payload;
+
+  if (!Array.isArray(experimentIds)) {
+    // eslint-disable-next-line no-const-assign
+    experimentIds = [experimentIds];
+  }
 
   const newIds = state.ids.filter((id) => !experimentIds.includes(id));
   const remainingExperiments = _.omit(state, experimentIds);

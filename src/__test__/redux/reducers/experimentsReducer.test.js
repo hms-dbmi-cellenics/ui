@@ -7,6 +7,7 @@ import {
   EXPERIMENTS_LOADING,
   EXPERIMENTS_UPDATED,
   EXPERIMENTS_ERROR,
+  EXPERIMENTS_DELETED,
 } from '../../../redux/actionTypes/experiments';
 
 describe('experimentsReducer', () => {
@@ -64,6 +65,13 @@ describe('experimentsReducer', () => {
     ...initialState,
     ids: [experimentId1],
     [experimentId1]: experiment1,
+  };
+
+  const twoExperimentsState = {
+    ...initialState,
+    ids: [experimentId1, experimentId2],
+    [experimentId1]: experiment1,
+    [experimentId2]: experiment2,
   };
 
   it('Reduces identical state on unknown action', () => expect(
@@ -144,6 +152,19 @@ describe('experimentsReducer', () => {
 
     expect(newState.ids).toEqual([experiment1.id]);
     expect(newState[experiment1.id]).toEqual(updatedExperiment);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Deletes an experiment correctly', () => {
+    const newState = experimentsReducer(twoExperimentsState, {
+      type: EXPERIMENTS_DELETED,
+      payload: {
+        experimentIds: experiment2.id,
+      },
+    });
+
+    expect(newState.ids).toEqual([experiment1.id]);
+    expect(newState).toEqual(oneExperimentState);
     expect(newState).toMatchSnapshot();
   });
 
