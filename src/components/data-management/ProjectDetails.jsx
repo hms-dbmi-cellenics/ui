@@ -603,8 +603,6 @@ const ProjectDetails = ({ width, height }) => {
   const launchAnalysis = (experimentId) => {
     dispatch(loadBackendStatus(experimentId))
       .then((backendStatus) => {
-        console.log(backendStatus);
-
         if ([
           pipelineStatus.NOT_CREATED,
           pipelineStatus.ABORTED,
