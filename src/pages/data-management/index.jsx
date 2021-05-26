@@ -6,6 +6,7 @@ import { Button, Space } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
+import { validate } from 'uuid';
 import { createProject, loadProjects } from '../../redux/actions/projects';
 import { loadExperiments } from '../../redux/actions/experiments';
 
@@ -32,14 +33,22 @@ const DataManagementPage = ({ route }) => {
   const existingExperiments = activeProject?.experiments
     .map((experimentId) => experiments[experimentId]);
 
+  const experimentIds = new Set(experiments.ids);
+  const experimentsAreLoaded = activeProject?.experiments
+    .every((experimentId) => experimentIds.has(experimentId));
+  const isUuid = (uuid) => validate(uuid);
+
+  // const experimentsAreLoaded = (project, experiments) => {}
   useEffect(() => {
     if (projectsList.ids.length === 0) dispatch(loadProjects());
   }, []);
 
   useEffect(() => {
-    if (!activeProjectUuid || activeProject?.experiments.every(
-      (experimentId) => experiments.ids.includes(experimentId),
-    )) return;
+    // old experiments don't have a project so the activeProjectUuid will actually be an experiment
+    // ID so the experiments load will fail this should be addressed by migrating experiments
+    // for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
+    // and we should not try to load the experiments with it
+    if (!activeProjectUuid || experimentsAreLoaded || !isUuid(activeProjectUuid)) return;
 
     dispatch(loadExperiments(activeProjectUuid));
   }, [activeProject]);
