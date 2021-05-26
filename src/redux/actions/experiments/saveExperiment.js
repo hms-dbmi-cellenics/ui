@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,

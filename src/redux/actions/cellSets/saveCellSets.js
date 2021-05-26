@@ -1,6 +1,6 @@
 import fetchAPI from '../../../utils/fetchAPI';
 import { CELL_SETS_SAVE } from '../../actionTypes/cellSets';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import composeTree from '../../../utils/composeTree';
 import messages from '../../../components/notification/messages';
 

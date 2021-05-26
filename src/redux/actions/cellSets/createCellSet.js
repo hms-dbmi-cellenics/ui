@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import messages from '../../../components/notification/messages';
 import { CELL_SETS_CREATE } from '../../actionTypes/cellSets';
 import saveCellSets from './saveCellSets';
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
 const createCellSet = (experimentId, name, color, cellIds) => (dispatch, getState) => {
   const {

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
 import { LOAD_CONFIG } from '../../actionTypes/componentConfig';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import messages from '../../../components/notification/messages';
 import { initialPlotConfigStates } from '../../reducers/componentConfig/initialState';
 
