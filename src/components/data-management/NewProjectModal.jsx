@@ -49,7 +49,7 @@ const NewProjectModal = (props) => {
 
   const submit = () => {
     // TO-DO: this fails to clear the input field
-    // We prpbably can fix this taking advantage of
+    // We probably can fix this taking advantage of
     // the Form properties.
     const newProject = projectName;
     setProjectName('');
@@ -90,10 +90,7 @@ const NewProjectModal = (props) => {
             you&apos;re working on.
           </Paragraph>
 
-          <Form
-            layout='vertical'
-            onFinish='submit'
-          >
+          <Form layout='vertical'>
             <Form.Item
               validateStatus={isValidName ? 'success' : 'error'}
               help={(
