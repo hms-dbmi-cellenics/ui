@@ -470,7 +470,9 @@ const ProjectDetails = ({ width, height }) => {
         record,
         'species',
         rowIdx,
-        (newValue) => dispatch(updateSample(record.uuid, { species: newValue })),
+        (newValue) => {
+          dispatch(updateSample(record.uuid, { species: newValue }));
+        },
       ),
       width: 200,
     },
@@ -499,7 +501,7 @@ const ProjectDetails = ({ width, height }) => {
     const allSampleMetadataInserted = (sample) => {
       if (activeProject?.metadataKeys.length === 0) return true;
       if (Object.keys(sample.metadata).length !== activeProject.metadataKeys.length) return false;
-      return Object.values(sample.metadata).every((value) => value.length > 0);
+      return Object.values(sample.metadata).every((value) => value && value.length > 0);
     };
 
     const canLaunch = activeProject?.samples.every((sampleUuid) => {

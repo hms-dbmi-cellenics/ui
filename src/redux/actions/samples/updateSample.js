@@ -29,7 +29,7 @@ const updateSample = (
       type: SAMPLES_UPDATE,
       payload: {
         sampleUuid,
-        diff,
+        sample: diff,
       },
     });
   } catch (e) {
