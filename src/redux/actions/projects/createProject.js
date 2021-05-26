@@ -34,7 +34,7 @@ const createProject = (
   };
 
   try {
-    dispatch(saveProject(newProjectUuid, newProject));
+    await dispatch(saveProject(newProjectUuid, newProject));
 
     dispatch({
       type: PROJECTS_CREATE,

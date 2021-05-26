@@ -62,18 +62,17 @@ describe('saveProject action', () => {
   });
 
   it('Dispatches a notification when fetch fails.', async () => {
+    const errorMsg = 'some weird error that happened';
+
     fetchMock.resetMocks();
-    fetchMock.mockReject(new Error('some weird error that happened'));
+    fetchMock.mockReject(new Error(errorMsg));
 
     const store = mockStore(initialState);
 
     try {
       await store.dispatch(saveProject(mockProject.uuid, mockProject));
     } catch (e) {
-      expect(e).toBeDefined();
-      expect(e).toMatchInlineSnapshot(
-        '[Error: Could not connect to the server. Check your internet connection and refresh the page.]',
-      );
+      expect(e).toEqual(errorMsg);
     }
 
     const actions = store.getActions();

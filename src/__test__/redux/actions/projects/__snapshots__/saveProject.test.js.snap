@@ -10,13 +10,13 @@ Array [
   },
   Object {
     "payload": Object {
-      "error": "Error saving project",
+      "error": "some weird error that happened",
     },
     "type": "projects/error",
   },
   Object {
     "payload": Object {
-      "message": "Could not connect to the server. Check your internet connection and refresh the page.",
+      "message": "Error saving project: some weird error that happened",
       "time": 5,
       "type": "error",
     },

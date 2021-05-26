@@ -1,10 +1,8 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
 import pushNotificationMessage from '../notifications';
-import messages from '../../../components/notification/messages';
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/samples';
 
-import errorTypes from './errorTypes';
 import getProjectSamples from '../../../utils/getProjectSamples';
 
 const saveSamples = (
@@ -61,7 +59,7 @@ const saveSamples = (
     );
 
     if (!response.ok) {
-      throw new Error('HTTP status code was not 200.');
+      throw new Error(await response.json().message);
     }
 
     if (notifySave) {
@@ -73,13 +71,12 @@ const saveSamples = (
     dispatch({
       type: SAMPLES_ERROR,
       payload: {
-        error: errorTypes.SAVE_SAMPLES,
+        error: e.message,
       },
     });
 
-    dispatch(pushNotificationMessage('error', messages.connectionError, 5));
-
-    throw new Error(messages.connectionError);
+    dispatch(pushNotificationMessage('error', `Error saving samples: ${e.message}`, 5));
+    return Promise.reject(e.message);
   }
 };
 
