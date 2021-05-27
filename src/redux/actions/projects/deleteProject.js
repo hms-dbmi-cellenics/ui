@@ -15,7 +15,7 @@ import {
   EXPERIMENTS_DELETED,
 } from '../../actionTypes/experiments';
 
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 
 const deleteProject = (

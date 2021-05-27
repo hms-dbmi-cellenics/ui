@@ -26,19 +26,19 @@ describe('createCellSet action', () => {
 
   it('Does not dispatch on loading state', async () => {
     const store = mockStore({ cellSets: { loading: true, error: false } });
-    store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
+    await store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
     expect(store.getActions().length).toEqual(0);
   });
 
   it('Does not dispatch on error state', async () => {
     const store = mockStore({ cellSets: { loading: false, error: true } });
-    store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
+    await store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
     expect(store.getActions().length).toEqual(0);
   });
 
   it('Dispatches an action to create cell set to the reducer', async () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
-    store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
+    await store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
 
     const firstAction = store.getActions()[0];
     firstAction.payload.key = 'a key';
@@ -47,9 +47,9 @@ describe('createCellSet action', () => {
 
   it('Last action dispatches cellSetSave event', async () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
-    store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
+    await store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
 
-    const cellSetSaveActionID = store.getActions().length - 2;
+    const cellSetSaveActionID = store.getActions().length - 1;
     const cellSetSaveAction = store.getActions()[cellSetSaveActionID];
     cellSetSaveAction.payload.key = 'a key';
 

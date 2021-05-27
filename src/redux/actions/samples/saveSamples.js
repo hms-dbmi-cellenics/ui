@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/samples';
 
 import getProjectSamples from '../../../utils/getProjectSamples';
@@ -75,7 +75,7 @@ const saveSamples = (
       },
     });
 
-    dispatch(pushNotificationMessage('error', `Error saving samples: ${e.message}`, 5));
+    pushNotificationMessage('error', `Error saving samples: ${e.message}`);
     return Promise.reject(e.message);
   }
 };

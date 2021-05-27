@@ -8,7 +8,9 @@ import {
   PROJECTS_SAVED,
   PROJECTS_SAVING,
 } from '../../../../redux/actionTypes/projects';
-import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 jest.mock('localforage');
 
@@ -83,8 +85,8 @@ describe('saveProject action', () => {
     // Second state saves error
     expect(actions[1].type).toBe(PROJECTS_ERROR);
 
-    // Third state emits notification
-    expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
+    // Expect notification to be fired
+    expect(pushNotificationMessage).toHaveBeenCalled();
 
     expect(actions).toMatchSnapshot();
   });

@@ -14,14 +14,6 @@ Array [
     },
     "type": "projects/error",
   },
-  Object {
-    "payload": Object {
-      "message": "Error saving project: some weird error that happened",
-      "time": 5,
-      "type": "error",
-    },
-    "type": "notifications/pushMessage",
-  },
 ]
 `;
 

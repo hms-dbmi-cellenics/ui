@@ -8,7 +8,7 @@ import {
   EXPERIMENTS_ERROR,
 } from '../../actionTypes/experiments';
 import { experimentTemplate } from '../../reducers/experiments/initialState';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 
 const createExperiment = (

@@ -15,7 +15,6 @@ import {
   BuildOutlined,
   FolderOpenOutlined,
 } from '@ant-design/icons';
-import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
 import { loadBackendStatus } from '../redux/actions/experimentSettings';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -276,7 +275,6 @@ const ContentWrapper = (props) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <NotificationManager />
       <Sider
         width={210}
         theme='dark'

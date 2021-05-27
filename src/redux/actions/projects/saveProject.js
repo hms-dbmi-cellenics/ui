@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
   PROJECTS_ERROR,
   PROJECTS_SAVING,
@@ -52,7 +52,7 @@ const saveProject = (
         error: e.message,
       },
     });
-    dispatch(pushNotificationMessage('error', `Error saving project: ${e.message}`, 5));
+    pushNotificationMessage('error', `Error saving project: ${e.message}`);
     return Promise.reject(e.message);
   }
 };

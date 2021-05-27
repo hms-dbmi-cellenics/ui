@@ -11,7 +11,9 @@ import { saveSamples } from '../../../../redux/actions/samples';
 import {
   PROJECTS_METADATA_UPDATE,
 } from '../../../../redux/actionTypes/projects';
-import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
@@ -90,15 +92,10 @@ describe('updateMetadataTrack action', () => {
       mockProject.uuid,
     ));
 
-    const actions = store.getActions();
-
     // It fires saves project
     expect(saveProject).toHaveBeenCalled();
 
     // Expect there is a notification
-    expect(actions[0].type).toEqual(NOTIFICATIONS_PUSH_MESSAGE);
-
-    // And there is no other actions
-    expect(actions.length).toEqual(1);
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 });

@@ -6,9 +6,11 @@ import {
   PROJECTS_METADATA_CREATE,
 } from '../../../../redux/actionTypes/projects';
 import { saveProject } from '../../../../redux/actions/projects';
-import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
 const mockStore = configureStore([thunk]);
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
@@ -48,15 +50,10 @@ describe('createMetadataTrack action', () => {
     const store = mockStore(initialState);
     await store.dispatch(createMetadataTrack('Test track', mockProject.uuid));
 
-    const actions = store.getActions();
-
     // It fires saves project
     expect(saveProject).toHaveBeenCalled();
 
     // Expect there is a notification
-    expect(actions[0].type).toEqual(NOTIFICATIONS_PUSH_MESSAGE);
-
-    // And there is no other actions
-    expect(actions.length).toEqual(1);
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 });

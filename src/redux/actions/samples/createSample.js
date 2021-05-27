@@ -10,7 +10,7 @@ import {
 } from '../../actionTypes/projects';
 import saveSamples from './saveSamples';
 import { saveProject } from '../projects';
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 
 import { sampleTemplate } from '../../reducers/samples/initialState';

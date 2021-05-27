@@ -190,7 +190,7 @@ describe('CellSetsTool', () => {
       if (helpTitle.includes('combining')) {
         // found the union operation, now execute the callback
         onCreate('union cluster', '#ff00ff');
-        expect(store.getActions().length).toEqual(3);
+        expect(store.getActions().length).toEqual(2);
 
         // Should create the appropriate union set.
         const createAction = store.getActions()[1];
@@ -232,7 +232,7 @@ describe('CellSetsTool', () => {
       if (helpTitle.includes('intersection')) {
         // found the union operation, now execute the callback
         onCreate('intersection cluster', '#ff00ff');
-        expect(store.getActions().length).toEqual(3);
+        expect(store.getActions().length).toEqual(2);
 
         // Should create the appropriate intersection set.
         const createAction = store.getActions()[1];
@@ -274,7 +274,7 @@ describe('CellSetsTool', () => {
       if (helpTitle.includes('complement')) {
         // found the union operation, now execute the callback
         onCreate('complement cluster', '#ff00ff');
-        expect(store.getActions().length).toEqual(3);
+        expect(store.getActions().length).toEqual(2);
 
         // Should create the appropriate intersection set.
         const createAction = store.getActions()[1];

@@ -7,7 +7,7 @@ import {
 import {
   SAMPLES_METADATA_DELETE,
 } from '../../actionTypes/samples';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import saveSamples from '../samples/saveSamples';
 import errorTypes from './errorTypes';
 import saveProject from './saveProject';
@@ -55,7 +55,7 @@ const deleteMetadataTrack = (
       },
     }));
   } catch (e) {
-    dispatch(pushNotificationMessage('error', errorTypes.SAVE_PROJECT));
+    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
   }
 };
 

@@ -3,7 +3,7 @@ import moment from 'moment';
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 import saveProject from './saveProject';
 

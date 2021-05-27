@@ -13,7 +13,9 @@ import {
   SAMPLES_SAVED,
   SAMPLES_SAVING,
 } from '../../../../redux/actionTypes/samples';
-import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 jest.mock('localforage');
 
@@ -120,8 +122,8 @@ describe('saveSamples action', () => {
     // Second state generates error
     expect(actions[1].type).toBe(SAMPLES_ERROR);
 
-    // Thirdd state emits notification
-    expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
+    // Expect there is a notification
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 
   it('Dispatches samples pre and post actions correctly', async () => {

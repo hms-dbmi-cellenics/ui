@@ -7,7 +7,7 @@ import {
 } from '../../actionTypes/projects';
 import { projectTemplate } from '../../reducers/projects/initialState';
 import createExperiment from '../experiments/createExperiment';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 
 const createProject = (
