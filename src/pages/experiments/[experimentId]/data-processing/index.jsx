@@ -110,6 +110,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     }
 
     if (samples.ids.length > 0) {
+      console.error(JSON.stringify(samples.ids));
+      console.error(JSON.stringify(samples));
+
       setPreFilteredSamples(
         samples.ids.filter(
           (sampleUuid) => samples[sampleUuid].preFiltered
