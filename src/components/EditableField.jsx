@@ -128,7 +128,7 @@ const EditableField = (props) => {
   return (
     <>
       <Space direction='vertical'>
-        <Space style={{ alignItems: 'flex-start' }}>
+        <Space align='start'>
           {renderEditState()}
           {
             deleteEnabled
