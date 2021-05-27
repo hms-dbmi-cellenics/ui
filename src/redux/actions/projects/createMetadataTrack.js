@@ -3,7 +3,7 @@ import { metadataNameToKey } from '../../../utils/metadataUtils';
 import {
   PROJECTS_METADATA_CREATE,
 } from '../../actionTypes/projects';
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 import saveProject from './saveProject';
 
@@ -28,7 +28,7 @@ const createMetadataTrack = (
       },
     });
   } catch (e) {
-    dispatch(pushNotificationMessage('error', errorTypes.SAVE_PROJECT));
+    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
   }
 };
 

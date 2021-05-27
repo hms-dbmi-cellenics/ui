@@ -13,7 +13,7 @@ import {
 import saveSamples from './saveSamples';
 import saveProject from '../projects/saveProject';
 
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import getProjectSamples from '../../../utils/getProjectSamples';
 import errorTypes from './errorTypes';
 

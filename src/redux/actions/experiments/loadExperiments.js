@@ -4,7 +4,7 @@ import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_LOADING,
 } from '../../actionTypes/experiments';
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
 const loadExperiments = (
   projectUuid,
@@ -39,7 +39,7 @@ const loadExperiments = (
       },
     });
 
-    dispatch(pushNotificationMessage('error', e.message));
+    pushNotificationMessage('error', e.message);
   }
 };
 

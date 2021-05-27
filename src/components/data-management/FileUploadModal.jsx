@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import mime from 'mime-types';
@@ -22,7 +21,7 @@ import Dropzone from 'react-dropzone';
 import techOptions from '../../utils/fileUploadSpecifications';
 import UploadStatus from '../../utils/UploadStatus';
 
-import pushNotificationMessage from '../../redux/actions/notifications';
+import pushNotificationMessage from '../../utils/pushNotificationMessage';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -35,8 +34,6 @@ const FileUploadModal = (props) => {
   const [selectedTech, setSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     setCanUpload(filesList.length && filesList.every((file) => file.valid));
@@ -62,7 +59,7 @@ const FileUploadModal = (props) => {
       });
 
     if (filesNotInFolder) {
-      dispatch(pushNotificationMessage('error', 'Only files contained in folder are accepted', 1));
+      pushNotificationMessage('error', 'Only files contained in folder are accepted');
     }
 
     filteredFiles.forEach((file) => {

@@ -11,7 +11,9 @@ import { saveSamples } from '../../../../redux/actions/samples';
 import {
   PROJECTS_METADATA_DELETE,
 } from '../../../../redux/actionTypes/projects';
-import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 const mockStore = configureStore([thunk]);
 
@@ -78,15 +80,12 @@ describe('deleteMetadataTrack action', () => {
     const store = mockStore(initialState);
     await store.dispatch(deleteMetadataTrack(metadataTrack, mockProject.uuid));
 
-    const actions = store.getActions();
-
     // It fires save project and save samples
     expect(saveProject).toHaveBeenCalled();
     expect(saveSamples).toHaveBeenCalled();
 
     // It fires project error
-    expect(actions[0].type).toEqual(NOTIFICATIONS_PUSH_MESSAGE);
-
-    expect(actions.length).toEqual(1);
+    // Expect there is a notification
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 });

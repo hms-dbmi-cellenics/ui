@@ -2,7 +2,7 @@ import _ from 'lodash';
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from '../../actionTypes/genes';
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const loadGeneExpression = (
@@ -66,7 +66,7 @@ const loadGeneExpression = (
       experimentId, 30, body, getState().experimentSettings.backendStatus.status,
     );
     if (data[genesToFetch[0]]?.error) {
-      dispatch(pushNotificationMessage('error', data[genesToFetch[0]].message, 3));
+      pushNotificationMessage('error', data[genesToFetch[0]].message);
       dispatch({
         type: GENES_EXPRESSION_LOADED,
         payload: {

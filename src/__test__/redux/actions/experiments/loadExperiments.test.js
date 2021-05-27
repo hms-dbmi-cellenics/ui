@@ -7,9 +7,11 @@ import {
   EXPERIMENTS_ERROR,
 } from '../../../../redux/actionTypes/experiments';
 import { loadExperiments } from '../../../../redux/actions/experiments';
-import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
 jest.mock('localforage');
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 enableFetchMocks();
 
@@ -47,6 +49,6 @@ describe('loadExperiment', () => {
 
     expect(actions[1].type).toEqual(EXPERIMENTS_ERROR);
 
-    expect(actions[2].type).toEqual(NOTIFICATIONS_PUSH_MESSAGE);
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 });

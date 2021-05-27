@@ -4,7 +4,7 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../actionTypes/experimentSettings';
 
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
 import errorTypes from './errorTypes';
 
@@ -36,12 +36,9 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
         { experimentId, settingName },
     });
   } catch (e) {
-    dispatch(
-      pushNotificationMessage(
-        'error',
-        'We couldn\'t connect to the server to save your current processing settings, retrying...',
-        3,
-      ),
+    pushNotificationMessage(
+      'error',
+      'We couldn\'t connect to the server to save your current processing settings, retrying...',
     );
 
     dispatch({

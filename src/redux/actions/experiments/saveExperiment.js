@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
@@ -46,12 +46,9 @@ const saveExperiment = (
       },
     });
 
-    dispatch(
-      pushNotificationMessage(
-        'error',
-        'We couldn\'t connect to the server to save your current experiment, retrying...',
-        3,
-      ),
+    pushNotificationMessage(
+      'error',
+      'We couldn\'t connect to the server to save your current experiment, retrying...',
     );
   }
 };
