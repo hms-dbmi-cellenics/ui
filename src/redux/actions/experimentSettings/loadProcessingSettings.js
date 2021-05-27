@@ -38,7 +38,6 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
     pushNotificationMessage(
       'error',
       'We couldn\'t load your processing settings.Please check your internet connection and try refreshing the page.',
-      5,
     );
 
     dispatch({

@@ -49,7 +49,6 @@ const saveExperiment = (
     pushNotificationMessage(
       'error',
       'We couldn\'t connect to the server to save your current experiment, retrying...',
-      3,
     );
   }
 };

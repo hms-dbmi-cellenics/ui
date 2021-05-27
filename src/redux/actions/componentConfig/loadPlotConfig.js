@@ -36,7 +36,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
       throw new Error('Server sent back different error or json conversion failed.');
     }
   } catch (e) {
-    pushNotificationMessage('error', messages.connectionError, 10);
+    pushNotificationMessage('error', messages.connectionError);
   }
 };
 

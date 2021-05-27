@@ -52,7 +52,7 @@ const saveProject = (
         error: e.message,
       },
     });
-    pushNotificationMessage('error', `Error saving project: ${e.message}`, 5);
+    pushNotificationMessage('error', `Error saving project: ${e.message}`);
     return Promise.reject(e.message);
   }
 };

@@ -38,7 +38,7 @@ const loadProjects = () => async (dispatch) => {
         error: e.message,
       },
     });
-    pushNotificationMessage('error', messages.connectionError, 10);
+    pushNotificationMessage('error', messages.connectionError);
   }
 };
 export default loadProjects;

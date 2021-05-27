@@ -59,7 +59,7 @@ const FileUploadModal = (props) => {
       });
 
     if (filesNotInFolder) {
-      pushNotificationMessage('error', 'Only files contained in folder are accepted', 1);
+      pushNotificationMessage('error', 'Only files contained in folder are accepted');
     }
 
     filteredFiles.forEach((file) => {

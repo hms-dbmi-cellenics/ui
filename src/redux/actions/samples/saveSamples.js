@@ -75,7 +75,7 @@ const saveSamples = (
       },
     });
 
-    pushNotificationMessage('error', `Error saving samples: ${e.message}`, 5);
+    pushNotificationMessage('error', `Error saving samples: ${e.message}`);
     return Promise.reject(e.message);
   }
 };

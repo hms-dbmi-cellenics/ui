@@ -39,7 +39,6 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
     pushNotificationMessage(
       'error',
       'We couldn\'t connect to the server to save your current processing settings, retrying...',
-      3,
     );
 
     dispatch({
