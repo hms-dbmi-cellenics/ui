@@ -190,19 +190,16 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
-            <>
-              <div>{debugValue}</div>
-              <Classifier
-                id={'classifier'}
-                experimentId={experimentId}
-                filtering
-                key={key}
-                sampleId={sample.key}
-                sampleIds={sampleKeys}
-                onConfigChange={onConfigChange}
-                stepDisabled={!processingConfig[key]?.enabled}
-              />
-            </>
+            <Classifier
+              id={'classifier'}
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+              onConfigChange={onConfigChange}
+              stepDisabled={!processingConfig[key]?.enabled}
+            />
           )}
         />
       ),
@@ -570,6 +567,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', height: '100vh',
     }}
     >
+      <div>downhere</div>
+      <div>{debugValue}</div>
+      <div>uphere</div>
       <Header
         experimentId={experimentId}
         experimentData={experimentData}
