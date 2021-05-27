@@ -48,9 +48,6 @@ const NewProjectModal = (props) => {
   } = useSelector((state) => state.projects.meta);
 
   const submit = () => {
-    // TO-DO: this fails to clear the input field
-    // We probably can fix this taking advantage of
-    // the Form properties.
     const newProject = projectName;
     setProjectName('');
     onCreate(newProject, projectDescription);
