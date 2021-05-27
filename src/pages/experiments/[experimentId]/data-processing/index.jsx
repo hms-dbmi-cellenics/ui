@@ -103,6 +103,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     }
   }, [experimentId]);
 
+  const [debugValue, setDebugValue] = useState('');
+
   useEffect(() => {
     if (samples.meta.loading) {
       dispatch(loadSamples(experimentId));
@@ -110,8 +112,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     }
 
     if (samples.ids.length > 0) {
-      console.error(JSON.stringify(samples.ids));
-      console.error(JSON.stringify(samples));
+      setDebugValue(`1=${JSON.stringify(samples.ids)}2=${JSON.stringify(samples)}`);
 
       setPreFilteredSamples(
         samples.ids.filter(
@@ -189,16 +190,19 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
-            <Classifier
-              id={'classifier'}
-              experimentId={experimentId}
-              filtering
-              key={key}
-              sampleId={sample.key}
-              sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
-              stepDisabled={!processingConfig[key]?.enabled}
-            />
+            <>
+              <div>{debugValue}</div>
+              <Classifier
+                id={'classifier'}
+                experimentId={experimentId}
+                filtering
+                key={key}
+                sampleId={sample.key}
+                sampleIds={sampleKeys}
+                onConfigChange={onConfigChange}
+                stepDisabled={!processingConfig[key]?.enabled}
+              />
+            </>
           )}
         />
       ),
