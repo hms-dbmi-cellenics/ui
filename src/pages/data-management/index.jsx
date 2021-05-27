@@ -65,11 +65,16 @@ const DataManagementPage = ({ route }) => {
     'Projects List': {
       toolbarControls: [],
       component: (width, height) => (
-        <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
+        <Space
+          direction='vertical'
+          style={{ width: '100%' }}
+        >
           <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
             Create New Project
           </Button>
-          <ProjectsListContainer height={height} />
+          <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
+            <ProjectsListContainer height={height} />
+          </Space>
         </Space>
       ),
     },
