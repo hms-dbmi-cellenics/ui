@@ -16,6 +16,7 @@ import {
 } from '@ant-design/icons';
 
 import PrettyTime from '../PrettyTime';
+import pipelineStatus from '../../utils/pipelineStatusValues';
 
 const { Text, Paragraph } = Typography;
 
@@ -27,14 +28,14 @@ const StatusIndicator = () => {
   const { startDate, stopDate, status } = pipeline;
 
   const statusIndicators = {
-    NotCreated: {
+    [pipelineStatus.NOT_CREATED]: {
       icon: <Text strong type='secondary'>to be started</Text>,
       title: 'to be started',
       description: (
         <Text>You have never submitted your analysis to data processing.</Text>
       ),
     },
-    RUNNING: {
+    [pipelineStatus.RUNNING]: {
       icon: <Text strong type='warning'>running</Text>,
       title: <Text strong type='warning'>running</Text>,
       description: (
@@ -47,7 +48,7 @@ const StatusIndicator = () => {
         </Text>
       ),
     },
-    FAILED: {
+    [pipelineStatus.FAILED]: {
       icon: <Text strong type='danger'>failed</Text>,
       title: <Text strong type='danger'>failing</Text>,
       description: (
@@ -63,7 +64,7 @@ const StatusIndicator = () => {
         </Text>
       ),
     },
-    ABORTED: {
+    [pipelineStatus.ABORTED]: {
       icon: <Text strong type='secondary'>stopped</Text>,
       title: <Text strong type='secondary'>stopped</Text>,
       description: (
@@ -79,7 +80,7 @@ const StatusIndicator = () => {
         </Text>
       ),
     },
-    SUCCEEDED: {
+    [pipelineStatus.SUCCEEDED]: {
       icon: <Text strong type='success'><CheckCircleOutlined /></Text>,
       title: <Text strong type='success'>finished</Text>,
       description: (

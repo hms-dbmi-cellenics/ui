@@ -22,7 +22,7 @@ const createSample = (
 ) => async (dispatch, getState) => {
   const project = getState().projects[projectUuid];
 
-  const createdAt = moment().toISOString();
+  const createdDate = moment().toISOString();
 
   const newSampleUuid = uuidv4();
 
@@ -32,8 +32,8 @@ const createSample = (
     type,
     projectUuid,
     uuid: newSampleUuid,
-    createdDate: createdAt,
-    lastModified: createdAt,
+    createdDate,
+    lastModified: createdDate,
   };
 
   const newProject = {

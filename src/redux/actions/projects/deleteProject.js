@@ -11,6 +11,10 @@ import {
   SAMPLES_DELETE,
 } from '../../actionTypes/samples';
 
+import {
+  EXPERIMENTS_DELETED,
+} from '../../actionTypes/experiments';
+
 import pushNotificationMessage from '../notifications';
 import errorTypes from './errorTypes';
 
@@ -29,7 +33,7 @@ const deleteProject = (
   });
 
   try {
-    await fetchAPI(
+    const response = await fetchAPI(
       `/v1/projects/${projectUuid}`,
       {
         method: 'DELETE',
@@ -38,6 +42,17 @@ const deleteProject = (
         },
       },
     );
+
+    if (!response.ok) {
+      throw new Error(response.json().message);
+    }
+
+    dispatch({
+      type: EXPERIMENTS_DELETED,
+      payload: {
+        experimentIds: projects[projectUuid].experiments,
+      },
+    });
 
     dispatch({
       type: SAMPLES_DELETE,

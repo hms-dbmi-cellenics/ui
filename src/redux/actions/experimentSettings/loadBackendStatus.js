@@ -29,7 +29,7 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
         },
       });
 
-      return;
+      return status;
     }
 
     throw new Error('HTTP status code was not 200.');

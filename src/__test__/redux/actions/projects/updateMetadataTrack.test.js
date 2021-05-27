@@ -5,8 +5,19 @@ import updateMetadataTrack from '../../../../redux/actions/projects/updateMetada
 import initialProjectState from '../../../../redux/reducers/projects';
 import initialSampleState from '../../../../redux/reducers/samples';
 
-import { PROJECTS_METADATA_UPDATE } from '../../../../redux/actionTypes/projects';
-import { SAMPLES_METADATA_DELETE, SAMPLES_UPDATE } from '../../../../redux/actionTypes/samples';
+import { saveProject } from '../../../../redux/actions/projects';
+import { saveSamples } from '../../../../redux/actions/samples';
+
+import {
+  PROJECTS_METADATA_UPDATE,
+} from '../../../../redux/actionTypes/projects';
+import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+
+jest.mock('../../../../redux/actions/projects/saveProject');
+saveProject.mockImplementation(() => async () => { });
+
+jest.mock('../../../../redux/actions/samples/saveSamples');
+saveSamples.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
@@ -58,13 +69,36 @@ describe('updateMetadataTrack action', () => {
       mockProject.uuid,
     ));
 
-    const firstAction = store.getActions()[0];
-    expect(firstAction.type).toEqual(PROJECTS_METADATA_UPDATE);
+    const actions = store.getActions();
 
-    const secondAction = store.getActions()[1];
-    expect(secondAction.type).toEqual(SAMPLES_UPDATE);
+    // It fires save project and save samples
+    expect(saveProject).toHaveBeenCalled();
+    expect(saveSamples).toHaveBeenCalled();
 
-    const thirdAction = store.getActions()[2];
-    expect(thirdAction.type).toEqual(SAMPLES_METADATA_DELETE);
+    // It creates the new metadata
+    expect(actions[0].type).toEqual(PROJECTS_METADATA_UPDATE);
+  });
+
+  it('Does not update metadata if save fails', async () => {
+    const store = mockStore(initialState);
+
+    saveProject.mockImplementation(() => async () => { throw new Error('some weird error'); });
+
+    await store.dispatch(updateMetadataTrack(
+      oldMetadataTrack,
+      newMetadataTrack,
+      mockProject.uuid,
+    ));
+
+    const actions = store.getActions();
+
+    // It fires saves project
+    expect(saveProject).toHaveBeenCalled();
+
+    // Expect there is a notification
+    expect(actions[0].type).toEqual(NOTIFICATIONS_PUSH_MESSAGE);
+
+    // And there is no other actions
+    expect(actions.length).toEqual(1);
   });
 });

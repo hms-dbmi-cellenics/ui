@@ -26,6 +26,7 @@ import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
+import pipelineStatus from '../../utils/pipelineStatusValues';
 
 import {
   updateProject,
@@ -44,6 +45,7 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
+import loadBackendStatus from '../../redux/actions/experimentSettings/loadBackendStatus';
 
 const { Text, Paragraph } = Typography;
 
@@ -470,7 +472,9 @@ const ProjectDetails = ({ width, height }) => {
         record,
         'species',
         rowIdx,
-        (newValue) => dispatch(updateSample(record.uuid, { species: newValue })),
+        (newValue) => {
+          dispatch(updateSample(record.uuid, { species: newValue }));
+        },
       ),
       width: 200,
     },
@@ -499,7 +503,7 @@ const ProjectDetails = ({ width, height }) => {
     const allSampleMetadataInserted = (sample) => {
       if (activeProject?.metadataKeys.length === 0) return true;
       if (Object.keys(sample.metadata).length !== activeProject.metadataKeys.length) return false;
-      return Object.values(sample.metadata).every((value) => value.length > 0);
+      return Object.values(sample.metadata).every((value) => value && value.length > 0);
     };
 
     const canLaunch = activeProject?.samples.every((sampleUuid) => {
@@ -591,11 +595,25 @@ const ProjectDetails = ({ width, height }) => {
     saveAs(downloadedS3Object.Body, fileNameToSaveWith);
   };
 
-  const launchAnalysis = () => {
+  const openAnalysisModal = () => {
     if (canLaunchAnalysis) {
       // Change the line below when multiple experiments in a project is supported
       setAnalysisModalVisible(true);
     }
+  };
+
+  const launchAnalysis = (experimentId) => {
+    dispatch(loadBackendStatus(experimentId))
+      .then((backendStatus) => {
+        if ([
+          pipelineStatus.NOT_CREATED,
+          pipelineStatus.ABORTED,
+          pipelineStatus.TIMED_OUT,
+        ].includes(backendStatus.gem2s.status)) {
+          dispatch(runGem2s(experimentId));
+        }
+        router.push(analysisPath.replace('[experimentId]', experimentId));
+      });
   };
 
   return (
@@ -611,8 +629,7 @@ const ProjectDetails = ({ width, height }) => {
         visible={analysisModalVisible}
         onLaunch={(experimentId) => {
           dispatch(updateExperiment(experimentId, { lastViewed: moment().toISOString() }));
-          dispatch(runGem2s(experimentId));
-          router.push(analysisPath.replace('[experimentId]', experimentId));
+          launchAnalysis(experimentId);
         }}
         onChange={() => {
           // Update experiments details
@@ -658,7 +675,7 @@ const ProjectDetails = ({ width, height }) => {
                 || activeProject?.samples?.length === 0
                 || !canLaunchAnalysis
               }
-              onClick={() => launchAnalysis()}
+              onClick={() => openAnalysisModal()}
             >
               Launch analysis
             </Button>,
@@ -667,6 +684,7 @@ const ProjectDetails = ({ width, height }) => {
           {
             activeProjectUuid && (
               <Space direction='vertical' size='small'>
+                <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
                 <Text strong>Description:</Text>
                 <Paragraph
                   editable={{ onChange: changeDescription }}
