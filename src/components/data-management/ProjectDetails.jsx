@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
+  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress, Row, Col,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -47,7 +47,7 @@ import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 import loadBackendStatus from '../../redux/actions/experimentSettings/loadBackendStatus';
 
-const { Text, Paragraph } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
   const defaultNA = 'N.A.';
@@ -646,69 +646,79 @@ const ProjectDetails = ({ width, height }) => {
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
       <div width={width} height={height}>
-        <PageHeader
-          title={activeProject.name}
-          extra={[
-            <Button
-              disabled={projects.ids.length === 0}
-              onClick={() => setUploadModalVisible(true)}
-            >
-              Add samples
-            </Button>,
-            <Button
-              disabled={
-                projects.ids.length === 0
+        <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
+          <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Title level={3}>{activeProject.name}</Title>
+            <Space>
+              <Button
+                disabled={projects.ids.length === 0}
+                onClick={() => setUploadModalVisible(true)}
+              >
+                Add samples
+              </Button>
+              <Button
+                disabled={
+                  projects.ids.length === 0
                 || activeProject?.samples?.length === 0
                 || isAddingMetadata
-              }
-              onClick={() => {
-                setIsAddingMetadata(true);
-                createMetadataColumn();
-              }}
-            >
-              Add metadata
-            </Button>,
-            <Button
-              type='primary'
-              disabled={
-                projects.ids.length === 0
+                }
+                onClick={() => {
+                  setIsAddingMetadata(true);
+                  createMetadataColumn();
+                }}
+              >
+                Add metadata
+              </Button>
+              <Button
+                type='primary'
+                disabled={
+                  projects.ids.length === 0
                 || activeProject?.samples?.length === 0
                 || !canLaunchAnalysis
+                }
+                onClick={() => openAnalysisModal()}
+              >
+                Launch analysis
+              </Button>
+            </Space>
+          </Row>
+
+          <Row>
+            <Col>
+              {
+                activeProjectUuid && (
+                  <Space direction='vertical' size='small'>
+                    <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
+                    <Text strong>Description:</Text>
+                    <Paragraph
+                      editable={{ onChange: changeDescription }}
+                    >
+                      {activeProject.description}
+
+                    </Paragraph>
+                  </Space>
+                )
               }
-              onClick={() => openAnalysisModal()}
-            >
-              Launch analysis
-            </Button>,
-          ]}
-        >
-          {
-            activeProjectUuid && (
-              <Space direction='vertical' size='small'>
-                <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
-                <Text strong>Description:</Text>
-                <Paragraph
-                  editable={{ onChange: changeDescription }}
-                >
-                  {activeProject.description}
+            </Col>
+          </Row>
 
-                </Paragraph>
-              </Space>
-            )
-          }
-        </PageHeader>
-
-        <Table
-          size='small'
-          scroll={{
-            x: 'max-content',
-            y: height - 250,
-          }}
-          bordered
-          columns={tableColumns}
-          dataSource={tableData}
-          sticky
-          pagination={false}
-        />
+          <Row>
+            <Col>
+              <Table
+                size='small'
+                scroll={{
+                  x: 'max-content',
+                  y: height - 250,
+                }}
+                bordered
+                columns={tableColumns}
+                dataSource={tableData}
+                sticky
+                pagination={false}
+              />
+            </Col>
+          </Row>
+        </Space>
       </div>
     </>
   );

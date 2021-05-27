@@ -90,8 +90,8 @@ const ProjectsListContainer = (props) => {
                 layout='horizontal'
                 size='small'
                 column={1}
-                colon=''
-                title={(
+              >
+                <Descriptions.Item contentStyle={{ fontWeight: 700, fontSize: 16 }}>
                   <EditableField
                     value={projects[uuid].name}
                     onAfterSubmit={(name) => {
@@ -110,8 +110,7 @@ const ProjectsListContainer = (props) => {
                       ).isValid
                     }
                   />
-                )}
-              >
+                </Descriptions.Item>
                 <Descriptions.Item
                   labelStyle={{ fontWeight: 'bold' }}
                   label='Samples'

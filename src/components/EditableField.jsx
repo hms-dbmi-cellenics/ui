@@ -128,7 +128,7 @@ const EditableField = (props) => {
   return (
     <>
       <Space direction='vertical'>
-        <Space>
+        <Space align='start'>
           {renderEditState()}
           {
             deleteEnabled
