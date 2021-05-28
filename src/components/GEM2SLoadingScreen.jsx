@@ -72,7 +72,7 @@ const GEM2SLoadingScreen = (props) => {
             </Button>
           </Link>
           <Button type='primary' key='console' onClick={relaunchExperiment}>
-            Re-launch Experiment
+            Re-launch This Experiment
           </Button>
         </Space>
       );
