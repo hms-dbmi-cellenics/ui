@@ -31,7 +31,7 @@ const GEM2SLoadingScreen = (props) => {
 
   const texts = {
     toBeRun: {
-      status: 'info',
+      status: 'toBeRun',
       title: 'Let\'s upload and pre-process data your data.',
       subTitle: 'Your data needs to be uploaded and pre-processed before it can be explored. To begin, go to Data Management.',
       showProgress: false,
@@ -53,7 +53,7 @@ const GEM2SLoadingScreen = (props) => {
   const { status, title, subTitle } = texts[gem2sStatus];
 
   const renderExtra = () => {
-    if (gem2sStatus === 'info') {
+    if (gem2sStatus === 'toBeRun') {
       return (
         <Link as={dataManagementPath} href={dataManagementPath} passHref>
           <Button type='primary' key='console'>
