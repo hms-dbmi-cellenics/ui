@@ -45,7 +45,7 @@ const GEM2SLoadingScreen = (props) => {
     error: {
       status: 'error',
       title: 'We\'ve had an issue while launching your experiment.',
-      subTitle: 'You can launch another experiment or retry launching this experiment.',
+      subTitle: 'You can launch another experiment or retry launching current experiment.',
       showProgress: false,
     },
   };
@@ -72,7 +72,7 @@ const GEM2SLoadingScreen = (props) => {
             </Button>
           </Link>
           <Button type='primary' key='console' onClick={relaunchExperiment}>
-            Re-launch This Experiment
+            Re-launch Current Experiment
           </Button>
         </Space>
       );
