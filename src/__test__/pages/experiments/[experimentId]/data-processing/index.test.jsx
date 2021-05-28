@@ -133,7 +133,7 @@ const getStore = (settings = {}) => {
 describe('DataProcessingPage', () => {
   const experimentData = {};
 
-  it('renders correctly', () => {
+  it('renders correctly after a successful pipeline run', () => {
     const store = getStore({
       experimentSettings: {
         backendStatus: {
@@ -156,10 +156,10 @@ describe('DataProcessingPage', () => {
     const card = page.find('Card');
     expect(card.length).toEqual(1);
 
-    const runDataProcessingButton = page.find('#runDataProcessingButton').filter('Button');
+    const runDataProcessingButton = page.find('#runQCPipelineButton').filter('Button');
     expect(runDataProcessingButton.length).toEqual(1);
 
-    // Run filter is disabled initially
+    // Run filter is disabled after pipeline is run successfully
     expect(runDataProcessingButton.at(0).props().disabled).toEqual(true);
   });
 
@@ -174,7 +174,7 @@ describe('DataProcessingPage', () => {
       </Provider>,
     );
 
-    const runDataProcessingButton = page.find('#runDataProcessingButton').filter('Button').at(0);
+    const runDataProcessingButton = page.find('#runQCPipelineButton').filter('Button').at(0);
 
     expect(runDataProcessingButton.props().disabled).toEqual(false);
     expect(runDataProcessingButton.text()).toEqual('Run Data Processing');
@@ -205,7 +205,7 @@ describe('DataProcessingPage', () => {
 
     page.update();
 
-    const runDataProcessingButton = page.find('#runDataProcessingButton').filter('Button').at(0);
+    const runDataProcessingButton = page.find('#runQCPipelineButton').filter('Button').at(0);
 
     // Run filter is enabled after changes take place
     expect(runDataProcessingButton.props().disabled).toEqual(false);
@@ -213,7 +213,7 @@ describe('DataProcessingPage', () => {
 
     act(() => {
       page
-        .find('#runDataProcessingButton').filter('Button')
+        .find('#runQCPipelineButton').filter('Button')
         .at(0).props()
         .onClick();
     });
@@ -224,7 +224,7 @@ describe('DataProcessingPage', () => {
     await waitForActions(store, [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING]);
 
     // Run filter is disabled after triggering the pipeline
-    expect(page.find('#runDataProcessingButton').filter('Button').at(0).props().disabled).toEqual(true);
+    expect(page.find('#runQCPipelineButton').filter('Button').at(0).props().disabled).toEqual(true);
   });
 
   it('preFiltered on a sample disables filter', async () => {
@@ -249,7 +249,6 @@ describe('DataProcessingPage', () => {
       </Provider>,
     );
 
-    // Run filter button is disabled on the first
-    expect(page.find('#runDataProcessingButton').filter('Button').at(0).props().disabled).toEqual(true);
+    expect(page.find('#runQCPipelineButton').filter('Button').at(0).props().disabled).toEqual(true);
   });
 });

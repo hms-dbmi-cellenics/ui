@@ -492,8 +492,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <Col>
               {steps[stepIdx].multiSample && (
                 <Button
-                  id='runDataProcessingButton'
-                  data-testid='runDataProcessingButton'
+                  id='runQCPipelineButton'
+                  data-testid='runQCPipelineButton'
                   type='primary'
                   onClick={() => { onPipelineRun(steps[stepIdx].key) }}
                   disabled={!canRunQCPipeline}
