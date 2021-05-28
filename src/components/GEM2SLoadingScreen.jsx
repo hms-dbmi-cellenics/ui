@@ -15,7 +15,7 @@ const gem2sStepsInfo = [
   'Preprocessing samples',
   'Computing metrics',
   'Converting samples',
-  'Preparing experiment',
+  'Preparing analysis',
   'Uploading completed data',
 ];
 
@@ -44,8 +44,8 @@ const GEM2SLoadingScreen = (props) => {
     },
     error: {
       status: 'error',
-      title: 'We\'ve had an issue while launching your experiment.',
-      subTitle: 'You can launch another experiment or retry launching current experiment.',
+      title: 'We\'ve had an issue while launching your analysis.',
+      subTitle: 'You can launch another analysis or retry to launch the current analysis.',
       showProgress: false,
     },
   };
@@ -68,11 +68,11 @@ const GEM2SLoadingScreen = (props) => {
         <Space size='large'>
           <Link as={dataManagementPath} href={dataManagementPath} passHref>
             <Button type='primary' key='console'>
-              Launch Another Experiment
+              Launch Another Analysis
             </Button>
           </Link>
           <Button type='primary' key='console' onClick={relaunchExperiment}>
-            Re-launch Current Experiment
+            Re-launch Current Analysis
           </Button>
         </Space>
       );
