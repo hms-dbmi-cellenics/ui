@@ -498,7 +498,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   onClick={() => { onPipelineRun(steps[stepIdx].key) }}
                   disabled={!canRunQCPipeline}
                 >
-                  {pipelineStatusKey === pipelineStatusValues.NOT_CREATED ? 'Run Data Processing' : 'Save Changes'}
+                  {
+                    pipelineStatusKey === pipelineStatusValues.NOT_CREATED
+                      || pipelineErrors.includes(pipelineStatusKey)
+                      ? 'Run Data Processing' : 'Save Changes'
+                  }
                 </Button>
               )}
             </Col>
