@@ -609,6 +609,7 @@ const ProjectDetails = ({ width, height }) => {
           pipelineStatus.NOT_CREATED,
           pipelineStatus.ABORTED,
           pipelineStatus.TIMED_OUT,
+          pipelineStatus.FAILED,
         ].includes(backendStatus.gem2s.status)) {
           dispatch(runGem2s(experimentId));
         }
