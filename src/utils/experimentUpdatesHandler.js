@@ -1,5 +1,5 @@
 import { updateProcessingSettings, updateBackendStatus } from '../redux/actions/experimentSettings';
-import { loadSamples } from '../redux/actions/samples';
+// import { loadSamples } from '../redux/actions/samples';
 import loadEmbedding from '../redux/actions/embedding/loadEmbedding';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
@@ -42,8 +42,9 @@ const onDataProcessingUpdate = (experimentId, update, dispatch) => {
   }
 };
 
-const onGEM2SUpdate = (experimentId, update, dispatch) => {
-  dispatch(loadSamples(experimentId));
+// const onGEM2SUpdate = (experimentId, update, dispatch) => {
+// dispatch(loadSamples(experimentId));
+const onGEM2SUpdate = () => {
 };
 
 export default experimentUpdatesHandler;
