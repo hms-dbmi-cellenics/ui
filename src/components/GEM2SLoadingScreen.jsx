@@ -68,11 +68,11 @@ const GEM2SLoadingScreen = (props) => {
         <Space size='large'>
           <Link as={dataManagementPath} href={dataManagementPath} passHref>
             <Button type='primary' key='console'>
-              Go to Data Management
+              Launch Another Experiment
             </Button>
           </Link>
           <Button type='primary' key='console' onClick={relaunchExperiment}>
-            Relaunch Experiment
+            Re-launch Experiment
           </Button>
         </Space>
       );
