@@ -22,6 +22,19 @@ jest.mock('localforage');
 
 const mockStore = configureMockStore([thunk]);
 
+const pipelineSucceeded = {
+  pipeline: {
+    status: 'SUCCEEDED',
+    completedSteps: [
+      'CellSizeDistributionFilter',
+      'MitochondrialContentFilter',
+      'ClassifierFilter',
+      'NumGenesVsNumUmisFilter',
+      'DoubletScoresFilter',
+    ],
+  },
+};
+
 const getStore = (settings = {}) => {
   const initialState = {
     notifications: {},
@@ -41,14 +54,8 @@ const getStore = (settings = {}) => {
         error: false,
         status: {
           pipeline: {
-            status: 'SUCCEEDED',
-            completedSteps: [
-              'CellSizeDistributionFilter',
-              'MitochondrialContentFilter',
-              'ClassifierFilter',
-              'NumGenesVsNumUmisFilter',
-              'DoubletScoresFilter',
-            ],
+            status: 'NotCreated',
+            completedSteps: [],
           },
         },
       },
@@ -127,7 +134,13 @@ describe('DataProcessingPage', () => {
   const experimentData = {};
 
   it('renders correctly', () => {
-    const store = getStore();
+    const store = getStore({
+      experimentSettings: {
+        backendStatus: {
+          status: pipelineSucceeded,
+        },
+      },
+    });
 
     const page = mount(
       <Provider store={store}>
@@ -143,15 +156,38 @@ describe('DataProcessingPage', () => {
     const card = page.find('Card');
     expect(card.length).toEqual(1);
 
-    const runFilterButton = page.find('#runFilterButton').filter('Button');
-    expect(runFilterButton.length).toEqual(1);
+    const runDataProcessingButton = page.find('#runDataProcessingButton').filter('Button');
+    expect(runDataProcessingButton.length).toEqual(1);
 
     // Run filter is disabled initially
-    expect(runFilterButton.at(0).props().disabled).toEqual(true);
+    expect(runDataProcessingButton.at(0).props().disabled).toEqual(true);
+  });
+
+  it('shows run data processing button if there is no pipeline run yet', async () => {
+    const store = getStore();
+
+    const page = mount(
+      <Provider store={store}>
+        <DataProcessingPage experimentId='experimentId' experimentData={experimentData} route='route'>
+          <></>
+        </DataProcessingPage>
+      </Provider>,
+    );
+
+    const runDataProcessingButton = page.find('#runDataProcessingButton').filter('Button').at(0);
+
+    expect(runDataProcessingButton.props().disabled).toEqual(false);
+    expect(runDataProcessingButton.text()).toEqual('Run Data Processing');
   });
 
   it('triggers the pipeline on click run filter', async () => {
-    const store = getStore();
+    const store = getStore({
+      experimentSettings: {
+        backendStatus: {
+          status: pipelineSucceeded,
+        },
+      },
+    });
 
     const page = mount(
       <Provider store={store}>
@@ -168,12 +204,16 @@ describe('DataProcessingPage', () => {
     });
 
     page.update();
+
+    const runDataProcessingButton = page.find('#runDataProcessingButton').filter('Button').at(0);
+
     // Run filter is enabled after changes take place
-    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(false);
+    expect(runDataProcessingButton.props().disabled).toEqual(false);
+    expect(runDataProcessingButton.text()).toEqual('Save Changes');
 
     act(() => {
       page
-        .find('#runFilterButton').filter('Button')
+        .find('#runDataProcessingButton').filter('Button')
         .at(0).props()
         .onClick();
     });
@@ -184,11 +224,16 @@ describe('DataProcessingPage', () => {
     await waitForActions(store, [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING]);
 
     // Run filter is disabled after triggering the pipeline
-    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);
+    expect(page.find('#runDataProcessingButton').filter('Button').at(0).props().disabled).toEqual(true);
   });
 
   it('preFiltered on a sample disables filter', async () => {
     const store = getStore({
+      experimentSettings: {
+        backendStatus: {
+          status: pipelineSucceeded,
+        },
+      },
       samples: {
         'sample-1': {
           preFiltered: true,
@@ -205,6 +250,6 @@ describe('DataProcessingPage', () => {
     );
 
     // Run filter button is disabled on the first
-    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);
+    expect(page.find('#runDataProcessingButton').filter('Button').at(0).props().disabled).toEqual(true);
   });
 });

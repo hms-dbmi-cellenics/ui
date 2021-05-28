@@ -33,6 +33,7 @@ import PlatformError from '../../../../components/PlatformError';
 
 import StepsIndicator from '../../../../components/data-processing/StepsIndicator';
 import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
+import pipelineStatusValues from '../../../../utils/pipelineStatusValues';
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 import { loadProcessingSettings, updateProcessingSettings, saveProcessingSettings } from '../../../../redux/actions/experimentSettings';
@@ -59,10 +60,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const samples = useSelector((state) => state.samples)
 
   const pipelineStatusKey = pipelineStatus?.status;
-  const pipelineRunning = pipelineStatusKey === 'RUNNING';
+  const pipelineRunning = pipelineStatusKey === pipelineStatusValues.RUNNING;
 
   // Pipeline is not loaded (either running or in an errored state)
-  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+  const pipelineErrors = [pipelineStatusValues.FAILED, pipelineStatusValues.TIMED_OUT, pipelineStatusValues.ABORTED];
   const pipelineNotFinished = pipelineRunning || pipelineErrors.includes(pipelineStatusKey);
 
   const completedSteps = pipelineStatus?.completedSteps;
@@ -76,6 +77,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [preFilteredSamples, setPreFilteredSamples] = useState([])
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
   const carouselRef = useRef(null);
+
+  const canRunQCPipeline = pipelineStatusKey === pipelineStatusValues.NOT_CREATED
+    || changesOutstanding
+    || pipelineErrors.includes(pipelineStatusKey)
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
@@ -487,13 +492,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <Col>
               {steps[stepIdx].multiSample && (
                 <Button
-                  id='runFilterButton'
-                  data-testid='runFilterButton'
+                  id='runDataProcessingButton'
+                  data-testid='runDataProcessingButton'
                   type='primary'
                   onClick={() => { onPipelineRun(steps[stepIdx].key) }}
-                  disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
+                  disabled={!canRunQCPipeline}
                 >
-                  {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}
+                  {pipelineStatusKey === pipelineStatusValues.NOT_CREATED ? 'Run Data Processing' : 'Save Changes'}
                 </Button>
               )}
             </Col>
