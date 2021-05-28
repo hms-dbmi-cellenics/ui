@@ -25,9 +25,9 @@ const DataManagementPage = ({ route }) => {
   const {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
-  const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
+  const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
   const experiments = useSelector((state) => state.experiments);
-  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProjectUuid);
+  const { activeProjectUuid, loading: projectsLoading } = useSelector((state) => state.projects.meta);
   const activeProject = projectsList[activeProjectUuid];
 
   const existingExperiments = activeProject?.experiments
@@ -54,10 +54,15 @@ const DataManagementPage = ({ route }) => {
   }, [activeProject]);
 
   useEffect(() => {
-    if (projectsList.ids.length) {
+    if (projectsLoading === true) {
+      return;
+    }
+    if (projectsList.ids.length === 0) {
+      setNewProjectModalVisible(true);
+    } else {
       setNewProjectModalVisible(false);
     }
-  }, [projectsList]);
+  }, [projectsList, projectsLoading]);
 
   const unnamedExperimentName = 'Unnamed Analysis';
 
