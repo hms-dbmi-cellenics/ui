@@ -53,8 +53,7 @@ const ContentWrapper = (props) => {
 
   const gem2sStatusKey = backendStatus.gem2s?.status;
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
-  // const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
-  const gem2sRunningError = true;
+  const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
   // This is used to prevent a race condition where the page would start loading immediately
