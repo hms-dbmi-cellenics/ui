@@ -221,7 +221,7 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <GEM2SLoadingScreen gem2sStatus='error' />;
+        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='error' />;
       }
 
       if (gem2sRunning) {
