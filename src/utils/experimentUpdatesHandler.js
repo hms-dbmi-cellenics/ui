@@ -10,6 +10,10 @@ const updateTypes = {
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
   dispatch(updateBackendStatus(experimentId, update.status));
 
+  if (update.response?.error) {
+    return;
+  }
+
   switch (update.type) {
     case updateTypes.QC: {
       return onDataProcessingUpdate(experimentId, update, dispatch);
