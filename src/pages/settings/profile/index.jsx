@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import FeedbackButton from '../../../components/FeedbackButton';
 import messages from '../../../components/notification/messages';
-import pushNotificationMessage from '../../../redux/actions/pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
 const ProfileSettings = () => {
   const dispatch = useDispatch();
@@ -135,7 +135,7 @@ const ProfileSettings = () => {
               </Form>
               <Button
                 onClick={() => updateDetails()}
-                disabled={(!Object.keys(changedPasswordAttributes.current).length && !Object.keys(changedUserAttributes.current).length)}
+                disabled={(!Object.keys(changedPasswordAttributes).length && !Object.keys(changedUserAttributes).length)}
               >
                 Save changes
               </Button>
