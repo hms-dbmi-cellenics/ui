@@ -3,20 +3,38 @@ import PropTypes from 'prop-types';
 import {
   Select, Typography, Space, Divider, Skeleton,
 } from 'antd';
-import _ from 'lodash';
 
 const { Text } = Typography;
 
 const SpeciesSelector = (props) => {
-  const { data, onChange } = props;
+  const { data, value, onChange } = props;
 
-  if (!data) {
+  if (!data || data.length === 0) {
     return <Skeleton.Input style={{ width: 300 }} size='small' />;
   }
 
+  const createLabel = (scientificName, displayName) => (
+    <Space direction='vertical'>
+      <Text type='primary'>{displayName}</Text>
+      <Text type='secondary'>
+        {scientificName}
+      </Text>
+    </Space>
+  );
+
+  const labeledValue = (organismId) => {
+    const organism = data.find((entry) => entry.id === organismId);
+
+    return {
+      value: organismId,
+      label: !organismId ? <></> : createLabel(organism.scientific_name, organism.display_name),
+    };
+  };
+
   return (
     <Select
-      onChange={(value, option) => onChange(value, option)}
+      value={labeledValue(value)}
+      onChange={(selectedValue, option) => onChange(selectedValue, option)}
       style={{ width: '100%' }}
       dropdownMatchSelectWidth={400}
       labelInValue
@@ -54,14 +72,7 @@ const SpeciesSelector = (props) => {
           displayName: organism.display_name,
           scientificName: organism.scientific_name,
           searchQuery: `${organism.display_name} ${organism.scientific_name}`.toLowerCase(),
-          label: (
-            <Space direction='vertical'>
-              <Text type='primary'>{organism.display_name}</Text>
-              <Text type='secondary'>
-                {organism.scientific_name}
-              </Text>
-            </Space>
-          ),
+          label: createLabel(organism.display_name, organism.scientific_name),
         }))
       }
     />
@@ -70,10 +81,12 @@ const SpeciesSelector = (props) => {
 
 SpeciesSelector.propTypes = {
   data: PropTypes.array.isRequired,
+  value: PropTypes.string,
   onChange: PropTypes.func,
 };
 
 SpeciesSelector.defaultProps = {
+  value: null,
   onChange: () => { },
 };
 

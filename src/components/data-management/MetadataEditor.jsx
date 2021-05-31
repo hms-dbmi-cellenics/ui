@@ -18,12 +18,15 @@ const MetadataEditor = (props) => {
 
   const [value, setValue] = useState('');
 
-  const onChange = (e) => setValue(e?.target?.value || e);
+  const onChange = (e) => {
+    setValue(e?.target?.value || e?.value);
+  };
 
   const getContent = () => (
     <Space direction='vertical'>
       {React.cloneElement(children, {
         onChange,
+        value,
       })}
       <Divider style={{ margin: '4px 0' }} />
 
@@ -33,9 +36,7 @@ const MetadataEditor = (props) => {
             <Button
               type='primary'
               size='small'
-              onClick={() => {
-                onReplaceEmpty(value);
-              }}
+              onClick={() => onReplaceEmpty(value)}
             >
               Fill all missing
 
