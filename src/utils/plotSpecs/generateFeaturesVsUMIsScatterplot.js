@@ -2,7 +2,7 @@ const generateSpec = (config, plotData) => ({
   $schema: 'https://vega.github.io/schema/vega/v5.json',
   width: config.dimensions.width,
   height: config.dimensions.height,
-  autosize: { type: 'fit', resize: true },
+  autosize: { type: 'pad', resize: false },
   padding: 5,
 
   data: [
