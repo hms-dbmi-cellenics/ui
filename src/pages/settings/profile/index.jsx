@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import _ from 'lodash';
-import { useDispatch } from 'react-redux';
 import {
   Form, Input, Empty, PageHeader, Card, Row, Col, Button,
 } from 'antd';
@@ -10,7 +9,6 @@ import messages from '../../../components/notification/messages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
 const ProfileSettings = () => {
-  const dispatch = useDispatch();
   const [user, setUser] = useState();
   const [oldPasswordError, setOldPasswordError] = useState(null);
   const [newPasswordError, setNewPasswordError] = useState(null);
@@ -38,14 +36,16 @@ const ProfileSettings = () => {
   }, []);
 
   const updateDetails = async () => {
-    if (Object.keys(changedUserAttributes).length) {
+    const { name, email } = changedUserAttributes;
+    const { oldPassword, newPassword, confirmNewPassword } = changedPasswordAttributes;
+
+    if (name || email) {
       setEmailError(false);
       await Auth.updateUserAttributes(user, changedUserAttributes)
         .then((response) => pushNotificationMessage('success', messages.detailsUpdated, 3))
         .catch((e) => setEmailError(true));
     }
-    if (Object.keys(changedPasswordAttributes).length) {
-      const { oldPassword, newPassword, confirmNewPassword } = changedPasswordAttributes;
+    if (oldPassword || newPassword || confirmNewPassword) {
       setOldPasswordError(false);
       setNewPasswordError(false);
       const decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
