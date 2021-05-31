@@ -1,9 +1,9 @@
-import calculateStdev from '../mathFormulas';
+import stdev from '../mathFormulas';
 
 const generateSpec = (config, plotData) => {
-  const stdev = calculateStdev(plotData.map((p) => p.log_genes));
-  const lowerCutoff = Math.min(...plotData.map((p) => p.lower_cutoff)) - stdev;
-  const upperCutoff = Math.max(...plotData.map((p) => p.upper_cutoff)) + stdev;
+  const sd = stdev(plotData.map((p) => p.log_genes));
+  const lowerCutoff = Math.min(...plotData.map((p) => p.lower_cutoff)) - sd;
+  const upperCutoff = Math.max(...plotData.map((p) => p.upper_cutoff)) + sd;
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
