@@ -25,9 +25,12 @@ const DataManagementPage = ({ route }) => {
   const {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
-  const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
+  const {
+    activeProjectUuid,
+    loading: projectsLoading,
+  } = useSelector((state) => state.projects.meta);
   const experiments = useSelector((state) => state.experiments);
-  const { activeProjectUuid, loading: projectsLoading } = useSelector((state) => state.projects.meta);
+  const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
   const activeProject = projectsList[activeProjectUuid];
 
   const existingExperiments = activeProject?.experiments
@@ -125,7 +128,7 @@ const DataManagementPage = ({ route }) => {
         title='Data Management'
       />
       <LoadingModal
-        visible={projectSaving || sampleSaving}
+        visible={!!(projectSaving || sampleSaving)}
         message={projectSaving || sampleSaving || ''}
       />
 
