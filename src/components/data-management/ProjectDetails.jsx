@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress,
+  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress, Row, Col,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,10 +22,11 @@ import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
-import getFromApiExpectOK from '../../utils/getFromApiExpectOK';
+import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
+import pipelineStatus from '../../utils/pipelineStatusValues';
 
 import {
   updateProject,
@@ -44,8 +45,9 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
+import loadBackendStatus from '../../redux/actions/experimentSettings/loadBackendStatus';
 
-const { Text, Paragraph } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
   const defaultNA = 'N.A.';
@@ -60,7 +62,7 @@ const ProjectDetails = ({ width, height }) => {
   const analysisPath = '/experiments/[experimentId]/data-processing';
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
-    getFromApiExpectOK,
+    getFromUrlExpectOK,
   );
   const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
@@ -374,7 +376,9 @@ const ProjectDetails = ({ width, height }) => {
             }}
             onClearAll={() => {
               activeProject.samples.forEach(
-                (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: defaultNA } })),
+                (sampleUuid) => dispatch(
+                  updateSample(sampleUuid, { metadata: { [key]: defaultNA } }),
+                ),
               );
             }}
             massEdit
@@ -468,7 +472,9 @@ const ProjectDetails = ({ width, height }) => {
         record,
         'species',
         rowIdx,
-        (newValue) => dispatch(updateSample(record.uuid, { species: newValue })),
+        (newValue) => {
+          dispatch(updateSample(record.uuid, { species: newValue }));
+        },
       ),
       width: 200,
     },
@@ -481,10 +487,11 @@ const ProjectDetails = ({ width, height }) => {
       // Check if all files for a given tech has been uploaded
       const fileNamesArray = Array.from(sample.fileNames);
 
-      if (!_.isEqual(
-        fileNamesArray,
-        fileUploadSpecifications[sample.type].requiredFiles,
-      )) { return false; }
+      if (
+        fileUploadSpecifications[sample.type].requiredFiles.every(
+          (file) => !fileNamesArray.includes(file),
+        )
+      ) { return false; }
 
       return fileNamesArray.every((fileName) => {
         const checkedFile = sample.files[fileName];
@@ -496,7 +503,7 @@ const ProjectDetails = ({ width, height }) => {
     const allSampleMetadataInserted = (sample) => {
       if (activeProject?.metadataKeys.length === 0) return true;
       if (Object.keys(sample.metadata).length !== activeProject.metadataKeys.length) return false;
-      return Object.values(sample.metadata).every((value) => value.length > 0);
+      return Object.values(sample.metadata).every((value) => value && value.length > 0);
     };
 
     const canLaunch = activeProject?.samples.every((sampleUuid) => {
@@ -510,7 +517,9 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   useEffect(() => {
-    if (projects.ids.length === 0 || !activeProject || !samples.ids.includes(activeProject.samples[0])) {
+    if (projects.ids.length === 0
+      || !activeProject
+      || !samples.ids.includes(activeProject.samples[0])) {
       setTableData([]);
       setTableColumns([]);
       return;
@@ -586,11 +595,26 @@ const ProjectDetails = ({ width, height }) => {
     saveAs(downloadedS3Object.Body, fileNameToSaveWith);
   };
 
-  const launchAnalysis = () => {
+  const openAnalysisModal = () => {
     if (canLaunchAnalysis) {
       // Change the line below when multiple experiments in a project is supported
       setAnalysisModalVisible(true);
     }
+  };
+
+  const launchAnalysis = (experimentId) => {
+    dispatch(loadBackendStatus(experimentId))
+      .then((backendStatus) => {
+        if ([
+          pipelineStatus.NOT_CREATED,
+          pipelineStatus.ABORTED,
+          pipelineStatus.TIMED_OUT,
+          pipelineStatus.FAILED,
+        ].includes(backendStatus.gem2s.status)) {
+          dispatch(runGem2s(experimentId));
+        }
+        router.push(analysisPath.replace('[experimentId]', experimentId));
+      });
   };
 
   return (
@@ -606,8 +630,7 @@ const ProjectDetails = ({ width, height }) => {
         visible={analysisModalVisible}
         onLaunch={(experimentId) => {
           dispatch(updateExperiment(experimentId, { lastViewed: moment().toISOString() }));
-          dispatch(runGem2s(experimentId));
-          router.push(analysisPath.replace('[experimentId]', experimentId));
+          launchAnalysis(experimentId);
         }}
         onChange={() => {
           // Update experiments details
@@ -624,68 +647,79 @@ const ProjectDetails = ({ width, height }) => {
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
       <div width={width} height={height}>
-        <PageHeader
-          title={activeProject.name}
-          extra={[
-            <Button
-              disabled={projects.ids.length === 0}
-              onClick={() => setUploadModalVisible(true)}
-            >
-              Add samples
-            </Button>,
-            <Button
-              disabled={
-                projects.ids.length === 0
+        <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
+          <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Title level={3}>{activeProject.name}</Title>
+            <Space>
+              <Button
+                disabled={projects.ids.length === 0}
+                onClick={() => setUploadModalVisible(true)}
+              >
+                Add samples
+              </Button>
+              <Button
+                disabled={
+                  projects.ids.length === 0
                 || activeProject?.samples?.length === 0
                 || isAddingMetadata
-              }
-              onClick={() => {
-                setIsAddingMetadata(true);
-                createMetadataColumn();
-              }}
-            >
-              Add metadata
-            </Button>,
-            <Button
-              type='primary'
-              disabled={
-                projects.ids.length === 0
+                }
+                onClick={() => {
+                  setIsAddingMetadata(true);
+                  createMetadataColumn();
+                }}
+              >
+                Add metadata
+              </Button>
+              <Button
+                type='primary'
+                disabled={
+                  projects.ids.length === 0
                 || activeProject?.samples?.length === 0
                 || !canLaunchAnalysis
+                }
+                onClick={() => openAnalysisModal()}
+              >
+                Launch analysis
+              </Button>
+            </Space>
+          </Row>
+
+          <Row>
+            <Col>
+              {
+                activeProjectUuid && (
+                  <Space direction='vertical' size='small'>
+                    <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
+                    <Text strong>Description:</Text>
+                    <Paragraph
+                      editable={{ onChange: changeDescription }}
+                    >
+                      {activeProject.description}
+
+                    </Paragraph>
+                  </Space>
+                )
               }
-              onClick={() => launchAnalysis()}
-            >
-              Launch analysis
-            </Button>,
-          ]}
-        >
-          {
-            activeProjectUuid && (
-              <Space direction='vertical' size='small'>
-                <Text strong>Description:</Text>
-                <Paragraph
-                  editable={{ onChange: changeDescription }}
-                >
-                  {activeProject.description}
+            </Col>
+          </Row>
 
-                </Paragraph>
-              </Space>
-            )
-          }
-        </PageHeader>
-
-        <Table
-          size='small'
-          scroll={{
-            x: 'max-content',
-            y: height - 250,
-          }}
-          bordered
-          columns={tableColumns}
-          dataSource={tableData}
-          sticky
-          pagination={false}
-        />
+          <Row>
+            <Col>
+              <Table
+                size='small'
+                scroll={{
+                  x: 'max-content',
+                  y: height - 250,
+                }}
+                bordered
+                columns={tableColumns}
+                dataSource={tableData}
+                sticky
+                pagination={false}
+              />
+            </Col>
+          </Row>
+        </Space>
       </div>
     </>
   );

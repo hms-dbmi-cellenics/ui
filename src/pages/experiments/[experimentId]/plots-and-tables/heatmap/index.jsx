@@ -16,7 +16,6 @@ import PlatformError from '../../../../../components/PlatformError';
 import Loader from '../../../../../components/Loader';
 import populateHeatmapData from '../../../../../components/plots/helpers/populateHeatmapData';
 import HeatmapControls from '../../../../../components/plots/styling/heatmap/HeatmapControls';
-import NotificationManager from '../../../../../components/notification/NotificationManager';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -177,7 +176,6 @@ const HeatmapPlot = ({ experimentId }) => {
 
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <NotificationManager />
       <Header plotUuid={plotUuid} experimentId={experimentId} finalRoute={route} />
       <Row gutter={16}>
         <Col span={16}>

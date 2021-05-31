@@ -5,10 +5,23 @@ import deleteMetadataTrack from '../../../../redux/actions/projects/deleteMetada
 import initialProjectState from '../../../../redux/reducers/projects';
 import initialSampleState from '../../../../redux/reducers/samples';
 
-import { PROJECTS_METADATA_DELETE } from '../../../../redux/actionTypes/projects';
-import { SAMPLES_METADATA_DELETE } from '../../../../redux/actionTypes/samples';
+import { saveProject } from '../../../../redux/actions/projects';
+import { saveSamples } from '../../../../redux/actions/samples';
+
+import {
+  PROJECTS_METADATA_DELETE,
+} from '../../../../redux/actionTypes/projects';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 const mockStore = configureStore([thunk]);
+
+jest.mock('../../../../redux/actions/projects/saveProject');
+saveProject.mockImplementation(() => async () => { });
+
+jest.mock('../../../../redux/actions/samples/saveSamples');
+saveSamples.mockImplementation(() => async () => { });
 
 describe('deleteMetadataTrack action', () => {
   const mockProjectUuid = 'project-1234';
@@ -49,12 +62,30 @@ describe('deleteMetadataTrack action', () => {
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(deleteMetadataTrack(metadataNameToKey(metadataTrack), mockProject.uuid));
+    await store.dispatch(deleteMetadataTrack(metadataTrack, mockProject.uuid));
 
-    const firstAction = store.getActions()[0];
-    expect(firstAction.type).toEqual(PROJECTS_METADATA_DELETE);
+    const actions = store.getActions();
 
-    const secondAction = store.getActions()[1];
-    expect(secondAction.type).toEqual(SAMPLES_METADATA_DELETE);
+    // It fires save project and save samples
+    expect(saveProject).toHaveBeenCalled();
+    expect(saveSamples).toHaveBeenCalled();
+
+    // It deletes metadata in samples
+    expect(actions[0].type).toEqual(PROJECTS_METADATA_DELETE);
+  });
+
+  it('Does not update metadata if save fails', async () => {
+    saveProject.mockImplementation(() => async () => { throw new Error('some weird error'); });
+
+    const store = mockStore(initialState);
+    await store.dispatch(deleteMetadataTrack(metadataTrack, mockProject.uuid));
+
+    // It fires save project and save samples
+    expect(saveProject).toHaveBeenCalled();
+    expect(saveSamples).toHaveBeenCalled();
+
+    // It fires project error
+    // Expect there is a notification
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 });

@@ -22,16 +22,7 @@ const NewProjectModal = (props) => {
   const [projectNames, setProjectNames] = useState(new Set());
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
-  const [isValid, setIsValid] = useState(false);
-
-  useEffect(() => {
-    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
-  }, [projects.ids]);
-
-  const {
-    saving,
-    error,
-  } = useSelector((state) => state.projects.meta);
+  const [isValidName, setIsValidName] = useState(false);
 
   const validationChecks = [
     rules.MIN_8_CHARS,
@@ -44,6 +35,24 @@ const NewProjectModal = (props) => {
     existingNames: projectNames,
   };
 
+  useEffect(() => {
+    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
+  }, [projects.ids]);
+  useEffect(() => {
+    setIsValidName(validateInputs(projectName, validationChecks, validationParams).isValid);
+  }, [projectName, projectNames]);
+
+  const {
+    saving,
+    error,
+  } = useSelector((state) => state.projects.meta);
+
+  const submit = () => {
+    const newProject = projectName;
+    setProjectName('');
+    onCreate(newProject, projectDescription);
+  };
+
   return (
     <Modal
       title='Create a new project'
@@ -53,11 +62,9 @@ const NewProjectModal = (props) => {
           type='primary'
           key='create'
           block
-          disabled={!isValid}
+          disabled={!isValidName}
           onClick={() => {
-            onCreate(projectName, projectDescription);
-            setProjectName('');
-            setIsValid(false);
+            submit();
           }}
         >
           Create Project
@@ -82,11 +89,7 @@ const NewProjectModal = (props) => {
 
           <Form layout='vertical'>
             <Form.Item
-              validateStatus={validateInputs(
-                projectName,
-                validationChecks,
-                validationParams,
-              ).isValid ? 'success' : 'error'}
+              validateStatus={isValidName ? 'success' : 'error'}
               help={(
                 <ul>
                   {validateInputs(
@@ -110,20 +113,13 @@ const NewProjectModal = (props) => {
             >
               <Input
                 onChange={(e) => {
-                  setProjectName(e.target.value);
-                  setIsValid(
-                    validateInputs(
-                      projectName,
-                      validationChecks,
-                      validationParams,
-                    ).isValid,
-                  );
+                  setProjectName(e.target.value.trim());
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && isValid) {
+                  if (e.key === 'Enter' && isValidName) {
                     onCreate(projectName, projectDescription);
                     setProjectName('');
-                    setIsValid(false);
+                    setIsValidName(false);
                   }
                 }}
                 placeholder='Ex.: Lung gamma delta T cells'

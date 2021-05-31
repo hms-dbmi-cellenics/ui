@@ -3,7 +3,7 @@ import loadEmbedding from '../redux/actions/embedding/loadEmbedding';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 const updateTypes = {
-  DATA_PROCESSING: 'dataProcessing',
+  QC: 'qc',
   GEM2S: 'gem2s',
 };
 
@@ -11,7 +11,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
   dispatch(updateBackendStatus(experimentId, update.status));
 
   switch (update.type) {
-    case updateTypes.DATA_PROCESSING: {
+    case updateTypes.QC: {
       return onDataProcessingUpdate(experimentId, update, dispatch);
     }
     case updateTypes.GEM2S: {

@@ -11,14 +11,6 @@ Array [
     },
     "type": "experiments/error",
   },
-  Object {
-    "payload": Object {
-      "message": "We couldn't connect to the server to save your current experiment, retrying...",
-      "time": 3,
-      "type": "error",
-    },
-    "type": "notifications/pushMessage",
-  },
 ]
 `;
 

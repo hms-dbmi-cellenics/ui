@@ -8,9 +8,12 @@ import {
   EXPERIMENTS_SAVED,
   EXPERIMENTS_ERROR,
 } from '../../../../redux/actionTypes/experiments';
-import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
 jest.mock('localforage');
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
@@ -102,8 +105,7 @@ describe('saveExperiment action', () => {
     // Second state saves error
     expect(actions[1].type).toBe(EXPERIMENTS_ERROR);
 
-    // Thirdd state emits notification
-    expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
+    expect(pushNotificationMessage).toHaveBeenCalled();
 
     expect(actions).toMatchSnapshot();
   });

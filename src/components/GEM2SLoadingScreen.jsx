@@ -2,29 +2,36 @@ import React from 'react';
 import {
   Result, Button, Progress, Row, Col, Typography, Space,
 } from 'antd';
+import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 
+import runGem2s from '../redux/actions/pipeline/runGem2s';
+
 const { Title, Text } = Typography;
 
-const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
-  const path = '/data-management';
+const gem2sStepsInfo = [
+  'Downloading sample files',
+  'Preprocessing samples',
+  'Computing metrics',
+  'Converting samples',
+  'Preparing analysis',
+  'Uploading completed data',
+];
 
-  const gem2sStepsInfo = [
-    'Downloading sample files',
-    'Preprocessing samples',
-    'Computing metrics',
-    'Converting samples',
-    'Preparing experiment',
-    'Uploading completed data',
-  ];
+const GEM2SLoadingScreen = (props) => {
+  const { gem2sStatus, completedSteps, experimentId } = props;
 
-  // eslint-disable-next-line no-param-reassign
-  steps = steps || gem2sStepsInfo;
+  const dispatch = useDispatch();
+
+  const dataManagementPath = '/data-management';
+  const relaunchExperiment = () => {
+    dispatch(runGem2s(experimentId));
+  };
 
   const texts = {
     toBeRun: {
-      status: 'info',
+      status: 'toBeRun',
       title: 'Let\'s upload and pre-process data your data.',
       subTitle: 'Your data needs to be uploaded and pre-processed before it can be explored. To begin, go to Data Management.',
       showProgress: false,
@@ -37,8 +44,8 @@ const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
     },
     error: {
       status: 'error',
-      title: 'We\'ve had an issue while launching your experiment.',
-      subTitle: 'Please go to Data Management and try again.',
+      title: 'We\'ve had an issue while launching your analysis.',
+      subTitle: 'You can launch another analysis or retry to launch the current analysis.',
       showProgress: false,
     },
   };
@@ -46,13 +53,28 @@ const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
   const { status, title, subTitle } = texts[gem2sStatus];
 
   const renderExtra = () => {
-    if (gem2sStatus !== 'running') {
+    if (gem2sStatus === 'toBeRun') {
       return (
-        <Link as={path} href={path} passHref>
+        <Link as={dataManagementPath} href={dataManagementPath} passHref>
           <Button type='primary' key='console'>
             Go to Data Management
           </Button>
         </Link>
+      );
+    }
+
+    if (gem2sStatus === 'error') {
+      return (
+        <Space size='large'>
+          <Link as={dataManagementPath} href={dataManagementPath} passHref>
+            <Button type='primary' key='console'>
+              Launch Another Analysis
+            </Button>
+          </Link>
+          <Button type='primary' key='console' onClick={relaunchExperiment}>
+            Re-launch Current Analysis
+          </Button>
+        </Space>
       );
     }
 
@@ -63,12 +85,12 @@ const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
             <br />
             <div>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / steps.length) * 100)} />
-                <Text type='secondary'>{(steps[Math.min(completedSteps.length, steps.length - 1)])}</Text>
+                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / gem2sStepsInfo.length) * 100)} />
+                <Text type='secondary'>{(gem2sStepsInfo[completedSteps.length])}</Text>
               </Space>
             </div>
             <div>
-              <Title level={3}>We're launching your analysis...</Title>
+              <Title level={3}>We&apos;re launching your analysis...</Title>
               <Text type='secondary'>You can wait or leave this screen and check again later</Text>
             </div>
           </Space>
@@ -101,12 +123,12 @@ const GEM2SLoadingScreen = ({ gem2sStatus, completedSteps, steps }) => {
 GEM2SLoadingScreen.propTypes = {
   gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
   completedSteps: PropTypes.array,
-  steps: PropTypes.array,
+  experimentId: PropTypes.string,
 };
 
 GEM2SLoadingScreen.defaultProps = {
   completedSteps: [],
-  steps: [],
+  experimentId: null,
 };
 
 export default GEM2SLoadingScreen;

@@ -2,9 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import messages from '../../../components/notification/messages';
 import { CELL_SETS_CREATE } from '../../actionTypes/cellSets';
 import saveCellSets from './saveCellSets';
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
-const createCellSet = (experimentId, name, color, cellIds) => (dispatch, getState) => {
+const createCellSet = (experimentId, name, color, cellIds) => async (dispatch, getState) => {
   const {
     loading, error,
   } = getState().cellSets;
@@ -21,7 +21,7 @@ const createCellSet = (experimentId, name, color, cellIds) => (dispatch, getStat
   };
 
   if (data.cellIds.size === 0) {
-    dispatch(pushNotificationMessage('info', messages.emptyClusterNotCreated, 5));
+    pushNotificationMessage('info', messages.emptyClusterNotCreated);
     return;
   }
 
@@ -33,8 +33,8 @@ const createCellSet = (experimentId, name, color, cellIds) => (dispatch, getStat
     },
   });
 
-  dispatch(saveCellSets(experimentId));
-  dispatch(pushNotificationMessage('info', messages.newClusterCreated, 5));
+  await dispatch(saveCellSets(experimentId));
+  pushNotificationMessage('info', messages.newClusterCreated);
 };
 
 export default createCellSet;

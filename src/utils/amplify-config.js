@@ -15,6 +15,10 @@ const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
       },
     },
   };
+  const redirectProtocol = (process.env.NODE_ENV === 'development') ? 'http:' : 'https:';
+  const usingProtocol = (url) => url.startsWith(redirectProtocol);
+  const signInRedirect = userPoolClientDetails.CallbackURLs.filter(usingProtocol)[0];
+  const signOutRedirect = userPoolClientDetails.LogoutURLs.filter(usingProtocol)[0];
 
   const authConfig = {
     Auth: {
@@ -29,8 +33,8 @@ const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
       oauth: {
         domain: userPoolClientDetails.Domain,
         scope: userPoolClientDetails.AllowedOAuthScopes,
-        redirectSignIn: userPoolClientDetails.CallbackURLs[0],
-        redirectSignOut: userPoolClientDetails.LogoutURLs[0],
+        redirectSignIn: signInRedirect,
+        redirectSignOut: signOutRedirect,
         responseType: userPoolClientDetails.AllowedOAuthFlows[0],
       },
     },

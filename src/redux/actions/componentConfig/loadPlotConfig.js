@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
 import { LOAD_CONFIG } from '../../actionTypes/componentConfig';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import messages from '../../../components/notification/messages';
 import { initialPlotConfigStates } from '../../reducers/componentConfig/initialState';
 
@@ -36,7 +36,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
       throw new Error('Server sent back different error or json conversion failed.');
     }
   } catch (e) {
-    dispatch(pushNotificationMessage('error', messages.connectionError, 10));
+    pushNotificationMessage('error', messages.connectionError);
   }
 };
 

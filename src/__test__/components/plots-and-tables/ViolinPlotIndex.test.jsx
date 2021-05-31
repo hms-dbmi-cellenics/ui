@@ -152,7 +152,7 @@ describe('ViolinIndex', () => {
     store.dispatch(updatePlotConfig(plotUuid, { selectedCellSet: 'sample' }));
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
     await expectStringInVegaCanvas('Sample 1', 1);
-  });
+  }, 8000);
   it('has a Data Tranformation panel', async () => {
     await renderViolinIndex();
 

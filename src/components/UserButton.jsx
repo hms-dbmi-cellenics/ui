@@ -6,13 +6,11 @@ import {
   Dropdown,
 } from 'antd';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
 import { Auth, Hub } from 'aws-amplify';
 import messages from './notification/messages';
-import pushNotificationMessage from '../redux/actions/notifications';
+import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const UserButton = () => {
-  const dispatch = useDispatch();
   const [user, setUser] = useState();
 
   const getUser = () => Auth.currentAuthenticatedUser()
@@ -31,7 +29,7 @@ const UserButton = () => {
           break;
         case 'signIn_failure':
         case 'cognitoHostedUI_failure':
-          dispatch(pushNotificationMessage('error', messages.signInError, 5));
+          pushNotificationMessage('error', messages.signInError);
           break;
         default:
           break;
