@@ -295,7 +295,7 @@ const ProjectDetails = ({ width, height }) => {
       <EditableField
         deleteEnabled
         value={text}
-        onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
+        onAfterSubmit={() => dispatch(updateSample(record.uuid, { name }))}
         onDelete={() => dispatch(deleteSamples(record.uuid))}
         validationFunc={(name) => validateInputs(name, validationChecks, validationParams).isValid}
       />
@@ -466,15 +466,11 @@ const ProjectDetails = ({ width, height }) => {
       ),
       fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
       dataIndex: 'species',
-      render: (text, record, rowIdx) => renderEditableFieldCell(
-        defaultNA,
-        text,
-        record,
-        'species',
-        rowIdx,
-        (newValue) => {
-          dispatch(updateSample(record.uuid, { species: newValue }));
-        },
+      render: (text, record) => (
+        <SpeciesSelector
+          data={sortedSpeciesData}
+          onChange={(value) => dispatch(updateSample(record.uuid, { species: value.key }))}
+        />
       ),
       width: 200,
     },

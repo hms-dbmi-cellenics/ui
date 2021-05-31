@@ -16,7 +16,7 @@ const SpeciesSelector = (props) => {
 
   return (
     <Select
-      onChange={(value, option) => onChange(option.displayName)}
+      onChange={(value, option) => onChange(value, option)}
       style={{ width: '100%' }}
       dropdownMatchSelectWidth={400}
       labelInValue
