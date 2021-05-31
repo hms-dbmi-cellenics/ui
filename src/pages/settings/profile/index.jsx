@@ -1,21 +1,27 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import _ from 'lodash';
+import { useDispatch } from 'react-redux';
 import {
-  Form, Input, Empty, PageHeader, Space, Card, Row, Col, Button,
+  Form, Input, Empty, PageHeader, Card, Row, Col, Button,
 } from 'antd';
 import FeedbackButton from '../../../components/FeedbackButton';
+import messages from '../../../components/notification/messages';
+import pushNotificationMessage from '../../../redux/actions/pushNotificationMessage';
 
 const ProfileSettings = () => {
+  const dispatch = useDispatch();
   const [user, setUser] = useState();
-  // const changedUserAttributes = useRef({});
-  // const changedPasswordAttributes = useRef({});
-  const [oldPasswordError, setOldPasswordError] = useState(false);
+  const [oldPasswordError, setOldPasswordError] = useState(null);
+  const [newPasswordError, setNewPasswordError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
 
-  const [newAttributes, setNewAttributes] = useState({
-    changedUserAttributes: {},
+  const initialState = {
     changedPasswordAttributes: {},
-  });
+    changedUserAttributes: {},
+  };
+  const [newAttributes, setNewAttributes] = useState(initialState);
+  const { changedPasswordAttributes, changedUserAttributes } = newAttributes;
 
   const setChanges = (object) => {
     const newChanges = _.cloneDeep(newAttributes);
@@ -32,32 +38,33 @@ const ProfileSettings = () => {
   }, []);
 
   const updateDetails = async () => {
-    console.log('updating details ', newAttributes);
-
-    const { changedPasswordAttributes, changedUserAttributes } = newAttributes;
-
-    validateInputs();
-
     if (Object.keys(changedUserAttributes).length) {
-      console.log('updating user details something ');
-      await Auth.updateUserAttributes(user, changedUserAttributes);
+      setEmailError(false);
+      await Auth.updateUserAttributes(user, changedUserAttributes)
+        .then((response) => dispatch(pushNotificationMessage('success', messages.detailsUpdated, 3)))
+        .catch((e) => setEmailError(true));
     }
     if (Object.keys(changedPasswordAttributes).length) {
-      const { oldPassword, newPassword } = changedPasswordAttributes;
+      const { oldPassword, newPassword, confirmNewPassword } = changedPasswordAttributes;
       setOldPasswordError(false);
-      await Auth.changePassword(user, oldPassword, newPassword)
-        .then((response) => console.log('RESPONSE FROM CHANGIN PASS IS ', response))
-        .catch((error) => { console.log('error was ', error); setOldPasswordError(error); });
+      setNewPasswordError(false);
+      const decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+
+      if (confirmNewPassword !== newPassword) {
+        setNewPasswordError("Passwords don't match.");
+      } else if (!newPassword.match(decimal)) {
+        setNewPasswordError('Password should include at least 8 characters, a number, special character, uppercase letter, lowercase letter.');
+      } else {
+        await Auth.changePassword(user, oldPassword, newPassword)
+          .then((response) => dispatch(pushNotificationMessage('success', messages.detailsUpdated, 3)))
+          .catch((error) => { setOldPasswordError("Doesn't match old password"); });
+      }
     }
     currentUser();
-  };
-
-  const validateInputs = () => {
-    console.log('something ');
+    setChanges(initialState);
   };
 
   if (user) {
-    console.log('checking something ', !Object.keys(newAttributes.changedPasswordAttributes).length, 'again ', !Object.keys(newAttributes.changedUserAttributes).length);
     return (
       <>
         <PageHeader
@@ -69,7 +76,7 @@ const ProfileSettings = () => {
         <Card>
 
           <Row type='flex' justify='center' align='center'>
-            <Col>
+            <Col style={{ width: '40%' }}>
 
               <Form layout='horizontal'>
                 <h2>Profile settings:</h2>
@@ -79,7 +86,11 @@ const ProfileSettings = () => {
                     placeholder={user.attributes.name}
                   />
                 </Form.Item>
-                <Form.Item label='Email address:'>
+                <Form.Item
+                  label='Email address:'
+                  validateStatus={emailError ? 'error' : 'success'}
+                  help={emailError ? 'Invalid email address format' : ''}
+                >
                   <Input
                     type='email'
                     onChange={(e) => setChanges({ changedUserAttributes: { email: e.target.value } })}
@@ -92,30 +103,39 @@ const ProfileSettings = () => {
                 </Form.Item> */}
                 <h2>Password settings:</h2>
                 <Form.Item
-                  label='Current password:'
+                  label='Current password:' // pragma: allowlist secret
                   validateStatus={oldPasswordError ? 'error' : 'success'}
-                  help={oldPasswordError ? "Doesn't match old password" : ''}
+                  help={oldPasswordError || ''}
                 >
                   <Input.Password
-                    onChange={(e) => setChanges({ changedPasswordAttributes: { oldPassword: e.target.value } })}
+                    onChange={(e) => setChanges({ changedPasswordAttributes: { oldPassword: e.target.value } })} // pragma: allowlist secret
                     visibilityToggle={false}
                   />
                 </Form.Item>
-                <Form.Item label='New password:'>
+                <Form.Item
+                  label='New password:' // pragma: allowlist secret
+                  validateStatus={newPasswordError ? 'error' : 'success'}
+                  help={newPasswordError || ''}
+                >
                   <Input.Password
-                    onChange={(e) => setChanges({ changedPasswordAttributes: { newPassword: e.target.value } })}
+                    onChange={(e) => setChanges({ changedPasswordAttributes: { newPassword: e.target.value } })} // pragma: allowlist secret
                     visibilityToggle={false}
                   />
                 </Form.Item>
-                <Form.Item label='Confirm new password:'>
+                <Form.Item
+                  label='Confirm new password:' // pragma: allowlist secret
+                  validateStatus={newPasswordError ? 'error' : 'success'}
+                  help={newPasswordError || ''}
+                >
                   <Input.Password
+                    onChange={(e) => setChanges({ changedPasswordAttributes: { confirmNewPassword: e.target.value } })} // pragma: allowlist secret
                     visibilityToggle={false}
                   />
                 </Form.Item>
               </Form>
               <Button
                 onClick={() => updateDetails()}
-                // disabled={(!Object.keys(changedPasswordAttributes.current).length && !Object.keys(changedUserAttributes.current).length)}
+                disabled={(!Object.keys(changedPasswordAttributes.current).length && !Object.keys(changedUserAttributes.current).length)}
               >
                 Save changes
               </Button>

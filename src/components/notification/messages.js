@@ -6,4 +6,5 @@ export default {
   feedbackSuccessful: 'Your feedback has been successfully sent. Thank you!',
   feedbackError: 'We couldn\'t process your feedback. Please try submitting again.',
   signInError: 'We couldn\'t sign you in. Please try again.',
+  detailsUpdated: 'Account details updated successfully',
 };
