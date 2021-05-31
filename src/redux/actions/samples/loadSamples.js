@@ -20,15 +20,17 @@ const loadSamples = (
         method: 'GET',
       });
     }
-    const json = await response.json();
+    const data = await response.json();
 
     if (!response.ok) {
-      throw new Error('HTTP status code was not 200.');
+      throw new Error(data.message);
     }
     dispatch({
       type: SAMPLES_LOADED,
       payload: {
-        samples: json[0].samples,
+        // Data[0] because 1 project contains only 1 experiment right now.
+        // This has to be changed when we support multiple experiments per project.
+        samples: data[0].samples,
       },
     });
   } catch (e) {

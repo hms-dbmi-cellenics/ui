@@ -3,7 +3,7 @@ const experimentTemplate = {
   name: null,
   description: 'Analysis description',
   id: null,
-  createdAt: null,
+  createdDate: null,
   lastViewed: null,
 };
 

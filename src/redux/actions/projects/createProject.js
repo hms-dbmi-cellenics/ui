@@ -7,7 +7,7 @@ import {
 } from '../../actionTypes/projects';
 import { projectTemplate } from '../../reducers/projects/initialState';
 import createExperiment from '../experiments/createExperiment';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 
 const createProject = (
@@ -15,7 +15,7 @@ const createProject = (
   projectDescription,
   newExperimentName,
 ) => async (dispatch) => {
-  const createdAt = moment().toISOString();
+  const createdDate = moment().toISOString();
 
   const newProjectUuid = uuidv4();
 
@@ -29,12 +29,12 @@ const createProject = (
     description: projectDescription,
     uuid: newProjectUuid,
     experiments: [newExperiment.id],
-    createdDate: createdAt,
-    lastModified: createdAt,
+    createdDate,
+    lastModified: createdDate,
   };
 
   try {
-    dispatch(saveProject(newProjectUuid, newProject));
+    await dispatch(saveProject(newProjectUuid, newProject));
 
     dispatch({
       type: PROJECTS_CREATE,

@@ -4,7 +4,7 @@ import saveSamples from './saveSamples';
 import {
   SAMPLES_FILE_UPDATE,
 } from '../../actionTypes/samples';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 import UploadStatus from '../../../utils/UploadStatus';
@@ -33,7 +33,6 @@ const updateSampleFile = (
       };
 
       const newSample = mergeObjectWithArrays(sample, diffObject);
-
       dispatch(saveSamples(sample.projectUuid, newSample));
     }
 

@@ -15,7 +15,7 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
 
   try {
     const response = await fetchAPI(
-      `/v1/experiments/${experimentId}/pipelines`,
+      `/v1/experiments/${experimentId}/backendStatus`,
     );
 
     if (response.ok) {
@@ -29,7 +29,7 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
         },
       });
 
-      return;
+      return status;
     }
 
     throw new Error('HTTP status code was not 200.');

@@ -15,7 +15,6 @@ import {
   BuildOutlined,
   FolderOpenOutlined,
 } from '@ant-design/icons';
-import NotificationManager from './notification/NotificationManager';
 import initUpdateSocket from '../utils/initUpdateSocket';
 import { loadBackendStatus } from '../redux/actions/experimentSettings';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -25,6 +24,7 @@ import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
 import PreloadContent from './PreloadContent';
 import Error from '../pages/_error';
+import pipelineStatus from '../utils/pipelineStatusValues';
 
 const { Sider, Footer } = Layout;
 
@@ -45,7 +45,7 @@ const ContentWrapper = (props) => {
     status: backendStatus,
   } = useSelector((state) => state.experimentSettings.backendStatus);
 
-  const backendErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
+  const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus.pipeline?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
@@ -221,14 +221,14 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <GEM2SLoadingScreen gem2sStatus='error' />;
+        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='error' />;
       }
 
       if (gem2sRunning) {
         return <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
-      if (gem2sStatusKey === 'NotCreated') {
+      if (gem2sStatusKey === pipelineStatus.NOT_CREATED) {
         return <GEM2SLoadingScreen gem2sStatus='toBeRun' />;
       }
 
@@ -244,7 +244,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineStatusKey === 'NotCreated' && !route.includes('data-processing')) {
+      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && !route.includes('data-processing')) {
         return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='toBeRun' />;
       }
     }
@@ -275,7 +275,6 @@ const ContentWrapper = (props) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <NotificationManager />
       <Sider
         width={210}
         theme='dark'

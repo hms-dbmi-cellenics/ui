@@ -124,6 +124,7 @@ Storage.put = jest.fn().mockImplementation(
 
 describe('processUpload (in development)', () => {
   afterEach(() => {
+    // console.log(fetch.mock.calls);
     mockStorageCalls = [];
     jest.clearAllMocks();
   });
@@ -132,11 +133,9 @@ describe('processUpload (in development)', () => {
     // eslint-disable-next-line no-param-reassign
     validFilesList.forEach((file) => { file.bundle.valid = true; });
 
-    const response = new Response({});
-
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResolvedValue(response);
+    fetchMock.mockResponse(JSON.stringify({}));
   });
 
   it('Uploads and updates redux correctly when there are no errors', async () => {

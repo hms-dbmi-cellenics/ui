@@ -3,8 +3,14 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialProjectState from '../../../../redux/reducers/projects/initialState';
 import { saveProject } from '../../../../redux/actions/projects';
-import { PROJECTS_ERROR, PROJECTS_SAVED, PROJECTS_SAVING } from '../../../../redux/actionTypes/projects';
-import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+import {
+  PROJECTS_ERROR,
+  PROJECTS_SAVED,
+  PROJECTS_SAVING,
+} from '../../../../redux/actionTypes/projects';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 jest.mock('localforage');
 
@@ -58,11 +64,18 @@ describe('saveProject action', () => {
   });
 
   it('Dispatches a notification when fetch fails.', async () => {
+    const errorMsg = 'some weird error that happened';
+
     fetchMock.resetMocks();
-    fetchMock.mockReject(new Error('some weird error that happened'));
+    fetchMock.mockReject(new Error(errorMsg));
 
     const store = mockStore(initialState);
-    await store.dispatch(saveProject(mockProject.uuid, mockProject));
+
+    try {
+      await store.dispatch(saveProject(mockProject.uuid, mockProject));
+    } catch (e) {
+      expect(e).toEqual(errorMsg);
+    }
 
     const actions = store.getActions();
 
@@ -72,8 +85,8 @@ describe('saveProject action', () => {
     // Second state saves error
     expect(actions[1].type).toBe(PROJECTS_ERROR);
 
-    // Thirdd state emits notification
-    expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
+    // Expect notification to be fired
+    expect(pushNotificationMessage).toHaveBeenCalled();
 
     expect(actions).toMatchSnapshot();
   });

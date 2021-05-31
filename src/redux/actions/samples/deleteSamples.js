@@ -13,7 +13,7 @@ import {
 import saveSamples from './saveSamples';
 import saveProject from '../projects/saveProject';
 
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import getProjectSamples from '../../../utils/getProjectSamples';
 import errorTypes from './errorTypes';
 
@@ -48,33 +48,39 @@ const deleteSamples = (
   });
 
   try {
-    Object.entries(projectSamples).forEach(([projectUuid, samplesToDelete]) => {
-      const samplesForAProject = getProjectSamples(projects, projectUuid, samples);
-      const newSample = _.omit(samplesForAProject, samplesToDelete);
-      newSample.ids = _.difference(samplesForAProject.ids, samplesToDelete);
+    const deleteSamplesPromise = Object.entries(projectSamples).map(
+      async ([projectUuid, samplesToDelete]) => {
+        const samplesForAProject = getProjectSamples(projects, projectUuid, samples);
 
-      const newProject = {
-        ...projects[projectUuid],
-        samples: _.difference(projects[projectUuid].samples, samplesToDelete),
-      };
-      dispatch(saveSamples(projectUuid, newSample, false, false));
-      dispatch(saveProject(projectUuid, newProject, false));
+        const newSample = _.omit(samplesForAProject, samplesToDelete);
+        newSample.ids = _.difference(samplesForAProject.ids, samplesToDelete);
 
-      dispatch({
-        type: SAMPLES_DELETE,
-        payload: { sampleUuids: samplesToDelete },
-      });
+        const newProject = {
+          ...projects[projectUuid],
+          samples: _.difference(projects[projectUuid].sampels, samplesToDelete),
+        };
 
-      dispatch({
-        type: PROJECTS_UPDATE,
-        payload: {
-          projectUuid,
-          project: {
-            samples: _.difference(projects[projectUuid].samples, samplesToDelete),
+        dispatch(saveSamples(projectUuid, newSample, false, false));
+        dispatch(saveProject(projectUuid, newProject, false));
+
+        dispatch({
+          type: SAMPLES_DELETE,
+          payload: { sampleUuids: samplesToDelete },
+        });
+
+        dispatch({
+          type: PROJECTS_UPDATE,
+          payload: {
+            projectUuid,
+            project: {
+              samples: _.difference(projects[projectUuid].samples, samplesToDelete),
+            },
           },
-        },
-      });
-    });
+        });
+      },
+    );
+
+    await Promise.all(deleteSamplesPromise);
 
     dispatch({
       type: SAMPLES_SAVED,

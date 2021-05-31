@@ -92,8 +92,8 @@ const NewExperimentModal = (props) => {
                       />
                     </strong>
                     <EditableField
-                      onAfterSubmit={(name) => {
-                        dispatch(updateExperiment(experiment.id, { name: name.trim() }));
+                      onAfterSubmit={(description) => {
+                        dispatch(updateExperiment(experiment.id, { description: description.trim() }));
                         setNumFieldsEditing(numFieldsEditing - 1);
                       }}
                       onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}

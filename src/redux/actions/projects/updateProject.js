@@ -3,7 +3,7 @@ import moment from 'moment';
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
-import pushNotificationMessage from '../notifications';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 import saveProject from './saveProject';
 
@@ -21,7 +21,7 @@ const updateProject = (
   const newProject = mergeObjectWithArrays(currentProject, diff);
 
   try {
-    dispatch(saveProject(projectUuid, newProject));
+    await dispatch(saveProject(projectUuid, newProject));
 
     dispatch({
       type: PROJECTS_UPDATE,

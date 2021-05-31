@@ -4,8 +4,17 @@ import deleteSamples from '../../../../redux/actions/samples/deleteSamples';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 
-import { SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
+import { saveProject } from '../../../../redux/actions/projects';
+import { saveSamples } from '../../../../redux/actions/samples';
+
+import { SAMPLES_DELETE, SAMPLES_SAVED } from '../../../../redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
+
+jest.mock('../../../../redux/actions/projects/saveProject');
+saveProject.mockImplementation(() => async () => { });
+
+jest.mock('../../../../redux/actions/samples/saveSamples');
+saveSamples.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
@@ -46,7 +55,9 @@ describe('deleteSample action', () => {
 
     // Sets up loading state for saving project
     const actions = store.getActions();
-    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+
+    expect(saveSamples).toHaveBeenCalled();
+    expect(saveProject).toHaveBeenCalled();
 
     // Delete sample
     expect(actions[1].type).toEqual(SAMPLES_DELETE);

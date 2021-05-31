@@ -6,7 +6,9 @@ import { Button, Space } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
+import { validate } from 'uuid';
 import { createProject, loadProjects } from '../../redux/actions/projects';
+import { loadExperiments } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
@@ -23,28 +25,49 @@ const DataManagementPage = ({ route }) => {
   const {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
-  const [newProjectModalVisible, setNewProjectModalVisible] = useState(true);
+  const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
   const experiments = useSelector((state) => state.experiments);
-  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProjectUuid);
+  const { activeProjectUuid, loading: projectsLoading } = useSelector((state) => state.projects.meta);
   const activeProject = projectsList[activeProjectUuid];
 
   const existingExperiments = activeProject?.experiments
     .map((experimentId) => experiments[experimentId]);
 
+  const experimentIds = new Set(experiments.ids);
+  const experimentsAreLoaded = activeProject?.experiments
+    .every((experimentId) => experimentIds.has(experimentId));
+  const isUuid = (uuid) => validate(uuid);
+
+  // const experimentsAreLoaded = (project, experiments) => {}
   useEffect(() => {
-    dispatch(loadProjects());
+    if (projectsList.ids.length === 0) dispatch(loadProjects());
   }, []);
 
   useEffect(() => {
-    if (projectsList.ids.length) {
+    // old experiments don't have a project so the activeProjectUuid will actually be an experiment
+    // ID so the experiments load will fail this should be addressed by migrating experiments
+    // for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
+    // and we should not try to load the experiments with it
+    if (!activeProjectUuid || experimentsAreLoaded || !isUuid(activeProjectUuid)) return;
+
+    dispatch(loadExperiments(activeProjectUuid));
+  }, [activeProject]);
+
+  useEffect(() => {
+    if (projectsLoading === true) {
+      return;
+    }
+    if (projectsList.ids.length === 0) {
+      setNewProjectModalVisible(true);
+    } else {
       setNewProjectModalVisible(false);
     }
-  }, [projectsList]);
+  }, [projectsList, projectsLoading]);
 
   const unnamedExperimentName = 'Unnamed Analysis';
 
   const createNewProject = (newProjectName, newProjectDescription) => {
-    const numUnnamedExperiments = !existingExperiments[0] ? 0
+    const numUnnamedExperiments = !existingExperiments?.[0] ? 0
       : existingExperiments.filter((experiment) => experiment.name.match(`${unnamedExperimentName} `)).length;
     const newExperimentName = `${unnamedExperimentName} ${numUnnamedExperiments + 1}`;
 
@@ -56,11 +79,16 @@ const DataManagementPage = ({ route }) => {
     'Projects List': {
       toolbarControls: [],
       component: (width, height) => (
-        <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
+        <Space
+          direction='vertical'
+          style={{ width: '100%' }}
+        >
           <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
             Create New Project
           </Button>
-          <ProjectsListContainer height={height} />
+          <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
+            <ProjectsListContainer height={height} />
+          </Space>
         </Space>
       ),
     },

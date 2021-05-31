@@ -1,11 +1,21 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
-import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
+import initialProjectState, {
+  projectTemplate,
+} from '../../../../redux/reducers/projects/initialState';
+import initialSampleState, {
+  sampleTemplate,
+} from '../../../../redux/reducers/samples/initialState';
 import { saveSamples } from '../../../../redux/actions/samples';
-import { SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
-import { NOTIFICATIONS_PUSH_MESSAGE } from '../../../../redux/actionTypes/notifications';
+import {
+  SAMPLES_ERROR,
+  SAMPLES_SAVED,
+  SAMPLES_SAVING,
+} from '../../../../redux/actionTypes/samples';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+
+jest.mock('../../../../utils/pushNotificationMessage');
 
 jest.mock('localforage');
 
@@ -36,7 +46,6 @@ describe('saveSamples action', () => {
   };
 
   const initialState = {
-
     projects: {
       ...initialProjectState,
       ids: [mockprojectUuid],
@@ -92,11 +101,18 @@ describe('saveSamples action', () => {
   });
 
   it('Dispatches a notification when fetch fails.', async () => {
+    const errorMsg = 'some weird error that happened';
+
     fetchMock.resetMocks();
-    fetchMock.mockReject(new Error('some weird error that happened'));
+    fetchMock.mockReject(new Error(errorMsg));
 
     const store = mockStore(initialState);
-    await store.dispatch(saveSamples(mockprojectUuid, newSample));
+
+    try {
+      await store.dispatch(saveSamples(mockprojectUuid, newSample));
+    } catch (e) {
+      expect(e).toEqual(errorMsg);
+    }
 
     const actions = store.getActions();
 
@@ -106,8 +122,8 @@ describe('saveSamples action', () => {
     // Second state generates error
     expect(actions[1].type).toBe(SAMPLES_ERROR);
 
-    // Thirdd state emits notification
-    expect(actions[2].type).toBe(NOTIFICATIONS_PUSH_MESSAGE);
+    // Expect there is a notification
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 
   it('Dispatches samples pre and post actions correctly', async () => {

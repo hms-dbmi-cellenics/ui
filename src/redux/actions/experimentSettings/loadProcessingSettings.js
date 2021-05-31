@@ -4,7 +4,7 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../actionTypes/experimentSettings';
 
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 
 const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
@@ -35,12 +35,9 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
 
     throw new Error('HTTP status code was not 200.');
   } catch (e) {
-    dispatch(
-      pushNotificationMessage(
-        'error',
-        'We couldn\'t load your processing settings.Please check your internet connection and try refreshing the page.',
-        5,
-      ),
+    pushNotificationMessage(
+      'error',
+      'We couldn\'t load your processing settings.Please check your internet connection and try refreshing the page.',
     );
 
     dispatch({
