@@ -41,7 +41,7 @@ const ProfileSettings = () => {
     if (Object.keys(changedUserAttributes).length) {
       setEmailError(false);
       await Auth.updateUserAttributes(user, changedUserAttributes)
-        .then((response) => dispatch(pushNotificationMessage('success', messages.detailsUpdated, 3)))
+        .then((response) => pushNotificationMessage('success', messages.detailsUpdated, 3))
         .catch((e) => setEmailError(true));
     }
     if (Object.keys(changedPasswordAttributes).length) {
@@ -56,7 +56,7 @@ const ProfileSettings = () => {
         setNewPasswordError('Password should include at least 8 characters, a number, special character, uppercase letter, lowercase letter.');
       } else {
         await Auth.changePassword(user, oldPassword, newPassword)
-          .then((response) => dispatch(pushNotificationMessage('success', messages.detailsUpdated, 3)))
+          .then((response) => pushNotificationMessage('success', messages.detailsUpdated, 3))
           .catch((error) => { setOldPasswordError("Doesn't match old password"); });
       }
     }
@@ -135,7 +135,6 @@ const ProfileSettings = () => {
               </Form>
               <Button
                 onClick={() => updateDetails()}
-                disabled={(!Object.keys(changedPasswordAttributes).length && !Object.keys(changedUserAttributes).length)}
               >
                 Save changes
               </Button>
