@@ -3,6 +3,13 @@ import { metadataNameToKey } from '../../../utils/metadataUtils';
 import {
   PROJECTS_METADATA_CREATE,
 } from '../../actionTypes/projects';
+import {
+  SAMPLES_UPDATE,
+} from '../../actionTypes/samples';
+import {
+  DEFAULT_NA,
+} from '../../reducers/projects/initialState';
+
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 import saveProject from './saveProject';
@@ -11,6 +18,7 @@ const createMetadataTrack = (
   name, projectUuid,
 ) => async (dispatch, getState) => {
   const project = getState().projects[projectUuid];
+  const { samples } = getState();
 
   const metadataKey = metadataNameToKey(name);
 
@@ -27,7 +35,22 @@ const createMetadataTrack = (
         key: metadataKey,
       },
     });
+
+    await Promise.all(samples.ids.map((sampleUuid) => dispatch({
+      type: SAMPLES_UPDATE,
+      payload: {
+        sampleUuid,
+        sample: {
+          metadata: {
+            [metadataKey]: (
+              samples[sampleUuid].metadata[metadataKey] || DEFAULT_NA
+            ),
+          },
+        },
+      },
+    })));
   } catch (e) {
+    console.log(e);
     pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
   }
 };

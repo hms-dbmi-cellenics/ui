@@ -20,5 +20,7 @@ const initialState = {
   },
 };
 
+const DEFAULT_NA = 'N.A.';
+
 export default initialState;
-export { projectTemplate };
+export { projectTemplate, DEFAULT_NA };
