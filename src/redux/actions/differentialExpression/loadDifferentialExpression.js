@@ -2,7 +2,7 @@ import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
 } from '../../actionTypes/differentialExpression';
 
-import fetchCachedWork from '../../../utils/cacheRequest';
+import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 

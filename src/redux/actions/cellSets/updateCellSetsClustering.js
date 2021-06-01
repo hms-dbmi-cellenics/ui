@@ -1,7 +1,7 @@
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING, CELL_SETS_CLUSTERING_UPDATED,
 } from '../../actionTypes/cellSets';
-import fetchCachedWork from '../../../utils/cacheRequest';
+import { fetchCachedWork } from '../../../utils/cacheRequest';
 import saveCellSets from './saveCellSets';
 
 const REQUEST_TIMEOUT = 30;
