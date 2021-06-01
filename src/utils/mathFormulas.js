@@ -1,9 +1,13 @@
 import _ from 'lodash';
 
+const mean = (array) => _.sum(array) / array.length;
+
 const stdev = (array) => {
-  const n = array.length;
-  const mean = _.sum(array) / n;
-  return Math.sqrt(_.sum(array.map((x) => (x - mean) ** 2)) / n);
+  const inputMean = mean(array);
+  return Math.sqrt(_.sum(array.map((x) => (x - inputMean) ** 2)) / array.length);
 };
 
-export default stdev;
+export {
+  mean,
+  stdev,
+};

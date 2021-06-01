@@ -1,4 +1,4 @@
-import stdev from '../mathFormulas';
+import { stdev } from '../mathFormulas';
 
 const generateSpec = (config, plotData) => {
   const sd = stdev(plotData.map((p) => p.log_genes));
