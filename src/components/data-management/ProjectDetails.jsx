@@ -629,7 +629,9 @@ const ProjectDetails = ({ width, height }) => {
         experiments={experiments}
         visible={analysisModalVisible}
         onLaunch={(experimentId) => {
-          dispatch(updateExperiment(experimentId, { lastViewed: moment().toISOString() }));
+          const lastViewed = moment().toISOString();
+          dispatch(updateExperiment(experimentId, { lastViewed }));
+          dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
         }}
         onChange={() => {
