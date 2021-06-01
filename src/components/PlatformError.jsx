@@ -36,7 +36,7 @@ const PlatformError = (props) => {
     reason = reason || 'That\'s all we know';
 
     if (error instanceof WorkResponseError) {
-      reason = 'We had an error on our side while we were completing your request.';
+      reason = error.message;
     }
 
     if (error instanceof WorkTimeoutError) {
