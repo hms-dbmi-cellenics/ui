@@ -12,7 +12,7 @@ const throwWithEndUserMessage = (response, json, friendlyMessage) => {
   }
 };
 
-const isServerError = (error) => !(error instanceof ServerError);
+const isServerError = (error) => (error instanceof ServerError);
 
 export {
   throwWithEndUserMessage,

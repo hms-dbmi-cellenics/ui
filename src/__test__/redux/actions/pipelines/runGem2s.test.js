@@ -61,7 +61,7 @@ describe('runGem2s action', () => {
 
   it('Dispatches status error if loading fails', async () => {
     fetchMock.resetMocks();
-    fetchMock.mockReject(new Error('some weird error that happened'));
+    fetchMock.mockResponse(JSON.stringify({ message: 'some weird error that happened' }), { status: 400 });
 
     const store = mockStore(initialState);
     await store.dispatch(runGem2s(experimentId));
