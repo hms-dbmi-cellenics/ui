@@ -8,7 +8,7 @@ import validateInputs, { rules } from '../../utils/validateInputs';
 
 const validationChecks = [
   rules.MIN_1_CHAR,
-  rules.ALPHANUM_DASH_SPACE,
+  rules.ALPHANUM_SPACE,
   rules.UNIQUE_NAME_CASE_INSENSITIVE,
 ];
 
