@@ -35,7 +35,8 @@ const createSample = (
     uuid: newSampleUuid,
     createdDate,
     lastModified: createdDate,
-    metadata: project.metadataKeys.reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}),
+    metadata: project?.metadataKeys
+      .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
   };
 
   const newProject = {
