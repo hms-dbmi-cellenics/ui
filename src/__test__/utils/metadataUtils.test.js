@@ -6,7 +6,7 @@ import {
 
 describe('metadataUtils', () => {
   it('metadataKeyToName converts name correctly', () => {
-    const key = 'Metadata-10';
+    const key = 'Metadata_10';
     const expectedName = 'Metadata 10';
 
     expect(metadataKeyToName(key)).toEqual(expectedName);
@@ -14,7 +14,7 @@ describe('metadataUtils', () => {
 
   it('metadataNameToKey converts key correctly', () => {
     const name = 'Metadata 10';
-    const expectedKey = 'Metadata-10';
+    const expectedKey = 'Metadata_10';
 
     expect(metadataNameToKey(name)).toEqual(expectedKey);
   });
