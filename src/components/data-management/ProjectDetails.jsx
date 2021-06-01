@@ -79,7 +79,7 @@ const ProjectDetails = ({ width, height }) => {
   const validationChecks = [
     rules.MIN_1_CHAR,
     rules.ALPHANUM_DASH_SPACE,
-    rules.UNIQUE_NAME,
+    rules.UNIQUE_NAME_CASE_INSENSITIVE,
   ];
 
   const validationParams = {
