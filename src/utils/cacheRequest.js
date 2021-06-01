@@ -38,17 +38,18 @@ const decomposeBody = async (body, experimentId) => {
   return { missingDataKeys, cachedData };
 };
 
-const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, backendStatus) => {
+const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, qcPipelineStartDate) => {
   const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
   const missingGenes = Object.keys(missingDataKeys);
   if (missingGenes.length === 0) {
     return cachedData;
   }
 
-  const { pipeline: { startDate } } = backendStatus;
-
   const response = await sendWork(
-    experimentId, timeout, { ...body, genes: missingGenes }, { ETagPipelineRun: startDate },
+    experimentId,
+    timeout,
+    { ...body, genes: missingGenes },
+    { ETagPipelineRun: qcPipelineStartDate },
   );
   const responseData = JSON.parse(response.results[0].body);
 
@@ -63,28 +64,22 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, backen
   return responseData;
 };
 
-const fetchCachedWork = async (experimentId, timeout, body, backendStatus) => {
+const fetchCachedWork = async (experimentId, timeout, body, qcPipelineStartDate) => {
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
 
-  const { pipeline: { startDate } } = backendStatus;
-
-  const key = createObjectHash({ experimentId, body, startDate });
+  const key = createObjectHash({ experimentId, body, qcPipelineStartDate });
   // const data = await cache.get(key);
   // if (data) return data;
 
-  try {
-    const response = await sendWork(
-      experimentId, timeout, body, { PipelineRunETag: startDate },
-    );
+  const response = await sendWork(
+    experimentId, timeout, body, { PipelineRunETag: qcPipelineStartDate },
+  );
 
-    const responseData = JSON.parse(response.results[0].body);
-    await cache.set(key, responseData);
-    return responseData;
-  } catch (e) {
-    console.log(e.message);
-  }
+  const responseData = JSON.parse(response.results[0].body);
+  await cache.set(key, responseData);
+  return responseData;
 };
 
 export { fetchCachedWork, fetchCachedGeneExpressionWork };
