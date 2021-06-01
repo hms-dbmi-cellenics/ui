@@ -4,6 +4,8 @@ import loadGeneExpression from '../../../../redux/actions/genes/loadGeneExpressi
 import initialState from '../../../../redux/reducers/genes/initialState';
 import sendWork from '../../../../utils/sendWork';
 
+import pipelineStatusValues from '../../../../utils/pipelineStatusValues';
+
 import {
   GENES_EXPRESSION_LOADING,
   GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
@@ -201,7 +203,7 @@ describe('loadGeneExpression action', () => {
         backendStatus: {
           status: {
             pipeline: {
-              status: 'NotCreated',
+              status: pipelineStatusValues.NOT_CREATED,
               startDate: null,
             },
           },
