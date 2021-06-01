@@ -47,6 +47,16 @@ const deleteProject = (
       throw new Error(response.json().message);
     }
 
+    // If deleted project is the same as the active project, choose another project
+    if (projectUuid === activeProjectUuid) {
+      const leftoverProjectIds = projects.ids.filter((uuid) => uuid !== activeProjectUuid);
+
+      dispatch({
+        type: PROJECTS_SET_ACTIVE,
+        payload: { projectUuid: leftoverProjectIds.length ? leftoverProjectIds[0] : null },
+      });
+    }
+
     dispatch({
       type: EXPERIMENTS_DELETED,
       payload: {
@@ -69,14 +79,6 @@ const deleteProject = (
     dispatch({
       type: PROJECTS_SAVED,
     });
-
-    // If deleted project is the same as the active project, choose another project
-    if (projectUuid === activeProjectUuid) {
-      dispatch({
-        type: PROJECTS_SET_ACTIVE,
-        payload: { projectUuid: projects.ids.length > 1 ? projects.ids[0] : null },
-      });
-    }
   } catch (e) {
     pushNotificationMessage('error', errorTypes.PROJECTS_DELETE);
 
