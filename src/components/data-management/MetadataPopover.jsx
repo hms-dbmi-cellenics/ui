@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
 import EditableField from '../EditableField';
-import { metadataKeyToName } from '../../utils/metadataUtils';
+import { metadataKeyToName, metadataNameToKey } from '../../utils/metadataUtils';
 import validateInputs, { rules } from '../../utils/validateInputs';
 
 const validationChecks = [
@@ -40,7 +40,9 @@ const MetadataPopover = (props) => {
       deleteEnabled={false}
       value={`Track ${existingMetadata.filter((key) => key.match('Track-')).length + 1}`}
       defaultEditing
-      validationFunc={(name) => validateInputs(name, validationChecks, validationParams).isValid}
+      validationFunc={(name) => validateInputs(
+        metadataKeyToName(metadataNameToKey(name)), validationChecks, validationParams,
+      ).isValid}
     />
   );
 
