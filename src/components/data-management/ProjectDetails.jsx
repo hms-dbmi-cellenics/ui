@@ -609,6 +609,7 @@ const ProjectDetails = ({ width, height }) => {
           pipelineStatus.NOT_CREATED,
           pipelineStatus.ABORTED,
           pipelineStatus.TIMED_OUT,
+          pipelineStatus.FAILED,
         ].includes(backendStatus.gem2s.status)) {
           dispatch(runGem2s(experimentId));
         }
@@ -628,7 +629,9 @@ const ProjectDetails = ({ width, height }) => {
         experiments={experiments}
         visible={analysisModalVisible}
         onLaunch={(experimentId) => {
-          dispatch(updateExperiment(experimentId, { lastViewed: moment().toISOString() }));
+          const lastViewed = moment().toISOString();
+          dispatch(updateExperiment(experimentId, { lastViewed }));
+          dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
         }}
         onChange={() => {

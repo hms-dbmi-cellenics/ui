@@ -209,6 +209,9 @@ const ContentWrapper = (props) => {
     },
   ];
 
+  const waitingForQcToLaunch = gem2sStatusKey === pipelineStatus.SUCCEEDED
+    && pipelineStatusKey === pipelineStatus.NOT_CREATED;
+
   const renderContent = () => {
     if (experimentId) {
       if (
@@ -221,10 +224,10 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <GEM2SLoadingScreen gem2sStatus='error' />;
+        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='error' />;
       }
 
-      if (gem2sRunning) {
+      if (gem2sRunning || waitingForQcToLaunch) {
         return <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
@@ -257,7 +260,8 @@ const ContentWrapper = (props) => {
   }) => {
     const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
     const pipelineStatusDisable = disabledByPipelineStatus && (
-      backendError || pipelineRunning || pipelineRunningError
+      backendError || gem2sRunning || gem2sRunningError
+      || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
     );
 
     return (
