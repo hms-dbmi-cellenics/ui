@@ -7,8 +7,8 @@ import {
 } from '../../actionTypes/projects';
 import { projectTemplate } from '../../reducers/projects/initialState';
 import createExperiment from '../experiments/createExperiment';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
 
 const createProject = (
   projectName,
@@ -41,7 +41,7 @@ const createProject = (
       payload: { project: newProject },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    pushNotificationMessage('error', endUserMessages.errorSaving);
   }
 };
 

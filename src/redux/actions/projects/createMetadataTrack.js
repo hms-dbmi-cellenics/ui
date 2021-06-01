@@ -4,7 +4,7 @@ import {
   PROJECTS_METADATA_CREATE,
 } from '../../actionTypes/projects';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
+import endUserMessages from '../../../utils/endUserMessages';
 import saveProject from './saveProject';
 
 const createMetadataTrack = (
@@ -28,7 +28,7 @@ const createMetadataTrack = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    pushNotificationMessage('error', endUserMessages.errorSaving);
   }
 };
 

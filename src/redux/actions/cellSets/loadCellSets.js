@@ -1,4 +1,6 @@
 import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import {
   CELL_SETS_LOADED, CELL_SETS_LOADING, CELL_SETS_ERROR,
 } from '../../actionTypes/cellSets';
@@ -17,12 +19,11 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
     });
   }
 
+  const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
-    const response = await fetchAPI(`/v1/experiments/${experimentId}/cellSets`);
+    const response = await fetchAPI(url);
     const json = await response.json();
-    if (!response.ok) {
-      throw new Error('HTTP status code was not 200.');
-    }
+    throwWithEndUserMessage(response, json, endUserMessages.errorFetchingCellSets);
     dispatch({
       type: CELL_SETS_LOADED,
       payload: {
@@ -31,6 +32,9 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
       },
     });
   } catch (e) {
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${e.message}`);
+    }
     dispatch({
       type: CELL_SETS_ERROR,
       payload: {

@@ -23,7 +23,7 @@ import {
 } from '../../../redux/actions/cellSets';
 import composeTree from '../../../utils/composeTree';
 import { isBrowser } from '../../../utils/environment';
-import messages from '../../notification/messages';
+import endUserMessages from '../../../utils/endUserMessages';
 import PlatformError from '../../PlatformError';
 import CellSetOperation from './CellSetOperation';
 import { union, intersection, complement } from '../../../utils/cellSetOperations';
@@ -57,7 +57,7 @@ const CellSetsTool = (props) => {
     if (
       notifications
       && notifications.message
-      && notifications.message.message === messages.newClusterCreated
+      && notifications.message.message === endUserMessages.newClusterCreated
     ) {
       animateScroll.scrollTo(height, {
         containerId: 'cell-set-tool-container',

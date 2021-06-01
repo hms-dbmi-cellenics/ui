@@ -4,7 +4,7 @@ import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
+import endUserMessages from '../../../utils/endUserMessages';
 import saveProject from './saveProject';
 
 import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
@@ -31,7 +31,7 @@ const updateProject = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    pushNotificationMessage('error', endUserMessages.errorSaving);
   }
 };
 

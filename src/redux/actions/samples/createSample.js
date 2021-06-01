@@ -10,8 +10,8 @@ import {
 } from '../../actionTypes/projects';
 import saveSamples from './saveSamples';
 import { saveProject } from '../projects';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
 
 import { sampleTemplate } from '../../reducers/samples/initialState';
 
@@ -44,8 +44,8 @@ const createSample = (
   };
 
   try {
-    dispatch(saveSamples(projectUuid, newSample));
-    dispatch(saveProject(projectUuid, newProject));
+    await dispatch(saveSamples(projectUuid, newSample));
+    await dispatch(saveProject(projectUuid, newProject));
 
     dispatch({
       type: SAMPLES_CREATE,
@@ -60,7 +60,7 @@ const createSample = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    pushNotificationMessage('error', endUserMessages.errorSaving);
   }
 
   return Promise.resolve(newSampleUuid);

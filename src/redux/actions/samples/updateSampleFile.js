@@ -4,8 +4,8 @@ import saveSamples from './saveSamples';
 import {
   SAMPLES_FILE_UPDATE,
 } from '../../actionTypes/samples';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
 import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 import UploadStatus from '../../../utils/UploadStatus';
 
@@ -33,7 +33,7 @@ const updateSampleFile = (
       };
 
       const newSample = mergeObjectWithArrays(sample, diffObject);
-      dispatch(saveSamples(sample.projectUuid, newSample));
+      await dispatch(saveSamples(sample.projectUuid, newSample));
     }
 
     dispatch({
@@ -46,7 +46,7 @@ const updateSampleFile = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_SAMPLES);
+    pushNotificationMessage('error', endUserMessages.errorSaving);
   }
 };
 

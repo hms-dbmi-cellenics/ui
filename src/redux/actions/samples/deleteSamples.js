@@ -13,9 +13,9 @@ import {
 import saveSamples from './saveSamples';
 import saveProject from '../projects/saveProject';
 
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import getProjectSamples from '../../../utils/getProjectSamples';
-import errorTypes from './errorTypes';
 
 const deleteSamples = (
   sampleUuids,
@@ -43,7 +43,7 @@ const deleteSamples = (
   dispatch({
     type: SAMPLES_SAVING,
     payload: {
-      message: 'Deleting sample...',
+      message: endUserMessages.deletingSample,
     },
   });
 
@@ -60,8 +60,8 @@ const deleteSamples = (
           samples: _.difference(projects[projectUuid].sampels, samplesToDelete),
         };
 
-        dispatch(saveSamples(projectUuid, newSample, false, false));
-        dispatch(saveProject(projectUuid, newProject, false));
+        await dispatch(saveSamples(projectUuid, newSample, false, false));
+        await dispatch(saveProject(projectUuid, newProject, false));
 
         dispatch({
           type: SAMPLES_DELETE,
@@ -86,12 +86,12 @@ const deleteSamples = (
       type: SAMPLES_SAVED,
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.DELETE_SAMPLES);
+    pushNotificationMessage('error', endUserMessages.errorDeletingSamples);
 
     dispatch({
       type: SAMPLES_ERROR,
       payload: {
-        error: errorTypes.DELETE_SAMPLES,
+        error: endUserMessages.errorDeletingSamples,
       },
     });
   }

@@ -1,17 +1,17 @@
 import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
-import { LOAD_CONFIG } from '../../actionTypes/componentConfig';
+import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import messages from '../../../components/notification/messages';
+import { LOAD_CONFIG } from '../../actionTypes/componentConfig';
 import { initialPlotConfigStates } from '../../reducers/componentConfig/initialState';
 
 const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
+  const url = `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`;
   try {
-    const response = await fetchAPI(
-      `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
-    );
+    const response = await fetchAPI(url);
+    const data = await response.json();
     if (response.ok) {
-      const data = await response.json();
       const config = _.merge({}, initialPlotConfigStates[plotType], data.config);
       dispatch({
         type: LOAD_CONFIG,
@@ -33,10 +33,15 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
         },
       });
     } else {
-      throw new Error('Server sent back different error or json conversion failed.');
+      throwWithEndUserMessage(response, data, endUserMessages.errorFetchingPlotConfig);
     }
   } catch (e) {
-    pushNotificationMessage('error', messages.connectionError);
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.connectionError;
+    }
+    pushNotificationMessage('error', message);
   }
 };
 
