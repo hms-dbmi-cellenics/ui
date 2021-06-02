@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
-const metadataKeyToName = (key) => key.replace('-', ' ');
+const metadataKeyToName = (key) => key.replace('_', ' ');
 
-const metadataNameToKey = (name) => `${name.trim().replace(/\s+/g, '-')}`;
+const metadataNameToKey = (name) => `${name.trim().replace(/\s+/g, '_')}`;
 
 const temporaryMetadataKey = (columns) => `metadata-${columns.length}`;
 
