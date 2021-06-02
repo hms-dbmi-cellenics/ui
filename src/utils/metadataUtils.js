@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const metadataKeyToName = (key) => key.replace('-', ' ').replace('_', ' ');
+const metadataKeyToName = (key) => key.replace('_', ' ');
 
 const metadataNameToKey = (name) => `${name.trim().replace(/\s+/g, '_')}`;
 

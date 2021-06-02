@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress, Row, Col,
+  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -76,9 +76,10 @@ const ProjectDetails = ({ width, height }) => {
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
-  const validationChecks = [
+  const validateMetadataName = [
     rules.MIN_1_CHAR,
-    rules.ALPHANUM_DASH_SPACE,
+    rules.ALPHANUM_SPACE,
+    rules.START_WITH_ALPHABET,
     rules.UNIQUE_NAME_CASE_INSENSITIVE,
   ];
 
@@ -297,7 +298,6 @@ const ProjectDetails = ({ width, height }) => {
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
         onDelete={() => dispatch(deleteSamples(record.uuid))}
-        validationFunc={(name) => validateInputs(name, validationChecks, validationParams).isValid}
       />
     </Text>
   );
@@ -356,6 +356,9 @@ const ProjectDetails = ({ width, height }) => {
               updateMetadataTrack(name, newName, activeProjectUuid),
             )}
             value={name}
+            validationFunc={
+              (newName) => validateInputs(newName, validateMetadataName, validationParams).isValid
+            }
           />
           <MetadataEditor
             onReplaceEmpty={(value) => {
@@ -611,6 +614,7 @@ const ProjectDetails = ({ width, height }) => {
           pipelineStatus.ABORTED,
           pipelineStatus.TIMED_OUT,
           pipelineStatus.FAILED,
+          pipelineStatus.SUCCEEDED,
         ].includes(backendStatus.gem2s.status)) {
           dispatch(runGem2s(experimentId));
         }

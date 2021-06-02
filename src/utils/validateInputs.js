@@ -6,6 +6,7 @@ const rules = {
   ALPHANUM_DASH_SPACE: 'ALPHANUM_DASH_SPACE',
   UNIQUE_NAME: 'UNIQUE_NAME',
   UNIQUE_NAME_CASE_INSENSITIVE: 'UNIQUE_NAME_CASE_INSENSITIVE',
+  START_WITH_ALPHABET: 'START_WITH_ALPHABET',
 };
 
 const errorMessages = {
@@ -16,6 +17,7 @@ const errorMessages = {
   [rules.ALPHANUM_DASH_SPACE]: 'Only letters, numbers, space, _, and - allowed',
   [rules.UNIQUE_NAME]: 'Name is already used',
   [rules.UNIQUE_NAME_CASE_INSENSITIVE]: 'Name is already used',
+  [rules.START_WITH_ALPHABET]: 'Name can only start with letter',
 };
 
 const validationFns = {
@@ -76,6 +78,12 @@ const validationFns = {
 
     if (lowerCaseNames.includes(input.toLowerCase())) return errorMessages[checkName];
 
+    return true;
+  },
+
+  // Start with alphabet - Fail if input starts with non-alphabetic character
+  [rules.START_WITH_ALPHABET](checkName, input) {
+    if (input.match(/^[^a-zA-Z]/gm)) return errorMessages[checkName];
     return true;
   },
 };
