@@ -46,7 +46,6 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 import loadBackendStatus from '../../redux/actions/experimentSettings/loadBackendStatus';
-import getExperimentInfo from '../../utils/ssr/getExperimentInfo';
 import fetchAPI from '../../utils/fetchAPI';
 import { updateExperimentInfo } from '../../redux/actions/experimentSettings';
 
