@@ -76,7 +76,7 @@ const ProjectDetails = ({ width, height }) => {
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
-  const validateMetadataName = [
+  const metadataNameValidation = [
     rules.MIN_1_CHAR,
     rules.ALPHANUM_SPACE,
     rules.START_WITH_ALPHABET,
@@ -357,7 +357,7 @@ const ProjectDetails = ({ width, height }) => {
             )}
             value={name}
             validationFunc={
-              (newName) => validateInputs(newName, validateMetadataName, validationParams).isValid
+              (newName) => validateInputs(newName, metadataNameValidation, validationParams).isValid
             }
           />
           <MetadataEditor

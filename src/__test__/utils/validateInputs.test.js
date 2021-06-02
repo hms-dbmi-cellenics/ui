@@ -82,9 +82,9 @@ describe('validateUnit unit test', () => {
     const invalidName = 'Yumm: A great project!';
     const checks = [rules.ALPHANUM_DASH_SPACE];
 
-    const { isValid: isInvalid, results: invalidResult } = validateInputs(invalidName, checks);
+    const { isValid, results: invalidResult } = validateInputs(invalidName, checks);
 
-    expect(isInvalid).not.toEqual(true);
+    expect(isValid).toEqual(false);
     expect(invalidResult).toEqual([errorMessages.ALPHANUM_DASH_SPACE]);
   });
 
@@ -92,9 +92,9 @@ describe('validateUnit unit test', () => {
     const invalidName = 'Track-1!';
     const checks = [rules.ALPHANUM_SPACE];
 
-    const { isValid: isInvalid, results: invalidResult } = validateInputs(invalidName, checks);
+    const { isValid, results: invalidResult } = validateInputs(invalidName, checks);
 
-    expect(isInvalid).not.toEqual(true);
+    expect(isValid).toEqual(false);
     expect(invalidResult).toEqual([errorMessages.ALPHANUM_SPACE]);
   });
 
@@ -102,9 +102,9 @@ describe('validateUnit unit test', () => {
     const invalidName = '24 Carats';
     const checks = [rules.START_WITH_ALPHABET];
 
-    const { isValid: isInvalid, results: invalidResult } = validateInputs(invalidName, checks);
+    const { isValid, results: invalidResult } = validateInputs(invalidName, checks);
 
-    expect(isInvalid).not.toEqual(true);
+    expect(isValid).toEqual(false);
     expect(invalidResult).toEqual([errorMessages.START_WITH_ALPHABET]);
   });
 
