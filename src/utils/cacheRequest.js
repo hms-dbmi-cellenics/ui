@@ -79,8 +79,8 @@ const fetchCachedWork = async (
   }
 
   const key = createObjectHash({ experimentId, body, qcPipelineStartDate });
-  // const data = await cache.get(key);
-  // if (data) return data;
+  const data = await cache.get(key);
+  if (data) return data;
 
   const response = await sendWork(
     experimentId,
