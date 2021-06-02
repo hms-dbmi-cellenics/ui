@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress, Row, Col,
+  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -46,6 +46,9 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 import loadBackendStatus from '../../redux/actions/experimentSettings/loadBackendStatus';
+import getExperimentInfo from '../../utils/ssr/getExperimentInfo';
+import fetchAPI from '../../utils/fetchAPI';
+import { updateExperimentInfo } from '../../redux/actions/experimentSettings';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -602,7 +605,10 @@ const ProjectDetails = ({ width, height }) => {
     }
   };
 
-  const launchAnalysis = (experimentId) => {
+  const launchAnalysis = async (experimentId) => {
+    const response = await fetchAPI(`/v1/experiments/${experimentId}`);
+    const experimentData = await response.json();
+    dispatch(updateExperimentInfo(experimentData));
     dispatch(loadBackendStatus(experimentId))
       .then((backendStatus) => {
         if ([
