@@ -10,6 +10,7 @@ const validationChecks = [
   rules.MIN_1_CHAR,
   rules.ALPHANUM_SPACE,
   rules.UNIQUE_NAME_CASE_INSENSITIVE,
+  rules.START_WITH_ALPHABET,
 ];
 
 const MetadataPopover = (props) => {

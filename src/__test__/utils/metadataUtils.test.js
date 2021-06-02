@@ -21,12 +21,12 @@ describe('metadataUtils', () => {
 
   it('temporaryMetadataKey creates key correctly', () => {
     const columns = [];
-    expect(temporaryMetadataKey(columns)).toEqual('metadata-0');
+    expect(temporaryMetadataKey(columns)).toEqual('metadata_0');
 
     columns.push(temporaryMetadataKey(columns));
     columns.push('fake-key');
 
-    expect(temporaryMetadataKey(columns)).toEqual('metadata-2');
+    expect(temporaryMetadataKey(columns)).toEqual('metadata_2');
   });
 });
 

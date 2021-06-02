@@ -78,17 +78,37 @@ describe('validateUnit unit test', () => {
     expect(invalidResult).toEqual([errorMessages.MIN_2_SEQUENTIAL_CHARS]);
   });
 
-  it('Correctly invalidate names with invalid characters', () => {
+  it('Correctly invalidate names with invalid characters (alphanum, dash, space)', () => {
     const invalidName = 'Yumm: A great project!';
     const checks = [rules.ALPHANUM_DASH_SPACE];
 
-    const { isValid: isInvalid, results: invalidResult } = validateInputs(invalidName, checks);
+    const { isValid, results: invalidResult } = validateInputs(invalidName, checks);
 
-    expect(isInvalid).not.toEqual(true);
+    expect(isValid).toEqual(false);
     expect(invalidResult).toEqual([errorMessages.ALPHANUM_DASH_SPACE]);
   });
 
-  it('Correctly invalidates should not be the same with existing projects', () => {
+  it('Correctly invalidate names with invalid characters (alphanum, space)', () => {
+    const invalidName = 'Track-1!';
+    const checks = [rules.ALPHANUM_SPACE];
+
+    const { isValid, results: invalidResult } = validateInputs(invalidName, checks);
+
+    expect(isValid).toEqual(false);
+    expect(invalidResult).toEqual([errorMessages.ALPHANUM_SPACE]);
+  });
+
+  it('Correctly invalidate names that does not begin with alphabets', () => {
+    const invalidName = '24 Carats';
+    const checks = [rules.START_WITH_ALPHABET];
+
+    const { isValid, results: invalidResult } = validateInputs(invalidName, checks);
+
+    expect(isValid).toEqual(false);
+    expect(invalidResult).toEqual([errorMessages.START_WITH_ALPHABET]);
+  });
+
+  it('Correctly invalidates should not be the same with existing values', () => {
     const projectNames = [
       'Project 1',
       'Project 2',
