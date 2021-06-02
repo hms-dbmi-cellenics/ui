@@ -35,6 +35,8 @@ import {
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
 
+import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
+
 import { updateExperiment } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
@@ -50,8 +52,6 @@ import loadBackendStatus from '../../redux/actions/experimentSettings/loadBacken
 const { Title, Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
-  const defaultNA = 'N.A.';
-
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
@@ -315,6 +315,7 @@ const ProjectDetails = ({ width, height }) => {
             const newMetadataColumn = createInitializedMetadataColumn(name);
             setTableColumns([...tableColumns, newMetadataColumn]);
             dispatch(createMetadataTrack(name, activeProjectUuid));
+
             setIsAddingMetadata(false);
           }}
           onCancel={() => {
@@ -362,7 +363,7 @@ const ProjectDetails = ({ width, height }) => {
                 (sampleUuid) => {
                   if (
                     !samples[sampleUuid].metadata[key]
-                    || samples[sampleUuid].metadata[key] === defaultNA
+                    || samples[sampleUuid].metadata[key] === DEFAULT_NA
                   ) {
                     dispatch(updateSample(sampleUuid, { metadata: { [key]: value } }));
                   }
@@ -377,7 +378,7 @@ const ProjectDetails = ({ width, height }) => {
             onClearAll={() => {
               activeProject.samples.forEach(
                 (sampleUuid) => dispatch(
-                  updateSample(sampleUuid, { metadata: { [key]: defaultNA } }),
+                  updateSample(sampleUuid, { metadata: { [key]: DEFAULT_NA } }),
                 ),
               );
             }}
@@ -391,7 +392,7 @@ const ProjectDetails = ({ width, height }) => {
       width: 200,
       dataIndex: key,
       render: (cellValue, record, rowIdx) => renderEditableFieldCell(
-        defaultNA,
+        DEFAULT_NA,
         cellValue,
         record,
         key,
@@ -441,7 +442,7 @@ const ProjectDetails = ({ width, height }) => {
                 (sampleUuid) => {
                   if (
                     !samples[sampleUuid].species
-                    || samples[sampleUuid].species === defaultNA
+                    || samples[sampleUuid].species === DEFAULT_NA
                   ) {
                     dispatch(updateSample(sampleUuid, { species: value }));
                   }
@@ -455,7 +456,7 @@ const ProjectDetails = ({ width, height }) => {
             }}
             onClearAll={() => {
               activeProject.samples.forEach(
-                (sampleUuid) => dispatch(updateSample(sampleUuid, { species: defaultNA })),
+                (sampleUuid) => dispatch(updateSample(sampleUuid, { species: DEFAULT_NA })),
               );
             }}
             massEdit
@@ -467,7 +468,7 @@ const ProjectDetails = ({ width, height }) => {
       fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
       dataIndex: 'species',
       render: (text, record, rowIdx) => renderEditableFieldCell(
-        defaultNA,
+        DEFAULT_NA,
         text,
         record,
         'species',
@@ -551,7 +552,7 @@ const ProjectDetails = ({ width, height }) => {
         barcodes: barcodesData,
         genes: genesData,
         matrix: matrixData,
-        species: samples[sampleUuid].species || defaultNA,
+        species: samples[sampleUuid].species || DEFAULT_NA,
         ...samples[sampleUuid].metadata,
       };
     });
@@ -662,8 +663,8 @@ const ProjectDetails = ({ width, height }) => {
               <Button
                 disabled={
                   projects.ids.length === 0
-                || activeProject?.samples?.length === 0
-                || isAddingMetadata
+                  || activeProject?.samples?.length === 0
+                  || isAddingMetadata
                 }
                 onClick={() => {
                   setIsAddingMetadata(true);
@@ -676,8 +677,8 @@ const ProjectDetails = ({ width, height }) => {
                 type='primary'
                 disabled={
                   projects.ids.length === 0
-                || activeProject?.samples?.length === 0
-                || !canLaunchAnalysis
+                  || activeProject?.samples?.length === 0
+                  || !canLaunchAnalysis
                 }
                 onClick={() => openAnalysisModal()}
               >
