@@ -3,7 +3,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
 import EditableField from '../EditableField';
-import { metadataNameToKey } from '../../utils/metadataUtils';
+import { metadataKeyToName, metadataNameToKey } from '../../utils/metadataUtils';
+import validateInputs, { rules } from '../../utils/validateInputs';
+
+const validationChecks = [
+  rules.MIN_1_CHAR,
+  rules.ALPHANUM_SPACE,
+  rules.UNIQUE_NAME_CASE_INSENSITIVE,
+];
 
 const MetadataPopover = (props) => {
   const {
@@ -16,6 +23,12 @@ const MetadataPopover = (props) => {
     ...restOfProps
   } = props;
 
+  const validationParams = {
+    existingNames: existingMetadata.map(
+      (metadataKey) => metadataKeyToName(metadataKey).toLowerCase(),
+    ),
+  };
+
   const getContent = () => (
     <EditableField
       onAfterSubmit={(value) => {
@@ -27,11 +40,9 @@ const MetadataPopover = (props) => {
       deleteEnabled={false}
       value={`Track ${existingMetadata.filter((key) => key.match('Track-')).length + 1}`}
       defaultEditing
-      validationFunc={
-        (value) => value.length > 0
-          && !existingMetadata.map((metadataKey) => metadataKey.toLowerCase())
-            .includes(metadataNameToKey(value.toLowerCase()))
-      }
+      validationFunc={(name) => validateInputs(
+        metadataKeyToName(metadataNameToKey(name)), validationChecks, validationParams,
+      ).isValid}
     />
   );
 

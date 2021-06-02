@@ -145,20 +145,20 @@ describe('deleteProject action', () => {
     const actions = store.getActions();
     expect(actions[0].type).toEqual(PROJECTS_SAVING);
 
+    // Switch active proejct
+    expect(actions[1].type).toEqual(PROJECTS_SET_ACTIVE);
+
     // Delete experiments
-    expect(actions[1].type).toEqual(EXPERIMENTS_DELETED);
+    expect(actions[2].type).toEqual(EXPERIMENTS_DELETED);
 
     // Delete sample
-    expect(actions[2].type).toEqual(SAMPLES_DELETE);
+    expect(actions[3].type).toEqual(SAMPLES_DELETE);
 
     // Delete project
-    expect(actions[3].type).toEqual(PROJECTS_DELETE);
+    expect(actions[4].type).toEqual(PROJECTS_DELETE);
 
     // Resolve loading state
-    expect(actions[4].type).toEqual(PROJECTS_SAVED);
-
-    // Switch active proejct
-    expect(actions[5].type).toEqual(PROJECTS_SET_ACTIVE);
+    expect(actions[5].type).toEqual(PROJECTS_SAVED);
   });
 
   it('Dispatches fetch correctly.', async () => {

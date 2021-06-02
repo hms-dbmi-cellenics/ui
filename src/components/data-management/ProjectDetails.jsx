@@ -34,6 +34,8 @@ import {
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
 
+import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
+
 import { updateExperiment } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
@@ -49,8 +51,6 @@ import loadBackendStatus from '../../redux/actions/experimentSettings/loadBacken
 const { Title, Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
-  const defaultNA = 'N.A.';
-
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
@@ -78,7 +78,7 @@ const ProjectDetails = ({ width, height }) => {
   const validationChecks = [
     rules.MIN_1_CHAR,
     rules.ALPHANUM_DASH_SPACE,
-    rules.UNIQUE_NAME,
+    rules.UNIQUE_NAME_CASE_INSENSITIVE,
   ];
 
   const validationParams = {
@@ -307,6 +307,7 @@ const ProjectDetails = ({ width, height }) => {
             const newMetadataColumn = createInitializedMetadataColumn(name);
             setTableColumns([...tableColumns, newMetadataColumn]);
             dispatch(createMetadataTrack(name, activeProjectUuid));
+
             setIsAddingMetadata(false);
           }}
           onCancel={() => {
@@ -389,7 +390,7 @@ const ProjectDetails = ({ width, height }) => {
       width: 200,
       dataIndex: key,
       render: (cellValue, record, rowIdx) => renderEditableFieldCell(
-        defaultNA,
+        DEFAULT_NA,
         cellValue,
         record,
         key,
@@ -530,7 +531,7 @@ const ProjectDetails = ({ width, height }) => {
         barcodes: barcodesData,
         genes: genesData,
         matrix: matrixData,
-        species: samples[sampleUuid].species,
+        species: samples[sampleUuid].species || DEFAULT_NA,
         ...samples[sampleUuid].metadata,
       };
     });
@@ -608,7 +609,9 @@ const ProjectDetails = ({ width, height }) => {
         experiments={experiments}
         visible={analysisModalVisible}
         onLaunch={(experimentId) => {
-          dispatch(updateExperiment(experimentId, { lastViewed: moment().toISOString() }));
+          const lastViewed = moment().toISOString();
+          dispatch(updateExperiment(experimentId, { lastViewed }));
+          dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
         }}
         onChange={() => {
@@ -639,8 +642,8 @@ const ProjectDetails = ({ width, height }) => {
               <Button
                 disabled={
                   projects.ids.length === 0
-                || activeProject?.samples?.length === 0
-                || isAddingMetadata
+                  || activeProject?.samples?.length === 0
+                  || isAddingMetadata
                 }
                 onClick={() => {
                   setIsAddingMetadata(true);
@@ -653,8 +656,8 @@ const ProjectDetails = ({ width, height }) => {
                 type='primary'
                 disabled={
                   projects.ids.length === 0
-                || activeProject?.samples?.length === 0
-                || !canLaunchAnalysis
+                  || activeProject?.samples?.length === 0
+                  || !canLaunchAnalysis
                 }
                 onClick={() => openAnalysisModal()}
               >
