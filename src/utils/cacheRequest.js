@@ -64,17 +64,32 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, qcPipe
   return responseData;
 };
 
-const fetchCachedWork = async (experimentId, timeout, body, qcPipelineStartDate) => {
+const fetchCachedWork = async (
+  experimentId,
+  timeout,
+  body,
+  qcPipelineStartDate,
+  ...additionaSendWorkParams) => {
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
 
+  if (body.name === 'GeneExpression') {
+    return fetchCachedGeneExpressionWork(experimentId, timeout, body, qcPipelineStartDate);
+  }
+
   const key = createObjectHash({ experimentId, body, qcPipelineStartDate });
-  const data = await cache.get(key);
-  if (data) return data;
+  // const data = await cache.get(key);
+  // if (data) return data;
 
   const response = await sendWork(
-    experimentId, timeout, body, { PipelineRunETag: qcPipelineStartDate },
+    experimentId,
+    timeout,
+    body,
+    {
+      PipelineRunETag: qcPipelineStartDate,
+      ...additionaSendWorkParams,
+    },
   );
 
   const responseData = JSON.parse(response.results[0].body);

@@ -34,7 +34,7 @@ const loadCellMeta = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, 30, body, getState().experimentSettings.backendStatus.status,
+      experimentId, 30, body, getState().experimentSettings.backendStatus.status.pipeline.startDate,
     );
     dispatch({
       type: CELL_META_LOADED,

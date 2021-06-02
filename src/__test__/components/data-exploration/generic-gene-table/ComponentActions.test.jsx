@@ -148,12 +148,7 @@ describe('ComponentActions', () => {
         name: 'GeneExpression',
         genes: ['A', 'B', 'C'],
       },
-      {
-        pipeline: {
-          status: 'SUCCEEDED',
-          startDate: '2021-01-01T01:01:01.000Z',
-        },
-      },
+      '2021-01-01T01:01:01.000Z',
     );
 
     expect(store.getActions().length).toEqual(2);

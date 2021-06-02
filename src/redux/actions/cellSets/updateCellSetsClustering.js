@@ -34,11 +34,9 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
   });
 
   try {
-    const response = await fetchCachedWork(
+    const louvainSets = await fetchCachedWork(
       experimentId, REQUEST_TIMEOUT, body, pipelineStartDate,
     );
-
-    const louvainSets = JSON.parse(response.results[0].body);
 
     const newCellSets = [
       louvainSets,
@@ -53,6 +51,8 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
     });
     dispatch(saveCellSets(experimentId));
   } catch (e) {
+    console.log(e);
+
     dispatch({
       type: CELL_SETS_ERROR,
       payload: {

@@ -3,17 +3,14 @@ import thunk from 'redux-thunk';
 import loadDifferentialExpression from '../../../../redux/actions/differentialExpression/loadDifferentialExpression';
 
 import initialState from '../../../../redux/reducers/differentialExpression/initialState';
-import sendWork from '../../../../utils/sendWork';
+import { fetchCachedWork } from '../../../../utils/cacheRequest';
 
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
 } from '../../../../redux/actionTypes/differentialExpression';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/sendWork', () => ({
-  __esModule: true, // this property makes it work
-  default: jest.fn(),
-}));
+jest.mock('../../../../utils/cacheRequest');
 
 const mockStore = configureStore([thunk]);
 
@@ -23,6 +20,16 @@ const defaultTableState = {
     current: 1, pageSize: 50, showSizeChanger: true, total: 0,
   },
   sorter: { field: 'p_val_adj', columnKey: 'p_val_adj', order: 'ascend' },
+};
+
+const startDate = '2021-01-01T00:00:00';
+
+const backendStatus = {
+  backendStatus: {
+    status: {
+      pipeline: { startDate },
+    },
+  },
 };
 
 describe('loadDifferentialExpression action', () => {
@@ -43,8 +50,9 @@ describe('loadDifferentialExpression action', () => {
       differentialExpression: {
         ...initialState,
       },
+      experimentSettings: backendStatus,
     });
-    sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     await store.dispatch(
       loadDifferentialExpression(experimentId, cellSets, comparisonType, defaultTableState),
@@ -52,18 +60,21 @@ describe('loadDifferentialExpression action', () => {
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(DIFF_EXPR_LOADING);
 
-    expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith('1234', 60, {
-      cellSet: 'louvain-0',
-      compareWith: 'louvain-1',
-      basis: 'condition-control',
-      name: 'DifferentialExpression',
-      experimentId: '1234',
-    }, {
-      pagination: {
-        limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
+    expect(fetchCachedWork).toHaveBeenCalledTimes(1);
+    expect(fetchCachedWork).toHaveBeenCalledWith('1234', 60,
+      {
+        cellSet: 'louvain-0',
+        compareWith: 'louvain-1',
+        basis: 'condition-control',
+        name: 'DifferentialExpression',
+        experimentId: '1234',
       },
-    });
+      startDate,
+      {
+        pagination: {
+          limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
+        },
+      });
     expect(loadingAction).toMatchSnapshot();
 
     const loadedAction = store.getActions()[1];
@@ -76,37 +87,31 @@ describe('loadDifferentialExpression action', () => {
       differentialExpression: {
         ...initialState,
       },
+      experimentSettings: backendStatus,
     });
 
-    sendWork.mockImplementation(() => {
+    fetchCachedWork.mockImplementationOnce(() => {
       const resolveWith = {
-        results:
-          [
-            {
-              body: JSON.stringify({
-                rows: [
-                  {
-                    p_val: 1.16, p_val_adj: 2.16, avg_log2FC: 3.45, gene_names: 'A',
-                  },
-                  {
-                    p_val: 2.16, p_val_adj: 3.16, avg_log2FC: 4.45, gene_names: 'B',
-                  },
-                  {
-                    p_val: 3.16, p_val_adj: 4.16, avg_log2FC: 5.45, gene_names: 'C',
-                  },
-                  {
-                    p_val: 4.16, p_val_adj: 5.16, avg_log2FC: 6.45, gene_names: 'D',
-                  },
-                  {
-                    p_val: 5.16, p_val_adj: 6.16, avg_log2FC: 7.45, gene_names: 'E',
-                  },
-                  {
-                    p_val: 6.16, p_val_adj: 7.16, avg_log2FC: 8.45, gene_names: 'F',
-                  },
-                ],
-              }),
-            },
-          ],
+        rows: [
+          {
+            p_val: 1.16, p_val_adj: 2.16, avg_log2FC: 3.45, gene_names: 'A',
+          },
+          {
+            p_val: 2.16, p_val_adj: 3.16, avg_log2FC: 4.45, gene_names: 'B',
+          },
+          {
+            p_val: 3.16, p_val_adj: 4.16, avg_log2FC: 5.45, gene_names: 'C',
+          },
+          {
+            p_val: 4.16, p_val_adj: 5.16, avg_log2FC: 6.45, gene_names: 'D',
+          },
+          {
+            p_val: 5.16, p_val_adj: 6.16, avg_log2FC: 7.45, gene_names: 'E',
+          },
+          {
+            p_val: 6.16, p_val_adj: 7.16, avg_log2FC: 8.45, gene_names: 'F',
+          },
+        ],
       };
 
       return new Promise((resolve) => resolve(resolveWith));
@@ -120,18 +125,21 @@ describe('loadDifferentialExpression action', () => {
     expect(loadingAction.type).toEqual(DIFF_EXPR_LOADING);
     expect(loadingAction).toMatchSnapshot();
 
-    expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith('1234', 60, {
-      cellSet: 'louvain-0',
-      compareWith: 'louvain-1',
-      basis: 'condition-control',
-      name: 'DifferentialExpression',
-      experimentId: '1234',
-    }, {
-      pagination: {
-        limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
+    expect(fetchCachedWork).toHaveBeenCalledTimes(1);
+    expect(fetchCachedWork).toHaveBeenCalledWith('1234', 60,
+      {
+        cellSet: 'louvain-0',
+        compareWith: 'louvain-1',
+        basis: 'condition-control',
+        name: 'DifferentialExpression',
+        experimentId: '1234',
       },
-    });
+      startDate,
+      {
+        pagination: {
+          limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
+        },
+      });
 
     const loadedAction = store.getActions()[1];
     expect(loadedAction.type).toEqual(DIFF_EXPR_LOADED);

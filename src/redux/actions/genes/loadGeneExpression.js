@@ -63,7 +63,8 @@ const loadGeneExpression = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, 30, body, getState().experimentSettings.backendStatus.status,
+      experimentId, 30, body,
+      getState().experimentSettings.backendStatus.status.pipeline.startDate,
     );
     if (data[genesToFetch[0]]?.error) {
       pushNotificationMessage('error', data[genesToFetch[0]].message);

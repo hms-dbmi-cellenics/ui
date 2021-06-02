@@ -54,10 +54,10 @@ const loadDifferentialExpression = (
   }
 
   try {
-    const response = await fetchCachedWork(
-      experimentId, REQUEST_TIMEOUT, body, pagination, pipelineStartDate,
+    const data = await fetchCachedWork(
+      experimentId, REQUEST_TIMEOUT, body, pipelineStartDate, pagination,
     );
-    const data = JSON.parse(response.results[0].body);
+
     let { total } = data;
     const { rows } = data;
 

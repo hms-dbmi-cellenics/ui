@@ -3,14 +3,18 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import updateCellSetsClustering from '../../../../redux/actions/cellSets/updateCellSetsClustering';
 import initialState from '../../../../redux/reducers/cellSets/initialState';
-import sendWork from '../../../../utils/sendWork';
+import { fetchCachedWork } from '../../../../utils/cacheRequest';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
-jest.mock('../../../../utils/sendWork', () => ({
-  __esModule: true, // this property makes it work
-  default: jest.fn(),
-}));
+jest.mock('localforage');
+jest.mock('../../../../utils/cacheRequest');
+
+const startDate = '2021-01-01T00:00:00';
+
+const backendStatusStore = {
+  backendStatus: { status: { pipeline: { startDate } } },
+};
 
 describe('updateCellSetsClustering action', () => {
   const experimentId = '1234';
@@ -28,13 +32,19 @@ describe('updateCellSetsClustering action', () => {
   });
 
   it('Does not dispatch on loading state', async () => {
-    const store = mockStore({ cellSets: { loading: true, error: false } });
+    const store = mockStore({
+      cellSets: { loading: true, error: false },
+      experimentSettings: backendStatusStore,
+    });
     store.dispatch(updateCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
   });
 
   it('Does not dispatch on error state', async () => {
-    const store = mockStore({ cellSets: { loading: false, error: true } });
+    const store = mockStore({
+      cellSets: { loading: false, error: true },
+      experimentSettings: backendStatusStore,
+    });
     store.dispatch(updateCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
   });
@@ -55,18 +65,12 @@ describe('updateCellSetsClustering action', () => {
           },
         },
       },
+      experimentSettings: backendStatusStore,
     });
 
-    sendWork.mockImplementation(() => {
+    fetchCachedWork.mockImplementation(() => {
       const resolveWith = {
-        results:
-          [
-            {
-              body: JSON.stringify({
-                name: 'one', color: '#ff0000', cellIds: ['1', '2', '3'],
-              }),
-            },
-          ],
+        name: 'one', color: '#ff0000', cellIds: ['1', '2', '3'],
       };
 
       return new Promise((resolve) => resolve(resolveWith));
@@ -76,14 +80,14 @@ describe('updateCellSetsClustering action', () => {
 
     store.dispatch(updateCellSetsClustering(experimentId, 0.5));
 
-    expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith(experimentId, 30, {
+    expect(fetchCachedWork).toHaveBeenCalledTimes(1);
+    expect(fetchCachedWork).toHaveBeenCalledWith(experimentId, 30, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',
       cellSetKey: 'louvain',
       config: { resolution: 0.5 },
-    });
+    }, startDate);
 
     await flushPromises();
 
@@ -99,8 +103,11 @@ describe('updateCellSetsClustering action', () => {
   });
 
   it('Dispatches error action when the reset fails', async () => {
-    const store = mockStore({ cellSets: { ...initialState, loading: false } });
-    sendWork.mockImplementation(() => {
+    const store = mockStore({
+      cellSets: { ...initialState, loading: false },
+      experimentSettings: backendStatusStore,
+    });
+    fetchCachedWork.mockImplementation(() => {
       const resolveWith = {
         results: { error: 'The backend returned an error' },
       };
@@ -112,14 +119,14 @@ describe('updateCellSetsClustering action', () => {
 
     store.dispatch(updateCellSetsClustering(experimentId, 0.5));
 
-    expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith(experimentId, 30, {
+    expect(fetchCachedWork).toHaveBeenCalledTimes(1);
+    expect(fetchCachedWork).toHaveBeenCalledWith(experimentId, 30, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',
       cellSetKey: 'louvain',
       config: { resolution: 0.5 },
-    });
+    }, startDate);
 
     await flushPromises();
 
