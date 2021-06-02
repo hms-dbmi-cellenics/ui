@@ -51,8 +51,6 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
     });
     dispatch(saveCellSets(experimentId));
   } catch (e) {
-    console.log(e);
-
     dispatch({
       type: CELL_SETS_ERROR,
       payload: {

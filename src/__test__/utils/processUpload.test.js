@@ -124,7 +124,6 @@ Storage.put = jest.fn().mockImplementation(
 
 describe('processUpload (in development)', () => {
   afterEach(() => {
-    // console.log(fetch.mock.calls);
     mockStorageCalls = [];
     jest.clearAllMocks();
   });
