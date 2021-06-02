@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import _ from 'lodash';
 import {
-  Form, Input, Empty, PageHeader, Card, Row, Col, Button,
+  Form, Input, Empty, PageHeader, Card, Row, Col, Button, Space,
 } from 'antd';
+import { useRouter } from 'next/router';
 import FeedbackButton from '../../../components/FeedbackButton';
 import messages from '../../../components/notification/messages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
 const ProfileSettings = () => {
+  const router = useRouter();
+
   const [user, setUser] = useState();
   const [oldPasswordError, setOldPasswordError] = useState(null);
   const [newPasswordError, setNewPasswordError] = useState(null);
@@ -133,11 +136,16 @@ const ProfileSettings = () => {
                   />
                 </Form.Item>
               </Form>
-              <Button
-                onClick={() => updateDetails()}
-              >
-                Save changes
-              </Button>
+              <Space>
+                <Button onClick={() => router.back()}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => updateDetails()}
+                >
+                  Save changes
+                </Button>
+              </Space>
             </Col>
           </Row>
         </Card>
