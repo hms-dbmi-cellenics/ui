@@ -85,6 +85,12 @@ const ProjectDetails = ({ width, height }) => {
     existingNames: sampleNames,
   };
 
+  const MASS_EDIT_ACTIONS = [
+    'REPLACE_EMPTY',
+    'REPLACE_ALL',
+    'CLEAR_ALL',
+  ];
+
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
     setUploadModalVisible(false);
@@ -326,43 +332,32 @@ const ProjectDetails = ({ width, height }) => {
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
   };
 
-  const updateSpeciesOrMetadata = (value, metadataKey) => {
+  const createUpdateObject = (value, metadataKey) => {
     const updateObject = metadataKey === 'species' ? { species: value } : { metadata: { [metadataKey]: value } };
     return updateObject;
   };
 
-  const replaceEmptyCells = (value, metadataKey) => {
-    const update = updateSpeciesOrMetadata(value, metadataKey);
+  const setCells = (value, metadataKey, actionType) => {
+    if (!MASS_EDIT_ACTIONS.includes(actionType)) return;
+    const updateObject = createUpdateObject(value, metadataKey);
 
-    const updatingSpecies = (sampleUuid) => metadataKey === 'species' && !samples[sampleUuid].species;
-    const updatingMetadata = (sampleUuid) => metadataKey !== 'species'
-      && (!samples[sampleUuid].metadata[metadataKey]
-        || samples[sampleUuid].metadata[metadataKey] === defaultNA);
+    const canUpdateCell = (sampleUuid, action) => {
+      if (action !== 'REPLACE_EMPTY') return true;
+
+      const isSpeciesEmpty = (uuid) => metadataKey === 'species' && !samples[uuid].species;
+      const isMetadataEmpty = (uuid) => metadataKey !== 'species'
+        && (!samples[uuid].metadata[metadataKey]
+          || samples[uuid].metadata[metadataKey] === defaultNA);
+
+      return isMetadataEmpty(sampleUuid) || isSpeciesEmpty(sampleUuid);
+    };
 
     activeProject.samples.forEach(
       (sampleUuid) => {
-        if (updatingSpecies(sampleUuid) || updatingMetadata(sampleUuid)) {
-          dispatch(updateSample(sampleUuid, update));
+        if (canUpdateCell(sampleUuid, actionType)) {
+          dispatch(updateSample(sampleUuid, updateObject));
         }
       },
-    );
-  };
-
-  const replaceAllCells = (value, metadataKey) => {
-    const update = updateSpeciesOrMetadata(value, metadataKey);
-
-    activeProject.samples.forEach(
-      (sampleUuid) => dispatch(updateSample(sampleUuid, update)),
-    );
-  };
-
-  const clearAllCells = (value, metadataKey) => {
-    const update = updateSpeciesOrMetadata(value, metadataKey);
-
-    activeProject.samples.forEach(
-      (sampleUuid) => dispatch(
-        updateSample(sampleUuid, update),
-      ),
     );
   };
 
@@ -382,9 +377,9 @@ const ProjectDetails = ({ width, height }) => {
             value={name}
           />
           <MetadataEditor
-            onReplaceEmpty={(value) => replaceEmptyCells(value, key)}
-            onReplaceAll={(value) => replaceAllCells(value, key)}
-            onClearAll={() => clearAllCells(defaultNA, key)}
+            onReplaceEmpty={(value) => setCells(value, key, 'REPLACE_EMPTY')}
+            onReplaceAll={(value) => setCells(value, key, 'REPLACE_ALL')}
+            onClearAll={() => setCells(defaultNA, key, 'CLEAR_ALL')}
             massEdit
           >
             <Input />
@@ -439,9 +434,9 @@ const ProjectDetails = ({ width, height }) => {
         <Space>
           <Text>Species</Text>
           <MetadataEditor
-            onReplaceEmpty={(value) => replaceEmptyCells(value, 'species')}
-            onReplaceAll={(value) => replaceAllCells(value, 'species')}
-            onClearAll={() => clearAllCells(null, 'species')}
+            onReplaceEmpty={(value) => setCells(value, 'species', 'REPLACE_EMPTY')}
+            onReplaceAll={(value) => setCells(value, 'species', 'REPLACE_ALL')}
+            onClearAll={() => setCells(null, 'species', 'CLEAR_ALL')}
             massEdit
           >
             <SpeciesSelector
@@ -456,7 +451,7 @@ const ProjectDetails = ({ width, height }) => {
           data={sortedSpeciesData}
           value={organismId}
           onChange={(value) => {
-            dispatch(updateSample(record.uuid, { species: value.key }));
+            dispatch(updateSample(record.uuid, { species: value }));
           }}
         />
       ),

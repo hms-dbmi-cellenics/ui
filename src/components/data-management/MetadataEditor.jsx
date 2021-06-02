@@ -19,7 +19,7 @@ const MetadataEditor = (props) => {
   const [value, setValue] = useState('');
 
   const onChange = (e) => {
-    setValue(e?.target?.value || e?.value);
+    setValue(e?.target?.value || e);
   };
 
   const getContent = () => (

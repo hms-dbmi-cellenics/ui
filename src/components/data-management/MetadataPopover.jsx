@@ -13,7 +13,6 @@ const MetadataPopover = (props) => {
     onCancel,
     message,
     children,
-    popupContainer,
     ...restOfProps
   } = props;
 

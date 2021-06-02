@@ -13,31 +13,12 @@ const SpeciesSelector = (props) => {
     return <Skeleton.Input style={{ width: 300 }} size='small' />;
   }
 
-  const createLabel = (scientificName, displayName) => (
-    <Space direction='vertical'>
-      <Text type='primary'>{displayName}</Text>
-      <Text type='secondary'>
-        {scientificName}
-      </Text>
-    </Space>
-  );
-
-  const labeledValue = (organismId) => {
-    const organism = data.find((entry) => entry.id === organismId);
-
-    return {
-      value: organismId,
-      label: !organismId ? <></> : createLabel(organism.scientific_name, organism.display_name),
-    };
-  };
-
   return (
     <Select
-      value={labeledValue(value)}
-      onChange={(selectedValue, option) => onChange(selectedValue, option)}
+      value={value}
+      onChange={(organismId, option) => onChange(organismId, option)}
       style={{ width: '100%' }}
       dropdownMatchSelectWidth={400}
-      labelInValue
       showSearch
       placeholder='Search for common or scientific name...'
       filterOption={(input, option) => option.searchQuery.includes(input.toLowerCase())}
@@ -72,7 +53,14 @@ const SpeciesSelector = (props) => {
           displayName: organism.display_name,
           scientificName: organism.scientific_name,
           searchQuery: `${organism.display_name} ${organism.scientific_name}`.toLowerCase(),
-          label: createLabel(organism.display_name, organism.scientific_name),
+          label: (
+            <Space direction='vertical'>
+              <Text type='primary'>{organism.display_name}</Text>
+              <Text type='secondary'>
+                {organism.scientific_name}
+              </Text>
+            </Space>
+          ),
         }))
       }
     />
@@ -86,7 +74,7 @@ SpeciesSelector.propTypes = {
 };
 
 SpeciesSelector.defaultProps = {
-  value: null,
+  value: '',
   onChange: () => { },
 };
 
