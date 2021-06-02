@@ -22,12 +22,10 @@ const defaultTableState = {
   sorter: { field: 'p_val_adj', columnKey: 'p_val_adj', order: 'ascend' },
 };
 
-const startDate = '2021-01-01T00:00:00';
-
 const backendStatus = {
-  backendStatus: {
-    status: {
-      pipeline: { startDate },
+  status: {
+    pipeline: {
+      startDate: '2021-01-01T00:00:00',
     },
   },
 };
@@ -50,13 +48,16 @@ describe('loadDifferentialExpression action', () => {
       differentialExpression: {
         ...initialState,
       },
-      experimentSettings: backendStatus,
+      experimentSettings: {
+        backendStatus,
+      },
     });
     fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     await store.dispatch(
       loadDifferentialExpression(experimentId, cellSets, comparisonType, defaultTableState),
     );
+
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(DIFF_EXPR_LOADING);
 
@@ -69,7 +70,7 @@ describe('loadDifferentialExpression action', () => {
         name: 'DifferentialExpression',
         experimentId: '1234',
       },
-      startDate,
+      backendStatus.status,
       {
         pagination: {
           limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
@@ -87,7 +88,9 @@ describe('loadDifferentialExpression action', () => {
       differentialExpression: {
         ...initialState,
       },
-      experimentSettings: backendStatus,
+      experimentSettings: {
+        backendStatus,
+      },
     });
 
     fetchCachedWork.mockImplementationOnce(() => {
@@ -134,7 +137,7 @@ describe('loadDifferentialExpression action', () => {
         name: 'DifferentialExpression',
         experimentId: '1234',
       },
-      startDate,
+      backendStatus.status,
       {
         pagination: {
           limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,

@@ -33,7 +33,15 @@ let component;
 let store;
 
 const TEST_UUID = 'testList';
-const startDate = '2021-01-01T01:01:01.000Z';
+
+const backendStatus = {
+  status: {
+    pipeline: {
+      status: 'SUCCEEDED',
+      startDate: '2021-01-01T01:01:01.000Z',
+    },
+  },
+};
 
 const initialState = {
   genes: {
@@ -71,14 +79,7 @@ const initialState = {
     },
   },
   experimentSettings: {
-    backendStatus: {
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-          startDate,
-        },
-      },
-    },
+    backendStatus,
   },
 };
 
@@ -161,7 +162,7 @@ describe('GeneListTool', () => {
         orderDirection: 'ASC',
         selectFields: ['gene_names', 'dispersions'],
       },
-      startDate,
+      backendStatus.status,
     );
 
     expect(store.getActions()[0]).toMatchSnapshot();

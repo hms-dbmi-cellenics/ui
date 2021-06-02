@@ -42,7 +42,13 @@ jest.mock('../../../../utils/cacheRequest', () => ({
 
 const mockStore = configureMockStore([thunk]);
 
-const startDate = '2021-01-01T00:00:00';
+const backendStatus = {
+  status: {
+    pipeline: {
+      startDate: '2021-01-01T00:00:00',
+    },
+  },
+};
 
 const store = mockStore({
   genes: {
@@ -138,13 +144,7 @@ const store = mockStore({
     },
   },
   experimentSettings: {
-    backendStatus: {
-      status: {
-        pipeline: {
-          startDate,
-        },
-      },
-    },
+    backendStatus,
   },
 });
 
@@ -219,7 +219,7 @@ describe('DiffExprResults', () => {
         experimentId: '1234',
         name: 'DifferentialExpression',
       },
-      startDate,
+      backendStatus.status,
       {
         pagination: {
           limit: 4, offset: 0, orderBy: 'gene_names', orderDirection: 'ASC', responseKey: 0,

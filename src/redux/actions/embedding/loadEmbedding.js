@@ -16,6 +16,8 @@ const loadEmbedding = (
     return null;
   }
 
+  const { backendStatus } = getState().experimentSettings;
+
   // Does not load anything if experiment settings is not loaded
   const embeddingState = getState()
     .experimentSettings
@@ -45,8 +47,7 @@ const loadEmbedding = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, TIMEOUT_SECONDS, body,
-      getState().experimentSettings.backendStatus.status.pipeline.startDate,
+      experimentId, TIMEOUT_SECONDS, body, backendStatus.status,
     );
     return dispatch({
       type: EMBEDDINGS_LOADED,

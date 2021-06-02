@@ -87,7 +87,7 @@ describe('updateCellSetsClustering action', () => {
       type: 'louvain',
       cellSetKey: 'louvain',
       config: { resolution: 0.5 },
-    }, startDate);
+    }, backendStatusStore.backendStatus.status);
 
     await flushPromises();
 
@@ -126,7 +126,7 @@ describe('updateCellSetsClustering action', () => {
       type: 'louvain',
       cellSetKey: 'louvain',
       config: { resolution: 0.5 },
-    }, startDate);
+    }, backendStatusStore.backendStatus.status);
 
     await flushPromises();
 

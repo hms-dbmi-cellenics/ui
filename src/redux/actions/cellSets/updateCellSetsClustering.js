@@ -12,8 +12,8 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
   } = getState().cellSets;
 
   const {
-    startDate: qcStartDate,
-  } = getState().experimentSettings.backendStatus.status.pipeline;
+    backendStatus,
+  } = getState().experimentSettings;
 
   if (loading || error) {
     return null;
@@ -35,7 +35,7 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
 
   try {
     const louvainSets = await fetchCachedWork(
-      experimentId, REQUEST_TIMEOUT, body, qcStartDate,
+      experimentId, REQUEST_TIMEOUT, body, backendStatus.status,
     );
 
     const newCellSets = [
