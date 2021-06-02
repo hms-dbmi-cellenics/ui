@@ -11,7 +11,7 @@ const loadDifferentialExpression = (
   experimentId, cellSets, comparisonType, tableState,
 ) => async (dispatch, getState) => {
   const {
-    startDate: pipelineStartDate,
+    startDate: qcStartDate,
   } = getState().experimentSettings.backendStatus.status.pipeline;
 
   dispatch({
@@ -55,7 +55,7 @@ const loadDifferentialExpression = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, REQUEST_TIMEOUT, body, pipelineStartDate, pagination,
+      experimentId, REQUEST_TIMEOUT, body, qcStartDate, pagination,
     );
 
     let { total } = data;

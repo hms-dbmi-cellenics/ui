@@ -69,7 +69,7 @@ const fetchCachedWork = async (
   timeout,
   body,
   qcPipelineStartDate,
-  ...additionaSendWorkParams) => {
+  ...extras) => {
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
@@ -88,7 +88,7 @@ const fetchCachedWork = async (
     body,
     {
       PipelineRunETag: qcPipelineStartDate,
-      ...additionaSendWorkParams,
+      ...extras,
     },
   );
 
