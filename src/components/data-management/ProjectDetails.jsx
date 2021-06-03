@@ -606,7 +606,7 @@ const ProjectDetails = ({ width, height }) => {
     }
   };
 
-  const launchAnalysis = (experimentId) => {
+  const launchAnalysis = async (experimentId) => {
     dispatch(loadBackendStatus(experimentId))
       .then((backendStatus) => {
         if ([
