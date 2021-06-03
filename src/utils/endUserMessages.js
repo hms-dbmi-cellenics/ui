@@ -14,7 +14,7 @@ export default {
   ERROR_FETCHING_STATUS: 'We couldn\'t get the status of pending jobs.',
   ERROR_NOT_SIGNED_IN: 'You need to sign in first. Click Sign in on the top right to begin.',
   ERROR_SAVING: 'We couldn\'t save your data.',
-  ERROR_STARTING_PIPLELINE: 'We couldn\'t get our server to start working on your data.',
+  ERROR_STARTING_PIPLELINE: 'We couldn\'t start working on your data.',
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
   FEEDBACK_ERROR: 'We couldn\'t process your feedback. Please try submitting again.',
   FEEDBACK_SUCCESSFUL: 'Your feedback has been successfully sent. Thank you!',
