@@ -12,6 +12,7 @@ export default {
   ERROR_FETCHING_PROJECTS: 'The server returned an error while getting the list of projects',
   ERROR_FETCHING_SAMPLES: 'The server returned an error while getting the samples',
   ERROR_FETCHING_STATUS: 'The server returned an error while getting the status of pending jobs',
+  ERROR_NOT_SIGNED_IN: 'You need to sign in. Click the button on the top right.',
   ERROR_SAVING: 'The server returned an error while saving your data',
   ERROR_STARTING_PIPLELINE: 'The server returned and error while trying to start working on your data',
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
