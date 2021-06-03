@@ -1,13 +1,7 @@
 import endUserMessages from './endUserMessages';
 
-// Babel transpiling does not work properly extending native types
-// class ServerError extends Error
-function ServerError(message) {
-  this.message = message;
-  this.stack = Error().stack;
+class ServerError extends Error {
 }
-ServerError.prototype = Object.create(Error.prototype);
-ServerError.prototype.name = 'ServerError';
 
 const throwIfRequestFailed = (response, json, friendlyMessage) => {
   if (!response.ok) {
