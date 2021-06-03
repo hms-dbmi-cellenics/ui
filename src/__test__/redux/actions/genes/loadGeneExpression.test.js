@@ -110,15 +110,6 @@ describe('loadGeneExpression action', () => {
       experimentSettings,
     });
 
-    // Need to mock result accurately because of post-request processing
-    // const mockResolve = {
-    //   geneA: {
-    //     expression: [1],
-    //     mean: 1,
-    //     stdev: 1,
-    //   },
-    // };
-
     const mockResult = {
       geneA: {
         expression: [1],
