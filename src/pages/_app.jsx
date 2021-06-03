@@ -5,7 +5,8 @@ import { DefaultSeo } from 'next-seo';
 import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
-import Amplify, { Storage, withSSRContext } from 'aws-amplify';
+import Amplify, { Auth, Storage, withSSRContext } from 'aws-amplify';
+import { ClipLoader } from 'react-spinners';
 import _ from 'lodash';
 import AWS from 'aws-sdk';
 import { Credentials } from '@aws-amplify/core';
@@ -58,6 +59,7 @@ const WrappedApp = ({ Component, pageProps }) => {
   );
 
   const [amplifyConfigured, setAmplifyConfigured] = useState(!amplifyConfig);
+  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
 
   const environment = useSelector((state) => state.networkResources.environment);
 
@@ -72,6 +74,15 @@ const WrappedApp = ({ Component, pageProps }) => {
       setAmplifyConfigured(true);
     }
   }, [amplifyConfig]);
+
+  // If user is not logged in, show log in page
+  useEffect(() => {
+    if (amplifyConfigured && !isUserAuthenticated) {
+      Auth.currentAuthenticatedUser()
+        .then(() => setIsUserAuthenticated(true))
+        .catch(() => Auth.federatedSignIn());
+    }
+  }, [amplifyConfigured]);
 
   const mainContent = () => {
     // If this is a not found error, show it without the navigation bar.
@@ -115,6 +126,10 @@ const WrappedApp = ({ Component, pageProps }) => {
     }
 
     if (!amplifyConfigured) {
+      return <></>;
+    }
+
+    if (!isUserAuthenticated) {
       return <></>;
     }
 
@@ -180,13 +195,13 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     let results = await Promise.all(promises.map((f) => f(ctx, store)));
     results = _.merge(...results);
 
-    const { Auth } = withSSRContext(ctx);
-    Auth.configure(results.amplifyConfig.Auth);
+    const { Auth: serverSideAuth } = withSSRContext(ctx);
+    serverSideAuth.configure(results.amplifyConfig.Auth);
 
     if (query?.experimentId) {
       const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
 
-      const experimentInfo = await getExperimentInfo(ctx, store, Auth);
+      const experimentInfo = await getExperimentInfo(ctx, store, serverSideAuth);
       results = _.merge(results, experimentInfo);
     }
 
