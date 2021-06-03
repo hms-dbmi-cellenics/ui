@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress, Row, Col,
+  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
