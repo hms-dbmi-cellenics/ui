@@ -35,7 +35,6 @@ const ContentWrapper = (props) => {
 
   const [collapsed, setCollapsed] = useState(false);
   const { experimentId, experimentData, children } = props;
-
   const router = useRouter();
   const route = router?.route || '';
 
@@ -45,6 +44,8 @@ const ContentWrapper = (props) => {
     status: backendStatus,
   } = useSelector((state) => state.experimentSettings.backendStatus);
 
+  const experiment = useSelector((state) => state.experiments[experimentId]);
+  const experimentName = experimentData?.experimentName || experiment?.name;
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus.pipeline?.status;
@@ -302,7 +303,7 @@ const ContentWrapper = (props) => {
             {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
 
             <Menu.ItemGroup title={!collapsed && (
-              <Tooltip title={experimentData?.experimentName} placement='right'>
+              <Tooltip title={experimentName} placement='right'>
                 <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
                   <Text
                     style={{
@@ -312,9 +313,9 @@ const ContentWrapper = (props) => {
                     strong
                     ellipsis
                   >
-                    {experimentData?.experimentName || 'No analysis'}
+                    {experimentName || 'No analysis'}
                   </Text>
-                  {experimentData?.experimentName && (
+                  {experimentName && (
                     <Text style={{ color: '#999999' }}>
                       Current analysis
                     </Text>

@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import { NextSeo } from 'next-seo';
-
+import { useSelector } from 'react-redux';
 import UserButton from './UserButton';
 import FeedbackButton from './FeedbackButton';
 import itemRender from '../utils/renderBreadcrumbLinks';
@@ -13,7 +13,8 @@ const Header = (props) => {
   const {
     experimentId, experimentData, title, extra, route,
   } = props;
-
+  const experiment = useSelector((state) => state.experiments[experimentId]);
+  const experimentName = experimentData?.experimentName || experiment?.name;
   const pathInformation = {
     'data-management': {
       breadcrumbName: 'Data Management',
@@ -25,7 +26,7 @@ const Header = (props) => {
       breadcrumbName: 'Analyses',
     },
     '[experimentId]': {
-      breadcrumbName: experimentData?.experimentName,
+      breadcrumbName: experimentName,
       params: experimentId,
     },
     'data-exploration': {
@@ -58,7 +59,7 @@ const Header = (props) => {
   return (
     <>
       <NextSeo
-        title={experimentData ? `${title} · ${truncateText(experimentData?.experimentName)}` : title}
+        title={experimentData ? `${title} · ${truncateText(experimentName)}` : title}
       />
 
       <PageHeader

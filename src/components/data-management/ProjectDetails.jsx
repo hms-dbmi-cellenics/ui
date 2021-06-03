@@ -46,8 +46,6 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 import loadBackendStatus from '../../redux/actions/experimentSettings/loadBackendStatus';
-import fetchAPI from '../../utils/fetchAPI';
-import { updateExperimentInfo } from '../../redux/actions/experimentSettings';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -605,9 +603,6 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   const launchAnalysis = async (experimentId) => {
-    const response = await fetchAPI(`/v1/experiments/${experimentId}`);
-    const experimentData = await response.json();
-    dispatch(updateExperimentInfo(experimentData));
     dispatch(loadBackendStatus(experimentId))
       .then((backendStatus) => {
         if ([
