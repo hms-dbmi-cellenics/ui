@@ -60,8 +60,8 @@ const deleteSamples = (
           samples: _.difference(projects[projectUuid].sampels, samplesToDelete),
         };
 
-        await dispatch(saveSamples(projectUuid, newSample, false, false));
-        await dispatch(saveProject(projectUuid, newProject, false));
+        dispatch(saveSamples(projectUuid, newSample, false, false));
+        dispatch(saveProject(projectUuid, newProject, false));
 
         dispatch({
           type: SAMPLES_DELETE,

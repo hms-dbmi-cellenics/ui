@@ -50,7 +50,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
       type: EXPERIMENT_SETTINGS_PIPELINE_START,
       payload: {},
     });
-    await dispatch(loadBackendStatus(experimentId));
+    dispatch(loadBackendStatus(experimentId));
   } catch (e) {
     let { message } = e;
     if (!isServerError(e)) {

@@ -38,7 +38,7 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
       payload: {},
     });
 
-    await dispatch(loadBackendStatus(experimentId));
+    dispatch(loadBackendStatus(experimentId));
 
     dispatch({
       type: EXPERIMENT_SETTINGS_INFO_UPDATE,

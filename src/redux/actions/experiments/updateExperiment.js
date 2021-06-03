@@ -10,7 +10,7 @@ const updateExperiment = (
   experiment,
 ) => async (dispatch) => {
   try {
-    await dispatch(saveExperiment(experimentId));
+    dispatch(saveExperiment(experimentId));
 
     dispatch({
       type: EXPERIMENTS_UPDATED,

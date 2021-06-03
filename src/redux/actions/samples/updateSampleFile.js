@@ -33,7 +33,7 @@ const updateSampleFile = (
       };
 
       const newSample = mergeObjectWithArrays(sample, diffObject);
-      await dispatch(saveSamples(sample.projectUuid, newSample));
+      dispatch(saveSamples(sample.projectUuid, newSample));
     }
 
     dispatch({

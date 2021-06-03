@@ -23,7 +23,7 @@ const updateSample = (
   const newSample = mergeObjectWithArrays(sample, diff);
 
   try {
-    await dispatch(saveSamples(sample.projectUuid, newSample));
+    dispatch(saveSamples(sample.projectUuid, newSample));
 
     dispatch({
       type: SAMPLES_UPDATE,
