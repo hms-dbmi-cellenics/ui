@@ -44,7 +44,7 @@ const ContentWrapper = (props) => {
     status: backendStatus,
   } = useSelector((state) => state.experimentSettings.backendStatus);
 
-  const experiment = useSelector((state) => state?.experiments[experimentId]) || {};
+  const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
