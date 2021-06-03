@@ -40,6 +40,15 @@ let component;
 const experimentId = '1234';
 const componentType = 'asd';
 
+const backendStatus = {
+  status: {
+    pipeline: {
+      status: 'SUCCEEDED',
+      startDate: '2021-01-01T01:01:01.000Z',
+    },
+  },
+};
+
 const initialState = {
   genes: {
     expression: {
@@ -67,14 +76,7 @@ const initialState = {
     selected: ['A'],
   },
   experimentSettings: {
-    backendStatus: {
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-          startDate: '2021-01-01T01:01:01.000Z',
-        },
-      },
-    },
+    backendStatus,
   },
 };
 
@@ -148,12 +150,7 @@ describe('ComponentActions', () => {
         name: 'GeneExpression',
         genes: ['A', 'B', 'C'],
       },
-      {
-        pipeline: {
-          status: 'SUCCEEDED',
-          startDate: '2021-01-01T01:01:01.000Z',
-        },
-      },
+      backendStatus.status,
     );
 
     expect(store.getActions().length).toEqual(2);

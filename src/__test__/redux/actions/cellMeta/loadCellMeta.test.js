@@ -5,9 +5,18 @@ import loadCellMeta from '../../../../redux/actions/cellMeta';
 import initialState from '../../../../redux/reducers/cellMeta/initialState';
 
 jest.mock('localforage');
+jest.mock('../../../../utils/cacheRequest');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
+
+const backendStatus = {
+  status: {
+    pipeline: {
+      startDate: '2021-01-01T00:00',
+    },
+  },
+};
 
 describe('loadCellMeta action', () => {
   const experimentId = '1234';
@@ -31,6 +40,9 @@ describe('loadCellMeta action', () => {
           error: false,
         },
       },
+      experimentSettings: {
+        backendStatus,
+      },
     });
 
     store.dispatch(loadCellMeta(experimentId, metaName));
@@ -45,6 +57,9 @@ describe('loadCellMeta action', () => {
           ...initialState[metaName],
           loading: true,
         },
+      },
+      experimentSettings: {
+        backendStatus,
       },
     });
 
@@ -63,6 +78,9 @@ describe('loadCellMeta action', () => {
           error,
         },
       },
+      experimentSettings: {
+        backendStatus,
+      },
     });
 
     store.dispatch(loadCellMeta(experimentId, metaName));
@@ -80,6 +98,9 @@ describe('loadCellMeta action', () => {
           error,
         },
       },
+      experimentSettings: {
+        backendStatus,
+      },
     });
 
     store.dispatch(loadCellMeta(experimentId, metaName));
@@ -92,6 +113,9 @@ describe('loadCellMeta action', () => {
   it('Dispatches a loaded action when run with the initial state.', async () => {
     const store = mockStore({
       cellMeta: initialState,
+      experimentSettings: {
+        backendStatus,
+      },
     });
 
     store.dispatch(loadCellMeta(experimentId, metaName));
@@ -104,6 +128,9 @@ describe('loadCellMeta action', () => {
   it('Dispatches an error condition if fetch fails', async () => {
     const store = mockStore({
       cellMeta: initialState,
+      experimentSettings: {
+        backendStatus,
+      },
     });
 
     fetchMock.resetMocks();

@@ -55,6 +55,13 @@ const defaultStore = {
   embeddings: {},
   experimentSettings: {
     ...initialExperimentState,
+    backendStatus: {
+      status: {
+        pipeline: {
+          startDate: '2020-01-01T00:00:00',
+        },
+      },
+    },
   },
   genes,
 };
