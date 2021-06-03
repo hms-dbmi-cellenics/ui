@@ -45,10 +45,13 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, backen
     return cachedData;
   }
 
-  const { pipeline: { startDate } } = backendStatus;
+  const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
   const response = await sendWork(
-    experimentId, timeout, { ...body, genes: missingGenes }, { ETagPipelineRun: startDate },
+    experimentId,
+    timeout,
+    { ...body, genes: missingGenes },
+    { ETagPipelineRun: qcPipelineStartDate },
   );
   const responseData = JSON.parse(response.results[0].body);
 
@@ -63,38 +66,36 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, backen
   return responseData;
 };
 
-const fetchCachedWork = async (experimentId, timeout, body, backendStatus) => {
+const fetchCachedWork = async (
+  experimentId,
+  timeout,
+  body,
+  backendStatus,
+  ...extras) => {
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
 
-  const { pipeline: { startDate, status } } = backendStatus;
-  const environment = process.env.NODE_ENV;
-  const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
-
-  if (environment === 'development') {
-    console.log('You are working locally. Therefore, you can fetch results for data exploration & plots and tables without having to run the platform first.');
-  } else {
-    if (!startDate) {
-      throw new Error('Cannot submit work before the data processing pipeline has been started.');
-    }
-
-    if (pipelineErrors.includes(status)) {
-      throw new Error('Cannot submit work before the data processing pipeline has been started.');
-    }
-  }
+  const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
   if (body.name === 'GeneExpression') {
     return fetchCachedGeneExpressionWork(experimentId, timeout, body, backendStatus);
   }
 
-  const key = createObjectHash({ experimentId, body, startDate });
+  const key = createObjectHash({ experimentId, body, qcPipelineStartDate });
   const data = await cache.get(key);
-
   if (data) return data;
+
   const response = await sendWork(
-    experimentId, timeout, body, { PipelineRunETag: startDate },
+    experimentId,
+    timeout,
+    body,
+    {
+      PipelineRunETag: qcPipelineStartDate,
+      ...extras,
+    },
   );
+
   const responseData = JSON.parse(response.results[0].body);
   await cache.set(key, responseData);
   return responseData;

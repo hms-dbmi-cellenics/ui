@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/samples';
 
@@ -10,7 +12,6 @@ const saveSamples = (
   newSample,
   addSample = true,
   notifySave = true,
-  message = 'Saving sample...',
 ) => async (dispatch, getState) => {
   const { projects, samples } = getState();
 
@@ -37,14 +38,15 @@ const saveSamples = (
     dispatch({
       type: SAMPLES_SAVING,
       payload: {
-        message,
+        message: endUserMessages.SAVING_SAMPLE,
       },
     });
   }
 
+  const url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
   try {
     const response = await fetchAPI(
-      `/v1/projects/${projectUuid}/${experimentId}/samples`,
+      url,
       {
         method: 'PUT',
         headers: {
@@ -58,9 +60,8 @@ const saveSamples = (
       },
     );
 
-    if (!response.ok) {
-      throw new Error(await response.json().message);
-    }
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     if (notifySave) {
       dispatch({
@@ -68,15 +69,20 @@ const saveSamples = (
       });
     }
   } catch (e) {
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.ERROR_SAVING;
+    }
     dispatch({
       type: SAMPLES_ERROR,
       payload: {
-        error: e.message,
+        error: message,
       },
     });
 
-    pushNotificationMessage('error', `Error saving samples: ${e.message}`);
-    return Promise.reject(e.message);
+    pushNotificationMessage('error', message);
+    return Promise.reject(message);
   }
 };
 

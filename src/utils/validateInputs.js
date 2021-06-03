@@ -2,16 +2,22 @@ const rules = {
   MIN_1_CHAR: 'MIN_1_CHAR',
   MIN_8_CHARS: 'MIN_8_CHARS',
   MIN_2_SEQUENTIAL_CHARS: 'MIN_2_SEQUENTIAL_CHARS',
+  ALPHANUM_SPACE: 'ALPHANUM_SPACE',
   ALPHANUM_DASH_SPACE: 'ALPHANUM_DASH_SPACE',
   UNIQUE_NAME: 'UNIQUE_NAME',
+  UNIQUE_NAME_CASE_INSENSITIVE: 'UNIQUE_NAME_CASE_INSENSITIVE',
+  START_WITH_ALPHABET: 'START_WITH_ALPHABET',
 };
 
 const errorMessages = {
   [rules.MIN_1_CHAR]: 'Min 1 alphanumeric characters',
   [rules.MIN_8_CHARS]: 'Min 8 alphanumeric characters',
   [rules.MIN_2_SEQUENTIAL_CHARS]: 'Min. 2 characters in sequence',
+  [rules.ALPHANUM_SPACE]: 'Only letters, numbers and space allowed',
   [rules.ALPHANUM_DASH_SPACE]: 'Only letters, numbers, space, _, and - allowed',
   [rules.UNIQUE_NAME]: 'Name is already used',
+  [rules.UNIQUE_NAME_CASE_INSENSITIVE]: 'Name is already used',
+  [rules.START_WITH_ALPHABET]: 'Name can only start with letter',
 };
 
 const validationFns = {
@@ -33,7 +39,13 @@ const validationFns = {
     return true;
   },
 
-  // Only alphanumeric, space, undersscore and dash is allowed
+  // Only alphanumeric and space are allowed
+  [rules.ALPHANUM_SPACE](checkName, input) {
+    if (input.match(/[^a-zA-Z\s\d]/gm)) return errorMessages[checkName];
+    return true;
+  },
+
+  // Only alphanumeric, space, undersscore and dash are allowed
   [rules.ALPHANUM_DASH_SPACE](checkName, input) {
     if (input.match(/[^a-zA-Z\s\d-_]/gm)) return errorMessages[checkName];
     return true;
@@ -51,6 +63,27 @@ const validationFns = {
     if (existingNames instanceof Set
       && existingNames.has(input)) return errorMessages[checkName];
 
+    return true;
+  },
+
+  // Enforce unique name - Fail if input exists in existing names
+  [rules.UNIQUE_NAME_CASE_INSENSITIVE](checkName, input, params) {
+    if (!params?.existingNames || params.existingNames.length === 0) return true;
+
+    const { existingNames } = params;
+
+    const existingNamesArr = existingNames instanceof Set
+      ? Array.from(existingNames) : existingNames;
+    const lowerCaseNames = existingNamesArr.map((name) => name.toLowerCase());
+
+    if (lowerCaseNames.includes(input.toLowerCase())) return errorMessages[checkName];
+
+    return true;
+  },
+
+  // Start with alphabet - Fail if input starts with non-alphabetic character
+  [rules.START_WITH_ALPHABET](checkName, input) {
+    if (input.match(/^[^a-zA-Z]/gm)) return errorMessages[checkName];
     return true;
   },
 };

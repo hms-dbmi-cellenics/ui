@@ -28,6 +28,13 @@ describe('Data Processing CalculationConfig', () => {
     embeddings: initialEmbeddingState,
     experimentSettings: {
       ...initialExperimentState,
+      backendStatus: {
+        status: {
+          pipeline: {
+            startDate: '2020-01-01T00:00:00',
+          },
+        },
+      },
     },
   };
 

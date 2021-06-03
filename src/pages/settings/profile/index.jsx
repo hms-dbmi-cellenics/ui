@@ -6,7 +6,7 @@ import {
 } from 'antd';
 import { useRouter } from 'next/router';
 import FeedbackButton from '../../../components/FeedbackButton';
-import messages from '../../../components/notification/messages';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
 const ProfileSettings = () => {
@@ -45,7 +45,7 @@ const ProfileSettings = () => {
     if (name || email) {
       setEmailError(false);
       await Auth.updateUserAttributes(user, changedUserAttributes)
-        .then((response) => pushNotificationMessage('success', messages.detailsUpdated, 3))
+        .then((response) => pushNotificationMessage('success', endUserMessages.DETAILS_UPDATED, 3))
         .catch((e) => setEmailError(true));
     }
     if (oldPassword || newPassword || confirmNewPassword) {
@@ -59,7 +59,7 @@ const ProfileSettings = () => {
         setNewPasswordError('Password should include at least 8 characters, a number, special character, uppercase letter, lowercase letter.');
       } else {
         await Auth.changePassword(user, oldPassword, newPassword)
-          .then((response) => pushNotificationMessage('success', messages.detailsUpdated, 3))
+          .then((response) => pushNotificationMessage('success', endUserMessages.DETAILS_UPDATED, 3))
           .catch((error) => { setOldPasswordError("Doesn't match old password"); });
       }
     }

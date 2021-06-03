@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import Link from 'next/link';
 import { Auth, Hub } from 'aws-amplify';
-import messages from './notification/messages';
+import endUserMessages from '../utils/endUserMessages';
 import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const UserButton = () => {
@@ -29,7 +29,7 @@ const UserButton = () => {
           break;
         case 'signIn_failure':
         case 'cognitoHostedUI_failure':
-          pushNotificationMessage('error', messages.signInError);
+          pushNotificationMessage('error', endUserMessages.ERROR_SIGN_IN);
           break;
         default:
           break;

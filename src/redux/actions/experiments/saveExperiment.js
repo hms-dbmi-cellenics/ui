@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_SAVED,
 } from '../../actionTypes/experiments';
-import errorTypes from './errorTypes';
 
 const saveExperiment = (
   experimentId,
@@ -19,9 +20,10 @@ const saveExperiment = (
     type: EXPERIMENTS_SAVING,
   });
 
+  const url = `/v1/experiments/${experimentId}`;
   try {
     const response = await fetchAPI(
-      `/v1/experiments/${experimentId}`,
+      url,
       {
         method: alreadyExists ? 'PUT' : 'POST',
         headers: {
@@ -31,24 +33,28 @@ const saveExperiment = (
       },
     );
 
-    if (!response.ok) {
-      throw new Error('HTTP status code was not 200.');
-    }
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: EXPERIMENTS_SAVED,
     });
   } catch (e) {
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
+    }
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: errorTypes.SAVE_EXPERIMENT,
+        error: message,
       },
     });
 
     pushNotificationMessage(
       'error',
-      'We couldn\'t connect to the server to save your current experiment, retrying...',
+      message,
     );
   }
 };

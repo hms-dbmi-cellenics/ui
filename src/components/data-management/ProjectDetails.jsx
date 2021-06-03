@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, PageHeader, Button, Input, Progress, Row, Col,
+  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  UploadOutlined, EditOutlined,
+  UploadOutlined,
 } from '@ant-design/icons';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
@@ -35,6 +34,8 @@ import {
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
 
+import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
+
 import { updateExperiment } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
@@ -50,8 +51,6 @@ import loadBackendStatus from '../../redux/actions/experimentSettings/loadBacken
 const { Title, Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
-  const defaultNA = 'N.A.';
-
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
@@ -76,15 +75,22 @@ const ProjectDetails = ({ width, height }) => {
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
-  const validationChecks = [
+  const metadataNameValidation = [
     rules.MIN_1_CHAR,
-    rules.ALPHANUM_DASH_SPACE,
-    rules.UNIQUE_NAME,
+    rules.ALPHANUM_SPACE,
+    rules.START_WITH_ALPHABET,
+    rules.UNIQUE_NAME_CASE_INSENSITIVE,
   ];
 
   const validationParams = {
     existingNames: sampleNames,
   };
+
+  const MASS_EDIT_ACTIONS = [
+    'REPLACE_EMPTY',
+    'REPLACE_ALL',
+    'CLEAR_ALL',
+  ];
 
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
@@ -256,19 +262,6 @@ const ProjectDetails = ({ width, height }) => {
         </div>
       );
     }
-
-    if (status === UploadStatus.DATA_MISSING) {
-      return (
-        <div style={{ whiteSpace: 'nowrap', height: '35px', minWidth: '90px' }}>
-          <Space>
-            <Text type='danger'>Data missing</Text>
-            <MetadataEditor size='small' shape='link' icon={<EditOutlined />}>
-              {_.find(tableColumns, { dataIndex: columnId }).fillInBy}
-            </MetadataEditor>
-          </Space>
-        </div>
-      );
-    }
   };
 
   const renderEditableFieldCell = (
@@ -297,7 +290,6 @@ const ProjectDetails = ({ width, height }) => {
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
         onDelete={() => dispatch(deleteSamples(record.uuid))}
-        validationFunc={(name) => validateInputs(name, validationChecks, validationParams).isValid}
       />
     </Text>
   );
@@ -315,6 +307,7 @@ const ProjectDetails = ({ width, height }) => {
             const newMetadataColumn = createInitializedMetadataColumn(name);
             setTableColumns([...tableColumns, newMetadataColumn]);
             dispatch(createMetadataTrack(name, activeProjectUuid));
+
             setIsAddingMetadata(false);
           }}
           onCancel={() => {
@@ -329,7 +322,6 @@ const ProjectDetails = ({ width, height }) => {
           </Space>
         </MetadataPopover>
       ),
-      fillInBy: <Input />,
       width: 200,
     };
 
@@ -339,6 +331,35 @@ const ProjectDetails = ({ width, height }) => {
   const deleteMetadataColumn = (name) => {
     setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
+  };
+
+  const createUpdateObject = (value, metadataKey) => {
+    const updateObject = metadataKey === 'species' ? { species: value } : { metadata: { [metadataKey]: value } };
+    return updateObject;
+  };
+
+  const setCells = (value, metadataKey, actionType) => {
+    if (!MASS_EDIT_ACTIONS.includes(actionType)) return;
+    const updateObject = createUpdateObject(value, metadataKey);
+
+    const canUpdateCell = (sampleUuid, action) => {
+      if (action !== 'REPLACE_EMPTY') return true;
+
+      const isSpeciesEmpty = (uuid) => metadataKey === 'species' && !samples[uuid].species;
+      const isMetadataEmpty = (uuid) => metadataKey !== 'species'
+        && (!samples[uuid].metadata[metadataKey]
+          || samples[uuid].metadata[metadataKey] === DEFAULT_NA);
+
+      return isMetadataEmpty(sampleUuid) || isSpeciesEmpty(sampleUuid);
+    };
+
+    activeProject.samples.forEach(
+      (sampleUuid) => {
+        if (canUpdateCell(sampleUuid, actionType)) {
+          dispatch(updateSample(sampleUuid, updateObject));
+        }
+      },
+    );
   };
 
   const createInitializedMetadataColumn = (name) => {
@@ -355,43 +376,24 @@ const ProjectDetails = ({ width, height }) => {
               updateMetadataTrack(name, newName, activeProjectUuid),
             )}
             value={name}
+            validationFunc={
+              (newName) => validateInputs(newName, metadataNameValidation, validationParams).isValid
+            }
           />
           <MetadataEditor
-            onReplaceEmpty={(value) => {
-              activeProject.samples.forEach(
-                (sampleUuid) => {
-                  if (
-                    !samples[sampleUuid].metadata[key]
-                    || samples[sampleUuid].metadata[key] === defaultNA
-                  ) {
-                    dispatch(updateSample(sampleUuid, { metadata: { [key]: value } }));
-                  }
-                },
-              );
-            }}
-            onReplaceAll={(value) => {
-              activeProject.samples.forEach(
-                (sampleUuid) => dispatch(updateSample(sampleUuid, { metadata: { [key]: value } })),
-              );
-            }}
-            onClearAll={() => {
-              activeProject.samples.forEach(
-                (sampleUuid) => dispatch(
-                  updateSample(sampleUuid, { metadata: { [key]: defaultNA } }),
-                ),
-              );
-            }}
+            onReplaceEmpty={(value) => setCells(value, key, 'REPLACE_EMPTY')}
+            onReplaceAll={(value) => setCells(value, key, 'REPLACE_ALL')}
+            onClearAll={() => setCells(DEFAULT_NA, key, 'CLEAR_ALL')}
             massEdit
           >
             <Input />
           </MetadataEditor>
         </Space>
       ),
-      fillInBy: <Input />,
       width: 200,
       dataIndex: key,
       render: (cellValue, record, rowIdx) => renderEditableFieldCell(
-        defaultNA,
+        DEFAULT_NA,
         cellValue,
         record,
         key,
@@ -436,45 +438,26 @@ const ProjectDetails = ({ width, height }) => {
         <Space>
           <Text>Species</Text>
           <MetadataEditor
-            onReplaceEmpty={(value) => {
-              activeProject.samples.forEach(
-                (sampleUuid) => {
-                  if (
-                    !samples[sampleUuid].species
-                    || samples[sampleUuid].species === defaultNA
-                  ) {
-                    dispatch(updateSample(sampleUuid, { species: value }));
-                  }
-                },
-              );
-            }}
-            onReplaceAll={(value) => {
-              activeProject.samples.forEach(
-                (sampleUuid) => dispatch(updateSample(sampleUuid, { species: value })),
-              );
-            }}
-            onClearAll={() => {
-              activeProject.samples.forEach(
-                (sampleUuid) => dispatch(updateSample(sampleUuid, { species: defaultNA })),
-              );
-            }}
+            onReplaceEmpty={(value) => setCells(value, 'species', 'REPLACE_EMPTY')}
+            onReplaceAll={(value) => setCells(value, 'species', 'REPLACE_ALL')}
+            onClearAll={() => setCells(null, 'species', 'CLEAR_ALL')}
             massEdit
           >
-            <SpeciesSelector data={sortedSpeciesData} />
+            <SpeciesSelector
+              data={sortedSpeciesData}
+            />
           </MetadataEditor>
         </Space>
       ),
-      fillInBy: <SpeciesSelector data={sortedSpeciesData} />,
       dataIndex: 'species',
-      render: (text, record, rowIdx) => renderEditableFieldCell(
-        defaultNA,
-        text,
-        record,
-        'species',
-        rowIdx,
-        (newValue) => {
-          dispatch(updateSample(record.uuid, { species: newValue }));
-        },
+      render: (organismId, record) => (
+        <SpeciesSelector
+          data={sortedSpeciesData}
+          value={organismId}
+          onChange={(value) => {
+            dispatch(updateSample(record.uuid, { species: value }));
+          }}
+        />
       ),
       width: 200,
     },
@@ -551,7 +534,7 @@ const ProjectDetails = ({ width, height }) => {
         barcodes: barcodesData,
         genes: genesData,
         matrix: matrixData,
-        species: samples[sampleUuid].species || defaultNA,
+        species: samples[sampleUuid].species || DEFAULT_NA,
         ...samples[sampleUuid].metadata,
       };
     });
@@ -602,7 +585,7 @@ const ProjectDetails = ({ width, height }) => {
     }
   };
 
-  const launchAnalysis = (experimentId) => {
+  const launchAnalysis = async (experimentId) => {
     dispatch(loadBackendStatus(experimentId))
       .then((backendStatus) => {
         if ([
@@ -629,7 +612,9 @@ const ProjectDetails = ({ width, height }) => {
         experiments={experiments}
         visible={analysisModalVisible}
         onLaunch={(experimentId) => {
-          dispatch(updateExperiment(experimentId, { lastViewed: moment().toISOString() }));
+          const lastViewed = moment().toISOString();
+          dispatch(updateExperiment(experimentId, { lastViewed }));
+          dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
         }}
         onChange={() => {
@@ -660,8 +645,8 @@ const ProjectDetails = ({ width, height }) => {
               <Button
                 disabled={
                   projects.ids.length === 0
-                || activeProject?.samples?.length === 0
-                || isAddingMetadata
+                  || activeProject?.samples?.length === 0
+                  || isAddingMetadata
                 }
                 onClick={() => {
                   setIsAddingMetadata(true);
@@ -674,8 +659,8 @@ const ProjectDetails = ({ width, height }) => {
                 type='primary'
                 disabled={
                   projects.ids.length === 0
-                || activeProject?.samples?.length === 0
-                || !canLaunchAnalysis
+                  || activeProject?.samples?.length === 0
+                  || !canLaunchAnalysis
                 }
                 onClick={() => openAnalysisModal()}
               >

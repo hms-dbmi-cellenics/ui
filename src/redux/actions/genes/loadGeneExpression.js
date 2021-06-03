@@ -16,6 +16,9 @@ const loadGeneExpression = (
   if (loading.length > 0) {
     return null;
   }
+
+  const { backendStatus } = getState().experimentSettings;
+
   const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
 
   const upperCaseGenes = new Set(upperCaseArray(genes));
@@ -63,7 +66,7 @@ const loadGeneExpression = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, 30, body, getState().experimentSettings.backendStatus.status,
+      experimentId, 30, body, backendStatus.status,
     );
     if (data[genesToFetch[0]]?.error) {
       pushNotificationMessage('error', data[genesToFetch[0]].message);

@@ -1,17 +1,18 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-
 import {
   SAMPLES_CREATE,
 } from '../../actionTypes/samples';
-
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
+import {
+  DEFAULT_NA,
+} from '../../reducers/projects/initialState';
 import saveSamples from './saveSamples';
 import { saveProject } from '../projects';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
 
 import { sampleTemplate } from '../../reducers/samples/initialState';
 
@@ -34,6 +35,8 @@ const createSample = (
     uuid: newSampleUuid,
     createdDate,
     lastModified: createdDate,
+    metadata: project?.metadataKeys
+      .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
   };
 
   const newProject = {
@@ -60,7 +63,7 @@ const createSample = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 
   return Promise.resolve(newSampleUuid);

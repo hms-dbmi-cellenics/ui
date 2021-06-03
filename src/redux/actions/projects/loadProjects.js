@@ -1,29 +1,26 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import { PROJECTS_ERROR, PROJECTS_LOADED, PROJECTS_LOADING } from '../../actionTypes/projects';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import messages from '../../../components/notification/messages';
+import endUserMessages from '../../../utils/endUserMessages';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import { PROJECTS_ERROR, PROJECTS_LOADED, PROJECTS_LOADING } from '../../actionTypes/projects';
 import loadSamples from '../samples/loadSamples';
 
 const loadProjects = () => async (dispatch) => {
+  const url = '/v1/projects';
   try {
     dispatch({
       type: PROJECTS_LOADING,
     });
-    const response = await fetchAPI('/v1/projects');
+    const response = await fetchAPI(url);
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
+    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROJECTS);
+
+    await Promise.all(data
+      .filter((entry) => entry.samples.length)
+      .map((entry) => dispatch(loadSamples(false, entry.uuid))));
 
     const ids = data.map((project) => project.uuid);
-
-    data.forEach((entry) => {
-      if (entry.samples.length) {
-        dispatch(loadSamples(false, entry.uuid));
-      }
-    });
-
     dispatch({
       type: PROJECTS_LOADED,
       payload: {
@@ -32,13 +29,18 @@ const loadProjects = () => async (dispatch) => {
       },
     });
   } catch (e) {
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
+    }
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
-        error: e.message,
+        error: message,
       },
     });
-    pushNotificationMessage('error', messages.connectionError);
+    pushNotificationMessage('error', message);
   }
 };
 export default loadProjects;

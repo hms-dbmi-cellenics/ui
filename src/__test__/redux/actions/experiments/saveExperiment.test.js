@@ -92,7 +92,7 @@ describe('saveExperiment action', () => {
 
   it('Dispatches a notification when fetch fails.', async () => {
     fetchMock.resetMocks();
-    fetchMock.mockReject(new Error('some weird error that happened'));
+    fetchMock.mockResponse(JSON.stringify({ message: 'Error from server hidden from user' }), { status: 500 });
 
     const store = mockStore(initialState);
     await store.dispatch(saveExperiment(mockExperiment.id));

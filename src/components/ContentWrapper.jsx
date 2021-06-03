@@ -35,7 +35,6 @@ const ContentWrapper = (props) => {
 
   const [collapsed, setCollapsed] = useState(false);
   const { experimentId, experimentData, children } = props;
-
   const router = useRouter();
   const route = router?.route || '';
 
@@ -45,6 +44,8 @@ const ContentWrapper = (props) => {
     status: backendStatus,
   } = useSelector((state) => state.experimentSettings.backendStatus);
 
+  const experiment = useSelector((state) => state?.experiments[experimentId]);
+  const experimentName = experimentData?.experimentName || experiment?.name;
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus.pipeline?.status;
@@ -209,6 +210,9 @@ const ContentWrapper = (props) => {
     },
   ];
 
+  const waitingForQcToLaunch = gem2sStatusKey === pipelineStatus.SUCCEEDED
+    && pipelineStatusKey === pipelineStatus.NOT_CREATED;
+
   const renderContent = () => {
     if (experimentId) {
       if (
@@ -224,7 +228,7 @@ const ContentWrapper = (props) => {
         return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='error' />;
       }
 
-      if (gem2sRunning) {
+      if (gem2sRunning || waitingForQcToLaunch) {
         return <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
@@ -257,7 +261,8 @@ const ContentWrapper = (props) => {
   }) => {
     const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
     const pipelineStatusDisable = disabledByPipelineStatus && (
-      backendError || pipelineRunning || pipelineRunningError
+      backendError || gem2sRunning || gem2sRunningError
+      || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
     );
 
     return (
@@ -298,7 +303,7 @@ const ContentWrapper = (props) => {
             {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
 
             <Menu.ItemGroup title={!collapsed && (
-              <Tooltip title={experimentData?.experimentName} placement='right'>
+              <Tooltip title={experimentName} placement='right'>
                 <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
                   <Text
                     style={{
@@ -308,9 +313,9 @@ const ContentWrapper = (props) => {
                     strong
                     ellipsis
                   >
-                    {experimentData?.experimentName || 'No analysis'}
+                    {experimentName || 'No analysis'}
                   </Text>
-                  {experimentData?.experimentName && (
+                  {experimentName && (
                     <Text style={{ color: '#999999' }}>
                       Current analysis
                     </Text>

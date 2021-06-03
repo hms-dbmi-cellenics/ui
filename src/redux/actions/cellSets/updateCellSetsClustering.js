@@ -1,7 +1,7 @@
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING, CELL_SETS_CLUSTERING_UPDATED,
 } from '../../actionTypes/cellSets';
-import sendWork from '../../../utils/sendWork';
+import { fetchCachedWork } from '../../../utils/cacheRequest';
 import saveCellSets from './saveCellSets';
 
 const REQUEST_TIMEOUT = 30;
@@ -10,6 +10,10 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
   const {
     loading, error,
   } = getState().cellSets;
+
+  const {
+    backendStatus,
+  } = getState().experimentSettings;
 
   if (loading || error) {
     return null;
@@ -30,11 +34,9 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
   });
 
   try {
-    const response = await sendWork(
-      experimentId, REQUEST_TIMEOUT, body,
+    const louvainSets = await fetchCachedWork(
+      experimentId, REQUEST_TIMEOUT, body, backendStatus.status,
     );
-
-    const louvainSets = JSON.parse(response.results[0].body);
 
     const newCellSets = [
       louvainSets,

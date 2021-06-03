@@ -3,23 +3,22 @@ import PropTypes from 'prop-types';
 import {
   Select, Typography, Space, Divider, Skeleton,
 } from 'antd';
-import _ from 'lodash';
 
 const { Text } = Typography;
 
 const SpeciesSelector = (props) => {
-  const { data, onChange } = props;
+  const { data, value, onChange } = props;
 
-  if (!data) {
+  if (!data || data.length === 0) {
     return <Skeleton.Input style={{ width: 300 }} size='small' />;
   }
 
   return (
     <Select
-      onChange={(value, option) => onChange(option.displayName)}
+      value={value}
+      onChange={(organismId, option) => onChange(organismId, option)}
       style={{ width: '100%' }}
       dropdownMatchSelectWidth={400}
-      labelInValue
       showSearch
       placeholder='Search for common or scientific name...'
       filterOption={(input, option) => option.searchQuery.includes(input.toLowerCase())}
@@ -70,10 +69,12 @@ const SpeciesSelector = (props) => {
 
 SpeciesSelector.propTypes = {
   data: PropTypes.array.isRequired,
+  value: PropTypes.string,
   onChange: PropTypes.func,
 };
 
 SpeciesSelector.defaultProps = {
+  value: '',
   onChange: () => { },
 };
 
