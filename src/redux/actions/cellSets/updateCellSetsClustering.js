@@ -49,7 +49,7 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
         data: newCellSets,
       },
     });
-    dispatch(saveCellSets(experimentId));
+    await dispatch(saveCellSets(experimentId));
   } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,

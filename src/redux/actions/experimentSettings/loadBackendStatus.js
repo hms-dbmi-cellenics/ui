@@ -1,4 +1,6 @@
 import fetchAPI from '../../../utils/fetchAPI';
+import endUserMessages from '../../../utils/endUserMessages';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
@@ -13,27 +15,25 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
     },
   });
 
+  const url = `/v1/experiments/${experimentId}/backendStatus`;
   try {
-    const response = await fetchAPI(
-      `/v1/experiments/${experimentId}/backendStatus`,
-    );
+    const response = await fetchAPI(url);
 
-    if (response.ok) {
-      const status = await response.json();
+    const status = await response.json();
+    throwIfRequestFailed(response, status, endUserMessages.ERROR_FETCHING_STATUS);
+    dispatch({
+      type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
+      payload: {
+        experimentId,
+        status,
+      },
+    });
 
-      dispatch({
-        type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
-        payload: {
-          experimentId,
-          status,
-        },
-      });
-
-      return status;
-    }
-
-    throw new Error('HTTP status code was not 200.');
+    return status;
   } catch (e) {
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${e.message}`);
+    }
     dispatch({
       type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
       payload: {

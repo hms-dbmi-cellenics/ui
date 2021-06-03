@@ -34,7 +34,7 @@ Array [
   Object {
     "payload": Object {
       "error": "Could not start gem2s.",
-      "errorType": [Error: some weird error that happened],
+      "errorType": "some weird error that happened",
     },
     "type": "experimentSettings/backendStatusError",
   },
