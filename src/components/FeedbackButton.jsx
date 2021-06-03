@@ -3,7 +3,7 @@ import {
   Button, Dropdown, Card, Input, Space,
 } from 'antd';
 import { CommentOutlined, DownOutlined } from '@ant-design/icons';
-import messages from './notification/messages';
+import endUserMessages from '../utils/endUserMessages';
 import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const { TextArea } = Input;
@@ -52,9 +52,9 @@ const FeedbackButton = () => {
         throw new Error('Invalid status code returned.');
       }
       setFeedbackText('');
-      pushNotificationMessage('success', messages.feedbackSuccessful);
+      pushNotificationMessage('success', endUserMessages.FEEDBACK_SUCCESSFUL);
     } catch {
-      pushNotificationMessage('error', messages.feedbackError);
+      pushNotificationMessage('error', endUserMessages.FEEDBACK_ERROR);
     }
   };
 

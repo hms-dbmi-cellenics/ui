@@ -28,7 +28,7 @@ const NewProjectModal = (props) => {
     rules.MIN_8_CHARS,
     rules.MIN_2_SEQUENTIAL_CHARS,
     rules.ALPHANUM_DASH_SPACE,
-    rules.UNIQUE_NAME,
+    rules.UNIQUE_NAME_CASE_INSENSITIVE,
   ];
 
   const validationParams = {

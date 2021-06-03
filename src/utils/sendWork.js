@@ -35,6 +35,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${requestUuid}`, (res) => {
       const { response: { error } } = res;
+
       if (error) {
         return reject(new WorkResponseError(error, request));
       }

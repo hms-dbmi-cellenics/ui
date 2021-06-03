@@ -104,7 +104,7 @@ describe('saveSamples action', () => {
     const errorMsg = 'some weird error that happened';
 
     fetchMock.resetMocks();
-    fetchMock.mockReject(new Error(errorMsg));
+    fetchMock.mockResponse(JSON.stringify({ message: errorMsg }), { status: 400 });
 
     const store = mockStore(initialState);
 

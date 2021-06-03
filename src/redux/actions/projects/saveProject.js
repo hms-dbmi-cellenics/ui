@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
   PROJECTS_ERROR,
@@ -11,7 +13,6 @@ const saveProject = (
   projectUuid,
   newProject,
   notifySave = true,
-  message = 'Saving project...',
 ) => async (dispatch, getState) => {
   const project = newProject ?? getState().projects[projectUuid];
 
@@ -19,14 +20,15 @@ const saveProject = (
     dispatch({
       type: PROJECTS_SAVING,
       payload: {
-        message,
+        message: endUserMessages.SAVING_PROJECT,
       },
     });
   }
 
+  const url = `/v1/projects/${projectUuid}`;
   try {
     const response = await fetchAPI(
-      `/v1/projects/${projectUuid}`,
+      url,
       {
         method: 'PUT',
         headers: {
@@ -36,9 +38,8 @@ const saveProject = (
       },
     );
 
-    if (!response.ok) {
-      throw new Error(await response.json().message);
-    }
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     if (notifySave) {
       dispatch({
@@ -46,14 +47,19 @@ const saveProject = (
       });
     }
   } catch (e) {
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.ERROR_SAVING;
+    }
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
-        error: e.message,
+        error: message,
       },
     });
-    pushNotificationMessage('error', `Error saving project: ${e.message}`);
-    return Promise.reject(e.message);
+    pushNotificationMessage('error', message);
+    return Promise.reject(message);
   }
 };
 

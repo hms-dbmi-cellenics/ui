@@ -45,9 +45,15 @@ Object {
 exports[`updateCellSetsClustering action Dispatches error action when the reset fails 2`] = `
 Object {
   "payload": Object {
-    "error": [TypeError: Cannot read property 'body' of undefined],
+    "data": Array [
+      Object {
+        "results": Object {
+          "error": "The backend returned an error",
+        },
+      },
+    ],
     "experimentId": "1234",
   },
-  "type": "cellSets/error",
+  "type": "cellSets/clusteringUpdated",
 }
 `;

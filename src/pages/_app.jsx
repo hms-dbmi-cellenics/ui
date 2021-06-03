@@ -182,10 +182,8 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     const { Auth } = withSSRContext(ctx);
     Auth.configure(results.amplifyConfig.Auth);
-
     if (query?.experimentId) {
       const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
-
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);
       results = _.merge(results, experimentInfo);
     }

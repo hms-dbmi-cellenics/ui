@@ -7,7 +7,7 @@ Array [
   },
   Object {
     "payload": Object {
-      "error": "Error saving experiment",
+      "error": "We couldn't save your data.",
     },
     "type": "experiments/error",
   },

@@ -43,6 +43,7 @@ const store = mockStore({
       experimentName: 'test experiment',
     },
   },
+  experiments: { 1234: {} },
 });
 
 describe('ContentWrapper', () => {
@@ -116,6 +117,7 @@ describe('ContentWrapper', () => {
         },
         info,
       },
+      experiments: { 1234: {} },
     });
 
     const wrapper = mount(

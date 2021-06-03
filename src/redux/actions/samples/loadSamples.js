@@ -1,4 +1,6 @@
 import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import {
   SAMPLES_LOADED,
   SAMPLES_ERROR,
@@ -8,23 +10,16 @@ import {
 const loadSamples = (
   experimentId = false, projectUuid = false,
 ) => async (dispatch) => {
+  const url = experimentId ? `/v1/experiments/${experimentId}/samples` : `/v1/projects/${projectUuid}/samples`;
   try {
-    let response = false;
     dispatch({
       type: SAMPLES_LOADING,
     });
-    if (experimentId) {
-      response = await fetchAPI(`/v1/experiments/${experimentId}/samples`);
-    } else {
-      response = await fetchAPI(`/v1/projects/${projectUuid}/samples`, {
-        method: 'GET',
-      });
-    }
+    const response = await fetchAPI(url);
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
+    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
+
     dispatch({
       type: SAMPLES_LOADED,
       payload: {
@@ -34,6 +29,9 @@ const loadSamples = (
       },
     });
   } catch (e) {
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${e.message}`);
+    }
     dispatch({
       type: SAMPLES_ERROR,
       payload: {

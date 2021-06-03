@@ -2,7 +2,7 @@ const updateExperimentInfo = (state, action) => {
   const {
     experimentId,
     experimentName,
-    projectUuid,
+    projectId,
   } = action.payload;
 
   return {
@@ -11,7 +11,7 @@ const updateExperimentInfo = (state, action) => {
       ...state.info,
       experimentId,
       experimentName,
-      projectUuid,
+      projectUuid: projectId,
     },
   };
 };
