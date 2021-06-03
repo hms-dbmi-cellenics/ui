@@ -25,7 +25,7 @@ const createExperiment = (
   };
 
   try {
-    await dispatch(saveExperiment(newExperiment.id, newExperiment, false));
+    dispatch(saveExperiment(newExperiment.id, newExperiment, false));
 
     dispatch({
       type: EXPERIMENTS_CREATED,
