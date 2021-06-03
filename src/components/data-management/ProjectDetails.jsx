@@ -348,7 +348,7 @@ const ProjectDetails = ({ width, height }) => {
       const isSpeciesEmpty = (uuid) => metadataKey === 'species' && !samples[uuid].species;
       const isMetadataEmpty = (uuid) => metadataKey !== 'species'
         && (!samples[uuid].metadata[metadataKey]
-          || samples[uuid].metadata[metadataKey] === defaultNA);
+          || samples[uuid].metadata[metadataKey] === DEFAULT_NA);
 
       return isMetadataEmpty(sampleUuid) || isSpeciesEmpty(sampleUuid);
     };
@@ -380,7 +380,7 @@ const ProjectDetails = ({ width, height }) => {
           <MetadataEditor
             onReplaceEmpty={(value) => setCells(value, key, 'REPLACE_EMPTY')}
             onReplaceAll={(value) => setCells(value, key, 'REPLACE_ALL')}
-            onClearAll={() => setCells(defaultNA, key, 'CLEAR_ALL')}
+            onClearAll={() => setCells(DEFAULT_NA, key, 'CLEAR_ALL')}
             massEdit
           >
             <Input />
