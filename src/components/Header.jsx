@@ -13,7 +13,7 @@ const Header = (props) => {
   const {
     experimentId, experimentData, title, extra, route,
   } = props;
-  const experiment = useSelector((state) => state.experiments[experimentId]);
+  const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
   const pathInformation = {
     'data-management': {
