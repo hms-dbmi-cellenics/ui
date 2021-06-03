@@ -128,8 +128,8 @@ const DataManagementPage = ({ route }) => {
         title='Data Management'
       />
       <LoadingModal
-        visible={!!(projectSaving || sampleSaving)}
-        message={projectSaving || sampleSaving || ''}
+        visible={Boolean(projectSaving || sampleSaving)}
+        message={projectSaving ?? sampleSaving ?? ''}
       />
 
       <NewProjectModal

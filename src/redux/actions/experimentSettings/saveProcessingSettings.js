@@ -4,7 +4,7 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../actionTypes/experimentSettings';
 
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
@@ -30,7 +30,7 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
     );
 
     const json = await response.json();
-    throwWithEndUserMessage(response, json, endUserMessages.errorSaving);
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_SAVE,
@@ -43,13 +43,13 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
     }
     pushNotificationMessage(
       'error',
-      endUserMessages.errorSaving,
+      endUserMessages.ERROR_SAVING,
     );
 
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
       payload: {
-        error: endUserMessages.errorSaving,
+        error: endUserMessages.ERROR_SAVING,
         errorType: errorTypes.SAVE_PROCESSING_SETTINGS,
       },
     });

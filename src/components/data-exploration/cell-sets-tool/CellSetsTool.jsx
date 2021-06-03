@@ -57,7 +57,7 @@ const CellSetsTool = (props) => {
     if (
       notifications
       && notifications.message
-      && notifications.message.message === endUserMessages.newClusterCreated
+      && notifications.message.message === endUserMessages.NEW_CLUSTER_CREATED
     ) {
       animateScroll.scrollTo(height, {
         containerId: 'cell-set-tool-container',
@@ -82,7 +82,7 @@ const CellSetsTool = (props) => {
   };
 
   /**
-   * Remders the content inside the tool. Can be a skeleton during loading
+   * Renders the content inside the tool. Can be a skeleton during loading
    * or a hierarchical tree listing all cell sets.
    */
   const renderContent = () => {

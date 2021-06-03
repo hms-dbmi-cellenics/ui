@@ -1,5 +1,5 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
@@ -44,7 +44,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
       },
     );
     const json = await response.json();
-    throwWithEndUserMessage(response, json, endUserMessages.errorStartingPipeline);
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
 
     dispatch({
       type: EXPERIMENT_SETTINGS_PIPELINE_START,
@@ -55,7 +55,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
     let { message } = e;
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.connectionError;
+      message = endUserMessages.CONNECTION_ERROR;
     }
     dispatch({
       type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,

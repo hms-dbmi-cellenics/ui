@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
@@ -20,7 +20,7 @@ const saveProject = (
     dispatch({
       type: PROJECTS_SAVING,
       payload: {
-        message: endUserMessages.savingProject,
+        message: endUserMessages.SAVING_PROJECT,
       },
     });
   }
@@ -39,7 +39,7 @@ const saveProject = (
     );
 
     const json = await response.json();
-    throwWithEndUserMessage(response, json, endUserMessages.errorSaving);
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     if (notifySave) {
       dispatch({
@@ -50,7 +50,7 @@ const saveProject = (
     let { message } = e;
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.errorSaving;
+      message = endUserMessages.ERROR_SAVING;
     }
     dispatch({
       type: PROJECTS_ERROR,

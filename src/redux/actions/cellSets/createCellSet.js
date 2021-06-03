@@ -21,7 +21,7 @@ const createCellSet = (experimentId, name, color, cellIds) => async (dispatch, g
   };
 
   if (data.cellIds.size === 0) {
-    pushNotificationMessage('info', endUserMessages.emptyClusterNotCreated);
+    pushNotificationMessage('info', endUserMessages.EMPTY_CLUSTER_NOT_CREATED);
     return;
   }
 
@@ -34,7 +34,7 @@ const createCellSet = (experimentId, name, color, cellIds) => async (dispatch, g
   });
 
   await dispatch(saveCellSets(experimentId));
-  pushNotificationMessage('info', endUserMessages.newClusterCreated);
+  pushNotificationMessage('info', endUserMessages.NEW_CLUSTER_CREATED);
 };
 
 export default createCellSet;

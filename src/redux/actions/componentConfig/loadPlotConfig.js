@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { LOAD_CONFIG } from '../../actionTypes/componentConfig';
@@ -33,13 +33,13 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
         },
       });
     } else {
-      throwWithEndUserMessage(response, data, endUserMessages.errorFetchingPlotConfig);
+      throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PLOT_CONFIG);
     }
   } catch (e) {
     let { message } = e;
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.connectionError;
+      message = endUserMessages.CONNECTION_ERROR;
     }
     pushNotificationMessage('error', message);
   }

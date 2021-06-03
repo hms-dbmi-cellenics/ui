@@ -1,20 +1,20 @@
 class ServerError extends Error {
 }
 
-const throwWithEndUserMessage = (response, json, friendlyMessage) => {
+const throwIfRequestFailed = (response, json, friendlyMessage) => {
   if (!response.ok) {
-    let messageToSend = json.message;
+    let { message } = json.message;
     if (response.status === 500) {
-      console.error(`Status 500 fetching ${response.url}. Hidding full error from user: ${messageToSend}`);
-      messageToSend = friendlyMessage;
+      console.error(`Status 500 fetching ${response.url}. Error in response: ${message}`);
+      message = friendlyMessage;
     }
-    throw new ServerError(messageToSend);
+    throw new ServerError(message);
   }
 };
 
 const isServerError = (error) => (error instanceof ServerError);
 
 export {
-  throwWithEndUserMessage,
+  throwIfRequestFailed,
   isServerError,
 };

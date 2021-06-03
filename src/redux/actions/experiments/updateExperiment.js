@@ -20,7 +20,7 @@ const updateExperiment = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.errorSaving);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

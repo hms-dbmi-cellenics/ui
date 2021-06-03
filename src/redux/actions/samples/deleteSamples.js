@@ -43,7 +43,7 @@ const deleteSamples = (
   dispatch({
     type: SAMPLES_SAVING,
     payload: {
-      message: endUserMessages.deletingSample,
+      message: endUserMessages.DELETING_SAMPLE,
     },
   });
 
@@ -86,12 +86,12 @@ const deleteSamples = (
       type: SAMPLES_SAVED,
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.errorDeletingSamples);
+    pushNotificationMessage('error', endUserMessages.ERROR_DELETING_SAMPLES);
 
     dispatch({
       type: SAMPLES_ERROR,
       payload: {
-        error: endUserMessages.errorDeletingSamples,
+        error: endUserMessages.ERROR_DELETING_SAMPLES,
       },
     });
   }

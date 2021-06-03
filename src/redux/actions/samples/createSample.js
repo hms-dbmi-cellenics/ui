@@ -63,7 +63,7 @@ const createSample = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.errorSaving);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 
   return Promise.resolve(newSampleUuid);

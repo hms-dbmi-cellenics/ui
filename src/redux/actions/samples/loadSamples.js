@@ -1,5 +1,5 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import {
   SAMPLES_LOADED,
@@ -18,7 +18,7 @@ const loadSamples = (
     const response = await fetchAPI(url);
     const data = await response.json();
 
-    throwWithEndUserMessage(response, data, endUserMessages.errorFetchingSamples);
+    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
 
     dispatch({
       type: SAMPLES_LOADED,

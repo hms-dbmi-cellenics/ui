@@ -31,7 +31,7 @@ const updateProject = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.errorSaving);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

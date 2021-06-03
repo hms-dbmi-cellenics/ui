@@ -29,7 +29,7 @@ const UserButton = () => {
           break;
         case 'signIn_failure':
         case 'cognitoHostedUI_failure':
-          pushNotificationMessage('error', endUserMessages.signInError);
+          pushNotificationMessage('error', endUserMessages.ERROR_SIGN_IN);
           break;
         default:
           break;

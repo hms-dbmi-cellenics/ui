@@ -34,12 +34,12 @@ const createExperiment = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.errorSaving);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: endUserMessages.errorSaving,
+        error: endUserMessages.ERROR_SAVING,
       },
     });
   }

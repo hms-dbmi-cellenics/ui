@@ -1,7 +1,7 @@
 import fetchAPI from '../../../utils/fetchAPI';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import endUserMessages from '../../../utils/endUserMessages';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import { PROJECTS_ERROR, PROJECTS_LOADED, PROJECTS_LOADING } from '../../actionTypes/projects';
 import loadSamples from '../samples/loadSamples';
 
@@ -14,7 +14,7 @@ const loadProjects = () => async (dispatch) => {
     const response = await fetchAPI(url);
     const data = await response.json();
 
-    throwWithEndUserMessage(response, data, endUserMessages.errorFetchingProjects);
+    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROJECTS);
 
     await Promise.all(data
       .filter((entry) => entry.samples.length)
@@ -32,7 +32,7 @@ const loadProjects = () => async (dispatch) => {
     let { message } = e;
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.connectionError;
+      message = endUserMessages.CONNECTION_ERROR;
     }
     dispatch({
       type: PROJECTS_ERROR,

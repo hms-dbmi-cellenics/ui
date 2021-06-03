@@ -1,5 +1,5 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import composeTree from '../../../utils/composeTree';
@@ -35,7 +35,7 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
     );
 
     const json = await response.json();
-    throwWithEndUserMessage(response, json, endUserMessages.errorSaving);
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: CELL_SETS_SAVE,
@@ -48,7 +48,7 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${e.message}`);
     }
-    pushNotificationMessage('error', endUserMessages.errorSaving);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

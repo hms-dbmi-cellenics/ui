@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
@@ -34,7 +34,7 @@ const saveExperiment = (
     );
 
     const json = await response.json();
-    throwWithEndUserMessage(response, json, endUserMessages.errorSaving);
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: EXPERIMENTS_SAVED,
@@ -43,7 +43,7 @@ const saveExperiment = (
     let { message } = e;
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.connectionError;
+      message = endUserMessages.CONNECTION_ERROR;
     }
     dispatch({
       type: EXPERIMENTS_ERROR,

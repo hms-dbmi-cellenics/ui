@@ -1,5 +1,5 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
@@ -28,7 +28,7 @@ const deleteProject = (
   dispatch({
     type: PROJECTS_SAVING,
     payload: {
-      message: endUserMessages.deletingProject,
+      message: endUserMessages.DELETING_PROJECT,
     },
   });
 
@@ -45,7 +45,7 @@ const deleteProject = (
     );
 
     const json = await response.json();
-    throwWithEndUserMessage(response, json, endUserMessages.errorSaving);
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     // If deleted project is the same as the active project, choose another project
     if (projectUuid === activeProjectUuid) {
@@ -83,12 +83,12 @@ const deleteProject = (
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${e.message}`);
     }
-    pushNotificationMessage('error', endUserMessages.errorDeletingProject);
+    pushNotificationMessage('error', endUserMessages.ERROR_DELETING_PROJECT);
 
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
-        error: endUserMessages.errorDeletingProject,
+        error: endUserMessages.ERROR_DELETING_PROJECT,
       },
     });
   }

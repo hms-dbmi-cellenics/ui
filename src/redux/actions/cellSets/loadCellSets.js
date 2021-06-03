@@ -1,5 +1,5 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import {
   CELL_SETS_LOADED, CELL_SETS_LOADING, CELL_SETS_ERROR,
@@ -23,7 +23,7 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
   try {
     const response = await fetchAPI(url);
     const json = await response.json();
-    throwWithEndUserMessage(response, json, endUserMessages.errorFetchingCellSets);
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_FETCHING_CELL_SETS);
     dispatch({
       type: CELL_SETS_LOADED,
       payload: {

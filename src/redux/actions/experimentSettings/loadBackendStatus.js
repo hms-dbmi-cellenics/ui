@@ -1,6 +1,6 @@
 import fetchAPI from '../../../utils/fetchAPI';
 import endUserMessages from '../../../utils/endUserMessages';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
@@ -20,7 +20,7 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
     const response = await fetchAPI(url);
 
     const status = await response.json();
-    throwWithEndUserMessage(response, status, endUserMessages.errorFetchingStatus);
+    throwIfRequestFailed(response, status, endUserMessages.ERROR_FETCHING_STATUS);
     dispatch({
       type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
       payload: {

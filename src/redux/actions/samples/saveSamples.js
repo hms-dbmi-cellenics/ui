@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwWithEndUserMessage } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/samples';
@@ -38,7 +38,7 @@ const saveSamples = (
     dispatch({
       type: SAMPLES_SAVING,
       payload: {
-        message: endUserMessages.savingSample,
+        message: endUserMessages.SAVING_SAMPLE,
       },
     });
   }
@@ -61,7 +61,7 @@ const saveSamples = (
     );
 
     const json = await response.json();
-    throwWithEndUserMessage(response, json, endUserMessages.errorSaving);
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     if (notifySave) {
       dispatch({
@@ -72,7 +72,7 @@ const saveSamples = (
     let { message } = e;
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.errorSaving;
+      message = endUserMessages.ERROR_SAVING;
     }
     dispatch({
       type: SAMPLES_ERROR,
