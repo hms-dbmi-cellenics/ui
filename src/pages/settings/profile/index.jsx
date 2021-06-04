@@ -45,7 +45,7 @@ const ProfileSettings = () => {
     if (name || email) {
       setEmailError(false);
       await Auth.updateUserAttributes(user, changedUserAttributes)
-        .then((response) => pushNotificationMessage('success', endUserMessages.DETAILS_UPDATED, 3))
+        .then((response) => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
         .catch((e) => setEmailError(true));
     }
     if (oldPassword || newPassword || confirmNewPassword) {
@@ -55,11 +55,11 @@ const ProfileSettings = () => {
 
       if (confirmNewPassword !== newPassword) {
         setNewPasswordError("Passwords don't match.");
-      } else if (!newPassword.match(decimal)) {
+      } else if (!newPassword?.match(decimal)) {
         setNewPasswordError('Password should include at least 8 characters, a number, special character, uppercase letter, lowercase letter.');
       } else {
         await Auth.changePassword(user, oldPassword, newPassword)
-          .then((response) => pushNotificationMessage('success', endUserMessages.DETAILS_UPDATED, 3))
+          .then((response) => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
           .catch((error) => { setOldPasswordError("Doesn't match old password"); });
       }
     }

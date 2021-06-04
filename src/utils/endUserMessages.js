@@ -1,4 +1,5 @@
 export default {
+  ACCOUNT_DETAILS_UPDATED: 'Account details updated successfully.',
   CONNECTION_ERROR: 'Could not connect to the server. Check your internet connection and refresh the page.',
   DELETING_PROJECT: 'Deleting project...',
   DELETING_SAMPLE: 'Deleting sample...',
@@ -21,6 +22,4 @@ export default {
   NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Data Management` window.',
   SAVING_SAMPLE: 'Saving sample...',
   SAVING_PROJECT: 'Saving project...',
-  DETAILS_UPDATED: 'Account details updated successfully.',
-
 };
