@@ -29,6 +29,15 @@ jobs:
         name: Initialize mandatory git info
         run: git config user.name "Github Actions"
 
+      - name: Bump version in package.json
+        run: yarn version --new-version ${{ github.event.inputs.version }} --no-git-tag-version
+
+      - name: Commit manifest files
+        id: make-commit
+        run: |
+          git add package.json
+          git commit --message "Prepare release ${{ github.event.inputs.version }}"
+          echo "::set-output name=commit::$(git rev-parse HEAD)"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
