@@ -42,6 +42,7 @@ const ProfileSettings = () => {
     const { name, email } = changedUserAttributes;
     const { oldPassword, newPassword, confirmNewPassword } = changedPasswordAttributes;
 
+    const invalidPasswordErrors = ['InvalidPasswordException', 'InvalidParameterException', 'NotAuthorizedException'];
     if (name || email) {
       setEmailError(false);
       await Auth.updateUserAttributes(user, changedUserAttributes)
@@ -55,18 +56,27 @@ const ProfileSettings = () => {
 
       if (confirmNewPassword !== newPassword) {
         setNewPasswordError("Passwords don't match.");
+      } else if (oldPassword === newPassword) { // pragma: allowlist secret
+        setNewPasswordError('The new password cannot match the old one.');
       } else if (!newPassword?.match(decimal)) {
         setNewPasswordError('Password should include at least 8 characters, a number, special character, uppercase letter, lowercase letter.');
       } else {
         await Auth.changePassword(user, oldPassword, newPassword)
           .then((response) => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
-          .catch((error) => { setOldPasswordError("Doesn't match old password"); });
+          .catch((error) => {
+            if (invalidPasswordErrors.includes(error.code)) {
+              setOldPasswordError("Doesn't match old password.");
+            } else {
+              pushNotificationMessage('error', error.message, 3);
+            }
+          });
       }
     }
     currentUser();
     setChanges(initialState);
   };
 
+  // the user might not be loaded already - then return <Empty/>
   if (user) {
     return (
       <>
@@ -96,6 +106,7 @@ const ProfileSettings = () => {
                 >
                   <Input
                     type='email'
+                    disabled
                     onChange={(e) => setChanges({ changedUserAttributes: { email: e.target.value } })}
                     placeholder={user.attributes.email}
                   />
