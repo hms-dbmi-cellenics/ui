@@ -25,9 +25,7 @@ const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        projectUuid,
-        experimentId,
-        samples: { ids: sampleUuids },
+        ids: sampleUuids,
       }),
     },
   );
