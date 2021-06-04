@@ -3,10 +3,14 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 jobs:
   build:
     name: Build website
     runs-on: ubuntu-20.04
+    if: startsWith(github.event.pull_request.head.ref, 'release/') || startsWith(github.event.pull_request.head.ref, 'hotfix/') # allow PRs to master for releases & hotfixes
     env:
       CI: "true"
     steps:

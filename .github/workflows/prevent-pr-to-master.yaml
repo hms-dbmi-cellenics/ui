@@ -8,10 +8,11 @@ on:
 jobs:
   run:
     runs-on: ubuntu-20.04
+    if: (!startsWith(github.event.pull_request.head.ref, 'release/') && !startsWith(github.event.pull_request.head.ref, 'hotfix/')) # allow PRs to master for releases & hotfixes
     steps:
     - uses: superbrothers/close-pull-request@v2
       with:
         comment: |-
-            Pull requests to master are not allowed, merge into develop.
+            Pull requests to master are not allowed unless they are releases or hotfixes, merge into develop.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
