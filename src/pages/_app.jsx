@@ -74,6 +74,10 @@ const WrappedApp = ({ Component, pageProps }) => {
     }
   }, [amplifyConfig]);
 
+  if (!amplifyConfigured) {
+    return <></>;
+  }
+
   const mainContent = () => {
     // If this is a not found error, show it without the navigation bar.
     if (Component === NotFoundPage) {
@@ -113,10 +117,6 @@ const WrappedApp = ({ Component, pageProps }) => {
       }
 
       return <Error statusCode={httpError} />;
-    }
-
-    if (!amplifyConfigured) {
-      return <></>;
     }
 
     // Otherwise, load the page inside the content wrapper.
@@ -177,10 +177,10 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
   promises.push(getAuthenticationInfo);
 
-  try {
-    let results = await Promise.all(promises.map((f) => f(ctx, store)));
-    results = _.merge(...results);
+  let results = await Promise.all(promises.map((f) => f(ctx, store)));
+  results = _.merge(...results);
 
+  try {
     const { Auth } = withSSRContext(ctx);
     Auth.configure(results.amplifyConfig.Auth);
     if (query?.experimentId) {
@@ -204,7 +204,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
         res.statusCode = 500;
       }
 
-      return { pageProps: { ...pageProps, httpError: e.payload.status || true } };
+      return { pageProps: { ...pageProps, ...results, httpError: e.payload.status || true } };
     }
     console.error('Error in WrappedApp.getInitialProps', e);
 
