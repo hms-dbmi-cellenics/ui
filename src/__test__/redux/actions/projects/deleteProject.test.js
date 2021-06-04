@@ -88,11 +88,9 @@ describe('deleteProject action', () => {
   };
 
   beforeEach(async () => {
-    const response = new Response({});
-
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResolvedValue(response);
+    fetchMock.mockResponse(JSON.stringify({}));
   });
 
   it('Dispatches event correctly for one sample', async () => {

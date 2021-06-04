@@ -2,7 +2,9 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import loadGeneExpression from '../../../../redux/actions/genes/loadGeneExpression';
 import initialState from '../../../../redux/reducers/genes/initialState';
-import sendWork from '../../../../utils/sendWork';
+import { fetchCachedWork } from '../../../../utils/cacheRequest';
+
+import pipelineStatusValues from '../../../../utils/pipelineStatusValues';
 
 import {
   GENES_EXPRESSION_LOADING,
@@ -10,10 +12,7 @@ import {
 } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/sendWork', () => ({
-  __esModule: true, // this property makes it work
-  default: jest.fn(),
-}));
+jest.mock('../../../../utils/cacheRequest');
 
 const mockStore = configureStore([thunk]);
 
@@ -62,24 +61,15 @@ describe('loadGeneExpression action', () => {
       experimentSettings,
     });
 
-    sendWork.mockImplementation(() => {
+    fetchCachedWork.mockImplementationOnce(() => (
       // No need to mock the result accurately.
-
-      const resolveWith = {
-        results:
-          [
-            {},
-          ],
-      };
-
-      return new Promise((resolve) => resolve(resolveWith));
-    });
+      new Promise((resolve) => resolve({}))));
 
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid));
 
-    const firstCall = sendWork.mock.calls[0];
+    const firstCall = fetchCachedWork.mock.calls[0];
     expect(firstCall[2].genes).toEqual(['b', 'c']);
-    expect(sendWork).toMatchSnapshot();
+    expect(fetchCachedWork).toMatchSnapshot();
   });
 
   it('Sends work for already loaded expression data if forced to do so.', async () => {
@@ -101,24 +91,15 @@ describe('loadGeneExpression action', () => {
       experimentSettings,
     });
 
-    sendWork.mockImplementation(() => {
+    fetchCachedWork.mockImplementationOnce(() => (
       // No need to mock the result accurately.
-
-      const resolveWith = {
-        results:
-          [
-            {},
-          ],
-      };
-
-      return new Promise((resolve) => resolve(resolveWith));
-    });
+      new Promise((resolve) => resolve({}))));
 
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
 
-    const firstCall = sendWork.mock.calls[1];
+    const firstCall = fetchCachedWork.mock.calls[1];
     expect(firstCall[2].genes).toEqual(['a', 'b', 'c']);
-    expect(sendWork).toMatchSnapshot();
+    expect(fetchCachedWork).toMatchSnapshot();
   });
 
   it('Dispatches appropriately on success', async () => {
@@ -129,15 +110,6 @@ describe('loadGeneExpression action', () => {
       experimentSettings,
     });
 
-    // Need to mock result accurately because of post-request processing
-    const mockResolve = {
-      geneA: {
-        expression: [1],
-        mean: 1,
-        stdev: 1,
-      },
-    };
-
     const mockResult = {
       geneA: {
         expression: [1],
@@ -147,18 +119,7 @@ describe('loadGeneExpression action', () => {
       },
     };
 
-    sendWork.mockImplementation(() => {
-      const resolveWith = {
-        results:
-          [
-            {
-              body: JSON.stringify(mockResolve),
-            },
-          ],
-      };
-
-      return new Promise((resolve) => resolve(resolveWith));
-    });
+    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
 
@@ -180,7 +141,7 @@ describe('loadGeneExpression action', () => {
       experimentSettings,
     });
 
-    sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
 
     const loadingAction = store.getActions()[0];
@@ -201,7 +162,7 @@ describe('loadGeneExpression action', () => {
         backendStatus: {
           status: {
             pipeline: {
-              status: 'NotCreated',
+              status: pipelineStatusValues.NOT_CREATED,
               startDate: null,
             },
           },
@@ -209,7 +170,7 @@ describe('loadGeneExpression action', () => {
       },
     });
 
-    sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchCachedWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
 
     const loadingAction = store.getActions()[0];

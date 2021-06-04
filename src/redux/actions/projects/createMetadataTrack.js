@@ -11,7 +11,7 @@ import {
 } from '../../reducers/projects/initialState';
 
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
+import endUserMessages from '../../../utils/endUserMessages';
 import saveProject from './saveProject';
 
 const createMetadataTrack = (
@@ -51,7 +51,7 @@ const createMetadataTrack = (
     })));
   } catch (e) {
     console.log(e);
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

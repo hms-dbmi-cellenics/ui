@@ -4,7 +4,6 @@ import { getFromApiExpectOK } from '../getDataExpectOK';
 const getExperimentInfo = async (context, store, user) => {
   const { req, query } = context;
   const { experimentId } = query;
-
   if (
     store.getState().apiUrl
     && store.getState().experimentSettings.info.experimentId === experimentId

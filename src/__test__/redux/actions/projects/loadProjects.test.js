@@ -16,24 +16,24 @@ describe('load projects ', () => {
     },
   };
 
-  const response = new Response(
-    JSON.stringify(
-      [
-        { name: 'I am project', samples: ['Best sample so far', 'and another one'] },
-        { name: 'project am I', samples: ['tired of unit testing honestly'] },
-      ],
-    ),
+  const response = JSON.stringify(
+    [
+      { name: 'I am project', samples: ['Best sample so far', 'and another one'] },
+      { name: 'project am I', samples: ['tired of unit testing honestly'] },
+    ],
   );
 
   fetchMock.resetMocks();
   fetchMock.doMock();
   fetchMock.mockResolvedValue(response);
+  fetchMock.mockResponse(response);
 
   it('Dispatches load action correctly', async () => {
     const store = mockStore(initialState);
     await store.dispatch(loadProjects());
-    const action = store.getActions()[3];
-    expect(action.type).toEqual(PROJECTS_LOADED);
+    const actions = store.getActions();
+    const lastAction = actions[actions.length - 1];
+    expect(lastAction.type).toEqual(PROJECTS_LOADED);
   });
 
   it('Dispatches error correctly', async () => {

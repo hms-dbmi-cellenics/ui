@@ -2,8 +2,8 @@ import saveExperiment from './saveExperiment';
 import {
   EXPERIMENTS_UPDATED,
 } from '../../actionTypes/experiments';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
 
 const updateExperiment = (
   experimentId,
@@ -20,7 +20,7 @@ const updateExperiment = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_EXPERIMENT);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

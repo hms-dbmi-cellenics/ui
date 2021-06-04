@@ -1,8 +1,9 @@
 import fetchAPI from '../../../utils/fetchAPI';
-import { CELL_SETS_SAVE } from '../../actionTypes/cellSets';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import composeTree from '../../../utils/composeTree';
-import messages from '../../../components/notification/messages';
+import { CELL_SETS_SAVE } from '../../actionTypes/cellSets';
 
 const saveCellSets = (experimentId) => async (dispatch, getState) => {
   const {
@@ -17,9 +18,10 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
   }
 
   const treeData = composeTree(hierarchy, properties);
+  const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
     const response = await fetchAPI(
-      `/v1/experiments/${experimentId}/cellSets`,
+      url,
       {
         method: 'PUT',
         headers: {
@@ -33,6 +35,7 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
     );
 
     const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: CELL_SETS_SAVE,
@@ -42,7 +45,10 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', messages.saveCellSets);
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${e.message}`);
+    }
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

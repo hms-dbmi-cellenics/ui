@@ -53,6 +53,7 @@ const getStore = (settings = {}) => {
         },
       },
     },
+    experiments: { experimentId: {} },
     cellSets: {
       ...initialCellSetsState,
       properties: {

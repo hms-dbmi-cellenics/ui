@@ -4,7 +4,6 @@ const UploadStatus = {
   COMPRESSING: 'compressing',
   UPLOAD_ERROR: 'uploadError',
   FILE_NOT_FOUND: 'fileNotFound',
-  DATA_MISSING: 'dataMissing',
   FILE_READ_ERROR: 'fileReadError',
   FILE_READ_ABORTED: 'fileReadAborted',
 };
@@ -15,7 +14,6 @@ const message = {
   [UploadStatus.COMPRESSING]: 'Compressing...',
   [UploadStatus.UPLOAD_ERROR]: 'Upload error',
   [UploadStatus.FILE_NOT_FOUND]: 'File not found',
-  [UploadStatus.DATA_MISSING]: 'Data missing',
   [UploadStatus.FILE_READ_ERROR]: 'File read error',
   [UploadStatus.FILE_READ_ABORTED]: 'File read aborted',
 };

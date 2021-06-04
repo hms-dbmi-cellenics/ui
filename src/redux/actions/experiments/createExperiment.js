@@ -8,8 +8,8 @@ import {
   EXPERIMENTS_ERROR,
 } from '../../actionTypes/experiments';
 import { experimentTemplate } from '../../reducers/experiments/initialState';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
 
 const createExperiment = (
   projectUuid, newExperimentName,
@@ -34,12 +34,12 @@ const createExperiment = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_EXPERIMENT);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: errorTypes.CREATE_EXPERIMENT,
+        error: endUserMessages.ERROR_SAVING,
       },
     });
   }

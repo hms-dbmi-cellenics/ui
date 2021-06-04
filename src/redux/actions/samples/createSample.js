@@ -11,8 +11,8 @@ import {
 } from '../../reducers/projects/initialState';
 import saveSamples from './saveSamples';
 import { saveProject } from '../projects';
+import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
 
 import { sampleTemplate } from '../../reducers/samples/initialState';
 
@@ -63,7 +63,7 @@ const createSample = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', errorTypes.SAVE_PROJECT);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 
   return Promise.resolve(newSampleUuid);
