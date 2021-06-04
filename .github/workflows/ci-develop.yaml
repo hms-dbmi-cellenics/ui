@@ -6,6 +6,8 @@ on:
   pull_request:
     branches:
       - develop
+      - 'release/**'
+      - 'hotfix/**'
 jobs:
   build:
     name: Build website
@@ -173,7 +175,7 @@ jobs:
             SANDBOX_ID="STAGING_SANDBOX_ID"
             CHART_REF="STAGING_CHART_REF"
           fi
-          
+
           yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
           | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
