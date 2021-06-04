@@ -10,8 +10,9 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
   const url = `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`;
   try {
     const response = await fetchAPI(url);
-    const data = await response.json();
+
     if (response.ok) {
+      const data = response.json();
       const config = _.merge({}, initialPlotConfigStates[plotType], data.config);
       dispatch({
         type: LOAD_CONFIG,
@@ -33,6 +34,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
         },
       });
     } else {
+      const data = await response.json();
       throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PLOT_CONFIG);
     }
   } catch (e) {
