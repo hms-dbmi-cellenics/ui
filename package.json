@@ -1,6 +1,6 @@
 {
   "name": "ui",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Biomage App UI",
   "main": "server.js",
   "author": "Biomage Developers",
