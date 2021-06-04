@@ -5,13 +5,13 @@ import { DefaultSeo } from 'next-seo';
 import PropTypes from 'prop-types';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
-import Amplify, { Auth, Storage, withSSRContext } from 'aws-amplify';
-import { ClipLoader } from 'react-spinners';
+import Amplify, { Storage, withSSRContext } from 'aws-amplify';
 import _ from 'lodash';
 import AWS from 'aws-sdk';
 import { Credentials } from '@aws-amplify/core';
 import ContentWrapper from '../components/ContentWrapper';
 import NotFoundPage from './404';
+import UnauthorizedPage from './401';
 import Error from './_error';
 import { wrapper } from '../redux/store';
 import '../../assets/self-styles.less';
@@ -59,7 +59,6 @@ const WrappedApp = ({ Component, pageProps }) => {
   );
 
   const [amplifyConfigured, setAmplifyConfigured] = useState(!amplifyConfig);
-  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
 
   const environment = useSelector((state) => state.networkResources.environment);
 
@@ -75,14 +74,9 @@ const WrappedApp = ({ Component, pageProps }) => {
     }
   }, [amplifyConfig]);
 
-  // If user is not logged in, show log in page
-  useEffect(() => {
-    if (amplifyConfigured && !isUserAuthenticated) {
-      Auth.currentAuthenticatedUser()
-        .then(() => setIsUserAuthenticated(true))
-        .catch(() => Auth.federatedSignIn());
-    }
-  }, [amplifyConfigured]);
+  if (!amplifyConfigured) {
+    return <></>;
+  }
 
   const mainContent = () => {
     // If this is a not found error, show it without the navigation bar.
@@ -113,24 +107,16 @@ const WrappedApp = ({ Component, pageProps }) => {
       }
 
       if (httpError === 401) {
-        return (
-          <NotFoundPage
-            title='Analysis not found'
-            subTitle={'You don\'t have access to this analysis.'}
+        return amplifyConfigured && (
+          <UnauthorizedPage
+            title='Log in to continue'
+            subTitle={'You don\'t have access to this page.'}
             hint='You may be able to view it by logging in.'
           />
         );
       }
 
       return <Error statusCode={httpError} />;
-    }
-
-    if (!amplifyConfigured) {
-      return <></>;
-    }
-
-    if (!isUserAuthenticated) {
-      return <></>;
     }
 
     // Otherwise, load the page inside the content wrapper.
@@ -191,28 +177,12 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
   promises.push(getAuthenticationInfo);
 
+  let results;
+
   try {
-    let results = await Promise.all(promises.map((f) => f(ctx, store)));
-    results = _.merge(...results);
-
-    const { Auth: serverSideAuth } = withSSRContext(ctx);
-    serverSideAuth.configure(results.amplifyConfig.Auth);
-
-    if (query?.experimentId) {
-      const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
-
-      const experimentInfo = await getExperimentInfo(ctx, store, serverSideAuth);
-      results = _.merge(results, experimentInfo);
-    }
-
-    return { pageProps: { ...pageProps, ...results } };
+    const requestCtx = await Promise.all(promises.map((f) => f(ctx, store)));
+    results = _.merge(...requestCtx);
   } catch (e) {
-    if (e === 'The user is not authenticated') {
-      console.error(`User not authenticated ${req.url}`);
-      // eslint-disable-next-line no-ex-assign
-      e = new CustomError(e, res);
-      e.payload.status = 401;
-    }
     if (e instanceof CustomError) {
       if (res && e.payload.status) {
         res.statusCode = e.payload.status;
@@ -225,6 +195,30 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     console.error('Error in WrappedApp.getInitialProps', e);
 
     throw e;
+  }
+
+  try {
+    const { Auth } = withSSRContext(ctx);
+    Auth.configure(results.amplifyConfig.Auth);
+
+    const user = await Auth.currentAuthenticatedUser();
+
+    if (query?.experimentId) {
+      const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
+      const experimentInfo = await getExperimentInfo(ctx, store, user);
+      results = _.merge(results, experimentInfo);
+    }
+
+    return { pageProps: { ...pageProps, ...results } };
+  } catch (e) {
+    if (e === 'The user is not authenticated') {
+      console.error(`User not authenticated ${req.url}`);
+      // eslint-disable-next-line no-ex-assign
+      e = new CustomError(e, res);
+      e.payload.status = 401;
+    }
+
+    return { pageProps: { ...pageProps, ...results, httpError: e.payload.status || true } };
   }
 };
 /* eslint-enable global-require */

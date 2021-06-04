@@ -1,7 +1,7 @@
 import updateExperimentInfo from '../../redux/actions/experimentSettings/updateExperimentInfo';
 import { getFromApiExpectOK } from '../getDataExpectOK';
 
-const getExperimentInfo = async (context, store, Auth) => {
+const getExperimentInfo = async (context, store, user) => {
   const { req, query } = context;
   const { experimentId } = query;
 
@@ -12,7 +12,6 @@ const getExperimentInfo = async (context, store, Auth) => {
     return;
   }
 
-  const user = await Auth.currentAuthenticatedUser();
   const jwt = user.getSignInUserSession().getIdToken().getJwtToken();
 
   const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;

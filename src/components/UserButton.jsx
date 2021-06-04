@@ -70,7 +70,7 @@ const UserButton = () => {
 
   // This eventually needs to become a Dropdown with a menu.
   // For now, we can just put the login stuff direclty into the popover.
-  return user ? (
+  return (
     <Dropdown overlay={content()} trigger={['click']}>
       <Button
         aria-label='User settings'
@@ -92,13 +92,6 @@ const UserButton = () => {
         )}
       />
     </Dropdown>
-  ) : (
-    <Button
-      type='dashed'
-      onClick={() => Auth.federatedSignIn()}
-    >
-      Sign in
-    </Button>
   );
 };
 
