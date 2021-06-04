@@ -10,22 +10,37 @@ import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
 
-import saveSamples from './saveSamples';
 import saveProject from '../projects/saveProject';
 
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import getProjectSamples from '../../../utils/getProjectSamples';
+import fetchAPI from '../../../utils/fetchAPI';
+
+const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) => {
+  const response = await fetchAPI(
+    `/v1/projects/${projectUuid}/${experimentId}/samples`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        projectUuid,
+        experimentId,
+        samples: { ids: sampleUuids },
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(await response.json().message);
+  }
+};
 
 const deleteSamples = (
   sampleUuids,
 ) => async (dispatch, getState) => {
   const { samples, projects } = getState();
-
-  if (!_.isArray(sampleUuids)) {
-    // eslint-disable-next-line no-param-reassign
-    sampleUuids = [sampleUuids];
-  }
 
   const projectSamples = sampleUuids.reduce((acc, sampleUuid) => {
     if (!_.has(acc, samples[sampleUuid].projectUuid)) {
@@ -40,6 +55,7 @@ const deleteSamples = (
       ],
     };
   }, {});
+
   dispatch({
     type: SAMPLES_SAVING,
     payload: {
@@ -50,17 +66,17 @@ const deleteSamples = (
   try {
     const deleteSamplesPromise = Object.entries(projectSamples).map(
       async ([projectUuid, samplesToDelete]) => {
-        const samplesForAProject = getProjectSamples(projects, projectUuid, samples);
-
-        const newSample = _.omit(samplesForAProject, samplesToDelete);
-        newSample.ids = _.difference(samplesForAProject.ids, samplesToDelete);
+        const newSamples = _.difference(projects[projectUuid].samples, samplesToDelete);
 
         const newProject = {
           ...projects[projectUuid],
-          samples: _.difference(projects[projectUuid].sampels, samplesToDelete),
+          samples: newSamples,
         };
 
-        dispatch(saveSamples(projectUuid, newSample, false, false));
+        // This is set right now as there is only one experiment per project
+        // Should be changed when we support multiple experiments per project
+        const experimentId = projects[projectUuid].experiments[0];
+
         dispatch(saveProject(projectUuid, newProject, false));
 
         dispatch({
@@ -73,10 +89,12 @@ const deleteSamples = (
           payload: {
             projectUuid,
             project: {
-              samples: _.difference(projects[projectUuid].samples, samplesToDelete),
+              samples: newSamples,
             },
           },
         });
+
+        await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
       },
     );
 

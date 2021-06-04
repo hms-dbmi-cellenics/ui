@@ -9,7 +9,7 @@ const samplesLoad = (state, action) => {
       error: false,
     },
     ...samples,
-    ids: [...state.ids, ...samples.ids],
+    // ids: [...state.ids, ...samples.ids],
   };
 };
 

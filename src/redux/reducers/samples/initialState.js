@@ -34,7 +34,6 @@ const sampleFileTemplate = {
 };
 
 const initialState = {
-  ids: [],
   meta: {
     loading: false,
     error: false,

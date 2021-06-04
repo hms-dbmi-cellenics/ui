@@ -2,7 +2,7 @@ const samplesCreate = (state, action) => {
   const { sample } = action.payload;
   return {
     ...state,
-    ids: [...state.ids, sample.uuid],
+    // ids: [...state.ids, sample.uuid],
     [sample.uuid]: sample,
   };
 };

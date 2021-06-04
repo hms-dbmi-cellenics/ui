@@ -10,5 +10,5 @@ export default {
   SUCCEEDED: 'SUCCEEDED',
 
   // Custom defined statuses defined in the API
-  NOT_CREATED: 'NOT_CREATED',
+  NOT_CREATED: 'NotCreated',
 };
