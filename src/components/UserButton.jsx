@@ -49,28 +49,9 @@ const UserButton = () => {
     </Menu>
   );
 
-  Hub.listen('auth', ({ payload: { event } }) => {
-    switch (event) {
-      case 'signIn':
-      case 'cognitoHostedUI':
-        getUser().then((userData) => setUser(userData));
-        break;
-      case 'signOut':
-        setUser(null);
-        break;
-      case 'signIn_failure':
-      case 'cognitoHostedUI_failure':
-
-        // do something here
-        break;
-      default:
-        break;
-    }
-  });
-
   // This eventually needs to become a Dropdown with a menu.
   // For now, we can just put the login stuff direclty into the popover.
-  return (
+  return user ? (
     <Dropdown overlay={content()} trigger={['click']}>
       <Button
         aria-label='User settings'
@@ -92,6 +73,13 @@ const UserButton = () => {
         )}
       />
     </Dropdown>
+  ) : (
+    <Button
+      type='dashed'
+      onClick={() => Auth.federatedSignIn()}
+    >
+      Sign in
+    </Button>
   );
 };
 
