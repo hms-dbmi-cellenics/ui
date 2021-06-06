@@ -25,7 +25,6 @@ import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
-import pipelineStatus from '../../utils/pipelineStatusValues';
 
 import {
   updateProject,
@@ -586,18 +585,11 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   const launchAnalysis = async (experimentId) => {
-    dispatch(loadBackendStatus(experimentId))
-      .then((backendStatus) => {
-        if ([
-          pipelineStatus.NOT_CREATED,
-          pipelineStatus.ABORTED,
-          pipelineStatus.TIMED_OUT,
-          pipelineStatus.FAILED,
-        ].includes(backendStatus.gem2s.status)) {
-          dispatch(runGem2s(experimentId));
-        }
-        router.push(analysisPath.replace('[experimentId]', experimentId));
-      });
+    const backendStatus = await dispatch(loadBackendStatus(experimentId));
+    if (backendStatus.gem2s.needsRunning) {
+      await dispatch(runGem2s(experimentId));
+    }
+    router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
   return (
