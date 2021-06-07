@@ -9,6 +9,7 @@ import {
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
+import { Auth } from 'aws-amplify';
 import {
   DatabaseOutlined,
   FundViewOutlined,
@@ -33,6 +34,7 @@ const { Paragraph, Text } = Typography;
 const ContentWrapper = (props) => {
   const dispatch = useDispatch();
 
+  const [isAuth, setIsAuth] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const { experimentId, experimentData, children } = props;
   const router = useRouter();
@@ -81,6 +83,17 @@ const ContentWrapper = (props) => {
 
     setBackendStatusRequested(true);
   }, [backendLoading]);
+
+  useEffect(() => {
+    Auth.currentAuthenticatedUser()
+      .then(() => setIsAuth(true))
+      .catch(() => {
+        setIsAuth(false);
+        Auth.federatedSignIn();
+      });
+  }, []);
+
+  if (!isAuth) return <></>;
 
   const BigLogo = () => (
     <div
