@@ -53,7 +53,6 @@ describe('saveSamples action', () => {
     },
     samples: {
       ...initialSampleState,
-      ids: [mocksampleUuid],
       [mocksampleUuid]: mockSample,
     },
   };
@@ -88,7 +87,6 @@ describe('saveSamples action', () => {
           experimentId: mockProject.experiments[0],
           samples: {
             ...payload,
-            ids: [...payload.ids, newSample.uuid],
             [newSample.uuid]: newSample,
           },
         }),
