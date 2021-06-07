@@ -1,4 +1,5 @@
 import _ from 'lodash';
+
 import {
   SAMPLES_DELETE,
   SAMPLES_ERROR,
@@ -41,14 +42,16 @@ const deleteSamples = (
   const { samples, projects } = getState();
 
   const projectSamples = sampleUuids.reduce((acc, sampleUuid) => {
-    if (!_.has(acc, samples[sampleUuid].projectUuid)) {
-      acc[samples[sampleUuid].projectUuid] = [];
+    const { projectUuid, upload } = samples[sampleUuid];
+
+    if (upload.AWSPromise) {
+      // Storage.cancel(upload.AWSPRomise)
     }
 
     return {
       ...acc,
-      [samples[sampleUuid].projectUuid]: [
-        ...acc[samples[sampleUuid].projectUuid],
+      [projectUuid]: [
+        ...acc[projectUuid],
         sampleUuid,
       ],
     };

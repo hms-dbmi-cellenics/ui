@@ -30,6 +30,7 @@ const sampleFileTemplate = {
   lastModified: '',
   upload: {
     status: null,
+    amplifyPromise: null,
   },
 };
 
