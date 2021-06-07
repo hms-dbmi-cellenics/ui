@@ -107,7 +107,7 @@ const WrappedApp = ({ Component, pageProps }) => {
       }
 
       if (httpError === 401) {
-        return amplifyConfigured && (
+        return (
           <UnauthorizedPage
             title='Log in to continue'
             subTitle={'You don\'t have access to this page.'}
