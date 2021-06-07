@@ -3,15 +3,18 @@ on:
   push:
     branches:
       - develop
-      - 'release/**'
-      - 'hotfix/**'
   pull_request:
     branches:
       - develop
+      - master
 jobs:
   build:
     name: Build website
     runs-on: ubuntu-20.04
+    if: |-
+      !github.event.pull_request == true || 
+      startsWith(github.event.pull_request.head.ref, 'release/') ||
+      startsWith(github.event.pull_request.head.ref, 'hotfix/') 
     env:
       CI: "true"
     steps:
