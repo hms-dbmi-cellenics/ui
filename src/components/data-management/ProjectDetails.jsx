@@ -139,9 +139,7 @@ const ProjectDetails = ({ width, height }) => {
       sampleUuid,
       file,
     } = tableCellData;
-
-    const { status = null, progress = null } = file?.upload ?? {};
-
+    const { progress = null, status = null } = file?.upload ?? {};
     const showSuccessDetails = () => {
       uploadDetailsModalDataRef.current = {
         sampleUuid,
@@ -153,6 +151,16 @@ const ProjectDetails = ({ width, height }) => {
     };
 
     const showErrorDetails = () => {
+      uploadDetailsModalDataRef.current = {
+        sampleUuid,
+        fileCategory: columnId,
+        file,
+      };
+
+      setUploadDetailsModalVisible(true);
+    };
+
+    const showUploadFileAgain = () => {
       uploadDetailsModalDataRef.current = {
         sampleUuid,
         fileCategory: columnId,
@@ -230,7 +238,7 @@ const ProjectDetails = ({ width, height }) => {
         </div>
       );
     }
-
+    console.log('status is ', status, ' upload not found is ', UploadStatus.FILE_NOT_FOUND);
     if (
       [
         UploadStatus.FILE_NOT_FOUND,
@@ -252,10 +260,10 @@ const ProjectDetails = ({ width, height }) => {
             <Text type='danger'>{messageForStatus(status)}</Text>
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
               <Button
-                size='small'
+                size='large'
                 shape='link'
                 icon={<UploadOutlined />}
-                onClick={() => setUploadModalVisible(true)}
+                onClick={showUploadFileAgain}
               />
             </Tooltip>
           </Space>
@@ -519,9 +527,9 @@ const ProjectDetails = ({ width, height }) => {
     const newData = activeProject.samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
-      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const genesFile = sampleFiles['features.tsv.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
 
       const barcodesData = { sampleUuid, file: barcodesFile };
       const genesData = { sampleUuid, file: genesFile };
@@ -538,7 +546,7 @@ const ProjectDetails = ({ width, height }) => {
         ...samples[sampleUuid].metadata,
       };
     });
-
+    console.log('new data is ', newData);
     checkLaunchAnalysis();
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
@@ -553,13 +561,13 @@ const ProjectDetails = ({ width, height }) => {
     }
 
     const { sampleUuid, file } = uploadDetailsModalDataRef.current;
-
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
+    const name = file.name || bundleToUpload.name;
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
 
     const metadata = metadataForBundle(bundleToUpload);
-
+    console.log('FILE IS ', file, ' BUNDLE TO UPLOAD IS ', bundleToUpload);
     compressAndUploadSingleFile(
-      bucketKey, sampleUuid, file.name,
+      bucketKey, sampleUuid, name,
       bundleToUpload, dispatch, metadata,
     );
 

@@ -16,13 +16,13 @@ const updateSampleFile = (
 ) => async (dispatch, getState) => {
   const updatedAt = moment().toISOString();
   const sample = getState().samples[sampleUuid];
-
   try {
     // Save sample only if upload is successful or error
     if (fileDiff.upload.status === UploadStatus.UPLOADED
       || fileDiff.upload.status === UploadStatus.UPLOAD_ERROR) {
+      console.log('FILENAMES IS ', sample.fileNames);
       const diffObject = {
-        fileNames: sample.fileNames.add(fileName),
+        fileNames: sample.fileNames,
         files: {
           lastModified: updatedAt,
           [fileName]: {
@@ -46,6 +46,7 @@ const updateSampleFile = (
       },
     });
   } catch (e) {
+    console.log('error was ', e);
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };

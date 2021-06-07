@@ -32,6 +32,7 @@ const UploadDetailsModal = (props) => {
 
   useEffect(() => {
     if (replacementFileBundle) {
+      console.log('UPLOADING BUNDLE ', replacementFileBundle);
       onUpload(replacementFileBundle);
     }
   }, [replacementFileBundle]);
