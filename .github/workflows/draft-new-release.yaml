@@ -1,6 +1,6 @@
 name: Create a new release
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       version:
@@ -17,32 +17,36 @@ jobs:
         name: Check out source code
         uses: actions/checkout@v2
         with:
+          token: ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
+          persist-credentials: false # otherwise, the token used is the BIOMAGE_ACTIONS_TOKEN, instead of your personal access token
           fetch-depth: 0
 
       - id: create-release
         name: Create release branch
         run: git checkout -b release/${{ github.event.inputs.version }}
-        
+
       - id: initialize-git-info
         name: Initialize mandatory git info
         run: git config user.name "Github Actions"
-      
-      - id: push-release
-        name: Push new release branch
-        run: git push origin release/${{ github.event.inputs.version }}
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
+          branch: ${{ format('release/{0}', github.event.inputs.version ) }}
 
       - id: create-pr
         name: Create pull request
         uses: thomaseizinger/create-pull-request@1.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
         with:
           head: release/${{ github.event.inputs.version }}
           base: master
           title: Release version ${{ github.event.inputs.version }}
           body: |
             This PR was created in response to a manual trigger of the release workflow here: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}.
-            
+
             This release candidate should be staged in :
             https://ui-${{ github.event.inputs.version }}.scp-staging.biomage.net/
 
