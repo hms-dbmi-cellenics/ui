@@ -471,7 +471,6 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   const checkLaunchAnalysis = () => {
-    console.log('checking if we can launch analysis');
     if (activeProject?.samples.length === 0) return false;
 
     const allSampleFilesUploaded = (sample) => {
