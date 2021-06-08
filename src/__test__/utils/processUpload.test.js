@@ -86,6 +86,7 @@ const initialState = {
   },
 };
 
+// Based on https://stackoverflow.com/a/51045733
 const flushPromises = () => new Promise(setImmediate);
 
 const mockStore = configureMockStore([thunk]);
