@@ -71,7 +71,7 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        { upload: { status: fileErrorStatus } },
+        { upload: { status: fileErrorStatus, amplifyPromise: null } },
       ),
     );
 
@@ -96,7 +96,7 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        { upload: { status: UploadStatus.UPLOAD_ERROR } },
+        { upload: { status: UploadStatus.UPLOAD_ERROR, amplifyPromise: null } },
       ),
     );
 
