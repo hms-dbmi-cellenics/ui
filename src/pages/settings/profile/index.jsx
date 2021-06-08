@@ -111,10 +111,10 @@ const ProfileSettings = () => {
                     placeholder={user.attributes.email}
                   />
                 </Form.Item>
-                {/* no information for the institution currently
+                {/* no information for the institution currently */}
                 <Form.Item label='Institution:'>
-                  <Input placeholder={user.attributes.institution} />
-                </Form.Item> */}
+                  <Input disabled placeholder={user.attributes.institution} />
+                </Form.Item>
                 <h2>Password settings:</h2>
                 <Form.Item
                   label='Current password:' // pragma: allowlist secret
