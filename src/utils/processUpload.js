@@ -41,14 +41,6 @@ const compressAndUploadSingleFile = async (
   bucketKey, sampleUuid, fileName,
   bundle, dispatch, metadata = {},
 ) => {
-  dispatch(
-    updateSampleFile(
-      sampleUuid,
-      fileName,
-      { bundle, upload: { status: UploadStatus.UPLOADING, progress: 0 } },
-    ),
-  );
-
   let loadedFile = null;
 
   try {
@@ -71,7 +63,7 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        { upload: { status: fileErrorStatus, amplifyPromise: null } },
+        { upload: { status: fileErrorStatus } },
       ),
     );
 
@@ -79,7 +71,7 @@ const compressAndUploadSingleFile = async (
   }
 
   try {
-    const uploadPromise = await putInS3(
+    const uploadPromise = putInS3(
       bucketKey, loadedFile, dispatch,
       sampleUuid, fileName, metadata,
     );
@@ -88,9 +80,11 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        { bundle, upload: { amplifyPromise: uploadPromise } },
+        { bundle, upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise } },
       ),
     );
+
+    await uploadPromise;
   } catch (e) {
     dispatch(
       updateSampleFile(
@@ -111,7 +105,7 @@ const compressAndUploadSingleFile = async (
         upload: {
           status: UploadStatus.UPLOADED,
           progress: 100,
-          AWSPromise: null,
+          amplifyPromise: null,
         },
       },
     ),

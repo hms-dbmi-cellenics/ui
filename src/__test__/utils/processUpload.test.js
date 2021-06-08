@@ -86,6 +86,8 @@ const initialState = {
   },
 };
 
+const flushPromises = () => new Promise(setImmediate);
+
 const mockStore = configureMockStore([thunk]);
 
 jest.mock('../../utils/loadAndCompressIfNecessary',
@@ -118,7 +120,7 @@ Storage.put = jest.fn().mockImplementation(
       return Promise.reject(new Error('error'));
     }
 
-    return Promise.resolve(null);
+    return Promise.resolve('Resolved');
   },
 );
 
@@ -148,6 +150,7 @@ describe('processUpload (in development)', () => {
       store.dispatch,
     );
 
+    // Wait for first storage puts to be made
     await waitForActions(
       store,
       new Array(6).fill(SAMPLES_FILE_UPDATE),
@@ -162,28 +165,32 @@ describe('processUpload (in development)', () => {
     expect(mockStorageCalls[1].file).toEqual('loadedGzippedFile');
     expect(mockStorageCalls[2].file).toEqual('loadedGzippedFile');
 
+    // Wait until all put promises are resolved
+    await flushPromises();
+
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.fileDiff.upload.status);
+    const uploadProperties = fileUpdateActions.map((action) => action.payload.fileDiff.upload);
 
-    const uploadingFileStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.UPLOADING,
+    const uploadingStatusProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.UPLOADING,
     );
 
-    const uploadedFilesStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.UPLOADED,
+    const uploadedStatusProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.UPLOADED,
     );
 
-    // The first 3 files actions are with status uploading
-    uploadingFileStatuses.forEach((status) => {
-      expect(status).toEqual(UploadStatus.UPLOADING);
-    });
+    // There are 6 files actions with status uploading
+    expect(uploadingStatusProperties.length).toEqual(6);
 
-    // After uploading ends successfully the statuses are uploaded
-    uploadedFilesStatuses.forEach((status) => {
-      expect(status).toEqual(UploadStatus.UPLOADED);
+    // There are 3 files actions with status uploaded
+    expect(uploadedStatusProperties.length).toEqual(3);
+
+    // After uploading ends successfully the upload promises are removed
+    uploadedStatusProperties.forEach(({ amplifyPromise }) => {
+      expect(amplifyPromise).toBeNull();
     });
   });
 
@@ -211,28 +218,28 @@ describe('processUpload (in development)', () => {
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.fileDiff.upload.status);
+    const uploadProperties = fileUpdateActions.map((action) => action.payload.fileDiff.upload);
 
-    const uploadingFileStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.UPLOADING,
+    const uploadingFileProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.UPLOADING,
     );
 
-    const errorFileStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.FILE_READ_ERROR,
+    const errorFileProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.FILE_READ_ERROR,
     );
 
-    const uploadedFileStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.UPLOADED,
+    const uploadedFileProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.UPLOADED,
     );
 
     // There are 3 files actions with status uploading
-    expect(uploadingFileStatuses.length).toEqual(6);
+    expect(uploadingFileProperties.length).toEqual(3);
 
     // There are 3 files actions with status upload error
-    expect(errorFileStatuses.length).toEqual(3);
+    expect(errorFileProperties.length).toEqual(3);
 
     // There are no file actions with status successfully uploaded
-    expect(uploadedFileStatuses.length).toEqual(0);
+    expect(uploadedFileProperties.length).toEqual(0);
   });
 
   it('Updates redux correctly when there are file upload errors', async () => {
@@ -248,7 +255,7 @@ describe('processUpload (in development)', () => {
 
     await waitForActions(
       store,
-      new Array(12).fill(SAMPLES_FILE_UPDATE),
+      new Array(9).fill(SAMPLES_FILE_UPDATE),
       { matcher: waitForActions.matchers.containing, throttleWait: 20 },
     );
 
@@ -256,27 +263,32 @@ describe('processUpload (in development)', () => {
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
 
-    const filesStatuses = fileUpdateActions.map((action) => action.payload.fileDiff.upload.status);
+    const uploadProperties = fileUpdateActions.map((action) => action.payload.fileDiff.upload);
 
-    const uploadingFileStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.UPLOADING,
+    const uploadingFileProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.UPLOADING,
     );
 
-    const errorFileStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.UPLOAD_ERROR,
+    const errorFileProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.UPLOAD_ERROR,
     );
 
-    const uploadedFileStatuses = filesStatuses.filter(
-      (status) => status === UploadStatus.UPLOADED,
+    const uploadedFileProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.UPLOADED,
     );
 
     // There are 3 files actions with status uploading
-    expect(uploadingFileStatuses.length).toEqual(6);
+    expect(uploadingFileProperties.length).toEqual(6);
 
     // There are 3 files actions with status upload error
-    expect(errorFileStatuses.length).toEqual(3);
+    expect(errorFileProperties.length).toEqual(3);
 
     // There are no file actions with status successfully uploaded
-    expect(uploadedFileStatuses.length).toEqual(0);
+    expect(uploadedFileProperties.length).toEqual(0);
+
+    // Upload end deletes aws promise (if there was one)
+    errorFileProperties.forEach(({ amplifyPromise }) => {
+      expect(amplifyPromise).toBeNull();
+    });
   });
 });

@@ -38,8 +38,8 @@ const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) 
 
 const cancelUploads = async (files) => {
   const promises = Object.values(files).map(({ upload }) => {
-    if (upload?.AWSPromise) {
-      // return Storage.cancel(upload.AWSPRomise);
+    if (upload?.amplifyPromise) {
+      // return Storage.cancel(upload.amplifyPromise);
     }
     return Promise.resolve();
   });

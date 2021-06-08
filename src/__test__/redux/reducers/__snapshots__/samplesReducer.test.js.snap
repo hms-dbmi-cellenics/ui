@@ -315,6 +315,7 @@ Object {
         "size": 0,
         "success": false,
         "upload": Object {
+          "amplifyPromise": null,
           "status": null,
         },
       },
@@ -356,6 +357,7 @@ Object {
         "size": 0,
         "success": false,
         "upload": Object {
+          "amplifyPromise": null,
           "status": null,
         },
       },
