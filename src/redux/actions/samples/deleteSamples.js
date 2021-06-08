@@ -36,17 +36,30 @@ const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) 
   }
 };
 
+const cancelUploads = async (files) => {
+  const promises = Object.values(files).map(({ upload }) => {
+    if (upload?.AWSPromise) {
+      return Storage.cancel(upload.AWSPRomise);
+    }
+    return Promise.resolve();
+  });
+
+  return Promise.all(promises);
+};
+
 const deleteSamples = (
   sampleUuids,
 ) => async (dispatch, getState) => {
   const { samples, projects } = getState();
 
-  const projectSamples = sampleUuids.reduce((acc, sampleUuid) => {
-    const { projectUuid, upload } = samples[sampleUuid];
+  const projectSamples = await sampleUuids.reduce(async (acc, sampleUuid) => {
+    const { projectUuid, files } = samples[sampleUuid];
 
-    if (upload.AWSPromise) {
-      // Storage.cancel(upload.AWSPRomise)
+    if (!_.has(acc, samples[sampleUuid].projectUuid)) {
+      acc[samples[sampleUuid].projectUuid] = [];
     }
+
+    await cancelUploads(files);
 
     return {
       ...acc,
