@@ -19,7 +19,6 @@ const updateSampleFile = (
   const sample = getState().samples[sampleUuid];
   // we'll need to remove the hard-coded 10x tech type once we start
   // supporting other types and save the chosen tech type in redux
-
   const valid = checkIfFileValid(fileName, '10X Chromium');
 
   try {
