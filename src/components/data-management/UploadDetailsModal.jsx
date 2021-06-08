@@ -32,7 +32,6 @@ const UploadDetailsModal = (props) => {
 
   useEffect(() => {
     if (replacementFileBundle) {
-      console.log('UPLOADING BUNDLE ', replacementFileBundle);
       onUpload(replacementFileBundle);
     }
   }, [replacementFileBundle]);
@@ -100,7 +99,7 @@ const UploadDetailsModal = (props) => {
         }}
         style={{ width: '140px', marginBottom: '10px' }}
       >
-        Replace file
+        {bundleName ? 'Replace file' : 'Upload'}
       </Button>
     </>
   );
@@ -128,7 +127,8 @@ const UploadDetailsModal = (props) => {
       footer={(
         <Row style={{ width: '100%', justifyContent: 'center' }}>
           <Col>
-            {isSuccessModal ? downloadButton() : retryButton()}
+            {/* render retry button only if file was tried to be uploaded */}
+            {bundleName && (isSuccessModal ? downloadButton() : retryButton())}
           </Col>
           <Col span='2' />
           {replaceButton()}
@@ -140,7 +140,7 @@ const UploadDetailsModal = (props) => {
         {!isSuccessModal
           && (
             <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-              The following file has failed to upload
+              The following file has failed to upload or was not uploaded
             </Row>
           )}
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
@@ -151,10 +151,12 @@ const UploadDetailsModal = (props) => {
           <Col span={5}>Category</Col>
           <Col span={10}>{fileCategory}</Col>
         </Row>
-        <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-          <Col span={5}>Filename</Col>
-          <Col span={10}>{bundleName}</Col>
-        </Row>
+        {bundleName && (
+          <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
+            <Col span={5}>Filename</Col>
+            <Col span={10}>{bundleName}</Col>
+          </Row>
+        )}
 
         {
           isSuccessModal ? (

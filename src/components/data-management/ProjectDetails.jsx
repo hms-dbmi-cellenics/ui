@@ -238,7 +238,6 @@ const ProjectDetails = ({ width, height }) => {
         </div>
       );
     }
-    console.log('status is ', status, ' upload not found is ', UploadStatus.FILE_NOT_FOUND);
     if (
       [
         UploadStatus.FILE_NOT_FOUND,
@@ -472,6 +471,7 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   const checkLaunchAnalysis = () => {
+    console.log('checking if we can launch analysis');
     if (activeProject?.samples.length === 0) return false;
 
     const allSampleFilesUploaded = (sample) => {
@@ -483,10 +483,8 @@ const ProjectDetails = ({ width, height }) => {
           (file) => !fileNamesArray.includes(file),
         )
       ) { return false; }
-
       return fileNamesArray.every((fileName) => {
         const checkedFile = sample.files[fileName];
-
         return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
       });
     };
@@ -503,7 +501,6 @@ const ProjectDetails = ({ width, height }) => {
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });
-
     setCanLaunchAnalysis(canLaunch);
   };
 
@@ -546,7 +543,6 @@ const ProjectDetails = ({ width, height }) => {
         ...samples[sampleUuid].metadata,
       };
     });
-    console.log('new data is ', newData);
     checkLaunchAnalysis();
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
@@ -559,13 +555,12 @@ const ProjectDetails = ({ width, height }) => {
     if (!uploadDetailsModalDataRef.current) {
       return;
     }
-
     const { sampleUuid, file } = uploadDetailsModalDataRef.current;
     const name = file.name || bundleToUpload.name;
     const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
 
     const metadata = metadataForBundle(bundleToUpload);
-    console.log('FILE IS ', file, ' BUNDLE TO UPLOAD IS ', bundleToUpload);
+
     compressAndUploadSingleFile(
       bucketKey, sampleUuid, name,
       bundleToUpload, dispatch, metadata,
