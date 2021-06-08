@@ -111,6 +111,7 @@ const compressAndUploadSingleFile = async (
         upload: {
           status: UploadStatus.UPLOADED,
           progress: 100,
+          AWSPromise: null,
         },
       },
     ),
