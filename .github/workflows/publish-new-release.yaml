@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-20.04
     # only trigger on merged pull requests named release/* or hotfix/*
     if: |
-        github.event.pull_request.merged == true && 
-        (startsWith(github.event.pull_request.head.ref, 'release/') || startsWith(github.event.pull_request.head.ref, 'hotfix/')) 
+        github.event.pull_request.merged == true &&
+        (startsWith(github.event.pull_request.head.ref, 'release/') || startsWith(github.event.pull_request.head.ref, 'hotfix/'))
     steps:
       - name: Extract version from branch name (for release branches)
         if: startsWith(github.event.pull_request.head.ref, 'release/')
@@ -35,7 +35,7 @@ jobs:
       - name: Create Release
         uses: thomaseizinger/create-release@1.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
         with:
           target_commitish: ${{ github.event.pull_request.merge_commit_sha }}
           tag_name: ${{ env.RELEASE_VERSION }}
@@ -46,7 +46,7 @@ jobs:
       - name: Merge master into dev branch
         uses: thomaseizinger/create-pull-request@1.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
         with:
           head: master
           base: develop
