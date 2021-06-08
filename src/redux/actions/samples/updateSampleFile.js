@@ -52,7 +52,6 @@ const updateSampleFile = (
       },
     });
   } catch (e) {
-    console.log('error was ', e);
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };

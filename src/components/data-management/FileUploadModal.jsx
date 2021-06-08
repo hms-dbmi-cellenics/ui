@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import mime from 'mime-types';
-import path from 'path';
 
 import {
   Modal,
@@ -42,9 +40,6 @@ const FileUploadModal = (props) => {
   // Handle on Drop
   const onDrop = (acceptedFiles) => {
     const newList = [];
-
-    // const acceptedFilesRegexp = `(${techOptions[selectedTech].acceptedFiles.join('|')})$`;
-
     let filesNotInFolder = false;
     const filteredFiles = acceptedFiles
       // Remove all hidden files
@@ -71,21 +66,7 @@ const FileUploadModal = (props) => {
       fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
       const valid = checkIfFileValid(fileName, selectedTech);
 
-      // const isValidType = (
-      //   techOptions[selectedTech].validMimeTypes
-      //     .includes(
-      //       mime.lookup(file.path),
-      //     )
-      //   || techOptions[selectedTech].validExtensionTypes
-      //     .includes(
-      //       path.extname(file.path),
-      //     )
-      // );
-
       if (!valid.isValidType) error.push('Invalid file type.');
-
-      // const acceptedFilenames = new RegExp(acceptedFilesRegexp, 'gi');
-      // const isValidFilename = fileName.match(acceptedFilenames) !== null;
       if (!valid.isValidFilename) error.push('Invalid file name.');
 
       newList.push({

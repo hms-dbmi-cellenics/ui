@@ -6,7 +6,6 @@ import path from 'path';
 import techOptions from './fileUploadSpecifications';
 
 const checkIfFileValid = (fileName, selectedTech) => {
-  console.log('FILE HERE AHAHAH IS ', fileName);
   const isValidType = (
     techOptions[selectedTech].validMimeTypes
       .includes(
