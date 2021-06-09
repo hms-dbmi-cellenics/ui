@@ -12,7 +12,8 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
     const response = await fetchAPI(url);
 
     if (response.ok) {
-      const data = response.json();
+      const data = await response.json();
+
       const config = _.merge({}, initialPlotConfigStates[plotType], data.config);
       dispatch({
         type: LOAD_CONFIG,
