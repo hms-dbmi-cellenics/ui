@@ -1,20 +1,19 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
 import deleteSamples from '../../../../redux/actions/samples/deleteSamples';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 
 import { saveProject } from '../../../../redux/actions/projects';
-import { saveSamples } from '../../../../redux/actions/samples';
-
 import { SAMPLES_DELETE, SAMPLES_SAVED } from '../../../../redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
 
+enableFetchMocks();
+
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
-
-jest.mock('../../../../redux/actions/samples/saveSamples');
-saveSamples.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
@@ -39,7 +38,6 @@ describe('deleteSample action', () => {
   const initialState = {
     samples: {
       ...initialSampleState,
-      ids: [mockSampleUuid],
       [mockSampleUuid]: mockSample,
     },
     projects: {
@@ -49,14 +47,17 @@ describe('deleteSample action', () => {
     },
   };
 
+  fetchMock.resetMocks();
+  fetchMock.doMock();
+  fetchMock.mockResolvedValue(new Response('{}'));
+
   it('Dispatches event correctly', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(deleteSamples(mockSampleUuid));
+    await store.dispatch(deleteSamples([mockSampleUuid]));
 
     // Sets up loading state for saving project
     const actions = store.getActions();
 
-    expect(saveSamples).toHaveBeenCalled();
     expect(saveProject).toHaveBeenCalled();
 
     // Delete sample

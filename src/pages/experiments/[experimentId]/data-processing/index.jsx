@@ -109,15 +109,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       return;
     }
 
-    if (samples.ids.length > 0) {
+    const sampleIds = Object.keys(samples);
+
+    if (sampleIds.length > 0) {
       setPreFilteredSamples(
-        samples.ids.filter(
+        sampleIds.filter(
           (sampleUuid) => samples[sampleUuid].preFiltered
         )
       )
     }
 
-  }, [samples.meta.loading, samples.ids])
+  }, [samples.meta.loading, samples])
 
   useEffect(() => {
     if (

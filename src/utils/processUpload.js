@@ -5,7 +5,7 @@ import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
 import UploadStatus from './UploadStatus';
 
-const putInS3 = (bucketKey, loadedFileData, dispatch, sampleUuid, fileName, metadata) => (
+const putInS3 = async (bucketKey, loadedFileData, dispatch, sampleUuid, fileName, metadata) => (
   Storage.put(
     bucketKey,
     loadedFileData,
@@ -41,14 +41,6 @@ const compressAndUploadSingleFile = async (
   bucketKey, sampleUuid, fileName,
   bundle, dispatch, metadata = {},
 ) => {
-  dispatch(
-    updateSampleFile(
-      sampleUuid,
-      fileName,
-      { bundle, upload: { status: UploadStatus.UPLOADING, progress: 0 } },
-    ),
-  );
-
   let loadedFile = null;
 
   try {
@@ -79,13 +71,26 @@ const compressAndUploadSingleFile = async (
   }
 
   try {
-    await putInS3(bucketKey, loadedFile, dispatch, sampleUuid, fileName, metadata);
+    const uploadPromise = putInS3(
+      bucketKey, loadedFile, dispatch,
+      sampleUuid, fileName, metadata,
+    );
+
+    dispatch(
+      updateSampleFile(
+        sampleUuid,
+        fileName,
+        { bundle, upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise } },
+      ),
+    );
+
+    await uploadPromise;
   } catch (e) {
     dispatch(
       updateSampleFile(
         sampleUuid,
         fileName,
-        { upload: { status: UploadStatus.UPLOAD_ERROR } },
+        { upload: { status: UploadStatus.UPLOAD_ERROR, amplifyPromise: null } },
       ),
     );
 
@@ -100,6 +105,7 @@ const compressAndUploadSingleFile = async (
         upload: {
           status: UploadStatus.UPLOADED,
           progress: 100,
+          amplifyPromise: null,
         },
       },
     ),
