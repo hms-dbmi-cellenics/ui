@@ -36,14 +36,14 @@ const createMetadataTrack = (
       },
     });
 
-    await Promise.all(samples.ids.map((sampleUuid) => dispatch({
+    await Promise.all(Object.entries(samples).map(([sampleUuid, sample]) => dispatch({
       type: SAMPLES_UPDATE,
       payload: {
         sampleUuid,
         sample: {
           metadata: {
             [metadataKey]: (
-              samples[sampleUuid].metadata[metadataKey] || DEFAULT_NA
+              sample.metadata[metadataKey] || DEFAULT_NA
             ),
           },
         },

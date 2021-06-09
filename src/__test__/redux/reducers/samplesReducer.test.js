@@ -41,13 +41,11 @@ describe('samplesReducer', () => {
 
   const oneSampleState = {
     ...initialState,
-    ids: [...initialState.ids, sample1.uuid],
     [sample1.uuid]: sample1,
   };
 
   const twoSamplesState = {
     ...oneSampleState,
-    ids: [...oneSampleState.ids, sample2.uuid],
     [sample2.uuid]: sample2,
   };
 
@@ -71,7 +69,6 @@ describe('samplesReducer', () => {
       },
     });
 
-    expect(newState.ids).toEqual([sample1.uuid]);
     expect(newState[sample1.uuid]).toEqual(sample1);
     expect(newState).toMatchSnapshot();
   });
@@ -84,7 +81,6 @@ describe('samplesReducer', () => {
       },
     });
 
-    expect(newState.ids).toEqual([sample1.uuid, sample2.uuid]);
     expect(newState[sample1.uuid]).toEqual(sample1);
     expect(newState[sample2.uuid]).toEqual(sample2);
     expect(newState).toMatchSnapshot();
@@ -99,7 +95,6 @@ describe('samplesReducer', () => {
       },
     });
 
-    expect(newState.ids).toEqual(oneSampleState.ids);
     expect(newState[sample1.uuid]).toEqual(updateActionResult);
     expect(newState).toMatchSnapshot();
   });
@@ -128,7 +123,6 @@ describe('samplesReducer', () => {
       },
     });
 
-    expect(newState.ids).toEqual([sample1.uuid]);
     expect(newState[sample2.uuid]).toBeUndefined();
     expect(newState).toMatchSnapshot();
   });
@@ -162,7 +156,6 @@ describe('samplesReducer', () => {
       },
     });
 
-    expect(newState.ids).toEqual([mockUuid1, mockUuid2]);
     expect(newState.meta.loading).toEqual(false);
     expect(newState.meta.error).toEqual(false);
     expect(newState).toMatchSnapshot();

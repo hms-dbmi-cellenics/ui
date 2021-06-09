@@ -5,10 +5,12 @@ import configureMockStore from 'redux-mock-store';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import { Menu } from 'antd';
+import { Auth } from 'aws-amplify';
 import ContentWrapper from '../../components/ContentWrapper';
 
 const { Item } = Menu;
 
+jest.mock('localforage');
 jest.mock('next/router', () => ({
   useRouter: jest.fn()
     .mockImplementationOnce(() => ({ // test 1
@@ -25,6 +27,13 @@ jest.mock('next/router', () => ({
       query: {},
     })),
 
+}));
+
+jest.mock('aws-amplify', () => ({
+  Auth: {
+    currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
+    federatedSignIn: jest.fn().mockImplementation(() => console.log('== HELLO ==')),
+  },
 }));
 
 configure({ adapter: new Adapter() });
@@ -47,14 +56,17 @@ const store = mockStore({
 });
 
 describe('ContentWrapper', () => {
-  it('renders correctly', () => {
-    const wrapper = mount(
+  it('renders correctly', async () => {
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
       <Provider store={store}>
         <ContentWrapper experimentId='1234'>
           <></>
         </ContentWrapper>
       </Provider>,
     );
+    await wrapper.update();
+
     const sider = wrapper.find('Sider');
     expect(sider.length).toEqual(1);
 
@@ -74,14 +86,17 @@ describe('ContentWrapper', () => {
     expect(plotsTablesLink.props().as).toEqual('/experiments/1234/plots-and-tables');
   });
 
-  it('links are disabled if there is no experimentId', () => {
-    const wrapper = mount(
+  it('links are disabled if there is no experimentId', async () => {
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
       <Provider store={store}>
         <ContentWrapper backendStatus={{}}>
           <></>
         </ContentWrapper>
       </Provider>,
     );
+    await wrapper.update();
+
     const sider = wrapper.find('Sider');
     expect(sider.length).toEqual(1);
 
@@ -101,7 +116,7 @@ describe('ContentWrapper', () => {
     expect(menus.at(3).props().disabled).toEqual(true);
   });
 
-  test('View changes if there is a pipeline run underway', () => {
+  it('View changes if there is a pipeline run underway', async () => {
     const info = {
       experimentId: '1234',
       experimentName: 'test experiment',
@@ -120,7 +135,8 @@ describe('ContentWrapper', () => {
       experiments: { 1234: {} },
     });
 
-    const wrapper = mount(
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
       <Provider store={testStore}>
         <ContentWrapper
           experimentId={info.experimentId}
@@ -130,6 +146,7 @@ describe('ContentWrapper', () => {
         </ContentWrapper>
       </Provider>,
     );
+    await wrapper.update();
 
     const sider = wrapper.find('Sider');
     expect(sider.length).toEqual(1);
@@ -139,5 +156,30 @@ describe('ContentWrapper', () => {
 
     const pipelineRedirects = wrapper.find('PipelineRedirectToDataProcessing');
     expect(pipelineRedirects.length).toEqual(1);
+  });
+
+  it('Redirects to login if the user is unauthenticated', async () => {
+    Auth.currentAuthenticatedUser
+      .mockImplementationOnce(
+        async () => { throw new Error('user not signed in'); },
+      );
+
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
+      <Provider store={store}>
+        <ContentWrapper experimentId='1234'>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+    await wrapper.update();
+
+    const sider = wrapper.find('Sider');
+    expect(sider.length).toEqual(0);
+
+    const menu = wrapper.find(Menu);
+    expect(menu.length).toEqual(0);
+
+    expect(Auth.federatedSignIn).toHaveBeenCalled();
   });
 });

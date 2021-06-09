@@ -37,7 +37,6 @@ describe('updateSampleFile action', () => {
   const mockState = {
     samples: {
       ...initialState,
-      ids: [...initialState.ids, mockSample.uuid],
       [mockSample.uuid]: mockSample,
     },
   };

@@ -6,10 +6,16 @@ on:
   pull_request:
     branches:
       - develop
+      - master
 jobs:
   build:
     name: Build website
     runs-on: ubuntu-20.04
+    if: |-
+      !github.event.pull_request == true || 
+      startsWith(github.event.pull_request.head.ref, 'release/') ||
+      startsWith(github.event.pull_request.head.ref, 'hotfix/') ||
+      github.event.pull_request.base.ref == 'develop'
     env:
       CI: "true"
     steps:
@@ -173,7 +179,7 @@ jobs:
             SANDBOX_ID="STAGING_SANDBOX_ID"
             CHART_REF="STAGING_CHART_REF"
           fi
-          
+
           yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
           | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \

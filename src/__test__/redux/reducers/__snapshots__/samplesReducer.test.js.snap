@@ -17,10 +17,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-    "qwe234",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -61,9 +57,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -94,9 +87,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -122,9 +112,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -155,9 +142,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -228,9 +212,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -256,9 +237,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -284,9 +262,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": "Error message",
     "loading": false,
@@ -312,9 +287,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -343,6 +315,7 @@ Object {
         "size": 0,
         "success": false,
         "upload": Object {
+          "amplifyPromise": null,
           "status": null,
         },
       },
@@ -356,9 +329,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -387,6 +357,7 @@ Object {
         "size": 0,
         "success": false,
         "upload": Object {
+          "amplifyPromise": null,
           "status": null,
         },
       },
@@ -400,9 +371,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,
@@ -435,9 +403,6 @@ Object {
     "type": null,
     "uuid": "asd123",
   },
-  "ids": Array [
-    "asd123",
-  ],
   "meta": Object {
     "error": false,
     "loading": false,

@@ -109,15 +109,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       return;
     }
 
-    if (samples.ids.length > 0) {
+    const sampleIds = Object.keys(samples);
+
+    if (sampleIds.length > 0) {
       setPreFilteredSamples(
-        samples.ids.filter(
+        sampleIds.filter(
           (sampleUuid) => samples[sampleUuid].preFiltered
         )
       )
     }
 
-  }, [samples.meta.loading, samples.ids])
+  }, [samples.meta.loading, samples])
 
   useEffect(() => {
     if (
@@ -272,7 +274,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'doubletScores',
       name: 'Doublet filter',
-      description: 'Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. The cut-off is typically set around 0.5.',
+      description: <span>Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see <a href="https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding" target="_blank">scDblFinder thresholding</a>.</span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer

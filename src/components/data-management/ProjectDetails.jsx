@@ -288,7 +288,7 @@ const ProjectDetails = ({ width, height }) => {
         deleteEnabled
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
-        onDelete={() => dispatch(deleteSamples(record.uuid))}
+        onDelete={() => dispatch(deleteSamples([record.uuid]))}
       />
     </Text>
   );
@@ -501,7 +501,7 @@ const ProjectDetails = ({ width, height }) => {
   useEffect(() => {
     if (projects.ids.length === 0
       || !activeProject
-      || !samples.ids.includes(activeProject.samples[0])) {
+      || !samples[activeProject.samples[0]]) {
       setTableData([]);
       setTableColumns([]);
       return;

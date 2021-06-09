@@ -38,7 +38,12 @@ const decomposeBody = async (body, experimentId) => {
   return { missingDataKeys, cachedData };
 };
 
-const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, backendStatus) => {
+const fetchCachedGeneExpressionWork = async (
+  experimentId,
+  timeout,
+  body,
+  backendStatus,
+  extras) => {
   const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
   const missingGenes = Object.keys(missingDataKeys);
   if (missingGenes.length === 0) {
@@ -51,7 +56,10 @@ const fetchCachedGeneExpressionWork = async (experimentId, timeout, body, backen
     experimentId,
     timeout,
     { ...body, genes: missingGenes },
-    { ETagPipelineRun: qcPipelineStartDate },
+    {
+      ETagPipelineRun: qcPipelineStartDate,
+      ...extras,
+    },
   );
   const responseData = JSON.parse(response.results[0].body);
 
@@ -71,7 +79,7 @@ const fetchCachedWork = async (
   timeout,
   body,
   backendStatus,
-  ...extras) => {
+  extras) => {
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
@@ -79,10 +87,13 @@ const fetchCachedWork = async (
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
   if (body.name === 'GeneExpression') {
-    return fetchCachedGeneExpressionWork(experimentId, timeout, body, backendStatus);
+    return fetchCachedGeneExpressionWork(experimentId, timeout, body, backendStatus, extras);
   }
 
-  const key = createObjectHash({ experimentId, body, qcPipelineStartDate });
+  const key = createObjectHash({
+    experimentId, body, qcPipelineStartDate, extras,
+  });
+
   const data = await cache.get(key);
   if (data) return data;
 
