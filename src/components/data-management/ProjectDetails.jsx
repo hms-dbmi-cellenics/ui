@@ -585,10 +585,7 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   const launchAnalysis = async (experimentId) => {
-    const backendStatus = await dispatch(loadBackendStatus(experimentId));
-    if (backendStatus.gem2s.needsRunning) {
-      await dispatch(runGem2s(experimentId));
-    }
+    await dispatch(runGem2s(experimentId));
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
@@ -603,10 +600,10 @@ const ProjectDetails = ({ width, height }) => {
         activeProject={activeProject}
         experiments={experiments}
         visible={analysisModalVisible}
-        onLaunch={(experimentId) => {
+        onLaunch={async (experimentId) => {
           const lastViewed = moment().toISOString();
-          dispatch(updateExperiment(experimentId, { lastViewed }));
-          dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+          await dispatch(updateExperiment(experimentId, { lastViewed }));
+          await dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
         }}
         onChange={() => {
