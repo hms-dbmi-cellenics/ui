@@ -140,33 +140,13 @@ const ProjectDetails = ({ width, height }) => {
       file,
     } = tableCellData;
     const { progress = null, status = null } = file?.upload ?? {};
-    const showSuccessDetails = () => {
+
+    const showDetails = () => {
       uploadDetailsModalDataRef.current = {
         sampleUuid,
         fileCategory: columnId,
         file,
       };
-
-      setUploadDetailsModalVisible(true);
-    };
-
-    const showErrorDetails = () => {
-      uploadDetailsModalDataRef.current = {
-        sampleUuid,
-        fileCategory: columnId,
-        file,
-      };
-
-      setUploadDetailsModalVisible(true);
-    };
-
-    const showUploadFileAgain = () => {
-      uploadDetailsModalDataRef.current = {
-        sampleUuid,
-        fileCategory: columnId,
-        file,
-      };
-
       setUploadDetailsModalVisible(true);
     };
 
@@ -184,8 +164,8 @@ const ProjectDetails = ({ width, height }) => {
           }}
         >
           <Space
-            onClick={showSuccessDetails}
-            onKeyDown={showSuccessDetails}
+            onClick={showDetails}
+            onKeyDown={showDetails}
           >
             <Text type='success'>{messageForStatus(status)}</Text>
           </Space>
@@ -221,8 +201,8 @@ const ProjectDetails = ({ width, height }) => {
       return (
         <div
           className='hoverSelectCursor'
-          onClick={showErrorDetails}
-          onKeyDown={showErrorDetails}
+          onClick={showDetails}
+          onKeyDown={showDetails}
           style={{
             whiteSpace: 'nowrap',
             height: '35px',
@@ -262,7 +242,7 @@ const ProjectDetails = ({ width, height }) => {
                 size='large'
                 shape='link'
                 icon={<UploadOutlined />}
-                onClick={showUploadFileAgain}
+                onClick={showDetails}
               />
             </Tooltip>
           </Space>
