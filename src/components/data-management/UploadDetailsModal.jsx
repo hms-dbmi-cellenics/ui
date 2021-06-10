@@ -99,6 +99,7 @@ const UploadDetailsModal = (props) => {
         }}
         style={{ width: '140px', marginBottom: '10px' }}
       >
+        {/* bundle name will be undefined if the file was not uploaded */}
         {bundleName ? 'Replace file' : 'Upload'}
       </Button>
     </>
