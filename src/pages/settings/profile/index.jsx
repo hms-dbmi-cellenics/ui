@@ -52,13 +52,15 @@ const ProfileSettings = () => {
     if (oldPassword || newPassword || confirmNewPassword) {
       setOldPasswordError(false);
       setNewPasswordError(false);
-      const decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$/;
+
+      //this should be updated in the case of changing the AWS Cognito password strength policy
+      const passwordValidity = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$/;
 
       if (confirmNewPassword !== newPassword) {
         setNewPasswordError("Passwords don't match.");
       } else if (oldPassword === newPassword) { // pragma: allowlist secret
         setNewPasswordError('The new password cannot match the old one.');
-      } else if (!newPassword?.match(decimal)) {
+      } else if (!newPassword?.match(passwordValidity)) {
         setNewPasswordError('Password should include at least 8 characters, a number, special character, uppercase letter, lowercase letter.');
       } else {
         await Auth.changePassword(user, oldPassword, newPassword)
@@ -106,6 +108,7 @@ const ProfileSettings = () => {
                 >
                   <Input
                     type='email'
+                    // disabled until we can validate the changing of email
                     disabled
                     onChange={(e) => setChanges({ changedUserAttributes: { email: e.target.value } })}
                     placeholder={user.attributes.email}
