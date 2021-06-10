@@ -37,6 +37,8 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
     const louvainSets = await fetchCachedWork(
       experimentId, REQUEST_TIMEOUT, body, backendStatus.status,
     );
+    console.log('louvain sets');
+    console.log({ louvainSets });
 
     const newCellSets = [
       louvainSets,
