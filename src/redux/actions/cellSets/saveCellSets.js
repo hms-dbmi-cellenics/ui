@@ -17,8 +17,6 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
     return null;
   }
 
-  console.log('SAVING CELLSETS LCS');
-
   const treeData = composeTree(hierarchy, properties);
   const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
