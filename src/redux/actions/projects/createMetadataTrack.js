@@ -36,7 +36,7 @@ const createMetadataTrack = (
       },
     });
 
-    const { meta, ...onlySamples } = samples;
+    const { meta, loading, ...onlySamples } = samples;
 
     await Promise.all(Object.entries(onlySamples).map(([sampleUuid, sample]) => dispatch({
       type: SAMPLES_UPDATE,
