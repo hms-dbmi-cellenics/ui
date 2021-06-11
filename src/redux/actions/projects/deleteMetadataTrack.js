@@ -31,9 +31,7 @@ const deleteMetadataTrack = (
       ...curr,
       [sampleUuid]: updatedSample,
     };
-  }, {
-    ids: project.samples,
-  });
+  }, {});
 
   try {
     await dispatch(saveProject(projectUuid, newProject, false));
