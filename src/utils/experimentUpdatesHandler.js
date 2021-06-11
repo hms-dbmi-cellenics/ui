@@ -66,11 +66,12 @@ const onGEM2SUpdate = () => {
 
 };
 
-const onWorkerUpdate = (experimentId, update, dispatch) => async () => {
+const onWorkerUpdate = (experimentId, update, dispatch) => {
   console.log('on data update, what to do, what to see');
 
   const reqName = update.response.request.body.name;
 
+  console.log('request name', reqName);
   if (reqName === 'ClusterCells') {
     console.log('loading cell sets anew, a piece');
     // dispatch(loadEmbedding(experimentId, 'umap'));
@@ -85,7 +86,7 @@ const onWorkerUpdate = (experimentId, update, dispatch) => async () => {
       louvainSets,
     ];
     try {
-      await dispatch({
+      dispatch({
         type: CELL_SETS_CLUSTERING_UPDATED,
         payload: {
           experimentId,
