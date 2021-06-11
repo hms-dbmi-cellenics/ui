@@ -29,12 +29,16 @@ const NewExperimentModal = (props) => {
 
   const [experimentsList, setExperimentsList] = useState([]);
   const [numFieldsEditing, setNumFieldsEditing] = useState(0);
+  const [isWorking, setIsWorking] = useState(false);
 
   useEffect(() => {
     setExperimentsList(
       activeProject?.experiments?.map((experimentId) => experiments[experimentId]),
     );
   }, [activeProject, experiments]);
+  useEffect(() => {
+    setIsWorking(!visible);
+  }, [visible]);
 
   const validationChecks = [
     rules.MIN_1_CHAR,
@@ -68,8 +72,11 @@ const NewExperimentModal = (props) => {
                       <Col>
                         <Button
                           type='primary'
-                          onClick={() => onLaunch(experiment.id)}
-                          disabled={numFieldsEditing > 0}
+                          onClick={() => {
+                            setIsWorking(true);
+                            onLaunch(experiment.id);
+                          }}
+                          disabled={numFieldsEditing > 0 || isWorking}
                         >
                           Launch
                         </Button>
@@ -88,18 +95,24 @@ const NewExperimentModal = (props) => {
                         value={experiment.name}
                         validationFunc={(name) => validateInputs(name, validationChecks).isValid}
                         deleteEnabled={false}
-                        onEditing={(editing) => { if (editing) setNumFieldsEditing(numFieldsEditing + 1); }}
+                        onEditing={(editing) => {
+                          if (editing) setNumFieldsEditing(numFieldsEditing + 1);
+                        }}
                       />
                     </strong>
                     <EditableField
                       onAfterSubmit={(description) => {
-                        dispatch(updateExperiment(experiment.id, { description: description.trim() }));
+                        dispatch(
+                          updateExperiment(experiment.id, { description: description.trim() }),
+                        );
                         setNumFieldsEditing(numFieldsEditing - 1);
                       }}
                       onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
                       value={experiment.description}
                       deleteEnabled={false}
-                      onEditing={(editing) => { if (editing) setNumFieldsEditing(numFieldsEditing + 1); }}
+                      onEditing={(editing) => {
+                        if (editing) setNumFieldsEditing(numFieldsEditing + 1);
+                      }}
                     />
                   </Space>
                 </List.Item>

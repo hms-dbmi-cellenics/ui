@@ -11,6 +11,7 @@ const experimentsLoaded = (state, action) => {
       id: curr.experimentId,
       createdDate: curr.createdDate,
       lastViewed: curr.lastViewed,
+      meta: curr.meta,
     };
 
     return acc;

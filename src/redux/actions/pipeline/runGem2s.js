@@ -30,6 +30,7 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
         },
       },
     );
+
     const json = await response.json();
     throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
 

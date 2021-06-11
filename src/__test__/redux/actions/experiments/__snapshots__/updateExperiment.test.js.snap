@@ -9,6 +9,10 @@ Array [
         "description": "Analysis description",
         "id": "experiment-1",
         "lastViewed": null,
+        "meta": Object {
+          "organism": null,
+          "type": "10x",
+        },
         "name": "updated-experiment",
         "projectUuid": null,
       },
