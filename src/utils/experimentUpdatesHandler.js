@@ -31,6 +31,11 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
     }
     // this should be used to notify the UI that a request has changed and the UI is out-of-sync
     case updateTypes.DATA: {
+      console.log('updateDebug');
+      console.log(update);
+
+      console.log('experimentIdDebug');
+      console.log(experimentId);
       return onWorkerUpdate(experimentId, update, dispatch);
     }
     default: {
@@ -87,7 +92,7 @@ const onWorkerUpdate = (experimentId, update, dispatch) => async () => {
           data: newCellSets,
         },
       });
-      dispatch(saveCellSets(experimentId));
+      // dispatch(saveCellSets(experimentId));
       console.log('saved new cell sets');
     } catch (e) {
       console.log('error on this louvain trial');
