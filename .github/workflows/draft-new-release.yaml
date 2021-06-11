@@ -33,6 +33,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
+
           branch: ${{ format('release/{0}', github.event.inputs.version ) }}
 
       - id: create-pr
