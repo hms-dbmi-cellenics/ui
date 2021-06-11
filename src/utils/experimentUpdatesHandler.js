@@ -2,7 +2,7 @@ import { updateProcessingSettings, updateBackendStatus } from '../redux/actions/
 // import loadEmbedding from '../redux/actions/embedding/loadEmbedding';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 // import { loadCellSets, updateCellSetsClustering } from '../redux/actions/cellSets';
-import { saveCellSets } from '../redux/actions/cellSets';
+// import { saveCellSets } from '../redux/actions/cellSets';
 import {
   CELL_SETS_CLUSTERING_UPDATED,
 } from '../redux/actionTypes/cellSets';
