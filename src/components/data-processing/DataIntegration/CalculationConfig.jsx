@@ -53,6 +53,11 @@ const CalculationConfig = (props) => {
       disabled: false,
     },
     {
+      value: 'harmony',
+      text: 'Harmony',
+      disabled: false,
+    },
+    {
       value: 'fastmnn',
       text: 'Fast MNN',
       disabled: false,
@@ -65,11 +70,6 @@ const CalculationConfig = (props) => {
     {
       value: 'seuratv3',
       text: 'Seurat v3',
-      disabled: true,
-    },
-    {
-      value: 'harmony',
-      text: 'Harmony',
       disabled: true,
     },
     {
