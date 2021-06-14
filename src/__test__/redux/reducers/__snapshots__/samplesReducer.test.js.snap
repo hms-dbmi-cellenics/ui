@@ -171,7 +171,6 @@ Object {
     "asd123",
     "qwe234",
   ],
-  "loading": false,
   "meta": Object {
     "error": false,
     "loading": false,
