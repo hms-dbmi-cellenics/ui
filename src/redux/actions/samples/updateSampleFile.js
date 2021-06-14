@@ -20,11 +20,10 @@ const updateSampleFile = (
   // we'll need to remove the hard-coded 10x tech type once we start
   // supporting other types and save the chosen tech type in redux
   const valid = checkIfFileValid(fileName, '10X Chromium');
-
+  const { UPLOADED, UPLOAD_ERROR } = UploadStatus;
   try {
     // Save sample only if upload is successful or error
-    if (fileDiff.upload.status === UploadStatus.UPLOADED
-      || fileDiff.upload.status === UploadStatus.UPLOAD_ERROR) {
+    if ([UPLOADED, UPLOAD_ERROR].includes(fileDiff.upload.status)) {
       const diffObject = {
         fileNames: sample.fileNames,
         files: {

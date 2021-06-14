@@ -2,7 +2,7 @@
 // this is done in the data-management module - upload samples
 import mime from 'mime-types';
 import path from 'path';
-
+import _ from 'lodash';
 import techOptions from './fileUploadSpecifications';
 
 const checkIfFileValid = (fileName, selectedTech) => {
@@ -16,7 +16,7 @@ const checkIfFileValid = (fileName, selectedTech) => {
         path.extname(fileName),
       )
   );
-  const acceptedFilesRegexp = `(${techOptions[selectedTech].acceptedFiles.join('|')})$`;
+  const acceptedFilesRegexp = `(${techOptions[selectedTech].acceptedFiles.map(_.escapeRegExp).join('|')})$`;
   const acceptedFilenames = new RegExp(acceptedFilesRegexp, 'gi');
   const isValidFilename = fileName.match(acceptedFilenames) !== null;
 

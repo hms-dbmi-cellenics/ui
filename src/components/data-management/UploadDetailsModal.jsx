@@ -37,6 +37,7 @@ const UploadDetailsModal = (props) => {
   }, [replacementFileBundle]);
 
   const isSuccessModal = status === UploadStatus.UPLOADED;
+  const isNotUploaded = status === UploadStatus.FILE_NOT_FOUND;
 
   const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);
 
@@ -129,7 +130,7 @@ const UploadDetailsModal = (props) => {
         <Row style={{ width: '100%', justifyContent: 'center' }}>
           <Col>
             {/* render retry button only if file was tried to be uploaded */}
-            {bundleName && (isSuccessModal ? downloadButton() : retryButton())}
+            {!isNotUploaded && (isSuccessModal ? downloadButton() : retryButton())}
           </Col>
           <Col span='2' />
           {replaceButton()}
@@ -141,7 +142,9 @@ const UploadDetailsModal = (props) => {
         {!isSuccessModal
           && (
             <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-              The following file has failed to upload or was not uploaded
+              The following file
+              {' '}
+              {isNotUploaded ? 'was not uploaded' : 'has failed to upload'}
             </Row>
           )}
         <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
@@ -152,7 +155,7 @@ const UploadDetailsModal = (props) => {
           <Col span={5}>Category</Col>
           <Col span={10}>{fileCategory}</Col>
         </Row>
-        {bundleName && (
+        {!isNotUploaded && (
           <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
             <Col span={5}>Filename</Col>
             <Col span={10}>{bundleName}</Col>
