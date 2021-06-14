@@ -14,7 +14,8 @@ jobs:
     if: |-
       !github.event.pull_request == true || 
       startsWith(github.event.pull_request.head.ref, 'release/') ||
-      startsWith(github.event.pull_request.head.ref, 'hotfix/') 
+      startsWith(github.event.pull_request.head.ref, 'hotfix/') ||
+      github.event.pull_request.base.ref == 'develop'
     env:
       CI: "true"
     steps:

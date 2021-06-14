@@ -4,9 +4,7 @@ const samplesDelete = (state, action) => {
   const { sampleUuids } = action.payload;
 
   let updatedObject = null;
-
   updatedObject = _.omit(state, sampleUuids);
-  updatedObject.ids = _.difference(state.ids, sampleUuids);
 
   return updatedObject;
 };

@@ -25,7 +25,6 @@ import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
-import pipelineStatus from '../../utils/pipelineStatusValues';
 
 import {
   updateProject,
@@ -276,7 +275,7 @@ const ProjectDetails = ({ width, height }) => {
         deleteEnabled
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
-        onDelete={() => dispatch(deleteSamples(record.uuid))}
+        onDelete={() => dispatch(deleteSamples([record.uuid]))}
       />
     </Text>
   );
@@ -486,7 +485,7 @@ const ProjectDetails = ({ width, height }) => {
   useEffect(() => {
     if (projects.ids.length === 0
       || !activeProject
-      || !samples.ids.includes(activeProject.samples[0])) {
+      || !samples[activeProject.samples[0]]) {
       setTableData([]);
       setTableColumns([]);
       return;
@@ -570,18 +569,8 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   const launchAnalysis = async (experimentId) => {
-    dispatch(loadBackendStatus(experimentId))
-      .then((backendStatus) => {
-        if ([
-          pipelineStatus.NOT_CREATED,
-          pipelineStatus.ABORTED,
-          pipelineStatus.TIMED_OUT,
-          pipelineStatus.FAILED,
-        ].includes(backendStatus.gem2s.status)) {
-          dispatch(runGem2s(experimentId));
-        }
-        router.push(analysisPath.replace('[experimentId]', experimentId));
-      });
+    await dispatch(runGem2s(experimentId));
+    router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
   return (
@@ -595,10 +584,10 @@ const ProjectDetails = ({ width, height }) => {
         activeProject={activeProject}
         experiments={experiments}
         visible={analysisModalVisible}
-        onLaunch={(experimentId) => {
+        onLaunch={async (experimentId) => {
           const lastViewed = moment().toISOString();
-          dispatch(updateExperiment(experimentId, { lastViewed }));
-          dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+          await dispatch(updateExperiment(experimentId, { lastViewed }));
+          await dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
         }}
         onChange={() => {

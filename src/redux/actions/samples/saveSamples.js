@@ -5,8 +5,6 @@ import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/samples';
 
-import getProjectSamples from '../../../utils/getProjectSamples';
-
 const saveSamples = (
   projectUuid,
   newSample,
@@ -19,12 +17,15 @@ const saveSamples = (
 
   // add new sample to payload
   if (addSample) {
-    payload = getProjectSamples(projects, projectUuid, samples);
+    const projectSamples = projects[projectUuid].samples.reduce((acc, sampleId) => {
+      acc[sampleId] = samples[sampleId];
+      return acc;
+    }, {});
+
+    payload = projectSamples;
     payload = {
       ...payload,
       [newSample.uuid]: newSample,
-      ids: payload?.ids.includes(newSample.uuid) ? payload.ids
-        : [...payload.ids || [], newSample.uuid],
     };
   } else {
     payload = newSample;

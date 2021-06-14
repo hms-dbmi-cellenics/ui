@@ -1,4 +1,5 @@
 export default {
+  ACCOUNT_DETAILS_UPDATED: 'Account details updated successfully.',
   CONNECTION_ERROR: 'Could not connect to the server. Check your internet connection and refresh the page.',
   DELETING_PROJECT: 'Deleting project...',
   DELETING_SAMPLE: 'Deleting sample...',

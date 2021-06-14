@@ -30,11 +30,11 @@ const sampleFileTemplate = {
   lastModified: '',
   upload: {
     status: null,
+    amplifyPromise: null,
   },
 };
 
 const initialState = {
-  ids: [],
   meta: {
     loading: false,
     error: false,
