@@ -8,7 +8,6 @@ import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 import UploadStatus from '../../../utils/UploadStatus';
-import checkIfFileValid from '../../../utils/checkIfFileValid';
 
 const updateSampleFile = (
   sampleUuid,
@@ -19,19 +18,17 @@ const updateSampleFile = (
   const sample = getState().samples[sampleUuid];
   // we'll need to remove the hard-coded 10x tech type once we start
   // supporting other types and save the chosen tech type in redux
-  const valid = checkIfFileValid(fileName, '10X Chromium');
   const { UPLOADED, UPLOAD_ERROR } = UploadStatus;
   try {
     // Save sample only if upload is successful or error
     if ([UPLOADED, UPLOAD_ERROR].includes(fileDiff.upload.status)) {
       const diffObject = {
-        fileNames: sample.fileNames,
         files: {
           lastModified: updatedAt,
           [fileName]: {
             ...sample.files[fileName],
             ...fileDiff,
-            valid: valid.isValidFilename && valid.isValidType,
+            valid: true,
           },
         },
       };
