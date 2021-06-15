@@ -40,7 +40,13 @@ const onQCUpdate = (experimentId, update, dispatch) => {
 
   const processingConfigUpdate = output.config;
   if (processingConfigUpdate) {
-    dispatch(updateProcessingSettings(experimentId, input.taskName, processingConfigUpdate));
+    dispatch(
+      updateProcessingSettings(
+        experimentId,
+        input.taskName,
+        { [input.sampleUuid]: processingConfigUpdate },
+      ),
+    );
 
     Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
       dispatch(updatePlotData(plotUuid, plotData));
