@@ -117,7 +117,7 @@ const UploadDetailsModal = (props) => {
 
   return (
     <Modal
-      title={isSuccessModal ? 'Upload successful' : 'Upload error'}
+      title={!isNotUploadedModal ? (isSuccessModal ? 'Upload successful' : 'Upload error') : 'File not found'}
       visible={visible}
       onCancel={onCancel}
       width='40%'
