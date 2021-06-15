@@ -11,9 +11,6 @@ import { useRouter } from 'next/router';
 
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
-
-import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
-
 import PlotStyling from '../../plots/styling/PlotStyling';
 
 import {
@@ -36,6 +33,10 @@ const DataIntegration = (props) => {
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
 
+  const pipelineIsRunning = useSelector((state) => (
+    state.experimentSettings.backendStatus.status.pipeline?.status === 'RUNNING'
+  ));
+
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
 
@@ -43,11 +44,6 @@ const DataIntegration = (props) => {
   const dispatch = useDispatch();
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
-  );
-
-  const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
-    [],
   );
 
   const plots = {
@@ -244,18 +240,10 @@ const DataIntegration = (props) => {
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
       && selectedConfig
-      && plotData) {
+      && plotData
+      && !pipelineIsRunning
+    ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData, true));
-      if (!selectedConfig.selectedCellSet) { return; }
-
-      const propertiesArray = Object.keys(cellSets.properties);
-      const cellSetClusteringLength = propertiesArray.filter(
-        (cellSet) => cellSet === selectedConfig.selectedCellSet,
-      ).length;
-
-      if (!cellSetClusteringLength) {
-        debouncedCellSetClustering(0.5);
-      }
     }
   }, [selectedConfig, cellSets, plotData, calculationConfig]);
 
