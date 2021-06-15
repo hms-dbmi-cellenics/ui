@@ -48,13 +48,13 @@ const CalculationConfig = (props) => {
 
   const methods = [
     {
-      value: 'seuratv4',
-      text: 'Seurat v4',
+      value: 'harmony',
+      text: 'Harmony',
       disabled: false,
     },
     {
-      value: 'harmony',
-      text: 'Harmony',
+      value: 'seuratv4',
+      text: 'Seurat v4',
       disabled: false,
     },
     {
