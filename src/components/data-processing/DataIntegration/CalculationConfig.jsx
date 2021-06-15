@@ -23,7 +23,7 @@ import {
 
 import _ from 'lodash';
 
-import SeuratV4Options from './SeuratV4Options';
+import NormalisationOptions from './NormalisationOptions';
 
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
@@ -34,7 +34,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun, disabled,
+    experimentId, onPipelineRun, disabled, disableDataIntegration,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -50,6 +50,16 @@ const CalculationConfig = (props) => {
     {
       value: 'seuratv4',
       text: 'Seurat v4',
+      disabled: false,
+    },
+    {
+      value: 'fastmnn',
+      text: 'Fast MNN',
+      disabled: false,
+    },
+    {
+      value: 'unisample',
+      text: 'No integration',
       disabled: false,
     },
     {
@@ -72,11 +82,6 @@ const CalculationConfig = (props) => {
       text: 'Liger',
       disabled: true,
     },
-    {
-      value: 'fastMNN',
-      text: 'Fast MNN',
-      disabled: true,
-    },
   ];
 
   const [numPCs, setNumPCs] = useState(dimensionalityReduction.numPCs);
@@ -94,17 +99,6 @@ const CalculationConfig = (props) => {
   const runWithCurrentDataIntegrationSettings = () => {
     setChangesOutstanding(false);
     onPipelineRun();
-  };
-
-  const methodOptions = {
-    seuratv4: () => (
-      <SeuratV4Options
-        config={dataIntegration.methodSettings.seuratv4}
-        onUpdate={updateSettings}
-        onChange={() => setChangesOutstanding(true)}
-        disabled={disabled}
-      />
-    ),
   };
 
   const roundedVariationExplained = () => {
@@ -146,7 +140,7 @@ const CalculationConfig = (props) => {
               <Select
                 value={dataIntegration.method}
                 onChange={(val) => updateSettings({ dataIntegration: { method: val } })}
-                disabled={disabled}
+                disabled={disableDataIntegration || disabled}
               >
                 {
                   methods.map((el) => (
@@ -156,9 +150,13 @@ const CalculationConfig = (props) => {
               </Select>
             </Form.Item>
 
-            {
-              methodOptions[dataIntegration.method]()
-            }
+            <NormalisationOptions
+              config={dataIntegration.methodSettings[dataIntegration.method]}
+              onUpdate={updateSettings}
+              methodId={dataIntegration.method}
+              onChange={() => setChangesOutstanding(true)}
+              disabled={disableDataIntegration || disabled}
+            />
 
           </div>
           <Form.Item>
@@ -197,10 +195,11 @@ const CalculationConfig = (props) => {
             <Form.Item label='Exclude genes categories'>
               <Tooltip title='Normalization can be biased by certain gene categories such the ones listed here.
               Checking them will ignore those categories.
-              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day. 
-              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences 
+              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day.
+              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences
               in expression between cell types.
-              This is not implemented yet'>
+              This is not implemented yet'
+              >
                 <QuestionCircleOutlined />
               </Tooltip>
               <Checkbox.Group
@@ -280,7 +279,7 @@ const CalculationConfig = (props) => {
           </div>
         </Form>
       </Panel>
-    </Collapse >
+    </Collapse>
   );
 };
 
@@ -288,10 +287,12 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
+  disableDataIntegration: PropTypes.bool,
 };
 
 CalculationConfig.defaultProps = {
   disabled: false,
+  disableDataIntegration: false,
 };
 
 export default CalculationConfig;

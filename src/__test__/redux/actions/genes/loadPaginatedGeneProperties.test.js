@@ -25,7 +25,7 @@ describe('loadPaginatedGeneProperties action', () => {
   const componentUuid = 'asd';
 
   const experimentSettings = {
-    pipelineStatus: {
+    backendStatus: {
       status: {
         pipeline: {
           status: 'SUCCEEDED',

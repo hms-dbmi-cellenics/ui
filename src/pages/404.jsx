@@ -1,10 +1,9 @@
 import React from 'react';
-import { Result, Button, Typography } from 'antd';
-
 import PropTypes from 'prop-types';
+import { Result, Button, Typography } from 'antd';
 import FeedbackButton from '../components/FeedbackButton';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 const NotFoundPage = ({ title, subTitle, hint }) => (
   <Result
@@ -48,15 +47,15 @@ const NotFoundPage = ({ title, subTitle, hint }) => (
 );
 
 NotFoundPage.defaultProps = {
-  hint: null,
+  hint: '',
   title: 'Page not found',
   subTitle: 'We can\'t seem to find the page you\'re looking for.',
 };
 
 NotFoundPage.propTypes = {
-  title: NotFoundPage.string,
-  subTitle: NotFoundPage.string,
-  hint: NotFoundPage.string,
+  title: PropTypes.string,
+  subTitle: PropTypes.string,
+  hint: PropTypes.string,
 };
 
 export default NotFoundPage;

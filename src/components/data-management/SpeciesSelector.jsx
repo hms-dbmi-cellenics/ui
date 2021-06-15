@@ -1,23 +1,24 @@
-// aa
-
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Select, Typography, Space, Divider, Skeleton,
 } from 'antd';
-import React from 'react';
-import _ from 'lodash';
 
 const { Text } = Typography;
 
-const SpeciesSelector = ({ data }) => {
-  if (!data) {
+const SpeciesSelector = (props) => {
+  const { data, value, onChange } = props;
+
+  if (!data || data.length === 0) {
     return <Skeleton.Input style={{ width: 300 }} size='small' />;
   }
 
   return (
     <Select
+      value={value}
+      onChange={(organismId, option) => onChange(organismId, option)}
       style={{ width: '100%' }}
       dropdownMatchSelectWidth={400}
-      labelInValue
       showSearch
       placeholder='Search for common or scientific name...'
       filterOption={(input, option) => option.searchQuery.includes(input.toLowerCase())}
@@ -49,6 +50,8 @@ const SpeciesSelector = ({ data }) => {
       options={
         data.map((organism) => ({
           value: organism.id,
+          displayName: organism.display_name,
+          scientificName: organism.scientific_name,
           searchQuery: `${organism.display_name} ${organism.scientific_name}`.toLowerCase(),
           label: (
             <Space direction='vertical'>
@@ -62,6 +65,17 @@ const SpeciesSelector = ({ data }) => {
       }
     />
   );
+};
+
+SpeciesSelector.propTypes = {
+  data: PropTypes.array.isRequired,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+};
+
+SpeciesSelector.defaultProps = {
+  value: '',
+  onChange: () => { },
 };
 
 export default SpeciesSelector;

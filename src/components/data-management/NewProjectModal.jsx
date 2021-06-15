@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Modal, Button, Input, Space, Typography, Form,
 } from 'antd';
-
-import validateProjectName from '../../utils/validateProjectName';
+import { ClipLoader } from 'react-spinners';
+import validateInputs, { rules } from '../../utils/validateInputs';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -19,14 +20,38 @@ const NewProjectModal = (props) => {
   } = props;
 
   const [projectNames, setProjectNames] = useState(new Set());
+  const [projectName, setProjectName] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
+  const [isValidName, setIsValidName] = useState(false);
+
+  const validationChecks = [
+    rules.MIN_8_CHARS,
+    rules.MIN_2_SEQUENTIAL_CHARS,
+    rules.ALPHANUM_DASH_SPACE,
+    rules.UNIQUE_NAME_CASE_INSENSITIVE,
+  ];
+
+  const validationParams = {
+    existingNames: projectNames,
+  };
 
   useEffect(() => {
     setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
   }, [projects.ids]);
+  useEffect(() => {
+    setIsValidName(validateInputs(projectName, validationChecks, validationParams).isValid);
+  }, [projectName, projectNames]);
 
-  const [projectName, setProjectName] = useState('');
-  const [projectDescription, setProjectDescription] = useState('');
-  const [isValid, setIsValid] = useState(false);
+  const {
+    saving,
+    error,
+  } = useSelector((state) => state.projects.meta);
+
+  const submit = () => {
+    const newProject = projectName;
+    setProjectName('');
+    onCreate(newProject, projectDescription);
+  };
 
   return (
     <Modal
@@ -37,11 +62,9 @@ const NewProjectModal = (props) => {
           type='primary'
           key='create'
           block
-          disabled={!isValid}
+          disabled={!isValidName}
           onClick={() => {
-            onCreate(projectName, projectDescription);
-            setProjectName('');
-            setIsValid(false);
+            submit();
           }}
         >
           Create Project
@@ -66,8 +89,18 @@ const NewProjectModal = (props) => {
 
           <Form layout='vertical'>
             <Form.Item
-              validateStatus={validateProjectName(projectName, projectNames) !== true && 'error'}
-              help={validateProjectName(projectName, projectNames)}
+              validateStatus={isValidName ? 'success' : 'error'}
+              help={(
+                <ul>
+                  {validateInputs(
+                    projectName,
+                    validationChecks,
+                    validationParams,
+                  ).results
+                    .filter((msg) => msg !== true)
+                    .map((msg) => <li>{msg}</li>)}
+                </ul>
+              )}
               label={(
                 <span>
                   Project name
@@ -80,18 +113,18 @@ const NewProjectModal = (props) => {
             >
               <Input
                 onChange={(e) => {
-                  setProjectName(e.target.value);
-                  setIsValid(validateProjectName(e.target.value, projectNames) === true);
+                  setProjectName(e.target.value.trim());
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && isValid) {
+                  if (e.key === 'Enter' && isValidName) {
                     onCreate(projectName, projectDescription);
                     setProjectName('');
-                    setIsValid(false);
+                    setIsValidName(false);
                   }
                 }}
                 placeholder='Ex.: Lung gamma delta T cells'
                 value={projectName}
+                disabled={saving}
               />
             </Form.Item>
             <Form.Item
@@ -101,9 +134,32 @@ const NewProjectModal = (props) => {
                 onChange={(e) => { setProjectDescription(e.target.value); }}
                 placeholder='Type description'
                 autoSize={{ minRows: 3, maxRows: 5 }}
+                disabled={saving}
               />
             </Form.Item>
           </Form>
+
+          {
+            saving && (
+              <center>
+                <Space direction='vertical'>
+                  <ClipLoader
+                    size={50}
+                    color='#8f0b10'
+                  />
+                  <Text>Creating project...</Text>
+                </Space>
+              </center>
+            )
+          }
+
+          {
+            error && (
+              <Text type='danger' style={{ fontSize: 14 }}>
+                {error}
+              </Text>
+            )
+          }
 
         </Space>
       </Space>

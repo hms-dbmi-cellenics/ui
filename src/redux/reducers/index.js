@@ -6,10 +6,10 @@ import cellSetsReducer from './cellSets';
 import componentConfigReducer from './componentConfig/index';
 import differentialExpressionReducer from './differentialExpression';
 import embeddingsReducer from './embeddings';
+import experimentsReducer from './experiments';
 import experimentSettingsReducer from './experimentSettings';
 import genesReducer from './genes';
 import layoutReducer from './layout/layout';
-import notificationsReducer from './notificationsReducer';
 import projectsReducer from './projects';
 import sampleReducer from './samples';
 import networkResourcesReducer from './networkResources';
@@ -21,10 +21,10 @@ export default combineReducers({
   componentConfig: componentConfigReducer,
   differentialExpression: differentialExpressionReducer,
   embeddings: embeddingsReducer,
+  experiments: experimentsReducer,
   experimentSettings: experimentSettingsReducer,
   genes: genesReducer,
   layout: layoutReducer,
-  notifications: notificationsReducer,
   projects: projectsReducer,
   samples: sampleReducer,
   networkResources: networkResourcesReducer,

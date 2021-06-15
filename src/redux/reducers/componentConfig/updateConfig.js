@@ -1,17 +1,12 @@
 import _ from 'lodash';
+import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateConfig = (state, action) => {
   const { plotUuid, configChanges = null, dataChanges = null } = action.payload;
-  const newConfig = _.cloneDeep(state[plotUuid]?.config);
-
-  const mergeConfig = (objValue, srcValue) => {
-    if (_.isArray(objValue) && srcValue) {
-      return srcValue;
-    }
-  };
+  let newConfig = _.cloneDeep(state[plotUuid]?.config);
 
   if (configChanges) {
-    _.mergeWith(newConfig, configChanges, mergeConfig);
+    newConfig = mergeObjectWithArrays(newConfig, configChanges);
   }
 
   const newData = dataChanges ?? state[plotUuid]?.plotData;

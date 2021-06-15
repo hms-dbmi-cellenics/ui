@@ -2,7 +2,7 @@ import _ from 'lodash';
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from '../../actionTypes/genes';
-import pushNotificationMessage from '../pushNotificationMessage';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const loadGeneExpression = (
@@ -16,6 +16,9 @@ const loadGeneExpression = (
   if (loading.length > 0) {
     return null;
   }
+
+  const { backendStatus } = getState().experimentSettings;
+
   const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
 
   const upperCaseGenes = new Set(upperCaseArray(genes));
@@ -63,10 +66,10 @@ const loadGeneExpression = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, 30, body, getState().experimentSettings.pipelineStatus.status,
+      experimentId, 30, body, backendStatus.status,
     );
     if (data[genesToFetch[0]]?.error) {
-      dispatch(pushNotificationMessage('error', data[genesToFetch[0]].message, 3));
+      pushNotificationMessage('error', data[genesToFetch[0]].message);
       dispatch({
         type: GENES_EXPRESSION_LOADED,
         payload: {

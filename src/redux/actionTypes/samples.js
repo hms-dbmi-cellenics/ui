@@ -26,15 +26,35 @@ const SAMPLES_FILE_UPDATE = `${SAMPLES}/fileUpdate`;
 const SAMPLES_LOADED = `${SAMPLES}/loaded`;
 
 /**
+ * Saving samples.
+ */
+const SAMPLES_SAVING = `${SAMPLES}/saving`;
+
+/**
+ * Samples saved successfully.
+ */
+const SAMPLES_SAVED = `${SAMPLES}/saved`;
+
+/**
  * Error loading/saving sample.
  */
 const SAMPLES_ERROR = `${SAMPLES}/error`;
 
+/**
+ * Delete metada from sample.
+ */
+const SAMPLES_METADATA_DELETE = `${SAMPLES}/metadataDelete`;
+
+const SAMPLES_LOADING = `${SAMPLES}/loading`;
 export {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
   SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
+  SAMPLES_SAVING,
   SAMPLES_ERROR,
+  SAMPLES_SAVED,
+  SAMPLES_METADATA_DELETE,
+  SAMPLES_LOADING,
 };

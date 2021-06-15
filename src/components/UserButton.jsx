@@ -5,14 +5,12 @@ import {
   Menu,
   Dropdown,
 } from 'antd';
-
-import { useDispatch } from 'react-redux';
+import Link from 'next/link';
 import { Auth, Hub } from 'aws-amplify';
-import messages from './notification/messages';
-import pushNotificationMessage from '../redux/actions/notifications';
+import endUserMessages from '../utils/endUserMessages';
+import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const UserButton = () => {
-  const dispatch = useDispatch();
   const [user, setUser] = useState();
 
   const getUser = () => Auth.currentAuthenticatedUser()
@@ -31,7 +29,7 @@ const UserButton = () => {
           break;
         case 'signIn_failure':
         case 'cognitoHostedUI_failure':
-          dispatch(pushNotificationMessage('error', messages.signInError, 5));
+          pushNotificationMessage('error', endUserMessages.ERROR_SIGN_IN);
           break;
         default:
           break;
@@ -45,30 +43,15 @@ const UserButton = () => {
     <Menu>
       <Menu.ItemGroup key='g1' title={`Signed in as ${user.attributes.name}`} />
       <Menu.Item key='profile' disabled>Your profile</Menu.Item>
-      <Menu.Item key='settings' disabled>Settings</Menu.Item>
+      <Menu.Item key='settings'>
+        <Link href='/settings/profile'>
+          Settings
+        </Link>
+      </Menu.Item>
       <Menu.Divider />
       <Menu.Item key='logout' onClick={async () => Auth.signOut()}>Sign out</Menu.Item>
     </Menu>
   );
-
-  Hub.listen('auth', ({ payload: { event } }) => {
-    switch (event) {
-      case 'signIn':
-      case 'cognitoHostedUI':
-        getUser().then((userData) => setUser(userData));
-        break;
-      case 'signOut':
-        setUser(null);
-        break;
-      case 'signIn_failure':
-      case 'cognitoHostedUI_failure':
-
-        // do something here
-        break;
-      default:
-        break;
-    }
-  });
 
   // This eventually needs to become a Dropdown with a menu.
   // For now, we can just put the login stuff direclty into the popover.

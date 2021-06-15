@@ -2,7 +2,6 @@ import {
   CognitoIdentityClient,
   ListIdentityPoolsCommand,
 } from '@aws-sdk/client-cognito-identity';
-
 import {
   CognitoIdentityProviderClient,
   ListUserPoolsCommand,
@@ -10,20 +9,11 @@ import {
   DescribeUserPoolClientCommand,
   DescribeUserPoolCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
-
 import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
 import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 import configure from '../amplify-config';
-import Environment, { ssrGetCurrentEnvironment } from '../environment';
 
 const getAuthenticationInfo = async () => {
-  // if (
-  //   store.getState().networkResources.auth.userPoolId
-  //   || store.getState().networkResources.auth.identityPoolId
-  // ) {
-  //   return;
-  // }
-
   let additionalClientParams = {};
 
   if (process.env.NODE_ENV !== 'development') {
@@ -79,7 +69,7 @@ const getAuthenticationInfo = async () => {
   );
 
   const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes(
-    `${ssrGetCurrentEnvironment() !== Environment.DEVELOPMENT ? `cluster-${sandboxId}` : 'local'}`,
+    `cluster-${sandboxId}`,
   )).ClientId;
 
   const [{ UserPoolClient: userPoolClientDetails }, { UserPool: { Domain } }] = await Promise.all([
@@ -96,14 +86,6 @@ const getAuthenticationInfo = async () => {
     identityPoolId,
     { ...userPoolClientDetails, Domain: `${Domain}.auth.eu-west-1.amazoncognito.com` },
   );
-
-  /*
-    You can use this as a shim for authorization in the future:
-
-    const { Auth } = withSSRContext(context);
-    Auth.configure(amplifyConfig.Auth);
-    const user = await Auth.currentAuthenticatedUser();
-  */
 
   return {
     amplifyConfig,

@@ -14,7 +14,7 @@ import initialCellSetsState from '../../../../../redux/reducers/cellSets/initial
 import initialExperimentSettingsState from '../../../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
-import { EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING } from '../../../../../redux/actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING } from '../../../../../redux/actionTypes/experimentSettings';
 
 configure({ adapter: new Adapter() });
 
@@ -36,7 +36,7 @@ const getStore = (settings = {}) => {
           completingStepError: false,
         },
       },
-      pipelineStatus: {
+      backendStatus: {
         loading: false,
         error: false,
         status: {
@@ -53,6 +53,7 @@ const getStore = (settings = {}) => {
         },
       },
     },
+    experiments: { experimentId: {} },
     cellSets: {
       ...initialCellSetsState,
       properties: {
@@ -181,7 +182,7 @@ describe('DataProcessingPage', () => {
     page.update();
 
     // Pipeline is triggered on clicking run button
-    await waitForActions(store, [EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING]);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING]);
 
     // Run filter is disabled after triggering the pipeline
     expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);

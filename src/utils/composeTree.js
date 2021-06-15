@@ -17,7 +17,7 @@ const composeTree = (hierarchy, properties, filterType = null) => {
       (node) => ({
         ...node,
         ...properties[node.key],
-        cellIds: [...properties[node.key].cellIds],
+        cellIds: [...properties[node.key]?.cellIds || []],
         children: node.children ? composeTreeRecursive(node.children, null) : undefined,
       }),
     );

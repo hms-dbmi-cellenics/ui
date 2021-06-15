@@ -17,8 +17,8 @@ jobs:
         name: Check out source code
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token
+          token: ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
+          persist-credentials: false # otherwise, the token used is the BIOMAGE_ACTIONS_TOKEN, instead of your personal access token
           fetch-depth: 0
 
       - id: create-release
@@ -29,18 +29,17 @@ jobs:
         name: Initialize mandatory git info
         run: git config user.name "Github Actions"
 
-
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.MY_GITHUB_TOKEN }}
+          github_token: ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
           branch: ${{ format('release/{0}', github.event.inputs.version ) }}
 
       - id: create-pr
         name: Create pull request
         uses: thomaseizinger/create-pull-request@1.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
         with:
           head: release/${{ github.event.inputs.version }}
           base: master

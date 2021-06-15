@@ -3,12 +3,28 @@ import {
   PROJECTS_UPDATE,
   PROJECTS_SET_ACTIVE,
   PROJECTS_DELETE,
+  PROJECTS_SAVING,
+  PROJECTS_SAVED,
+  PROJECTS_ERROR,
+  PROJECTS_METADATA_CREATE,
+  PROJECTS_METADATA_UPDATE,
+  PROJECTS_METADATA_DELETE,
+  PROJECTS_LOADED,
+  PROJECTS_LOADING,
 } from '../../actionTypes/projects';
 import initialState from './initialState';
 import projectsCreate from './projectsCreate';
 import projectsUpdate from './projectsUpdate';
 import projectsDelete from './projectsDelete';
 import projectsSetActive from './projectsSetActive';
+import projectsSaving from './projectsSaving';
+import projectsSaved from './projectsSaved';
+import projectsError from './projectsError';
+import projectsMetadataCreate from './projectsMetadataCreate';
+import projectsMetadataUpdate from './projectsMetadataUpdate';
+import projectsMetadataDelete from './projectsMetadataDelete';
+import projectsLoaded from './projectsLoaded';
+import projectsLoading from './projectsLoading';
 
 const projectsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -28,6 +44,37 @@ const projectsReducer = (state = initialState, action) => {
       return projectsDelete(state, action);
     }
 
+    case PROJECTS_SAVING: {
+      return projectsSaving(state, action);
+    }
+
+    case PROJECTS_SAVED: {
+      return projectsSaved(state, action);
+    }
+
+    case PROJECTS_ERROR: {
+      return projectsError(state, action);
+    }
+
+    case PROJECTS_METADATA_CREATE: {
+      return projectsMetadataCreate(state, action);
+    }
+
+    case PROJECTS_METADATA_UPDATE: {
+      return projectsMetadataUpdate(state, action);
+    }
+
+    case PROJECTS_METADATA_DELETE: {
+      return projectsMetadataDelete(state, action);
+    }
+
+    case PROJECTS_LOADED: {
+      return projectsLoaded(state, action);
+    }
+
+    case PROJECTS_LOADING: {
+      return projectsLoading(state);
+    }
     default: {
       return state;
     }

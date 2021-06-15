@@ -22,33 +22,27 @@ jest.mock('../../../../utils/environment', () => ({
   isBrowser: () => true,
 }));
 
-jest.mock('../../../../utils/sendWork', () => ({
+jest.mock('../../../../utils/cacheRequest', () => ({
   __esModule: true, // this property makes it work
-  default: jest.fn(() => new Promise((resolve) => resolve({
-    results: [
+  fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
+    rows: [
       {
-        body: JSON.stringify({
-          rows: [
-            {
-              p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, avg_log2FC: -1.4274754343649423, gene_names: 'A',
-            },
-            {
-              p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, avg_log2FC: -2.4274754343649423, gene_names: 'B',
-            },
-            {
-              p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, avg_log2FC: -3.4274754343649423, gene_names: 'C',
-            },
-            {
-              p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, avg_log2FC: -4.4274754343649423, gene_names: 'D',
-            },
-            {
-              p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, avg_log2FC: -5.4274754343649423, gene_names: 'E',
-            },
-          ],
-          total: 500,
-        }),
+        p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, avg_log2FC: -1.4274754343649423, gene_names: 'A',
+      },
+      {
+        p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, avg_log2FC: -2.4274754343649423, gene_names: 'B',
+      },
+      {
+        p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, avg_log2FC: -3.4274754343649423, gene_names: 'C',
+      },
+      {
+        p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, avg_log2FC: -4.4274754343649423, gene_names: 'D',
+      },
+      {
+        p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, avg_log2FC: -5.4274754343649423, gene_names: 'E',
       },
     ],
+    total: 500,
   }))),
 }));
 
@@ -74,6 +68,15 @@ const storeState = {
           cellSet: 'condition/condition-treated',
           compareWith: 'condition/condition-control',
           basis: 'louvain/cluster-a;',
+        },
+      },
+    },
+  },
+  experimentSettings: {
+    backendStatus: {
+      status: {
+        pipeline: {
+          startDate: '2021-01-01T00:00:00',
         },
       },
     },

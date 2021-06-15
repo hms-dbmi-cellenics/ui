@@ -1,11 +1,20 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import deleteProject from '../../../../redux/actions/projects/deleteProject';
+
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 
 import { SAMPLES_DELETE } from '../../../../redux/actionTypes/samples';
-import { PROJECTS_DELETE, PROJECTS_SET_ACTIVE } from '../../../../redux/actionTypes/projects';
+import {
+  PROJECTS_DELETE, PROJECTS_SAVED, PROJECTS_SAVING, PROJECTS_SET_ACTIVE,
+} from '../../../../redux/actionTypes/projects';
+import { EXPERIMENTS_DELETED } from '../../../../redux/actionTypes/experiments';
+
+jest.mock('../../../../redux/actions/projects/saveProject', () => { });
+
+enableFetchMocks();
 
 const mockStore = configureStore([thunk]);
 
@@ -78,46 +87,93 @@ describe('deleteProject action', () => {
     },
   };
 
+  beforeEach(async () => {
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResponse(JSON.stringify({}));
+  });
+
   it('Dispatches event correctly for one sample', async () => {
     const store = mockStore(initialStateUniSample);
     await store.dispatch(deleteProject(mockProjectUuid1));
 
+    // Sets up loading state for saving project
+    const actions = store.getActions();
+    expect(actions[0].type).toEqual(PROJECTS_SAVING);
+
+    // Delete experiments
+    expect(actions[1].type).toEqual(EXPERIMENTS_DELETED);
+
     // Delete sample
-    const action1 = store.getActions()[0];
-    expect(action1.type).toEqual(SAMPLES_DELETE);
+    expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
     // Delete project
-    const action2 = store.getActions()[1];
-    expect(action2.type).toEqual(PROJECTS_DELETE);
+    expect(actions[3].type).toEqual(PROJECTS_DELETE);
+
+    // Resolve loading state
+    expect(actions[4].type).toEqual(PROJECTS_SAVED);
   });
 
   it('Dispatches event correctly for multiple samples', async () => {
     const store = mockStore(initialStateMultipleSamples);
     await store.dispatch(deleteProject(mockProjectUuid1));
 
-    // Delete samples 1 and 2
-    const action1 = store.getActions()[0];
-    expect(action1.type).toEqual(SAMPLES_DELETE);
+    // Sets up loading state for saving project
+    const actions = store.getActions();
+    expect(actions[0].type).toEqual(PROJECTS_SAVING);
+
+    // Delete experiments
+    expect(actions[1].type).toEqual(EXPERIMENTS_DELETED);
+
+    // Delete sample
+    expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
     // Delete project
-    const action3 = store.getActions()[1];
-    expect(action3.type).toEqual(PROJECTS_DELETE);
+    expect(actions[3].type).toEqual(PROJECTS_DELETE);
+
+    // Resolve loading state
+    expect(actions[4].type).toEqual(PROJECTS_SAVED);
   });
 
   it('Switches to activeProjectUuid to another project if multiple project exists', async () => {
     const store = mockStore(initialStateMultipleProjects);
     await store.dispatch(deleteProject(mockProjectUuid1));
 
-    // Delete sample
-    const action1 = store.getActions()[0];
-    expect(action1.type).toEqual(SAMPLES_DELETE);
-
-    // Delete project
-    const action2 = store.getActions()[1];
-    expect(action2.type).toEqual(PROJECTS_DELETE);
+    // Sets up loading state for saving project
+    const actions = store.getActions();
+    expect(actions[0].type).toEqual(PROJECTS_SAVING);
 
     // Switch active proejct
-    const action3 = store.getActions()[2];
-    expect(action3.type).toEqual(PROJECTS_SET_ACTIVE);
+    expect(actions[1].type).toEqual(PROJECTS_SET_ACTIVE);
+
+    // Delete experiments
+    expect(actions[2].type).toEqual(EXPERIMENTS_DELETED);
+
+    // Delete sample
+    expect(actions[3].type).toEqual(SAMPLES_DELETE);
+
+    // Delete project
+    expect(actions[4].type).toEqual(PROJECTS_DELETE);
+
+    // Resolve loading state
+    expect(actions[5].type).toEqual(PROJECTS_SAVED);
+  });
+
+  it('Dispatches fetch correctly.', async () => {
+    const response = new Response(JSON.stringify({}));
+    fetchMock.mockResolvedValueOnce(response);
+
+    const store = mockStore(initialStateUniSample);
+    await store.dispatch(deleteProject(mockProjectUuid1));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v1/projects/${mockProject.uuid}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
   });
 });

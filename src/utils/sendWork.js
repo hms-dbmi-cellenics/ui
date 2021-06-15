@@ -11,7 +11,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const io = await connectionPromise();
 
   // Check if we need to have a bigger timeout because the worker being down.
-  const statusResponse = await fetchAPI(`/v1/experiments/${experimentId}/pipelines`);
+  const statusResponse = await fetchAPI(`/v1/experiments/${experimentId}/backendStatus`);
   const jsonResponse = await statusResponse.json();
 
   const { worker: { started, ready } } = jsonResponse;
@@ -35,6 +35,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${requestUuid}`, (res) => {
       const { response: { error } } = res;
+
       if (error) {
         return reject(new WorkResponseError(error, request));
       }

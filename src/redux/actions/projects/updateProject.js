@@ -1,28 +1,38 @@
-import _ from 'lodash';
 import moment from 'moment';
 
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import endUserMessages from '../../../utils/endUserMessages';
+import saveProject from './saveProject';
+
+import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateProject = (
   projectUuid,
-  project,
+  diff,
 ) => async (dispatch, getState) => {
-  const currentProject = getState().projects[project.uuid];
-
-  if (_.isEqual(currentProject, project)) return null;
+  const currentProject = getState().projects[projectUuid];
 
   // eslint-disable-next-line no-param-reassign
-  project.lastModified = moment().toISOString();
+  diff.lastModified = moment().toISOString();
 
-  dispatch({
-    type: PROJECTS_UPDATE,
-    payload: {
-      projectUuid,
-      project,
-    },
-  });
+  const newProject = mergeObjectWithArrays(currentProject, diff);
+
+  try {
+    await dispatch(saveProject(projectUuid, newProject));
+
+    dispatch({
+      type: PROJECTS_UPDATE,
+      payload: {
+        projectUuid,
+        diff,
+      },
+    });
+  } catch (e) {
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+  }
 };
 
 export default updateProject;

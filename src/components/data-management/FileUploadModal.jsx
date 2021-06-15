@@ -18,13 +18,15 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
-
+import techOptions from '../../utils/fileUploadSpecifications';
 import UploadStatus from '../../utils/UploadStatus';
+
+import pushNotificationMessage from '../../utils/pushNotificationMessage';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
-const NewProjectModal = (props) => {
+const FileUploadModal = (props) => {
   const { visible, onUpload, onCancel } = props;
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1qX6no9od4pi-Wy87Q06hmjnLNECwItKJ/view?usp=sharing';
@@ -32,28 +34,6 @@ const NewProjectModal = (props) => {
   const [selectedTech, setSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
-
-  const techOptions = {
-    '10X Chromium': {
-      acceptedFiles: [
-        'barcodes.tsv',
-        'barcodes.tsv.gz',
-        'features.tsv',
-        'features.tsv.gz',
-        'genes.tsv',
-        'genes.tsv.gz',
-        'matrix.mtx',
-        'matrix.mtx.gz',
-      ],
-      validMimeTypes: ['text/tsv', 'application/gzip', 'text/tab-separated-values'],
-      validExtensionTypes: ['.mtx'],
-      inputInfo: [
-        ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
-        ['barcodes.tsv', 'barcodes.tsv.gz'],
-        ['matrix.mtx', 'matrix.mtx.gz'],
-      ],
-    },
-  };
 
   useEffect(() => {
     setCanUpload(filesList.length && filesList.every((file) => file.valid));
@@ -65,18 +45,31 @@ const NewProjectModal = (props) => {
 
     const acceptedFilesRegexp = `(${techOptions[selectedTech].acceptedFiles.join('|')})$`;
 
-    acceptedFiles.forEach((file) => {
+    let filesNotInFolder = false;
+    const filteredFiles = acceptedFiles
+      // Remove all hidden files
+      .filter((file) => !file.name.startsWith('.'))
+      // Remove all files that aren't in a folder
+      .filter((file) => {
+        const inFolder = file.path.includes('/');
+
+        filesNotInFolder ||= !inFolder;
+
+        return inFolder;
+      });
+
+    if (filesNotInFolder) {
+      pushNotificationMessage('error', 'Only files contained in folder are accepted');
+    }
+
+    filteredFiles.forEach((file) => {
       let fileName = null;
       const error = [];
 
       // First character of file.path === '/' means a directory is uploaded
       // Remove initial slash so that it does not create an empty directory in S3
-      if (file.path[0] === '/') {
-        const paths = file.path.split('/');
-        fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
-      } else {
-        fileName = file.path;
-      }
+      const paths = file.path.split('/');
+      fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
 
       const isValidType = (
         techOptions[selectedTech].validMimeTypes
@@ -192,9 +185,13 @@ const NewProjectModal = (props) => {
                 Technology:
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
-              <Select style={{ width: 250 }} defaultValue={selectedTech} onChange={(value) => setSelectedTech(value)}>
+              <Select
+                style={{ width: 250 }}
+                defaultValue={selectedTech}
+                onChange={(value) => setSelectedTech(value)}
+              >
                 {Object.keys(techOptions).map((val, idx) => (
-                  <Option key={idx} value={val}>{val}</Option>
+                  <Option key={`key-${idx}`} value={val}>{val}</Option>
                 ))}
               </Select>
             </Space>
@@ -206,10 +203,10 @@ const NewProjectModal = (props) => {
 
         {/* eslint-disable react/jsx-props-no-spreading */}
         <Col span={24}>
-          <Dropzone onDrop={onDrop}>
+          <Dropzone onDrop={onDrop} multiple>
             {({ getRootProps, getInputProps }) => (
               <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
-                <input {...getInputProps()} />
+                <input {...getInputProps()} webkitdirectory='' />
                 <Empty description='Drag and drop folders here or click to browse.' image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             )}
@@ -254,16 +251,16 @@ const NewProjectModal = (props) => {
   );
 };
 
-NewProjectModal.propTypes = {
+FileUploadModal.propTypes = {
   visible: PropTypes.bool,
   onUpload: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
-NewProjectModal.defaultProps = {
+FileUploadModal.defaultProps = {
   visible: true,
   onUpload: null,
   onCancel: null,
 };
 
-export default NewProjectModal;
+export default FileUploadModal;

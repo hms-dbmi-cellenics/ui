@@ -4,7 +4,9 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../actionTypes/experimentSettings';
 
-import pushNotificationMessage from '../pushNotificationMessage';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import errorTypes from './errorTypes';
 
 const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
@@ -16,37 +18,35 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
     return null;
   }
 
+  const url = `/v1/experiments/${experimentId}/processingConfig`;
   try {
-    const response = await fetchAPI(
-      `/v1/experiments/${experimentId}/processingConfig`,
-    );
+    const response = await fetchAPI(url);
 
-    if (response.ok) {
-      const data = await response.json();
-      dispatch({
-        type: EXPERIMENT_SETTINGS_PROCESSING_LOAD,
-        payload: {
-          data: data.processingConfig,
-        },
-      });
+    const data = await response.json();
+    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROCESSING);
+    dispatch({
+      type: EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+      payload: {
+        data: data.processingConfig,
+      },
+    });
 
-      return;
-    }
-
-    throw new Error('HTTP status code was not 200.');
+    return;
   } catch (e) {
-    dispatch(
-      pushNotificationMessage(
-        'error',
-        'We couldn\'t load your processing settings.Please check your internet connection and try refreshing the page.',
-        5,
-      ),
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
+    }
+    pushNotificationMessage(
+      'error',
+      message,
     );
 
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
       payload: {
-        error: "Couldn't fetch experiment data.",
+        error: message,
         errorType: errorTypes.LOADING_PROCESSING_SETTINGS,
       },
     });

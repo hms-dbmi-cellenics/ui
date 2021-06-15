@@ -29,7 +29,9 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
-  const { experimentId, onPipelineRun, stepDisabled } = props;
+  const {
+    experimentId, onPipelineRun, stepDisabled, disableDataIntegration,
+  } = props;
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
@@ -208,7 +210,7 @@ const DataIntegration = (props) => {
   const selectedConfig = plotConfigs[plots[selectedPlot].plotUuid];
 
   const completedSteps = useSelector(
-    (state) => state.experimentSettings.pipelineStatus.status.pipeline?.completedSteps,
+    (state) => state.experimentSettings.backendStatus.status.pipeline?.completedSteps,
   );
 
   const configureEmbeddingFinished = useRef(null);
@@ -368,6 +370,7 @@ const DataIntegration = (props) => {
             config={calculationConfig}
             onPipelineRun={onPipelineRun}
             disabled={stepDisabled}
+            disableDataIntegration={disableDataIntegration}
           />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
@@ -389,10 +392,12 @@ DataIntegration.propTypes = {
   onPipelineRun: PropTypes.func.isRequired,
   experimentId: PropTypes.string.isRequired,
   stepDisabled: PropTypes.bool,
+  disableDataIntegration: PropTypes.bool,
 };
 
 DataIntegration.defaultProps = {
   stepDisabled: false,
+  disableDataIntegration: false,
 };
 
 export default DataIntegration;

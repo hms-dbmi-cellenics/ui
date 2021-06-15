@@ -6,12 +6,16 @@ on:
   pull_request:
     branches:
       - develop
-      - 'release/**'
-      - 'hotfix/**'
+      - master
 jobs:
   build:
     name: Build website
     runs-on: ubuntu-20.04
+    if: |-
+      !github.event.pull_request == true || 
+      startsWith(github.event.pull_request.head.ref, 'release/') ||
+      startsWith(github.event.pull_request.head.ref, 'hotfix/') ||
+      github.event.pull_request.base.ref == 'develop'
     env:
       CI: "true"
     steps:

@@ -1,23 +1,89 @@
-import { updateProcessingSettings, updatePipelineStatus } from '../redux/actions/experimentSettings';
-import loadEmbedding from '../redux/actions/embedding/loadEmbedding';
+import { updateProcessingSettings, updateBackendStatus } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
+import {
+  CELL_SETS_CLUSTERING_UPDATED, CELL_SETS_ERROR,
+} from '../redux/actionTypes/cellSets';
+
+const updateTypes = {
+  QC: 'qc',
+  GEM2S: 'gem2s',
+  DATA: 'data_update',
+};
+
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
-  const { input, output, status } = update;
+  if (update.response?.error) {
+    return;
+  }
+
+  switch (update.type) {
+    case updateTypes.QC: {
+      dispatch(updateBackendStatus(experimentId, update.status));
+      return onQCUpdate(experimentId, update, dispatch);
+    }
+    case updateTypes.GEM2S: {
+      dispatch(updateBackendStatus(experimentId, update.status));
+      return onGEM2SUpdate(experimentId, update, dispatch);
+    }
+    // this should be used to notify the UI that a request has changed and the UI is out-of-sync
+    case updateTypes.DATA: {
+      return onWorkerUpdate(experimentId, update, dispatch);
+    }
+    default: {
+      console.log(`Error, unrecognized message type ${update.type}`);
+    }
+  }
+};
+
+const onQCUpdate = (experimentId, update, dispatch) => {
+  const { input, output } = update;
 
   const processingConfigUpdate = output.config;
+  if (processingConfigUpdate) {
+    dispatch(
+      updateProcessingSettings(
+        experimentId,
+        input.taskName,
+        { [input.sampleUuid]: processingConfigUpdate },
+      ),
+    );
 
-  dispatch(updatePipelineStatus(experimentId, status));
-  dispatch(updateProcessingSettings(experimentId, input.taskName, processingConfigUpdate));
+    Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
+      dispatch(updatePlotData(plotUuid, plotData));
+    });
+  }
+};
 
-  Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
-    dispatch(updatePlotData(plotUuid, plotData));
-  });
+const onGEM2SUpdate = () => {
 
-  // This is temporary, should be taken out eventually as it will be handled
-  // once we clean up the redux store (which is the correct action to take here)
-  dispatch(loadEmbedding(experimentId, 'umap'));
-  dispatch(loadEmbedding(experimentId, 'tsne'));
+};
+
+const onWorkerUpdate = (experimentId, update, dispatch) => {
+  const reqName = update.response.request.body.name;
+
+  if (reqName === 'ClusterCells') {
+    const louvainSets = JSON.parse(update.response.results[0].body);
+    const newCellSets = [
+      louvainSets,
+    ];
+    try {
+      dispatch({
+        type: CELL_SETS_CLUSTERING_UPDATED,
+        payload: {
+          experimentId,
+          data: newCellSets,
+        },
+      });
+    } catch (e) {
+      dispatch({
+        type: CELL_SETS_ERROR,
+        payload: {
+          experimentId,
+          error: e,
+        },
+      });
+    }
+  }
 };
 
 export default experimentUpdatesHandler;

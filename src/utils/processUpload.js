@@ -5,16 +5,16 @@ import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
 import UploadStatus from './UploadStatus';
 
-const putInS3 = (bucketKey, loadedFile, dispatch, sample, file) => (
+const putInS3 = async (bucketKey, loadedFileData, dispatch, sampleUuid, fileName, metadata) => (
   Storage.put(
     bucketKey,
-    loadedFile,
+    loadedFileData,
     {
+      metadata,
       progressCallback(progress) {
         const percentProgress = Math.round((progress.loaded / progress.total) * 100);
 
-        dispatch(updateSampleFile(sample.uuid, {
-          ...file,
+        dispatch(updateSampleFile(sampleUuid, fileName, {
           upload: {
             status: UploadStatus.UPLOADING,
             progress: percentProgress ?? 0,
@@ -25,9 +25,96 @@ const putInS3 = (bucketKey, loadedFile, dispatch, sample, file) => (
   )
 );
 
+const metadataForBundle = (bundle) => {
+  const metadata = {};
+
+  if (bundle.name.includes('genes')) {
+    metadata.cellranger_version = 'v2';
+  } else if (bundle.name.includes('features')) {
+    metadata.cellranger_version = 'v3';
+  }
+
+  return metadata;
+};
+
+const compressAndUploadSingleFile = async (
+  bucketKey, sampleUuid, fileName,
+  bundle, dispatch, metadata = {},
+) => {
+  let loadedFile = null;
+
+  try {
+    loadedFile = await loadAndCompressIfNecessary(
+      bundle,
+      () => (
+        dispatch(
+          updateSampleFile(
+            sampleUuid,
+            fileName,
+            { upload: { status: UploadStatus.COMPRESSING } },
+          ),
+        )
+      ),
+    );
+  } catch (e) {
+    const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+
+    dispatch(
+      updateSampleFile(
+        sampleUuid,
+        fileName,
+        { upload: { status: fileErrorStatus } },
+      ),
+    );
+
+    return;
+  }
+
+  try {
+    const uploadPromise = putInS3(
+      bucketKey, loadedFile, dispatch,
+      sampleUuid, fileName, metadata,
+    );
+
+    dispatch(
+      updateSampleFile(
+        sampleUuid,
+        fileName,
+        { bundle, upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise } },
+      ),
+    );
+
+    await uploadPromise;
+  } catch (e) {
+    dispatch(
+      updateSampleFile(
+        sampleUuid,
+        fileName,
+        { upload: { status: UploadStatus.UPLOAD_ERROR, amplifyPromise: null } },
+      ),
+    );
+
+    return;
+  }
+
+  dispatch(
+    updateSampleFile(
+      sampleUuid,
+      fileName,
+      {
+        upload: {
+          status: UploadStatus.UPLOADED,
+          progress: 100,
+          amplifyPromise: null,
+        },
+      },
+    ),
+  );
+};
+
 const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
-    const uncompressed = file.bundle.type !== 'application/gzip';
+    const uncompressed = !['application/gzip', 'application/x-gzip'].includes(file.bundle.type);
 
     const newFileName = uncompressed ? `${fileName}.gz` : fileName;
     const newFile = {
@@ -41,33 +128,14 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   }, {});
 
   Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
-    let loadedFile = null;
-    try {
-      loadedFile = await loadAndCompressIfNecessary(file);
-    } catch (e) {
-      const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
-
-      dispatch(updateSampleFile(sample.uuid, {
-        ...file,
-        upload: { status: fileErrorStatus },
-      }));
-    }
-
     const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
 
-    try {
-      await putInS3(bucketKey, loadedFile, dispatch, sample, file);
-    } catch (e) {
-      dispatch(updateSampleFile(sample.uuid, {
-        ...file,
-        upload: { status: UploadStatus.UPLOAD_ERROR },
-      }));
-    }
+    const metadata = metadataForBundle(file.bundle);
 
-    dispatch(updateSampleFile(sample.uuid, {
-      ...file,
-      upload: { status: UploadStatus.UPLOADED },
-    }));
+    await compressAndUploadSingleFile(
+      bucketKey, sample.uuid, fileName,
+      file.bundle, dispatch, metadata,
+    );
   });
 
   return updatedSampleFiles;
@@ -78,7 +146,10 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
     const sampleName = pathToArray[0];
-    const fileName = _.last(pathToArray);
+    let fileName = _.last(pathToArray);
+
+    // We rename genes.tsv files to features.tsv (for a single entry)
+    fileName = fileName.replace('genes', 'features');
 
     // Update the file name so that instead of being saved as
     // e.g. WT13/matrix.tsv.gz, we save it as matrix.tsv.gz
@@ -111,7 +182,8 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
 
     Object.values(sample.files).forEach((file) => {
-      dispatch(updateSampleFile(sample.uuid, {
+      // Create files
+      dispatch(updateSampleFile(sample.uuid, file.name, {
         ...file,
         path: `${activeProjectUuid}/${file.name.replace(name, sample.uuid)}`,
       }));
@@ -119,4 +191,5 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   });
 };
 
+export { compressAndUploadSingleFile, metadataForBundle };
 export default processUpload;

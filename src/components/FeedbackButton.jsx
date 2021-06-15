@@ -2,15 +2,13 @@ import React, { useState } from 'react';
 import {
   Button, Dropdown, Card, Input, Space,
 } from 'antd';
-import { useDispatch } from 'react-redux';
 import { CommentOutlined, DownOutlined } from '@ant-design/icons';
-import messages from './notification/messages';
-import pushNotificationMessage from '../redux/actions/notifications';
+import endUserMessages from '../utils/endUserMessages';
+import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const { TextArea } = Input;
 
 const FeedbackButton = () => {
-  const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
 
@@ -54,9 +52,9 @@ const FeedbackButton = () => {
         throw new Error('Invalid status code returned.');
       }
       setFeedbackText('');
-      dispatch(pushNotificationMessage('success', messages.feedbackSuccessful, 5));
+      pushNotificationMessage('success', endUserMessages.FEEDBACK_SUCCESSFUL);
     } catch {
-      dispatch(pushNotificationMessage('error', messages.feedbackError, 5));
+      pushNotificationMessage('error', endUserMessages.FEEDBACK_ERROR);
     }
   };
 

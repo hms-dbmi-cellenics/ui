@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button, Input, Space, Tooltip, Typography,
@@ -20,18 +20,27 @@ const EditableField = (props) => {
     renderBold,
     defaultEditing,
     validationFunc,
+    onEditing,
   } = props;
 
   const [editing, setEditing] = useState(defaultEditing);
   const [editedValue, setEditedValue] = useState(value);
   const [isValid, setIsValid] = useState(true);
+  const saveButton = useRef(null);
+  const editButton = useRef(null);
 
   useEffect(() => {
     setEditedValue(value);
   }, [value]);
 
+  useEffect(() => {
+    if (!onEditing) return;
+
+    onEditing(editing);
+  }, [editing]);
+
   const deleteEditableField = (e) => {
-    props.onDelete(e);
+    props.onDelete(e, editedValue);
   };
 
   const onKeyDown = (e) => {
@@ -89,11 +98,11 @@ const EditableField = (props) => {
             onKeyDown={onKeyDown}
           />
 
-          <Tooltip placement='bottom' title='Save' mouseLeaveDelay={0}>
-            <Button size='small' shape='circle' icon={<CheckOutlined />} onClick={onSubmit} />
+          <Tooltip placement='top' title='Save' mouseLeaveDelay={0} ref={saveButton}>
+            <Button size='small' shape='circle' icon={<CheckOutlined />} onClick={(e) => { saveButton.current.onMouseLeave(); onSubmit(e); }} />
           </Tooltip>
 
-          <Tooltip placement='bottom' title='Cancel' mouseLeaveDelay={0}>
+          <Tooltip placement='top' title='Cancel' mouseLeaveDelay={0}>
             <Button size='small' shape='circle' icon={<CloseOutlined />} onClick={onCancel} />
           </Tooltip>
 
@@ -107,8 +116,8 @@ const EditableField = (props) => {
         {
           showEdit
             ? (
-              <Tooltip placement='bottom' title='Edit' mouseLeaveDelay={0}>
-                <Button size='small' shape='circle' icon={<EditOutlined />} onClick={toggleEditing} />
+              <Tooltip placement='top' title='Edit' mouseLeaveDelay={0} ref={editButton}>
+                <Button size='small' shape='circle' icon={<EditOutlined />} onClick={(e) => { editButton.current.onMouseLeave(); toggleEditing(e); }} />
               </Tooltip>
             ) : <></>
         }
@@ -119,12 +128,12 @@ const EditableField = (props) => {
   return (
     <>
       <Space direction='vertical'>
-        <Space>
+        <Space align='start'>
           {renderEditState()}
           {
             deleteEnabled
               ? (
-                <Tooltip placement='bottom' title='Delete' mouseLeaveDelay={0}>
+                <Tooltip placement='top' title='Delete' mouseLeaveDelay={0}>
                   <Button size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
                 </Tooltip>
               ) : <></>
@@ -144,6 +153,7 @@ EditableField.defaultProps = {
   onAfterSubmit: () => null,
   onAfterCancel: () => null,
   onDelete: () => null,
+  onEditing: undefined,
   validationFunc: undefined,
   renderBold: false,
   value: null,
@@ -157,6 +167,7 @@ EditableField.propTypes = {
   onAfterSubmit: PropTypes.func,
   onAfterCancel: PropTypes.func,
   onDelete: PropTypes.func,
+  onEditing: PropTypes.func,
   validationFunc: PropTypes.func,
   deleteEnabled: PropTypes.bool,
   showEdit: PropTypes.bool,

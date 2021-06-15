@@ -15,7 +15,7 @@ import { setActiveProject, updateProject, deleteProject as deleteProjectAction }
 import PrettyTime from '../PrettyTime';
 
 import processUpload from '../../utils/processUpload';
-import validateProjectName from '../../utils/validateProjectName';
+import validateInputs, { rules } from '../../utils/validateInputs';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
@@ -49,6 +49,17 @@ const ProjectsListContainer = (props) => {
     setDeleteModalVisible(false);
   };
 
+  const validationChecks = [
+    rules.MIN_8_CHARS,
+    rules.MIN_2_SEQUENTIAL_CHARS,
+    rules.ALPHANUM_DASH_SPACE,
+    rules.UNIQUE_NAME_CASE_INSENSITIVE,
+  ];
+
+  const validationParams = {
+    existingNames: projectNames,
+  };
+
   return (
     <>
       <FileUploadModal
@@ -79,8 +90,8 @@ const ProjectsListContainer = (props) => {
                 layout='horizontal'
                 size='small'
                 column={1}
-                colon=''
-                title={(
+              >
+                <Descriptions.Item contentStyle={{ fontWeight: 700, fontSize: 16 }}>
                   <EditableField
                     value={projects[uuid].name}
                     onAfterSubmit={(name) => {
@@ -91,10 +102,15 @@ const ProjectsListContainer = (props) => {
                       setDeleteProjectUuid(uuid);
                       setDeleteModalVisible(true);
                     }}
-                    validationFunc={(name) => validateProjectName(name, projectNames)}
+                    validationFunc={
+                      (name) => validateInputs(
+                        name,
+                        validationChecks,
+                        validationParams,
+                      ).isValid
+                    }
                   />
-                )}
-              >
+                </Descriptions.Item>
                 <Descriptions.Item
                   labelStyle={{ fontWeight: 'bold' }}
                   label='Samples'

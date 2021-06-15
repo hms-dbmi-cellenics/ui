@@ -1,14 +1,16 @@
 import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
-  EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_START,
 } from '../../actionTypes/experimentSettings';
-import loadPipelineStatus from '../experimentSettings/loadPipelineStatus';
+import loadBackendStatus from '../experimentSettings/loadBackendStatus';
 
 const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) => {
   dispatch({
-    type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_LOADING,
+    type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
       experimentId,
     },
@@ -16,6 +18,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
 
   const processingConfig = getState().experimentSettings.processing[callerStepKey];
 
+  const url = `/v1/experiments/${experimentId}/pipelines`;
   try {
     // We are only sending the configuration that we know changed
     // with respect to the one that is already persisted in dynamodb
@@ -24,7 +27,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
     // We don't need to manually save any processing config because it is done by
     // the api once the pipeline finishes successfully
     const response = await fetchAPI(
-      `/v1/experiments/${experimentId}/pipelines`,
+      url,
       {
         method: 'POST',
         headers: {
@@ -40,25 +43,25 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
         }),
       },
     );
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
 
-    if (response.ok) {
-      dispatch({
-        type: EXPERIMENT_SETTINGS_PIPELINE_START,
-        payload: {},
-      });
-
-      dispatch(loadPipelineStatus(experimentId));
-
-      return;
-    }
-
-    throw new Error('HTTP status code was not 200.');
-  } catch (e) {
     dispatch({
-      type: EXPERIMENT_SETTINGS_PIPELINE_STATUS_ERROR,
+      type: EXPERIMENT_SETTINGS_PIPELINE_START,
+      payload: {},
+    });
+    dispatch(loadBackendStatus(experimentId));
+  } catch (e) {
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
+    }
+    dispatch({
+      type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
       payload: {
         error: 'Could not start the pipeline.',
-        errorType: e,
+        errorType: message,
       },
     });
   }

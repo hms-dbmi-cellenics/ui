@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, mount, configure } from 'enzyme';
+import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import EditableField from '../../components/EditableField';
 
@@ -19,7 +19,7 @@ describe('EditableField', () => {
 
   test('The user can toggle between editing mode and non-editing mode', () => {
     const mockOnEdit = jest.fn();
-    const component = shallow(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
+    const component = mount(<EditableField value='Cluster X' onEdit={mockOnEdit} />);
 
     // No input should show now.
     let input = component.find('Input');
@@ -53,7 +53,7 @@ describe('EditableField', () => {
 
   test('Editable field updates changed text on clicking save', () => {
     const mockOnSubmit = jest.fn();
-    const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
+    const component = mount(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
     component.find('Button').at(0).simulate('click', eventStub);
@@ -76,7 +76,7 @@ describe('EditableField', () => {
 
   test('Editable field updates changed text on pressing Enter', () => {
     const mockOnSubmit = jest.fn();
-    const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
+    const component = mount(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
     component.find('Button').at(0).simulate('click', eventStub);
@@ -98,7 +98,7 @@ describe('EditableField', () => {
 
   test('Editable field does not update changed text on cancel', () => {
     const mockOnSubmit = jest.fn();
-    const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
+    const component = mount(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
     component.find('Button').at(0).simulate('click', eventStub);
@@ -120,7 +120,7 @@ describe('EditableField', () => {
 
   test('Editable field does not update changed text on hitting escape', () => {
     const mockOnSubmit = jest.fn();
-    const component = shallow(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
+    const component = mount(<EditableField value='Cluster X' onAfterSubmit={mockOnSubmit} />);
 
     // click the edit button
     component.find('Button').at(0).simulate('click', eventStub);
@@ -142,7 +142,7 @@ describe('EditableField', () => {
   test('The onDelete callback should trigger on delete.', () => {
     const mockOnDelete = jest.fn();
 
-    const component = shallow(<EditableField value='Cluster X' onDelete={mockOnDelete} />);
+    const component = mount(<EditableField value='Cluster X' onDelete={mockOnDelete} />);
 
     // Click delete button.
     component.find('Button').at(1).simulate('click', eventStub);
@@ -150,5 +150,47 @@ describe('EditableField', () => {
 
     // The callback should have been called
     expect(mockOnDelete).toHaveBeenCalledTimes(1);
+  });
+
+  test('onEditing should reflect editing state.', () => {
+    const mockOnEditing = jest.fn().mockImplementation((editing) => editing);
+
+    const component = mount(
+      <EditableField value='Cluster X' onEditing={mockOnEditing} />,
+    );
+
+    // Click edit button.
+    component.find('Button').at(0).simulate('click', eventStub);
+    component.update();
+
+    // Click save button
+    component.find('Button').at(0).simulate('click', eventStub);
+    component.update();
+
+    // Click edit button to open the field again
+    component.find('Button').at(0).simulate('click', eventStub);
+    component.update();
+
+    // Click cancel button
+    component.find('Button').at(1).simulate('click', eventStub);
+    component.update();
+
+    // The callback should have been called, returning editing state true
+    expect(mockOnEditing).toHaveBeenCalledTimes(5);
+
+    // First call is when component is initializing
+    expect(mockOnEditing.mock.results[0].value).toBe(false);
+
+    // True on first open
+    expect(mockOnEditing.mock.results[1].value).toBe(true);
+
+    // False on saving
+    expect(mockOnEditing.mock.results[2].value).toBe(false);
+
+    // True on second open
+    expect(mockOnEditing.mock.results[3].value).toBe(true);
+
+    // False on close by cancel
+    expect(mockOnEditing.mock.results[4].value).toBe(false);
   });
 });

@@ -53,21 +53,19 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const {
-    status: pipelineStatus,
-  } = useSelector((state) => state.experimentSettings.pipelineStatus);
+  const pipelineStatus = useSelector((state) => state.experimentSettings.backendStatus.status.pipeline);
 
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const samples = useSelector((state) => state.samples)
 
-  const pipelineStatusKey = pipelineStatus.pipeline?.status;
+  const pipelineStatusKey = pipelineStatus?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
 
   // Pipeline is not loaded (either running or in an errored state)
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
   const pipelineNotFinished = pipelineRunning || pipelineErrors.includes(pipelineStatusKey);
 
-  const completedSteps = pipelineStatus.pipeline?.completedSteps;
+  const completedSteps = pipelineStatus?.completedSteps;
 
   const cellSets = useSelector((state) => state.cellSets);
 
@@ -81,7 +79,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
-    unisample: ['dataIntegration']
+    unisample: []
   }
 
   const disabledConditionMessage = {
@@ -111,15 +109,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       return;
     }
 
-    if (samples.ids.length > 0) {
+    const sampleIds = Object.keys(samples);
+
+    if (sampleIds.length > 0) {
       setPreFilteredSamples(
-        samples.ids.filter(
+        sampleIds.filter(
           (sampleUuid) => samples[sampleUuid].preFiltered
         )
       )
     }
 
-  }, [samples.meta.loading])
+  }, [samples.meta.loading, samples])
 
   useEffect(() => {
     if (
@@ -134,7 +134,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       })
     }
 
-  }, [preFilteredSamples, processingConfig.meta])
+  }, [stepIdx, preFilteredSamples, processingConfig.meta])
 
   useEffect(() => {
     if (sampleKeys && sampleKeys.length === 1) {
@@ -274,7 +274,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'doubletScores',
       name: 'Doublet filter',
-      description: 'Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘Scrublet’. The cut-off is typically set around 0.2.',
+      description: <span>Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see <a href="https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding" target="_blank">scDblFinder thresholding</a>.</span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -303,7 +303,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           experimentId={expId}
           key={key}
           onPipelineRun={() => onPipelineRun(key)}
-          stepDisabled={!processingConfig[key].enabled}
+          disableDataIntegration={sampleKeys && sampleKeys.length === 1}
         />
       ),
     },
@@ -469,6 +469,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               {steps[stepIdx].multiSample && (
                 <Button
                   disabled={stepDisabledByCondition}
+                  data-testid='enableFilterButton'
                   onClick={() => {
                     dispatch(updateProcessingSettings(
                       experimentId,
@@ -489,6 +490,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               {steps[stepIdx].multiSample && (
                 <Button
                   id='runFilterButton'
+                  data-testid='runFilterButton'
                   type='primary'
                   onClick={() => { onPipelineRun(steps[stepIdx].key) }}
                   disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
@@ -517,6 +519,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <Col style={{ marginLeft: 'auto' }}>
               <Space size='large'>
                 <Button
+                  data-testid='pipelinePrevStep'
                   disabled={stepIdx === 0}
                   icon={<LeftOutlined />}
                   onClick={() => changeStepId(Math.max(stepIdx - 1, 0))}
@@ -525,6 +528,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                 </Button>
                 {stepIdx !== steps.length - 1 ? (
                   <Button
+                    data-testid='pipelineNextStep'
                     onClick={() => {
                       const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
                       changeStepId(newStepIdx);

@@ -4,7 +4,11 @@ import {
   SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
+  SAMPLES_SAVING,
+  SAMPLES_SAVED,
   SAMPLES_ERROR,
+  SAMPLES_METADATA_DELETE,
+  SAMPLES_LOADING,
 } from '../../actionTypes/samples';
 import initialState from './initialState';
 import samplesCreate from './samplesCreate';
@@ -12,7 +16,11 @@ import samplesUpdate from './samplesUpdate';
 import samplesDelete from './samplesDelete';
 import samplesFileUpdate from './samplesFileUpdate';
 import samplesLoaded from './samplesLoaded';
+import samplesSaving from './samplesSaving';
 import samplesError from './samplesError';
+import samplesSaved from './samplesSaved';
+import samplesMetadataDelete from './samplesMetadataDelete';
+import samplesLoading from './samplesLoading';
 
 const samplesReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -36,10 +44,24 @@ const samplesReducer = (state = initialState, action) => {
       return samplesLoaded(state, action);
     }
 
+    case SAMPLES_SAVING: {
+      return samplesSaving(state, action);
+    }
+
+    case SAMPLES_SAVED: {
+      return samplesSaved(state, action);
+    }
+
     case SAMPLES_ERROR: {
       return samplesError(state, action);
     }
 
+    case SAMPLES_METADATA_DELETE: {
+      return samplesMetadataDelete(state, action);
+    }
+    case SAMPLES_LOADING: {
+      return samplesLoading(state);
+    }
     default: {
       return state;
     }

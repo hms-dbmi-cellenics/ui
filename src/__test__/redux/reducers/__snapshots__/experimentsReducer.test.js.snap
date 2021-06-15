@@ -1,0 +1,175 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`experimentsReducer Deletes an experiment correctly 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "lastViewed": "01-01-2021",
+    "meta": Object {
+      "organism": null,
+      "type": "10x",
+    },
+    "name": "experiment 1",
+    "projectUuid": "project-1",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Error state inserts error correctly 1`] = `
+Object {
+  "ids": Array [],
+  "meta": Object {
+    "error": "Error message",
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Inserts a new experiment correctly 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "lastViewed": "01-01-2021",
+    "meta": Object {
+      "organism": null,
+      "type": "10x",
+    },
+    "name": "experiment 1",
+    "projectUuid": "project-1",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Loading state changes meta state 1`] = `
+Object {
+  "ids": Array [],
+  "meta": Object {
+    "error": false,
+    "loading": true,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Loads an experiment correct 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "lastViewed": "01-01-2021",
+    "meta": Object {
+      "organism": null,
+      "type": "10x",
+    },
+    "name": "experiment 1",
+    "projectUuid": "project-1",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Loads experiment correctly on existing state 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "lastViewed": "01-01-2021",
+    "meta": Object {
+      "organism": null,
+      "type": "10x",
+    },
+    "name": "experiment 1",
+    "projectUuid": "project-1",
+  },
+  "experiment-2": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-2",
+    "lastViewed": "01-01-2021",
+    "meta": Object {
+      "organism": null,
+      "type": "10x",
+    },
+    "name": "experiment 2",
+    "projectUuid": "project-2",
+  },
+  "ids": Array [
+    "experiment-1",
+    "experiment-2",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Returns state if experiment does not exist when updating 1`] = `
+Object {
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Updates an experiment correctly 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "lastModified": "02-01-2021",
+    "lastViewed": "01-01-2021",
+    "meta": Object {
+      "organism": null,
+      "type": "10x",
+    },
+    "name": "updated name",
+    "projectUuid": "project-1",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
