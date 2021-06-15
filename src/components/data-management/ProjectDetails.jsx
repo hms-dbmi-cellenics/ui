@@ -36,7 +36,7 @@ import {
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
 import { updateExperiment } from '../../redux/actions/experiments';
-import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
+import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
@@ -45,7 +45,6 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
-import loadBackendStatus from '../../redux/actions/experimentSettings/loadBackendStatus';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -498,19 +497,12 @@ const ProjectDetails = ({ width, height }) => {
     setTableColumns([...columns, ...metadataColumns]);
     // Set table data
 
-    const getFile = (sampleFiles, allowedFiles) => {
-      const fileName = Object.keys(sampleFiles).filter((file) => allowedFiles.includes(file));
-      const file = fileName.length ? sampleFiles[fileName] : { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      return file;
-    };
-
     const newData = activeProject.samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
-      const fileNames = fileUploadSpecifications[samples[sampleUuid].type].inputInfo;
 
-      const barcodesFile = getFile(sampleFiles, fileNames[1]);
-      const genesFile = getFile(sampleFiles, fileNames[0]);
-      const matrixFile = getFile(sampleFiles, fileNames[2]);
+      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
 
       const barcodesData = { sampleUuid, file: barcodesFile };
       const genesData = { sampleUuid, file: genesFile };
@@ -547,8 +539,10 @@ const ProjectDetails = ({ width, height }) => {
 
     const metadata = metadataForBundle(bundleToUpload);
 
+    const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
+
     compressAndUploadSingleFile(
-      bucketKey, sampleUuid, name,
+      bucketKey, sampleUuid, newFileName,
       bundleToUpload, dispatch, metadata,
     );
 
