@@ -139,7 +139,6 @@ const ProjectDetails = ({ width, height }) => {
       file,
     } = tableCellData;
     const { progress = null, status = null } = file?.upload ?? {};
-
     const showDetails = () => {
       uploadDetailsModalDataRef.current = {
         sampleUuid,
@@ -497,14 +496,21 @@ const ProjectDetails = ({ width, height }) => {
     ) || [];
 
     setTableColumns([...columns, ...metadataColumns]);
-
     // Set table data
+
+    const getFile = (sampleFiles, allowedFiles) => {
+      const fileName = Object.keys(sampleFiles).filter((file) => allowedFiles.includes(file));
+      const file = fileName.length ? sampleFiles[fileName] : { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      return file;
+    };
+
     const newData = activeProject.samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
+      const fileNames = fileUploadSpecifications[samples[sampleUuid].type].inputInfo;
 
-      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const barcodesFile = getFile(sampleFiles, fileNames[1]);
+      const genesFile = getFile(sampleFiles, fileNames[0]);
+      const matrixFile = getFile(sampleFiles, fileNames[2]);
 
       const barcodesData = { sampleUuid, file: barcodesFile };
       const genesData = { sampleUuid, file: genesFile };
