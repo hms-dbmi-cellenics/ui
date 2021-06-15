@@ -16,18 +16,19 @@ const updateSampleFile = (
 ) => async (dispatch, getState) => {
   const updatedAt = moment().toISOString();
   const sample = getState().samples[sampleUuid];
-
+  // we'll need to remove the hard-coded 10x tech type once we start
+  // supporting other types and save the chosen tech type in redux
+  const { UPLOADED, UPLOAD_ERROR } = UploadStatus;
   try {
     // Save sample only if upload is successful or error
-    if (fileDiff.upload.status === UploadStatus.UPLOADED
-      || fileDiff.upload.status === UploadStatus.UPLOAD_ERROR) {
+    if ([UPLOADED, UPLOAD_ERROR].includes(fileDiff.upload.status)) {
       const diffObject = {
-        fileNames: sample.fileNames.add(fileName),
         files: {
           lastModified: updatedAt,
           [fileName]: {
             ...sample.files[fileName],
             ...fileDiff,
+            valid: true,
           },
         },
       };

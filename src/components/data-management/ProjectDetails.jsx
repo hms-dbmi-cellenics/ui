@@ -36,7 +36,7 @@ import {
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
 import { updateExperiment } from '../../redux/actions/experiments';
-import processUpload, { compressAndUploadSingleFile, metadataForBundle } from '../../utils/processUpload';
+import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
@@ -45,7 +45,6 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
-import loadBackendStatus from '../../redux/actions/experimentSettings/loadBackendStatus';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -138,26 +137,13 @@ const ProjectDetails = ({ width, height }) => {
       sampleUuid,
       file,
     } = tableCellData;
-
-    const { status = null, progress = null } = file?.upload ?? {};
-
-    const showSuccessDetails = () => {
+    const { progress = null, status = null } = file?.upload ?? {};
+    const showDetails = () => {
       uploadDetailsModalDataRef.current = {
         sampleUuid,
         fileCategory: columnId,
         file,
       };
-
-      setUploadDetailsModalVisible(true);
-    };
-
-    const showErrorDetails = () => {
-      uploadDetailsModalDataRef.current = {
-        sampleUuid,
-        fileCategory: columnId,
-        file,
-      };
-
       setUploadDetailsModalVisible(true);
     };
 
@@ -175,8 +161,8 @@ const ProjectDetails = ({ width, height }) => {
           }}
         >
           <Space
-            onClick={showSuccessDetails}
-            onKeyDown={showSuccessDetails}
+            onClick={showDetails}
+            onKeyDown={showDetails}
           >
             <Text type='success'>{messageForStatus(status)}</Text>
           </Space>
@@ -212,8 +198,8 @@ const ProjectDetails = ({ width, height }) => {
       return (
         <div
           className='hoverSelectCursor'
-          onClick={showErrorDetails}
-          onKeyDown={showErrorDetails}
+          onClick={showDetails}
+          onKeyDown={showDetails}
           style={{
             whiteSpace: 'nowrap',
             height: '35px',
@@ -229,7 +215,6 @@ const ProjectDetails = ({ width, height }) => {
         </div>
       );
     }
-
     if (
       [
         UploadStatus.FILE_NOT_FOUND,
@@ -251,10 +236,10 @@ const ProjectDetails = ({ width, height }) => {
             <Text type='danger'>{messageForStatus(status)}</Text>
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
               <Button
-                size='small'
+                size='large'
                 shape='link'
                 icon={<UploadOutlined />}
-                onClick={() => setUploadModalVisible(true)}
+                onClick={showDetails}
               />
             </Tooltip>
           </Space>
@@ -474,10 +459,8 @@ const ProjectDetails = ({ width, height }) => {
           (file) => !fileNamesArray.includes(file),
         )
       ) { return false; }
-
       return fileNamesArray.every((fileName) => {
         const checkedFile = sample.files[fileName];
-
         return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
       });
     };
@@ -494,7 +477,6 @@ const ProjectDetails = ({ width, height }) => {
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });
-
     setCanLaunchAnalysis(canLaunch);
   };
 
@@ -513,14 +495,14 @@ const ProjectDetails = ({ width, height }) => {
     ) || [];
 
     setTableColumns([...columns, ...metadataColumns]);
-
     // Set table data
+
     const newData = activeProject.samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
-      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const genesFile = sampleFiles['features.tsv.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
-      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { status: UploadStatus.FILE_NOT_FOUND };
+      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
 
       const barcodesData = { sampleUuid, file: barcodesFile };
       const genesData = { sampleUuid, file: genesFile };
@@ -537,7 +519,6 @@ const ProjectDetails = ({ width, height }) => {
         ...samples[sampleUuid].metadata,
       };
     });
-
     checkLaunchAnalysis();
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
@@ -550,15 +531,18 @@ const ProjectDetails = ({ width, height }) => {
     if (!uploadDetailsModalDataRef.current) {
       return;
     }
-
     const { sampleUuid, file } = uploadDetailsModalDataRef.current;
 
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
+    // when uploading only one file - bundleToUpload doesn't have .name
+    const name = file.name || bundleToUpload.name;
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
 
     const metadata = metadataForBundle(bundleToUpload);
 
+    const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
+
     compressAndUploadSingleFile(
-      bucketKey, sampleUuid, file.name,
+      bucketKey, sampleUuid, newFileName,
       bundleToUpload, dispatch, metadata,
     );
 
