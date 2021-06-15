@@ -30,7 +30,6 @@ const saveSamples = (
   } else {
     payload = newSample;
   }
-
   // This is set right now as there is only one experiment per project
   // Should be changed when we support multiple experiments per project
   const experimentId = projects[projectUuid].experiments[0];
@@ -81,7 +80,6 @@ const saveSamples = (
         error: message,
       },
     });
-
     pushNotificationMessage('error', message);
     return Promise.reject(message);
   }

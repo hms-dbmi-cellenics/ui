@@ -20,8 +20,7 @@ const samplesFileUpdate = (state, action) => {
 
   newFile.lastModified = lastModified;
 
-  const newFileNames = new Set([...state[sampleUuid].fileNames, fileName]);
-
+  const newFileNames = Array.from(new Set([...state[sampleUuid].fileNames, fileName]));
   return {
     ...state,
     [sampleUuid]: {
