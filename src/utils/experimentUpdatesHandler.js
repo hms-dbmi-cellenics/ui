@@ -1,9 +1,7 @@
 import { updateProcessingSettings, updateBackendStatus } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
-import {
-  CELL_SETS_CLUSTERING_UPDATED, CELL_SETS_ERROR,
-} from '../redux/actionTypes/cellSets';
+import { updateCellSetsClustering } from '../redux/actions/cellSets';
 
 const updateTypes = {
   QC: 'qc',
@@ -66,23 +64,8 @@ const onWorkerUpdate = (experimentId, update, dispatch) => {
     const newCellSets = [
       louvainSets,
     ];
-    try {
-      dispatch({
-        type: CELL_SETS_CLUSTERING_UPDATED,
-        payload: {
-          experimentId,
-          data: newCellSets,
-        },
-      });
-    } catch (e) {
-      dispatch({
-        type: CELL_SETS_ERROR,
-        payload: {
-          experimentId,
-          error: e,
-        },
-      });
-    }
+
+    dispatch(updateCellSetsClustering(experimentId, newCellSets));
   }
 };
 
