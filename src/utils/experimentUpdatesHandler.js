@@ -8,7 +8,7 @@ import {
 const updateTypes = {
   QC: 'qc',
   GEM2S: 'gem2s',
-  DATA: 'data_update',
+  WORKER_DATA_UPDATE: 'workerDataUpdate',
 };
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
@@ -25,10 +25,10 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
       dispatch(updateBackendStatus(experimentId, update.status));
       return onGEM2SUpdate(experimentId, update, dispatch);
     }
-    // this should be used to notify the UI that a request has changed and the UI is out-of-sync
-    case updateTypes.DATA: {
+    case updateTypes.WORKER_DATA_UPDATE: {
       return onWorkerUpdate(experimentId, update, dispatch);
     }
+
     default: {
       console.log(`Error, unrecognized message type ${update.type}`);
     }

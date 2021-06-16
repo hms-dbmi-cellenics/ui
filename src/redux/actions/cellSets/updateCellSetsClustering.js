@@ -42,6 +42,8 @@ const updateCellSetsClustering = (experimentId, resolution) => async (dispatch, 
       louvainSets,
     ];
 
+    // TODO Factor out up from this
+    // Resolution changes in ui should update cellSets for everyone
     await dispatch({
       type: CELL_SETS_CLUSTERING_UPDATED,
       payload: {
