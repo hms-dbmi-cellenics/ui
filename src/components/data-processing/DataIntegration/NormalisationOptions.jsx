@@ -99,11 +99,11 @@ const NormalisationOptions = (props) => {
       )}
       >
         <Select
-          value={config.normalization}
+          value={config.normalisation}
           onChange={(val) => onUpdate({
             dataIntegration: {
               methodSettings: {
-                [methodId]: { normalization: val },
+                [methodId]: { normalisation: val },
               },
             },
           })}
