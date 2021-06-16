@@ -18,8 +18,8 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
   const url = `/v1/experiments/${experimentId}/backendStatus`;
   try {
     const response = await fetchAPI(url);
-
     const status = await response.json();
+
     throwIfRequestFailed(response, status, endUserMessages.ERROR_FETCHING_STATUS);
     dispatch({
       type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
