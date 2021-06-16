@@ -58,7 +58,7 @@ const StatusIndicator = () => {
           Reason:
           {' '}
           <Text type='danger'>
-            {error.error}
+            {error?.error}
           </Text>
           <br />
           The analysis launched
