@@ -38,10 +38,6 @@ const ConfigureEmbedding = (props) => {
     (state) => state.experimentSettings.processing.meta,
   );
 
-  const pipelineIsRunning = useSelector((state) => (
-    state.experimentSettings.backendStatus.status.pipeline?.status === 'RUNNING'
-  ));
-
   const filterName = 'configureEmbedding';
 
   const router = useRouter();
@@ -289,7 +285,6 @@ const ConfigureEmbedding = (props) => {
       && !cellSets.updateCellSetsClustering
       && selectedConfig
       && plotData
-      && !pipelineIsRunning
     ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData));
     }

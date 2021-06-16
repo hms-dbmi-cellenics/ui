@@ -3,15 +3,17 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, PageHeader, Collapse, Skeleton, Alert,
+  Row, Col, Space, PageHeader, Collapse, Alert,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 
 import CalculationConfig from './CalculationConfig';
-import MiniPlot from '../../plots/MiniPlot';
 import PlotStyling from '../../plots/styling/PlotStyling';
+
+import MiniPlot from '../../plots/MiniPlot';
+import EmptyPlot from '../../plots/helpers/EmptyPlot';
 
 import {
   updatePlotConfig,
@@ -32,10 +34,6 @@ const DataIntegration = (props) => {
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
-
-  const pipelineIsRunning = useSelector((state) => (
-    state.experimentSettings.backendStatus.status.pipeline?.status === 'RUNNING'
-  ));
 
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
@@ -241,7 +239,6 @@ const DataIntegration = (props) => {
       && !cellSets.updateCellSetsClustering
       && selectedConfig
       && plotData
-      && !pipelineIsRunning
     ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData, true));
     }
@@ -296,7 +293,7 @@ const DataIntegration = (props) => {
     if (!selectedConfig || disabledByConfigEmbedding) {
       return (
         <center>
-          <Skeleton.Image style={{ width: 400, height: 400 }} />
+          <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -336,7 +333,7 @@ const DataIntegration = (props) => {
                 {plotObj.blockedByConfigureEmbedding && !configureEmbeddingFinished.current
                   ? (
                     <center>
-                      <Skeleton.Image />
+                      <EmptyPlot mini />
                     </center>
                   )
                   : (
