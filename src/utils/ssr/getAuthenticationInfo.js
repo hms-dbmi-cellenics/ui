@@ -59,7 +59,7 @@ const getAuthenticationInfo = async () => {
   const k8sEnv = process.env.K8S_ENV || 'staging';
 
   const identityPoolId = IdentityPools.find(
-    (pool) => pool.IdentityPoolName.includes(sandboxId),
+    (pool) => pool.IdentityPoolName.includes(`${k8sEnv}-${sandboxId}`),
   ).IdentityPoolId;
 
   const userPoolId = UserPools.find((pool) => pool.Name.includes(k8sEnv)).Id;
