@@ -14,9 +14,13 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
     backendStatus,
   } = getState().experimentSettings;
 
+  console.log('Running stuff3');
+
   if (loading || error) {
     return null;
   }
+
+  console.log('Running stuff2');
 
   const body = {
     name: 'ClusterCells',
@@ -28,11 +32,14 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
     },
   };
 
+  console.log('Running stuff1');
+
   dispatch({
     type: CELL_SETS_CLUSTERING_UPDATING,
   });
 
   try {
+    console.log('Running stuff');
     await sendWork(experimentId, REQUEST_TIMEOUT, body, backendStatus.status);
   } catch (e) {
     dispatch({

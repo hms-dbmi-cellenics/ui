@@ -1,14 +1,19 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import updateCellSetsClustering from '../../../../redux/actions/cellSets/updateCellSetsClustering';
+import runCellSetsClustering from '../../../../redux/actions/cellSets/runCellSetsClustering';
 import initialState from '../../../../redux/reducers/cellSets/initialState';
-import { fetchCachedWork } from '../../../../utils/cacheRequest';
+import sendWork from '../../../../utils/sendWork';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 jest.mock('localforage');
 jest.mock('../../../../utils/cacheRequest');
+
+jest.mock('../../../../utils/sendWork', () => ({
+  __esModule: true, // this property makes it work
+  default: jest.fn(),
+}));
 
 const startDate = '2021-01-01T00:00:00';
 
@@ -16,7 +21,7 @@ const backendStatusStore = {
   backendStatus: { status: { pipeline: { startDate } } },
 };
 
-describe('updateCellSetsClustering action', () => {
+describe('runCellSetsClustering action', () => {
   const experimentId = '1234';
 
   beforeEach(() => {
@@ -36,7 +41,7 @@ describe('updateCellSetsClustering action', () => {
       cellSets: { loading: true, error: false },
       experimentSettings: backendStatusStore,
     });
-    store.dispatch(updateCellSetsClustering(experimentId));
+    store.dispatch(runCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
   });
 
@@ -45,7 +50,7 @@ describe('updateCellSetsClustering action', () => {
       cellSets: { loading: false, error: true },
       experimentSettings: backendStatusStore,
     });
-    store.dispatch(updateCellSetsClustering(experimentId));
+    store.dispatch(runCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
   });
 
@@ -68,20 +73,14 @@ describe('updateCellSetsClustering action', () => {
       experimentSettings: backendStatusStore,
     });
 
-    fetchCachedWork.mockImplementation(() => {
-      const resolveWith = {
-        name: 'one', color: '#ff0000', cellIds: ['1', '2', '3'],
-      };
-
-      return new Promise((resolve) => resolve(resolveWith));
-    });
-
     const flushPromises = () => new Promise(setImmediate);
 
-    store.dispatch(updateCellSetsClustering(experimentId, 0.5));
+    sendWork.mockImplementation(() => Promise.resolve());
 
-    expect(fetchCachedWork).toHaveBeenCalledTimes(1);
-    expect(fetchCachedWork).toHaveBeenCalledWith(experimentId, 30, {
+    store.dispatch(runCellSetsClustering(experimentId, 0.5));
+
+    expect(sendWork).toHaveBeenCalledTimes(1);
+    expect(sendWork).toHaveBeenCalledWith(experimentId, 30, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',
@@ -102,25 +101,20 @@ describe('updateCellSetsClustering action', () => {
     done();
   });
 
-  it('Dispatches error action when the reset fails', async () => {
+  it('Dispatches error action when sendWord fails', async () => {
     const store = mockStore({
       cellSets: { ...initialState, loading: false },
       experimentSettings: backendStatusStore,
     });
-    fetchCachedWork.mockImplementation(() => {
-      const resolveWith = {
-        results: { error: 'The backend returned an error' },
-      };
 
-      return new Promise((resolve) => resolve(resolveWith));
-    });
+    sendWork.mockImplementation(() => Promise.reject());
 
     const flushPromises = () => new Promise(setImmediate);
 
-    store.dispatch(updateCellSetsClustering(experimentId, 0.5));
+    store.dispatch(runCellSetsClustering(experimentId, 0.5));
 
-    expect(fetchCachedWork).toHaveBeenCalledTimes(1);
-    expect(fetchCachedWork).toHaveBeenCalledWith(experimentId, 30, {
+    expect(sendWork).toHaveBeenCalledTimes(1);
+    expect(sendWork).toHaveBeenCalledWith(experimentId, 30, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',
