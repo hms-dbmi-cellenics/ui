@@ -48,6 +48,11 @@ const CalculationConfig = (props) => {
 
   const methods = [
     {
+      value: 'harmony',
+      text: 'Harmony',
+      disabled: false,
+    },
+    {
       value: 'seuratv4',
       text: 'Seurat v4',
       disabled: false,
@@ -65,11 +70,6 @@ const CalculationConfig = (props) => {
     {
       value: 'seuratv3',
       text: 'Seurat v3',
-      disabled: true,
-    },
-    {
-      value: 'harmony',
-      text: 'Harmony',
       disabled: true,
     },
     {
