@@ -25,7 +25,9 @@ const StatusIndicator = () => {
     status: { pipeline },
   } = useSelector((state) => state.experimentSettings.backendStatus);
 
-  const { startDate, stopDate, status } = pipeline;
+  const {
+    startDate, stopDate, status, error,
+  } = pipeline;
 
   const statusIndicators = {
     [pipelineStatus.NOT_CREATED]: {
@@ -53,6 +55,10 @@ const StatusIndicator = () => {
       title: <Text strong type='danger'>failing</Text>,
       description: (
         <Text>
+          <b>Reason: </b>
+          {' '}
+          {error?.error}
+          <br />
           The analysis launched
           {' '}
           <PrettyTime isoTime={startDate} />
