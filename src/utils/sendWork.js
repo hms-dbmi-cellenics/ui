@@ -21,9 +21,12 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
 
   const authJWT = await getAuthJWT();
 
+  const isOnlyForThisClient = body.name !== 'ClusterCells';
+  const socketId = isOnlyForThisClient ? io.id : 'broadcast';
+
   const request = {
     uuid: requestUuid,
-    socketId: io.id,
+    socketId,
     experimentId,
     ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
     timeout: timeoutDate,
@@ -32,6 +35,12 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   };
 
   io.emit('WorkRequest', request);
+
+  // If it is not a single client request then it will be received
+  // in the ExperimentUpdates port instead of the WorkResponse one
+  // so we don't need to listen for it
+  if (!isOnlyForThisClient) { return; }
+
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${requestUuid}`, (res) => {
       const { response: { error } } = res;

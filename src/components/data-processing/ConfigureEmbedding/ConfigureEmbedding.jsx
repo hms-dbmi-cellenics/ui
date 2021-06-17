@@ -21,7 +21,6 @@ import {
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
 import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
 import loadCellMeta from '../../../redux/actions/cellMeta';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
@@ -34,18 +33,17 @@ const ConfigureEmbedding = (props) => {
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
   const cellMeta = useSelector((state) => state.cellMeta);
-  const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector((state) => state.experimentSettings.processing.meta);
+
+  const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector(
+    (state) => state.experimentSettings.processing.meta,
+  );
+
   const filterName = 'configureEmbedding';
 
   const router = useRouter();
   const dispatch = useDispatch();
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
-  );
-
-  const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
-    [],
   );
 
   const continuousEmbeddingPlots = ['mitochondrialContent', 'doubletScores'];
@@ -286,18 +284,9 @@ const ConfigureEmbedding = (props) => {
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
       && selectedConfig
-      && plotData) {
+      && plotData
+    ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData));
-      if (!selectedConfig.selectedCellSet) { return; }
-
-      const propertiesArray = Object.keys(cellSets.properties);
-      const cellSetClusteringLength = propertiesArray.filter(
-        (cellSet) => cellSet === selectedConfig.selectedCellSet,
-      ).length;
-
-      if (!cellSetClusteringLength) {
-        debouncedCellSetClustering(0.5);
-      }
     }
   }, [selectedConfig, cellSets, plotData]);
 
