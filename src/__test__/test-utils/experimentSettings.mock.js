@@ -59,15 +59,15 @@ const testableProcessingConfig = {
       methodSettings: {
         seuratv4: {
           numGenes: 2000,
-          normalization: 'logNormalize',
+          normalisation: 'logNormalize',
         },
         fastmnn: {
           numGenes: 2000,
-          normalization: 'logNormalize',
+          normalisation: 'logNormalize',
         },
         unisample: {
           numGenes: 2000,
-          normalization: 'logNormalize',
+          normalisation: 'logNormalize',
         },
       },
     },
