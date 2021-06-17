@@ -3,18 +3,17 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, PageHeader, Collapse, Skeleton, Alert,
+  Row, Col, Space, PageHeader, Collapse, Alert,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 
 import CalculationConfig from './CalculationConfig';
-import MiniPlot from '../../plots/MiniPlot';
-
-import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
-
 import PlotStyling from '../../plots/styling/PlotStyling';
+
+import MiniPlot from '../../plots/MiniPlot';
+import EmptyPlot from '../../plots/helpers/EmptyPlot';
 
 import {
   updatePlotConfig,
@@ -43,11 +42,6 @@ const DataIntegration = (props) => {
   const dispatch = useDispatch();
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
-  );
-
-  const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
-    [],
   );
 
   const plots = {
@@ -244,18 +238,9 @@ const DataIntegration = (props) => {
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
       && selectedConfig
-      && plotData) {
+      && plotData
+    ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData, true));
-      if (!selectedConfig.selectedCellSet) { return; }
-
-      const propertiesArray = Object.keys(cellSets.properties);
-      const cellSetClusteringLength = propertiesArray.filter(
-        (cellSet) => cellSet === selectedConfig.selectedCellSet,
-      ).length;
-
-      if (!cellSetClusteringLength) {
-        debouncedCellSetClustering(0.5);
-      }
     }
   }, [selectedConfig, cellSets, plotData, calculationConfig]);
 
@@ -308,7 +293,7 @@ const DataIntegration = (props) => {
     if (!selectedConfig || disabledByConfigEmbedding) {
       return (
         <center>
-          <Skeleton.Image style={{ width: 400, height: 400 }} />
+          <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -348,7 +333,7 @@ const DataIntegration = (props) => {
                 {plotObj.blockedByConfigureEmbedding && !configureEmbeddingFinished.current
                   ? (
                     <center>
-                      <Skeleton.Image />
+                      <EmptyPlot mini />
                     </center>
                   )
                   : (

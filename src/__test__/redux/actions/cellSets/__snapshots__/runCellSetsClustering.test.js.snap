@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runCellSetsClustering action Dispatches all required actions to update cell sets clustering. 1`] = `
+Object {
+  "type": "cellSets/clusteringUpdating",
+}
+`;
+
+exports[`runCellSetsClustering action Dispatches all required actions to update cell sets clustering. 2`] = `undefined`;
+
+exports[`runCellSetsClustering action Dispatches all required actions to update cell sets clustering. 3`] = `undefined`;
+
+exports[`runCellSetsClustering action Dispatches error action when sendWord fails 1`] = `
+Object {
+  "type": "cellSets/clusteringUpdating",
+}
+`;
+
+exports[`runCellSetsClustering action Dispatches error action when sendWord fails 2`] = `
+Object {
+  "payload": Object {
+    "error": undefined,
+    "experimentId": "1234",
+  },
+  "type": "cellSets/error",
+}
+`;

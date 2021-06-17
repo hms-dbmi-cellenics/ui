@@ -14,7 +14,7 @@ import {
   saveProcessingSettings,
 } from '../../../redux/actions/experimentSettings';
 
-import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
+import runCellSetsClustering from '../../../redux/actions/cellSets/runCellSetsClustering';
 import { loadEmbedding } from '../../../redux/actions/embedding';
 
 import SliderWithInput from '../../SliderWithInput';
@@ -49,7 +49,7 @@ const CalculationConfig = (props) => {
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
   const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 1500),
+    _.debounce((resolution) => dispatch(runCellSetsClustering(experimentId, resolution)), 1500),
     [],
   );
 
@@ -231,7 +231,8 @@ const CalculationConfig = (props) => {
           The parameter is, in a sense, a guess about the number of close neighbors each cell has.
           In most implementations, perplexity defaults to 30. This focuses the attention of t-SNE on preserving the
           distances to its 30 nearest neighbors and puts virtually no weight on preserving distances to the remaining points.
-          The perplexity value has a complex effect on the resulting pictures.'>
+          The perplexity value has a complex effect on the resulting pictures.'
+          >
             <QuestionCircleOutlined />
           </Tooltip>
         </Form.Item>
@@ -247,7 +248,8 @@ const CalculationConfig = (props) => {
             onBlur={(e) => setLearningRate(e.target.value)}
           />
           <Tooltip title='If the learning rate is too high, the data may look like a "ball" with any point approximately equidistant from its nearest neighbours.
-          If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'>
+          If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'
+          >
             <QuestionCircleOutlined />
           </Tooltip>
         </Form.Item>
@@ -312,7 +314,6 @@ const CalculationConfig = (props) => {
               <Option value='umap'>UMAP</Option>
               <Option value='tsne'>t-SNE</Option>
             </Select>
-
 
           </Form.Item>
           {changes.embeddingSettings.method === 'umap' && renderUMAPSettings()}
