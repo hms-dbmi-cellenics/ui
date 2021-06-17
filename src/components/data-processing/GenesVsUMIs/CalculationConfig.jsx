@@ -16,9 +16,6 @@ const GenesVsUMIsConfig = (props) => {
 
   return (
     <>
-      <Form.Item
-        label='Regression type:'
-      />
       <Form.Item label='p-level cut-off:'>
         <Space direction='horizontal'>
           <Tooltip title='Linear regression (Gam) of UMIs vs features (genes) is performed for all cells in order to detect outliers. The ‘p-level cut-off’ is the stringency for defining outliers: ‘p.level’ refers to the confidence level for a given cell to deviate from the main trend. The smaller the number the more stringent cut-off.
