@@ -55,11 +55,9 @@ const StatusIndicator = () => {
       title: <Text strong type='danger'>failing</Text>,
       description: (
         <Text>
-          Reason:
+          <b>Reason: </b>
           {' '}
-          <Text type='danger'>
-            {error?.error}
-          </Text>
+          {error?.error}
           <br />
           The analysis launched
           {' '}
