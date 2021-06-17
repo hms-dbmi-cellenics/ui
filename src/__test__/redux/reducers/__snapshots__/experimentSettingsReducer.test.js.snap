@@ -150,15 +150,15 @@ Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "fastmnn": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
           "seuratv4": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
           "unisample": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
@@ -270,15 +270,15 @@ Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "fastmnn": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
           "seuratv4": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
           "unisample": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
@@ -397,15 +397,15 @@ Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "fastmnn": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
           "seuratv4": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
           "unisample": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
@@ -516,15 +516,15 @@ Object {
         "method": "seuratv4",
         "methodSettings": Object {
           "fastmnn": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
           "seuratv4": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
           "unisample": Object {
-            "normalization": "logNormalize",
+            "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },

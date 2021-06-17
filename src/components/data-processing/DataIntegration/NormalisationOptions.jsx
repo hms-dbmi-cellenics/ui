@@ -99,18 +99,20 @@ const NormalisationOptions = (props) => {
       )}
       >
         <Select
-          value={config.normalization}
+          value={config.normalisation}
           onChange={(val) => onUpdate({
             dataIntegration: {
               methodSettings: {
-                [methodId]: { normalization: val },
+                [methodId]: { normalisation: val },
               },
             },
           })}
           disabled={disabled}
         >
           <Option value='logNormalize'>LogNormalize</Option>
-          <Option value='scTransform'>SCTransform</Option>
+
+          {/* scTransform is disabled until implemented in the QC pipeline */}
+          <Option disabled value='scTransform'>SCTransform</Option>
         </Select>
 
       </Form.Item>
