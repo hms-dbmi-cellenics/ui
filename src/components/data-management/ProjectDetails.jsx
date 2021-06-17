@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import _ from 'lodash';
 import {
   Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col,
 } from 'antd';
@@ -280,7 +281,6 @@ const ProjectDetails = ({ width, height }) => {
 
   const createMetadataColumn = () => {
     const key = temporaryMetadataKey(tableColumns);
-
     const metadataColumn = {
       key,
       fixed: 'right',
@@ -289,6 +289,7 @@ const ProjectDetails = ({ width, height }) => {
           existingMetadata={activeProject.metadataKeys}
           onCreate={(name) => {
             const newMetadataColumn = createInitializedMetadataColumn(name);
+
             setTableColumns([...tableColumns, newMetadataColumn]);
             dispatch(createMetadataTrack(name, activeProjectUuid));
 
@@ -311,7 +312,6 @@ const ProjectDetails = ({ width, height }) => {
 
     setTableColumns([...tableColumns, metadataColumn]);
   };
-
   const deleteMetadataColumn = (name) => {
     setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
@@ -488,13 +488,14 @@ const ProjectDetails = ({ width, height }) => {
       setTableColumns([]);
       return;
     }
-
     // Set table columns
     const metadataColumns = activeProject?.metadataKeys.map(
       (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
     ) || [];
 
-    setTableColumns([...columns, ...metadataColumns]);
+    const newColumns = tableColumns.length ? tableColumns : [...columns, ...metadataColumns];
+
+    setTableColumns(newColumns);
     // Set table data
 
     const newData = activeProject.samples.map((sampleUuid, idx) => {
