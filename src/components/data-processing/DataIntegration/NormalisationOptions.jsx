@@ -20,7 +20,7 @@ const NormalisationOptions = (props) => {
 
   return (
     <>
-      <Form.Item label='# of HGV genes'>
+      <Form.Item label='# of HVGs'>
         <InputNumber
           value={numGenes}
           step={100}
@@ -53,8 +53,8 @@ const NormalisationOptions = (props) => {
         {' '}
         <Tooltip overlay={(
           <span>
-            Number of genes to mark as top highly variable genes (HGV).
-            Integration as well as PCA is based on a sensible selection of HGV.
+            Number of genes to mark as top highly variable genes (HVGs).
+            Integration as well as PCA is based on a sensible selection of HVGs.
             Here, this number selects the top variable genes based on the "vst" method.
             The default 2000 has been found to be a sensible for many cases.
             Further info can be found
