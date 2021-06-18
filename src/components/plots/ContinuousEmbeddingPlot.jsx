@@ -73,7 +73,7 @@ const ContinuousEmbeddingPlot = (props) => {
         <PlatformError
           error={error}
           onClick={() => {
-            dispatch(reloadPlotData());
+            reloadPlotData();
           }}
         />
       );
