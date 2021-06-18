@@ -114,7 +114,7 @@ const compressAndUploadSingleFile = async (
 
 const renameFileIfNeeded = (fileName, type) => {
   // rename files to include .gz
-  const uncompressed = !['application/gzip', 'application/x-gzip'].includes(type);
+  const uncompressed = !['application/gzip', 'application/x-gzip'].includes(type) && !fileName.endsWith('.gz');
   let newFileName = uncompressed ? `${fileName}.gz` : fileName;
 
   // We rename genes.tsv files to features.tsv (for a single entry)
