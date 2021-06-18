@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import _ from 'lodash';
 import {
   Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col,
 } from 'antd';
