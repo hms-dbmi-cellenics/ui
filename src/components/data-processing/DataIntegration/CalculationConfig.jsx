@@ -90,7 +90,6 @@ const CalculationConfig = (props) => {
   const updateSettings = (diff) => {
     setChangesOutstanding(true);
     dispatch(updateProcessingSettings(
-      experimentId,
       FILTER_UUID,
       diff,
     ));
@@ -207,7 +206,7 @@ const CalculationConfig = (props) => {
                   { dimensionalityReduction: { excludeGeneCategories: val } },
                 )}
                 value={dimensionalityReduction.excludeGeneCategories}
-                disabled={true}
+                disabled
               >
                 <Space direction='vertical'>
                   <Checkbox value='ribosomal'>ribosomal</Checkbox>

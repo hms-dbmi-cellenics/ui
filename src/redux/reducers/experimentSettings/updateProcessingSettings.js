@@ -2,10 +2,10 @@ import initialState from './initialState';
 import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateProcessingSettings = (state, action) => {
-  const { settingName, configChange } = action.payload;
+  const { step, configChange } = action.payload;
 
   const newConfig = mergeObjectWithArrays(
-    state.processing[settingName],
+    state.processing[step],
     configChange,
   );
 
@@ -15,8 +15,8 @@ const updateProcessingSettings = (state, action) => {
     processing: {
       ...initialState.processing,
       ...state.processing,
-      [settingName]: {
-        ...state.processing[settingName],
+      [step]: {
+        ...state.processing[step],
         ...newConfig,
       },
     },

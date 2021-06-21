@@ -9,9 +9,9 @@ const getDefaultValues = (state, settingName) => {
 };
 
 const updateSampleSettings = (state, action) => {
-  const { settingName, sampleId, diff } = action.payload;
+  const { step, sampleId, diff } = action.payload;
 
-  const config = state.processing[settingName][sampleId] ?? getDefaultValues(state, settingName);
+  const config = state.processing[step][sampleId] ?? getDefaultValues(state, step);
 
   const mergedSettings = _.merge(_.cloneDeep(config), diff);
 
@@ -21,8 +21,8 @@ const updateSampleSettings = (state, action) => {
     processing: {
       ...initialState.processing,
       ...state.processing,
-      [settingName]: {
-        ...state.processing[settingName],
+      [step]: {
+        ...state.processing[step],
         [sampleId]: mergedSettings,
       },
     },

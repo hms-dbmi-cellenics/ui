@@ -97,7 +97,6 @@ const CalculationConfig = (props) => {
 
       setChangesOutstanding(true);
       dispatch(updateProcessingSettings(
-        experimentId,
         FILTER_UUID,
         diff,
       ));
@@ -106,7 +105,6 @@ const CalculationConfig = (props) => {
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
 
       dispatch(updateProcessingSettings(
-        experimentId,
         FILTER_UUID,
         diff,
       ));

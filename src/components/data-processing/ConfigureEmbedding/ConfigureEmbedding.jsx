@@ -370,7 +370,6 @@ const ConfigureEmbedding = (props) => {
                 key={key}
                 onClick={() => dispatch(
                   updateProcessingSettings(
-                    experimentId,
                     'meta',
                     { selectedConfigureEmbeddingPlot: key },
                   ),
