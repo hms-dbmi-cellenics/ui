@@ -70,7 +70,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const cellSets = useSelector((state) => state.cellSets);
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
-  const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
+
   const [stepIdx, setStepIdx] = useState(0);
   const [applicableFilters, setApplicableFilters] = useState([])
   const [preFilteredSamples, setPreFilteredSamples] = useState([])
@@ -335,15 +335,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }
 
   // Called when the pipeline is triggered to be run by the user.
-  const onPipelineRun = (stepKey) => {
+  const onPipelineRun = (steps) => {
     setChangesOutstanding(false);
-    dispatch((runPipeline(experimentId, Array.from(changedFilters.current))))
-  }
+    changedFilters.current = new Set();
+    dispatch((runPipeline(experimentId, steps)))
 
-  const ignoreLostChanges = () => {
-    // setShowChangesWillBeLost(false)
-    setChangesOutstanding(false);
-    setStepIdx(upcomingStepIdxRef.current);
   }
 
   const renderWithInnerScroll = (innerRenderer) => {
@@ -473,7 +469,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   id='runFilterButton'
                   data-testid='runFilterButton'
                   type='primary'
-                  onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+                  onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
                   disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
                 >
                   {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}

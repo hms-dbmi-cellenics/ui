@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
@@ -15,6 +16,11 @@ const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState)
       experimentId,
     },
   });
+
+  if (!_.isArray(callerStepKeys)) {
+    // eslint-disable-next-line no-param-reassign
+    callerStepKeys = [callerStepKeys];
+  }
 
   const processingConfig = callerStepKeys.map((key) => {
     const currentConfig = getState().experimentSettings.processing[key];
