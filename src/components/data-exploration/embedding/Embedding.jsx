@@ -22,7 +22,7 @@ import {
   renderCellSetColors,
   colorByGeneExpression,
 } from '../../../utils/embeddingPlotHelperFunctions/helpers';
-import legend from '../../../../static/media/viridis.png';
+import legend from '../../../../public/static/media/viridis.png';
 import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
 
