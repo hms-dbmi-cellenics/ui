@@ -17,39 +17,10 @@ const updateSampleFilterSettings = produce((draft, action) => {
 
   const previousSettings = getPreviousSettings(draft, step, sampleId);
 
-  const updatedSettings = _.clone(previousSettings);
+  const updatedSettings = _.cloneDeep(previousSettings);
   _.merge(updatedSettings, diff);
 
   draft.processing[step][sampleId].filterSettings = updatedSettings;
 }, initialState);
-
-/* // Perform object destructuring to avoid picking extra properties if choosing the default values
-const getDefaultValues = (state, settingName) => {
-  const { auto, filterSettings } = state.processing[settingName];
-  return { auto, filterSettings };
-};
-
-const updateSampleFilterSettings = (state, action) => {
-  const { step, sampleId, diff } = action.payload;
-
-  const config = state.processing[step][sampleId] ?? getDefaultValues(state, step);
-
-  const mergedSettings = _.merge(_.cloneDeep(config), diff);
-
-  const newState = {
-    ...initialState,
-    ...state,
-    processing: {
-      ...initialState.processing,
-      ...state.processing,
-      [step]: {
-        ...state.processing[step],
-        [sampleId]: mergedSettings,
-      },
-    },
-  };
-
-  return newState;
-}; */
 
 export default updateSampleFilterSettings;
