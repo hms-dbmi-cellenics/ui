@@ -94,7 +94,7 @@ const CalculationConfig = (props) => {
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Run.
-      changedFilters.add(FILTER_UUID);
+      changedFilters?.current.add(FILTER_UUID);
       setChangesOutstanding(true);
       dispatch(updateProcessingSettings(
         experimentId,
