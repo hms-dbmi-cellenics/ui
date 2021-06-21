@@ -10,6 +10,7 @@ import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED,
+  EXPERIMENT_SETTINGS_COPY_SETTINGS_TO_ALL_SAMPLES,
 } from '../../actionTypes/experimentSettings';
 import updateExperimentInfo from './updateExperimentInfo';
 import updateProcessingSettings from './updateProcessingSettings';
@@ -21,6 +22,7 @@ import backendStatusLoaded from './backendStatusLoaded';
 import backendStatusError from './backendStatusError';
 
 import setQCStepEnabled from './setQCStepEnabled';
+import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -50,6 +52,9 @@ const experimentSettingsReducer = (state = initialState, action) => {
     }
     case EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED: {
       return setQCStepEnabled(state, action);
+    }
+    case EXPERIMENT_SETTINGS_COPY_SETTINGS_TO_ALL_SAMPLES: {
+      return copyFilterSettingsToAllSamples(state, action);
     }
     case HYDRATE: {
       const experimentInfo = action.payload.experimentSettings.info;

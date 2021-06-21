@@ -8,11 +8,11 @@ import {
   Radio,
 } from 'antd';
 
-import { updateProcessingSettings, updateSampleSettings } from '../../redux/actions/experimentSettings';
+import { updateSampleSettings, copyFilterSettingsToAllSamples } from '../../redux/actions/experimentSettings';
 
 const CalculationConfigContainer = (props) => {
   const {
-    filterUuid, experimentId, sampleId, plotType, sampleIds, onConfigChange, children, stepDisabled,
+    filterUuid, sampleId, plotType, sampleIds, onConfigChange, children, stepDisabled,
   } = props;
 
   const { auto, filterSettings: config } = useSelector(
@@ -24,20 +24,9 @@ const CalculationConfigContainer = (props) => {
 
   const [displayIndividualChangesWarning, setDisplayIndividualChangesWarning] = useState(false);
 
-  const updateAllSettings = () => {
+  const copySettingsToAllSamples = () => {
     setDisplayIndividualChangesWarning(false);
-
-    const newConfig = {};
-    sampleIds.forEach((currentSampleId) => {
-      newConfig[currentSampleId] = { filterSettings: config, auto };
-    });
-
-    dispatch(updateProcessingSettings(
-      experimentId,
-      filterUuid,
-      newConfig,
-    ));
-
+    dispatch(copyFilterSettingsToAllSamples(filterUuid, sampleId));
     onConfigChange();
   };
 
@@ -78,7 +67,7 @@ const CalculationConfigContainer = (props) => {
 
       {
         sampleIds.length > 1 ? (
-          <Button onClick={updateAllSettings} disabled={auto === 'automatic'}>Copy to all samples</Button>
+          <Button onClick={copySettingsToAllSamples} disabled={auto === 'automatic'}>Copy to all samples</Button>
         ) : <></>
       }
 
@@ -87,7 +76,6 @@ const CalculationConfigContainer = (props) => {
 };
 CalculationConfigContainer.propTypes = {
   children: PropTypes.any.isRequired,
-  experimentId: PropTypes.string.isRequired,
   filterUuid: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   plotType: PropTypes.string.isRequired,

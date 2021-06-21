@@ -123,7 +123,6 @@ const DoubletScores = (props) => {
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
                 filterUuid={filterName}
-                experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}

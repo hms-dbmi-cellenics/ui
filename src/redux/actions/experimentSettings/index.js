@@ -6,6 +6,7 @@ import loadBackendStatus from './loadBackendStatus';
 import updateBackendStatus from './updateBackendStatus';
 import updateExperimentInfo from './updateExperimentInfo';
 import setQCStepEnabled from './setQCStepEnabled';
+import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
 
 export {
   loadProcessingSettings,
@@ -16,4 +17,5 @@ export {
   updateBackendStatus,
   updateExperimentInfo,
   setQCStepEnabled,
+  copyFilterSettingsToAllSamples,
 };
