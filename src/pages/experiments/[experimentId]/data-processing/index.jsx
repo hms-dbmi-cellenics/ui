@@ -76,6 +76,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [preFilteredSamples, setPreFilteredSamples] = useState([])
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
   const carouselRef = useRef(null);
+  const changedFilters = useRef(new Set())
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
@@ -169,7 +170,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     return stepAppearances.length > 0;
   }
 
-  const onConfigChange = () => {
+  const onConfigChange = (key) => {
+    changedFilters.current.add(key)
     setChangesOutstanding(true);
   };
 
@@ -195,7 +197,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key]?.enabled}
             />
           )}
@@ -218,7 +220,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -241,7 +243,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -264,7 +266,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -287,7 +289,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -329,23 +331,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [stepIdx, carouselRef.current]);
 
   const changeStepId = (newStepIdx) => {
-    if (changesOutstanding) {
-      upcomingStepIdxRef.current = newStepIdx;
-
-      setShowChangesWillBeLost(true);
-    } else {
       setStepIdx(newStepIdx);
-    }
   }
 
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = (stepKey) => {
     setChangesOutstanding(false);
-    dispatch((runPipeline(experimentId, stepKey)))
+    dispatch((runPipeline(experimentId, Array.from(changedFilters.current))))
   }
 
   const ignoreLostChanges = () => {
-    setShowChangesWillBeLost(false)
+    // setShowChangesWillBeLost(false)
     setChangesOutstanding(false);
     setStepIdx(upcomingStepIdxRef.current);
   }
@@ -362,21 +358,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const renderTitle = () => (
     <>
-      <Modal
-        visible={showChangesWillBeLost}
-        onOk={ignoreLostChanges}
-        onCancel={() => setShowChangesWillBeLost(false)}
-        okText='Leave this page'
-        cancelText='Stay on this page'
-        title='Unsaved changes'
-      >
-        <Space style={{ margin: '15px' }}>
-          <p>
-            You have unsaved settings changes. If you leave the page, these changes
-            will be lost.
-          </p>
-        </Space>
-      </Modal>
       <Row style={{ display: 'flex' }}>
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <Row style={{ display: 'flex' }} gutter={16}>

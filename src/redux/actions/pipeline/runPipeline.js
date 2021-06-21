@@ -8,7 +8,7 @@ import {
 } from '../../actionTypes/experimentSettings';
 import loadBackendStatus from '../experimentSettings/loadBackendStatus';
 
-const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) => {
+const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState) => {
   dispatch({
     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
@@ -16,7 +16,13 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
     },
   });
 
-  const processingConfig = getState().experimentSettings.processing[callerStepKey];
+  const processingConfig = callerStepKeys.map((key) => {
+    const currentConfig = getState().experimentSettings.processing[key];
+    return {
+      name: key,
+      body: currentConfig,
+    };
+  });
 
   const url = `/v1/experiments/${experimentId}/pipelines`;
   try {
@@ -34,12 +40,7 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          processingConfig: [
-            {
-              name: callerStepKey,
-              body: processingConfig,
-            },
-          ],
+          processingConfig,
         }),
       },
     );
