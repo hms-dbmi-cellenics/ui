@@ -40,7 +40,6 @@ const onQCUpdate = (experimentId, update, dispatch) => {
   if (processingConfigUpdate) {
     dispatch(
       updateProcessingSettings(
-        experimentId,
         input.taskName,
         { [input.sampleUuid]: processingConfigUpdate },
       ),

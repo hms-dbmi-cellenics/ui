@@ -8,7 +8,7 @@ import {
   Radio,
 } from 'antd';
 
-import { updateSampleSettings, copyFilterSettingsToAllSamples } from '../../redux/actions/experimentSettings';
+import { updateSampleFilterSettings, copyFilterSettingsToAllSamples, setSampleFilterSettingsAuto } from '../../redux/actions/experimentSettings';
 
 const CalculationConfigContainer = (props) => {
   const {
@@ -30,9 +30,8 @@ const CalculationConfigContainer = (props) => {
     onConfigChange();
   };
 
-  const onSampleSettingsChange = (propertyDiff, property = 'filterSettings') => {
+  const onFilterSettingsChange = () => {
     setDisplayIndividualChangesWarning(true);
-    dispatch(updateSampleSettings(filterUuid, sampleId, { [property]: propertyDiff }));
     onConfigChange();
   };
 
@@ -49,7 +48,10 @@ const CalculationConfigContainer = (props) => {
 
       <Radio.Group
         value={auto ? 'automatic' : 'manual'}
-        onChange={(e) => { onSampleSettingsChange(e.target.value === 'automatic', 'auto'); }}
+        onChange={(e) => {
+          onFilterSettingsChange();
+          dispatch(setSampleFilterSettingsAuto(filterUuid, sampleId, e.target.value === 'automatic'));
+        }}
         style={{ marginTop: '5px', marginBottom: '30px' }}
         disabled={stepDisabled}
       >
@@ -62,7 +64,13 @@ const CalculationConfigContainer = (props) => {
       </Radio.Group>
 
       {React.cloneElement(children, {
-        config, plotType, updateSettings: onSampleSettingsChange, disabled: stepDisabled || auto,
+        config,
+        plotType,
+        updateSettings: (diff) => {
+          dispatch(updateSampleFilterSettings(filterUuid, sampleId, diff));
+          onFilterSettingsChange();
+        },
+        disabled: stepDisabled || auto,
       })}
 
       {

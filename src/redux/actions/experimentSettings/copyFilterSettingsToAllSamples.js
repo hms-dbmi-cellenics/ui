@@ -1,8 +1,13 @@
 import { EXPERIMENT_SETTINGS_COPY_SETTINGS_TO_ALL_SAMPLES } from '../../actionTypes/experimentSettings';
 
 const copyFilterSettingsToAllSamples = ((step, sampleId) => (dispatch, getState) => {
-  const { samples: allSamples } = getState();
-  const allSampleIds = Object.keys(allSamples);
+  const { cellSets } = getState();
+
+  const allSampleIds = cellSets.hierarchy?.find(
+    (rootNode) => (rootNode.key === 'sample'),
+  )?.children.map(
+    (child) => child.key,
+  );
 
   dispatch({
     type: EXPERIMENT_SETTINGS_COPY_SETTINGS_TO_ALL_SAMPLES,

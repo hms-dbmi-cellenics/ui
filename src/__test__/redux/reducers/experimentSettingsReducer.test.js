@@ -8,7 +8,7 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_LOAD,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
-  EXPERIMENT_SETTINGS_SAMPLE_UPDATE,
+  EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
@@ -98,7 +98,7 @@ describe('experimentSettingsReducer', () => {
   it('Updates sample settings properly', () => {
     const newState = experimentSettingsReducer(initialExperimentState,
       {
-        type: EXPERIMENT_SETTINGS_SAMPLE_UPDATE,
+        type: EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
         payload:
         {
           settingName: 'cellSizeDistribution',

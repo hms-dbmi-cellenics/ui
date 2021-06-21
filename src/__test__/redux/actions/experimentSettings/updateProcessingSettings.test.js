@@ -11,7 +11,6 @@ jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
 describe('saveProcessingSettings', () => {
-  const experimentId = '1234';
   const settingName = 'test';
 
   const mockState = {
@@ -22,7 +21,7 @@ describe('saveProcessingSettings', () => {
 
   it('Dispatches action when called', async () => {
     const store = mockStore(mockState);
-    store.dispatch(updateProcessingSettings(experimentId, settingName));
+    store.dispatch(updateProcessingSettings(settingName));
 
     const action = store.getActions();
     expect(action.length).toEqual(1);
