@@ -35,7 +35,7 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
   + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
-  const { experimentId, onPipelineRun } = props;
+  const { experimentId, onPipelineRun, changedFilters } = props;
   const FILTER_UUID = 'configureEmbedding';
 
   const dispatch = useDispatch();
@@ -94,7 +94,7 @@ const CalculationConfig = (props) => {
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Run.
-
+      changedFilters.add(FILTER_UUID);
       setChangesOutstanding(true);
       dispatch(updateProcessingSettings(
         experimentId,
@@ -427,6 +427,7 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
+  changedFilters: PropTypes.isRequired,
 };
 
 export default CalculationConfig;

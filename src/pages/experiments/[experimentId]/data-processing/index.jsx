@@ -304,7 +304,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <DataIntegration
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun(key)}
+          changedFilters={changedFilters}
+          onPipelineRun={() => onPipelineRun(Array.from(changedFilters.current))}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
         />
       ),
@@ -318,7 +319,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <ConfigureEmbedding
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun(key)}
+          changedFilters={changedFilters}
+          onPipelineRun={() => onPipelineRun(Array.from(changedFilters.current))}
         />
       ),
     },

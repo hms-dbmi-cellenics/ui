@@ -29,7 +29,6 @@ const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState)
       body: currentConfig,
     };
   });
-
   const url = `/v1/experiments/${experimentId}/pipelines`;
   try {
     // We are only sending the configuration that we know changed
