@@ -393,6 +393,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   steps.map(
                     ({ name, key }, i) => {
                       const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
+                      const text = `${i + 1}. ${name}`;
 
                       return (
                         <Option
@@ -404,6 +405,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                         >
                           {processingConfig[key]?.enabled === false ? (
                             <>
+                              {/* disabled */}
                               <Text
                                 type='secondary'
 
@@ -413,11 +415,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                               <span
                                 style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
                               >
-                                {name}
+                                {text}
                               </span>
                             </>
                           ) : !disabledByPipeline ? (
                             <>
+                              {/* finished */}
                               <Text
                                 type='success'
 
@@ -427,28 +430,30 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                               <span
                                 style={{ marginLeft: '0.25rem' }}
                               >
-                                {name}
+                                {text}
                               </span>
                             </>
                           ) : pipelineRunning && !isStepComplete(key) ? (
                             <>
+                              {/* incomplete */}
                               <Text
                                 type='warning'
                                 strong
                               >
                                 <EllipsisOutlined />
                               </Text>
-                              <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                              <span style={{ marginLeft: '0.25rem' }}>{`${i + 1}. C ${name}`}</span>
                             </>
                           ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
                             <>
+                              {/* failed */}
                               <Text
                                 type='danger'
                                 strong
                               >
                                 <WarningOutlined />
                               </Text>
-                              <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                              <span style={{ marginLeft: '0.25rem' }}>{text}</span>
                             </>
                           ) : <></>}
                         </Option>
