@@ -5,6 +5,7 @@ import loadProcessingSettings from './loadProcessingSettings';
 import loadBackendStatus from './loadBackendStatus';
 import updateBackendStatus from './updateBackendStatus';
 import updateExperimentInfo from './updateExperimentInfo';
+import setQCStepEnabled from './setQCStepEnabled';
 
 export {
   loadProcessingSettings,
@@ -14,4 +15,5 @@ export {
   loadBackendStatus,
   updateBackendStatus,
   updateExperimentInfo,
+  setQCStepEnabled,
 };

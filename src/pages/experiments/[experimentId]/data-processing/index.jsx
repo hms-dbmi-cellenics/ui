@@ -35,12 +35,11 @@ import StepsIndicator from '../../../../components/data-processing/StepsIndicato
 import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
-import { loadProcessingSettings, updateProcessingSettings, saveProcessingSettings } from '../../../../redux/actions/experimentSettings';
+import { loadProcessingSettings, updateProcessingSettings, saveProcessingSettings, setQCStepEnabled } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { loadSamples } from '../../../../redux/actions/samples'
 import { runPipeline } from '../../../../redux/actions/pipeline';
 import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
-
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -129,7 +128,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       && processingConfig[steps[stepIdx].key].enabled
     ) {
       disableStepsOnCondition.prefilter.forEach((step) => {
-        dispatch(updateProcessingSettings(experimentId, step, { enabled: false }))
+        dispatch(setQCStepEnabled(step, false));
         dispatch(saveProcessingSettings(experimentId, step))
       })
     }
@@ -139,7 +138,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   useEffect(() => {
     if (sampleKeys && sampleKeys.length === 1) {
       disableStepsOnCondition.unisample.forEach((step) => {
-        dispatch(updateProcessingSettings(experimentId, step, { enabled: false }))
+        dispatch(setQCStepEnabled(step, false));
         dispatch(saveProcessingSettings(experimentId, step))
       })
     }
@@ -471,11 +470,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   disabled={stepDisabledByCondition}
                   data-testid='enableFilterButton'
                   onClick={() => {
-                    dispatch(updateProcessingSettings(
-                      experimentId,
-                      steps[stepIdx].key,
-                      { enabled: !processingConfig[steps[stepIdx].key]?.enabled },
-                    ));
+                    dispatch(setQCStepEnabled(steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled));
                     dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
                     setChangesOutstanding(true);
                   }}>
