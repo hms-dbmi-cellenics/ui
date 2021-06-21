@@ -442,7 +442,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                               >
                                 <EllipsisOutlined />
                               </Text>
-                              <span style={{ marginLeft: '0.25rem' }}>{`${i + 1}. C ${name}`}</span>
+                              <span style={{ marginLeft: '0.25rem' }}>{text}</span>
                             </>
                           ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
                             <>
