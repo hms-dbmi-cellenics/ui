@@ -16,11 +16,11 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 
   switch (update.type) {
     case updateTypes.QC: {
-      dispatch(updateBackendStatus(experimentId, update.status));
+      dispatch(updateBackendStatus(update.status));
       return onQCUpdate(experimentId, update, dispatch);
     }
     case updateTypes.GEM2S: {
-      dispatch(updateBackendStatus(experimentId, update.status));
+      dispatch(updateBackendStatus(update.status));
       return onGEM2SUpdate(experimentId, update, dispatch);
     }
     case updateTypes.WORKER_DATA_UPDATE: {

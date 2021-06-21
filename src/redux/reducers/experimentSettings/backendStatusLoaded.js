@@ -1,9 +1,12 @@
+/* eslint-disable no-param-reassign */
+import produce, { original } from 'immer';
+
 import initialState from './initialState';
 
-const backendStatusLoaded = (state, action) => {
+const backendStatusLoaded = produce((draft, action) => {
   const { status } = action.payload;
 
-  const previousStatus = state.backendStatus?.status;
+  const previousStatus = original(draft.backendStatus?.status);
 
   const newStatus = {
     pipeline: status.pipeline ?? previousStatus?.pipeline,
@@ -11,15 +14,11 @@ const backendStatusLoaded = (state, action) => {
     worker: status.worker ?? previousStatus?.worker,
   };
 
-  return {
-    ...initialState,
-    ...state,
-    backendStatus: {
-      status: newStatus,
-      loading: false,
-      error: false,
-    },
+  draft.backendStatus = {
+    status: newStatus,
+    loading: false,
+    error: false,
   };
-};
+}, initialState);
 
 export default backendStatusLoaded;

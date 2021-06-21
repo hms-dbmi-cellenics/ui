@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 
-// TODO check if this is necessary
 import initialState from './initialState';
 
 const setQCStepEnabled = produce((draft, action) => {

@@ -6,7 +6,7 @@ import initialExperimentState from '../../test-utils/experimentSettings.mock';
 
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
-  EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+  EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
   EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
@@ -32,7 +32,7 @@ describe('experimentSettingsReducer', () => {
 
     const newState = experimentSettingsReducer({ ...initialState }, {
       payload: { data: newData },
-      type: EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+      type: EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
     });
 
     expect(newState.processing.meta.loading).toEqual(false);

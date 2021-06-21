@@ -3,8 +3,7 @@ import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../actionTypes/experim
 const updateProcessingSettings = (step, configChange) => (dispatch) => {
   dispatch({
     type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
-    payload:
-      { step, configChange },
+    payload: { step, configChange },
   });
 };
 

@@ -1,26 +1,20 @@
+/* eslint-disable no-param-reassign */
+import produce, { original } from 'immer';
+
 import initialState from './initialState';
 import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
-const updateProcessingSettings = (state, action) => {
+const updateProcessingSettings = produce((draft, action) => {
   const { step, configChange } = action.payload;
 
+  const originalProcessingConfig = original(draft.processing[step]);
+
   const newConfig = mergeObjectWithArrays(
-    state.processing[step],
+    originalProcessingConfig,
     configChange,
   );
 
-  return {
-    ...initialState,
-    ...state,
-    processing: {
-      ...initialState.processing,
-      ...state.processing,
-      [step]: {
-        ...state.processing[step],
-        ...newConfig,
-      },
-    },
-  };
-};
+  draft.processing[step] = newConfig;
+}, initialState);
 
 export default updateProcessingSettings;

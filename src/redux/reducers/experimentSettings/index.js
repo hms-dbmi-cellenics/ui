@@ -2,7 +2,7 @@ import { HYDRATE } from 'next-redux-wrapper';
 import initialState from './initialState';
 import {
   EXPERIMENT_SETTINGS_INFO_UPDATE,
-  EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+  EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
   EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
@@ -13,15 +13,15 @@ import {
   EXPERIMENT_SETTINGS_COPY_SETTINGS_TO_ALL_SAMPLES,
   EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO,
 } from '../../actionTypes/experimentSettings';
+
 import updateExperimentInfo from './updateExperimentInfo';
 import updateProcessingSettings from './updateProcessingSettings';
 import updateSampleFilterSettings from './updateSampleFilterSettings';
-import loadProcessingSettings from './loadProcessingSettings';
+import loadedProcessingConfig from './loadedProcessingConfig';
 import processingSettingsError from './processingSettingsError';
 import backendStatusLoading from './backendStatusLoading';
 import backendStatusLoaded from './backendStatusLoaded';
 import backendStatusError from './backendStatusError';
-
 import setQCStepEnabled from './setQCStepEnabled';
 import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
 import setSampleFilterSettingsAuto from './setSampleFilterSettingsAuto';
@@ -31,8 +31,8 @@ const experimentSettingsReducer = (state = initialState, action) => {
     case EXPERIMENT_SETTINGS_INFO_UPDATE: {
       return updateExperimentInfo(state, action);
     }
-    case EXPERIMENT_SETTINGS_PROCESSING_LOAD: {
-      return loadProcessingSettings(state, action);
+    case EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED: {
+      return loadedProcessingConfig(state, action);
     }
     case EXPERIMENT_SETTINGS_PROCESSING_UPDATE: {
       return updateProcessingSettings(state, action);
