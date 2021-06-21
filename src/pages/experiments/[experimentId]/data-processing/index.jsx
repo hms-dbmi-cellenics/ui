@@ -386,7 +386,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                 onChange={(idx) => {
                   changeStepId(idx);
                 }}
-                style={{ fontWeight: 'bold' }}
+                style={{ fontWeight: 'bold', width: 270 }}
                 placeholder='Jump to a step...'
               >
                 {
