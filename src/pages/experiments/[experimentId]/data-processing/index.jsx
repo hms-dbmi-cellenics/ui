@@ -381,12 +381,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <Row style={{ display: 'flex' }} gutter={16}>
             <Col>
+              {/* Should be just wide enough that no ellipsis appears */}
               <Select
                 value={stepIdx}
                 onChange={(idx) => {
                   changeStepId(idx);
                 }}
-                style={{ fontWeight: 'bold', width: 270 }}
+                style={{ fontWeight: 'bold', width: 290 }}
                 placeholder='Jump to a step...'
               >
                 {
