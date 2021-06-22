@@ -74,6 +74,7 @@ describe('Data Processing CalculationConfig', () => {
     const component = mount(
       <Provider store={store}>
         <CalculationConfig
+          changedFilters={jest.fn()}
           experimentId='1234'
           width={50}
           height={50}

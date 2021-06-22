@@ -80,7 +80,7 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
+        <CalculationConfig experimentId={experimentId} changedFilters={jest.fn()} config={config} onPipelineRun={onPipelineRun} />
       </Provider>,
     );
 

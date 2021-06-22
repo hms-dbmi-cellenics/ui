@@ -118,7 +118,7 @@ const CalculationConfig = (props) => {
     updateSettings(changes);
     setChangesOutstanding(false);
     dispatch(loadEmbedding(experimentId, embeddingMethod, true));
-    if (changedFilters.current.size) {
+    if (changedFilters?.current.size) {
       // other steps are changed so we run the pipeline
       changedFilters.current.add(FILTER_UUID);
       onPipelineRun();
