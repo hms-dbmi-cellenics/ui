@@ -81,6 +81,13 @@ const CalculationConfig = (props) => {
   }, [louvainSettings]);
 
   useEffect(() => {
+    // adding the filter to the changed ones so its run when the pipeline is triggered
+    if (!_.isEqual(changes, initialValues) && !changedFilters.current.has(FILTER_UUID)) {
+      changedFilters.current.add(FILTER_UUID);
+    }
+  }, [changes]);
+
+  useEffect(() => {
     if (!minDistance && umapSettings) {
       setMinDistance(umapSettings.minimumDistance);
     }
@@ -94,7 +101,6 @@ const CalculationConfig = (props) => {
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Run.
-      changedFilters?.current.add(FILTER_UUID);
       setChangesOutstanding(true);
       dispatch(updateProcessingSettings(
         experimentId,
