@@ -51,8 +51,7 @@ const Classifier = (props) => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
-      || state.experimentSettings.processing[filterName].filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
   );
   const plotData = useSelector((state) => state.componentConfig[plotUuid]?.plotData);
 
