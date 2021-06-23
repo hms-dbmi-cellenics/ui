@@ -25,7 +25,7 @@ const HideButton = (props) => {
   }
 
   return (
-    <Tooltip placement='right' title={`${buttonString} cells from embedding`}>
+    <Tooltip placement='right' title={`${buttonString} cells from embedding and heatmap`}>
       <Button
         size='small'
         style={style}
