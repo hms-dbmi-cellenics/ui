@@ -1,3 +1,4 @@
+import _ from 'lodash';
 /* eslint-disable no-param-reassign */
 import produce, { original } from 'immer';
 
@@ -9,8 +10,10 @@ const updateProcessingSettings = produce((draft, action) => {
 
   const originalProcessingConfig = original(draft.processing)[step] ?? {};
 
-  const newConfig = mergeObjectWithArrays(
-    originalProcessingConfig,
+  const newConfig = _.cloneDeep(originalProcessingConfig);
+
+  mergeObjectWithArrays(
+    newConfig,
     configChange,
   );
 
