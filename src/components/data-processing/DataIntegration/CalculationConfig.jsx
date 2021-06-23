@@ -288,7 +288,7 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  changedFilters: PropTypes.isRequired,
+  changedFilters: PropTypes.object.isRequired,
   disableDataIntegration: PropTypes.bool,
 };
 

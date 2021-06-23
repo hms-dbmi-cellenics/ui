@@ -21,7 +21,6 @@ const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState)
     // eslint-disable-next-line no-param-reassign
     callerStepKeys = [callerStepKeys];
   }
-
   const processingConfig = callerStepKeys.map((key) => {
     const currentConfig = getState().experimentSettings.processing[key];
     return {
@@ -51,7 +50,6 @@ const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState)
     );
     const json = await response.json();
     throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
-
     dispatch({
       type: EXPERIMENT_SETTINGS_PIPELINE_START,
       payload: {},

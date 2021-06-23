@@ -37,7 +37,6 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
 const CalculationConfig = (props) => {
   const { experimentId, onPipelineRun, changedFilters } = props;
   const FILTER_UUID = 'configureEmbedding';
-
   const dispatch = useDispatch();
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
@@ -117,11 +116,12 @@ const CalculationConfig = (props) => {
   const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
-    dispatch(loadEmbedding(experimentId, embeddingMethod, true));
     if (changedFilters?.current.size) {
       // other steps are changed so we run the pipeline
       changedFilters.current.add(FILTER_UUID);
       onPipelineRun();
+    } else {
+      dispatch(loadEmbedding(experimentId, embeddingMethod, true));
     }
   };
   const newChanges = changes;
@@ -309,7 +309,6 @@ const CalculationConfig = (props) => {
           >
             <Select
               value={changes.embeddingSettings.method}
-              // changes.({ embeddingSettings: { method: value } })
               onChange={(value) => {
                 newChanges.embeddingSettings.method = value;
                 setChanges({ ...newChanges });
@@ -431,7 +430,7 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
-  changedFilters: PropTypes.isRequired,
+  changedFilters: PropTypes.object.isRequired,
 };
 
 export default CalculationConfig;

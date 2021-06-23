@@ -417,7 +417,7 @@ const ConfigureEmbedding = (props) => {
 ConfigureEmbedding.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
-  changedFilters: PropTypes.isRequired,
+  changedFilters: PropTypes.object.isRequired,
 };
 
 export default ConfigureEmbedding;

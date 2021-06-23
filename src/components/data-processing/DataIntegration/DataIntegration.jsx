@@ -378,7 +378,7 @@ DataIntegration.propTypes = {
   onPipelineRun: PropTypes.func.isRequired,
   experimentId: PropTypes.string.isRequired,
   stepDisabled: PropTypes.bool,
-  changedFilters: PropTypes.isRequired,
+  changedFilters: PropTypes.object.isRequired,
   disableDataIntegration: PropTypes.bool,
 };
 
