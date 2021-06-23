@@ -167,7 +167,6 @@ const FileUploadModal = (props) => {
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
               <Select
-                style={{ width: 250 }}
                 defaultValue={selectedTech}
                 onChange={(value) => setSelectedTech(value)}
               >
