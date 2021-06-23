@@ -34,7 +34,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun, disabled, disableDataIntegration,
+    experimentId, onPipelineRun, disabled, disableDataIntegration, changedFilters,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -88,6 +88,7 @@ const CalculationConfig = (props) => {
   const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const updateSettings = (diff) => {
+    changedFilters?.current.add(FILTER_UUID);
     setChangesOutstanding(true);
     dispatch(updateProcessingSettings(
       experimentId,
@@ -119,7 +120,7 @@ const CalculationConfig = (props) => {
           {changesOutstanding && (
             <Form.Item>
               <Alert
-                message='Your changes are not yet applied. To rerun data integration, click Apply.'
+                message='Your changes are not yet applied. To rerun data integration, click Run.'
                 type='warning'
                 showIcon
               />
@@ -207,7 +208,7 @@ const CalculationConfig = (props) => {
                   { dimensionalityReduction: { excludeGeneCategories: val } },
                 )}
                 value={dimensionalityReduction.excludeGeneCategories}
-                disabled={true}
+                disabled
               >
                 <Space direction='vertical'>
                   <Checkbox value='ribosomal'>ribosomal</Checkbox>
@@ -287,6 +288,7 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
+  changedFilters: PropTypes.object.isRequired,
   disableDataIntegration: PropTypes.bool,
 };
 

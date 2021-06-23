@@ -70,12 +70,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const cellSets = useSelector((state) => state.cellSets);
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
-  const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
+
   const [stepIdx, setStepIdx] = useState(0);
   const [applicableFilters, setApplicableFilters] = useState([])
   const [preFilteredSamples, setPreFilteredSamples] = useState([])
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
   const carouselRef = useRef(null);
+  const changedFilters = useRef(new Set())
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
@@ -169,7 +170,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     return stepAppearances.length > 0;
   }
 
-  const onConfigChange = () => {
+  const onConfigChange = (key) => {
+    changedFilters.current.add(key)
     setChangesOutstanding(true);
   };
 
@@ -195,7 +197,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key]?.enabled}
             />
           )}
@@ -218,7 +220,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -241,7 +243,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -264,7 +266,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -287,7 +289,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={()=>onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -302,7 +304,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <DataIntegration
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun(key)}
+          changedFilters={changedFilters}
+          onPipelineRun={() => onPipelineRun(Array.from(changedFilters.current))}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
         />
       ),
@@ -316,7 +319,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <ConfigureEmbedding
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun(key)}
+          changedFilters={changedFilters}
+          onPipelineRun={() => onPipelineRun(Array.from(changedFilters.current))}
         />
       ),
     },
@@ -329,25 +333,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [stepIdx, carouselRef.current]);
 
   const changeStepId = (newStepIdx) => {
-    if (changesOutstanding) {
-      upcomingStepIdxRef.current = newStepIdx;
-
-      setShowChangesWillBeLost(true);
-    } else {
       setStepIdx(newStepIdx);
-    }
   }
 
   // Called when the pipeline is triggered to be run by the user.
-  const onPipelineRun = (stepKey) => {
+  const onPipelineRun = (steps) => {
     setChangesOutstanding(false);
-    dispatch((runPipeline(experimentId, stepKey)))
-  }
+    changedFilters.current = new Set();
+    dispatch((runPipeline(experimentId, steps)))
 
-  const ignoreLostChanges = () => {
-    setShowChangesWillBeLost(false)
-    setChangesOutstanding(false);
-    setStepIdx(upcomingStepIdxRef.current);
   }
 
   const renderWithInnerScroll = (innerRenderer) => {
@@ -362,21 +356,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const renderTitle = () => (
     <>
-      <Modal
-        visible={showChangesWillBeLost}
-        onOk={ignoreLostChanges}
-        onCancel={() => setShowChangesWillBeLost(false)}
-        okText='Leave this page'
-        cancelText='Stay on this page'
-        title='Unsaved changes'
-      >
-        <Space style={{ margin: '15px' }}>
-          <p>
-            You have unsaved settings changes. If you leave the page, these changes
-            will be lost.
-          </p>
-        </Space>
-      </Modal>
       <Row style={{ display: 'flex' }}>
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <Row style={{ display: 'flex' }} gutter={16}>
@@ -498,7 +477,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   id='runFilterButton'
                   data-testid='runFilterButton'
                   type='primary'
-                  onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+                  onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
                   disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
                 >
                   {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}
