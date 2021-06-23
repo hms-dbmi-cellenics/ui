@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
@@ -8,7 +9,7 @@ import {
 } from '../../actionTypes/experimentSettings';
 import loadBackendStatus from '../experimentSettings/loadBackendStatus';
 
-const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) => {
+const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState) => {
   dispatch({
     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
@@ -16,8 +17,17 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
     },
   });
 
-  const processingConfig = getState().experimentSettings.processing[callerStepKey];
-
+  if (!_.isArray(callerStepKeys)) {
+    // eslint-disable-next-line no-param-reassign
+    callerStepKeys = [callerStepKeys];
+  }
+  const processingConfig = callerStepKeys.map((key) => {
+    const currentConfig = getState().experimentSettings.processing[key];
+    return {
+      name: key,
+      body: currentConfig,
+    };
+  });
   const url = `/v1/experiments/${experimentId}/pipelines`;
   try {
     // We are only sending the configuration that we know changed
@@ -34,18 +44,12 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          processingConfig: [
-            {
-              name: callerStepKey,
-              body: processingConfig,
-            },
-          ],
+          processingConfig,
         }),
       },
     );
     const json = await response.json();
     throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
-
     dispatch({
       type: EXPERIMENT_SETTINGS_PIPELINE_START,
       payload: {},

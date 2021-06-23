@@ -30,7 +30,6 @@ const Classifier = (props) => {
 
   const plotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
   const plotType = 'classifierEmptyDropsPlot';
-
   const allowedPlotActions = {
     export: true,
     compiled: false,

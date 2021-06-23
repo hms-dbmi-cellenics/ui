@@ -38,7 +38,7 @@ describe('Data Processing CalculationConfig', () => {
     },
   };
 
-  const onPipelineRun = () => { };
+  const onPipelineRun = () => {};
 
   configure({ adapter: new Adapter() });
 
@@ -74,6 +74,7 @@ describe('Data Processing CalculationConfig', () => {
     const component = mount(
       <Provider store={store}>
         <CalculationConfig
+          changedFilters={{ current: new Set() }}
           experimentId='1234'
           width={50}
           height={50}
@@ -97,6 +98,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
+          changedFilters={{ current: new Set() }}
           onPipelineRun={onPipelineRun}
         />
       </Provider>,
@@ -120,6 +122,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
+          changedFilters={{ current: new Set() }}
           onPipelineRun={onPipelineRun}
         />
       </Provider>,
@@ -163,6 +166,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
+          changedFilters={{ current: new Set() }}
           onPipelineRun={onPipelineRun}
         />
       </Provider>,
@@ -181,5 +185,51 @@ describe('Data Processing CalculationConfig', () => {
     await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
     expect(store.getActions().length).toEqual(2);
     expect(store.getActions()).toMatchSnapshot();
+  });
+
+  it('Clicking run with other filters changed triggers the pipeline', async () => {
+    const store = mockStore(storeState);
+    const mockOnPipelineRun = jest.fn();
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig
+          experimentId='1234'
+          width={50}
+          height={50}
+          changedFilters={{ current: new Set(['filter1', 'awesomeFilter']) }}
+          onPipelineRun={mockOnPipelineRun}
+        />
+      </Provider>,
+    );
+    act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
+    component.update();
+
+    const runButton = component.find(Button);
+    runButton.simulate('click');
+    expect(mockOnPipelineRun).toBeCalledTimes(1);
+  });
+
+  it("Clicking run with NO other filters changed doesn't trigger the pipeline", async () => {
+    const store = mockStore(storeState);
+    const mockOnPipelineRun = jest.fn();
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig
+          experimentId='1234'
+          width={50}
+          height={50}
+          changedFilters={{ current: new Set() }}
+          onPipelineRun={mockOnPipelineRun}
+        />
+      </Provider>,
+    );
+    act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
+    component.update();
+
+    const runButton = component.find(Button);
+    runButton.simulate('click', {});
+    expect(mockOnPipelineRun).toBeCalledTimes(0);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
+    expect(store.getActions()[1].type).toEqual(EMBEDDINGS_LOADING);
   });
 });
