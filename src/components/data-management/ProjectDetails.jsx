@@ -649,12 +649,11 @@ const ProjectDetails = ({ width, height }) => {
                   <Space direction='vertical' size='small'>
                     <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
                     <Text strong>Description:</Text>
-                    <Paragraph
-                      editable={{ onChange: changeDescription }}
-                    >
-                      {activeProject.description}
-
-                    </Paragraph>
+                    <EditableField
+                      onAfterSubmit={changeDescription}
+                      value={activeProject.description}
+                      deleteEnabled={false}
+                    />
                   </Space>
                 )
               }
