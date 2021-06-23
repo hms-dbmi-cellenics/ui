@@ -166,7 +166,7 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          changedFilters={{ current: new Set(['filter1', 'awesomeFilter']) }}
+          changedFilters={{ current: new Set() }}
           onPipelineRun={onPipelineRun}
         />
       </Provider>,
