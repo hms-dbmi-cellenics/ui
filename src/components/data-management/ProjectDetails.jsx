@@ -35,7 +35,7 @@ import {
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
-import { updateExperiment } from '../../redux/actions/experiments';
+import { updateExperiment, saveExperiment } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
@@ -586,7 +586,8 @@ const ProjectDetails = ({ width, height }) => {
         visible={analysisModalVisible}
         onLaunch={async (experimentId) => {
           const lastViewed = moment().toISOString();
-          await dispatch(updateExperiment(experimentId, { lastViewed }));
+          dispatch(updateExperiment(experimentId, { lastViewed }));
+          await dispatch(saveExperiment(experimentId));
           await dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
         }}

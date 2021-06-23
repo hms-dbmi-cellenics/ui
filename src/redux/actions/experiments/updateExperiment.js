@@ -1,4 +1,3 @@
-import saveExperiment from './saveExperiment';
 import {
   EXPERIMENTS_UPDATED,
 } from '../../actionTypes/experiments';
@@ -10,8 +9,6 @@ const updateExperiment = (
   experiment,
 ) => async (dispatch) => {
   try {
-    dispatch(saveExperiment(experimentId));
-
     dispatch({
       type: EXPERIMENTS_UPDATED,
       payload: {

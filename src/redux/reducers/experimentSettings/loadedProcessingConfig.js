@@ -8,14 +8,15 @@ const loadedProcessingConfig = produce((draft, action) => {
 
   const originalProcessing = original(draft.processing);
 
-  draft.processing = data;
-
-  draft.processing.meta = {
+  data.meta = {
     ...originalProcessing.meta,
+    ...data.meta,
     loading: false,
     loadingSettingsError: false,
-    stepsDone: new Set(originalProcessing.meta.stepsDone),
+    stepsDone: new Set(originalProcessing.meta?.stepsDone ?? []),
   };
+
+  draft.processing = data;
 }, initialState);
 
 export default loadedProcessingConfig;

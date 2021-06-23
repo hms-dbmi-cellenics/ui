@@ -2,6 +2,7 @@ import updateProcessingSettings from './updateProcessingSettings';
 import updateSampleFilterSettings from './updateSampleFilterSettings';
 import saveProcessingSettings from './saveProcessingSettings';
 import loadProcessingSettings from './loadProcessingSettings';
+import loadedProcessingConfig from './loadedProcessingConfig';
 import loadBackendStatus from './loadBackendStatus';
 import updateBackendStatus from './updateBackendStatus';
 import updateExperimentInfo from './updateExperimentInfo';
@@ -11,6 +12,7 @@ import setSampleFilterSettingsAuto from './setSampleFilterSettingsAuto';
 
 export {
   loadProcessingSettings,
+  loadedProcessingConfig,
   updateProcessingSettings,
   updateSampleFilterSettings,
   saveProcessingSettings,
