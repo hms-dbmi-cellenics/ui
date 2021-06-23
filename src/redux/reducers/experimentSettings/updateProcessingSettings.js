@@ -10,7 +10,7 @@ const updateProcessingSettings = produce((draft, action) => {
   const originalProcessingConfig = original(draft.processing)[step] ?? {};
 
   const newConfig = mergeObjectWithArrays(
-    originalProcessingConfig[step],
+    originalProcessingConfig,
     configChange,
   );
 
