@@ -28,7 +28,7 @@ const NewExperimentModal = (props) => {
   const dispatch = useDispatch();
 
   const [experimentsList, setExperimentsList] = useState([]);
-  const [numFieldsEditing, setNumFieldsEditing] = useState(1);
+  const [numFieldsEditing, setNumFieldsEditing] = useState(0);
   const [isWorking, setIsWorking] = useState(false);
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const NewExperimentModal = (props) => {
                         validationFunc={(name) => validateInputs(name, validationChecks).isValid}
                         deleteEnabled={false}
                         onEditing={(editing) => {
-                          setNumFieldsEditing(numFieldsEditing + (editing ? 1 : -1));
+                          setNumFieldsEditing(Math.max(0, numFieldsEditing + (editing || -1)));
                         }}
                       />
                     </strong>
@@ -107,7 +107,7 @@ const NewExperimentModal = (props) => {
                       value={experiment.description}
                       deleteEnabled={false}
                       onEditing={(editing) => {
-                        setNumFieldsEditing(numFieldsEditing + (editing ? 1 : -1));
+                        setNumFieldsEditing(Math.max(0, numFieldsEditing + (editing || -1)));
                       }}
                     />
                   </Space>
