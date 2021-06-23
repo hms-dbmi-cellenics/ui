@@ -8,6 +8,8 @@ import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 const updateProcessingSettings = produce((draft, action) => {
   const { step, configChange } = action.payload;
 
+  if (!step) throw new Error('Invalid step value');
+
   const originalProcessingConfig = original(draft.processing)[step] ?? {};
 
   const newConfig = _.cloneDeep(originalProcessingConfig);

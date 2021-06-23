@@ -16,7 +16,7 @@ import CrossHair from '../../../../components/data-exploration/embedding/CrossHa
 import CellInfo from '../../../../components/data-exploration/CellInfo';
 import { CELL_SETS_CREATE } from '../../../../redux/actionTypes/cellSets';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import initialExperimentState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import { CELL_INFO_UPDATE } from '../../../../redux/actionTypes/cellInfo';
 
 jest.mock('localforage');
@@ -27,6 +27,8 @@ let store;
 
 const width = 100;
 const height = 200;
+
+const initialExperimentState = generateExperimentSettingsMock([]);
 
 describe('Embedding', () => {
   const initialState = {

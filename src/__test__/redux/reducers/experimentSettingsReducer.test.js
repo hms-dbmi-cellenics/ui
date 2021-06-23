@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import experimentSettingsReducer from '../../../redux/reducers/experimentSettings';
 import initialState from '../../../redux/reducers/experimentSettings/initialState';
-import initialExperimentState from '../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
 
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
@@ -15,6 +15,8 @@ import {
 } from '../../../redux/actionTypes/experimentSettings';
 
 import errorTypes from '../../../redux/actions/experimentSettings/errorTypes';
+
+const initialExperimentState = generateExperimentSettingsMock(['sample-KO']);
 
 describe('experimentSettingsReducer', () => {
   it('Reduces identical state on unknown action', () => expect(
@@ -56,7 +58,7 @@ describe('experimentSettingsReducer', () => {
         type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
         payload:
         {
-          settingName: 'configureEmbedding',
+          step: 'configureEmbedding',
           configChange: { embeddingSettings: { method: 'newMethod' } },
         },
       });
@@ -71,7 +73,7 @@ describe('experimentSettingsReducer', () => {
         type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
         payload:
         {
-          settingName: 'configureEmbedding',
+          step: 'configureEmbedding',
           configChange: { embeddingSettings: { newProperty: 'property' } },
         },
       });
@@ -86,7 +88,7 @@ describe('experimentSettingsReducer', () => {
         type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
         payload:
         {
-          settingName: 'configureEmbedding',
+          step: 'configureEmbedding',
           configChange: { embeddingSettings: { newProperty: { name: 'a', value: 'b' } } },
         },
       });
@@ -101,19 +103,14 @@ describe('experimentSettingsReducer', () => {
         type: EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
         payload:
         {
-          settingName: 'cellSizeDistribution',
+          step: 'cellSizeDistribution',
           sampleId: 'sample-KO',
-          diff: { filterSettings: { binStep: 400 } },
+          diff: { binStep: 400 },
         },
       });
 
     const expectedCellSizeDistribution = {
       enabled: true,
-      auto: true,
-      filterSettings: {
-        minCellSize: 10800,
-        binStep: 200,
-      },
       'sample-KO': {
         auto: true,
         filterSettings: {

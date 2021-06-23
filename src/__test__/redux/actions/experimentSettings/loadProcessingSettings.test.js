@@ -7,7 +7,7 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../../../redux/actionTypes/experimentSettings';
 import loadProcessingSettings from '../../../../redux/actions/experimentSettings/loadProcessingSettings';
-import initialState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
@@ -18,12 +18,14 @@ jest.mock('../../../../utils/pushNotificationMessage');
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
+const initialExperimentState = generateExperimentSettingsMock([]);
+
 describe('loadProcessingSettings action', () => {
   const experimentId = '1234';
 
   const mockState = {
     experimentSettings: {
-      ...initialState,
+      ...initialExperimentState,
     },
   };
 

@@ -4,18 +4,20 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
 import updateProcessingSettings from '../../../../redux/actions/experimentSettings/updateProcessingSettings';
-import initialState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');
 
 const mockStore = configureStore([thunk]);
+
+const initialExperimentState = generateExperimentSettingsMock([]);
 
 describe('saveProcessingSettings', () => {
   const settingName = 'test';
 
   const mockState = {
     experimentSettings: {
-      ...initialState,
+      ...initialExperimentState,
     },
   };
 
