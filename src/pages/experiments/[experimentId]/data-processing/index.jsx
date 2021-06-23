@@ -380,18 +380,20 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <Row style={{ display: 'flex' }} gutter={16}>
             <Col>
+              {/* Should be just wide enough that no ellipsis appears */}
               <Select
                 value={stepIdx}
                 onChange={(idx) => {
                   changeStepId(idx);
                 }}
-                style={{ fontWeight: 'bold' }}
+                style={{ fontWeight: 'bold', width: 290 }}
                 placeholder='Jump to a step...'
               >
                 {
                   steps.map(
                     ({ name, key }, i) => {
                       const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
+                      const text = `${i + 1}. ${name}`;
 
                       return (
                         <Option
@@ -403,6 +405,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                         >
                           {processingConfig[key]?.enabled === false ? (
                             <>
+                              {/* disabled */}
                               <Text
                                 type='secondary'
 
@@ -412,11 +415,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                               <span
                                 style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
                               >
-                                {name}
+                                {text}
                               </span>
                             </>
                           ) : !disabledByPipeline ? (
                             <>
+                              {/* finished */}
                               <Text
                                 type='success'
 
@@ -426,28 +430,30 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                               <span
                                 style={{ marginLeft: '0.25rem' }}
                               >
-                                {name}
+                                {text}
                               </span>
                             </>
                           ) : pipelineRunning && !isStepComplete(key) ? (
                             <>
+                              {/* incomplete */}
                               <Text
                                 type='warning'
                                 strong
                               >
                                 <EllipsisOutlined />
                               </Text>
-                              <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                              <span style={{ marginLeft: '0.25rem' }}>{text}</span>
                             </>
                           ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
                             <>
+                              {/* failed */}
                               <Text
                                 type='danger'
                                 strong
                               >
                                 <WarningOutlined />
                               </Text>
-                              <span style={{ marginLeft: '0.25rem' }}>{name}</span>
+                              <span style={{ marginLeft: '0.25rem' }}>{text}</span>
                             </>
                           ) : <></>}
                         </Option>
