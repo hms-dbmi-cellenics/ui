@@ -44,7 +44,7 @@ const DataIntegration = (props) => {
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
 
-  const plots = {
+  const [plots] = useState({
     embedding: {
       title: 'Sample embedding',
       plotUuid: generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1),
@@ -94,7 +94,7 @@ const DataIntegration = (props) => {
       ),
       blockedByConfigureEmbedding: false,
     },
-  };
+  });
 
   const plotSpecificStylingControl = {
     embedding: [
