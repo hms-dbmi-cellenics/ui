@@ -66,6 +66,7 @@ describe('cellSetsReducer', () => {
       name: 'My Key',
       color: '#ff00ff',
       cellIds: [1, 2, 3],
+      type: 'cellSets',
     };
 
     const newState = cellSetsReducer({ ...initialState, hierarchy: [{ key: 'scratchpad', children: [] }] }, {
