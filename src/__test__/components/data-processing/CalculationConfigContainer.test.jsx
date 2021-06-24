@@ -14,7 +14,7 @@ import generateExperimentSettingsMock from '../../test-utils/experimentSettings.
 
 jest.mock('localforage');
 
-const koSampleId = 'sample-WT';
+const koSampleId = 'sample-WT1';
 const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const filterName = 'mitochondrialContent';
 
@@ -85,8 +85,8 @@ describe('CalculationConfigContainer', () => {
       expect(store.getState().experimentSettings.processing[filterName][koSampleId].auto).toBe(value === 'automatic');
     };
 
-    testRadioButton('manual');
     testRadioButton('automatic');
+    testRadioButton('manual');
   });
   it('displays a warning when the auto setting is changed', () => {
     expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(0);
