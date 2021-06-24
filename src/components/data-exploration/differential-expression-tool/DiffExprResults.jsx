@@ -51,11 +51,17 @@ const DiffExprResults = (props) => {
       title: 'Pct 1',
       key: 'pct_1',
       sorter: true,
+      showSorterTooltip: {
+        title: 'The percentage of cells where the feature is detected in the first group',
+      },
     },
     {
       title: 'Pct 2',
       key: 'pct_2',
       sorter: true,
+      showSorterTooltip: {
+        title: 'The percentage of cells where the feature is detected in the second group',
+      },
     },
   ];
 
