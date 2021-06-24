@@ -1,4 +1,4 @@
-import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../../actionTypes/experimentSettings';
 
 const updateProcessingSettings = (step, configChange) => (dispatch) => {
   dispatch({

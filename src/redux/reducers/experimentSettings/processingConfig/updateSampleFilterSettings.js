@@ -2,7 +2,7 @@
 import produce, { original } from 'immer';
 import _ from 'lodash';
 
-import initialState from './initialState';
+import initialState from '../initialState';
 
 const updateSampleFilterSettings = produce((draft, action) => {
   const { step, sampleId, diff } = action.payload;

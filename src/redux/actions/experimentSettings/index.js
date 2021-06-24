@@ -1,14 +1,14 @@
-import updateProcessingSettings from './updateProcessingSettings';
-import updateSampleFilterSettings from './updateSampleFilterSettings';
-import saveProcessingSettings from './saveProcessingSettings';
-import loadProcessingSettings from './loadProcessingSettings';
-import loadedProcessingConfig from './loadedProcessingConfig';
-import loadBackendStatus from './loadBackendStatus';
-import updateBackendStatus from './updateBackendStatus';
+import updateProcessingSettings from './processingConfig/updateProcessingSettings';
+import updateSampleFilterSettings from './processingConfig/updateSampleFilterSettings';
+import saveProcessingSettings from './processingConfig/saveProcessingSettings';
+import loadProcessingSettings from './processingConfig/loadProcessingSettings';
+import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
+import loadBackendStatus from './backendStatus/loadBackendStatus';
+import updateBackendStatus from './backendStatus/updateBackendStatus';
 import updateExperimentInfo from './updateExperimentInfo';
-import setQCStepEnabled from './setQCStepEnabled';
-import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
-import setSampleFilterSettingsAuto from './setSampleFilterSettingsAuto';
+import setQCStepEnabled from './processingConfig/setQCStepEnabled';
+import copyFilterSettingsToAllSamples from './processingConfig/copyFilterSettingsToAllSamples';
+import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSettingsAuto';
 
 export {
   loadProcessingSettings,

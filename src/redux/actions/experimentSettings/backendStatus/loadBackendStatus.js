@@ -1,11 +1,11 @@
-import fetchAPI from '../../../utils/fetchAPI';
-import endUserMessages from '../../../utils/endUserMessages';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import fetchAPI from '../../../../utils/fetchAPI';
+import endUserMessages from '../../../../utils/endUserMessages';
+import { isServerError, throwIfRequestFailed } from '../../../../utils/fetchErrors';
 import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
-} from '../../actionTypes/experimentSettings';
+} from '../../../actionTypes/experimentSettings';
 
 const loadBackendStatus = (experimentId) => async (dispatch) => {
   dispatch({

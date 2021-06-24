@@ -15,16 +15,16 @@ import {
 } from '../../actionTypes/experimentSettings';
 
 import updateExperimentInfo from './updateExperimentInfo';
-import updateProcessingSettings from './updateProcessingSettings';
-import updateSampleFilterSettings from './updateSampleFilterSettings';
-import loadedProcessingConfig from './loadedProcessingConfig';
-import processingSettingsError from './processingSettingsError';
-import backendStatusLoading from './backendStatusLoading';
-import backendStatusLoaded from './backendStatusLoaded';
-import backendStatusError from './backendStatusError';
-import setQCStepEnabled from './setQCStepEnabled';
-import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
-import setSampleFilterSettingsAuto from './setSampleFilterSettingsAuto';
+import updateProcessingSettings from './processingConfig/updateProcessingSettings';
+import updateSampleFilterSettings from './processingConfig/updateSampleFilterSettings';
+import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
+import processingSettingsError from './processingConfig/processingSettingsError';
+import backendStatusLoading from './backendStatus/backendStatusLoading';
+import backendStatusLoaded from './backendStatus/backendStatusLoaded';
+import backendStatusError from './backendStatus/backendStatusError';
+import setQCStepEnabled from './processingConfig/setQCStepEnabled';
+import copyFilterSettingsToAllSamples from './processingConfig/copyFilterSettingsToAllSamples';
+import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSettingsAuto';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {

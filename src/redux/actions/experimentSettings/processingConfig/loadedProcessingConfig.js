@@ -1,6 +1,6 @@
 import {
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
-} from '../../actionTypes/experimentSettings';
+} from '../../../actionTypes/experimentSettings';
 
 const loadedProcessingConfig = (processingConfig) => (dispatch) => {
   dispatch({

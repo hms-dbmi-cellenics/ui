@@ -2,8 +2,8 @@ import _ from 'lodash';
 /* eslint-disable no-param-reassign */
 import produce, { original } from 'immer';
 
-import initialState from './initialState';
-import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
+import initialState from '../initialState';
+import mergeObjectWithArrays from '../../../../utils/mergeObjectWithArrays';
 
 const updateProcessingSettings = produce((draft, action) => {
   const { step, configChange } = action.payload;

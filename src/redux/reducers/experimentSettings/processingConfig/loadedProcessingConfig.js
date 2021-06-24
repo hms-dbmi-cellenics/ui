@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import produce, { original } from 'immer';
 
-import initialState from './initialState';
+import initialState from '../initialState';
 
 const loadedProcessingConfig = produce((draft, action) => {
   const { data } = action.payload;

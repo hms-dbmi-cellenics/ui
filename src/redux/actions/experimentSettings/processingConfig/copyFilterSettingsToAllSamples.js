@@ -1,4 +1,4 @@
-import { EXPERIMENT_SETTINGS_COPY_SETTINGS_TO_ALL_SAMPLES } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_COPY_SETTINGS_TO_ALL_SAMPLES } from '../../../actionTypes/experimentSettings';
 
 const copyFilterSettingsToAllSamples = ((step, sampleId) => (dispatch, getState) => {
   const { cellSets } = getState();

@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
-import updateProcessingSettings from '../../../../redux/actions/experimentSettings/updateProcessingSettings';
+import updateProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/updateProcessingSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');

@@ -1,13 +1,13 @@
-import fetchAPI from '../../../utils/fetchAPI';
+import fetchAPI from '../../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
-} from '../../actionTypes/experimentSettings';
+} from '../../../actionTypes/experimentSettings';
 
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import errorTypes from './errorTypes';
+import { isServerError, throwIfRequestFailed } from '../../../../utils/fetchErrors';
+import endUserMessages from '../../../../utils/endUserMessages';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+import errorTypes from '../errorTypes';
 
 const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
   const {
