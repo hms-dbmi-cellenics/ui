@@ -64,7 +64,7 @@ const Embedding = (props) => {
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [cellColors, setCellColors] = useState({});
-  const [clusterKeyToName, setClusterKeyToName] = useState({});
+  const [clusterKeyToNameMap, setClusterKeyToNameMap] = useState({});
   const [cellSetClusters, setCellSetClusters] = useState({});
 
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
@@ -127,14 +127,16 @@ const Embedding = (props) => {
 
   useEffect(() => {
     if (cellSetHierarchy) {
-      const results = cellSetHierarchy.reduce((acc, curr) => {
-        if (curr.children.length > 0) {
-          // eslint-disable-next-line no-return-assign
-          curr.children.forEach((child) => acc[child.key] = _.capitalize(curr.key));
+      const mapping = cellSetHierarchy.reduce((keyToClusterNameMap, rootHierarchy) => {
+        if (rootHierarchy.children.length > 0) {
+          rootHierarchy.children.forEach((child) => {
+            // eslint-disable-next-line no-param-reassign
+            keyToClusterNameMap[child.key] = _.capitalize(rootHierarchy.key);
+          });
         }
-        return acc;
+        return keyToClusterNameMap;
       }, {});
-      setClusterKeyToName(results);
+      setClusterKeyToNameMap(mapping);
     }
 
     if (cellSetProperties) {
@@ -156,7 +158,7 @@ const Embedding = (props) => {
 
   const getContainingCellSets = (cellId) => {
     const prefixedCellSetNames = cellSetClusters.filter(([key, cellSet]) => cellSet.cellIds.has(Number.parseInt(cellId, 10)))
-      .map(([key, containingCellset]) => `${clusterKeyToName[key]}: ${containingCellset.name}`);
+      .map(([key, containingCellset]) => `${clusterKeyToNameMap[key]}: ${containingCellset.name}`);
 
     return prefixedCellSetNames;
   };
