@@ -1,7 +1,8 @@
 import _ from 'lodash';
 
 import {
-  updateBackendStatus, updateProcessingSettings, updateSampleFilterSettings, loadedProcessingConfig,
+  updateBackendStatus, updateProcessingSettings, updateSampleFilterSettings,
+  loadedProcessingConfig, saveProcessingSettings,
 } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
@@ -25,7 +26,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
     }
     case updateTypes.GEM2S: {
       dispatch(updateBackendStatus(update.status));
-      return onGEM2SUpdate(update, dispatch);
+      return onGEM2SUpdate(experimentId, update, dispatch);
     }
     case updateTypes.WORKER_DATA_UPDATE: {
       return onWorkerUpdate(experimentId, update, dispatch);
@@ -41,7 +42,6 @@ const onQCUpdate = (update, dispatch) => {
   const { input, output } = update;
 
   const processingConfigUpdate = output.config;
-
   if (processingConfigUpdate) {
     if (input.sampleUuid) {
       dispatch(
@@ -94,11 +94,21 @@ const uglyTemporalFixedProcessingConfig = (processingConfig, filterName) => {
   return fixedProcessingConfig;
 };
 
-const onGEM2SUpdate = (update, dispatch) => {
+const onGEM2SUpdate = (experimentId, update, dispatch) => {
   const processingConfig = update?.item?.processingConfig;
   if (processingConfig) {
     let fixedProcessingConfig = uglyTemporalFixedProcessingConfig(processingConfig, 'classifier');
     fixedProcessingConfig = uglyTemporalFixedProcessingConfig(fixedProcessingConfig, 'mitochondrialContent');
+
+    // adding default config to every filter with auto option
+    Object.keys(fixedProcessingConfig).forEach((key) => {
+      const currentObject = fixedProcessingConfig[key];
+      const settingsKey = Object.keys(currentObject).find((current) => currentObject[current].auto);
+      if (settingsKey) {
+        fixedProcessingConfig[key].defaultFilterSettings = fixedProcessingConfig[key][settingsKey];
+        dispatch(saveProcessingSettings(experimentId, key));
+      }
+    });
     dispatch(loadedProcessingConfig(fixedProcessingConfig));
   }
 };

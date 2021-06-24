@@ -5,7 +5,6 @@ import initialState from './initialState';
 
 const loadedProcessingConfig = produce((draft, action) => {
   const { data } = action.payload;
-
   const originalProcessing = original(draft.processing);
 
   data.meta = {
