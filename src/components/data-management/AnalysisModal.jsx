@@ -66,7 +66,7 @@ const NewExperimentModal = (props) => {
               itemLayout='vertical'
               renderItem={(experiment) => (
                 <List.Item
-                  key={`${experiment.name}`}
+                  key={`${experiment.id}`}
                   extra={(
                     <Row type='flex' align='middle'>
                       <Col>
@@ -89,14 +89,12 @@ const NewExperimentModal = (props) => {
                       <EditableField
                         onAfterSubmit={(name) => {
                           dispatch(updateExperiment(experiment.id, { name: name.trim() }));
-                          setNumFieldsEditing(numFieldsEditing - 1);
                         }}
-                        onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
                         value={experiment.name}
                         validationFunc={(name) => validateInputs(name, validationChecks).isValid}
                         deleteEnabled={false}
                         onEditing={(editing) => {
-                          if (editing) setNumFieldsEditing(numFieldsEditing + 1);
+                          setNumFieldsEditing(Math.max(0, numFieldsEditing + (editing || -1)));
                         }}
                       />
                     </strong>
@@ -105,13 +103,11 @@ const NewExperimentModal = (props) => {
                         dispatch(
                           updateExperiment(experiment.id, { description: description.trim() }),
                         );
-                        setNumFieldsEditing(numFieldsEditing - 1);
                       }}
-                      onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
                       value={experiment.description}
                       deleteEnabled={false}
                       onEditing={(editing) => {
-                        if (editing) setNumFieldsEditing(numFieldsEditing + 1);
+                        setNumFieldsEditing(Math.max(0, numFieldsEditing + (editing || -1)));
                       }}
                     />
                   </Space>
