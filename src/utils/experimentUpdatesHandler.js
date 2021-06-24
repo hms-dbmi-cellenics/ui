@@ -1,7 +1,8 @@
 import _ from 'lodash';
 
 import {
-  updateBackendStatus, updateProcessingSettings, updateSampleFilterSettings, loadedProcessingConfig,
+  updateBackendStatus, updateNonSampleFilterSettings,
+  updateSampleFilterSettings, loadedProcessingConfig,
 } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
@@ -53,7 +54,7 @@ const onQCUpdate = (update, dispatch) => {
       );
     } else {
       dispatch(
-        updateProcessingSettings(
+        updateNonSampleFilterSettings(
           input.taskName,
           processingConfigUpdate,
         ),

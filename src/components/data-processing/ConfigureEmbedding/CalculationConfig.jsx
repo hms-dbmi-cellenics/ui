@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import PreloadContent from '../../PreloadContent';
 import {
-  updateProcessingSettings,
+  updateNonSampleFilterSettings,
   saveProcessingSettings,
 } from '../../../redux/actions/experimentSettings';
 
@@ -96,7 +96,7 @@ const CalculationConfig = (props) => {
       // applied until they hit Run.
 
       setChangesOutstanding(true);
-      dispatch(updateProcessingSettings(
+      dispatch(updateNonSampleFilterSettings(
         FILTER_UUID,
         diff,
       ));
@@ -104,7 +104,7 @@ const CalculationConfig = (props) => {
       // If it's a clustering change, debounce the save process at 1.5s.
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
 
-      dispatch(updateProcessingSettings(
+      dispatch(updateNonSampleFilterSettings(
         FILTER_UUID,
         diff,
       ));

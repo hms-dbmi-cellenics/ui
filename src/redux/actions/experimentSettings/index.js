@@ -1,4 +1,4 @@
-import updateProcessingSettings from './processingConfig/updateProcessingSettings';
+import updateNonSampleFilterSettings from './processingConfig/updateNonSampleFilterSettings';
 import updateSampleFilterSettings from './processingConfig/updateSampleFilterSettings';
 import saveProcessingSettings from './processingConfig/saveProcessingSettings';
 import loadProcessingSettings from './processingConfig/loadProcessingSettings';
@@ -13,7 +13,7 @@ import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSetti
 export {
   loadProcessingSettings,
   loadedProcessingConfig,
-  updateProcessingSettings,
+  updateNonSampleFilterSettings,
   updateSampleFilterSettings,
   saveProcessingSettings,
   loadBackendStatus,

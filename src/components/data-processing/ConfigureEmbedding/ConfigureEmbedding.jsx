@@ -21,7 +21,7 @@ import {
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
+import { updateNonSampleFilterSettings } from '../../../redux/actions/experimentSettings';
 import loadCellMeta from '../../../redux/actions/cellMeta';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 import Loader from '../../Loader';
@@ -369,7 +369,7 @@ const ConfigureEmbedding = (props) => {
                 type='button'
                 key={key}
                 onClick={() => dispatch(
-                  updateProcessingSettings(
+                  updateNonSampleFilterSettings(
                     'meta',
                     { selectedConfigureEmbeddingPlot: key },
                   ),

@@ -5,10 +5,10 @@ import produce, { original } from 'immer';
 import initialState from '../initialState';
 import mergeObjectWithArrays from '../../../../utils/mergeObjectWithArrays';
 
-const updateProcessingSettings = produce((draft, action) => {
+const updateNonSampleFilterSettings = produce((draft, action) => {
   const { step, configChange } = action.payload;
 
-  if (!step) throw new Error('Invalid step value');
+  if (!step) throw new Error(`Invalid step parameter received: ${step}`);
 
   const originalProcessingConfig = original(draft.processing)[step] ?? {};
 
@@ -22,4 +22,4 @@ const updateProcessingSettings = produce((draft, action) => {
   draft.processing[step] = newConfig;
 }, initialState);
 
-export default updateProcessingSettings;
+export default updateNonSampleFilterSettings;

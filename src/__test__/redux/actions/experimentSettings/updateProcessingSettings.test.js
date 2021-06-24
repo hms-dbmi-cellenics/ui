@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
-import updateProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/updateProcessingSettings';
+import updateNonSampleFilterSettings from '../../../../redux/actions/experimentSettings/processingConfig/updateNonSampleFilterSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');
@@ -23,7 +23,7 @@ describe('saveProcessingSettings', () => {
 
   it('Dispatches action when called', async () => {
     const store = mockStore(mockState);
-    store.dispatch(updateProcessingSettings(settingName));
+    store.dispatch(updateNonSampleFilterSettings(settingName));
 
     const action = store.getActions();
     expect(action.length).toEqual(1);

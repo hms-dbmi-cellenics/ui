@@ -15,7 +15,7 @@ import {
 } from '../../actionTypes/experimentSettings';
 
 import updateExperimentInfo from './updateExperimentInfo';
-import updateProcessingSettings from './processingConfig/updateProcessingSettings';
+import updateNonSampleFilterSettings from './processingConfig/updateNonSampleFilterSettings';
 import updateSampleFilterSettings from './processingConfig/updateSampleFilterSettings';
 import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
 import processingSettingsError from './processingConfig/processingSettingsError';
@@ -35,7 +35,7 @@ const experimentSettingsReducer = (state = initialState, action) => {
       return loadedProcessingConfig(state, action);
     }
     case EXPERIMENT_SETTINGS_PROCESSING_UPDATE: {
-      return updateProcessingSettings(state, action);
+      return updateNonSampleFilterSettings(state, action);
     }
     case EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE: {
       return updateSampleFilterSettings(state, action);
