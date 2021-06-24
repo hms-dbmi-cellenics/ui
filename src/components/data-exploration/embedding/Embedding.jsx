@@ -65,6 +65,7 @@ const Embedding = (props) => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [cellColors, setCellColors] = useState({});
   const [clusterKeyToName, setClusterKeyToName] = useState({});
+  const [cellSetClusters, setCellSetClusters] = useState({});
 
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
@@ -124,6 +125,23 @@ const Embedding = (props) => {
     setCellColors(colorByGeneExpression(focusedExpression));
   }, [focusedExpression]);
 
+  useEffect(() => {
+    if (cellSetHierarchy) {
+      const results = cellSetHierarchy.reduce((acc, curr) => {
+        if (curr.children.length > 0) {
+          // eslint-disable-next-line no-return-assign
+          curr.children.forEach((child) => acc[child.key] = _.capitalize(curr.key));
+        }
+        return acc;
+      }, {});
+      setClusterKeyToName(results);
+    }
+
+    if (cellSetProperties) {
+      setCellSetClusters(Object.entries(cellSetProperties).filter(([key, cellSet]) => cellSet.type === 'cellSets'));
+    }
+  }, [cellSetProperties, cellSetHierarchy]);
+
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
@@ -136,22 +154,8 @@ const Embedding = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (cellSetHierarchy) {
-      const results = cellSetHierarchy.reduce((acc, curr) => {
-        if (curr.children.length > 0) {
-          // eslint-disable-next-line no-return-assign
-          curr.children.forEach((child) => acc[child.key] = _.capitalize(curr.key));
-        }
-        return acc;
-      }, {});
-      setClusterKeyToName(results);
-    }
-  }, [cellSetProperties]);
-
   const getContainingCellSets = (cellId) => {
-    const prefixedCellSetNames = Object.entries(cellSetProperties)
-      .filter(([key, cellSet]) => cellSet.type === 'cellSets' && cellSet.cellIds.has(Number.parseInt(cellId, 10)))
+    const prefixedCellSetNames = cellSetClusters.filter(([key, cellSet]) => cellSet.cellIds.has(Number.parseInt(cellId, 10)))
       .map(([key, containingCellset]) => `${clusterKeyToName[key]}: ${containingCellset.name}`);
 
     return prefixedCellSetNames;
