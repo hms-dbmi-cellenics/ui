@@ -218,7 +218,7 @@ const DataIntegration = (props) => {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
-  }, [experimentId]);
+  }, []);
 
   useEffect(() => {
     // if we change a plot and the config is not saved yet

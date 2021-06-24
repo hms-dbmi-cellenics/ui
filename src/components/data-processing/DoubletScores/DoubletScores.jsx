@@ -57,6 +57,9 @@ const DoubletScores = (props) => {
   const [renderConfig, setRenderConfig] = useState(null);
 
   useEffect(() => {
+  }, []);
+
+  useEffect(() => {
     const newConfig = _.clone(config);
     _.merge(newConfig, expConfig);
 
@@ -67,7 +70,7 @@ const DoubletScores = (props) => {
     if (!config) {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
-  }, [experimentId]);
+  }, []);
 
   const plotStylingControlsConfig = [
     {

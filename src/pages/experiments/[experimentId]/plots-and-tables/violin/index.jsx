@@ -46,7 +46,7 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-  }, [experimentId]);
+  }, []);
 
   // updateField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updateField) => {
@@ -125,7 +125,7 @@ const ViolinIndex = ({ experimentId }) => {
       <Panel header='Data Transformation' key='16'>
         {config ? (
           <div>
-            { false // Control removed until we are able to get the raw values
+            {false // Control removed until we are able to get the raw values
               && (
                 <Form.Item>
                   <p>Transform Gene Expression</p>

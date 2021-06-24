@@ -71,7 +71,7 @@ const Embedding = (props) => {
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId));
     }
-  }, [experimentId]);
+  }, []);
 
   // Then, try to load the embedding with the appropriate data.
   useEffect(() => {

@@ -24,7 +24,7 @@ const FrequencyPlot = (props) => {
     if (!hierarchy && !properties) {
       dispatch(loadCellSets(experimentId));
     }
-  }, [experimentId]);
+  }, []);
 
   const spec = generateSpec(config, generateData(hierarchy, properties, config));
 

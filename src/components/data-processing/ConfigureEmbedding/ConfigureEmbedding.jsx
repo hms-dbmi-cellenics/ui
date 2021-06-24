@@ -54,7 +54,7 @@ const ConfigureEmbedding = (props) => {
         dispatch(loadCellMeta(experimentId, dataName));
       }
     });
-  }, [experimentId]);
+  }, []);
 
   const plots = {
     cellCluster: {
@@ -264,7 +264,7 @@ const ConfigureEmbedding = (props) => {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
-  }, [experimentId]);
+  }, []);
 
   useEffect(() => {
     // if we change a plot and the config is not saved yet
