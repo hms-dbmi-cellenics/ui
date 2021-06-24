@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 const cellSetsCreate = (state, action) => {
   const {
-    key, name, color, cellIds,
+    key, name, color, cellIds, type,
   } = action.payload;
   const newState = _.cloneDeep(state);
 
@@ -17,7 +17,7 @@ const cellSetsCreate = (state, action) => {
   });
 
   newState.properties[key] = {
-    key, name, color, cellIds: new Set(cellIds),
+    key, name, color, cellIds: new Set(cellIds), type,
   };
 
   return newState;

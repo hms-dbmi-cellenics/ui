@@ -5,6 +5,7 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import Loader from '../../Loader';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
@@ -63,6 +64,7 @@ const Embedding = (props) => {
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [cellColors, setCellColors] = useState({});
+  const [clusterKeyToName, setClusterKeyToName] = useState({});
 
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
@@ -134,11 +136,33 @@ const Embedding = (props) => {
     }
   };
 
+  useEffect(() => {
+    if (cellSetHierarchy) {
+      const results = cellSetHierarchy.reduce((acc, curr) => {
+        if (curr.children.length > 0) {
+          // eslint-disable-next-line no-return-assign
+          curr.children.forEach((child) => acc[child.key] = _.capitalize(curr.key));
+        }
+        return acc;
+      }, {});
+      setClusterKeyToName(results);
+    }
+  }, [cellSetProperties]);
+
+  const getContainingCellSets = (cellId) => {
+    const prefixedCellSetNames = Object.entries(cellSetProperties)
+      .filter(([key, cellSet]) => cellSet.type === 'cellSets' && cellSet.cellIds.has(Number.parseInt(cellId, 10)))
+      .map(([key, containingCellset]) => `${clusterKeyToName[key]}: ${containingCellset.name}`);
+
+    return prefixedCellSetNames;
+  };
+
   const updateCellsHover = (cell) => {
     if (cell) {
       if (focusData.store === 'genes') {
         return dispatch(updateCellInfo({
           cellName: cell.cellId,
+          cellSets: getContainingCellSets(cell.cellId),
           geneName: focusData.key,
           expression: focusedExpression ? focusedExpression.expression[cell.cellId] : undefined,
           componentType: embeddingType,
@@ -147,6 +171,7 @@ const Embedding = (props) => {
 
       return dispatch(updateCellInfo({
         cellName: cell.cellId,
+        cellSets: getContainingCellSets(cell.cellId),
         geneName: undefined,
         expression: undefined,
         componentType: embeddingType,

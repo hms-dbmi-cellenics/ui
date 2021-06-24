@@ -36,14 +36,15 @@ const CellInfo = (props) => {
     >
       {cellInfo.cellName ? (
         <div>
-          Cell id:&nbsp;
-          {cellInfo.cellName}
+          {`Cell id: ${cellInfo.cellName}`}
         </div>
       ) : <></>}
+      {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
+        <div>{`${cellSetName}`}</div>
+      )) : <></>}
       {cellInfo.geneName ? (
         <div>
-          Gene name:&nbsp;
-          {cellInfo.geneName}
+          {`Gene name: ${cellInfo.geneName}`}
         </div>
       ) : <></>}
       {cellInfo.expression !== undefined ? (
