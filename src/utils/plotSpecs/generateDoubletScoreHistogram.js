@@ -1,6 +1,6 @@
 const generateSpec = (config, plotData) => {
   let legend = null;
-  const generateStatus = `(datum.bin1 <= ${config.probabilityThreshold}) ? 'high score' : 'low score'`;
+  const generateStatus = `(datum.bin1 <= ${config.probabilityThreshold}) ? 'low score' : 'high score'`;
 
   legend = !config.legend.enabled ? {} : [
     {
@@ -98,11 +98,8 @@ const generateSpec = (config, plotData) => {
       {
         name: 'color',
         type: 'ordinal',
-        range:
-          [
-            'green', 'blue',
-          ],
-        domain: ['high score', 'low score'],
+        range: ['green', 'blue'],
+        domain: ['low score', 'high score'],
       },
     ],
     axes: [
