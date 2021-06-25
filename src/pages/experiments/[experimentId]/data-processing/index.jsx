@@ -153,6 +153,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   // Checks if the step is in the 'completed steps' list we get from the pipeline status
   const isStepComplete = (stepName) => {
+    return true;
+
     const lowerCaseStepName = stepName.toLowerCase();
 
     const stepAppearances = _.filter(completedSteps, (stepPipelineName) => {
