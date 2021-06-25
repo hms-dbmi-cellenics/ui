@@ -12,6 +12,7 @@ Object {
     "experimentId": "1234",
     "key": "a key",
     "name": "one",
+    "type": "cellSets",
   },
   "type": "cellSets/create",
 }

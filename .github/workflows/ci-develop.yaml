@@ -30,6 +30,7 @@ jobs:
     - id: install
       name: Install dependencies
       run: |-
+        git config --global url."https://".insteadOf ssh://
         npm ci
 
     - id: test

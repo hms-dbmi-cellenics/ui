@@ -5,6 +5,7 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import Loader from '../../Loader';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
@@ -63,6 +64,8 @@ const Embedding = (props) => {
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [cellColors, setCellColors] = useState({});
+  const [clusterKeyToNameMap, setClusterKeyToNameMap] = useState({});
+  const [cellSetClusters, setCellSetClusters] = useState({});
 
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
@@ -122,6 +125,25 @@ const Embedding = (props) => {
     setCellColors(colorByGeneExpression(focusedExpression));
   }, [focusedExpression]);
 
+  useEffect(() => {
+    if (cellSetHierarchy) {
+      const mapping = cellSetHierarchy.reduce((keyToClusterNameMap, rootHierarchy) => {
+        if (rootHierarchy.children.length > 0) {
+          rootHierarchy.children.forEach((child) => {
+            // eslint-disable-next-line no-param-reassign
+            keyToClusterNameMap[child.key] = _.capitalize(rootHierarchy.key);
+          });
+        }
+        return keyToClusterNameMap;
+      }, {});
+      setClusterKeyToNameMap(mapping);
+    }
+
+    if (cellSetProperties) {
+      setCellSetClusters(Object.entries(cellSetProperties).filter(([key, cellSet]) => cellSet.type === 'cellSets'));
+    }
+  }, [cellSetProperties, cellSetHierarchy]);
+
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
@@ -134,11 +156,19 @@ const Embedding = (props) => {
     }
   };
 
+  const getContainingCellSets = (cellId) => {
+    const prefixedCellSetNames = cellSetClusters.filter(([key, cellSet]) => cellSet.cellIds.has(Number.parseInt(cellId, 10)))
+      .map(([key, containingCellset]) => `${clusterKeyToNameMap[key]}: ${containingCellset.name}`);
+
+    return prefixedCellSetNames;
+  };
+
   const updateCellsHover = (cell) => {
     if (cell) {
       if (focusData.store === 'genes') {
         return dispatch(updateCellInfo({
           cellName: cell.cellId,
+          cellSets: getContainingCellSets(cell.cellId),
           geneName: focusData.key,
           expression: focusedExpression ? focusedExpression.expression[cell.cellId] : undefined,
           componentType: embeddingType,
@@ -147,6 +177,7 @@ const Embedding = (props) => {
 
       return dispatch(updateCellInfo({
         cellName: cell.cellId,
+        cellSets: getContainingCellSets(cell.cellId),
         geneName: undefined,
         expression: undefined,
         componentType: embeddingType,

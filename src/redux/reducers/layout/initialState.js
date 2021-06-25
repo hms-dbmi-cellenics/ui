@@ -9,7 +9,7 @@ const initialState = {
       direction: 'column',
       splitPercentage: 50,
     },
-    second: 'Tools',
+    second: 'Genes',
     splitPercentage: 70,
   },
   panel: 'Gene list',
