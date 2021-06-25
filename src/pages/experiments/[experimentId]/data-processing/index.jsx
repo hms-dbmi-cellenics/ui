@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
@@ -35,7 +35,7 @@ import StepsIndicator from '../../../../components/data-processing/StepsIndicato
 import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
-import { loadProcessingSettings, updateProcessingSettings, saveProcessingSettings, setQCStepEnabled } from '../../../../redux/actions/experimentSettings';
+import { loadProcessingSettings, saveProcessingSettings, setQCStepEnabled } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { loadSamples } from '../../../../redux/actions/samples'
 import { runPipeline } from '../../../../redux/actions/pipeline';
@@ -46,9 +46,6 @@ const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const dispatch = useDispatch();
-  const dispatchDebounce = useCallback(_.debounce((f) => {
-    dispatch(f);
-  }, 1500), []);
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 

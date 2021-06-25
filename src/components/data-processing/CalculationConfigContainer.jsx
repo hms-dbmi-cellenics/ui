@@ -17,7 +17,6 @@ const CalculationConfigContainer = (props) => {
   const { auto, filterSettings: config } = useSelector(
     (state) => (state.experimentSettings.processing[filterUuid][sampleId]),
   );
-
   const dispatch = useDispatch();
 
   const [displayIndividualChangesWarning, setDisplayIndividualChangesWarning] = useState(false);

@@ -99,17 +99,19 @@ const onGEM2SUpdate = (experimentId, update, dispatch) => {
   if (processingConfig) {
     let fixedProcessingConfig = uglyTemporalFixedProcessingConfig(processingConfig, 'classifier');
     fixedProcessingConfig = uglyTemporalFixedProcessingConfig(fixedProcessingConfig, 'mitochondrialContent');
+    dispatch(loadedProcessingConfig(fixedProcessingConfig));
 
     // adding default config to every filter with auto option
     Object.keys(fixedProcessingConfig).forEach((key) => {
       const currentObject = fixedProcessingConfig[key];
       const settingsKey = Object.keys(currentObject).find((current) => currentObject[current].auto);
       if (settingsKey) {
-        fixedProcessingConfig[key].defaultFilterSettings = fixedProcessingConfig[key][settingsKey];
+        dispatch(updateProcessingSettings(
+          key, { defaultFilterSettings: fixedProcessingConfig[key][settingsKey] },
+        ));
         dispatch(saveProcessingSettings(experimentId, key));
       }
     });
-    dispatch(loadedProcessingConfig(fixedProcessingConfig));
   }
 };
 
