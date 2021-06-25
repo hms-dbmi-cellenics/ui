@@ -89,7 +89,6 @@ const CalculationConfig = (props) => {
 
   const updateSettings = (diff) => {
     setChangesOutstanding(true);
-    console.log('DIFF IS ', diff);
     dispatch(updateProcessingSettings(
       FILTER_UUID,
       diff,
