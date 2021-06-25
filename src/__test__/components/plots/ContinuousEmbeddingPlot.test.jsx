@@ -11,7 +11,7 @@ import ContinuousEmbeddingPlot from '../../../components/plots/ContinuousEmbeddi
 import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
 import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
 import initialGeneExpressionState from '../../../redux/reducers/genes/initialState';
-import initialExperimentState from '../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 import { mockCellSets1 } from '../../test-utils/cellSets.mock';
 
@@ -24,6 +24,8 @@ const mockCellSets = {
 };
 
 const mockStore = configureStore([thunk]);
+
+const initialExperimentState = generateExperimentSettingsMock([]);
 
 describe('Continuous embedding plot', () => {
   const config = initialPlotConfigStates.embeddingContinuous;

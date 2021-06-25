@@ -1,6 +1,6 @@
 import fetchAPI from '../../../utils/fetchAPI';
 import {
-  EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+  EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../actionTypes/experimentSettings';
 
@@ -23,9 +23,11 @@ const loadProcessingSettings = (experimentId) => async (dispatch, getState) => {
     const response = await fetchAPI(url);
 
     const data = await response.json();
+
     throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROCESSING);
+
     dispatch({
-      type: EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+      type: EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
       payload: {
         data: data.processingConfig,
       },

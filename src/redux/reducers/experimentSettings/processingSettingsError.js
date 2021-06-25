@@ -1,20 +1,13 @@
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
+
 import initialState from './initialState';
 
-const processingSettingsError = (state, action) => {
+const processingSettingsError = produce((draft, action) => {
   const { error, errorType } = action.payload;
 
-  return {
-    ...initialState,
-    ...state,
-    processing: {
-      ...state.processing,
-      meta: {
-        ...state.processing.meta,
-        loading: false,
-        [errorType]: error,
-      },
-    },
-  };
-};
+  draft.processing.meta.loading = false;
+  draft.processing.meta[errorType] = error;
+}, initialState);
 
 export default processingSettingsError;

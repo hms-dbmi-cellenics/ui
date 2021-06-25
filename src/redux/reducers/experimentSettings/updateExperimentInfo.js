@@ -1,19 +1,16 @@
-const updateExperimentInfo = (state, action) => {
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
+
+const updateExperimentInfo = produce((draft, action) => {
   const {
     experimentId,
     experimentName,
     projectId,
   } = action.payload;
 
-  return {
-    ...state,
-    info: {
-      ...state.info,
-      experimentId,
-      experimentName,
-      projectUuid: projectId,
-    },
-  };
-};
+  draft.info.experimentId = experimentId;
+  draft.info.experimentName = experimentName;
+  draft.info.projectUuid = projectId;
+});
 
 export default updateExperimentInfo;
