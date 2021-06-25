@@ -43,7 +43,7 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
     // try to load the plot configuration.
     dispatch(loadCellSets(experimentId));
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }, [experimentId]);
+  }, []);
 
   const generateCellSetOptions = () => {
     if (cellSets.loading) {

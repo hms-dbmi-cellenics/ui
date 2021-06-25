@@ -36,7 +36,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-  }, [experimentId]);
+  }, []);
 
   const geneExpression = useSelector((state) => state.genes.expression);
   const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);

@@ -47,7 +47,7 @@ const frequencyPlot = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }, [experimentId]);
+  }, []);
 
   const getCellOptions = (type) => {
     const filteredOptions = hierarchy.filter((element) => (
