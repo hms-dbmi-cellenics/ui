@@ -55,7 +55,7 @@ const CellInfo = (props) => {
       ) : <></>}
       {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
         <div style={cellInfoStyle}>
-          {`${_.truncate(cellSetName)}`}
+          {_.truncate(cellSetName)}
         </div>
       )) : <></>}
     </Card>
