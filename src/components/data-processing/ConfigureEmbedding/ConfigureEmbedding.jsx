@@ -56,7 +56,7 @@ const ConfigureEmbedding = (props) => {
     });
   }, []);
 
-  const [plots] = useState({
+  const plots = {
     cellCluster: {
       title: 'Colored by CellSets',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
@@ -123,7 +123,7 @@ const ConfigureEmbedding = (props) => {
         />
       ),
     },
-  });
+  };
 
   const plotSpecificStylingControl = {
     sample: [
