@@ -42,7 +42,7 @@ const HeatmapPlot = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-  }, [experimentId]);
+  }, []);
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
       return;
