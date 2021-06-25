@@ -11,7 +11,7 @@ import {
   List,
 } from 'antd';
 import EditableField from '../EditableField';
-import { updateExperiment } from '../../redux/actions/experiments';
+import { updateExperiment, saveExperiment } from '../../redux/actions/experiments';
 import validateInputs, { rules } from '../../utils/validateInputs';
 
 const { Title } = Typography;
@@ -87,8 +87,9 @@ const NewExperimentModal = (props) => {
                   <Space direction='vertical' size='small'>
                     <strong>
                       <EditableField
-                        onAfterSubmit={(name) => {
+                        onAfterSubmit={async (name) => {
                           dispatch(updateExperiment(experiment.id, { name: name.trim() }));
+                          await dispatch(saveExperiment(experiment.id));
                           setNumFieldsEditing(numFieldsEditing - 1);
                         }}
                         onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
@@ -101,10 +102,11 @@ const NewExperimentModal = (props) => {
                       />
                     </strong>
                     <EditableField
-                      onAfterSubmit={(description) => {
+                      onAfterSubmit={async (description) => {
                         dispatch(
                           updateExperiment(experiment.id, { description: description.trim() }),
                         );
+                        await dispatch(saveExperiment(experiment.id));
                         setNumFieldsEditing(numFieldsEditing - 1);
                       }}
                       onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
