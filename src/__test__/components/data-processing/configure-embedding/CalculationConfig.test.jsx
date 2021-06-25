@@ -12,7 +12,7 @@ import { act } from 'react-dom/test-utils';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
-import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../../../redux/actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE } from '../../../../redux/actionTypes/experimentSettings';
 import { EMBEDDINGS_LOADING } from '../../../../redux/actionTypes/embeddings';
 
 import CalculationConfig from '../../../../components/data-processing/ConfigureEmbedding/CalculationConfig';
@@ -180,7 +180,7 @@ describe('Data Processing CalculationConfig', () => {
     button.simulate('click', {});
     // Should load the new embedding and save the config.
 
-    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE, EMBEDDINGS_LOADING]);
     expect(store.getActions().length).toEqual(2);
     expect(store.getActions()).toMatchSnapshot();
   });

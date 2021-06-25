@@ -1,4 +1,4 @@
-import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE } from '../../../actionTypes/experimentSettings';
 
 const updateNonSampleFilterSettings = (configName, configChange) => (dispatch) => {
   const validStep = ['dataIntegration', 'configureEmbedding', 'meta'].includes(configName);
@@ -7,7 +7,7 @@ const updateNonSampleFilterSettings = (configName, configChange) => (dispatch) =
   }
 
   dispatch({
-    type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+    type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
     payload: { step: configName, configChange },
   });
 };
