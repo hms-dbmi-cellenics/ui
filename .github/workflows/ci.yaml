@@ -115,8 +115,6 @@ jobs:
           platforms: linux/amd64
           tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
           push: false
-          ssh: 
-            - ${{ secrets.BIOMAGE_ACTIONS_TOKEN }}
 
       - id: push
         name: Push docker image to ECR
