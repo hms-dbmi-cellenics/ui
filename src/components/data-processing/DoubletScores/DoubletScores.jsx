@@ -57,9 +57,6 @@ const DoubletScores = (props) => {
   const [renderConfig, setRenderConfig] = useState(null);
 
   useEffect(() => {
-  }, []);
-
-  useEffect(() => {
     const newConfig = _.clone(config);
     _.merge(newConfig, expConfig);
 
