@@ -39,20 +39,22 @@ const CellInfo = (props) => {
           {`Cell id: ${cellInfo.cellName}`}
         </div>
       ) : <></>}
-      {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
-        <div>{`${cellSetName}`}</div>
-      )) : <></>}
       {cellInfo.geneName ? (
-        <div>
+        <div style={{ fontSize: '0.75rem' }}>
           {`Gene name: ${cellInfo.geneName}`}
         </div>
       ) : <></>}
       {cellInfo.expression !== undefined ? (
-        <div>
+        <div style={{ fontSize: '0.75rem' }}>
           Expression Level:&nbsp;
           {parseFloat(cellInfo.expression.toFixed(3))}
         </div>
       ) : <></>}
+      {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
+        <div style={{ fontSize: '0.75rem' }}>
+          {`${cellSetName}`}
+        </div>
+      )) : <></>}
     </Card>
   );
 
