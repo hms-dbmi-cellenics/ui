@@ -41,7 +41,6 @@ const generateSpec = (config, plotData) => {
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
-    description: 'A basic scatter plot example depicting automobile statistics.',
     width: config?.dimensions.width,
     height: config?.dimensions.height,
     autosize: 'fit',
@@ -84,7 +83,7 @@ const generateSpec = (config, plotData) => {
         name: 'cellSetColors',
         type: 'ordinal',
         range: { data: 'values', field: colorFieldName },
-        domain: { data: 'values', field: 'cluster', sort: true },
+        domain: { data: 'values', field: 'cluster' },
       },
       {
         name: 'sampleToName',
