@@ -11,7 +11,7 @@ import _ from 'lodash';
 import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
 
 import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
-import initialExperimentSettingsState from '../../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
 import { EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING } from '../../../../../redux/actionTypes/experimentSettings';
@@ -22,13 +22,17 @@ jest.mock('localforage');
 
 const mockStore = configureMockStore([thunk]);
 
+const sampleIds = ['sample-1', 'sample-2'];
+
+const initialExperimentState = generateExperimentSettingsMock(sampleIds);
+
 const getStore = (settings = {}) => {
   const initialState = {
     notifications: {},
     experimentSettings: {
-      ...initialExperimentSettingsState,
+      ...initialExperimentState,
       processing: {
-        ...initialExperimentSettingsState.processing,
+        ...initialExperimentState.processing,
         meta: {
           loading: false,
           stepsDone: new Set([]),
@@ -105,7 +109,7 @@ const getStore = (settings = {}) => {
       ...initialPlotConfigStates,
     },
     samples: {
-      ids: ['sample-1', 'sample-2'],
+      ids: sampleIds,
       meta: {
         loading: false,
         error: false,

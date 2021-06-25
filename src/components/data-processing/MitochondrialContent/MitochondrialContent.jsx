@@ -83,8 +83,7 @@ const MitochondrialContent = (props) => {
   );
 
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
-      || state.experimentSettings.processing[filterName].filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
   );
 
   const plotData = useSelector(
@@ -188,7 +187,6 @@ const MitochondrialContent = (props) => {
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
                 filterUuid={filterName}
-                experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}

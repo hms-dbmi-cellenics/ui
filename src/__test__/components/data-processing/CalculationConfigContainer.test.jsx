@@ -10,15 +10,25 @@ import _ from 'lodash';
 import rootReducer from '../../../redux/reducers/index';
 
 import CalculationConfigContainer from '../../../components/data-processing/CalculationConfigContainer';
-import initialExperimentState from '../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');
 
-const sampleId = 'sample-WT';
+const koSampleId = 'sample-WT1';
 const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const filterName = 'mitochondrialContent';
 
+const initialExperimentState = generateExperimentSettingsMock(sampleIds);
+
 const noData = {
+  cellSets: {
+    hierarchy: [
+      {
+        key: 'sample',
+        children: sampleIds.map((sampleId) => ({ key: sampleId })),
+      },
+    ],
+  },
   experimentSettings: {
     ...initialExperimentState,
   },
@@ -53,7 +63,7 @@ describe('CalculationConfigContainer', () => {
       <Provider store={store}>
         <CalculationConfigContainer
           experimentId={expect.getState().currentTestName}
-          sampleId={sampleId}
+          sampleId={koSampleId}
           sampleIds={sampleIds}
           filterUuid={filterName}
           plotType='unused'
@@ -72,11 +82,11 @@ describe('CalculationConfigContainer', () => {
     const testRadioButton = (value) => {
       setRadioButton(value);
       expect(screen.getByRole('heading')).toHaveTextContent(`${value === 'automatic'}`);
-      expect(store.getState().experimentSettings.processing[filterName][sampleId].auto).toBe(value === 'automatic');
+      expect(store.getState().experimentSettings.processing[filterName][koSampleId].auto).toBe(value === 'automatic');
     };
 
-    testRadioButton('manual');
     testRadioButton('automatic');
+    testRadioButton('manual');
   });
   it('displays a warning when the auto setting is changed', () => {
     expect(screen.queryAllByText(ALERT_TEXT, { exact: false }).length).toBe(0);

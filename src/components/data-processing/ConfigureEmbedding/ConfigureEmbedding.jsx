@@ -102,7 +102,7 @@ const ConfigureEmbedding = (props) => {
           plotData={cellMeta.mitochondrialContent.data}
           loading={cellMeta.mitochondrialContent.loading}
           error={cellMeta.mitochondrialContent.error}
-          reloadPlotData={() => loadCellMeta(experimentId, 'mitochondrialContent')}
+          reloadPlotData={() => dispatch(loadCellMeta(experimentId, 'mitochondrialContent'))}
         />
       ),
     },
@@ -119,7 +119,7 @@ const ConfigureEmbedding = (props) => {
           plotData={cellMeta.doubletScores.data}
           loading={cellMeta.doubletScores.loading}
           error={cellMeta.doubletScores.error}
-          reloadPlotData={() => loadCellMeta(experimentId, 'doubletScores')}
+          reloadPlotData={() => dispatch(loadCellMeta(experimentId, 'doubletScores'))}
         />
       ),
     },
@@ -370,7 +370,6 @@ const ConfigureEmbedding = (props) => {
                 key={key}
                 onClick={() => dispatch(
                   updateProcessingSettings(
-                    experimentId,
                     'meta',
                     { selectedConfigureEmbeddingPlot: key },
                   ),

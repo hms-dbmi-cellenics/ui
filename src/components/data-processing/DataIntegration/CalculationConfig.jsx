@@ -91,7 +91,6 @@ const CalculationConfig = (props) => {
     changedFilters?.current.add(FILTER_UUID);
     setChangesOutstanding(true);
     dispatch(updateProcessingSettings(
-      experimentId,
       FILTER_UUID,
       diff,
     ));

@@ -3,54 +3,77 @@ import initialState, {
   initialWorkerState,
 } from '../../redux/reducers/experimentSettings/initialState';
 
-const testableProcessingConfig = {
+const sampleifiedConfig = (sampleIds, configToReplicate) => {
+  const result = sampleIds.reduce(
+    (acum, sampleId) => {
+      // eslint-disable-next-line no-param-reassign
+      acum[sampleId] = configToReplicate;
+      return acum;
+    },
+    {},
+  );
+
+  return result;
+};
+
+const generateProcessingConfigMock = (sampleIds) => ({
   cellSizeDistribution: {
     enabled: true,
-    auto: true,
-    filterSettings: {
-      minCellSize: 10800,
-      binStep: 200,
-    },
+    ...sampleifiedConfig(sampleIds, {
+      auto: true,
+      filterSettings: {
+        minCellSize: 10800,
+        binStep: 200,
+      },
+    }),
   },
   mitochondrialContent: {
     enabled: true,
-    auto: true,
-    filterSettings: {
-      method: 'absolute_threshold',
-      methodSettings: {
-        absolute_threshold: {
-          maxFraction: 0.1,
-          binStep: 200,
+    ...sampleifiedConfig(sampleIds, {
+      auto: true,
+      filterSettings: {
+        method: 'absolute_threshold',
+        methodSettings: {
+          absolute_threshold: {
+            maxFraction: 0.1,
+            binStep: 200,
+          },
         },
       },
-    },
+    }),
   },
   classifier: {
     enabled: true,
-    auto: true,
-    filterSettings: {
-      FDR: 0.1,
-    },
+    ...sampleifiedConfig(sampleIds, {
+      auto: true,
+      filterSettings: {
+        FDR: 0.1,
+      },
+    }),
   },
   numGenesVsNumUmis: {
     enabled: true,
-    auto: true,
-    filterSettings: {
-      regressionType: 'gam',
-      regressionTypeSettings: {
-        gam: {
-          'p.level': 0.00009,
+    ...sampleifiedConfig(sampleIds, {
+      auto: true,
+      filterSettings: {
+        regressionType: 'gam',
+        regressionTypeSettings: {
+          gam: {
+            'p.level': 0.00009,
+          },
         },
       },
-    },
+    }),
   },
   doubletScores: {
     enabled: true,
-    auto: true,
-    filterSettings: {
-      probabilityThreshold: 0.2,
-      binStep: 0.05,
-    },
+    ...sampleifiedConfig(sampleIds, {
+      auto: true,
+      filterSettings: {
+        probabilityThreshold: 0.2,
+        binStep: 0.05,
+      },
+    }),
   },
   dataIntegration: {
     enabled: true,
@@ -101,14 +124,16 @@ const testableProcessingConfig = {
       },
     },
   },
-};
+});
 
-export default {
+const generateExperimentSettingsMock = (sampleIds) => ({
   ...initialState,
   processing: {
     ...initialState.processing,
-    ...testableProcessingConfig,
+    ...generateProcessingConfigMock(sampleIds),
   },
-};
+});
+
+export default generateExperimentSettingsMock;
 
 export { initialPipelineState, initialWorkerState };

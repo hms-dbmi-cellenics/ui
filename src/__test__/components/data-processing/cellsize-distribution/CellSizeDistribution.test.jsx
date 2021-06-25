@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import CalculationConfig from '../../../../components/data-processing/CellSizeDistribution/CalculationConfig';
-import initialExperimentState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
@@ -24,6 +24,8 @@ const filterName = 'cellSizeDistribution';
 
 const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
 const sample2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);
+
+const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
 const noData = {
   experimentSettings: {

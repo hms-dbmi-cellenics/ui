@@ -8,42 +8,27 @@ import {
   Radio,
 } from 'antd';
 
-import { updateProcessingSettings, updateSampleSettings } from '../../redux/actions/experimentSettings';
+import { updateSampleFilterSettings, copyFilterSettingsToAllSamples, setSampleFilterSettingsAuto } from '../../redux/actions/experimentSettings';
 
 const CalculationConfigContainer = (props) => {
   const {
-    filterUuid, experimentId, sampleId, plotType, sampleIds, onConfigChange, children, stepDisabled,
+    filterUuid, sampleId, plotType, sampleIds, onConfigChange, children, stepDisabled,
   } = props;
-
   const { auto, filterSettings: config } = useSelector(
-    (state) => (state.experimentSettings.processing[filterUuid][sampleId]
-      || state.experimentSettings.processing[filterUuid]),
+    (state) => (state.experimentSettings.processing[filterUuid][sampleId]),
   );
-
   const dispatch = useDispatch();
 
   const [displayIndividualChangesWarning, setDisplayIndividualChangesWarning] = useState(false);
 
-  const updateAllSettings = () => {
+  const copySettingsToAllSamples = () => {
     setDisplayIndividualChangesWarning(false);
-
-    const newConfig = {};
-    sampleIds.forEach((currentSampleId) => {
-      newConfig[currentSampleId] = { filterSettings: config, auto };
-    });
-
-    dispatch(updateProcessingSettings(
-      experimentId,
-      filterUuid,
-      newConfig,
-    ));
-
+    dispatch(copyFilterSettingsToAllSamples(filterUuid, sampleId));
     onConfigChange();
   };
 
-  const onSampleSettingsChange = (propertyDiff, property = 'filterSettings') => {
+  const onFilterSettingsChange = () => {
     setDisplayIndividualChangesWarning(true);
-    dispatch(updateSampleSettings(filterUuid, sampleId, { [property]: propertyDiff }));
     onConfigChange();
   };
 
@@ -60,7 +45,10 @@ const CalculationConfigContainer = (props) => {
 
       <Radio.Group
         value={auto ? 'automatic' : 'manual'}
-        onChange={(e) => { onSampleSettingsChange(e.target.value === 'automatic', 'auto'); }}
+        onChange={(e) => {
+          onFilterSettingsChange();
+          dispatch(setSampleFilterSettingsAuto(filterUuid, sampleId, e.target.value === 'automatic'));
+        }}
         style={{ marginTop: '5px', marginBottom: '30px' }}
         disabled={stepDisabled}
       >
@@ -73,12 +61,18 @@ const CalculationConfigContainer = (props) => {
       </Radio.Group>
 
       {React.cloneElement(children, {
-        config, plotType, updateSettings: onSampleSettingsChange, disabled: stepDisabled || auto,
+        config,
+        plotType,
+        updateSettings: (diff) => {
+          dispatch(updateSampleFilterSettings(filterUuid, sampleId, diff));
+          onFilterSettingsChange();
+        },
+        disabled: stepDisabled || auto,
       })}
 
       {
         sampleIds.length > 1 ? (
-          <Button onClick={updateAllSettings} disabled={auto === 'automatic'}>Copy to all samples</Button>
+          <Button onClick={copySettingsToAllSamples} disabled={auto === 'automatic'}>Copy to all samples</Button>
         ) : <></>
       }
 
@@ -87,7 +81,6 @@ const CalculationConfigContainer = (props) => {
 };
 CalculationConfigContainer.propTypes = {
   children: PropTypes.any.isRequired,
-  experimentId: PropTypes.string.isRequired,
   filterUuid: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   plotType: PropTypes.string.isRequired,

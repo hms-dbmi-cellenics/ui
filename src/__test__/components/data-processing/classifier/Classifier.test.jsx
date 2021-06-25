@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import Classifier from '../../../../components/data-processing/Classifier/Classifier';
 import CalculationConfig from '../../../../components/data-processing/Classifier/CalculationConfig';
-import initialExperimentState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
@@ -23,6 +23,8 @@ const filterName = 'classifier';
 const experimentId = 'e1234';
 
 const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+
+const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
 const noData = {
   experimentSettings: {

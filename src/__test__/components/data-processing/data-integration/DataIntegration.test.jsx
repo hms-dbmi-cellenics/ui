@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
-import initialExperimentState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import initialCellSetsState from '../../../../redux/reducers/cellSets/initialState';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
@@ -25,6 +25,8 @@ const configureEmbeddingFilterName = 'configureEmbedding';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
+
+const initialExperimentState = generateExperimentSettingsMock([]);
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
