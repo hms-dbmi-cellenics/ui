@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import _ from 'lodash';
 import {
   useSelector,
 } from 'react-redux';
@@ -35,7 +36,7 @@ const CellInfo = (props) => {
       }}
     >
       {cellInfo.cellName ? (
-        <div>
+        <div style={{ fontSize: '0.75rem' }}>
           {`Cell id: ${cellInfo.cellName}`}
         </div>
       ) : <></>}
@@ -52,7 +53,7 @@ const CellInfo = (props) => {
       ) : <></>}
       {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
         <div style={{ fontSize: '0.75rem' }}>
-          {`${cellSetName}`}
+          {`${_.truncate(cellSetName)}`}
         </div>
       )) : <></>}
     </Card>
