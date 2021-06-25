@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import _ from 'lodash';
 import {
   useSelector,
 } from 'react-redux';
@@ -22,6 +23,8 @@ const CellInfo = (props) => {
     }
   }, [cellInfo]);
 
+  const cellInfoStyle = { fontSize: '0.75rem' };
+
   const renderCellInfo = () => (
     <Card
       size='small'
@@ -35,23 +38,26 @@ const CellInfo = (props) => {
       }}
     >
       {cellInfo.cellName ? (
-        <div>
-          Cell id:&nbsp;
-          {cellInfo.cellName}
+        <div style={cellInfoStyle}>
+          {`Cell id: ${cellInfo.cellName}`}
         </div>
       ) : <></>}
       {cellInfo.geneName ? (
-        <div>
-          Gene name:&nbsp;
-          {cellInfo.geneName}
+        <div style={cellInfoStyle}>
+          {`Gene name: ${cellInfo.geneName}`}
         </div>
       ) : <></>}
       {cellInfo.expression !== undefined ? (
-        <div>
+        <div style={cellInfoStyle}>
           Expression Level:&nbsp;
           {parseFloat(cellInfo.expression.toFixed(3))}
         </div>
       ) : <></>}
+      {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
+        <div style={cellInfoStyle}>
+          {_.truncate(cellSetName)}
+        </div>
+      )) : <></>}
     </Card>
   );
 

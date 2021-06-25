@@ -60,6 +60,10 @@ const GeneListTool = (props) => {
       title: 'Dispersion',
       key: 'dispersions',
       sorter: true,
+      showSorterTooltip: {
+        title: `Dispersion describes how much the variance deviates from the mean. 
+      Genes with high dispersion have a high level of variation between cells in the dataset.`,
+      },
       render: (num) => parseFloat(num.toFixed(3)),
     },
   ];
