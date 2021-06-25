@@ -40,11 +40,13 @@ const DiffExprResults = (props) => {
       title: 'Avg log2FC',
       key: 'avg_log2FC',
       sorter: true,
+      showSorterTooltip: false,
     },
     {
       title: 'adj p-value',
       key: 'p_val_adj',
       sorter: true,
+      showSorterTooltip: false,
       render: (score, record) => <Tooltip title={`adj p-value: ${record.p_val_adj}`}>{score}</Tooltip>,
     },
     {

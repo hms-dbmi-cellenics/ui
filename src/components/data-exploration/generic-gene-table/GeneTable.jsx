@@ -136,6 +136,7 @@ const GeneTable = (props) => {
         dataIndex: 'gene_names',
         key: 'gene_names',
         sorter: true,
+        showSorterTooltip: false,
         render: (geneName) => (
           <a
             href={`https://www.genecards.org/cgi-bin/carddisp.pl?gene=${geneName}`}
