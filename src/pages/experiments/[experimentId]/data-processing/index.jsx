@@ -334,7 +334,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const renderTitle = () => (
     <>
       <Row style={{ display: 'flex' }}>
-        <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+        <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }} span={10}>
           <Row style={{ display: 'flex' }} gutter={16}>
             <Col>
               {/* Should be just wide enough that no ellipsis appears */}
@@ -444,23 +444,35 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                 </Button>
               )}
             </Col>
-            <Col>
-              {steps[stepIdx].multiSample && (
-                <Button
-                  id='runFilterButton'
-                  data-testid='runFilterButton'
-                  type='primary'
-                  onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
-                  disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
-                >
-                  {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}
-                </Button>
-              )}
-            </Col>
           </Row>
         </Col>
-        <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} span={18}>
           <Row>
+            <Col>
+              {steps[stepIdx].multiSample && (
+                <Space size='middle' style={{ marginRight: '20px' }}>
+                  <Button
+                    id='runFilterButton'
+                    data-testid='runFilterButton'
+                    type='primary'
+                    onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
+                    disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
+                    style={{ width: '90px' }}
+                  >
+                    {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Run'}
+                  </Button>
+                  <Button
+                    id='discardChangesButton'
+                    data-testid='discardChangesButton'
+                    type='primary'
+                    onClick={() => { }}
+                    style={{ width: '90px' }}
+                  >
+                    Discard
+                  </Button>
+                </Space>
+              )}
+            </Col>
             <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex', marginLeft: 'auto' }}>
               <Space>
                 <StepsIndicator
