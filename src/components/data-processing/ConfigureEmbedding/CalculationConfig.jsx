@@ -94,11 +94,7 @@ const CalculationConfig = (props) => {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Run.
       setChangesOutstanding(true);
-<<<<<<< HEAD
       dispatch(updateNonSampleFilterSettings(
-=======
-      dispatch(updateProcessingSettings(
->>>>>>> develop
         FILTER_UUID,
         diff,
       ));
@@ -106,11 +102,7 @@ const CalculationConfig = (props) => {
       // If it's a clustering change, debounce the save process at 1.5s.
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
 
-<<<<<<< HEAD
       dispatch(updateNonSampleFilterSettings(
-=======
-      dispatch(updateProcessingSettings(
->>>>>>> develop
         FILTER_UUID,
         diff,
       ));
