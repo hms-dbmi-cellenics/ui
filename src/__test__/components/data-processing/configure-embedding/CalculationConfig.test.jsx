@@ -40,7 +40,7 @@ describe('Data Processing CalculationConfig', () => {
     },
   };
 
-  const onPipelineRun = () => {};
+  const onPipelineRun = () => { };
 
   configure({ adapter: new Adapter() });
 
@@ -231,7 +231,7 @@ describe('Data Processing CalculationConfig', () => {
     const runButton = component.find(Button);
     runButton.simulate('click', {});
     expect(mockOnPipelineRun).toBeCalledTimes(0);
-    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EMBEDDINGS_LOADING]);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE, EMBEDDINGS_LOADING]);
     expect(store.getActions()[1].type).toEqual(EMBEDDINGS_LOADING);
   });
 });
