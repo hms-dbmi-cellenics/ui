@@ -322,6 +322,39 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     setStepIdx(newStepIdx);
   }
 
+  const renderRunOrDiscardButtons = () => (
+    <Alert
+      message={<>Your new settings are <br />not yet applied</>}
+      type='info'
+      showIcon
+      style={{ paddingTop: '0px', paddingBottom: '0px', paddingLeft: '10px', paddingRight: '10px', marginRight: '10px' }}
+      action={
+        <Space size='small'>
+          <Button
+            id='runFilterButton'
+            data-testid='runFilterButton'
+            type='primary'
+            onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
+            disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
+            style={{ width: '80px' }}
+          >
+            Run
+          </Button>
+          <Button
+            id='discardChangesButton'
+            data-testid='discardChangesButton'
+            type='primary'
+            onClick={() => { }}
+            style={{ width: '80px' }}
+          >
+            Discard
+          </Button>
+        </Space>
+      }
+    >
+    </Alert>
+  );
+
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = (steps) => {
     setChangesOutstanding(false);
@@ -335,7 +368,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     <>
       <Row style={{ display: 'flex' }}>
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }} span={7}>
-          <Row style={{ display: 'flex' }} gutter={16}>
+          <Row style={{ display: 'flex' }} gutter={10}>
             <Col>
               {/* Should be just wide enough that no ellipsis appears */}
               <Select
@@ -448,43 +481,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         </Col>
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
           <Row>
-            <Col>
-              {steps[stepIdx].multiSample && (
-                <Alert
-                  message={<>Your new settings are <br />not yet applied</>}
-                  type='info'
-                  showIcon
-                  style={{ marginRight: '15px' }}
-                  action={
-                    <Space size='middle'>
-                      <>
-                        <Button
-                          id='runFilterButton'
-                          data-testid='runFilterButton'
-                          type='primary'
-                          onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
-                          disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
-                          style={{ width: '90px' }}
-                        >
-                          {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Run'}
-                        </Button>
-                        <Button
-                          id='discardChangesButton'
-                          data-testid='discardChangesButton'
-                          type='primary'
-                          onClick={() => { }}
-                          style={{ width: '90px' }}
-                        >
-                          Discard
-                      </Button>
-                      </>
-                    </Space>
-                  }
-                >
-                </Alert>
-              )}
+            <Col style={{ marginLeft: 'auto' }}>
+              {steps[stepIdx].multiSample && renderRunOrDiscardButtons()}
             </Col>
-            <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex', marginLeft: 'auto' }}>
+            <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex' }}>
               <Space>
                 <StepsIndicator
                   allSteps={steps}
@@ -498,7 +498,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               <StatusIndicator />
             </Col>
             <Col style={{ marginLeft: 'auto', alignItems: 'center', display: 'flex' }}>
-              <Space size='large'>
+              <Space size='middle'>
                 <Button
                   data-testid='pipelinePrevStep'
                   disabled={stepIdx === 0}
