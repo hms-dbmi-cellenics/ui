@@ -7,7 +7,6 @@ exports[`SearchMenu renders correctly with category info 1`] = `
   mouseEnterDelay={0.1}
   mouseLeaveDelay={0}
   placement="left"
-  transitionName="zoom-big-fast"
 >
   item 1
 </Tooltip>
@@ -20,7 +19,6 @@ exports[`SearchMenu renders correctly with category info 2`] = `
   mouseEnterDelay={0.1}
   mouseLeaveDelay={0}
   placement="left"
-  transitionName="zoom-big-fast"
 >
   item 2
 </Tooltip>
@@ -33,7 +31,6 @@ exports[`SearchMenu renders correctly with options and one category 1`] = `
   mouseEnterDelay={0.1}
   mouseLeaveDelay={0}
   placement="left"
-  transitionName="zoom-big-fast"
 >
   item 1
 </Tooltip>
@@ -46,7 +43,6 @@ exports[`SearchMenu renders correctly with options and one category 2`] = `
   mouseEnterDelay={0.1}
   mouseLeaveDelay={0}
   placement="left"
-  transitionName="zoom-big-fast"
 >
   item 2
 </Tooltip>
