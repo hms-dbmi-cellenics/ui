@@ -26,7 +26,7 @@ const { Text } = Typography;
 const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to compress points together. '
   + 'Larger values ensure embedded points are more evenly distributed, while '
   + 'smaller values allow the algorithm to optimise more accurately with regard '
-  + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
+  + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.3.';
 
 const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some information and there are several methods available. '
   + 'PCA (Principal component analysis) is fast and preserves the global structure of the data, whereas nonlinear techniques '
@@ -388,7 +388,7 @@ const CalculationConfig = (props) => {
                   Resolution is a parameter for the Louvain community detection algorithm that affects the size of the recovered clusters.
                   Smaller resolutions recover smaller, and therefore more clusters,
                   and conversely, larger values recover fewer clusters containing more data points.
-                  Default: 0.3
+                  Default: 0.8
                 </span>
               )}
               >
