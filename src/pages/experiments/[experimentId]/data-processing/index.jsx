@@ -59,7 +59,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   // Pipeline is not loaded (either running or in an errored state)
   const pipelineErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'];
-  const pipelineNotFinished = pipelineRunning || pipelineErrors.includes(pipelineStatusKey);
+  const pipelineHadErrors = pipelineErrors.includes(pipelineStatusKey);
+  const pipelineNotFinished = pipelineRunning || pipelineHadErrors;
 
   const completedSteps = pipelineStatus?.completedSteps;
 
@@ -322,47 +323,56 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     setStepIdx(newStepIdx);
   }
 
-  const renderRunOrDiscardButtons = () => (
-    <Alert
-      message={<>Your new settings are <br />not yet applied</>}
-      type='info'
-      showIcon
-      style={{ paddingTop: '0px', paddingBottom: '0px', paddingLeft: '10px', paddingRight: '10px', marginRight: '10px' }}
-      action={
-        <Space size='small'>
-          <Button
-            id='runFilterButton'
-            data-testid='runFilterButton'
-            type='primary'
-            onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
-            disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
-            style={{ width: '80px' }}
-          >
-            Run
-          </Button>
-          <Button
-            id='discardChangesButton'
-            data-testid='discardChangesButton'
-            type='primary'
-            onClick={() => { }}
-            style={{ width: '80px' }}
-          >
-            Discard
-          </Button>
-        </Space>
-      }
+  const renderRunButton = (runMessage) => (
+    <Button
+      id='runFilterButton'
+      data-testid='runFilterButton'
+      type='primary'
+      onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
+      style={{ width: '80px' }}
     >
-    </Alert>
+      {runMessage}
+    </Button>
   );
+
+  const renderRunOrDiscardButtons = () => {
+    if (pipelineHadErrors) {
+      return renderRunButton('Run Data Processing');
+    } else if (changesOutstanding) {
+      return (
+        <Alert
+          message={<>Your new settings are <br />not yet applied</>}
+          type='info'
+          showIcon
+          style={{ paddingTop: '0px', paddingBottom: '0px', paddingLeft: '10px', paddingRight: '10px', marginRight: '10px' }}
+          action={
+            <Space size='small'>
+              {renderRunButton('Run')}
+              <Button
+                id='discardChangesButton'
+                data-testid='discardChangesButton'
+                type='primary'
+                onClick={() => { }}
+                style={{ width: '80px' }}
+              >
+                Discard
+              </Button>
+            </Space>
+          }
+        >
+        </Alert>
+      );
+    }
+
+    return;
+  };
 
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = (steps) => {
     setChangesOutstanding(false);
     changedFilters.current = new Set();
     dispatch((runPipeline(experimentId, steps)))
-
   }
-
 
   const renderTitle = () => (
     <>
