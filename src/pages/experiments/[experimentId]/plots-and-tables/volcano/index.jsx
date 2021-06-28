@@ -56,7 +56,7 @@ const VolcanoPlot = ({ experimentId }) => {
 
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }, [experimentId]);
+  }, []);
 
   useEffect(() => {
     // Sync plot and settings with last used config

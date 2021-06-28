@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
-  Row, Col, Carousel, Card, Modal, Skeleton,
+  Row, Col, Card, Skeleton,
   Tooltip
 } from 'antd';
 import {
@@ -46,9 +46,6 @@ const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const dispatch = useDispatch();
-  const dispatchDebounce = useCallback(_.debounce((f) => {
-    dispatch(f);
-  }, 1500), []);
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
@@ -69,12 +66,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const cellSets = useSelector((state) => state.cellSets);
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
-  const [showChangesWillBeLost, setShowChangesWillBeLost] = useState(false);
+
   const [stepIdx, setStepIdx] = useState(0);
   const [applicableFilters, setApplicableFilters] = useState([])
   const [preFilteredSamples, setPreFilteredSamples] = useState([])
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
-  const carouselRef = useRef(null);
+  const changedFilters = useRef(new Set())
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
@@ -82,8 +79,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }
 
   const disabledConditionMessage = {
-    prefilter: `This filter disabled because samples ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered.`,
-    unisample: "This step is disabled as there is only one sample"
+    prefilter: `This filter disabled because samples ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered. 
+      Click 'Next' to continue processing your data.`,
+    unisample: "This step is disabled as there is only one sample. Click 'Next' to continue processing your data."
   }
 
   const sampleKeys = cellSets.hierarchy?.find(
@@ -97,10 +95,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       dispatch(loadCellSets(experimentId));
     }
 
-    if (experimentId) {
-      dispatch(loadProcessingSettings(experimentId));
-    }
-  }, [experimentId]);
+    dispatch(loadProcessingSettings(experimentId));
+  }, []);
 
   useEffect(() => {
     if (samples.meta.loading) {
@@ -155,8 +151,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     )
   }, [stepIdx])
 
-  const upcomingStepIdxRef = useRef(null);
-
   // Checks if the step is in the 'completed steps' list we get from the pipeline status
   const isStepComplete = (stepName) => {
     const lowerCaseStepName = stepName.toLowerCase();
@@ -168,7 +162,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     return stepAppearances.length > 0;
   }
 
-  const onConfigChange = () => {
+  const onConfigChange = (key) => {
+    changedFilters.current.add(key)
     setChangesOutstanding(true);
   };
 
@@ -194,7 +189,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!processingConfig[key]?.enabled}
             />
           )}
@@ -217,7 +212,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -240,7 +235,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -263,7 +258,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -286,7 +281,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={onConfigChange}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
             />
           )}
@@ -301,7 +296,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <DataIntegration
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun(key)}
+          changedFilters={changedFilters}
+          onPipelineRun={() => onPipelineRun(Array.from(changedFilters.current))}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
         />
       ),
@@ -315,67 +311,28 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <ConfigureEmbedding
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun(key)}
+          changedFilters={changedFilters}
+          onPipelineRun={() => onPipelineRun(Array.from(changedFilters.current))}
         />
       ),
     },
   ];
 
-  useEffect(() => {
-    if (carouselRef.current) {
-      carouselRef.current.goTo(stepIdx, true);
-    }
-  }, [stepIdx, carouselRef.current]);
-
   const changeStepId = (newStepIdx) => {
-    if (changesOutstanding) {
-      upcomingStepIdxRef.current = newStepIdx;
-
-      setShowChangesWillBeLost(true);
-    } else {
-      setStepIdx(newStepIdx);
-    }
+    setStepIdx(newStepIdx);
   }
 
   // Called when the pipeline is triggered to be run by the user.
-  const onPipelineRun = (stepKey) => {
+  const onPipelineRun = (steps) => {
     setChangesOutstanding(false);
-    dispatch((runPipeline(experimentId, stepKey)))
+    changedFilters.current = new Set();
+    dispatch((runPipeline(experimentId, steps)))
+
   }
 
-  const ignoreLostChanges = () => {
-    setShowChangesWillBeLost(false)
-    setChangesOutstanding(false);
-    setStepIdx(upcomingStepIdxRef.current);
-  }
-
-  const renderWithInnerScroll = (innerRenderer) => {
-    return (
-      <div style={{
-        position: 'relative', overflow: 'scroll', height: window.innerHeight * 0.8,
-      }}>
-        {innerRenderer()}
-      </div>
-    )
-  }
 
   const renderTitle = () => (
     <>
-      <Modal
-        visible={showChangesWillBeLost}
-        onOk={ignoreLostChanges}
-        onCancel={() => setShowChangesWillBeLost(false)}
-        okText='Leave this page'
-        cancelText='Stay on this page'
-        title='Unsaved changes'
-      >
-        <Space style={{ margin: '15px' }}>
-          <p>
-            You have unsaved settings changes. If you leave the page, these changes
-            will be lost.
-          </p>
-        </Space>
-      </Modal>
       <Row style={{ display: 'flex' }}>
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <Row style={{ display: 'flex' }} gutter={16}>
@@ -493,7 +450,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   id='runFilterButton'
                   data-testid='runFilterButton'
                   type='primary'
-                  onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+                  onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
                   disabled={!pipelineErrors.includes(pipelineStatusKey) && !changesOutstanding}
                 >
                   {pipelineErrors.includes(pipelineStatusKey) ? 'Run Data Processing' : 'Save changes'}
@@ -556,10 +513,73 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           </Row>
         </Col>
       </Row>
-
-
     </>
   );
+
+  const renderContent = () => {
+    if (pipelineRunning && !isStepComplete(key)) {
+      return <div><PipelineRedirectToDataProcessing pipelineStatus='runningStep' /></div>;
+    }
+
+    if (pipelineNotFinished && !isStepComplete(key)) {
+      return (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <PlatformError
+              description={'We don\'t have anything for this step.'}
+              reason={'The last run ended before this step could be finished.'}
+              onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    if (cellSets.loading || samples.meta.loading || processingConfig.meta.loading) {
+      return (
+        <div className='preloadContextSkeleton' style={{ padding: '16px 0px' }}>
+          <Skeleton.Input style={{ width: '100%', height: 400 }} active />
+        </div>
+      );
+    }
+
+    if (cellSets.error || samples.meta.error || processingConfig.meta.loadingSettingsError) {
+      return (
+        <PlatformError
+          error={cellSets.error.toString()}
+          onClick={() => { dispatch(loadCellSets(experimentId)); }}
+        />
+      );
+    }
+
+    const { render, key } = steps[stepIdx];
+
+    return (
+      <Space direction='vertical' style={{ width: '100%' }}>
+        {processingConfig[steps[stepIdx].key]?.enabled === false && stepDisabledByCondition &&
+          applicableFilters.map(filter =>
+            <Alert
+              message={disabledConditionMessage[filter]}
+              type="info"
+              showIcon
+            />
+          )
+        }
+
+        {processingConfig[steps[stepIdx].key]?.enabled === false && !stepDisabledByCondition &&
+          (
+            <Alert
+              message={'This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'}
+              type="info"
+              showIcon
+            />
+          )
+        }
+
+        {render(key, experimentId)}
+      </Space>
+    );
+  }
 
   return (
     <div style={{
@@ -576,71 +596,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       <Card
         title={renderTitle()}
       >
-        <Carousel lazyLoad='ondemand' ref={carouselRef} dots={false}>
-          {steps.map(({ render, key }) => {
-            if (pipelineRunning && !isStepComplete(key)) {
-              return <div><PipelineRedirectToDataProcessing pipelineStatus='runningStep' /></div>;
-            }
-
-            if (pipelineNotFinished && !isStepComplete(key)) {
-              return (
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <PlatformError
-                      description={'We don\'t have anything for this step.'}
-                      reason={'The last run ended before this step could be finished.'}
-                      onClick={() => { onPipelineRun(steps[stepIdx].key) }}
-                    />
-                  </div>
-                </div>
-              );
-            }
-
-            if (cellSets.loading || samples.meta.loading || processingConfig.meta.loading) {
-              return (
-                <div className='preloadContextSkeleton' style={{ padding: '16px 0px' }}>
-                  <Skeleton.Input style={{ width: '100%', height: 400 }} active />
-                </div>
-              );
-            }
-
-            if (cellSets.error || samples.meta.error || processingConfig.meta.loadingSettingsError) {
-              return (
-                <PlatformError
-                  error={cellSets.error.toString()}
-                  onClick={() => { dispatch(loadCellSets(experimentId)); }}
-                />
-              );
-            }
-
-            return (
-              <Space direction='vertical'>
-                {processingConfig[steps[stepIdx].key]?.enabled === false ?
-                  (
-                    stepDisabledByCondition ? (
-                      applicableFilters.map(filter =>
-                        < Alert
-                          message={disabledConditionMessage[filter]}
-                          type="info"
-                          showIcon
-                        />
-                      )
-                    ) : (
-                      < Alert
-                        message={'This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'}
-                        type="info"
-                        showIcon
-                      />
-                    )
-                  ) : <></>
-                }
-                { renderWithInnerScroll(() => render(key, experimentId))}
-              </Space>
-            )
-          })}
-        </Carousel>
+        {renderContent()}
       </Card>
-    </div >
+    </div>
   );
 };
 

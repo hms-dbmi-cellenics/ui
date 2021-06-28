@@ -35,9 +35,8 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
   + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
-  const { experimentId, onPipelineRun } = props;
+  const { experimentId, onPipelineRun, changedFilters } = props;
   const FILTER_UUID = 'configureEmbedding';
-
   const dispatch = useDispatch();
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
@@ -94,9 +93,12 @@ const CalculationConfig = (props) => {
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Run.
-
       setChangesOutstanding(true);
+<<<<<<< HEAD
       dispatch(updateNonSampleFilterSettings(
+=======
+      dispatch(updateProcessingSettings(
+>>>>>>> develop
         FILTER_UUID,
         diff,
       ));
@@ -104,7 +106,11 @@ const CalculationConfig = (props) => {
       // If it's a clustering change, debounce the save process at 1.5s.
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
 
+<<<<<<< HEAD
       dispatch(updateNonSampleFilterSettings(
+=======
+      dispatch(updateProcessingSettings(
+>>>>>>> develop
         FILTER_UUID,
         diff,
       ));
@@ -116,7 +122,13 @@ const CalculationConfig = (props) => {
   const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
-    dispatch(loadEmbedding(experimentId, embeddingMethod, true));
+    if (changedFilters?.current.size) {
+      // other steps are changed so we run the pipeline
+      changedFilters.current.add(FILTER_UUID);
+      onPipelineRun();
+    } else {
+      dispatch(loadEmbedding(experimentId, embeddingMethod, true));
+    }
   };
   const newChanges = changes;
 
@@ -303,7 +315,6 @@ const CalculationConfig = (props) => {
           >
             <Select
               value={changes.embeddingSettings.method}
-              // changes.({ embeddingSettings: { method: value } })
               onChange={(value) => {
                 newChanges.embeddingSettings.method = value;
                 setChanges({ ...newChanges });
@@ -425,6 +436,7 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
+  changedFilters: PropTypes.object.isRequired,
 };
 
 export default CalculationConfig;

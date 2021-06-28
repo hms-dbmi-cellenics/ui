@@ -51,7 +51,6 @@ const MiniPlot = (props) => {
   );
 
   const renderPlot = () => {
-    // Spinner for main window
     if (!config) {
       return (
         <center>
@@ -75,4 +74,4 @@ MiniPlot.propTypes = {
   actions: PropTypes.bool.isRequired,
 };
 
-export default MiniPlot;
+export default React.memo(MiniPlot);

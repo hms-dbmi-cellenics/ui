@@ -66,7 +66,7 @@ const DoubletScores = (props) => {
     if (!config) {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
-  }, [experimentId]);
+  }, []);
 
   const plotStylingControlsConfig = [
     {

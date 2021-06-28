@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-
 import React, { useEffect } from 'react';
+import Link from 'next/link';
 import {
   Row,
   Col,
@@ -47,7 +47,7 @@ const frequencyPlot = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }, [experimentId]);
+  }, []);
 
   const getCellOptions = (type) => {
     const filteredOptions = hierarchy.filter((element) => (
@@ -61,6 +61,7 @@ const frequencyPlot = ({ experimentId }) => {
 
   const optionsMetadata = getCellOptions('metadataCategorical');
   const optionsCellSets = getCellOptions('cellSets');
+  const dataExplorationPath = '/experiments/[experimentId]/data-exploration';
 
   useEffect(() => {
     if (!loading && config?.proportionGrouping === '') {
@@ -97,8 +98,11 @@ const frequencyPlot = ({ experimentId }) => {
     {
       panelTitle: 'Legend',
       footer: <Alert
-        message='Changing cell set colours is not currently available here.
-              Use the Data Management tool in Data Exploration to customise cell set colours.'
+        message={
+          ['Changing cell set colours is not currently available here. Use the Data Management tool in ',
+            <Link as={dataExplorationPath.replace('[experimentId]', experimentId)} href={dataExplorationPath} passHref>Data Exploration</Link>,
+            ' to customise cell set colours.']
+        }
         type='info'
       />,
       controls: [
@@ -146,9 +150,9 @@ const frequencyPlot = ({ experimentId }) => {
       frequencyType: value.target.value,
     });
     if (value.target.value === 'proportional') {
-      updatePlotWithChanges({ yaxisText: 'Proportion' });
+      updatePlotWithChanges({ axes: { yAxisText: 'Proportion' } });
     } else {
-      updatePlotWithChanges({ yaxisText: 'Count' });
+      updatePlotWithChanges({ axes: { yAxisText: 'Count' } });
     }
   };
 

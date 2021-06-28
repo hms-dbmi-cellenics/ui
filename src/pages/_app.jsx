@@ -110,7 +110,7 @@ const WrappedApp = ({ Component, pageProps }) => {
         return (
           <UnauthorizedPage
             title='Log in to continue'
-            subTitle={'You don\'t have access to this page.'}
+            subTitle="We can't show you this page."
             hint='You may be able to view it by logging in.'
           />
         );

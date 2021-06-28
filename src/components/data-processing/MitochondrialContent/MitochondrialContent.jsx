@@ -96,7 +96,7 @@ const MitochondrialContent = (props) => {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
-  }, [experimentId]);
+  }, []);
 
   useEffect(() => {
     if (config && plotData && expConfig) {

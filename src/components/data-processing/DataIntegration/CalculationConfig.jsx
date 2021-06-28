@@ -34,7 +34,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun, disabled, disableDataIntegration,
+    experimentId, onPipelineRun, disabled, disableDataIntegration, changedFilters,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -88,6 +88,7 @@ const CalculationConfig = (props) => {
   const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const updateSettings = (diff) => {
+    changedFilters?.current.add(FILTER_UUID);
     setChangesOutstanding(true);
     dispatch(updateNonSampleFilterSettings(
       FILTER_UUID,
@@ -118,7 +119,7 @@ const CalculationConfig = (props) => {
           {changesOutstanding && (
             <Form.Item>
               <Alert
-                message='Your changes are not yet applied. To rerun data integration, click Apply.'
+                message='Your changes are not yet applied. To rerun data integration, click Run.'
                 type='warning'
                 showIcon
               />
@@ -286,6 +287,7 @@ CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
+  changedFilters: PropTypes.object.isRequired,
   disableDataIntegration: PropTypes.bool,
 };
 

@@ -40,22 +40,30 @@ const DiffExprResults = (props) => {
       title: 'Avg log2FC',
       key: 'avg_log2FC',
       sorter: true,
+      showSorterTooltip: false,
     },
     {
       title: 'adj p-value',
       key: 'p_val_adj',
       sorter: true,
+      showSorterTooltip: false,
       render: (score, record) => <Tooltip title={`adj p-value: ${record.p_val_adj}`}>{score}</Tooltip>,
     },
     {
       title: 'Pct 1',
       key: 'pct_1',
       sorter: true,
+      showSorterTooltip: {
+        title: 'The percentage of cells where the feature is detected in the first group',
+      },
     },
     {
       title: 'Pct 2',
       key: 'pct_2',
       sorter: true,
+      showSorterTooltip: {
+        title: 'The percentage of cells where the feature is detected in the second group',
+      },
     },
   ];
 

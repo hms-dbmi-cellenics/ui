@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
 import {
-  updateBackendStatus, updateNonSampleFilterSettings,
-  updateSampleFilterSettings, loadedProcessingConfig,
+  updateBackendStatus, updateNonSampleFilterSettings, updateSampleFilterSettings,
+  loadedProcessingConfig, saveProcessingSettings,
 } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
@@ -26,7 +26,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
     }
     case updateTypes.GEM2S: {
       dispatch(updateBackendStatus(update.status));
-      return onGEM2SUpdate(update, dispatch);
+      return onGEM2SUpdate(update, dispatch, experimentId);
     }
     case updateTypes.WORKER_DATA_UPDATE: {
       return onWorkerUpdate(experimentId, update, dispatch);
@@ -95,12 +95,24 @@ const uglyTemporalFixedProcessingConfig = (processingConfig, filterName) => {
   return fixedProcessingConfig;
 };
 
-const onGEM2SUpdate = (update, dispatch) => {
+const onGEM2SUpdate = (update, dispatch, experimentId) => {
   const processingConfig = update?.item?.processingConfig;
   if (processingConfig) {
     let fixedProcessingConfig = uglyTemporalFixedProcessingConfig(processingConfig, 'classifier');
     fixedProcessingConfig = uglyTemporalFixedProcessingConfig(fixedProcessingConfig, 'mitochondrialContent');
     dispatch(loadedProcessingConfig(fixedProcessingConfig));
+
+    // adding default config to every filter with auto option
+    Object.keys(fixedProcessingConfig).forEach((step) => {
+      const currentObject = fixedProcessingConfig[step];
+      const settingsKey = Object.keys(currentObject).find((current) => currentObject[current].auto);
+      if (settingsKey) {
+        dispatch(updateNonSampleFilterSettings(
+          step, { defaultFilterSettings: fixedProcessingConfig[step][settingsKey] },
+        ));
+        dispatch(saveProcessingSettings(experimentId, step));
+      }
+    });
   }
 };
 

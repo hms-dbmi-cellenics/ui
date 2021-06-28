@@ -21,6 +21,7 @@ import {
 import Header from '../../../../../components/plots/Header';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import CategoricalEmbeddingPlot from '../../../../../components/plots/CategoricalEmbeddingPlot';
+import SelectData from '../../../../../components/plots/styling/embedding-continuous/SelectData';
 
 const { Panel } = Collapse;
 
@@ -42,7 +43,7 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
     // try to load the plot configuration.
     dispatch(loadCellSets(experimentId));
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }, [experimentId]);
+  }, []);
 
   const generateCellSetOptions = () => {
     if (cellSets.loading) {
@@ -113,6 +114,15 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
+      <Panel header='Select Data' key='15'>
+        {config && !cellSets.loading && !cellSets.error ? (
+          <SelectData
+            config={config}
+            onUpdate={updatePlotWithChanges}
+            cellSets={cellSets}
+          />
+        ) : <Skeleton.Input style={{ width: 200 }} active />}
+      </Panel>
       <Panel header='Group by' key='1'>
         <p>
           Select the cell set category you would like to group cells by.

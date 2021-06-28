@@ -18,6 +18,7 @@ const createCellSet = (experimentId, name, color, cellIds) => async (dispatch, g
     name,
     color,
     cellIds: new Set([...cellIds].map((id) => parseInt(id, 10))),
+    type: 'cellSets',
   };
 
   if (data.cellIds.size === 0) {

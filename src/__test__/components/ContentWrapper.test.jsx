@@ -71,7 +71,12 @@ describe('ContentWrapper', () => {
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);
-    expect(menus.length).toEqual(4);
+
+    // Menu item renders twice to support HOC usage (?)
+    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
+    const visibleMenuLength = menus.length / 2;
+
+    expect(visibleMenuLength).toEqual(4);
 
     const dataManagementLink = menus.at(0).find('Link');
     expect(dataManagementLink.props().as).toEqual('/data-management');
@@ -101,7 +106,12 @@ describe('ContentWrapper', () => {
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);
-    expect(menus.length).toEqual(4);
+
+    // Menu item renders twice to support HOC usage (?)
+    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
+    const visibleMenuLength = menus.length / 2;
+
+    expect(visibleMenuLength).toEqual(4);
 
     // Data Management is not disabled
     expect(menus.at(0).props().disabled).toEqual(false);
@@ -152,7 +162,12 @@ describe('ContentWrapper', () => {
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);
-    expect(menus.length).toEqual(4);
+
+    // Menu item renders twice to support HOC usage (?)
+    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
+    const visibleMenuLength = menus.length / 2;
+
+    expect(visibleMenuLength).toEqual(4);
 
     const pipelineRedirects = wrapper.find('PipelineRedirectToDataProcessing');
     expect(pipelineRedirects.length).toEqual(1);
