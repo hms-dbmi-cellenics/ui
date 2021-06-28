@@ -26,7 +26,7 @@ const { Text } = Typography;
 const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to compress points together. '
   + 'Larger values ensure embedded points are more evenly distributed, while '
   + 'smaller values allow the algorithm to optimise more accurately with regard '
-  + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.3.';
+  + 'to local structure. Expected range: 0.001 to 1. Default is 0.3.';
 
 const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some information and there are several methods available. '
   + 'PCA (Principal component analysis) is fast and preserves the global structure of the data, whereas nonlinear techniques '
