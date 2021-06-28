@@ -35,22 +35,30 @@ const GEM2SLoadingScreen = (props) => {
       title: 'Let\'s upload and pre-process data your data.',
       subTitle: 'Your data needs to be uploaded and pre-processed before it can be explored. To begin, go to Data Management.',
       showProgress: false,
+      image: '/undraw_To_the_stars_qhyy.svg',
+      alt: 'A rocket ship ready for take-off.',
     },
     running: {
       status: 'running',
       showProgress: true,
       title: '',
       subTitle: '',
+      image: '/undraw_Dev_focus_re_6iwt.svg',
+      alt: 'A woman working in front of a computer.',
     },
     error: {
       status: 'error',
       title: 'We\'ve had an issue while launching your analysis.',
       subTitle: 'You can launch another analysis or retry to launch the current analysis.',
+      image: '/undraw_Abstract_re_l9xy.svg',
+      alt: 'A woman confusedly staring at an abstract drawing.',
       showProgress: false,
     },
   };
 
-  const { status, title, subTitle } = texts[gem2sStatus];
+  const {
+    status, title, subTitle, image, alt,
+  } = texts[gem2sStatus];
 
   const renderExtra = () => {
     if (gem2sStatus === 'toBeRun') {
@@ -108,8 +116,8 @@ const GEM2SLoadingScreen = (props) => {
         <img
           width={250}
           height={250}
-          alt='A woman fitting an oversized clipboard next to other clipboards (illustration).'
-          src='/undraw_Timeline_re_aw6g.svg'
+          alt={alt}
+          src={image}
           style={{
             display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%',
           }}

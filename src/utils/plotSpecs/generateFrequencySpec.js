@@ -1,3 +1,7 @@
+import _ from 'lodash';
+
+import { intersection } from '../cellSetOperations';
+
 const generateSpec = (config, plotData) => {
   let legend = [];
 
@@ -33,6 +37,7 @@ const generateSpec = (config, plotData) => {
         columns: legendColumns,
         labelLimit,
       },
+
     ];
   }
   return {
@@ -48,6 +53,20 @@ const generateSpec = (config, plotData) => {
         name: 'plotData',
         values: plotData,
         transform: [
+          ...(
+            config.frequencyType === 'proportional' && [{
+              type: 'joinaggregate',
+              groupby: ['x'],
+              ops: ['sum'],
+              fields: ['y'],
+              as: ['totalY'],
+            }]
+          ),
+          ...(
+            config.frequencyType === 'proportional' && [
+              { type: 'formula', as: 'y', expr: '(datum.y / datum.totalY) * 100' },
+            ]
+          ),
           {
             type: 'stack',
             groupby: ['x'],
@@ -76,8 +95,12 @@ const generateSpec = (config, plotData) => {
       {
         name: 'c',
         type: 'ordinal',
-        range: { data: 'plotData', field: 'c' },
-        domain: { data: 'plotData', field: 'c' },
+        range: {
+          data: 'plotData', field: 'c',
+        },
+        domain: {
+          data: 'plotData', field: 'c',
+        },
       },
       {
         name: 'color',
@@ -158,77 +181,39 @@ const generateSpec = (config, plotData) => {
 };
 
 const generateData = (hierarchy, properties, config) => {
-  const calculateSum = (proportionClusters, xAxisClustersIds) => {
-    let sum = 0;
-
-    if (!xAxisClustersIds.length) {
-      proportionClusters.forEach((cellSetCluster) => {
-        sum += properties[cellSetCluster.key].cellIds.size;
-      });
-      return sum;
-    }
-    proportionClusters.forEach((cellSetCluster) => {
-      const cellSetIds = Array.from(properties[cellSetCluster.key].cellIds);
-      sum += xAxisClustersIds.filter((id) => cellSetIds.includes(id)).length;
-    });
-    return sum;
+  // The key of the cell set root nodes to display on the x and y axes.
+  const cellSetGroupByRoots = {
+    x: config.xAxisGrouping,
+    y: config.proportionGrouping,
   };
 
-  const getClustersForGrouping = (name) => hierarchy.filter((cluster) => (
-    cluster.key === name))[0]?.children;
+  // Get cell sets under the nodes.
+  const cellSets = _.mapValues(cellSetGroupByRoots, (key) => (
+    hierarchy.find((rootNode) => rootNode.key === key)?.children
+  ));
 
-  const populateData = (x, y, cluster, sum, data) => {
-    let value = y;
-    if (config.frequencyType === 'proportional') {
-      value = (y / sum) * 100;
-    }
-
-    data.push({
-      x,
-      y: value,
-      c: cluster.name,
-      color: cluster.color,
-    });
-
-    return data;
-  };
-
-  let data = [];
-
-  const proportionClusters = hierarchy.filter((cluster) => (
-    cluster.key === config.proportionGrouping))[0]?.children;
-
-  if (!proportionClusters) {
+  if (!cellSets.y) {
     return [];
   }
 
-  const clustersInXAxis = getClustersForGrouping(config.xAxisGrouping);
-  if (!clustersInXAxis) {
-    const sum = calculateSum(proportionClusters, []);
-    proportionClusters.forEach((clusterName) => {
-      const x = 1;
-      const y = properties[clusterName.key].cellIds.size;
-      const cluster = properties[clusterName.key];
-      data = populateData(x, y, cluster, sum, data);
-    });
-  } else {
-    clustersInXAxis.forEach((clusterInXAxis) => {
-      const clusterInXAxisIds = Array.from(properties[clusterInXAxis.key].cellIds);
+  // eslint-disable-next-line no-shadow
+  const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
 
-      const sum = calculateSum(proportionClusters, clusterInXAxisIds);
+  const cellSetCombinations = cartesian(cellSets.x, cellSets.y);
 
-      proportionClusters.forEach((clusterName) => {
-        const x = properties[clusterInXAxis.key].name;
-        const cellSetIds = Array.from(properties[clusterName.key].cellIds);
-        const y = clusterInXAxisIds.filter((id) => cellSetIds.includes(id)).length;
-        const cluster = properties[clusterName.key];
+  const data = cellSetCombinations.map(([{ key: xCellSetKey }, { key: yCellSetKey }]) => {
+    const xCellSet = properties[xCellSetKey];
+    const yCellSet = properties[yCellSetKey];
 
-        if (y !== 0) {
-          data = populateData(x, y, cluster, sum, data);
-        }
-      });
-    });
-  }
+    const sum = intersection([xCellSetKey, yCellSetKey], properties).size;
+
+    return {
+      x: xCellSet.name,
+      y: sum,
+      c: yCellSet.name,
+      color: yCellSet.color,
+    };
+  });
 
   return data;
 };

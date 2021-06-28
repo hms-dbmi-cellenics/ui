@@ -540,6 +540,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   );
 
   const renderContent = () => {
+    const { render, key } = steps[stepIdx];
+
     if (pipelineRunning && !isStepComplete(key)) {
       return <div><PipelineRedirectToDataProcessing pipelineStatus='runningStep' /></div>;
     }
@@ -574,8 +576,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         />
       );
     }
-
-    const { render, key } = steps[stepIdx];
 
     return (
       <Space direction='vertical' style={{ width: '100%' }}>
