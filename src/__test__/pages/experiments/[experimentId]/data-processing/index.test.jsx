@@ -149,10 +149,9 @@ describe('DataProcessingPage', () => {
     expect(card.length).toEqual(1);
 
     const runFilterButton = page.find('#runFilterButton').filter('Button');
-    expect(runFilterButton.length).toEqual(1);
 
-    // Run filter is disabled initially
-    expect(runFilterButton.at(0).props().disabled).toEqual(true);
+    // Run filter doesn't exist initially
+    expect(runFilterButton.length).toEqual(0);
   });
 
   it('triggers the pipeline on click run filter', async () => {
@@ -173,23 +172,21 @@ describe('DataProcessingPage', () => {
     });
 
     page.update();
-    // Run filter is enabled after changes take place
-    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(false);
 
-    act(() => {
-      page
-        .find('#runFilterButton').filter('Button')
-        .at(0).props()
-        .onClick();
-    });
+    const runFilterButton = page.find('#runFilterButton').filter('Button');
+
+    // Run filter shows up after changes take place
+    expect(runFilterButton.length).toEqual(1);
+
+    act(() => { runFilterButton.at(0).props().onClick(); });
 
     page.update();
 
     // Pipeline is triggered on clicking run button
     await waitForActions(store, [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING]);
 
-    // Run filter is disabled after triggering the pipeline
-    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);
+    // Run filter disappears after triggering the pipeline
+    expect(page.find('#runFilterButton').filter('Button').length).toEqual(0);
   });
 
   it('preFiltered on a sample disables filter', async () => {
@@ -209,7 +206,7 @@ describe('DataProcessingPage', () => {
       </Provider>,
     );
 
-    // Run filter button is disabled on the first
-    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);
+    // Run filter button doesn't show up on the first
+    expect(page.find('#runFilterButton').filter('Button').length).toEqual(0);
   });
 });
