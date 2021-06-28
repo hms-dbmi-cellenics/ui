@@ -12,7 +12,7 @@ const UnauthorizedPage = ({ title, subTitle, hint }) => (
     icon={(
       <img
         alt='People looking into bushes to find something (illustration).'
-        src='/undraw_not_found_60pq.svg'
+        src='/undraw_cancel_u1it.svg'
         width={250}
         height={250}
         style={{
