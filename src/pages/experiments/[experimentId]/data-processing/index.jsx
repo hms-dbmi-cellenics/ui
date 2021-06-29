@@ -329,7 +329,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       data-testid='runFilterButton'
       type='primary'
       onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
-      style={{ width: '80px' }}
+      style={{ minWidth: '80px' }}
     >
       {runMessage}
     </Button>
