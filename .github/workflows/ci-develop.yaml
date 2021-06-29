@@ -33,11 +33,6 @@ jobs:
         git config --global url."https://".insteadOf ssh://
         npm ci
 
-    - id: test-fail
-      name: This will fail!
-      run: |-
-        exit 1
-        
     - id: test
       name: Run unit tests
       run: |-
