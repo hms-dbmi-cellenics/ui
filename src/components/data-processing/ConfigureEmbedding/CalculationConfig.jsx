@@ -35,13 +35,15 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
   + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
-  const { experimentId, onPipelineRun, changedFilters } = props;
+  const { experimentId, onPipelineRun } = props;
   const FILTER_UUID = 'configureEmbedding';
   const dispatch = useDispatch();
 
   const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
+  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.changedQCFilters);
+
   const { method: clusteringMethod } = data?.clusteringSettings || {};
   const { method: embeddingMethod } = data?.embeddingSettings || {};
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
@@ -97,6 +99,7 @@ const CalculationConfig = (props) => {
       dispatch(updateProcessingSettings(
         FILTER_UUID,
         diff,
+        true,
       ));
     } else {
       // If it's a clustering change, debounce the save process at 1.5s.
@@ -114,9 +117,9 @@ const CalculationConfig = (props) => {
   const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
-    if (changedFilters?.current.size) {
+    if (changedQCFilters?.current.size) {
       // other steps are changed so we run the pipeline
-      changedFilters.current.add(FILTER_UUID);
+      changedQCFilters.current.add(FILTER_UUID);
       onPipelineRun();
     } else {
       dispatch(loadEmbedding(experimentId, embeddingMethod, true));
@@ -428,7 +431,6 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
-  changedFilters: PropTypes.object.isRequired,
 };
 
 export default CalculationConfig;

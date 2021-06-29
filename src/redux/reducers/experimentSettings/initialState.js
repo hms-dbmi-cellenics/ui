@@ -29,6 +29,7 @@ const initialState = {
       completingStepError: false,
       loadingSettingsError: false,
       selectedConfigureEmbeddingPlot: 'sample',
+      changedQCFilters: new Set(),
     },
   },
 };

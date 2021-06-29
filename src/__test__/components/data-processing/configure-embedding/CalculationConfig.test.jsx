@@ -40,7 +40,7 @@ describe('Data Processing CalculationConfig', () => {
     },
   };
 
-  const onPipelineRun = () => {};
+  const onPipelineRun = () => { };
 
   configure({ adapter: new Adapter() });
 

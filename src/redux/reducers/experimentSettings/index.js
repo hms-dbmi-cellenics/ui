@@ -12,6 +12,8 @@ import {
   EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED,
   EXPERIMENT_SETTINGS_COPY_SETTINGS_TO_ALL_SAMPLES,
   EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO,
+  EXPERIMENT_SETTINGS_ADD_CHANGED_QC_FILTER,
+  EXPERIMENT_SETTINGS_PIPELINE_START,
 } from '../../actionTypes/experimentSettings';
 
 import updateExperimentInfo from './updateExperimentInfo';
@@ -25,6 +27,8 @@ import backendStatusError from './backendStatusError';
 import setQCStepEnabled from './setQCStepEnabled';
 import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
 import setSampleFilterSettingsAuto from './setSampleFilterSettingsAuto';
+import addChangedQCFilter from './addChangedQCFilter';
+import pipelineStart from './pipelineStart';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -60,6 +64,12 @@ const experimentSettingsReducer = (state = initialState, action) => {
     }
     case EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO: {
       return setSampleFilterSettingsAuto(state, action);
+    }
+    case EXPERIMENT_SETTINGS_ADD_CHANGED_QC_FILTER: {
+      return addChangedQCFilter(state, action);
+    }
+    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+      return pipelineStart(state, action);
     }
     case HYDRATE: {
       const experimentInfo = action.payload.experimentSettings.info;

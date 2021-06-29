@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
@@ -9,7 +8,7 @@ import {
 } from '../../actionTypes/experimentSettings';
 import loadBackendStatus from '../experimentSettings/loadBackendStatus';
 
-const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState) => {
+const runPipeline = (experimentId) => async (dispatch, getState) => {
   dispatch({
     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
@@ -17,12 +16,12 @@ const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState)
     },
   });
 
-  if (!_.isArray(callerStepKeys)) {
-    // eslint-disable-next-line no-param-reassign
-    callerStepKeys = [callerStepKeys];
-  }
-  const processingConfig = callerStepKeys.map((key) => {
-    const currentConfig = getState().experimentSettings.processing[key];
+  const { processing } = getState().experimentSettings;
+
+  const { changedQCFilters } = processing.meta;
+
+  const changesToProcessingConfig = Array.from(changedQCFilters).map((key) => {
+    const currentConfig = processing[key];
     return {
       name: key,
       body: currentConfig,
@@ -44,7 +43,7 @@ const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState)
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          processingConfig,
+          processingConfig: changesToProcessingConfig,
         }),
       },
     );

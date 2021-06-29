@@ -34,7 +34,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun, disabled, disableDataIntegration, changedFilters,
+    onPipelineRun, disabled, disableDataIntegration,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -88,11 +88,11 @@ const CalculationConfig = (props) => {
   const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const updateSettings = (diff) => {
-    changedFilters?.current.add(FILTER_UUID);
     setChangesOutstanding(true);
     dispatch(updateProcessingSettings(
       FILTER_UUID,
       diff,
+      true,
     ));
   };
 
@@ -284,10 +284,8 @@ const CalculationConfig = (props) => {
 };
 
 CalculationConfig.propTypes = {
-  experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  changedFilters: PropTypes.object.isRequired,
   disableDataIntegration: PropTypes.bool,
 };
 

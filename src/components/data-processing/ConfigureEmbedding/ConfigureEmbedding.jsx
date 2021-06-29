@@ -29,7 +29,7 @@ import Loader from '../../Loader';
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
-  const { experimentId, onPipelineRun, changedFilters } = props;
+  const { experimentId, onPipelineRun } = props;
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
   const cellMeta = useSelector((state) => state.cellMeta);
@@ -396,7 +396,7 @@ const ConfigureEmbedding = (props) => {
         </Col>
 
         <Col flex='1 0px'>
-          <CalculationConfig experimentId={experimentId} onPipelineRun={onPipelineRun} changedFilters={changedFilters} />
+          <CalculationConfig experimentId={experimentId} onPipelineRun={onPipelineRun} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
@@ -416,7 +416,6 @@ const ConfigureEmbedding = (props) => {
 ConfigureEmbedding.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
-  changedFilters: PropTypes.object.isRequired,
 };
 
 export default ConfigureEmbedding;

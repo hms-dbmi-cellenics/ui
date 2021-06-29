@@ -50,7 +50,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
   const pipelineStatus = useSelector((state) => state.experimentSettings.backendStatus.status.pipeline);
-
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const samples = useSelector((state) => state.samples)
 
@@ -72,7 +71,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [applicableFilters, setApplicableFilters] = useState([])
   const [preFilteredSamples, setPreFilteredSamples] = useState([])
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
-  const changedFilters = useRef(new Set())
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
@@ -164,7 +162,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }
 
   const onConfigChange = (key) => {
-    changedFilters.current.add(key)
     setChangesOutstanding(true);
   };
 
@@ -297,8 +294,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <DataIntegration
           experimentId={expId}
           key={key}
-          changedFilters={changedFilters}
-          onPipelineRun={() => onPipelineRun(Array.from(changedFilters.current))}
+          onPipelineRun={() => onPipelineRun()}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
         />
       ),
@@ -312,8 +308,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <ConfigureEmbedding
           experimentId={expId}
           key={key}
-          changedFilters={changedFilters}
-          onPipelineRun={() => onPipelineRun(Array.from(changedFilters.current))}
+          onPipelineRun={() => onPipelineRun()}
         />
       ),
     },
@@ -328,7 +323,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       id='runFilterButton'
       data-testid='runFilterButton'
       type='primary'
-      onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
+      onClick={() => onPipelineRun()}
       style={{ minWidth: '80px' }}
     >
       {runMessage}
@@ -368,10 +363,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   };
 
   // Called when the pipeline is triggered to be run by the user.
-  const onPipelineRun = (steps) => {
+  const onPipelineRun = () => {
     setChangesOutstanding(false);
-    changedFilters.current = new Set();
-    dispatch((runPipeline(experimentId, steps)))
+    dispatch(runPipeline(experimentId))
   }
 
   const renderTitle = () => (
@@ -563,7 +557,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             <PlatformError
               description={'We don\'t have anything for this step.'}
               reason={'The last run ended before this step could be finished.'}
-              onClick={() => { onPipelineRun(steps[stepIdx].key) }}
+              onClick={() => { onPipelineRun() }}
             />
           </div>
         </div>
