@@ -18,6 +18,7 @@ const axesBaseState = {
   gridOpacity: 0,
   gridWidth: 10,
   domainWidth: 2,
+  xAxisLabelRotation: false,
 };
 
 const titleBaseState = {
