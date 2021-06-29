@@ -156,7 +156,7 @@ describe('DataProcessingPage', () => {
   });
 
   it('triggers the pipeline on click run filter', async () => {
-    const store = getStore();
+    const store = getStore({ experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
 
     const page = mount(
       <Provider store={store}>
@@ -180,11 +180,14 @@ describe('DataProcessingPage', () => {
     expect(runFilterButton.length).toEqual(1);
 
     act(() => { runFilterButton.at(0).props().onClick(); });
-
     page.update();
 
     // Pipeline is triggered on clicking run button
-    await waitForActions(store, [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING]);
+    await waitForActions(
+      store,
+      [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING],
+      { matcher: waitForActions.matchers.containing },
+    );
 
     // Run filter disappears after triggering the pipeline
     expect(page.find('#runFilterButton').filter('Button').length).toEqual(0);
