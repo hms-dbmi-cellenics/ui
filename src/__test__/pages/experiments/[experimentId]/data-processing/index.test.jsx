@@ -38,6 +38,7 @@ const getStore = (settings = {}) => {
           stepsDone: new Set([]),
           loadingSettingsError: false,
           completingStepError: false,
+          changedQCFilters: new Set(),
         },
       },
       backendStatus: {

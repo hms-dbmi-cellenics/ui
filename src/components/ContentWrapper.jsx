@@ -300,6 +300,7 @@ const ContentWrapper = (props) => {
 
     return (
       <Menu.Item
+        id={path}
         disabled={noExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
