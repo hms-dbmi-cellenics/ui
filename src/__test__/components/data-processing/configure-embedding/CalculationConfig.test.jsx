@@ -76,7 +76,6 @@ describe('Data Processing CalculationConfig', () => {
     const component = mount(
       <Provider store={store}>
         <CalculationConfig
-          changedFilters={{ current: new Set() }}
           experimentId='1234'
           width={50}
           height={50}
@@ -100,7 +99,6 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          changedFilters={{ current: new Set() }}
           onPipelineRun={onPipelineRun}
         />
       </Provider>,
@@ -124,7 +122,6 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          changedFilters={{ current: new Set() }}
           onPipelineRun={onPipelineRun}
         />
       </Provider>,
@@ -168,7 +165,6 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          changedFilters={{ current: new Set() }}
           onPipelineRun={onPipelineRun}
         />
       </Provider>,
@@ -190,7 +186,19 @@ describe('Data Processing CalculationConfig', () => {
   });
 
   it('Clicking run with other filters changed triggers the pipeline', async () => {
-    const store = mockStore(storeState);
+    const store = mockStore({
+      ...storeState,
+      experimentSettings: {
+        ...storeState.experimentSettings,
+        processing: {
+          ...storeState.experimentSettings.processing,
+          meta: {
+            changedQCFilters: new Set(['filter1', 'awesomeFilter']),
+          },
+        },
+      },
+    });
+
     const mockOnPipelineRun = jest.fn();
     const component = mount(
       <Provider store={store}>
@@ -198,11 +206,11 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          changedFilters={{ current: new Set(['filter1', 'awesomeFilter']) }}
           onPipelineRun={mockOnPipelineRun}
         />
       </Provider>,
     );
+
     act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
     component.update();
 
@@ -220,7 +228,6 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          changedFilters={{ current: new Set() }}
           onPipelineRun={mockOnPipelineRun}
         />
       </Provider>,

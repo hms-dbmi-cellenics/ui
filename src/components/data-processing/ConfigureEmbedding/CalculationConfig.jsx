@@ -12,6 +12,7 @@ import PreloadContent from '../../PreloadContent';
 import {
   updateProcessingSettings,
   saveProcessingSettings,
+  addChangedQCFilter,
 } from '../../../redux/actions/experimentSettings';
 
 import runCellSetsClustering from '../../../redux/actions/cellSets/runCellSetsClustering';
@@ -42,7 +43,7 @@ const CalculationConfig = (props) => {
   const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
-  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.changedQCFilters);
+  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
 
   const { method: clusteringMethod } = data?.clusteringSettings || {};
   const { method: embeddingMethod } = data?.embeddingSettings || {};
@@ -116,9 +117,9 @@ const CalculationConfig = (props) => {
   const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
     setChangesOutstanding(false);
-    if (changedQCFilters?.current.size) {
+    if (changedQCFilters.size) {
       // other steps are changed so we run the pipeline
-      changedQCFilters.current.add(FILTER_UUID);
+      dispatch(addChangedQCFilter(FILTER_UUID));
       onPipelineRun();
     } else {
       dispatch(loadEmbedding(experimentId, embeddingMethod, true));
