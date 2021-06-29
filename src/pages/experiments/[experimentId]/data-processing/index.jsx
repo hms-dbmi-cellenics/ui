@@ -344,7 +344,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           message={<>Your new settings are <br />not yet applied</>}
           type='info'
           showIcon
-          style={{ paddingTop: '0px', paddingBottom: '0px', paddingLeft: '10px', paddingRight: '10px', marginRight: '10px' }}
+          style={{ paddingTop: '0px', paddingBottom: '0px', paddingLeft: '10px', paddingRight: '10px' }}
           action={
             <Space size='small'>
               {renderRunButton('Run')}
@@ -491,7 +491,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         </Col>
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
           <Row>
-            <Col style={{ marginLeft: 'auto' }}>
+            <Col style={{ marginLeft: 'auto', marginRight: '10px' }}>
               {steps[stepIdx].multiSample && renderRunOrDiscardButtons()}
             </Col>
             <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex' }}>
