@@ -1,13 +1,6 @@
-import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE, EXPERIMENT_SETTINGS_ADD_CHANGED_QC_FILTER } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_PROCESSING_UPDATE } from '../../actionTypes/experimentSettings';
 
-const updateProcessingSettings = (step, configChange, isUserChange = false) => (dispatch) => {
-  if (isUserChange) {
-    dispatch({
-      type: EXPERIMENT_SETTINGS_ADD_CHANGED_QC_FILTER,
-      payload: { stepKey: step },
-    });
-  }
-
+const updateProcessingSettings = (step, configChange) => (dispatch) => {
   dispatch({
     type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
     payload: { step, configChange },

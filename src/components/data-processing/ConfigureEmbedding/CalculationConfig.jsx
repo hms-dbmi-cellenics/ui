@@ -99,7 +99,6 @@ const CalculationConfig = (props) => {
       dispatch(updateProcessingSettings(
         FILTER_UUID,
         diff,
-        true,
       ));
     } else {
       // If it's a clustering change, debounce the save process at 1.5s.

@@ -2,7 +2,11 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { createWrapper } from 'next-redux-wrapper';
+import { enableMapSet } from 'immer';
+
 import rootReducer from './reducers/index';
+
+enableMapSet();
 
 const bindMiddleware = (middleware) => {
   if (process.env.NODE_ENV !== 'production') {

@@ -9,6 +9,8 @@ import updateExperimentInfo from './updateExperimentInfo';
 import setQCStepEnabled from './setQCStepEnabled';
 import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
 import setSampleFilterSettingsAuto from './setSampleFilterSettingsAuto';
+import addChangedQCFilter from './addChangedQCFilter';
+import discardChangedQCFilters from './discardChangedQCFilters';
 
 export {
   loadProcessingSettings,
@@ -22,4 +24,6 @@ export {
   setQCStepEnabled,
   copyFilterSettingsToAllSamples,
   setSampleFilterSettingsAuto,
+  addChangedQCFilter,
+  discardChangedQCFilters,
 };

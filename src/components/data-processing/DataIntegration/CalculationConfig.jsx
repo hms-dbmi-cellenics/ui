@@ -92,7 +92,6 @@ const CalculationConfig = (props) => {
     dispatch(updateProcessingSettings(
       FILTER_UUID,
       diff,
-      true,
     ));
   };
 

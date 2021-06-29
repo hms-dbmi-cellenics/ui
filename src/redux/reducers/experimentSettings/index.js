@@ -14,6 +14,7 @@ import {
   EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO,
   EXPERIMENT_SETTINGS_ADD_CHANGED_QC_FILTER,
   EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from '../../actionTypes/experimentSettings';
 
 import updateExperimentInfo from './updateExperimentInfo';
@@ -29,6 +30,7 @@ import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
 import setSampleFilterSettingsAuto from './setSampleFilterSettingsAuto';
 import addChangedQCFilter from './addChangedQCFilter';
 import pipelineStart from './pipelineStart';
+import discardChangedQCFilters from './discardChangedQCFilters';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -67,6 +69,9 @@ const experimentSettingsReducer = (state = initialState, action) => {
     }
     case EXPERIMENT_SETTINGS_ADD_CHANGED_QC_FILTER: {
       return addChangedQCFilter(state, action);
+    }
+    case EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS: {
+      return discardChangedQCFilters(state, action);
     }
     case EXPERIMENT_SETTINGS_PIPELINE_START: {
       return pipelineStart(state, action);

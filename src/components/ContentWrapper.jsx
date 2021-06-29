@@ -19,7 +19,7 @@ import {
 import initUpdateSocket from '../utils/initUpdateSocket';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
-import { loadBackendStatus } from '../redux/actions/experimentSettings';
+import { loadBackendStatus, discardChangedQCFilters } from '../redux/actions/experimentSettings';
 import { runPipeline } from '../redux/actions/pipeline';
 
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -73,7 +73,7 @@ const ContentWrapper = (props) => {
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
 
-  const [changesNotAppliedModalVisible, setChangesNotAppliedModalVisible] = useState(false);
+  const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
 
   const updateSocket = useRef(null);
   useEffect(() => {
@@ -236,9 +236,9 @@ const ContentWrapper = (props) => {
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatus.SUCCEEDED
     && pipelineStatusKey === pipelineStatus.NOT_CREATED;
 
-  const transitionToModule = (e, path) => {
+  const transitionToModule = (path) => {
     if (changedQCFilters.size) {
-      setChangesNotAppliedModalVisible(true);
+      setChangesNotAppliedModalPath(path);
     } else {
       router.push(path);
     }
@@ -296,34 +296,40 @@ const ContentWrapper = (props) => {
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
     );
 
+    const realPath = path.replace('[experimentId]', experimentId);
+
     return (
       <Menu.Item
         disabled={noExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
-        onClick={(e) => { transitionToModule(e, path); }}
-        onKeyPress={(e) => { transitionToModule(e, path); }}
+        onClick={() => { transitionToModule(realPath); }}
+        onKeyPress={() => { transitionToModule(realPath); }}
       >
         <a>{name}</a>
-
-        {/* <Link onClick={(e) => { transitionToModule(e, path); }} as={path.replace('[experimentId]', experimentId)} href={path}>
-        </Link> */}
       </Menu.Item>
     );
   };
 
+  const onRunQC = () => {
+    dispatch(runPipeline(experimentId));
+    setChangesNotAppliedModalPath(null);
+  };
+
   const onDiscardQC = () => {
-    setChangesNotAppliedModalVisible(false);
-    // ...other effects of discard
+    router.push(changesNotAppliedModalPath);
+    setChangesNotAppliedModalPath(null);
+
+    dispatch(discardChangedQCFilters());
   };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <ChangesNotAppliedModal
-        visible={changesNotAppliedModalVisible}
-        onRun={() => { dispatch(runPipeline(experimentId)); }}
+        visible={changesNotAppliedModalPath !== null}
+        onRun={onRunQC}
         onDiscard={onDiscardQC}
-        onCancel={() => setChangesNotAppliedModalVisible(false)}
+        onCancel={() => setChangesNotAppliedModalPath(null)}
       />
 
       <Sider
