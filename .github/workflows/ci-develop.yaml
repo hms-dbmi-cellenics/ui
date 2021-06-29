@@ -133,6 +133,22 @@ jobs:
         env:
           IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
 
+      - id: test-fail
+        name: This will fail!
+        run: |-
+          exit 1
+
+      - id: send-to-slack
+        name: Send failure notification to Slack
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: pipelines
+          status: FAILED
+          color: danger
+
   deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-20.04
