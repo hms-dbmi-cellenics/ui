@@ -63,7 +63,7 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
     // having to run the pipelines
     if (process.env.NODE_ENV === 'development'
       && (status.gem2s.status === pipelineStatusValues.NOT_CREATED
-        || status.qc.status === pipelineStatusValues.NOT_CREATED)) {
+        || status.pipeline.status === pipelineStatusValues.NOT_CREATED)) {
       status = mockSuccessStatus;
     }
 
