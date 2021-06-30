@@ -4,9 +4,9 @@ import produce from 'immer';
 import initialState from '../initialState';
 
 const setSampleFilterSettingsAuto = produce((draft, action) => {
-  const { step, sampleId, enabled } = action.payload;
+  const { step, sampleId, isAuto } = action.payload;
 
-  draft.processing[step][sampleId].auto = enabled;
+  draft.processing[step][sampleId].auto = isAuto;
 }, initialState);
 
 export default setSampleFilterSettingsAuto;
