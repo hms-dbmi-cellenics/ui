@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import { Skeleton } from 'antd';
+import Loader from '../Loader';
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateViolinSpec';
 import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/actions/genes';
@@ -117,7 +117,7 @@ const ViolinPlot = (props) => {
       || highestDispersionLoading) {
       return (
         <center>
-          <Skeleton.Image style={{ width: 400, height: 400 }} />
+          <Loader />
         </center>
       );
     }
