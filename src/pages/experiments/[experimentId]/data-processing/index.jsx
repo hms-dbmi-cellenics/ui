@@ -79,7 +79,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }
 
   const disabledConditionMessage = {
-    prefilter: `This filter disabled because samples ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered. 
+    prefilter: `This filter disabled because samples ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered.
       Click 'Next' to continue processing your data.`,
     unisample: "This step is disabled as there is only one sample. Click 'Next' to continue processing your data."
   }
@@ -153,6 +153,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   // Checks if the step is in the 'completed steps' list we get from the pipeline status
   const isStepComplete = (stepName) => {
+    if (stepName === undefined) {
+      return true
+    }
+
     const lowerCaseStepName = stepName.toLowerCase();
 
     const stepAppearances = _.filter(completedSteps, (stepPipelineName) => {
@@ -517,6 +521,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   );
 
   const renderContent = () => {
+    const { render, key } = steps[stepIdx];
+
     if (pipelineRunning && !isStepComplete(key)) {
       return <div><PipelineRedirectToDataProcessing pipelineStatus='runningStep' /></div>;
     }
@@ -551,8 +557,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         />
       );
     }
-
-    const { render, key } = steps[stepIdx];
 
     return (
       <Space direction='vertical' style={{ width: '100%' }}>

@@ -375,7 +375,7 @@ const cellSizeDistributionKneePlot = {
   axes: {
     ...axesBaseState,
     xAxisText: 'Cell rank',
-    yAxisText: 'log #UMIs in cell',
+    yAxisText: '#UMIs in cell',
   },
   title: {
     ...titleBaseState,

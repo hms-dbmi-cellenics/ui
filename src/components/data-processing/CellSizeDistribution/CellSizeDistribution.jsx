@@ -62,7 +62,7 @@ const CellSizeDistribution = (props) => {
   const plots = {
     kneePlot: {
       title: 'Knee Plot',
-      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'cellSizeDistributionKneePlot',
       plot: (config, plotData, actions) => (
         <CellSizeDistributionKneePlot
@@ -75,7 +75,7 @@ const CellSizeDistribution = (props) => {
     },
     histogram: {
       title: 'Histogram',
-      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
       plotType: 'cellSizeDistributionHistogram',
       plot: (config, plotData, actions) => (
         <CellSizeDistributionHistogram
