@@ -56,7 +56,7 @@ const webpackConfigPlugins = (config, { dev }) => {
 
   config.plugins.push(...plugins);
 
-  return this;
+  return config;
 };
 
 module.exports = webpackConfigPlugins;
