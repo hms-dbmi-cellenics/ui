@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
 
 const withPlugins = require('next-compose-plugins');
 const less = require('@zeit/next-less');
@@ -113,14 +114,25 @@ const nextConfig = {
   experimental: {
     productionBrowserSourceMaps: true,
   },
-  webpack: (config, ...args) => webpackConfigSourcemaps(
-    webpackConfigRules(
-      webpackConfigPlugins(
-        config,
-        ...args,
-      ), ...args,
-    ), ...args,
-  ),
+  webpack: (config, params) => {
+    const { dev } = params;
+
+    const final = webpackConfigSourcemaps(
+      webpackConfigRules(
+        webpackConfigPlugins(
+          config,
+          params,
+        ), params,
+      ), params,
+    );
+
+    if (dev) {
+      console.log('WebPack build configuration:');
+      console.log(util.inspect(config, false, null, true /* enable colors */));
+    }
+
+    return final;
+  },
 };
 
 module.exports = withPlugins([

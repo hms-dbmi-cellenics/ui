@@ -7,7 +7,7 @@ const srcFolder = [
   path.resolve(__dirname, '../src/redux'),
 ];
 
-const webpackConfigRules = (config, { dev }) => {
+const webpackConfigRules = (config, { dev, isServer }) => {
   // Download fonts and vector graphics instead of direct linking.
   const rules = [
     {
@@ -58,6 +58,28 @@ const webpackConfigRules = (config, { dev }) => {
         },
       },
       loader: 'eslint-loader',
+    });
+  }
+
+  // to be refactored
+  if (isServer) {
+    // deal antd style
+    const antStyles = /antd\/.*?\/style.*?/;
+    const origExternals = [...config.externals];
+    config.externals = [
+      (context, request, callback) => {
+        if (request.match(antStyles)) return callback();
+        if (typeof origExternals[0] === 'function') {
+          origExternals[0](context, request, callback);
+        } else {
+          callback();
+        }
+      },
+      ...(typeof origExternals[0] === 'function' ? [] : origExternals),
+    ];
+    config.module.rules.unshift({
+      test: antStyles,
+      use: 'null-loader',
     });
   }
 

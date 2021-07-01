@@ -1,8 +1,6 @@
+/* eslint-disable no-param-reassign */
 const webpack = require('webpack');
-
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCssPlugin = require('optimize-css-assets-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 
 const webpackConfigPlugins = (config, { dev }) => {
@@ -19,49 +17,19 @@ const webpackConfigPlugins = (config, { dev }) => {
         generateStatsFile: true,
         statsFilename: 'stats.json',
       }),
+      new MomentLocalesPlugin(),
     );
   }
 
-  // Add certain plugins to non-dev builds
+  // Only load minimizer/optimizer plugins for production builds.
+  // Terser and OptimizeCss are automatically loaded in Webpack 4+.
   if (!dev) {
-    // eslint-disable-next-line no-param-reassign
+    config.mode = 'production';
+
     config.optimization = {
       ...config.optimization,
       minimize: true,
-      minimizer: [new TerserPlugin()],
     };
-
-    // new TerserPlugin({
-    //   cache: true,
-    //   terserOptions: {
-    //     sourceMap: true,
-    //     ecma: 6,
-    //     warnings: false,
-    //     extractComments: false,
-    //     output: {
-    //       comments: false,
-    //     },
-    //     compress: {
-    //       drop_console: false,
-    //     },
-    //     ie8: false,
-    //   },
-    // }),
-
-    plugins.push(
-      ...[
-
-        new OptimizeCssPlugin({
-          // eslint-disable-next-line global-require
-          cssProcessor: require('cssnano'),
-          cssProcessorOptions: {
-            discardComments: { removeAll: true },
-          },
-          canPrint: true,
-        }),
-        new MomentLocalesPlugin(),
-      ],
-    );
   }
 
   config.plugins.push(...plugins);
