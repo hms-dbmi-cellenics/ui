@@ -24,7 +24,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
   },
 }
@@ -51,7 +51,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
   },
 }
@@ -78,7 +78,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
   },
 }
@@ -178,7 +178,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
       "enabled": true,
@@ -307,7 +307,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
       "enabled": true,
@@ -444,7 +444,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
       "enabled": true,
@@ -573,7 +573,7 @@ Object {
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
       "enabled": true,
