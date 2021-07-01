@@ -118,7 +118,6 @@ const nextConfig = {
       ), ...args,
     ), ...args,
   ),
-  productionBrowserSourceMaps: true,
 };
 
 module.exports = withPlugins([
