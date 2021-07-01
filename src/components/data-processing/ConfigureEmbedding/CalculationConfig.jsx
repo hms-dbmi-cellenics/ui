@@ -9,10 +9,7 @@ import {
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import PreloadContent from '../../PreloadContent';
-import {
-  updateNonSampleFilterSettings,
-  saveProcessingSettings,
-} from '../../../redux/actions/experimentSettings';
+import { updateFilterSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
 
 import runCellSetsClustering from '../../../redux/actions/cellSets/runCellSetsClustering';
 import { loadEmbedding } from '../../../redux/actions/embedding';
@@ -94,7 +91,7 @@ const CalculationConfig = (props) => {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Run.
       setChangesOutstanding(true);
-      dispatch(updateNonSampleFilterSettings(
+      dispatch(updateFilterSettings(
         FILTER_UUID,
         diff,
       ));
@@ -102,7 +99,7 @@ const CalculationConfig = (props) => {
       // If it's a clustering change, debounce the save process at 1.5s.
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
 
-      dispatch(updateNonSampleFilterSettings(
+      dispatch(updateFilterSettings(
         FILTER_UUID,
         diff,
       ));

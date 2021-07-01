@@ -1,5 +1,3 @@
-import updateNonSampleFilterSettings from './processingConfig/updateNonSampleFilterSettings';
-import updateSampleFilterSettings from './processingConfig/updateSampleFilterSettings';
 import saveProcessingSettings from './processingConfig/saveProcessingSettings';
 import loadProcessingSettings from './processingConfig/loadProcessingSettings';
 import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
@@ -9,12 +7,11 @@ import updateExperimentInfo from './updateExperimentInfo';
 import setQCStepEnabled from './processingConfig/setQCStepEnabled';
 import copyFilterSettingsToAllSamples from './processingConfig/copyFilterSettingsToAllSamples';
 import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSettingsAuto';
+import updateFilterSettings from './processingConfig/updateFilterSettings';
 
 export {
   loadProcessingSettings,
   loadedProcessingConfig,
-  updateNonSampleFilterSettings,
-  updateSampleFilterSettings,
   saveProcessingSettings,
   loadBackendStatus,
   updateBackendStatus,
@@ -22,4 +19,5 @@ export {
   setQCStepEnabled,
   copyFilterSettingsToAllSamples,
   setSampleFilterSettingsAuto,
+  updateFilterSettings,
 };

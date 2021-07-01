@@ -8,7 +8,7 @@ import {
   Radio,
 } from 'antd';
 
-import { updateSampleFilterSettings, copyFilterSettingsToAllSamples, setSampleFilterSettingsAuto } from '../../redux/actions/experimentSettings';
+import { updateFilterSettings, copyFilterSettingsToAllSamples, setSampleFilterSettingsAuto } from '../../redux/actions/experimentSettings';
 
 const CalculationConfigContainer = (props) => {
   const {
@@ -23,7 +23,9 @@ const CalculationConfigContainer = (props) => {
 
   const copySettingsToAllSamples = () => {
     setDisplayIndividualChangesWarning(false);
-    dispatch(copyFilterSettingsToAllSamples(filterUuid, sampleId));
+    dispatch(
+      copyFilterSettingsToAllSamples(filterUuid, { auto, filterSettings: config }, sampleIds),
+    );
     onConfigChange();
   };
 
@@ -64,7 +66,7 @@ const CalculationConfigContainer = (props) => {
         config,
         plotType,
         updateSettings: (diff) => {
-          dispatch(updateSampleFilterSettings(filterUuid, sampleId, diff));
+          dispatch(updateFilterSettings(filterUuid, diff, sampleId));
           onFilterSettingsChange();
         },
         disabled: stepDisabled || auto,

@@ -1,9 +1,6 @@
 import _ from 'lodash';
 
-import {
-  updateBackendStatus, updateNonSampleFilterSettings, updateSampleFilterSettings,
-  loadedProcessingConfig, saveProcessingSettings,
-} from '../redux/actions/experimentSettings';
+import { updateBackendStatus, updateFilterSettings, loadedProcessingConfig } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 import { updateCellSetsClustering } from '../redux/actions/cellSets';
@@ -44,22 +41,11 @@ const onQCUpdate = (update, dispatch) => {
   const processingConfigUpdate = output.config;
 
   if (processingConfigUpdate) {
-    if (input.sampleUuid) {
-      dispatch(
-        updateSampleFilterSettings(
-          input.taskName,
-          input.sampleUuid,
-          processingConfigUpdate,
-        ),
-      );
-    } else {
-      dispatch(
-        updateNonSampleFilterSettings(
-          input.taskName,
-          processingConfigUpdate,
-        ),
-      );
-    }
+    dispatch(updateFilterSettings(
+      input.taskName,
+      processingConfigUpdate,
+      input.sampleUuid,
+    ));
 
     Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
       dispatch(updatePlotData(plotUuid, plotData));
@@ -100,19 +86,7 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
   if (processingConfig) {
     let fixedProcessingConfig = uglyTemporalFixedProcessingConfig(processingConfig, 'classifier');
     fixedProcessingConfig = uglyTemporalFixedProcessingConfig(fixedProcessingConfig, 'mitochondrialContent');
-    dispatch(loadedProcessingConfig(fixedProcessingConfig));
-
-    // adding default config to every filter with auto option
-    Object.keys(fixedProcessingConfig).forEach((step) => {
-      const currentObject = fixedProcessingConfig[step];
-      const settingsKey = Object.keys(currentObject).find((current) => currentObject[current].auto);
-      if (settingsKey) {
-        dispatch(updateNonSampleFilterSettings(
-          step, { defaultFilterSettings: fixedProcessingConfig[step][settingsKey] },
-        ));
-        dispatch(saveProcessingSettings(experimentId, step));
-      }
-    });
+    dispatch(loadedProcessingConfig(experimentId, fixedProcessingConfig, true));
   }
 };
 

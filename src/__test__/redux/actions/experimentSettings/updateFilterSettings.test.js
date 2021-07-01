@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import {
   EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
-import updateNonSampleFilterSettings from '../../../../redux/actions/experimentSettings/processingConfig/updateNonSampleFilterSettings';
+import updateFilterSettings from '../../../../redux/actions/experimentSettings/processingConfig/updateFilterSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');
@@ -22,7 +22,7 @@ describe('saveProcessingSettings', () => {
   it('Dispatches action when called with a correct settingName', async () => {
     const settingName = 'dataIntegration';
     const store = mockStore(mockState);
-    store.dispatch(updateNonSampleFilterSettings(settingName));
+    store.dispatch(updateFilterSettings(settingName));
 
     const action = store.getActions();
     expect(action.length).toEqual(1);
@@ -34,7 +34,7 @@ describe('saveProcessingSettings', () => {
     const store = mockStore(mockState);
 
     try {
-      store.dispatch(updateNonSampleFilterSettings(settingName));
+      store.dispatch(updateFilterSettings(settingName));
 
       // Had to add this disable because for some reason eslint doesn't realize fail exists
       // eslint-disable-next-line no-undef

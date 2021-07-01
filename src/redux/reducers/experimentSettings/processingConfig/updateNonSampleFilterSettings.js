@@ -1,6 +1,6 @@
 import _ from 'lodash';
 /* eslint-disable no-param-reassign */
-import produce, { original } from 'immer';
+import produce, { current } from 'immer';
 
 import initialState from '../initialState';
 import mergeObjectWithArrays from '../../../../utils/mergeObjectWithArrays';
@@ -10,7 +10,7 @@ const updateNonSampleFilterSettings = produce((draft, action) => {
 
   if (!step) throw new Error(`Invalid step parameter received: ${step}`);
 
-  const originalProcessingConfig = original(draft.processing)[step] ?? {};
+  const originalProcessingConfig = current(draft.processing)[step] ?? {};
 
   const newConfig = _.cloneDeep(originalProcessingConfig);
 

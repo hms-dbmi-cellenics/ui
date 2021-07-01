@@ -181,7 +181,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA',
       multiSample: true,
       render: (key) => (
-
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}

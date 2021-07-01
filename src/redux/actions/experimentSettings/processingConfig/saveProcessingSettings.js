@@ -12,6 +12,7 @@ import errorTypes from '../errorTypes';
 
 const saveProcessingSettings = (experimentId, settingName) => async (dispatch, getState) => {
   const content = getState().experimentSettings.processing[settingName];
+
   const url = `/v1/experiments/${experimentId}/processingConfig`;
   try {
     const response = await fetchAPI(

@@ -1,15 +1,14 @@
+import _ from 'lodash';
 /* eslint-disable no-param-reassign */
-import produce, { original } from 'immer';
+import produce from 'immer';
 
 import initialState from '../initialState';
 
 const copyFilterSettingsToAllSamples = produce((draft, action) => {
-  const { step, sampleId, allSampleIds } = action.payload;
+  const { step, newSettings, sampleIds } = action.payload;
 
-  const settingsToCopy = original(draft.processing[step][sampleId]);
-
-  allSampleIds.forEach((sampleIdToReplace) => {
-    draft.processing[step][sampleIdToReplace] = settingsToCopy;
+  sampleIds.forEach((sampleIdToReplace) => {
+    draft.processing[step][sampleIdToReplace] = _.cloneDeep(newSettings);
   });
 }, initialState);
 

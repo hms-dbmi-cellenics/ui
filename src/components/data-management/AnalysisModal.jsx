@@ -77,6 +77,12 @@ const NewExperimentModal = (props) => {
                             onLaunch(experiment.id);
                           }}
                           disabled={numFieldsEditing > 0 || isWorking}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              setIsWorking(true);
+                              onLaunch(experiment.id);
+                            }
+                          }}
                         >
                           Launch
                         </Button>
