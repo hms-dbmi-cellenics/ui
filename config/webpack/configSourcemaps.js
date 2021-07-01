@@ -8,8 +8,6 @@ const webpackConfigSourcemaps = (config, { dev, isServer }) => {
     config.devtool = 'source-map';
   }
 
-  config.experimental = { ...config.experimental, productionBrowserSourceMaps: true };
-
   if (!isServer) {
     config.node = {
       fs: 'empty',

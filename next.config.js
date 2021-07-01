@@ -110,6 +110,9 @@ const nextConfig = {
       },
     ];
   },
+  experimental: {
+    productionBrowserSourceMaps: true,
+  },
   webpack: (config, ...args) => webpackConfigSourcemaps(
     webpackConfigRules(
       webpackConfigPlugins(
