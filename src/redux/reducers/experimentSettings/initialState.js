@@ -28,7 +28,7 @@ const initialState = {
       loading: true,
       completingStepError: false,
       loadingSettingsError: false,
-      selectedConfigureEmbeddingPlot: 'sample',
+      selectedConfigureEmbeddingPlot: 'cellCluster',
       changedQCFilters: new Set(),
     },
   },

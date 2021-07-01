@@ -5,7 +5,7 @@ const generateSpec = (config, plotData) => {
 
   const minCellSizeItem = _.findLast(
     plotData,
-    (element) => element.log_u >= Math.log(config.minCellSize),
+    (element) => element.u >= config.minCellSize,
   );
 
   const minCellSizeRank = minCellSizeItem?.rank ?? 0;
@@ -65,7 +65,7 @@ const generateSpec = (config, plotData) => {
           },
           {
             type: 'filter',
-            expr: 'datum.log_u > 0 && datum.rank > 0',
+            expr: 'datum.u > 0 && datum.rank > 0',
           },
         ],
       },
@@ -100,10 +100,10 @@ const generateSpec = (config, plotData) => {
       },
       {
         name: 'yscale',
-        type: 'linear',
-        range: 'height',
+        type: 'log',
         nice: true,
-        domain: { data: 'plotData', field: 'log_u' },
+        range: 'height',
+        domain: { data: 'plotData', field: 'u' },
       },
       {
         name: 'color',
@@ -120,7 +120,7 @@ const generateSpec = (config, plotData) => {
         tickCount: 5,
         grid: true,
         zindex: 1,
-        title: { value: config.axes.xAxisText },
+        title: config.axes.xAxisText,
         titleFont: { value: config.fontStyle.font },
         labelFont: { value: config.fontStyle.font },
         titleFontSize: { value: config.axes.titleFontSize },
@@ -133,7 +133,7 @@ const generateSpec = (config, plotData) => {
         scale: 'yscale',
         grid: true,
         zindex: 1,
-        title: { value: config.axes.yAxisText },
+        title: config.axes.yAxisText,
         titleFont: { value: config.fontStyle.font },
         labelFont: { value: config.fontStyle.font },
         titleFontSize: { value: config.axes.titleFontSize },
@@ -147,11 +147,12 @@ const generateSpec = (config, plotData) => {
       {
         type: 'area',
         from: { data: 'lowerHalfPlotData' },
+        clip: true,
         encode: {
           enter: {
             x: { scale: 'xscale', field: 'rank' },
-            y: { scale: 'yscale', field: 'log_u' },
-            y2: { scale: 'yscale', value: 0 },
+            y: { scale: 'yscale', field: 'u' },
+            y2: { scale: 'yscale', value: 1 },
             fill: { value: 'green' },
           },
         },
@@ -159,11 +160,12 @@ const generateSpec = (config, plotData) => {
       {
         type: 'area',
         from: { data: 'higherHalfPlotData' },
+        clip: true,
         encode: {
           enter: {
             x: { scale: 'xscale', field: 'rank' },
-            y: { scale: 'yscale', field: 'log_u' },
-            y2: { scale: 'yscale', value: 0 },
+            y: { scale: 'yscale', field: 'u' },
+            y2: { scale: 'yscale', value: 1 },
             fill: { value: '#f57b42' },
           },
         },
@@ -184,7 +186,7 @@ const generateSpec = (config, plotData) => {
     ],
     legends: legend,
     title: {
-      text: { value: config.title.text },
+      text: config.title.text,
       anchor: { value: config.title.anchor },
       font: { value: config.fontStyle.font },
       dx: { value: config.title.dx },
