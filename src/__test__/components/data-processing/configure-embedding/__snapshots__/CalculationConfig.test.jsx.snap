@@ -21,7 +21,7 @@ Array [
       },
       "step": "configureEmbedding",
     },
-    "type": "experimentSettings/updateProcessing",
+    "type": "experimentSettings/updateNonSampleFilterSettings",
   },
   Object {
     "payload": Object {

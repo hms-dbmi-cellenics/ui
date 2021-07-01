@@ -1,22 +1,21 @@
-import updateProcessingSettings from './updateProcessingSettings';
-import updateSampleFilterSettings from './updateSampleFilterSettings';
-import saveProcessingSettings from './saveProcessingSettings';
-import loadProcessingSettings from './loadProcessingSettings';
-import loadedProcessingConfig from './loadedProcessingConfig';
-import loadBackendStatus from './loadBackendStatus';
-import updateBackendStatus from './updateBackendStatus';
+import loadBackendStatus from './backendStatus/loadBackendStatus';
+import updateBackendStatus from './backendStatus/updateBackendStatus';
+
+import saveProcessingSettings from './processingConfig/saveProcessingSettings';
+import loadProcessingSettings from './processingConfig/loadProcessingSettings';
+import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
+import setQCStepEnabled from './processingConfig/setQCStepEnabled';
+import copyFilterSettingsToAllSamples from './processingConfig/copyFilterSettingsToAllSamples';
+import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSettingsAuto';
+import addChangedQCFilter from './processingConfig/addChangedQCFilter';
+import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
+import updateFilterSettings from './processingConfig/updateFilterSettings';
+
 import updateExperimentInfo from './updateExperimentInfo';
-import setQCStepEnabled from './setQCStepEnabled';
-import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
-import setSampleFilterSettingsAuto from './setSampleFilterSettingsAuto';
-import addChangedQCFilter from './addChangedQCFilter';
-import discardChangedQCFilters from './discardChangedQCFilters';
 
 export {
   loadProcessingSettings,
   loadedProcessingConfig,
-  updateProcessingSettings,
-  updateSampleFilterSettings,
   saveProcessingSettings,
   loadBackendStatus,
   updateBackendStatus,
@@ -26,4 +25,5 @@ export {
   setSampleFilterSettingsAuto,
   addChangedQCFilter,
   discardChangedQCFilters,
+  updateFilterSettings,
 };

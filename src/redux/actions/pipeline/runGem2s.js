@@ -7,7 +7,7 @@ import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_INFO_UPDATE,
 } from '../../actionTypes/experimentSettings';
-import loadBackendStatus from '../experimentSettings/loadBackendStatus';
+import loadBackendStatus from '../experimentSettings/backendStatus/loadBackendStatus';
 
 const runGem2s = (experimentId) => async (dispatch, getState) => {
   const { experiments } = getState();
