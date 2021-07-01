@@ -194,7 +194,7 @@ const generateData = (hierarchy, properties, config) => {
     hierarchy.find((rootNode) => rootNode.key === key)?.children
   ));
 
-  if (!cellSets.y) {
+  if (!cellSets.x || !cellSets.y) {
     return [];
   }
 
