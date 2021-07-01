@@ -24,24 +24,33 @@ const webpackConfigPlugins = (config, { dev }) => {
 
   // Add certain plugins to non-dev builds
   if (!dev) {
+    // eslint-disable-next-line no-param-reassign
+    config.optimization = {
+      ...config.optimization,
+      minimize: true,
+      minimizer: [new TerserPlugin()],
+    };
+
+    // new TerserPlugin({
+    //   cache: true,
+    //   terserOptions: {
+    //     sourceMap: true,
+    //     ecma: 6,
+    //     warnings: false,
+    //     extractComments: false,
+    //     output: {
+    //       comments: false,
+    //     },
+    //     compress: {
+    //       drop_console: false,
+    //     },
+    //     ie8: false,
+    //   },
+    // }),
+
     plugins.push(
       ...[
-        new TerserPlugin({
-          cache: true,
-          terserOptions: {
-            sourceMap: true,
-            ecma: 6,
-            warnings: false,
-            extractComments: false,
-            output: {
-              comments: false,
-            },
-            compress: {
-              drop_console: false,
-            },
-            ie8: false,
-          },
-        }),
+
         new OptimizeCssPlugin({
           // eslint-disable-next-line global-require
           cssProcessor: require('cssnano'),
