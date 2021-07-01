@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
@@ -15,7 +15,6 @@ const FrequencyPlot = (props) => {
   const dispatch = useDispatch();
 
   const cellSets = useSelector((state) => state.cellSets);
-  const [plotSpec, setPlotSpec] = useState({});
 
   const {
     hierarchy, properties,
@@ -27,11 +26,7 @@ const FrequencyPlot = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (hierarchy && properties) {
-      setPlotSpec(generateSpec(config, generateData(hierarchy, properties, config)));
-    }
-  }, [hierarchy, properties]);
+  const plotSpec = generateSpec(config, generateData(hierarchy, properties, config));
 
   return (
     <center>
