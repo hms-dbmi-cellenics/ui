@@ -29,6 +29,7 @@ const webpackConfigPlugins = (config, { dev }) => {
         new TerserPlugin({
           cache: true,
           terserOptions: {
+            sourceMap: true,
             ecma: 6,
             warnings: false,
             extractComments: false,
