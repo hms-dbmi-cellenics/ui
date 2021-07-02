@@ -18,6 +18,8 @@ const updateFilterSettings = (step, diff, sampleId = null) => (dispatch) => {
       type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
       payload: { step, configChange: diff },
     });
+  } else {
+    throw new Error(`Invalid step parameter received: ${step}`);
   }
 };
 
