@@ -1,12 +1,12 @@
-import fetchAPI from '../../../utils/fetchAPI';
-import endUserMessages from '../../../utils/endUserMessages';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import fetchAPI from '../../../../utils/fetchAPI';
+import endUserMessages from '../../../../utils/endUserMessages';
+import { isServerError, throwIfRequestFailed } from '../../../../utils/fetchErrors';
 import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
-} from '../../actionTypes/experimentSettings';
-import pipelineStatusValues from '../../../utils/pipelineStatusValues';
+} from '../../../actionTypes/experimentSettings';
+import pipelineStatusValues from '../../../../utils/pipelineStatusValues';
 
 // used to mock a success backend status response from the API
 const date = (new Date()).toISOString();
@@ -68,6 +68,7 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
     }
 
     throwIfRequestFailed(response, status, endUserMessages.ERROR_FETCHING_STATUS);
+
     dispatch({
       type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
       payload: {

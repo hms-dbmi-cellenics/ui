@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
-import produce, { original } from 'immer';
+import produce, { current } from 'immer';
 
-import initialState from './initialState';
+import initialState from '../initialState';
 
 const backendStatusLoaded = produce((draft, action) => {
   const { status } = action.payload;
 
-  const previousStatus = original(draft.backendStatus?.status);
+  const previousStatus = current(draft.backendStatus?.status);
 
   const newStatus = {
     pipeline: status.pipeline ?? previousStatus?.pipeline,
