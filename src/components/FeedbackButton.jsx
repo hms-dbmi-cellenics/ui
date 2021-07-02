@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button, Dropdown, Card, Input, Space,
 } from 'antd';
 import { CommentOutlined, DownOutlined } from '@ant-design/icons';
+import { Auth } from 'aws-amplify';
 import endUserMessages from '../utils/endUserMessages';
 import pushNotificationMessage from '../utils/pushNotificationMessage';
 
@@ -11,6 +12,12 @@ const { TextArea } = Input;
 const FeedbackButton = () => {
   const [visible, setVisible] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    Auth.currentAuthenticatedUser().then((userData) => setUser(userData));
+  }, []);
+
 
   const HOOK_URL = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDAxNTVEWkZWTTAvQjAxOVlCQVJYSjkvTWNwRnF5RGtHSmE1WTd0dGFSZHpoQXNQ'; // pragma: allowlist secret
 
@@ -34,8 +41,35 @@ const FeedbackButton = () => {
               text: '*URL posted from:*',
             },
             {
-              type: 'mrkdwn',
+              type: 'plain_text',
               text: window.location.href,
+            },
+
+            {
+              type: 'mrkdwn',
+              text: '*User email:*',
+            },
+            {
+              type: 'plain_text',
+              text: user.attributes.email,
+            },
+
+            {
+              type: 'mrkdwn',
+              text: '*User name:*',
+            },
+            {
+              type: 'plain_text',
+              text: user.attributes.name,
+            },
+
+            {
+              type: 'mrkdwn',
+              text: '*User uuid:*',
+            },
+            {
+              type: 'plain_text',
+              text: user.attributes.sub,
             },
           ],
         },
