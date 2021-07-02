@@ -34,7 +34,7 @@ const AxesDesign = (props) => {
         />
       </Form.Item>
 
-      <Form.Item label='Axes Label Size'>
+      <Form.Item label='Axes Title Size'>
         <Slider
           value={newConfig.axes.titleFontSize}
           min={5}
@@ -58,7 +58,7 @@ const AxesDesign = (props) => {
         </Radio.Group>
       </Form.Item>
 
-      <Form.Item label='Axes Ticks Size'>
+      <Form.Item label='Axes Label Size'>
         <Slider
           value={newConfig.axes.labelFontSize}
           min={5}
@@ -82,7 +82,7 @@ const AxesDesign = (props) => {
         />
       </Form.Item>
 
-      <Form.Item label='Grid-line weight'>
+      <Form.Item label='Grid Line Weight'>
         <Slider
           value={newConfig.axes.gridOpacity}
           min={0}
