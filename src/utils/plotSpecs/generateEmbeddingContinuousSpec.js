@@ -81,6 +81,8 @@ const generateSpec = (config, plotData) => {
         titleColor: { value: config.colour.masterColour },
         labelFontSize: { value: config.axes.labelFontSize },
         domainWidth: { value: config.axes.domainWidth },
+        labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
+        labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
       },
       {
         scale: 'y',
