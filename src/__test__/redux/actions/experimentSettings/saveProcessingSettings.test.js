@@ -4,7 +4,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_SAVE,
 } from '../../../../redux/actionTypes/experimentSettings';
-import saveProcessingSettings from '../../../../redux/actions/experimentSettings/saveProcessingSettings';
+import saveProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');

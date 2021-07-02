@@ -17,7 +17,7 @@ import CalculationConfig from '../../../../components/data-processing/DataIntegr
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import {
-  EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+  EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
 
 jest.mock('localforage');
@@ -140,7 +140,7 @@ describe('Data Integration Calculation Config', () => {
     const actions = store.getActions();
     expect(actions.length).toEqual(1);
 
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_UPDATE);
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE);
   });
 
   it('button is disabled if there are no changes', () => {
@@ -178,7 +178,7 @@ describe('Data Integration Calculation Config', () => {
     // Alert disappears
     expect(component.find(Alert).length).toEqual(0);
 
-    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE]);
+    await waitForActions(store, [EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE]);
   });
 
   it('displays the correct proportion of variation explained value', async () => {

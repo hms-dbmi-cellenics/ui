@@ -25,7 +25,7 @@ import _ from 'lodash';
 
 import NormalisationOptions from './NormalisationOptions';
 
-import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
+import { updateFilterSettings } from '../../../redux/actions/experimentSettings';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Option } = Select;
@@ -90,7 +90,7 @@ const CalculationConfig = (props) => {
   const updateSettings = (diff) => {
     changedFilters?.current.add(FILTER_UUID);
     setChangesOutstanding(true);
-    dispatch(updateProcessingSettings(
+    dispatch(updateFilterSettings(
       FILTER_UUID,
       diff,
     ));

@@ -6,7 +6,7 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../../../redux/actionTypes/experimentSettings';
-import loadProcessingSettings from '../../../../redux/actions/experimentSettings/loadProcessingSettings';
+import loadProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';

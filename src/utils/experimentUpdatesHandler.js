@@ -1,9 +1,6 @@
 import _ from 'lodash';
 
-import {
-  updateBackendStatus, updateProcessingSettings, updateSampleFilterSettings,
-  loadedProcessingConfig, saveProcessingSettings,
-} from '../redux/actions/experimentSettings';
+import { updateBackendStatus, updateFilterSettings, loadedProcessingConfig } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 import { updateCellSetsClustering } from '../redux/actions/cellSets';
@@ -26,7 +23,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
     }
     case updateTypes.GEM2S: {
       dispatch(updateBackendStatus(update.status));
-      return onGEM2SUpdate(experimentId, update, dispatch);
+      return onGEM2SUpdate(update, dispatch, experimentId);
     }
     case updateTypes.WORKER_DATA_UPDATE: {
       return onWorkerUpdate(experimentId, update, dispatch);
@@ -42,23 +39,13 @@ const onQCUpdate = (update, dispatch) => {
   const { input, output } = update;
 
   const processingConfigUpdate = output.config;
+
   if (processingConfigUpdate) {
-    if (input.sampleUuid) {
-      dispatch(
-        updateSampleFilterSettings(
-          input.taskName,
-          input.sampleUuid,
-          processingConfigUpdate,
-        ),
-      );
-    } else {
-      dispatch(
-        updateProcessingSettings(
-          input.taskName,
-          processingConfigUpdate,
-        ),
-      );
-    }
+    dispatch(updateFilterSettings(
+      input.taskName,
+      processingConfigUpdate,
+      input.sampleUuid,
+    ));
 
     Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
       dispatch(updatePlotData(plotUuid, plotData));
@@ -94,24 +81,12 @@ const uglyTemporalFixedProcessingConfig = (processingConfig, filterName) => {
   return fixedProcessingConfig;
 };
 
-const onGEM2SUpdate = (experimentId, update, dispatch) => {
+const onGEM2SUpdate = (update, dispatch, experimentId) => {
   const processingConfig = update?.item?.processingConfig;
   if (processingConfig) {
     let fixedProcessingConfig = uglyTemporalFixedProcessingConfig(processingConfig, 'classifier');
     fixedProcessingConfig = uglyTemporalFixedProcessingConfig(fixedProcessingConfig, 'mitochondrialContent');
-    dispatch(loadedProcessingConfig(fixedProcessingConfig));
-
-    // adding default config to every filter with auto option
-    Object.keys(fixedProcessingConfig).forEach((key) => {
-      const currentObject = fixedProcessingConfig[key];
-      const settingsKey = Object.keys(currentObject).find((current) => currentObject[current].auto);
-      if (settingsKey) {
-        dispatch(updateProcessingSettings(
-          key, { defaultFilterSettings: fixedProcessingConfig[key][settingsKey] },
-        ));
-        dispatch(saveProcessingSettings(experimentId, key));
-      }
-    });
+    dispatch(loadedProcessingConfig(experimentId, fixedProcessingConfig, true));
   }
 };
 
