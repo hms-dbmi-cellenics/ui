@@ -164,6 +164,8 @@ const generateSpec = (config, plotData) => {
         titleFontSize: { value: config.axes.titleFontSize },
         titleColor: { value: config.colour.masterColour },
         labelFontSize: { value: config.axes.labelFontSize },
+        labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
+        labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
         encode: {
           labels: {
             update: {
