@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Button, Dropdown, Card, Input, Space,
 } from 'antd';
@@ -12,17 +12,13 @@ const { TextArea } = Input;
 const FeedbackButton = () => {
   const [visible, setVisible] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
-  const [user, setUser] = useState();
-
-  useEffect(() => {
-    Auth.currentAuthenticatedUser().then((userData) => setUser(userData));
-  }, []);
-
 
   const HOOK_URL = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDAxNTVEWkZWTTAvQjAxOVlCQVJYSjkvTWNwRnF5RGtHSmE1WTd0dGFSZHpoQXNQ'; // pragma: allowlist secret
 
   const submitFeedback = async () => {
     setVisible(false);
+
+    const user = await Auth.currentAuthenticatedUser();
 
     const feedbackData = {
       blocks: [
