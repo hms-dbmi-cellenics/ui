@@ -1,6 +1,3 @@
-import loadBackendStatus from './backendStatus/loadBackendStatus';
-import updateBackendStatus from './backendStatus/updateBackendStatus';
-
 import saveProcessingSettings from './processingConfig/saveProcessingSettings';
 import loadProcessingSettings from './processingConfig/loadProcessingSettings';
 import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
@@ -10,6 +7,9 @@ import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSetti
 import updateFilterSettings from './processingConfig/updateFilterSettings';
 import addChangedQCFilter from './processingConfig/addChangedQCFilter';
 import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
+
+import loadBackendStatus from './backendStatus/loadBackendStatus';
+import updateBackendStatus from './backendStatus/updateBackendStatus';
 
 import updateExperimentInfo from './updateExperimentInfo';
 

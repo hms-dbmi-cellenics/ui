@@ -17,9 +17,6 @@ import {
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from '../../actionTypes/experimentSettings';
 
-import updateExperimentInfo from './updateExperimentInfo';
-import pipelineStart from './pipelineStart';
-
 import updateNonSampleFilterSettings from './processingConfig/updateNonSampleFilterSettings';
 import updateSampleFilterSettings from './processingConfig/updateSampleFilterSettings';
 import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
@@ -32,6 +29,9 @@ import copyFilterSettingsToAllSamples from './processingConfig/copyFilterSetting
 import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSettingsAuto';
 import addChangedQCFilter from './processingConfig/addChangedQCFilter';
 import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
+
+import updateExperimentInfo from './updateExperimentInfo';
+import pipelineStart from './pipelineStart';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {
