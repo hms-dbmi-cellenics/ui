@@ -76,7 +76,7 @@ const nextConfig = {
       ), params,
     );
 
-    if (dev) {
+    if (!dev) {
       console.log('WebPack build configuration:');
       console.log(util.inspect(config, false, null, true /* enable colors */));
     }
