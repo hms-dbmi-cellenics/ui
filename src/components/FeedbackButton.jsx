@@ -18,7 +18,52 @@ const FeedbackButton = () => {
   const submitFeedback = async () => {
     setVisible(false);
 
-    const user = await Auth.currentAuthenticatedUser();
+    const pageContext = [
+      {
+        type: 'mrkdwn',
+        text: '*URL posted from:*',
+      },
+      {
+        type: 'mrkdwn',
+        text: window.location.href,
+      },
+    ];
+
+    let user;
+    try {
+      user = await Auth.currentAuthenticatedUser();
+    } catch (e) {
+      console.warn('User not authenticated')
+    }
+
+    const userContext = user ? [
+      {
+        type: 'mrkdwn',
+        text: '*User email:*',
+      },
+      {
+        type: 'mrkdwn',
+        text: user.attributes.email,
+      },
+
+      {
+        type: 'mrkdwn',
+        text: '*User name:*',
+      },
+      {
+        type: 'plain_text',
+        text: user.attributes.name,
+      },
+
+      {
+        type: 'mrkdwn',
+        text: '*User UUID:*',
+      },
+      {
+        type: 'plain_text',
+        text: user.username,
+      },
+    ] : [];
 
     const feedbackData = {
       blocks: [
@@ -32,41 +77,8 @@ const FeedbackButton = () => {
         {
           type: 'context',
           elements: [
-            {
-              type: 'mrkdwn',
-              text: '*URL posted from:*',
-            },
-            {
-              type: 'plain_text',
-              text: window.location.href,
-            },
-
-            {
-              type: 'mrkdwn',
-              text: '*User email:*',
-            },
-            {
-              type: 'plain_text',
-              text: user.attributes.email,
-            },
-
-            {
-              type: 'mrkdwn',
-              text: '*User name:*',
-            },
-            {
-              type: 'plain_text',
-              text: user.attributes.name,
-            },
-
-            {
-              type: 'mrkdwn',
-              text: '*User uuid:*',
-            },
-            {
-              type: 'plain_text',
-              text: user.attributes.sub,
-            },
+            ...pageContext,
+            ...userContext,
           ],
         },
       ],
