@@ -312,8 +312,6 @@ const CalculationConfig = (props) => {
                     method: value,
                   },
                 });
-
-                onConfigChange();
               }}
             >
               <Option value='umap'>UMAP</Option>

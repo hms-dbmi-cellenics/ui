@@ -65,6 +65,7 @@ describe('Data Processing CalculationConfig', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    mockOnConfigChange.mockClear();
   });
 
   it('renders correctly when nothing is loaded', () => {
@@ -121,7 +122,7 @@ describe('Data Processing CalculationConfig', () => {
     expect(form.length).toBeGreaterThan(0);
   });
 
-  it('a changed setting should show an alert', () => {
+  it('A changed setting should show an alert', () => {
     const changedStepStoreState = _.cloneDeep(storeState);
     changedStepStoreState.experimentSettings.processing.meta.changedQCFilters = new Set(['configureEmbedding']);
     const store = mockStore(changedStepStoreState);
