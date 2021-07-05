@@ -4,11 +4,13 @@ import {
   Modal, Typography, Space, Button,
 } from 'antd';
 
+import getUserFriendlyQCStepName from '../utils/getUserFriendlyQCStepName';
+
 const { Text } = Typography;
 
 const ChangesNotAppliedModal = (props) => {
   const {
-    visible, onRun, onDiscard, onCancel,
+    steps, visible, onRun, onDiscard, onCancel,
   } = props;
 
   return (
@@ -41,6 +43,18 @@ const ChangesNotAppliedModal = (props) => {
         <Space>
           <Text>
             Your new settings are not yet applied.
+            {steps && (
+              <>
+                {' '}
+                Modified steps are:
+                <br />
+                <b>
+                  {Array.from(steps).map(getUserFriendlyQCStepName).join(', ')}
+                  {' '}
+                </b>
+                <br />
+              </>
+            )}
             Would you like to rerun data processing with
             these new settings, or discard the changes?
           </Text>
@@ -52,6 +66,7 @@ const ChangesNotAppliedModal = (props) => {
 };
 
 ChangesNotAppliedModal.propTypes = {
+  steps: PropTypes.any,
   visible: PropTypes.bool,
   onRun: PropTypes.func.isRequired,
   onDiscard: PropTypes.func.isRequired,
@@ -59,6 +74,7 @@ ChangesNotAppliedModal.propTypes = {
 };
 
 ChangesNotAppliedModal.defaultProps = {
+  steps: null,
   visible: false,
   onCancel: null,
 };

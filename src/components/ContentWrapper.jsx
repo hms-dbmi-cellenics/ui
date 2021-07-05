@@ -327,6 +327,7 @@ const ContentWrapper = (props) => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <ChangesNotAppliedModal
+        steps={changedQCFilters}
         visible={changesNotAppliedModalPath !== null}
         onRun={onRunQC}
         onDiscard={onDiscardQC}

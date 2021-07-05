@@ -7,9 +7,9 @@ import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
 import setQCStepEnabled from './processingConfig/setQCStepEnabled';
 import copyFilterSettingsToAllSamples from './processingConfig/copyFilterSettingsToAllSamples';
 import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSettingsAuto';
+import updateFilterSettings from './processingConfig/updateFilterSettings';
 import addChangedQCFilter from './processingConfig/addChangedQCFilter';
 import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
-import updateFilterSettings from './processingConfig/updateFilterSettings';
 
 import updateExperimentInfo from './updateExperimentInfo';
 

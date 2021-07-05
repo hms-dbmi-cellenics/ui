@@ -36,9 +36,11 @@ import StatusIndicator from '../../../../components/data-processing/StatusIndica
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 
+import getUserFriendlyQCStepName from '../../../../utils/getUserFriendlyQCStepName';
+
 import {
   loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
-  addChangedQCFilter, discardChangedQCFilters
+  addChangedQCFilter, updateNonSampleFilterSettings, discardChangedQCFilters
 } from '../../../../redux/actions/experimentSettings';
 
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
@@ -181,7 +183,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
 
       key: 'classifier',
-      name: 'Classifier filter',
+      name: getUserFriendlyQCStepName('classifier'),
       description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA',
       multiSample: true,
       render: (key) => (
@@ -205,7 +207,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
     {
       key: 'cellSizeDistribution',
-      name: 'Cell size distribution filter',
+      name: getUserFriendlyQCStepName('cellSizeDistribution'),
       description: 'The number of unique molecular identifiers (#UMIs) per cell distinguishes real cells (high #UMIs per cell) from empty droplets (low #UMIs per cell). This filter is used to detect empty droplets and fine-tunes the Classifier filter. In some datasets this filter might be used instead of the Classifier filter.',
       multiSample: true,
       render: (key) => (
@@ -228,7 +230,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
     {
       key: 'mitochondrialContent',
-      name: 'Mitochondrial content filter',
+      name: getUserFriendlyQCStepName('mitochondrialContent'),
       description: 'A high percentage of mitochondrial reads is an indicator of cell death. UMIs mapped to mitochondrial genes are calculated as a percentage of total UMIs. The percentage of mitochondrial reads depends on the cell type. The typical cut-off range is 10-50%, with the default cut-off set to 20%.',
       multiSample: true,
       render: (key) => (
@@ -251,7 +253,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
     {
       key: 'numGenesVsNumUmis',
-      name: 'Number of genes vs UMIs filter',
+      name: getUserFriendlyQCStepName('numGenesVsNumUmis'),
       description: 'The number of expressed genes per cell and number of UMIs per cell is expected to have a linear relationship. This filter is used to exclude outliers (e.g. many UMIs originating from only a few genes).',
       multiSample: true,
       render: (key) => (
@@ -274,7 +276,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
     {
       key: 'doubletScores',
-      name: 'Doublet filter',
+      name: getUserFriendlyQCStepName('doubletScores'),
       description: <span>Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see <a href="https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding" target="_blank">scDblFinder thresholding</a>.</span>,
       multiSample: true,
       render: (key) => (
@@ -297,20 +299,20 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
     {
       key: 'dataIntegration',
-      name: 'Data integration',
+      name: getUserFriendlyQCStepName('dataIntegration'),
       multiSample: false,
       render: (key, expId) => (
         <DataIntegration
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun()}
+          onConfigChange={() => onConfigChange(key)}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
         />
       ),
     },
     {
       key: 'configureEmbedding',
-      name: 'Configure embedding',
+      name: getUserFriendlyQCStepName('configureEmbedding'),
       description: 'Single cell data is very complex. To visualize the relationship (similarity) between cells, we need to reduce this complexity (dimension reduction) to be able to plot (embedd into 2D space).',
       multiSample: false,
       render: (key, expId) => (
@@ -318,6 +320,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           experimentId={expId}
           key={key}
           onPipelineRun={() => onPipelineRun()}
+          onConfigChange={() => onConfigChange(key)}
         />
       ),
     },
@@ -499,7 +502,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
           <Row>
             <Col style={{ marginLeft: 'auto', marginRight: '10px' }}>
-              {steps[stepIdx].multiSample && renderRunOrDiscardButtons()}
+              {renderRunOrDiscardButtons()}
             </Col>
             <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex' }}>
               <Space>
