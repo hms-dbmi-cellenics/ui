@@ -196,7 +196,7 @@ const FileUploadModal = (props) => {
 
         {filesList.length ? (
           <>
-            <Divider orientation='center'>Uploaded files</Divider>
+            <Divider orientation='center'>To upload</Divider>
             <ul style={{
               columnCount: 4, listStyleType: 'none', padding: 0, margin: 0,
             }}
