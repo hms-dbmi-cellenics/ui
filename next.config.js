@@ -7,9 +7,6 @@ const withPlugins = require('next-compose-plugins');
 const less = require('@zeit/next-less');
 const css = require('@zeit/next-css');
 const images = require('next-images');
-const bundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
 
 const lessToJS = require('less-vars-to-js');
 const webpackConfigPlugins = require('./config/webpack/configPlugins');
@@ -42,53 +39,6 @@ fs.writeFileSync(
 if (typeof require !== 'undefined') {
   require.extensions['.less'] = () => { };
 }
-
-// module.exports = {
-
-//   webpack: (config, {
-//     dev, isServer,
-//   }) => {
-//     if (isServer) {
-//       // deal antd style
-//       const antStyles = /antd\/.*?\/style.*?/;
-//       const origExternals = [...config.externals];
-//       config.externals = [
-//         (context, request, callback) => {
-//           if (request.match(antStyles)) return callback();
-//           if (typeof origExternals[0] === 'function') {
-//             origExternals[0](context, request, callback);
-//           } else {
-//             callback();
-//           }
-//         },
-//         ...(typeof origExternals[0] === 'function' ? [] : origExternals),
-//       ];
-//       config.module.rules.unshift({
-//         test: antStyles,
-//         use: 'null-loader',
-//       });
-//     }
-
-//     if (!dev) {
-//       // polyfill IE11
-//       const originalEntry = config.entry;
-//       config.entry = async () => {
-//         const entries = await originalEntry();
-//         if (
-//           entries['main.js']
-//           && !entries['main.js'].includes('./assets/polyfills.js')
-//         ) {
-//           entries['main.js'].unshift('./assets/polyfills.js');
-//         }
-//         return entries;
-//       };
-//     }
-//     return config;
-//   },
-
-// };
-
-// Configure what Webpack plugins to load in.
 
 const nextConfig = {
   // Redirects enforced by Next.
