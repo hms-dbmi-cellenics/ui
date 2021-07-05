@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import {
   Select, Form, Alert, Button,
 } from 'antd';
@@ -41,6 +42,7 @@ describe('Data Processing CalculationConfig', () => {
   };
 
   const onPipelineRun = () => { };
+  const mockOnConfigChange = jest.fn(() => {});
 
   configure({ adapter: new Adapter() });
 
@@ -59,6 +61,10 @@ describe('Data Processing CalculationConfig', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResolvedValue(response);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('renders correctly when nothing is loaded', () => {
@@ -80,6 +86,7 @@ describe('Data Processing CalculationConfig', () => {
           width={50}
           height={50}
           onPipelineRun={onPipelineRun}
+          onConfigChange={mockOnConfigChange}
         />
       </Provider>,
     );
@@ -100,6 +107,7 @@ describe('Data Processing CalculationConfig', () => {
           width={50}
           height={50}
           onPipelineRun={onPipelineRun}
+          onConfigChange={mockOnConfigChange}
         />
       </Provider>,
     );
@@ -113,7 +121,33 @@ describe('Data Processing CalculationConfig', () => {
     expect(form.length).toBeGreaterThan(0);
   });
 
-  it('changing an embedding setting should trigger an alert', () => {
+  it('a changed setting should show an alert', () => {
+    const changedStepStoreState = _.cloneDeep(storeState);
+    changedStepStoreState.experimentSettings.processing.meta.changedQCFilters = new Set(['configureEmbedding']);
+    const store = mockStore(changedStepStoreState);
+
+    const component = mount(
+      <Provider store={store}>
+        <CalculationConfig
+          experimentId='1234'
+          width={50}
+          height={50}
+          onPipelineRun={onPipelineRun}
+          onConfigChange={mockOnConfigChange}
+        />
+      </Provider>,
+    );
+
+    // The alert should show up.
+    const alert = component.find(Alert);
+    expect(alert.length).toEqual(1);
+
+    // The button should be enabled.
+    const button = component.find(Button);
+    expect(button.at(0).getElement().props.disabled).toEqual(false);
+  });
+
+  it('a changed setting should trigger an onConfigChange callback', () => {
     const store = mockStore(storeState);
 
     const component = mount(
@@ -123,41 +157,28 @@ describe('Data Processing CalculationConfig', () => {
           width={50}
           height={50}
           onPipelineRun={onPipelineRun}
+          onConfigChange={mockOnConfigChange}
         />
       </Provider>,
     );
 
-    // There should no spinner anymore.
-    const preloadContent = component.find('PreloadContent');
-    expect(preloadContent.length).toEqual(0);
-
-    // There should be a form loaded.
-    const form = component.find(Form);
-    expect(form.length).toBeGreaterThan(0);
-
-    // There should be no alert loaded.
-    let alert = component.find(Alert);
-    expect(alert.length).toEqual(0);
-
     // The Apply button should be disabled.
-    let button = component.find(Button);
+    const button = component.find(Button);
+
     expect(button.at(0).getElement().props.disabled).toEqual(true);
 
     // Switching the embedding type...
     act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
+
     component.update();
 
-    // The alert should appear.
-    alert = component.find(Alert);
-    expect(alert.length).toEqual(1);
-
-    // The button should enable.
-    button = component.find(Button);
-    expect(button.at(0).getElement().props.disabled).toEqual(false);
+    expect(mockOnConfigChange).toHaveBeenCalledTimes(1);
   });
 
   it('clicking on button triggers save action and reloading of plot data', async () => {
-    const store = mockStore(storeState);
+    const changedStepStoreState = _.cloneDeep(storeState);
+    changedStepStoreState.experimentSettings.processing.meta.changedQCFilters = new Set(['configureEmbedding']);
+    const store = mockStore(changedStepStoreState);
 
     const component = mount(
       <Provider store={store}>
@@ -166,15 +187,12 @@ describe('Data Processing CalculationConfig', () => {
           width={50}
           height={50}
           onPipelineRun={onPipelineRun}
+          onConfigChange={mockOnConfigChange}
         />
       </Provider>,
     );
 
-    // Switching the embedding type...
-    act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
-    component.update();
-
-    // ... and clicking the Apply button.
+    // Clicking the Apply button.
     const button = component.find(Button);
 
     button.simulate('click', {});
@@ -207,6 +225,7 @@ describe('Data Processing CalculationConfig', () => {
           width={50}
           height={50}
           onPipelineRun={mockOnPipelineRun}
+          onConfigChange={mockOnConfigChange}
         />
       </Provider>,
     );
@@ -229,6 +248,7 @@ describe('Data Processing CalculationConfig', () => {
           width={50}
           height={50}
           onPipelineRun={mockOnPipelineRun}
+          onConfigChange={mockOnConfigChange}
         />
       </Provider>,
     );
