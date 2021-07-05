@@ -9,8 +9,9 @@ import {
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import PreloadContent from '../../PreloadContent';
+
 import {
-  updateProcessingSettings,
+  updateFilterSettings,
   saveProcessingSettings,
   addChangedQCFilter,
 } from '../../../redux/actions/experimentSettings';
@@ -97,7 +98,7 @@ const CalculationConfig = (props) => {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Run.
       setChangesOutstanding(true);
-      dispatch(updateProcessingSettings(
+      dispatch(updateFilterSettings(
         FILTER_UUID,
         diff,
       ));
@@ -105,7 +106,7 @@ const CalculationConfig = (props) => {
       // If it's a clustering change, debounce the save process at 1.5s.
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
 
-      dispatch(updateProcessingSettings(
+      dispatch(updateFilterSettings(
         FILTER_UUID,
         diff,
       ));

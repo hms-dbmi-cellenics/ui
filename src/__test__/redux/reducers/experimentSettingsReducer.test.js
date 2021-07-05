@@ -5,7 +5,7 @@ import initialState from '../../../redux/reducers/experimentSettings/initialStat
 import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
 
 import {
-  EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+  EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
   EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
@@ -55,7 +55,7 @@ describe('experimentSettingsReducer', () => {
   it('Updates existing value properly', () => {
     const newState = experimentSettingsReducer(initialState,
       {
-        type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+        type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
         payload:
         {
           step: 'configureEmbedding',
@@ -70,7 +70,7 @@ describe('experimentSettingsReducer', () => {
   it('Adds new value properly', () => {
     const newState = experimentSettingsReducer(initialState,
       {
-        type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+        type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
         payload:
         {
           step: 'configureEmbedding',
@@ -85,7 +85,7 @@ describe('experimentSettingsReducer', () => {
   it('Adds new object properly', () => {
     const newState = experimentSettingsReducer(initialState,
       {
-        type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+        type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
         payload:
         {
           step: 'configureEmbedding',

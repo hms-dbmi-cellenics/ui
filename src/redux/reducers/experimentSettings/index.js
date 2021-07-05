@@ -3,7 +3,7 @@ import initialState from './initialState';
 import {
   EXPERIMENT_SETTINGS_INFO_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
-  EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+  EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
   EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
@@ -17,20 +17,21 @@ import {
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from '../../actionTypes/experimentSettings';
 
+import updateNonSampleFilterSettings from './processingConfig/updateNonSampleFilterSettings';
+import updateSampleFilterSettings from './processingConfig/updateSampleFilterSettings';
+import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
+import processingSettingsError from './processingConfig/processingSettingsError';
+import backendStatusLoading from './backendStatus/backendStatusLoading';
+import backendStatusLoaded from './backendStatus/backendStatusLoaded';
+import backendStatusError from './backendStatus/backendStatusError';
+import setQCStepEnabled from './processingConfig/setQCStepEnabled';
+import copyFilterSettingsToAllSamples from './processingConfig/copyFilterSettingsToAllSamples';
+import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSettingsAuto';
+import addChangedQCFilter from './processingConfig/addChangedQCFilter';
+import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
+
 import updateExperimentInfo from './updateExperimentInfo';
-import updateProcessingSettings from './updateProcessingSettings';
-import updateSampleFilterSettings from './updateSampleFilterSettings';
-import loadedProcessingConfig from './loadedProcessingConfig';
-import processingSettingsError from './processingSettingsError';
-import backendStatusLoading from './backendStatusLoading';
-import backendStatusLoaded from './backendStatusLoaded';
-import backendStatusError from './backendStatusError';
-import setQCStepEnabled from './setQCStepEnabled';
-import copyFilterSettingsToAllSamples from './copyFilterSettingsToAllSamples';
-import setSampleFilterSettingsAuto from './setSampleFilterSettingsAuto';
-import addChangedQCFilter from './addChangedQCFilter';
 import pipelineStart from './pipelineStart';
-import discardChangedQCFilters from './discardChangedQCFilters';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -40,8 +41,8 @@ const experimentSettingsReducer = (state = initialState, action) => {
     case EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED: {
       return loadedProcessingConfig(state, action);
     }
-    case EXPERIMENT_SETTINGS_PROCESSING_UPDATE: {
-      return updateProcessingSettings(state, action);
+    case EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE: {
+      return updateNonSampleFilterSettings(state, action);
     }
     case EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE: {
       return updateSampleFilterSettings(state, action);

@@ -6,7 +6,7 @@ import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_START,
 } from '../../actionTypes/experimentSettings';
-import loadBackendStatus from '../experimentSettings/loadBackendStatus';
+import loadBackendStatus from '../experimentSettings/backendStatus/loadBackendStatus';
 
 const runPipeline = (experimentId) => async (dispatch, getState) => {
   dispatch({

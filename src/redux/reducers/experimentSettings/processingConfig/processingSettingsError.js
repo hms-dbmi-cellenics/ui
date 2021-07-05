@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 
-import initialState from './initialState';
+import initialState from '../initialState';
 
 const processingSettingsError = produce((draft, action) => {
   const { error, errorType } = action.payload;

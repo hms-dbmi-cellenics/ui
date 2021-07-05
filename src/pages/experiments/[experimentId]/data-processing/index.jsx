@@ -35,9 +35,10 @@ import StepsIndicator from '../../../../components/data-processing/StepsIndicato
 import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
+
 import {
-  loadProcessingSettings, saveProcessingSettings,
-  setQCStepEnabled, addChangedQCFilter
+  loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
+  addChangedQCFilter, updateNonSampleFilterSettings, 
 } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { loadSamples } from '../../../../redux/actions/samples'
@@ -183,7 +184,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA',
       multiSample: true,
       render: (key) => (
-
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}

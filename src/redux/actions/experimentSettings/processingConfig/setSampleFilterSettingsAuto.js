@@ -1,4 +1,4 @@
-import { EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO } from '../../../actionTypes/experimentSettings';
 
 const setSampleFilterSettingsAuto = (step, sampleId, isAuto) => (dispatch) => {
   dispatch({
