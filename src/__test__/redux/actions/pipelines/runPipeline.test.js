@@ -101,29 +101,4 @@ describe('runPipeline action', () => {
 
     expect(actions).toMatchSnapshot();
   });
-
-  // it("Clicking run with NO other filters changed doesn't trigger the pipeline", async () => {
-  //   const store = mockStore(storeState);
-
-  //   const component = mount(
-  //     <Provider store={store}>
-  //       <CalculationConfig
-  //         experimentId='1234'
-  //         width={50}
-  //         height={50}
-  //         onPipelineRun={mockOnPipelineRun}
-  //         onConfigChange={mockOnConfigChange}
-  //       />
-  //     </Provider>,
-  //   );
-  //   act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
-  //   component.update();
-
-  //   const runButton = component.find(Button);
-  //   runButton.simulate('click', {});
-  //   expect(mockOnPipelineRun).toBeCalledTimes(0);
-  //   await waitForActions(
-  // store, [EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE, EMBEDDINGS_LOADING]);
-  //   expect(store.getActions()[1].type).toEqual(EMBEDDINGS_LOADING);
-  // });
 });
