@@ -37,7 +37,8 @@ import StatusIndicator from '../../../../components/data-processing/StatusIndica
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 
 import {
-  loadProcessingSettings, saveProcessingSettings, setQCStepEnabled, addChangedQCFilter,
+  loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
+  addChangedQCFilter, discardChangedQCFilters
 } from '../../../../redux/actions/experimentSettings';
 
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
@@ -375,6 +376,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     setChangesOutstanding(false);
     dispatch(runPipeline(experimentId))
   }
+
+  const discardQCChanges = () => {
+    dispatch(discardChangedQCFilters());
+  };
 
   const renderTitle = () => (
     <>
