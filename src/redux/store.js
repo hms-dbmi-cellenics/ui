@@ -34,5 +34,4 @@ const makeStore = () => {
 };
 
 const wrapper = createWrapper(makeStore);
-
 export { wrapper, makeStore };
