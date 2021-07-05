@@ -5,7 +5,9 @@ import _ from 'lodash';
 import initialState from '../initialState';
 
 const updateSampleFilterSettings = produce((draft, action) => {
-  const { step, sampleId, diff } = action.payload;
+  const {
+    step, sampleId, diff, isALocalChange,
+  } = action.payload;
 
   const previousSettings = current(draft.processing[step][sampleId].filterSettings);
 
@@ -13,6 +15,10 @@ const updateSampleFilterSettings = produce((draft, action) => {
   _.merge(updatedSettings, diff);
 
   draft.processing[step][sampleId].filterSettings = updatedSettings;
+
+  if (!isALocalChange) {
+    draft.processing.originalProcessing[step][sampleId].filterSettings = updatedSettings;
+  }
 }, initialState);
 
 export default updateSampleFilterSettings;

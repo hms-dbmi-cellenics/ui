@@ -29,6 +29,8 @@ const loadedProcessingConfig = produce((draft, action) => {
 
   const originalProcessing = current(draft.processing);
 
+  draft.originalProcessing = data;
+
   let dataToSet = _.cloneDeep(data);
 
   dataToSet.meta = {
