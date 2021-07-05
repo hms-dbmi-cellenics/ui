@@ -255,7 +255,7 @@ const CalculationConfig = (props) => {
                 disabled={disabled}
               >
                 <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
-                <Option key='cca' value='cca'>Cannonical Correlation Analysis (CCA)</Option>
+                <Option key='cca' value='cca'>Canonical Correlation Analysis (CCA)</Option>
               </Select>
 
             </Form.Item>
