@@ -128,6 +128,8 @@ const generateSpec = (config, plotData) => {
         titleColor: { value: config.colour.masterColour },
         labelFontSize: { value: config.axes.labelFontSize },
         domainWidth: { value: config.axes.domainWidth },
+        labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
+        labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
       },
       {
         orient: 'left',
@@ -192,7 +194,7 @@ const generateData = (hierarchy, properties, config) => {
     hierarchy.find((rootNode) => rootNode.key === key)?.children
   ));
 
-  if (!cellSets.y) {
+  if (!cellSets.x || !cellSets.y) {
     return [];
   }
 

@@ -40,7 +40,9 @@ const CalculationConfig = (props) => {
   const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
-  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   const { method: clusteringMethod } = data?.clusteringSettings || {};
   const { method: embeddingMethod } = data?.embeddingSettings || {};

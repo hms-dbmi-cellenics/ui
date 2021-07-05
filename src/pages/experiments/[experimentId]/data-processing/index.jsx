@@ -37,8 +37,9 @@ import StatusIndicator from '../../../../components/data-processing/StatusIndica
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 
 import {
-  loadProcessingSettings, saveProcessingSettings, setQCStepEnabled, addChangedQCFilter
+  loadProcessingSettings, saveProcessingSettings, setQCStepEnabled, addChangedQCFilter,
 } from '../../../../redux/actions/experimentSettings';
+
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { loadSamples } from '../../../../redux/actions/samples'
 import { runPipeline } from '../../../../redux/actions/pipeline';

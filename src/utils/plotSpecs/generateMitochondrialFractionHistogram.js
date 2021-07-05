@@ -122,6 +122,8 @@ const generateSpec = (config, plotData) => {
         labelFontSize: { value: config.axes.labelFontSize },
         offset: { value: config.axes.offset },
         gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
+        labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
       },
       {
         orient: 'left',

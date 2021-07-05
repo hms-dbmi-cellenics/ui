@@ -31,6 +31,8 @@ const updateFilterSettings = (step, diff, sampleId = null, isALocalChange = true
       type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
       payload: { step, configChange: diff, isALocalChange },
     });
+  } else {
+    throw new Error(`Invalid step parameter received: ${step}`);
   }
 };
 
