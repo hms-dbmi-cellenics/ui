@@ -89,12 +89,6 @@ const CalculationConfig = (props) => {
     ));
   };
 
-  // When the Run button is pressed
-  // remove the warning, update the settings and trigger the pipeline run.
-  const runWithCurrentEmbeddingSettings = () => {
-    onPipelineRun();
-  };
-
   const setMinimumDistance = (value) => {
     updateSettings({
       embeddingSettings: {
@@ -328,7 +322,7 @@ const CalculationConfig = (props) => {
                 type='primary'
                 htmlType='submit'
                 disabled={!changedQCFilters.size}
-                onClick={runWithCurrentEmbeddingSettings}
+                onClick={() => onPipelineRun()}
                 size='medium'
               >
                 Run

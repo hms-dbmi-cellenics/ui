@@ -31,9 +31,7 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
   const { processing } = getState().experimentSettings;
   const { changedQCFilters } = processing.meta;
 
-  if (
-    changedQCFilters.size === 1 && changedQCFilters.has('configureEmbedding')
-  ) {
+  if (changedQCFilters.size === 1 && changedQCFilters.has('configureEmbedding')) {
     runOnlyConfigureEmbedding(
       experimentId,
       processing.configureEmbedding.embeddingSettings.method,
