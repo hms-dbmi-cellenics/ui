@@ -37,14 +37,14 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
   + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
-  const { experimentId, onPipelineRun } = props;
+  const { experimentId, onPipelineRun, onConfigChange } = props;
   const FILTER_UUID = 'configureEmbedding';
   const dispatch = useDispatch();
 
-  const [changesOutstanding, setChangesOutstanding] = useState(false);
-
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
-  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   const { method: clusteringMethod } = data?.clusteringSettings || {};
   const { method: embeddingMethod } = data?.embeddingSettings || {};
@@ -97,7 +97,7 @@ const CalculationConfig = (props) => {
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Run.
-      setChangesOutstanding(true);
+      onConfigChange();
       dispatch(updateFilterSettings(
         FILTER_UUID,
         diff,
@@ -117,7 +117,6 @@ const CalculationConfig = (props) => {
   // remove the warning, update the settings and trigger the pipeline run.
   const runWithCurrentEmbeddingSettings = () => {
     updateSettings(changes);
-    setChangesOutstanding(false);
     if (changedQCFilters.size) {
       // other steps are changed so we run the pipeline
       dispatch(addChangedQCFilter(FILTER_UUID));
@@ -131,17 +130,13 @@ const CalculationConfig = (props) => {
   const setMinimumDistance = (value) => {
     newChanges.embeddingSettings.methodSettings.umap.minimumDistance = parseFloat(value);
     setChanges({ ...newChanges });
+    onConfigChange();
   };
   const setDistanceMetric = (value) => {
     newChanges.embeddingSettings.methodSettings.umap.distanceMetric = parseFloat(value);
-    setChanges({ ...newChanges });
+    onConfigChange();
   };
-  if (!changesOutstanding && !_.isEqual(changes, initialValues)) {
-    setChangesOutstanding(true);
-  }
-  if (changesOutstanding && _.isEqual(changes, initialValues)) {
-    setChangesOutstanding(false);
-  }
+
   const renderUMAPSettings = () => {
     const { umap } = changes.embeddingSettings.methodSettings;
     return (
@@ -271,7 +266,7 @@ const CalculationConfig = (props) => {
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
       <Panel header='Embedding settings' key='embedding-settings'>
         <Form size='small'>
-          {changesOutstanding && (
+          {changedQCFilters.size && (
             <Form.Item>
               <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
             </Form.Item>
@@ -325,11 +320,11 @@ const CalculationConfig = (props) => {
           {changes.embeddingSettings.method === 'tsne' && renderTSNESettings()}
 
           <Form.Item>
-            <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
+            <Tooltip title={!changedQCFilters.size ? 'No outstanding changes' : ''}>
               <Button
                 type='primary'
                 htmlType='submit'
-                disabled={!changesOutstanding}
+                disabled={!changedQCFilters.size}
                 onClick={runWithCurrentEmbeddingSettings}
                 size='medium'
               >
@@ -431,6 +426,7 @@ const CalculationConfig = (props) => {
 
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
 };
 

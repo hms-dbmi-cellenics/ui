@@ -29,7 +29,7 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
   const {
-    experimentId, onPipelineRun, stepDisabled, disableDataIntegration,
+    experimentId, onConfigChange, stepDisabled, disableDataIntegration,
   } = props;
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
@@ -352,8 +352,8 @@ const DataIntegration = (props) => {
         <Col flex='1 0px'>
           <CalculationConfig
             experimentId={experimentId}
+            onConfigChange={onConfigChange}
             config={calculationConfig}
-            onPipelineRun={onPipelineRun}
             disabled={stepDisabled}
             disableDataIntegration={disableDataIntegration}
           />
@@ -374,8 +374,8 @@ const DataIntegration = (props) => {
 };
 
 DataIntegration.propTypes = {
-  onPipelineRun: PropTypes.func.isRequired,
   experimentId: PropTypes.string.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
   disableDataIntegration: PropTypes.bool,
 };

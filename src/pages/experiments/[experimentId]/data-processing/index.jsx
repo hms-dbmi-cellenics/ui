@@ -304,7 +304,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <DataIntegration
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun()}
+          onConfigChange={() => onConfigChange(key)}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
         />
       ),
@@ -319,6 +319,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           experimentId={expId}
           key={key}
           onPipelineRun={() => onPipelineRun()}
+          onConfigChange={() => onConfigChange(key)}
         />
       ),
     },
@@ -496,7 +497,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <Col style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
           <Row>
             <Col style={{ marginLeft: 'auto', marginRight: '10px' }}>
-              {steps[stepIdx].multiSample && renderRunOrDiscardButtons()}
+              {renderRunOrDiscardButtons()}
             </Col>
             <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex' }}>
               <Space>
