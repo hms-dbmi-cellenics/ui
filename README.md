@@ -29,26 +29,34 @@ To get it running end-to-end locally with mocked dataset, you will need to set u
 
 Just follow the README of each of them for instructions on how to get it to run.
 
+### Remote debugging with VS Code
+
+For remote debugging, the easiest thing to do is to use VS Code's native debugger capatibilites.
+
+First, you need to ensure you have the correct website to debug. You can go to
+`.vscode/launch.json` and find an object with the `name` set to `Debug develop in Chrome`.
+
+You can edit the `url` to match your staged environment. Then you can use the VS
+Code debugger, select `Debug develop in Chrome` and start the debug session.
+A Chrome window should spin up and you can control it using the debugger in VS Code.
+
+### Remote debugging with Chrome DevTools
+
+Alternatively, you can use Google Chrome's built-in DevTools. When it is open
+(e.g. by clicking Inspect on an element), you can click on `Sources > Filesystem`.
+Click on `Add Folder to Workspace` and add this folder. You will be able to use
+Google Chrome's debugger to set breakpoints, inspect variables, similarly to VS Code.
+
+In the DevTools, if you have the React and Redux Developer Tools installed,
+you can also run the React profiler and check the Redux history just as you would
+on a local development environment.
+
 ### How to run tests in debug mode
 
-As per instructions in: https://jestjs.io/docs/en/troubleshooting
-
-1. Paste the following snippet in your launch.json file:
-
-        {
-            "type": "node",
-            "request": "attach",
-            "name": "Attach",
-            "port": 9229
-        }
-
-    launch.json file should be located in the .vscode folder.
-
-2. Place a debugger; statement in any of your tests, and then, in a terminal in your project's directory, run:
-
-        node --inspect-brk node_modules/.bin/jest --runInBand
-
-3. Open your browser and go to chrome://inspect and click on "Open Dedicated DevTools for Node".
+The workspace comes with a preset for debugging tests. You can enter the Debugger
+in Visual Studio Code, find `Run and Debug` and find the preset `Test and debug`.
+Running the debugger using this configuration will automatically launch the test suite
+and attach the VS Code debugger to it.
 
 ### How to check bundle size
 
