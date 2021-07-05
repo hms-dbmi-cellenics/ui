@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const path = require('path');
 
 const srcFolder = [
@@ -61,7 +62,6 @@ const webpackConfigRules = (config, { dev, isServer }) => {
     });
   }
 
-  // to be refactored
   if (isServer) {
     // deal antd style
     const antStyles = /antd\/.*?\/style.*?/;

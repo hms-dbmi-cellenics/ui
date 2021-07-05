@@ -8,6 +8,7 @@ const webpackConfigPlugins = (config, { dev }) => {
     new webpack.IgnorePlugin(
       /pages.*\/test.*/,
     ),
+    new MomentLocalesPlugin(),
   ];
 
   if (process.env.NODE_ENV === 'analyse') {
@@ -17,7 +18,6 @@ const webpackConfigPlugins = (config, { dev }) => {
         generateStatsFile: true,
         statsFilename: 'stats.json',
       }),
-      new MomentLocalesPlugin(),
     );
   }
 
