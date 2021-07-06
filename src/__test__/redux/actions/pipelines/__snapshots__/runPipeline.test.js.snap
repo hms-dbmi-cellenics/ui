@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runPipeline action Dispatches events properly 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "experimentId": "experiment-id",
+    },
+    "type": "experimentSettings/backendStatusLoading",
+  },
+  Object {
+    "payload": Object {},
+    "type": "experimentSettings/startPipeline",
+  },
+]
+`;
+
+exports[`runPipeline action Dispatches status error if loading fails 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "experimentId": "experiment-id",
+    },
+    "type": "experimentSettings/backendStatusLoading",
+  },
+  Object {
+    "payload": Object {
+      "error": "Could not start the pipeline.",
+      "errorType": "some weird error that happened",
+    },
+    "type": "experimentSettings/backendStatusError",
+  },
+]
+`;
+
+exports[`runPipeline action Runs only the embedding if only changed filter was configureEmbedding 1`] = `
+Array [
+  Object {
+    "payload": Object {},
+    "type": "experimentSettings/discardChangedQCFilters",
+  },
+  Object {
+    "payload": Object {
+      "embeddingType": "umap",
+      "experimentId": "experiment-id",
+    },
+    "type": "embeddings/loading",
+  },
+]
+`;

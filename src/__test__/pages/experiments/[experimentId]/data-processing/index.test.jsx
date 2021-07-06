@@ -38,6 +38,7 @@ const getStore = (settings = {}) => {
           stepsDone: new Set([]),
           loadingSettingsError: false,
           completingStepError: false,
+          changedQCFilters: new Set(),
         },
       },
       backendStatus: {
@@ -155,7 +156,7 @@ describe('DataProcessingPage', () => {
   });
 
   it('triggers the pipeline on click run filter', async () => {
-    const store = getStore();
+    const store = getStore({ experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
 
     const page = mount(
       <Provider store={store}>
@@ -181,9 +182,14 @@ describe('DataProcessingPage', () => {
     page.update();
     const modal = page.find(Modal);
     const startButton = modal.find('Button').at(1);
-
     act(() => startButton.simulate('click'));
-    await waitForActions(store, [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING]);
+
+    // Pipeline is triggered on clicking run button
+    await waitForActions(
+      store,
+      [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING],
+      { matcher: waitForActions.matchers.containing },
+    );
 
     page.update();
     // Run filter shows up after changes take place
