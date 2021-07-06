@@ -10,7 +10,7 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
     headers: {
       ...headers,
       ...(auth.JWT && { Authorization: `Bearer ${auth.JWT}` }),
-      userId: auth?.userId,
+      ...(auth.userId && { userId: auth?.userId }),
     },
   };
 
