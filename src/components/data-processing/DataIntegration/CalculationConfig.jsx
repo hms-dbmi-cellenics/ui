@@ -10,11 +10,7 @@ import {
   Form,
   Checkbox,
   Tooltip,
-  Button,
   Typography,
-  Alert,
-  Row,
-  Col,
 } from 'antd';
 
 import {
@@ -34,7 +30,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun, disabled, disableDataIntegration, changedFilters,
+    onConfigChange, disabled, disableDataIntegration,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -85,20 +81,13 @@ const CalculationConfig = (props) => {
   ];
 
   const [numPCs, setNumPCs] = useState(dimensionalityReduction.numPCs);
-  const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const updateSettings = (diff) => {
-    changedFilters?.current.add(FILTER_UUID);
-    setChangesOutstanding(true);
+    onConfigChange();
     dispatch(updateFilterSettings(
       FILTER_UUID,
       diff,
     ));
-  };
-
-  const runWithCurrentDataIntegrationSettings = () => {
-    setChangesOutstanding(false);
-    onPipelineRun();
   };
 
   const roundedVariationExplained = () => {
@@ -116,15 +105,6 @@ const CalculationConfig = (props) => {
       <Panel header='Data Integration' key='data-integration'>
         <Space direction='vertical' style={{ width: '100%' }} />
         <Form size='small'>
-          {changesOutstanding && (
-            <Form.Item>
-              <Alert
-                message='Your changes are not yet applied. To rerun data integration, click Run.'
-                type='warning'
-                showIcon
-              />
-            </Form.Item>
-          )}
           <Form.Item>
             <Text>
               <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
@@ -154,7 +134,7 @@ const CalculationConfig = (props) => {
               config={dataIntegration.methodSettings[dataIntegration.method]}
               onUpdate={updateSettings}
               methodId={dataIntegration.method}
-              onChange={() => setChangesOutstanding(true)}
+              onChange={() => onConfigChange()}
               disabled={disableDataIntegration || disabled}
             />
 
@@ -174,7 +154,7 @@ const CalculationConfig = (props) => {
                 max={data?.length || 100}
                 min={0}
                 onChange={(value) => {
-                  setChangesOutstanding(true);
+                  onConfigChange();
                   setNumPCs(value);
                 }}
                 onPressEnter={(e) => e.preventDefault()}
@@ -259,23 +239,6 @@ const CalculationConfig = (props) => {
               </Select>
 
             </Form.Item>
-            <Form.Item>
-              <Row>
-                <Col span={6}>
-                  <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
-                    <Button
-                      size='small'
-                      type='primary'
-                      htmlType='submit'
-                      disabled={!changesOutstanding}
-                      onClick={runWithCurrentDataIntegrationSettings}
-                    >
-                      Run
-                    </Button>
-                  </Tooltip>
-                </Col>
-              </Row>
-            </Form.Item>
           </div>
         </Form>
       </Panel>
@@ -284,10 +247,8 @@ const CalculationConfig = (props) => {
 };
 
 CalculationConfig.propTypes = {
-  experimentId: PropTypes.string.isRequired,
-  onPipelineRun: PropTypes.func.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  changedFilters: PropTypes.object.isRequired,
   disableDataIntegration: PropTypes.bool,
 };
 
