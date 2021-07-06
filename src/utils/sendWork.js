@@ -4,7 +4,7 @@ import fetchAPI from './fetchAPI';
 import connectionPromise from './socketConnection';
 import WorkResponseError from './WorkResponseError';
 import WorkTimeoutError from './WorkTimeoutError';
-import getAuthJWT from './getAuthJWT';
+import getAuth from './getAuth';
 
 const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();
@@ -19,7 +19,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
 
   const timeoutDate = moment().add(adjustedTimeout, 's').toISOString();
 
-  const authJWT = await getAuthJWT();
+  const auth = await getAuth();
 
   const isOnlyForThisClient = body.name !== 'ClusterCells';
   const socketId = isOnlyForThisClient ? io.id : 'broadcast';
@@ -28,7 +28,8 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
     uuid: requestUuid,
     socketId,
     experimentId,
-    ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
+    ...(auth && { Authorization: `Bearer ${auth.JWT}` }),
+    userId: auth.userId,
     timeout: timeoutDate,
     body,
     ...requestProps,

@@ -1,15 +1,16 @@
 import getApiEndpoint from './apiEndpoint';
-import getAuthJWT from './getAuthJWT';
+import getAuth from './getAuth';
 
 const fetchAPI = async (path, params = {}, extras = {}) => {
   const headers = params.headers ? params.headers : {};
-  const authJWT = extras.jwt || await getAuthJWT();
-
+  const auth = extras.jwt || await getAuth();
+  console.log('AUTH IS ', auth);
   const parameters = {
     ...params,
     headers: {
       ...headers,
-      ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
+      ...(auth.JWT && { Authorization: `Bearer ${auth.JWT}` }),
+      userId: auth?.userId,
     },
   };
 
