@@ -79,8 +79,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
   const [runClicked, setRunClicked] = useState(false);
 
-  const changedFilters = useRef(new Set())
-
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
     unisample: []
@@ -640,7 +638,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       <Modal title='Run data processing with the changed settings' 
         visible={runClicked} 
         onCancel={()=>setRunClicked(false)}
-        onOk={()=>onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }
+        onOk={()=>onPipelineRun() }
         okText='Start'
       >
         <p>This will take several minutes. Your navigation within Cellscope will be restricted during this time. Do you want to start?</p>
