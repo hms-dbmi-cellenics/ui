@@ -61,17 +61,18 @@ const fetchCachedGeneExpressionWork = async (
       ...extras,
     },
   );
+
   const responseData = JSON.parse(response.results[0].body);
 
-  if (!responseData[missingGenes[0]]?.error) {
+  if (!responseData.rawExpression[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
-    const processedData = calculateZScore(responseData);
+    const processedData = calculateZScore(responseData.rawExpression);
 
     Object.keys(missingDataKeys).forEach(async (gene) => {
       await cache.set(missingDataKeys[gene], processedData[gene]);
     });
   }
-  return responseData;
+  return responseData.rawExpression;
 };
 
 const fetchCachedWork = async (
