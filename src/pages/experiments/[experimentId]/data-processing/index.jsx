@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
   Row, Col, Card, Skeleton,
-  Tooltip
+  Tooltip, Modal
 } from 'antd';
 import {
   LeftOutlined,
@@ -72,6 +72,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [applicableFilters, setApplicableFilters] = useState([])
   const [preFilteredSamples, setPreFilteredSamples] = useState([])
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
+  const [runClicked, setRunClicked] = useState(false);
+
   const changedFilters = useRef(new Set())
 
   const disableStepsOnCondition = {
@@ -327,15 +329,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }
 
   const renderRunButton = (runMessage) => (
-    <Button
-      id='runFilterButton'
-      data-testid='runFilterButton'
-      type='primary'
-      onClick={() => { onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }}
-      style={{ minWidth: '80px' }}
-    >
-      {runMessage}
-    </Button>
+    <Tooltip title='Run data processing with the changed settings'>
+      <Button
+        id='runFilterButton'
+        data-testid='runFilterButton'
+        type='primary'
+        onClick={() => setRunClicked(true)}
+        style={{ minWidth: '80px' }}
+      >
+        {runMessage}
+      </Button>
+    </Tooltip>
   );
 
   const renderRunOrDiscardButtons = () => {
@@ -351,15 +355,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           action={
             <Space size='small'>
               {renderRunButton('Run')}
-              <Button
-                id='discardChangesButton'
-                data-testid='discardChangesButton'
-                type='primary'
-                onClick={() => { }}
-                style={{ width: '80px' }}
-              >
-                Discard
-              </Button>
+              <Tooltip title='Discard your changes since the last run'>
+                <Button
+                  id='discardChangesButton'
+                  data-testid='discardChangesButton'
+                  type='primary'
+                  onClick={() => { }}
+                  style={{ width: '80px' }}
+                >
+                  Discard
+                </Button>
+              </Tooltip>
             </Space>
           }
         >
@@ -628,7 +634,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         route={route}
         title='Data Processing'
       />
-
+      <Modal title='Run data processing with the changed settings' 
+        visible={runClicked} 
+        onCancel={()=>setRunClicked(false)}
+        onOk={()=>onPipelineRun(changedFilters.current.size ? Array.from(changedFilters.current) : steps[stepIdx].key) }
+        okText='Start'
+      >
+        <p>This will take several minutes. Your navigation within Cellscope will be restricted during this time. Do you want to start?</p>
+      </Modal>
       <Card
         title={renderTitle()}
       >
