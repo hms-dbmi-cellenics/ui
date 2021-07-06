@@ -7,7 +7,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import { act } from 'react-dom/test-utils';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
-
+import { Modal } from 'antd';
 import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
 
 import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
@@ -175,15 +175,19 @@ describe('DataProcessingPage', () => {
 
     const runFilterButton = page.find('#runFilterButton').filter('Button');
 
-    // Run filter shows up after changes take place
     expect(runFilterButton.length).toEqual(1);
 
     act(() => { runFilterButton.at(0).props().onClick(); });
+    page.update();
+    const modal = page.find(Modal);
+    const startButton = modal.find('Button').at(1);
+
+    act(() => startButton.simulate('click'));
+    await waitForActions(store, [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING]);
 
     page.update();
-
+    // Run filter shows up after changes take place
     // Pipeline is triggered on clicking run button
-    await waitForActions(store, [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING]);
 
     // Run filter disappears after triggering the pipeline
     expect(page.find('#runFilterButton').filter('Button').length).toEqual(0);
