@@ -6,7 +6,7 @@ import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const loadGeneExpression = (
-  experimentId, genes, componentUuid, forceReloadAll = true,
+  experimentId, genes, componentUuid, forceReloadAll = false,
 ) => async (dispatch, getState) => {
   const {
     loading, data: geneData,
