@@ -31,14 +31,19 @@ Just follow the README of each of them for instructions on how to get it to run.
 
 ### Remote debugging with VS Code
 
-For remote debugging, the easiest thing to do is to use VS Code's native debugger capatibilites.
+Remote debugging is enabled for all staging and production environments. For
+remote debugging, the best approach is to use VS Code's native debugger capatibilites.
 
 First, you need to ensure you have the correct website to debug. You can go to
 `.vscode/launch.json` and find an object with the `name` set to `Debug develop in Chrome`.
 
-You can edit the `url` to match your staged environment. Then you can use the VS
+You can edit the `url` to match your staged or production environment. Then you can use the VS
 Code debugger, select `Debug develop in Chrome` and start the debug session.
 A Chrome window should spin up and you can control it using the debugger in VS Code.
+
+**Note:** For debugging to work reliably, the code used on the environment must be the
+same version as the code open in VS Code. This is needed so line numbers from VS Code
+can be mapped to remote code on the server.
 
 ### Remote debugging with Chrome DevTools
 
@@ -50,6 +55,9 @@ Google Chrome's debugger to set breakpoints, inspect variables, similarly to VS 
 In the DevTools, if you have the React and Redux Developer Tools installed,
 you can also run the React profiler and check the Redux history just as you would
 on a local development environment.
+
+**Note:** For debugging to work reliably, the code added the the workspace must be
+the same version as the code on the environment.
 
 ### How to run tests in debug mode
 
