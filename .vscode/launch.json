@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug develop in Chrome",
+            "request": "launch",
+            "type": "pwa-chrome",
+            "url": "https://ui-default.scp-staging.biomage.net/",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
             "name": "Attach to running process",
             "type": "node",
             "request": "attach",
@@ -17,6 +24,6 @@
             "cwd": "${workspaceFolder}",
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run-script", "test"]
-        },          
+        },
     ]
 }
