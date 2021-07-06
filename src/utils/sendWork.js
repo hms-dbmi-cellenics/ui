@@ -29,7 +29,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
     socketId,
     experimentId,
     ...(auth.JWT && { Authorization: `Bearer ${auth.JWT}` }),
-    ...(auth.userID && { userId: auth.userId }),
+    ...(auth.userId && { userId: auth.userId }),
     timeout: timeoutDate,
     body,
     ...requestProps,
