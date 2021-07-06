@@ -1,4 +1,4 @@
-import { EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE, EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE } from '../../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_UPDATE_SAMPLE_FROM_QC, EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE } from '../../../actionTypes/experimentSettings';
 
 const settingsWithSampleId = ['classifier', 'cellSizeDistribution', 'doubletScores', 'mitochondrialContent', 'numGenesVsNumUmis'];
 const settingsWithoutSampleId = ['dataIntegration', 'configureEmbedding', 'meta', 'defaultFilterSettings'];
@@ -14,26 +14,26 @@ const settingsWithoutSampleId = ['dataIntegration', 'configureEmbedding', 'meta'
  * or a change that this client is performing
  */
 
-const updateFilterSettings = (step, diff, sampleId = null) => (dispatch) => {
+const updateProcessingSettingsFromQC = (step, newSettings, sampleId = null) => (dispatch) => {
   if (settingsWithSampleId.includes(step)) {
     if (!sampleId) {
       throw new Error(`sampleId is undefined, but step: ${step} received needs a sampleId`);
     }
 
     dispatch({
-      type: EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
+      type: EXPERIMENT_SETTINGS_UPDATE_SAMPLE_FROM_QC,
       payload: {
-        step, sampleId, diff,
+        step, sampleId, newSettings, isALocalChange: false,
       },
     });
   } else if (settingsWithoutSampleId.includes(step)) {
     dispatch({
       type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
-      payload: { step, configChange: diff, isALocalChange: true },
+      payload: { step, configChange: newSettings, isALocalChange: false },
     });
   } else {
     throw new Error(`Invalid step parameter received: ${step}`);
   }
 };
 
-export default updateFilterSettings;
+export default updateProcessingSettingsFromQC;

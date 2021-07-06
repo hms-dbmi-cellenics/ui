@@ -1,4 +1,4 @@
-import { updateBackendStatus, updateFilterSettings, loadedProcessingConfig } from '../redux/actions/experimentSettings';
+import { updateBackendStatus, updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 import { updateCellSetsClustering } from '../redux/actions/cellSets';
@@ -39,7 +39,7 @@ const onQCUpdate = (update, dispatch) => {
   const processingConfigUpdate = output.config;
 
   if (processingConfigUpdate) {
-    dispatch(updateFilterSettings(
+    dispatch(updateProcessingSettingsFromQC(
       input.taskName,
       processingConfigUpdate,
       input.sampleUuid,
