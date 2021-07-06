@@ -20,6 +20,8 @@ Make sure that you clone this repo and are in the `ui` folder. then simply do:
 
 See more available commands like syntax checking with `make help`.
 
+Once UI is running, open your browser and go to `localhost:5000`.
+
 Note that since the UI is not connected to the backend, you should see an empty screen saying `You are not connected to the backend.`
 To get it running end-to-end locally with mocked dataset, you will need to set up and run each of these:
 
@@ -28,6 +30,8 @@ To get it running end-to-end locally with mocked dataset, you will need to set u
 - worker: https://github.com/biomage-ltd/worker
 
 Just follow the README of each of them for instructions on how to get it to run.
+
+Once you have everything running on the backend, you will see an authentication page. You will have to create a staging account by clicking through "Sign up" link (even if you have an existing production account).
 
 ### How to run tests in debug mode
 
