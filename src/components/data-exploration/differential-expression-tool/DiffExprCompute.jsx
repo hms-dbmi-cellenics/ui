@@ -108,10 +108,8 @@ const DiffExprCompute = (props) => {
       return;
     }
 
-    if (!comparisonGroup[selectedComparison]?.basis) {
-      setIsFormValid(false);
-      return;
-    }
+    // it is impossible to get basis into a null state as it has a
+    // default value
 
     setIsFormValid(true);
   };
