@@ -4,17 +4,15 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Typography, Radio,
+  Button, Form, Select, Radio,
 } from 'antd';
 
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import { loadCellSets } from '../../../redux/actions/cellSets';
 import { setComparisonGroup, setComparisonType } from '../../../redux/actions/differentialExpression';
 
 import composeTree from '../../../utils/composeTree';
 
-const { Text } = Typography;
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
