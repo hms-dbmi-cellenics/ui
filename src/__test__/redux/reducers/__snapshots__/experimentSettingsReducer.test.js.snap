@@ -11,6 +11,16 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {
+    "configureEmbedding": Object {
+      "embeddingSettings": Object {
+        "newProperty": Object {
+          "name": "a",
+          "value": "b",
+        },
+      },
+    },
+  },
   "processing": Object {
     "configureEmbedding": Object {
       "embeddingSettings": Object {
@@ -42,6 +52,13 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {
+    "configureEmbedding": Object {
+      "embeddingSettings": Object {
+        "newProperty": "property",
+      },
+    },
+  },
   "processing": Object {
     "configureEmbedding": Object {
       "embeddingSettings": Object {
@@ -69,6 +86,13 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+  },
+  "originalProcessing": Object {
+    "configureEmbedding": Object {
+      "embeddingSettings": Object {
+        "method": "newMethod",
+      },
+    },
   },
   "processing": Object {
     "configureEmbedding": Object {
@@ -98,6 +122,7 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {},
   "processing": Object {
     "cellSizeDistribution": Object {
       "enabled": true,
@@ -228,6 +253,7 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {},
   "processing": Object {
     "cellSizeDistribution": Object {
       "enabled": true,
@@ -366,6 +392,7 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {},
   "processing": Object {
     "cellSizeDistribution": Object {
       "enabled": true,
@@ -496,6 +523,7 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {},
   "processing": Object {
     "cellSizeDistribution": Object {
       "enabled": true,

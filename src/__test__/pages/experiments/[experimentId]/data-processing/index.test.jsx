@@ -188,9 +188,6 @@ describe('DataProcessingPage', () => {
       [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING],
       { matcher: waitForActions.matchers.containing },
     );
-
-    // Run filter disappears after triggering the pipeline
-    expect(page.find('#runFilterButton').filter('Button').length).toEqual(0);
   });
 
   it('preFiltered on a sample disables filter', async () => {
