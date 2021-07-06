@@ -8,7 +8,6 @@ import {
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
-import Link from 'next/link';
 import { Auth } from 'aws-amplify';
 import {
   DatabaseOutlined,
@@ -16,14 +15,20 @@ import {
   BuildOutlined,
   FolderOpenOutlined,
 } from '@ant-design/icons';
-import initUpdateSocket from '../utils/initUpdateSocket';
-import { loadBackendStatus } from '../redux/actions/experimentSettings';
-import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
-import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 
+import initUpdateSocket from '../utils/initUpdateSocket';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
+import { loadBackendStatus, discardChangedQCFilters } from '../redux/actions/experimentSettings';
+import { runPipeline } from '../redux/actions/pipeline';
+
+import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
+
 import PreloadContent from './PreloadContent';
+import GEM2SLoadingScreen from './GEM2SLoadingScreen';
+
+import ChangesNotAppliedModal from './ChangesNotAppliedModal';
+
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
 
@@ -36,18 +41,19 @@ const ContentWrapper = (props) => {
 
   const [isAuth, setIsAuth] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+
   const { experimentId, experimentData, children } = props;
   const router = useRouter();
   const route = router?.route || '';
+
+  const experiment = useSelector((state) => state?.experiments[experimentId]);
+  const experimentName = experimentData?.experimentName || experiment?.name;
 
   const {
     loading: backendLoading,
     error: backendError,
     status: backendStatus,
   } = useSelector((state) => state.experimentSettings.backendStatus);
-
-  const experiment = useSelector((state) => state?.experiments[experimentId]);
-  const experimentName = experimentData?.experimentName || experiment?.name;
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus.pipeline?.status;
@@ -59,11 +65,15 @@ const ContentWrapper = (props) => {
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
+  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
+
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
+
+  const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
 
   const updateSocket = useRef(null);
   useEffect(() => {
@@ -226,6 +236,14 @@ const ContentWrapper = (props) => {
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatus.SUCCEEDED
     && pipelineStatusKey === pipelineStatus.NOT_CREATED;
 
+  const transitionToModule = (path) => {
+    if (changedQCFilters.size) {
+      setChangesNotAppliedModalPath(path);
+    } else {
+      router.push(path);
+    }
+  };
+
   const renderContent = () => {
     if (experimentId) {
       if (
@@ -278,21 +296,44 @@ const ContentWrapper = (props) => {
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
     );
 
+    const realPath = path.replace('[experimentId]', experimentId);
+
     return (
       <Menu.Item
+        id={path}
         disabled={noExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
+        onClick={() => { transitionToModule(realPath); }}
+        onKeyPress={() => { transitionToModule(realPath); }}
       >
-        <Link as={path.replace('[experimentId]', experimentId)} href={path} passHref>
-          <a>{name}</a>
-        </Link>
+        <a>{name}</a>
       </Menu.Item>
     );
   };
 
+  const onRunQC = () => {
+    dispatch(runPipeline(experimentId));
+    setChangesNotAppliedModalPath(null);
+  };
+
+  const onDiscardQC = () => {
+    router.push(changesNotAppliedModalPath);
+    setChangesNotAppliedModalPath(null);
+
+    dispatch(discardChangedQCFilters());
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
+      <ChangesNotAppliedModal
+        steps={changedQCFilters}
+        visible={changesNotAppliedModalPath !== null}
+        onRun={onRunQC}
+        onDiscard={onDiscardQC}
+        onCancel={() => setChangesNotAppliedModalPath(null)}
+      />
+
       <Sider
         width={210}
         theme='dark'
@@ -315,28 +356,29 @@ const ContentWrapper = (props) => {
           >
             {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
 
-            <Menu.ItemGroup title={!collapsed && (
-              <Tooltip title={experimentName} placement='right'>
-                <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
-                  <Text
-                    style={{
-                      width: '100%',
-                      color: '#999999',
-                    }}
-                    strong
-                    ellipsis
-                  >
-                    {experimentName || 'No analysis'}
-                  </Text>
-                  {experimentName && (
-                    <Text style={{ color: '#999999' }}>
-                      Current analysis
+            <Menu.ItemGroup
+              title={!collapsed && (
+                <Tooltip title={experimentName} placement='right'>
+                  <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
+                    <Text
+                      style={{
+                        width: '100%',
+                        color: '#999999',
+                      }}
+                      strong
+                      ellipsis
+                    >
+                      {experimentName || 'No analysis'}
                     </Text>
-                  )}
-                </Space>
-              </Tooltip>
+                    {experimentName && (
+                      <Text style={{ color: '#999999' }}>
+                        Current analysis
+                      </Text>
+                    )}
+                  </Space>
+                </Tooltip>
 
-            )}
+              )}
             >
               {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
             </Menu.ItemGroup>
@@ -353,9 +395,9 @@ const ContentWrapper = (props) => {
               >
                 <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
                   <a href='//www.biomage.net/our-team'>Team</a>
-                &nbsp;&middot;&nbsp;
+                  &nbsp;&middot;&nbsp;
                   <a href='//www.biomage.net/careers'>Careers</a>
-                &nbsp;&middot;&nbsp;
+                  &nbsp;&middot;&nbsp;
                   <a href='mailto:hello@biomage.net'>Contact</a>
                 </Paragraph>
 

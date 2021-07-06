@@ -12,9 +12,11 @@ import {
   EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED,
   EXPERIMENT_SETTINGS_COPY_SETTINGS_TO_ALL_SAMPLES,
   EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO,
+  EXPERIMENT_SETTINGS_ADD_CHANGED_QC_FILTER,
+  EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from '../../actionTypes/experimentSettings';
 
-import updateExperimentInfo from './updateExperimentInfo';
 import updateNonSampleFilterSettings from './processingConfig/updateNonSampleFilterSettings';
 import updateSampleFilterSettings from './processingConfig/updateSampleFilterSettings';
 import loadedProcessingConfig from './processingConfig/loadedProcessingConfig';
@@ -25,6 +27,11 @@ import backendStatusError from './backendStatus/backendStatusError';
 import setQCStepEnabled from './processingConfig/setQCStepEnabled';
 import copyFilterSettingsToAllSamples from './processingConfig/copyFilterSettingsToAllSamples';
 import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSettingsAuto';
+import addChangedQCFilter from './processingConfig/addChangedQCFilter';
+import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
+
+import updateExperimentInfo from './updateExperimentInfo';
+import pipelineStart from './pipelineStart';
 
 const experimentSettingsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -60,6 +67,15 @@ const experimentSettingsReducer = (state = initialState, action) => {
     }
     case EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO: {
       return setSampleFilterSettingsAuto(state, action);
+    }
+    case EXPERIMENT_SETTINGS_ADD_CHANGED_QC_FILTER: {
+      return addChangedQCFilter(state, action);
+    }
+    case EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS: {
+      return discardChangedQCFilters(state, action);
+    }
+    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+      return pipelineStart(state, action);
     }
     case HYDRATE: {
       const experimentInfo = action.payload.experimentSettings.info;

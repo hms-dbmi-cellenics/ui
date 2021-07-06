@@ -42,6 +42,11 @@ const mockStore = configureMockStore([thunk]);
 const store = mockStore({
   notifications: {},
   experimentSettings: {
+    processing: {
+      meta: {
+        changedQCFilters: new Set(),
+      },
+    },
     backendStatus: {
       loading: false,
       error: false,
@@ -78,17 +83,13 @@ describe('ContentWrapper', () => {
 
     expect(visibleMenuLength).toEqual(4);
 
-    const dataManagementLink = menus.at(0).find('Link');
-    expect(dataManagementLink.props().as).toEqual('/data-management');
+    expect(menus.at(0).prop('id')).toEqual('/data-management');
 
-    const dataProcessingLink = menus.at(1).find('Link');
-    expect(dataProcessingLink.props().as).toEqual('/experiments/1234/data-processing');
+    expect(menus.at(1).prop('id')).toEqual('/experiments/[experimentId]/data-processing');
 
-    const dataExplorationLink = menus.at(2).find('Link');
-    expect(dataExplorationLink.props().as).toEqual('/experiments/1234/data-exploration');
+    expect(menus.at(2).prop('id')).toEqual('/experiments/[experimentId]/data-exploration');
 
-    const plotsTablesLink = menus.at(3).find('Link');
-    expect(plotsTablesLink.props().as).toEqual('/experiments/1234/plots-and-tables');
+    expect(menus.at(3).prop('id')).toEqual('/experiments/[experimentId]/plots-and-tables');
   });
 
   it('links are disabled if there is no experimentId', async () => {
@@ -135,6 +136,11 @@ describe('ContentWrapper', () => {
     const testStore = mockStore({
       notifications: {},
       experimentSettings: {
+        processing: {
+          meta: {
+            changedQCFilters: new Set(),
+          },
+        },
         backendStatus: {
           loading: false,
           error: false,

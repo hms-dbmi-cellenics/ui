@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
@@ -6,10 +5,42 @@ import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from '../../actionTypes/experimentSettings';
 import loadBackendStatus from '../experimentSettings/backendStatus/loadBackendStatus';
 
-const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState) => {
+import { loadEmbedding } from '../embedding';
+
+const runOnlyConfigureEmbedding = (experimentId, embeddingMethod, dispatch) => {
+  dispatch({
+    type: EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
+    payload: {},
+  });
+
+  // Only configure embedding was changed so we run loadEmbedding
+  dispatch(
+    loadEmbedding(
+      experimentId,
+      embeddingMethod,
+      true,
+    ),
+  );
+};
+
+const runPipeline = (experimentId) => async (dispatch, getState) => {
+  const { processing } = getState().experimentSettings;
+  const { changedQCFilters } = processing.meta;
+
+  if (changedQCFilters.size === 1 && changedQCFilters.has('configureEmbedding')) {
+    runOnlyConfigureEmbedding(
+      experimentId,
+      processing.configureEmbedding.embeddingSettings.method,
+      dispatch,
+    );
+
+    return;
+  }
+
   dispatch({
     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
@@ -17,17 +48,14 @@ const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState)
     },
   });
 
-  if (!_.isArray(callerStepKeys)) {
-    // eslint-disable-next-line no-param-reassign
-    callerStepKeys = [callerStepKeys];
-  }
-  const processingConfig = callerStepKeys.map((key) => {
-    const currentConfig = getState().experimentSettings.processing[key];
+  const changesToProcessingConfig = Array.from(changedQCFilters).map((key) => {
+    const currentConfig = processing[key];
     return {
       name: key,
       body: currentConfig,
     };
   });
+
   const url = `/v1/experiments/${experimentId}/pipelines`;
   try {
     // We are only sending the configuration that we know changed
@@ -44,7 +72,7 @@ const runPipeline = (experimentId, callerStepKeys) => async (dispatch, getState)
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          processingConfig,
+          processingConfig: changesToProcessingConfig,
         }),
       },
     );
