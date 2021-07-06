@@ -40,21 +40,25 @@ const ChangesNotAppliedModal = (props) => {
       )}
     >
       <center>
-        <Space>
+        <Space direction='vertical'>
+          Your changes to the settings of these filters are not yet applied:
+          {steps && (
+          <>
+            <br />
+            <ul style={{ margin: '0 auto', display: 'table' }}>
+              {Array.from(steps).map((step) => (
+                <li>
+                  <b style={{ float: 'left' }}>
+                    {getUserFriendlyQCStepName(step)}
+                  </b>
+                </li>
+              ))}
+            </ul>
+
+            <br />
+          </>
+          )}
           <Text>
-            Your new settings are not yet applied.
-            {steps && (
-              <>
-                {' '}
-                Modified steps are:
-                <br />
-                <b>
-                  {Array.from(steps).map(getUserFriendlyQCStepName).join(', ')}
-                  {' '}
-                </b>
-                <br />
-              </>
-            )}
             Would you like to rerun data processing with
             these new settings, or discard the changes?
           </Text>
