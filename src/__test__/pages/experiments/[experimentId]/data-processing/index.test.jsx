@@ -176,6 +176,7 @@ describe('DataProcessingPage', () => {
 
     const runFilterButton = page.find('#runFilterButton').filter('Button');
 
+    // Run filter shows up after changes take place
     expect(runFilterButton.length).toEqual(1);
 
     act(() => { runFilterButton.at(0).props().onClick(); });
@@ -192,9 +193,6 @@ describe('DataProcessingPage', () => {
     );
 
     page.update();
-    // Run filter shows up after changes take place
-    // Pipeline is triggered on clicking run button
-
     // Run filter disappears after triggering the pipeline
     expect(page.find('#runFilterButton').filter('Button').length).toEqual(0);
   });

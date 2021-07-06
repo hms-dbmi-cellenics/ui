@@ -40,7 +40,7 @@ import getUserFriendlyQCStepName from '../../../../utils/getUserFriendlyQCStepNa
 
 import {
   loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
-  addChangedQCFilter, updateNonSampleFilterSettings, 
+  addChangedQCFilter, 
 } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { loadSamples } from '../../../../redux/actions/samples'
