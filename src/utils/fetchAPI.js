@@ -4,7 +4,6 @@ import getAuth from './getAuth';
 const fetchAPI = async (path, params = {}, extras = {}) => {
   const headers = params.headers ? params.headers : {};
   const auth = extras.jwt || await getAuth();
-  console.log('AUTH IS ', auth);
   const parameters = {
     ...params,
     headers: {
