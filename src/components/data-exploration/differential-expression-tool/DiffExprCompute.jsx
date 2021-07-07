@@ -95,7 +95,6 @@ const DiffExprCompute = (props) => {
   }, [hierarchy, properties]);
 
   const validateForm = () => {
-
     if (!comparisonGroup[selectedComparison]?.cellSet) {
       setIsFormValid(false);
       return;
@@ -106,8 +105,12 @@ const DiffExprCompute = (props) => {
       return;
     }
 
-    // it is impossible to get basis into a null state as it has a
-    // default value
+    // for a single sample, it is impossible to get basis into a null state as
+    // it has a default value
+    if (!onlySample && !comparisonGroup[selectedComparison]?.basis) {
+      setIsFormValid(false);
+      return;
+    }
 
     setIsFormValid(true);
   };
