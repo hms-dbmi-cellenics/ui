@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -13,11 +13,13 @@ import {
 } from '../../../redux/actions/componentConfig';
 
 import ClassifierEmptyDropsPlot from '../../plots/ClassifierEmptyDropsPlot';
+import ClassifierKneePlot from '../../plots/ClassifierKneePlot';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
+import MiniPlot from '../../plots/MiniPlot';
 import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
-import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
 
@@ -39,28 +41,76 @@ const Classifier = (props) => {
 
   const dispatch = useDispatch();
 
+  const [selectedPlot, setSelectedPlot] = useState('kneePlot');
+  const [plot, setPlot] = useState(null);
+
   const debounceSave = useCallback(
     _.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), [],
   );
 
   const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-    debounceSave(plotUuid);
+    dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
+    debounceSave(plots[selectedPlot].plotUuid);
   };
 
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const plots = {
+    kneePlot: {
+      title: 'Knee Plot',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
+      plotType: 'classifierKneePlot',
+      plot: (config, plotData, actions) => {
+
+        return(
+        <ClassifierKneePlot
+          experimentId={experimentId}
+          config={config}
+          expConfig={expConfig}
+          plotData={plotData}
+          actions={actions}
+        />)
+      },
+    },
+    histogram: {
+      title: 'Histogram',
+      plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
+      plotType: 'cellSizeDistributionHistogram',
+      plot: (config, plotData, actions) => (
+        <ClassifierEmptyDropsPlot
+          experimentId={experimentId}
+          config={config}
+          expConfig={expConfig}
+          plotData={plotData}
+          actions={actions}
+        />
+      ),
+    },
+  };
+
+  const config = useSelector(
+      (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+    );
   const expConfig = useSelector(
     (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
   );
-  const plotData = useSelector((state) => state.componentConfig[plotUuid]?.plotData);
+  const plotData = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+  );
 
   useEffect(() => {
-    if (!config) {
+      Object.values(plots).forEach((obj) => {
+        if (!config) {
+          dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+        }
+      });
+    }, []);
+
+  useEffect(() => {
+    if (config && plotData && expConfig) {
       const newConfig = _.clone(config);
       _.merge(newConfig, expConfig);
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+      setPlot(plots[selectedPlot].plot(newConfig, plotData, allowedPlotActions));
     }
-  }, [config]);
+  }, [expConfig, config, plotData]);
 
   const plotStylingControlsConfig = [
     {
@@ -91,16 +141,8 @@ const Classifier = (props) => {
       );
     }
 
-    if (config && plotData) {
-      return (
-        <ClassifierEmptyDropsPlot
-          experimentId={experimentId}
-          config={config}
-          expConfig={expConfig}
-          plotData={plotData}
-          actions={allowedPlotActions}
-        />
-      );
+    if (plot) {
+      return plot;
     }
   };
 
@@ -112,7 +154,35 @@ const Classifier = (props) => {
         </Col>
 
         <Col flex='1 0px'>
-          <Space direction='vertical' style={{ width: '100%' }} />
+            <Space direction='vertical'>
+            {Object.entries(plots).map(([key, plotObj]) => (
+              <button
+                type='button'
+                key={key}
+                onClick={() => setSelectedPlot(key)}
+                style={{
+                  margin: 0,
+                  backgroundColor: 'transparent',
+                  align: 'center',
+                  padding: '8px',
+                  border: '1px solid #000',
+                  cursor: 'pointer',
+                }}
+              >
+                <MiniPlot
+                  experimentId={experimentId}
+                  plotUuid={plotObj.plotUuid}
+                  plotFn={plotObj.plot}
+                  actions={false}
+                />
+
+              </button>
+
+            ))}
+          </Space>
+          </Col>
+
+          <Col flex='1 0px'>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer

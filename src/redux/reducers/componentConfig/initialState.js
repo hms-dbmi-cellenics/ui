@@ -448,6 +448,34 @@ const mitochondrialFractionLogHistogram = {
   maxFraction: 0.2,
 };
 
+// CLASSIFIER - Classifier Knee Plot
+const classifierKneePlot = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-right',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Cell rank',
+    yAxisText: '#UMIs in cell',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  minCellSize: 990,
+};
+
 // CLASSIFIER - Classifier Empty Drops
 const classifierEmptyDropsPlot = {
   spec: '1.0.0',
@@ -647,6 +675,7 @@ const initialPlotConfigStates = {
   cellSizeDistributionKneePlot,
   mitochondrialFractionHistogram,
   mitochondrialFractionLogHistogram,
+  classifierKneePlot,
   classifierEmptyDropsPlot,
   featuresVsUMIsScatterplot,
   doubletScoreHistogram,

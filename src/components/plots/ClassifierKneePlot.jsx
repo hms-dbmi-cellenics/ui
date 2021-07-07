@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import EmptyPlot from './helpers/EmptyPlot';
-import generateSpec from '../../utils/plotSpecs/generateCellSizeDistributionKneePlot';
+import generateSpec from '../../utils/plotSpecs/generateClassifierKneePlot';
 
-const CellSizeDistributionKneePlot = (props, plotType) => {
+const ClassifierKneePlot = (props) => {
   const {
-    config, plotData, actions,
+    config, expConfig, plotData, actions,
   } = props;
 
+  console.log(expConfig)
   const [plotSpec, setPlotSpec] = useState(config);
 
   useEffect(() => {
@@ -39,8 +40,9 @@ const CellSizeDistributionKneePlot = (props, plotType) => {
   );
 };
 
-CellSizeDistributionKneePlot.propTypes = {
+ClassifierKneePlot.propTypes = {
   config: PropTypes.object.isRequired,
+  expConfig: PropTypes.object.isRequired,
   plotData: PropTypes.array,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
@@ -48,9 +50,9 @@ CellSizeDistributionKneePlot.propTypes = {
   ]),
 };
 
-CellSizeDistributionKneePlot.defaultProps = {
+ClassifierKneePlot.defaultProps = {
   plotData: null,
   actions: true,
 };
 
-export default CellSizeDistributionKneePlot;
+export default ClassifierKneePlot;
