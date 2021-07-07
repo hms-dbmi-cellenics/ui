@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
   Row, Col, Card, Skeleton,
-  Tooltip
+  Tooltip, Modal
 } from 'antd';
 import {
   LeftOutlined,
@@ -40,7 +40,7 @@ import getUserFriendlyQCStepName from '../../../../utils/getUserFriendlyQCStepNa
 
 import {
   loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
-  addChangedQCFilter, updateNonSampleFilterSettings, 
+  addChangedQCFilter, 
 } from '../../../../redux/actions/experimentSettings';
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { loadSamples } from '../../../../redux/actions/samples'
@@ -77,6 +77,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [applicableFilters, setApplicableFilters] = useState([])
   const [preFilteredSamples, setPreFilteredSamples] = useState([])
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
+  const [runQCModalVisible, setRunQCModalVisible] = useState(false);
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
@@ -330,15 +331,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }
 
   const renderRunButton = (runMessage) => (
-    <Button
-      id='runFilterButton'
-      data-testid='runFilterButton'
-      type='primary'
-      onClick={() => onPipelineRun()}
-      style={{ minWidth: '80px' }}
-    >
-      {runMessage}
-    </Button>
+    <Tooltip title='Run data processing with the changed settings'>
+      <Button
+        id='runFilterButton'
+        data-testid='runFilterButton'
+        type='primary'
+        onClick={() => setRunQCModalVisible(true)}
+        style={{ minWidth: '80px' }}
+      >
+        {runMessage}
+      </Button>
+    </Tooltip>
   );
 
   const renderRunOrDiscardButtons = () => {
@@ -354,15 +357,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           action={
             <Space size='small'>
               {renderRunButton('Run')}
-              <Button
-                id='discardChangesButton'
-                data-testid='discardChangesButton'
-                type='primary'
-                onClick={() => { }}
-                style={{ width: '80px' }}
-              >
-                Discard
-              </Button>
+              <Tooltip title='Discard your changes since the last run'>
+                <Button
+                  id='discardChangesButton'
+                  data-testid='discardChangesButton'
+                  type='primary'
+                  onClick={() => { }}
+                  style={{ width: '80px' }}
+                >
+                  Discard
+                </Button>
+              </Tooltip>
             </Space>
           }
         >
@@ -630,7 +635,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         route={route}
         title='Data Processing'
       />
-
+      <Modal title='Run data processing with the changed settings' 
+        visible={runQCModalVisible} 
+        onCancel={()=>setRunQCModalVisible(false)}
+        onOk={()=>onPipelineRun() }
+        okText='Start'
+      >
+        <p>This will take several minutes. Your navigation within Cellscope will be restricted during this time. Do you want to start?</p>
+      </Modal>
       <Card
         title={renderTitle()}
       >
