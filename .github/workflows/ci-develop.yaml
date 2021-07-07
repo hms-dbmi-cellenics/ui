@@ -49,6 +49,8 @@ jobs:
       name: Build project
       run: |-
         npm run build
+      env:
+        ENABLE_MANGLE: ${{ github.event.pull_request.base.ref == 'develop' }}
 
     - id: upload-build-out
       name: Upload Next.js build output

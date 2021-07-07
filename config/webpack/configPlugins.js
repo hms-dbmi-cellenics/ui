@@ -26,6 +26,12 @@ const webpackConfigPlugins = (config, { dev }) => {
   if (!dev) {
     config.mode = 'production';
 
+    // If we are specifically asked, do not mangle variable names.
+    // This can be useful for easier debugging.
+    if (process.env.ENABLE_MANGLE === 'false') {
+      config.optimization.minimizer[0].options.terserOptions.mangle = false;
+    }
+
     config.optimization = {
       ...config.optimization,
       minimize: true,
