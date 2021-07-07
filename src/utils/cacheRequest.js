@@ -64,28 +64,16 @@ const fetchCachedGeneExpressionWork = async (
 
   const responseData = JSON.parse(response.results[0].body);
 
-  // Changing struct, temporal
-  const tmpResponseData = {};
-  const geneNames = Object.keys(responseData.rawExpression);
-
-  geneNames.forEach((geneName) => {
-    tmpResponseData[geneName] = {
-      rawExpression: responseData.rawExpression[geneName],
-      truncatedExpression: responseData.truncatedExpression[geneName],
-    };
-  });
-  // finish changing struct, temporal
-
-  if (!tmpResponseData[missingGenes[0]]?.error) {
+  if (!responseData[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
-    const processedData = calculateZScore(tmpResponseData);
+    const processedData = calculateZScore(responseData);
 
     Object.keys(missingDataKeys).forEach(async (gene) => {
       await cache.set(missingDataKeys[gene], processedData[gene]);
     });
   }
 
-  return tmpResponseData;
+  return responseData;
 };
 
 const fetchCachedWork = async (
