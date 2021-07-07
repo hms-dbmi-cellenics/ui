@@ -69,10 +69,12 @@ const ViolinPlot = (props) => {
       && !geneExpression.error
       && !cellSets.loading
       && !cellSets.error) {
-      const expressionType = config.normalised === 'normalised' ? 'expression' : 'raw TO-DO';
+      // const expressionType = config.normalised === 'normalised' ? 'expression' : 'raw TO-DO';
+      const geneExpressionData = config.normalised === 'normalised' ? geneExpression.data[config.shownGene].rawExpression.expression : undefined;
+
       const generatedPlotData = generateData(
         cellSets,
-        geneExpression.data[config.shownGene][expressionType],
+        geneExpressionData,
         config.selectedCellSet,
         config.selectedPoints,
       );
