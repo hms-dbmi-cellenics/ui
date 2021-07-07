@@ -462,8 +462,8 @@ const classifierKneePlot = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'Cell rank',
-    yAxisText: '#UMIs in cell',
+    xAxisText: 'Droplet Rank',
+    yAxisText: 'Droplet #UMIs',
   },
   title: {
     ...titleBaseState,

@@ -1,28 +1,68 @@
 import _ from 'lodash';
 
-const generateSpec = (config, plotData) => {
+const generateSpec = (config, { FDR }, plotData) => {
   let legend = null;
 
-  const firstUnknownQualityItem = _.find(
-    plotData,
-    (element) => element.fdr >= 0.01,
-  );
+  let firstLowQualityIndex;
+  let lastHighQualityIndex;
+  const ntot = plotData.map((item) => item.ndrops).reduce((a, b) => a + b, 0);
+  let nkeep;
 
-  const lastUnknownQualityItem = _.findLast(
-    plotData,
-    (element) => element.fdr <= 0.01,
-  );
+  if (FDR === 1) {
+    firstLowQualityIndex = lastHighQualityIndex = plotData.length - 1;
+    nkeep = ntot;
+  } else if (FDR === 0) {
+    firstLowQualityIndex = lastHighQualityIndex = 0;
+    nkeep = 0;
+  } else {
+    firstLowQualityIndex = _.findIndex(
+      plotData,
+      (element) => element.fdr > FDR,
+    );
+    lastHighQualityIndex = _.findLastIndex(
+      plotData,
+      (element) => element.fdr <= FDR,
+    );
+    nkeep = plotData
+      .filter((item) => item.fdr < FDR);
 
-  const firstUnknownQualityRank = firstUnknownQualityItem.rank;
-  const lastUnknownQualityRank = lastUnknownQualityItem.rank;
+    console.log('nkeep:', nkeep);
+    nkeep = nkeep.map((item) => item.ndrops)
+      .reduce((a, b) => a + b, 0);
+  }
+
+  const ndiscard = ntot - nkeep;
+  const firstLowQualityRank = plotData[firstLowQualityIndex].rank;
+  const lastHighQualityRank = plotData[lastHighQualityIndex].rank;
+
+  // format with commas for thousandths
+  const formatInt = (int) => int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
   legend = !config.legend.enabled ? null : [
     {
+      fill: 'keep',
+      orient: 'none',
+      direction: 'vertical',
+      rowPadding: 5,
+      title: null,
+      labelFont: config.fontStyle.font,
+      encode: {
+        labels: {
+          interactive: true,
+          update: {
+            fontSize: { value: 12 },
+            fill: { value: 'black' },
+          },
+        },
+      },
+    },
+    {
       fill: 'color',
       orient: config.legend.position,
-      title: 'Quality',
+      title: 'FDR Threshold',
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,
+      padding: 4,
       encode: {
         title: {
           update: {
@@ -48,7 +88,8 @@ const generateSpec = (config, plotData) => {
           },
         },
       },
-    }];
+    },
+  ];
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -68,7 +109,7 @@ const generateSpec = (config, plotData) => {
         transform: [
           {
             type: 'filter',
-            expr: `datum.rank <= ${firstUnknownQualityRank}`,
+            expr: `datum.rank <= ${firstLowQualityRank}`,
           },
         ],
       },
@@ -78,7 +119,7 @@ const generateSpec = (config, plotData) => {
         transform: [
           {
             type: 'filter',
-            expr: `datum.rank >= ${firstUnknownQualityRank} & datum.rank <= ${lastUnknownQualityRank}`,
+            expr: `datum.rank >= ${firstLowQualityRank} & datum.rank <= ${lastHighQualityRank}`,
           },
         ],
       },
@@ -88,7 +129,7 @@ const generateSpec = (config, plotData) => {
         transform: [
           {
             type: 'filter',
-            expr: `datum.rank >= ${lastUnknownQualityRank}`,
+            expr: `datum.rank >= ${lastHighQualityRank}`,
           },
         ],
       },
@@ -112,7 +153,12 @@ const generateSpec = (config, plotData) => {
         name: 'color',
         type: 'ordinal',
         range: ['green', 'lightgray', '#f57b42'],
-        domain: ['high', 'unknown', 'low'],
+        domain: ['above', 'mixed', 'below'],
+      },
+      {
+        name: 'keep',
+        type: 'ordinal',
+        domain: [`keep: ${formatInt(nkeep)}`, `discard: ${formatInt(ndiscard)}`],
       },
     ],
 

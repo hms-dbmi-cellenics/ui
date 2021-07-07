@@ -10,14 +10,13 @@ const ClassifierKneePlot = (props) => {
     config, expConfig, plotData, actions,
   } = props;
 
-  console.log(expConfig)
   const [plotSpec, setPlotSpec] = useState(config);
 
   useEffect(() => {
     if (config && plotData) {
-      setPlotSpec(generateSpec(config, plotData));
+      setPlotSpec(generateSpec(config, expConfig, plotData));
     }
-  }, [config, plotData]);
+  }, [config, expConfig, plotData]);
 
   const render = () => {
     if (!plotData.length) {
