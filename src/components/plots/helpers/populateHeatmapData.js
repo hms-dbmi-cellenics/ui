@@ -201,18 +201,17 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
         return;
       }
 
-      const valueToDisplay = (
-        expressionValue === 'raw' ? expressionDataForGene.rawExpression.expression
-          : expressionValue === 'zScore' ? expressionDataForGene.zScore
+      const expressionValues = (
+        expressionValue === 'raw' ? { color: expressionDataForGene.truncatedExpression.expression, display: expressionDataForGene.rawExpression.expression }
+          : expressionValue === 'zScore' ? { color: expressionDataForGene.zScore, display: expressionDataForGene.zScore }
             : undefined
       );
-
-      const cellGeneExpression = valueToDisplay[cellId];
 
       data.heatmapData.push({
         cellId,
         gene,
-        expression: cellGeneExpression,
+        expression: expressionValues.color[cellId],
+        displayExpression: expressionValues.display[cellId],
       });
     },
   );
