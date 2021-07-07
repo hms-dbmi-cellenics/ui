@@ -10,8 +10,6 @@ const settingsWithoutSampleId = ['dataIntegration', 'configureEmbedding', 'meta'
  * @param {*} diff The change itself that is taking place.
  * @param {*} sampleId The id of the sample that had its settings changed
  * (if the settings of the step are sample specific).
- * @param {*} isALocalChange Whether this is an update received from qc running
- * or a change that this client is performing
  */
 
 const updateFilterSettings = (step, diff, sampleId = null) => (dispatch) => {

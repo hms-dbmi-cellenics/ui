@@ -10,8 +10,6 @@ const settingsWithoutSampleId = ['dataIntegration', 'configureEmbedding', 'meta'
  * @param {*} diff The change itself that is taking place.
  * @param {*} sampleId The id of the sample that had its settings changed
  * (if the settings of the step are sample specific).
- * @param {*} isALocalChange Whether this is an update received from qc running
- * or a change that this client is performing
  */
 
 const updateProcessingSettingsFromQC = (step, newSettings, sampleId = null) => (dispatch) => {
@@ -23,7 +21,7 @@ const updateProcessingSettingsFromQC = (step, newSettings, sampleId = null) => (
     dispatch({
       type: EXPERIMENT_SETTINGS_UPDATE_SAMPLE_FROM_QC,
       payload: {
-        step, sampleId, newSettings, isALocalChange: false,
+        step, sampleId, newSettings,
       },
     });
   } else if (settingsWithoutSampleId.includes(step)) {
