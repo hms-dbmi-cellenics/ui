@@ -77,7 +77,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [applicableFilters, setApplicableFilters] = useState([])
   const [preFilteredSamples, setPreFilteredSamples] = useState([])
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
-  const [runClicked, setRunClicked] = useState(false);
+  const [runQCModalVisible, setRunQCModalVisible] = useState(false);
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
@@ -336,7 +336,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         id='runFilterButton'
         data-testid='runFilterButton'
         type='primary'
-        onClick={() => setRunClicked(true)}
+        onClick={() => setRunQCModalVisible(true)}
         style={{ minWidth: '80px' }}
       >
         {runMessage}
@@ -636,8 +636,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         title='Data Processing'
       />
       <Modal title='Run data processing with the changed settings' 
-        visible={runClicked} 
-        onCancel={()=>setRunClicked(false)}
+        visible={runQCModalVisible} 
+        onCancel={()=>setRunQCModalVisible(false)}
         onOk={()=>onPipelineRun() }
         okText='Start'
       >
