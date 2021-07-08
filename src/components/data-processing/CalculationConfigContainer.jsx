@@ -24,7 +24,11 @@ const CalculationConfigContainer = (props) => {
   const copySettingsToAllSamples = () => {
     setDisplayIndividualChangesWarning(false);
     dispatch(
-      copyFilterSettingsToAllSamples(filterUuid, { auto, filterSettings: config }, sampleIds),
+      copyFilterSettingsToAllSamples(
+        filterUuid,
+        sampleId,
+        sampleIds,
+      ),
     );
     onConfigChange();
   };
