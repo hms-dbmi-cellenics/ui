@@ -60,20 +60,6 @@ const CellSizeDistribution = (props) => {
     debounceSave(plots[selectedPlot].plotUuid);
   };
 
-  const selectedConfig = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
-  );
-  const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
-  );
-  const selectedPlotData = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
-  );
-
-  const histogramPlotData = useSelector(
-    (state) => state.componentConfig[plots.histogram.plotUuid]?.plotData,
-  );
-
   const plots = {
     kneePlot: {
       title: 'Knee Plot',
@@ -103,6 +89,20 @@ const CellSizeDistribution = (props) => {
       ),
     },
   };
+
+  const selectedConfig = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
+  const expConfig = useSelector(
+    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
+  );
+  const selectedPlotData = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+  );
+
+  const histogramPlotData = useSelector(
+    (state) => state.componentConfig[plots.histogram.plotUuid]?.plotData,
+  );
 
   useEffect(() => {
     highestUmiRef.current = _.maxBy(

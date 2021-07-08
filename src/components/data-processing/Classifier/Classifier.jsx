@@ -65,34 +65,6 @@ const Classifier = (props) => {
     _.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), [],
   );
 
-  const selectedPlotConfig = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
-  );
-
-  const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
-  );
-
-  const selectedPlotData = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
-  );
-
-  useEffect(() => {
-    Object.values(plots).forEach((obj) => {
-      if (!selectedPlotConfig) {
-        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (selectedPlotConfig && selectedPlotData && expConfig) {
-      const newConfig = _.clone(selectedPlotConfig);
-      _.merge(newConfig, expConfig);
-      setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
-    }
-  }, [expConfig, selectedPlotConfig, selectedPlotData]);
-
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
     debounceSave(plots[selectedPlot].plotUuid);
@@ -126,6 +98,34 @@ const Classifier = (props) => {
       ),
     },
   };
+
+  const selectedPlotConfig = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
+
+  const expConfig = useSelector(
+    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
+  );
+
+  const selectedPlotData = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+  );
+
+  useEffect(() => {
+    Object.values(plots).forEach((obj) => {
+      if (!selectedPlotConfig) {
+        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (selectedPlotConfig && selectedPlotData && expConfig) {
+      const newConfig = _.clone(selectedPlotConfig);
+      _.merge(newConfig, expConfig);
+      setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
+    }
+  }, [expConfig, selectedPlotConfig, selectedPlotData]);
 
   const renderPlot = () => {
     // Spinner for main window

@@ -46,38 +46,6 @@ const MitochondrialContent = (props) => {
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
 
-  const selectedConfig = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
-  );
-
-  const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
-  );
-
-  const selectedPlotData = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
-  );
-
-  useEffect(() => {
-    Object.values(plots).forEach((obj) => {
-      if (!selectedConfig) {
-        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (selectedConfig && selectedPlotData && expConfig) {
-      let newConfig = _.clone(selectedConfig);
-
-      const expConfigSettings = expConfig.methodSettings[expConfig.method];
-
-      newConfig = _.merge(newConfig, expConfigSettings);
-
-      setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
-    }
-  }, [expConfig, selectedConfig, selectedPlotData]);
-
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
     debounceSave(plots[selectedPlot].plotUuid);
@@ -111,6 +79,38 @@ const MitochondrialContent = (props) => {
       ),
     },
   };
+
+  const selectedConfig = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
+
+  const expConfig = useSelector(
+    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
+  );
+
+  const selectedPlotData = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+  );
+
+  useEffect(() => {
+    Object.values(plots).forEach((obj) => {
+      if (!selectedConfig) {
+        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (selectedConfig && selectedPlotData && expConfig) {
+      let newConfig = _.clone(selectedConfig);
+
+      const expConfigSettings = expConfig.methodSettings[expConfig.method];
+
+      newConfig = _.merge(newConfig, expConfigSettings);
+
+      setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
+    }
+  }, [expConfig, selectedConfig, selectedPlotData]);
 
   const plotStylingControlsConfig = [
     {
