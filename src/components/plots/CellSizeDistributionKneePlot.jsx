@@ -5,7 +5,7 @@ import { Vega } from 'react-vega';
 import EmptyPlot from './helpers/EmptyPlot';
 import generateSpec from '../../utils/plotSpecs/generateCellSizeDistributionKneePlot';
 
-const CellSizeDistributionKneePlot = (props, plotType) => {
+const CellSizeDistributionKneePlot = (props) => {
   const {
     config, plotData, actions,
   } = props;
@@ -34,7 +34,7 @@ const CellSizeDistributionKneePlot = (props, plotType) => {
 
   return (
     <>
-      { render()}
+      {render()}
     </>
   );
 };
