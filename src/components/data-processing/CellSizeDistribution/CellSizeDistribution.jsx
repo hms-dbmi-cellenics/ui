@@ -31,24 +31,25 @@ const { Panel } = Collapse;
 
 const HIGHEST_UMI_DEFAULT = 17000;
 
+const filterName = 'cellSizeDistribution';
+
+const allowedPlotActions = {
+  export: true,
+  compiled: false,
+  source: false,
+  editor: false,
+};
+
 const CellSizeDistribution = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
-  const filterName = 'cellSizeDistribution';
-
-  const allowedPlotActions = {
-    export: true,
-    compiled: false,
-    source: false,
-    editor: false,
-  };
-
   const dispatch = useDispatch();
 
   const [selectedPlot, setSelectedPlot] = useState('kneePlot');
   const [plot, setPlot] = useState(null);
+  const highestUmiRef = useRef(null);
 
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
@@ -58,6 +59,20 @@ const CellSizeDistribution = (props) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
     debounceSave(plots[selectedPlot].plotUuid);
   };
+
+  const selectedConfig = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
+  const expConfig = useSelector(
+    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
+  );
+  const selectedPlotData = useSelector(
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+  );
+
+  const histogramPlotData = useSelector(
+    (state) => state.componentConfig[plots.histogram.plotUuid]?.plotData,
+  );
 
   const plots = {
     kneePlot: {
@@ -89,41 +104,28 @@ const CellSizeDistribution = (props) => {
     },
   };
 
-  const config = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
-  );
-  const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
-  );
-  const plotData = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
-  );
-
-  const histogramPlotData = useSelector(
-    (state) => state.componentConfig[plots.histogram.plotUuid]?.plotData,
-  );
-
-  const highestUmiRef = useRef(null);
-
   useEffect(() => {
-    highestUmiRef.current = _.maxBy(histogramPlotData, (datum) => datum.u)?.u ?? HIGHEST_UMI_DEFAULT;
+    highestUmiRef.current = _.maxBy(
+      histogramPlotData,
+      (datum) => datum.u,
+    )?.u ?? HIGHEST_UMI_DEFAULT;
   }, [histogramPlotData]);
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
-      if (!config) {
+      if (!selectedConfig) {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
   }, []);
 
   useEffect(() => {
-    if (config && plotData && expConfig) {
-      const newConfig = _.clone(config);
+    if (selectedConfig && selectedPlotData && expConfig) {
+      const newConfig = _.clone(selectedConfig);
       _.merge(newConfig, expConfig);
-      setPlot(plots[selectedPlot].plot(newConfig, plotData, allowedPlotActions));
+      setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
     }
-  }, [expConfig, config, plotData]);
+  }, [expConfig, selectedConfig, selectedPlotData]);
 
   const plotStylingControlsConfig = [
     {
@@ -150,7 +152,7 @@ const CellSizeDistribution = (props) => {
 
   const renderPlot = () => {
     // Spinner for main window
-    if (!config || !plotData) {
+    if (!selectedConfig || !selectedPlotData) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -217,7 +219,7 @@ const CellSizeDistribution = (props) => {
               <div style={{ height: 8 }} />
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
-                config={config}
+                config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
               />
             </Panel>
