@@ -113,6 +113,7 @@ const generateSpec = (configSrc, data) => {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     background: config.colour.toggleInvert,
     padding: 5,
+
     data: [
       {
         name: 'data',
@@ -148,6 +149,7 @@ const generateSpec = (configSrc, data) => {
       },
 
     ],
+
     scales: [
       {
         name: 'x',
@@ -186,8 +188,8 @@ const generateSpec = (configSrc, data) => {
 
         },
       },
-
     ],
+
     axes: [
       {
         scale: 'x',
@@ -227,11 +229,11 @@ const generateSpec = (configSrc, data) => {
         labelColor: { value: config.colour.masterColour },
         titleFontSize: { value: config.title.titleFontSize },
         titleColor: { value: config.colour.masterColour },
-        labelFontSize: { value: config.label.labelFontSize },
+        // labelFontSize: { value: config.label.labelFontSize },
         domainWidth: { value: config.axes.domainWidth },
-
       },
     ],
+
     title:
     {
       text: { value: config.title.text },
@@ -241,6 +243,7 @@ const generateSpec = (configSrc, data) => {
       dx: 10,
       fontSize: { value: config.title.fonSize },
     },
+
     marks: [
       {
         type: 'symbol',
@@ -341,6 +344,7 @@ const generateSpec = (configSrc, data) => {
         },
       },
     ],
+
     legends: legend,
   };
 
