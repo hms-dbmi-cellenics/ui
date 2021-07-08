@@ -18,24 +18,16 @@ const ClassifierKneePlot = (props) => {
     }
   }, [config, expConfig, plotData]);
 
-  const render = () => {
-    if (!plotData.length) {
-      return (
-        <EmptyPlot mini={config.miniPlot} />
-      );
-    }
-
+  if (!plotData.length) {
     return (
-      <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
-      </center>
+      <EmptyPlot mini={config.miniPlot} />
     );
-  };
+  }
 
   return (
-    <>
-      { render()}
-    </>
+    <center>
+      <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+    </center>
   );
 };
 
