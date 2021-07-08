@@ -58,17 +58,15 @@ const Classifier = (props) => {
       title: 'Knee Plot',
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
       plotType: 'classifierKneePlot',
-      plot: (config, plotData, actions) => {
-
-        return(
+      plot: (config, plotData, actions) => (
         <ClassifierKneePlot
           experimentId={experimentId}
           config={config}
           expConfig={expConfig}
           plotData={plotData}
           actions={actions}
-        />)
-      },
+        />
+      ),
     },
     histogram: {
       title: 'Histogram',
@@ -87,8 +85,8 @@ const Classifier = (props) => {
   };
 
   const config = useSelector(
-      (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
-    );
+    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
+  );
   const expConfig = useSelector(
     (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
   );
@@ -97,12 +95,12 @@ const Classifier = (props) => {
   );
 
   useEffect(() => {
-      Object.values(plots).forEach((obj) => {
-        if (!config) {
-          dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
-        }
-      });
-    }, []);
+    Object.values(plots).forEach((obj) => {
+      if (!config) {
+        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (config && plotData && expConfig) {
@@ -154,7 +152,7 @@ const Classifier = (props) => {
         </Col>
 
         <Col flex='1 0px'>
-            <Space direction='vertical'>
+          <Space direction='vertical'>
             {Object.entries(plots).map(([key, plotObj]) => (
               <button
                 type='button'
@@ -180,9 +178,9 @@ const Classifier = (props) => {
 
             ))}
           </Space>
-          </Col>
+        </Col>
 
-          <Col flex='1 0px'>
+        <Col flex='1 0px'>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
