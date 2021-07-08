@@ -10,10 +10,7 @@ import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import PreloadContent from '../../PreloadContent';
 
-import {
-  updateFilterSettings,
-  saveProcessingSettings,
-} from '../../../redux/actions/experimentSettings';
+import { updateFilterSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
 
 import runCellSetsClustering from '../../../redux/actions/cellSets/runCellSetsClustering';
 

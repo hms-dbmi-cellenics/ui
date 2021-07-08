@@ -1,6 +1,4 @@
-import _ from 'lodash';
-
-import { updateBackendStatus, updateFilterSettings, loadedProcessingConfig } from '../redux/actions/experimentSettings';
+import { updateBackendStatus, updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 import { updateCellSetsClustering } from '../redux/actions/cellSets';
@@ -41,10 +39,11 @@ const onQCUpdate = (update, dispatch) => {
   const processingConfigUpdate = output.config;
 
   if (processingConfigUpdate) {
-    dispatch(updateFilterSettings(
+    dispatch(updateProcessingSettingsFromQC(
       input.taskName,
       processingConfigUpdate,
       input.sampleUuid,
+      false,
     ));
 
     Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
@@ -53,40 +52,10 @@ const onQCUpdate = (update, dispatch) => {
   }
 };
 
-const uglyTemporalFixedProcessingConfig = (processingConfig, filterName) => {
-  // This is an ugly patch we need to remove once filterName's processing config is fixed
-  // (right now we only receive default values which we no longer use)
-  const {
-    auto, enabled, filterSettings, ...samples
-  } = processingConfig.cellSizeDistribution;
-
-  const sampleIds = Object.keys(samples);
-  const defaultFilterSetting = processingConfig[filterName];
-
-  const perSampleFilterSetting = sampleIds.reduce(
-    (acum, sampleId) => {
-      // eslint-disable-next-line no-param-reassign
-      acum[sampleId] = defaultFilterSetting;
-      return acum;
-    },
-    {},
-  );
-
-  const fixedProcessingConfig = _.clone(processingConfig);
-  fixedProcessingConfig[filterName] = {
-    ...processingConfig[filterName],
-    ...perSampleFilterSetting,
-  };
-
-  return fixedProcessingConfig;
-};
-
 const onGEM2SUpdate = (update, dispatch, experimentId) => {
   const processingConfig = update?.item?.processingConfig;
   if (processingConfig) {
-    let fixedProcessingConfig = uglyTemporalFixedProcessingConfig(processingConfig, 'classifier');
-    fixedProcessingConfig = uglyTemporalFixedProcessingConfig(fixedProcessingConfig, 'mitochondrialContent');
-    dispatch(loadedProcessingConfig(experimentId, fixedProcessingConfig, true));
+    dispatch(loadedProcessingConfig(experimentId, processingConfig, true));
   }
 };
 

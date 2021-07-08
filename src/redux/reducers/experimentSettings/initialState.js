@@ -32,6 +32,7 @@ const initialState = {
       changedQCFilters: new Set(),
     },
   },
+  originalProcessing: {},
 };
 
 export default initialState;

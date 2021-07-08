@@ -6,7 +6,7 @@ import initialState from '../initialState';
 import mergeObjectWithArrays from '../../../../utils/mergeObjectWithArrays';
 
 const updateNonSampleFilterSettings = produce((draft, action) => {
-  const { step, configChange } = action.payload;
+  const { step, configChange, isALocalChange } = action.payload;
 
   if (!step) throw new Error(`Invalid step parameter received: ${step}`);
 
@@ -20,6 +20,10 @@ const updateNonSampleFilterSettings = produce((draft, action) => {
   );
 
   draft.processing[step] = newConfig;
+
+  if (!isALocalChange) {
+    draft.originalProcessing[step] = newConfig;
+  }
 }, initialState);
 
 export default updateNonSampleFilterSettings;

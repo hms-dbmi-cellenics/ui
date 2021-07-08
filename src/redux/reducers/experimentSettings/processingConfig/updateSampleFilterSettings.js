@@ -5,7 +5,9 @@ import _ from 'lodash';
 import initialState from '../initialState';
 
 const updateSampleFilterSettings = produce((draft, action) => {
-  const { step, sampleId, diff } = action.payload;
+  const {
+    step, sampleId, diff,
+  } = action.payload;
 
   const previousSettings = current(draft.processing[step][sampleId].filterSettings);
 
