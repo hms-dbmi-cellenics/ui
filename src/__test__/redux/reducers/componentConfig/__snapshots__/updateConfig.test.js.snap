@@ -74,7 +74,7 @@ Object {
         "titleFontSize": 13,
         "xAxisRotateLabels": false,
         "xAxisText": "log2 fold change",
-        "yAxisText": " - log10(adj.p - value)",
+        "yAxisText": "- log10(adj.p - value)",
       },
       "colour": Object {
         "gradient": "viridis",
