@@ -8,7 +8,6 @@ const copyFilterSettingsToAllSamples = produce((draft, action) => {
   const { step, newSettings, sampleIds } = action.payload;
 
   sampleIds.forEach((sampleIdToReplace) => {
-    draft.processing[step][sampleIdToReplace].auto = newSettings.auto;
     draft
       .processing[step][sampleIdToReplace].filterSettings = _.cloneDeep(newSettings.filterSettings);
   });
