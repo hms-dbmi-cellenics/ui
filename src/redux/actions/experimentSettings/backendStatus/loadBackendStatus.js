@@ -5,7 +5,6 @@ import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
-
 } from '../../../actionTypes/experimentSettings';
 
 const loadBackendStatus = (experimentId) => async (dispatch) => {

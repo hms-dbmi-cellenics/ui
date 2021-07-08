@@ -40,8 +40,9 @@ import getUserFriendlyQCStepName from '../../../../utils/getUserFriendlyQCStepNa
 
 import {
   loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
-  addChangedQCFilter, 
+  addChangedQCFilter, discardChangedQCFilters
 } from '../../../../redux/actions/experimentSettings';
+
 import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
 import { loadSamples } from '../../../../redux/actions/samples'
 import { runPipeline } from '../../../../redux/actions/pipeline';
@@ -70,8 +71,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const completedSteps = pipelineStatus?.completedSteps;
 
   const cellSets = useSelector((state) => state.cellSets);
+  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
 
-  const [changesOutstanding, setChangesOutstanding] = useState(false);
+  const changesOutstanding = Boolean(changedQCFilters.size);
 
   const [stepIdx, setStepIdx] = useState(0);
   const [applicableFilters, setApplicableFilters] = useState([])
@@ -174,7 +176,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const onConfigChange = (key) => {
     dispatch(addChangedQCFilter(key));
-    setChangesOutstanding(true);
   };
 
   const inputsList = sampleKeys?.map((key) => ({ key, headerName: `Sample ${cellSets.properties?.[key].name}`, params: { ...cellSets.properties?.[key], key } }));
@@ -362,16 +363,16 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   id='discardChangesButton'
                   data-testid='discardChangesButton'
                   type='primary'
-                  onClick={() => { }}
+                  onClick={() => { dispatch(discardChangedQCFilters()); }}
                   style={{ width: '80px' }}
                 >
                   Discard
                 </Button>
               </Tooltip>
-            </Space>
+            </Space >
           }
         >
-        </Alert>
+        </Alert >
       );
     }
 
@@ -380,7 +381,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = () => {
-    setChangesOutstanding(false);
     dispatch(runPipeline(experimentId))
   }
 
@@ -488,7 +488,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   onClick={() => {
                     dispatch(setQCStepEnabled(steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled));
                     dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
-                    setChangesOutstanding(true);
                   }}>
                   {
                     !processingConfig[steps[stepIdx].key]?.enabled
@@ -635,10 +634,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         route={route}
         title='Data Processing'
       />
-      <Modal title='Run data processing with the changed settings' 
-        visible={runQCModalVisible} 
-        onCancel={()=>setRunQCModalVisible(false)}
-        onOk={()=>onPipelineRun() }
+      <Modal title='Run data processing with the changed settings'
+        visible={runQCModalVisible}
+        onCancel={() => setRunQCModalVisible(false)}
+        onOk={() => onPipelineRun()}
         okText='Start'
       >
         <p>This will take several minutes. Your navigation within Cellscope will be restricted during this time. Do you want to start?</p>

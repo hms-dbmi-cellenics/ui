@@ -7,6 +7,7 @@ import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSetti
 import updateFilterSettings from './processingConfig/updateFilterSettings';
 import addChangedQCFilter from './processingConfig/addChangedQCFilter';
 import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
+import updateProcessingSettingsFromQC from './processingConfig/updateProcessingSettingsFromQC';
 
 import loadBackendStatus from './backendStatus/loadBackendStatus';
 import updateBackendStatus from './backendStatus/updateBackendStatus';
@@ -26,4 +27,5 @@ export {
   addChangedQCFilter,
   discardChangedQCFilters,
   updateFilterSettings,
+  updateProcessingSettingsFromQC,
 };
