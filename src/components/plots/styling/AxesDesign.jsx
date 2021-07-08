@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Slider, Form, Input, Radio,
+  Slider, Form, Input, Radio, Switch,
 } from 'antd';
 import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
@@ -47,15 +47,13 @@ const AxesDesign = (props) => {
       </Form.Item>
 
       <Form.Item label='Rotate X-Axis Labels'>
-        <Radio.Group
-          value={newConfig.axes.xAxisRotateLabels}
-          onChange={(event) => {
-              handleChange({ axes: { xAxisRotateLabels: event.target.value } })
+        <Switch
+          checked={newConfig.axes.xAxisRotateLabels}
+          onChange={(checked) => {
+              handleChange({ axes: { xAxisRotateLabels: checked } })
             }}
           >
-          <Radio value={true}>On</Radio>
-          <Radio value={false}>Off</Radio>
-        </Radio.Group>
+        </Switch>
       </Form.Item>
 
       <Form.Item label='Axes Label Size'>
