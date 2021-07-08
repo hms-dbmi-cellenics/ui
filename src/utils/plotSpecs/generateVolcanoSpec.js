@@ -227,7 +227,7 @@ const generateSpec = (configSrc, data) => {
         titleFont: { value: config.fontStyle.font },
         labelFont: { value: config.fontStyle.font },
         labelColor: { value: config.colour.masterColour },
-        titleFontSize: { value: config.title.titleFontSize },
+        // titleFontSize: { value: config.title.titleFontSize },
         titleColor: { value: config.colour.masterColour },
         // labelFontSize: { value: config.label.labelFontSize },
         domainWidth: { value: config.axes.domainWidth },
