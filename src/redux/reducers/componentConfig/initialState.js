@@ -121,9 +121,6 @@ const volcanoInitialConfig = {
   noDifferenceColor: '#aaaaaa',
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',
-  notSignificantDownregulatedColor: '#aaaaaa',
-  notSignificantUpregulatedColor: '#aaaaaa',
-  significantChangeDirectionUnknownColor: '#aaaaaa',
 
   // `null` automatically scales to range. This is a problem
   // because our DE is bad right now, so it throws off the

@@ -182,30 +182,18 @@ const VolcanoPlot = ({ experimentId }) => {
           p_val_adj <= pvalueThreshold
           && avg_log2FC >= config.logFoldChangeThreshold
         ) {
-          status = '1_significantUpregulated';
+          status = 'Upregulated';
         } else if (
           p_val_adj <= pvalueThreshold
           && avg_log2FC <= config.logFoldChangeThreshold * -1
         ) {
-          status = '2_significantDownregulated';
+          status = 'Downregulated';
         } else if (
           p_val_adj > pvalueThreshold
           && datum.avg_log2FC >= config.logFoldChangeThreshold
         ) {
-          status = '3_notSignificantUpregulated';
-        } else if (
-          p_val_adj > pvalueThreshold
-          && avg_log2FC <= config.logFoldChangeThreshold * -1
-        ) {
-          status = '4_notSignificantDownregulated';
-        } else if (
-          p_val_adj <= pvalueThreshold
-          && avg_log2FC > config.logFoldChangeThreshold * -1
-          && avg_log2FC < config.logFoldChangeThreshold
-        ) {
-          status = '5_significantChangeDirectionUnknown';
         } else {
-          status = '6_noDifference';
+          status = 'No difference';
         }
         // eslint-disable-next-line no-param-reassign
         datum.status = status;
