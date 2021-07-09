@@ -320,9 +320,16 @@ describe('Embedding', () => {
           loading: [],
           data: {
             REALGENE: {
-              min: 0,
-              max: 1.6,
-              expression: [0, 0.4, 0.5, 1.6],
+              rawExpression: {
+                min: 0,
+                max: 1.6,
+                expression: [0, 0.4, 0.5, 1.6],
+              },
+              truncatedExpression: {
+                min: 0,
+                max: 1.6,
+                expression: [0, 0.4, 0.5, 1.6],
+              },
             },
           },
         },

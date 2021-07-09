@@ -190,25 +190,28 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
   // eslint-disable-next-line no-shadow
   const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
 
-  // Mapping between expressionValue with key to data
-  const dataSource = {
-    raw: 'expression',
-    zScore: 'zScore',
-  };
-
   // Directly generate heatmap data.
   cartesian(
     data.geneOrder, data.cellOrder,
   ).forEach(
     ([gene, cellId]) => {
-      if (!expression.data[gene]) {
+      const expressionDataForGene = expression.data[gene];
+
+      if (!expressionDataForGene) {
         return;
       }
+
+      const expressionValues = (
+        expressionValue === 'raw' ? { color: expressionDataForGene.truncatedExpression.expression, display: expressionDataForGene.rawExpression.expression }
+          : expressionValue === 'zScore' ? { color: expressionDataForGene.zScore, display: expressionDataForGene.zScore }
+            : undefined
+      );
 
       data.heatmapData.push({
         cellId,
         gene,
-        expression: expression.data[gene][dataSource[expressionValue]][cellId],
+        expression: expressionValues.color[cellId],
+        displayExpression: expressionValues.display[cellId],
       });
     },
   );

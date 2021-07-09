@@ -53,6 +53,7 @@ const Embedding = (props) => {
 
   const focusData = useSelector((state) => state.cellInfo.focus);
   const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
+
   const cellSetProperties = useSelector((state) => state.cellSets.properties);
   const cellSetHierarchy = useSelector((state) => state.cellSets.hierarchy);
   const cellSetHidden = useSelector((state) => state.cellSets.hidden);
@@ -157,7 +158,8 @@ const Embedding = (props) => {
   };
 
   const getContainingCellSets = (cellId) => {
-    const prefixedCellSetNames = cellSetClusters.filter(([key, cellSet]) => cellSet.cellIds.has(Number.parseInt(cellId, 10)))
+    const prefixedCellSetNames = cellSetClusters
+      .filter(([, cellSet]) => cellSet.cellIds.has(Number.parseInt(cellId, 10)))
       .map(([key, containingCellset]) => `${clusterKeyToNameMap[key]}: ${containingCellset.name}`);
 
     return prefixedCellSetNames;
@@ -166,11 +168,14 @@ const Embedding = (props) => {
   const updateCellsHover = (cell) => {
     if (cell) {
       if (focusData.store === 'genes') {
+        const expressionToDispatch = focusedExpression
+          ? focusedExpression.rawExpression.expression[cell.cellId] : undefined;
+
         return dispatch(updateCellInfo({
           cellName: cell.cellId,
           cellSets: getContainingCellSets(cell.cellId),
           geneName: focusData.key,
-          expression: focusedExpression ? focusedExpression.expression[cell.cellId] : undefined,
+          expression: expressionToDispatch,
           componentType: embeddingType,
         }));
       }
