@@ -32,8 +32,8 @@ const generateSpec = (config, { FDR }, plotData) => {
   }
 
   const ndiscard = ntot - nkeep;
-  const firstLowQualityRank = plotData[firstLowQualityIndex].rank;
-  const lastHighQualityRank = plotData[lastHighQualityIndex].rank;
+  const firstLowQualityRank = plotData[firstLowQualityIndex]?.rank;
+  const lastHighQualityRank = plotData[lastHighQualityIndex]?.rank;
 
   // format with commas for thousandths
   const formatInt = (int) => int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
