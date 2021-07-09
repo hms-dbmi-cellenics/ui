@@ -12,6 +12,8 @@ const VolcanoDimensionsRangeEditor = (props) => {
   } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
+  const rangeFormatter = (value) => value === 0 ? 'Auto' : value.toString();
+
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <DimensionsRangeEditor
@@ -25,6 +27,7 @@ const VolcanoDimensionsRangeEditor = (props) => {
           value={newConfig.maxNegativeLogpValueDomain}
           min={0}
           max={yMax}
+          tipFormatter={rangeFormatter}
           onChange={(value) => {
             handleChange({ maxNegativeLogpValueDomain: value });
           }}
@@ -37,6 +40,7 @@ const VolcanoDimensionsRangeEditor = (props) => {
           value={newConfig.logFoldChangeDomain}
           min={0}
           max={xMax}
+          tipFormatter={rangeFormatter}
           onChange={(value) => {
             handleChange({ logFoldChangeDomain: value });
           }}

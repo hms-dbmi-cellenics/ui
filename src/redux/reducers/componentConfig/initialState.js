@@ -122,14 +122,8 @@ const volcanoInitialConfig = {
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',
 
-  // `null` automatically scales to range. This is a problem
-  // because our DE is bad right now, so it throws off the
-  // range to extreme values. TODO: set this back when we have
-  // good DE
-  // logFoldChangeDomain: null,
-
-  logFoldChangeDomain: 20,
-  maxNegativeLogpValueDomain: null,
+  logFoldChangeDomain: 0,
+  maxNegativeLogpValueDomain: 0,
   negLogpValueThreshold: 4,
   logFoldChangeThreshold: 1,
   logFoldChangeTickCount: 5,
