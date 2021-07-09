@@ -22,7 +22,7 @@ const VolcanoDimensionsRangeEditor = (props) => {
         label='Y-axis Range'
       >
         <Slider
-          value={yMax}
+          value={newConfig.maxNegativeLogpValueDomain}
           min={0}
           max={yMax}
           onChange={(value) => {
@@ -34,7 +34,7 @@ const VolcanoDimensionsRangeEditor = (props) => {
         label='X-axis Range'
       >
         <Slider
-          value={xMax}
+          value={newConfig.logFoldChangeDomain}
           min={0}
           max={xMax}
           onChange={(value) => {
