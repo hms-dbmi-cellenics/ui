@@ -79,4 +79,4 @@ You can check for the size of the bundles served to the user and loaded onto the
 Alternatively, you can use `npm run analyze:server` or `npm run analyze:client` to get information about
 bundle sizes for just server-side rendered and client-side scripts.
 
-The script will produce HTML artifacts that will open in your default browswer as a Voronoi treemap.
+The script will produce HTML artifacts that will open in your default browser as a Voronoi treemap.
