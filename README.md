@@ -20,8 +20,6 @@ Make sure that you clone this repo and are in the `ui` folder. then simply do:
 
 See more available commands like syntax checking with `make help`.
 
-Once UI is running, open your browser and go to [localhost:5000](localhost:5000).
-
 Note that since the UI is not connected to the backend, you should see an empty screen saying `You are not connected to the backend.`
 To get it running end-to-end locally with mocked dataset, you will need to set up and run each of these:
 
