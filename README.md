@@ -31,7 +31,7 @@ To get it running end-to-end locally with mocked dataset, you will need to set u
 
 Just follow the README of each of them for instructions on how to get it to run.
 
-Once you have everything running on the backend, go to `localhost:5000`. You will get redirected to an authentication page. You will have to create a staging account by clicking through "Sign up" link (even if you have an existing production account).
+Once you have everything running on the backend, go to <http://localhost:5000> in your browser. You will get redirected to an authentication page. You will have to create a staging account by clicking through "Sign up" link (even if you have an existing production account).
 
 ### Remote debugging with VS Code
 
