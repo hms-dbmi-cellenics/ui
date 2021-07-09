@@ -195,7 +195,7 @@ const spec = {
       encode: {
         enter: {
           cursor: { value: 'cell' },
-          tooltip: { signal: '{"Cell ID": datum.cellId, "Gene name": datum.gene, "Expression": format(datum.expression, ",.3f") }' },
+          tooltip: { signal: '{"Cell ID": datum.cellId, "Gene name": datum.gene, "Expression": format(datum.displayExpression, ",.3f") }' },
           x: {
             scale: 'x',
             field: 'cellId',

@@ -37,9 +37,11 @@ jest.mock('../../../utils/cacheRequest', () => ({
         const requestedExpression = {};
         body.genes.forEach((geneName) => {
           requestedExpression[geneName] = {
-            min: 0,
-            max: 1.6,
-            expression: [0, 0.4, 0.5, 1.6, 0, 1],
+            rawExpression: {
+              min: 0,
+              max: 1.6,
+              expression: [0, 0.4, 0.5, 1.6, 0, 1],
+            },
             zScore: [1, 1.4, 1.5, 2.6, 2, 2],
           };
         });

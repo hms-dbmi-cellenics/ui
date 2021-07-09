@@ -68,6 +68,7 @@ const loadGeneExpression = (
     const data = await fetchCachedWork(
       experimentId, 30, body, backendStatus.status,
     );
+
     if (data[genesToFetch[0]]?.error) {
       pushNotificationMessage('error', data[genesToFetch[0]].message);
       dispatch({

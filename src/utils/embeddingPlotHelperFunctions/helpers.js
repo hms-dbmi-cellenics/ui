@@ -45,7 +45,8 @@ const renderCellSetColors = (rootKey, cellSetHierarchy, cellSetProperties) => {
 };
 
 const colorByGeneExpression = (focusedGene) => {
-  const { expression, min, max } = focusedGene;
+  // Use truncated values for coloring
+  const { expression, min, max } = focusedGene.truncatedExpression;
 
   const scaleFunction = d3.scaleSequential(d3Chromatic.interpolateViridis)
     .domain([min, max]);
