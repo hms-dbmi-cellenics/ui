@@ -26,7 +26,6 @@ const generateSpec = (config, { FDR }, plotData) => {
     nkeep = plotData
       .filter((item) => item.fdr < FDR);
 
-    console.log('nkeep:', nkeep);
     nkeep = nkeep.map((item) => item.ndrops)
       .reduce((a, b) => a + b, 0);
   }
