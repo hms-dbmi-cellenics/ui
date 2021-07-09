@@ -181,10 +181,7 @@ const DiffExprCompute = (props) => {
           placeholder={`Select a ${placeholder}...`}
           style={{ width: 200 }}
           onChange={(cellSet) => onSelectCluster(cellSet, option)}
-          value={
-            option === "basis" && numSamples === 1 ? onlySample :
-              comparisonGroup[selectedComparison][option] ?? null
-          }
+          value={comparisonGroup[selectedComparison][option] ?? null}
           size='small'
         >
           {
