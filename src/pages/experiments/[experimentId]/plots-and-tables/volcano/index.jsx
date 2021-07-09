@@ -51,7 +51,6 @@ const VolcanoPlot = ({ experimentId }) => {
   const [spec, setSpec] = useState({
     spec: null,
     maxNegativeLogpValue: null,
-    xMax: null,
   });
 
   useEffect(() => {
@@ -76,7 +75,7 @@ const VolcanoPlot = ({ experimentId }) => {
       controls: [{
         name: 'volcanoDimensions',
         props: {
-          xMax: Math.round(spec.xMax),
+          xMax: 20,
           yMax: Math.round(spec.maxNegativeLogpValue) + 2,
         },
       }],

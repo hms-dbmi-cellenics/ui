@@ -4,9 +4,6 @@ const generateSpec = (configSrc, data) => {
   const config = _.cloneDeep(configSrc);
 
   let maxNegativeLogpValue = 0;
-  let l2fcMin = null;
-  let l2fcMax = null;
-  let xMax = null;
 
   data.forEach((o) => {
     Object.keys(o).forEach((k) => {
@@ -18,20 +15,6 @@ const generateSpec = (configSrc, data) => {
     });
   });
 
-  data.forEach((o) => {
-    Object.keys(o).forEach((k) => {
-      if (k === 'avg_log2FC' && o[k] && o[k] !== 1 && o[k] !== 0) {
-        l2fcMin = Math.min(l2fcMin, o[k]);
-        l2fcMax = Math.max(l2fcMax, o[k]);
-      }
-    });
-  });
-
-  if (Math.abs(l2fcMin) > Math.abs(l2fcMax)) {
-    xMax = Math.abs(l2fcMin);
-  } else {
-    xMax = Math.abs(l2fcMax);
-  }
   const logFoldChangeFilterExpr = (config.logFoldChangeDomain)
     ? `datum.avg_log2FC > ${config.logFoldChangeDomain * -1} && datum.avg_log2FC < ${config.logFoldChangeDomain}`
     : 'true';
@@ -350,7 +333,7 @@ const generateSpec = (configSrc, data) => {
   };
 
   return {
-    spec, maxNegativeLogpValue, xMax,
+    spec, maxNegativeLogpValue,
   };
 };
 
