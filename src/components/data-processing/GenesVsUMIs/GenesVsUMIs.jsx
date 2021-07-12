@@ -20,33 +20,28 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 
 const { Panel } = Collapse;
 
+const allowedPlotActions = {
+  export: true,
+  compiled: false,
+  source: true,
+  editor: false,
+};
+
+const filterName = 'numGenesVsNumUmis';
+const plotType = 'featuresVsUMIsScatterplot';
+
 const GenesVsUMIs = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
-  const filterName = 'numGenesVsNumUmis';
-
   const plotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
-  const plotType = 'featuresVsUMIsScatterplot';
 
   const dispatch = useDispatch();
-
-  const allowedPlotActions = {
-    export: true,
-    compiled: false,
-    source: true,
-    editor: false,
-  };
 
   const debounceSave = useCallback(
     _.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), [],
   );
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-    debounceSave(plotUuid);
-  };
 
   const config = useSelector(
     (state) => state.componentConfig[plotUuid]?.config,
@@ -65,6 +60,11 @@ const GenesVsUMIs = (props) => {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
   }, [config]);
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+    debounceSave(plotUuid);
+  };
 
   const plotStylingControlsConfig = [
     {
