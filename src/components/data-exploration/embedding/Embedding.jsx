@@ -21,7 +21,8 @@ import {
   updateStatus,
   clearPleaseWait,
   renderCellSetColors,
-  colorByGeneExpression, colorInterpolator,
+  colorByGeneExpression,
+  colorInterpolator,
 } from '../../../utils/embeddingPlotHelperFunctions/helpers';
 import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
