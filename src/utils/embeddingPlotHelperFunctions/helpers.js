@@ -61,12 +61,9 @@ const colorByGeneExpression = (focusedGene) => {
   // instead!
   const scaleFunction = d3.scaleSequential([min, max], d3Chromatic.interpolatePurples);
 
-  const cellColoring = {};
-  expression.forEach((expressionValue, cellId) => {
-    cellColoring[cellId] = cssRgbToRgb(scaleFunction(expressionValue));
-  });
-
-  return cellColoring;
+  return Object.fromEntries(expression.map(
+    (expressionValue, cellId) => [cellId, cssRgbToRgb(scaleFunction(expressionValue))],
+  ));
 };
 
 const convertCellsData = (results, hidden, properties) => {
