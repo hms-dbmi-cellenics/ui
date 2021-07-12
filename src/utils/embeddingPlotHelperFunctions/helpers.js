@@ -13,6 +13,13 @@ const hexToRgb = (hex) => {
   return null;
 };
 
+const cssRgbToRgb = (rgb) => {
+  if (rgb) {
+    return rgb.match(/\d+/g).map(Number);
+  }
+  return null;
+};
+
 const renderCellSetColors = (rootKey, cellSetHierarchy, cellSetProperties) => {
   const colors = {};
 
@@ -48,12 +55,15 @@ const colorByGeneExpression = (focusedGene) => {
   // Use truncated values for coloring
   const { expression, min, max } = focusedGene.truncatedExpression;
 
-  const scaleFunction = d3.scaleSequential(d3Chromatic.interpolateViridis)
-    .domain([min, max]);
-  const cellColoring = {};
+  // this sometimes generates hex (e.g. '#000000') and sometimes rgb colour
+  // (e.g. 'rgb(0, 0, 0)') strings for different interpolators. Amazing.
+  // So if you change the interpolators and the colours break, use hexToRgb
+  // instead!
+  const scaleFunction = d3.scaleSequential([min, max], d3Chromatic.interpolatePurples);
 
+  const cellColoring = {};
   expression.forEach((expressionValue, cellId) => {
-    cellColoring[cellId] = hexToRgb(scaleFunction(expressionValue));
+    cellColoring[cellId] = cssRgbToRgb(scaleFunction(expressionValue));
   });
 
   return cellColoring;
