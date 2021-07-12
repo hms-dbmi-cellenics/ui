@@ -13,25 +13,25 @@ const generateSpec = (config, plotData) => {
       encode: {
         title: {
           update: {
-            fontSize: { value: 14 },
+            fontSize: 14,
           },
         },
         labels: {
           interactive: true,
           update: {
-            fontSize: { value: 12 },
-            fill: { value: 'black' },
+            fontSize: 12,
+            fill: 'black',
           },
         },
         symbols: {
           update: {
-            stroke: { value: 'transparent' },
+            stroke: 'transparent',
           },
         },
         legend: {
           update: {
-            stroke: { value: '#ccc' },
-            strokeWidth: { value: 1.5 },
+            stroke: '#ccc',
+            strokeWidth: 1.5,
           },
         },
       },
@@ -89,13 +89,13 @@ const generateSpec = (config, plotData) => {
         scale: 'xscale',
         zindex: 1,
         grid: true,
-        title: { value: config.axes.xAxisText },
-        titleFont: { value: config.fontStyle.font },
-        labelFont: { value: config.fontStyle.font },
-        titleFontSize: { value: config.axes.titleFontSize },
-        labelFontSize: { value: config.axes.labelFontSize },
-        offset: { value: config.axes.offset },
-        gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        title: config.axes.xAxisText,
+        titleFont: config.fontStyle.font,
+        labelFont: config.fontStyle.font,
+        titleFontSize: config.axes.titleFontSize,
+        labelFontSize: config.axes.labelFontSize,
+        offset: config.axes.offset,
+        gridOpacity: (config.axes.gridOpacity / 20),
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
       },
@@ -105,13 +105,13 @@ const generateSpec = (config, plotData) => {
         tickCount: 5,
         grid: true,
         zindex: 1,
-        title: { value: config.axes.yAxisText },
-        titleFont: { value: config.fontStyle.font },
-        labelFont: { value: config.fontStyle.font },
-        titleFontSize: { value: config.axes.titleFontSize },
-        labelFontSize: { value: config.axes.labelFontSize },
-        offset: { value: config.axes.offset },
-        gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        title: config.axes.yAxisText,
+        titleFont: config.fontStyle.font,
+        labelFont: config.fontStyle.font,
+        titleFontSize: config.axes.titleFontSize,
+        labelFontSize: config.axes.labelFontSize,
+        offset: config.axes.offset,
+        gridOpacity: (config.axes.gridOpacity / 20),
       },
     ],
     marks: [
@@ -123,10 +123,10 @@ const generateSpec = (config, plotData) => {
           update: {
             x: { scale: 'xscale', field: 'fracMito' },
             y: { scale: 'yscale', field: 'cellSize' },
-            size: { value: 10 },
-            shape: { value: 'circle' },
-            strokeWidth: { value: 2 },
-            opacity: { value: 0.5 },
+            size: 10,
+            shape: 'circle',
+            strokeWidth: 2,
+            opacity: 0.5,
             fill: {
               scale: 'color',
               field: 'status',
@@ -139,11 +139,11 @@ const generateSpec = (config, plotData) => {
         encode: {
           update: {
             x: { scale: 'xscale', value: maxPercentage },
-            y: { value: 0 },
+            y: 0,
             y2: { field: { group: 'height' } },
-            strokeWidth: { value: 2 },
-            strokeDash: { value: [8, 4] },
-            stroke: { value: 'red' },
+            strokeWidth: 2,
+            strokeDash: [8, 4],
+            stroke: 'red',
           },
         },
       },
@@ -151,11 +151,11 @@ const generateSpec = (config, plotData) => {
     legends: legend,
     title:
     {
-      text: { value: config.title.text },
-      anchor: { value: config.title.anchor },
-      font: { value: config.fontStyle.font },
-      dx: { value: config.title.dx },
-      fontSize: { value: config.title.fontSize },
+      text: config.title.text,
+      anchor: config.title.anchor,
+      font: config.fontStyle.font,
+      dx: config.title.dx,
+      fontSize: config.title.fontSize,
     },
   };
 };
