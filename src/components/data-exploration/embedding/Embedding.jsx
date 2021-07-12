@@ -21,13 +21,13 @@ import {
   updateStatus,
   clearPleaseWait,
   renderCellSetColors,
-  colorByGeneExpression,
+  colorByGeneExpression, colorInterpolator,
 } from '../../../utils/embeddingPlotHelperFunctions/helpers';
-import legend from '../../../../public/static/media/viridis.png';
 import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
 
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
+import * as d3 from 'd3-scale';
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
@@ -227,22 +227,25 @@ const Embedding = (props) => {
     );
   }
 
+
   const renderExpressionView = () => {
     if (focusData.store === 'genes') {
+      const colorScale = d3.scaleSequential(colorInterpolator);
+
       return (
         <div>
           <label htmlFor='continuous data name'>
             <strong>{focusData.key}</strong>
           </label>
-          <div>
-            <img
-              src={legend}
-              alt='gene expression legend'
-              style={{
-                height: 200, width: 20, position: 'absolute', top: 70,
-              }}
-            />
-          </div>
+          <div
+            style={{
+              position: 'absolute',
+              background: `linear-gradient(${colorScale(1)}, ${colorScale(0)})`,
+              height: 200,
+              width: 20,
+              top: 70,
+            }}
+          />
         </div>
       );
     }

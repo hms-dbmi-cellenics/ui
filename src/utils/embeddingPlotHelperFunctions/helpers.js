@@ -3,6 +3,8 @@ import * as d3 from 'd3-scale';
 
 import { union } from '../cellSetOperations';
 
+const colorInterpolator = d3Chromatic.interpolatePurples;
+
 const hexToRgb = (hex) => {
   if (hex) {
     return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i,
@@ -59,7 +61,7 @@ const colorByGeneExpression = (focusedGene) => {
   // (e.g. 'rgb(0, 0, 0)') strings for different interpolators. Amazing.
   // So if you change the interpolators and the colours break, use hexToRgb
   // instead!
-  const scaleFunction = d3.scaleSequential([min, max], d3Chromatic.interpolatePurples);
+  const scaleFunction = d3.scaleSequential([min, max], colorInterpolator);
 
   return Object.fromEntries(expression.map(
     (expressionValue, cellId) => [cellId, cssRgbToRgb(scaleFunction(expressionValue))],
@@ -94,4 +96,5 @@ export {
   updateStatus,
   clearPleaseWait,
   colorByGeneExpression,
+  colorInterpolator,
 };
