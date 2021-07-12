@@ -18,7 +18,7 @@ const SelectData = (props) => {
     return children;
   };
   const getMetadataParents = () => {
-    const options = hierarchy.map(({ key }) => (key));
+    const options = hierarchy.map(({ key }) => ({ value: key }));
 
     const filteredOptions = options.filter((element) => (
       properties[element.value].type === 'metadataCategorical'
