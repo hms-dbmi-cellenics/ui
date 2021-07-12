@@ -4,9 +4,6 @@ const generateSpec = (configSrc, data) => {
   const config = _.cloneDeep(configSrc);
 
   let maxNegativeLogpValue = 0;
-  let l2fcMin = null;
-  let l2fcMax = null;
-  let xMax = null;
 
   data.forEach((o) => {
     Object.keys(o).forEach((k) => {
@@ -18,20 +15,6 @@ const generateSpec = (configSrc, data) => {
     });
   });
 
-  data.forEach((o) => {
-    Object.keys(o).forEach((k) => {
-      if (k === 'avg_log2FC' && o[k] && o[k] !== 1 && o[k] !== 0) {
-        l2fcMin = Math.min(l2fcMin, o[k]);
-        l2fcMax = Math.max(l2fcMax, o[k]);
-      }
-    });
-  });
-
-  if (Math.abs(l2fcMin) > Math.abs(l2fcMax)) {
-    xMax = Math.abs(l2fcMin);
-  } else {
-    xMax = Math.abs(l2fcMax);
-  }
   const logFoldChangeFilterExpr = (config.logFoldChangeDomain)
     ? `datum.avg_log2FC > ${config.logFoldChangeDomain * -1} && datum.avg_log2FC < ${config.logFoldChangeDomain}`
     : 'true';
@@ -113,6 +96,7 @@ const generateSpec = (configSrc, data) => {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     background: config.colour.toggleInvert,
     padding: 5,
+
     data: [
       {
         name: 'data',
@@ -148,6 +132,7 @@ const generateSpec = (configSrc, data) => {
       },
 
     ],
+
     scales: [
       {
         name: 'x',
@@ -169,25 +154,23 @@ const generateSpec = (configSrc, data) => {
       {
         name: 'color',
         type: 'ordinal',
+
+        // specifying a domain and a range like this works
+        // like a map of values to colours
+        domain: [
+          'Upregulated',
+          'No difference',
+          'Downregulated',
+        ],
         range:
           [
             config.significantUpregulatedColor,
-            config.significantDownregulatedColor,
-            config.notSignificantUpregulatedColor,
-            config.notSignificantDownregulatedColor,
-            config.significantChangeDirectionUnknownColor,
             config.noDifferenceColor,
+            config.significantDownregulatedColor,
           ],
-        domain: {
-          data: 'data',
-          field: 'status',
-          sort: true,
-          reverse: config.colour.reverseColourBar,
-
-        },
       },
-
     ],
+
     axes: [
       {
         scale: 'x',
@@ -215,23 +198,22 @@ const generateSpec = (configSrc, data) => {
         grid: true,
         domain: true,
         orient: 'left',
-        titlePadding: 5,
-        gridColor: { value: config.masterColour },
-        gridOpacity: { value: (config.axes.gridOpacity / 20) },
-        gridWidth: { value: (config.axes.gridWidth / 20) },
-        tickColor: { value: config.masterColour },
-        offset: { value: config.axes.Offset },
         title: { value: config.axes.yAxisText },
         titleFont: { value: config.fontStyle.font },
         labelFont: { value: config.fontStyle.font },
         labelColor: { value: config.colour.masterColour },
-        titleFontSize: { value: config.title.titleFontSize },
+        tickColor: { value: config.colour.masterColour },
+        gridColor: { value: config.colour.masterColour },
+        gridOpacity: { value: (config.axes.gridOpacity / 20) },
+        gridWidth: { value: (config.axes.gridWidth / 20) },
+        offset: { value: config.axes.offset },
+        titleFontSize: { value: config.axes.titleFontSize },
         titleColor: { value: config.colour.masterColour },
-        labelFontSize: { value: config.label.labelFontSize },
+        labelFontSize: { value: config.axes.labelFontSize },
         domainWidth: { value: config.axes.domainWidth },
-
       },
     ],
+
     title:
     {
       text: { value: config.title.text },
@@ -239,8 +221,9 @@ const generateSpec = (configSrc, data) => {
       anchor: { value: config.title.anchor },
       font: { value: config.fontStyle.font },
       dx: 10,
-      fontSize: { value: config.title.fonSize },
+      fontSize: { value: config.title.fontSize },
     },
+
     marks: [
       {
         type: 'symbol',
@@ -341,11 +324,12 @@ const generateSpec = (configSrc, data) => {
         },
       },
     ],
+
     legends: legend,
   };
 
   return {
-    spec, maxNegativeLogpValue, xMax,
+    spec, maxNegativeLogpValue,
   };
 };
 

@@ -4,17 +4,15 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Typography, Radio,
+  Button, Form, Select, Radio,
 } from 'antd';
 
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import { loadCellSets } from '../../../redux/actions/cellSets';
 import { setComparisonGroup, setComparisonType } from '../../../redux/actions/differentialExpression';
 
 import composeTree from '../../../utils/composeTree';
 
-const { Text } = Typography;
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
@@ -31,7 +29,6 @@ const DiffExprCompute = (props) => {
   const hierarchy = useSelector((state) => state.cellSets.hierarchy);
   const [isFormValid, setIsFormValid] = useState(false);
   const [numSamples, setNumSamples] = useState(1);
-  const [onlySample, setOnlySample] = useState('');
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
 
@@ -91,7 +88,7 @@ const DiffExprCompute = (props) => {
     setNumSamples(samples.length)
 
     if (samples.length === 1) {
-      setOnlySample(`sample/${samples[0].key}`)
+      comparisonGroup[selectedComparison]['basis'] = `sample/${samples[0].key}`
     }
 
   }, [hierarchy, properties]);
@@ -157,11 +154,7 @@ const DiffExprCompute = (props) => {
 
       const shouldDisable = (key) => {
         // Should always disable something already selected.
-        if (Object.values(comparisonGroup[selectedComparison]).includes(key)) {
-          return true;
-        }
-
-        return false;
+        return Object.values(comparisonGroup[selectedComparison]).includes(key);
       }
 
       if (comparisonGroup[selectedComparison]) {
@@ -181,10 +174,7 @@ const DiffExprCompute = (props) => {
           placeholder={`Select a ${placeholder}...`}
           style={{ width: 200 }}
           onChange={(cellSet) => onSelectCluster(cellSet, option)}
-          value={
-            option === "basis" && numSamples === 1 ? onlySample :
-              comparisonGroup[selectedComparison][option] ?? null
-          }
+          value={comparisonGroup[selectedComparison][option] ?? null}
           size='small'
         >
           {

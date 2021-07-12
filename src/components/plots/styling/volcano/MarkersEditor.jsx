@@ -16,20 +16,8 @@ const MarkersEditor = (props) => {
       name: 'Significantly upregulated genes',
     },
     {
-      config: 'notSignificantDownregulatedColor',
-      name: 'Insignificantly downregulated genes',
-    },
-    {
-      config: 'notSignificantUpregulatedColor',
-      name: 'Insignificantly upregulated genes',
-    },
-    {
-      config: 'significantChangeDirectionUnknownColor',
-      name: 'Significant genes, either direction',
-    },
-    {
       config: 'noDifferenceColor',
-      name: 'Genes with no measured difference',
+      name: 'Genes with no significant difference',
     },
   ];
 
