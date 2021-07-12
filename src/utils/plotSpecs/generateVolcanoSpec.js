@@ -221,7 +221,7 @@ const generateSpec = (configSrc, data) => {
       anchor: { value: config.title.anchor },
       font: { value: config.fontStyle.font },
       dx: 10,
-      fontSize: { value: config.title.fonSize },
+      fontSize: { value: config.title.fontSize },
     },
 
     marks: [
