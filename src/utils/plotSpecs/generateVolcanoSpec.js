@@ -66,13 +66,9 @@ const generateSpec = (configSrc, data) => {
             },
           },
           labels: {
-            interactive: true,
             update: {
-              fontSize: 12,
-              fill: config.colour.masterColour,
-            },
-            hover: {
-              fill: 'firebrick',
+              fontSize: { value: 12 },
+              fill: { value: config.colour.masterColour },
             },
           },
           symbols: {

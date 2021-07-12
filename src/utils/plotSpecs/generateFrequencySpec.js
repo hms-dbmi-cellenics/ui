@@ -27,7 +27,7 @@ const generateSpec = (config, plotData) => {
               text: {
                 scale: 'c', field: 'label',
               },
-              fill: config.colour.masterColour,
+              fill: { value: config.colour.masterColour },
             },
           },
         },

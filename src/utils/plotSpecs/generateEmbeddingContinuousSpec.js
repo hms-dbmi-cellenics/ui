@@ -16,7 +16,7 @@ const generateSpec = (config, plotData) => {
           interactive: true,
           update: {
             fontSize: 12,
-            fill: config.colour.masterColour,
+            fill: { value: config.colour.masterColour },
           },
 
         },
@@ -113,7 +113,7 @@ const generateSpec = (config, plotData) => {
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: config.marker.size,
+            size: { value: config.marker.size },
             stroke: {
               scale: 'color',
               field: 'value',
@@ -122,8 +122,8 @@ const generateSpec = (config, plotData) => {
               scale: 'color',
               field: 'value',
             },
-            shape: config.marker.shape,
-            fillOpacity: config.marker.opacity / 10,
+            shape: { value: config.marker.shape },
+            fillOpacity: { value: config.marker.opacity / 10 },
           },
         },
       },

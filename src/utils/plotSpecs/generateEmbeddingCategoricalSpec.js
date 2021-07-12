@@ -26,7 +26,7 @@ const generateSpec = (config, plotData) => {
               text: {
                 scale: 'sampleToName', field: 'label',
               },
-              fill: config?.colour.masterColour,
+              fill: { value: config?.colour.masterColour },
             },
 
           },
@@ -143,11 +143,11 @@ const generateSpec = (config, plotData) => {
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: config?.marker.size,
+            size: { value: config?.marker.size },
             stroke: { scale: 'cellSetColors', field: 'cluster' },
             fill: { scale: 'cellSetColors', field: 'cluster' },
-            shape: config?.marker.shape,
-            fillOpacity: config?.marker.opacity / 10,
+            shape: { value: config?.marker.shape },
+            fillOpacity: { value: config?.marker.opacity / 10 },
           },
         },
       },
