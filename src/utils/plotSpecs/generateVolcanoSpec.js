@@ -154,24 +154,20 @@ const generateSpec = (configSrc, data) => {
       {
         name: 'color',
         type: 'ordinal',
-        // points are coloured by a range which is pretty hacky because it means
-        // the possible domain values must be ordered in alphabetical order here.
-        // It's done this way because the 'status' is set in the component.
-        // Colouring them there would mean that that process would become a
-        // dependency of config.
+
+        // specifying a domain and a range like this works
+        // like a map of values to colours
+        domain: [
+          'Upregulated',
+          'No difference',
+          'Downregulated',
+        ],
         range:
           [
-            config.significantDownregulatedColor,
-            config.noDifferenceColor,
             config.significantUpregulatedColor,
+            config.noDifferenceColor,
+            config.significantDownregulatedColor,
           ],
-        domain: {
-          data: 'data',
-          field: 'status',
-          sort: true,
-          reverse: config.colour.reverseColourBar,
-
-        },
       },
     ],
 
