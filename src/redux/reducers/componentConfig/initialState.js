@@ -110,7 +110,7 @@ const volcanoInitialConfig = {
   axes: {
     ...axesBaseState,
     xAxisText: 'log2 fold change',
-    yAxisText: ' - log10(adj.p - value)',
+    yAxisText: '-log10(adj p-value)',
     gridOpacity: 5,
     offset: 10,
   },
@@ -121,18 +121,9 @@ const volcanoInitialConfig = {
   noDifferenceColor: '#aaaaaa',
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',
-  notSignificantDownregulatedColor: '#aaaaaa',
-  notSignificantUpregulatedColor: '#aaaaaa',
-  significantChangeDirectionUnknownColor: '#aaaaaa',
 
-  // `null` automatically scales to range. This is a problem
-  // because our DE is bad right now, so it throws off the
-  // range to extreme values. TODO: set this back when we have
-  // good DE
-  // logFoldChangeDomain: null,
-
-  logFoldChangeDomain: 20,
-  maxNegativeLogpValueDomain: null,
+  logFoldChangeDomain: 0,
+  maxNegativeLogpValueDomain: 0,
   negLogpValueThreshold: 4,
   logFoldChangeThreshold: 1,
   logFoldChangeTickCount: 5,
