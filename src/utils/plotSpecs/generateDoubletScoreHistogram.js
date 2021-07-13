@@ -9,25 +9,25 @@ const generateSpec = (config, plotData) => {
       encode: {
         title: {
           update: {
-            fontSize: 14,
+            fontSize: { value: 14 },
           },
         },
         labels: {
           interactive: true,
           update: {
-            fontSize: 12,
-            fill: 'black',
+            fontSize: { value: 12 },
+            fill: { value: 'black' },
           },
         },
         symbols: {
           update: {
-            stroke: 'transparent',
+            stroke: { value: 'transparent' },
           },
         },
         legend: {
           update: {
-            stroke: '#ccc',
-            strokeWidth: 1.5,
+            stroke: { value: '#ccc' },
+            strokeWidth: { value: 1.5 },
           },
         },
       },
@@ -159,10 +159,10 @@ const generateSpec = (config, plotData) => {
         encode: {
           update: {
             x: { scale: 'xscale', field: 'bin0' },
-            width: 1,
+            width: { value: 1 },
             y: { value: 25, offset: { signal: 'height' } },
-            height: 5,
-            fillOpacity: 0.4,
+            height: { value: 5 },
+            fillOpacity: { value: 0.4 },
             fill: {
               scale: 'color',
               field: 'status',
@@ -175,11 +175,11 @@ const generateSpec = (config, plotData) => {
         encode: {
           update: {
             x: { scale: 'xscale', value: config.probabilityThreshold },
-            y: 0,
+            y: { value: 0 },
             y2: { field: { group: 'height' } },
-            strokeWidth: 2,
-            strokeDash: [8, 4],
-            stroke: 'red',
+            strokeWidth: { value: 2 },
+            strokeDash: { value: [8, 4] },
+            stroke: { value: 'red' },
           },
         },
       },

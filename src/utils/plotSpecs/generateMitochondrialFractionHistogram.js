@@ -14,25 +14,25 @@ const generateSpec = (config, plotData) => {
       encode: {
         title: {
           update: {
-            fontSize: 14,
+            fontSize: { value: 14 },
           },
         },
         labels: {
           interactive: true,
           update: {
-            fontSize: 12,
-            fill: 'black',
+            fontSize: { value: 12 },
+            fill: { value: 'black' },
           },
         },
         symbols: {
           update: {
-            stroke: 'transparent',
+            stroke: { value: 'transparent' },
           },
         },
         legend: {
           update: {
-            stroke: '#ccc',
-            strokeWidth: 1.5,
+            stroke: { value: '#ccc' },
+            strokeWidth: { value: 1.5 },
           },
         },
       },
@@ -184,9 +184,9 @@ const generateSpec = (config, plotData) => {
             x: { scale: 'xscale', value: maxPercentage },
             y: 0,
             y2: { field: { group: 'height' } },
-            strokeWidth: 2,
-            strokeDash: [8, 4],
-            stroke: 'red',
+            strokeWidth: { value: 2 },
+            strokeDash: { value: [8, 4] },
+            stroke: { value: 'red' },
           },
         },
       },

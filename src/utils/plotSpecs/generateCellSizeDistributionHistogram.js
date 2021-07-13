@@ -13,25 +13,25 @@ const generateSpec = (config, plotData, highestUmi) => {
       encode: {
         title: {
           update: {
-            fontSize: 14,
+            fontSize: { value: 14 },
           },
         },
         labels: {
           interactive: true,
           update: {
-            fontSize: 12,
-            fill: 'black',
+            fontSize: { value: 12 },
+            fill: { value: 'black' },
           },
         },
         symbols: {
           update: {
-            stroke: 'transparent',
+            stroke: { value: 'transparent' },
           },
         },
         legend: {
           update: {
-            stroke: '#ccc',
-            strokeWidth: 1.5,
+            stroke: { value: '#ccc' },
+            strokeWidth: { value: 1.5 },
           },
         },
       },
@@ -144,8 +144,8 @@ const generateSpec = (config, plotData, highestUmi) => {
             },
             y: { scale: 'yscale', field: 'count' },
             y2: { scale: 'yscale', value: 0 },
-            stroke: 'black',
-            strokeWidth: 0.5,
+            stroke: { value: 'black' },
+            strokeWidth: { value: 0.5 },
             fill: {
               scale: 'color',
               field: 'color',
@@ -160,9 +160,9 @@ const generateSpec = (config, plotData, highestUmi) => {
             x: { scale: 'xscale', value: config.minCellSize },
             y: 0,
             y2: { field: { group: 'height' } },
-            strokeWidth: 2,
-            strokeDash: [8, 4],
-            stroke: 'red',
+            strokeWidth: { value: 2 },
+            strokeDash: { value: [8, 4] },
+            stroke: { value: 'red' },
           },
         },
       },
