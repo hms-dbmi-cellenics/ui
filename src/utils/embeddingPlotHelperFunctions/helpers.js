@@ -7,10 +7,11 @@ const colorInterpolator = d3Chromatic.interpolatePurples;
 
 const hexToRgb = (hex) => {
   if (hex) {
-    return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i,
-      (m, r, g, b) => `#${r}${r}${g}${g}${b}${b}`)
-      .substring(1).match(/.{2}/g)
-      .map((x) => parseInt(x, 16));
+    const i = parseInt(hex.replace(/^#/, ''), 16);
+    const r = (i >> 16) & 255;
+    const g = (i >> 8) & 255;
+    const b = i & 255;
+    return [r, g, b];
   }
   return null;
 };
