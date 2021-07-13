@@ -34,9 +34,13 @@ jobs:
         npm ci
 
     - id: test
-      name: Run unit tests
+      name: Run unit tests with code coverage
       run: |-
-        npm test
+        npm run coverage
+    
+    - id: upload-coverage
+      name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
 
     - id: next-cache-seek
       name: Look up the Next.js build cache

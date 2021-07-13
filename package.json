@@ -20,6 +20,7 @@
     "prod": "NODE_ENV=production node server.js",
     "pretest": "eslint ./src",
     "test": "jest",
+    "coverage": "jest --coverage --silent",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "lint": "eslint ./src",
     "detect-secrets": "pip3 install detect-secrets && git diff --staged --name-only | xargs detect-secrets-hook --baseline .secrets.baseline",
