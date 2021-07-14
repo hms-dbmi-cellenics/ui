@@ -188,10 +188,10 @@ const ExplorationViewPage = ({
                 <MosaicWindow
                   path={path}
                   title={id}
-                  toolbarControls={TILE_MAP[id].toolbarControls}
+                  toolbarControls={TILE_MAP[id]?.toolbarControls}
                   key={id}
                 >
-                  {renderWindow(TILE_MAP[id].component, width, height)}
+                  {renderWindow(TILE_MAP[id]?.component, width, height)}
                 </MosaicWindow>
               )}
             </ReactResizeDetector>
