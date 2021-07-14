@@ -9,20 +9,12 @@ const REQUEST_TIMEOUT = 5 * MINUTE;
 
 const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState) => {
   const {
-    loading, error,
-  } = getState().cellSets;
-
-  const {
     backendStatus,
   } = getState().experimentSettings;
 
-  if (loading || error) {
-    return null;
-  }
-
   const body = {
     name: 'MarkerHeatmap',
-    nGenes: 3,
+    nGenes: 2,
     type: 'louvain',
     config: {
       resolution,

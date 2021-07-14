@@ -6,7 +6,7 @@ import WorkResponseError from './WorkResponseError';
 import WorkTimeoutError from './WorkTimeoutError';
 import getAuthJWT from './getAuthJWT';
 
-const tasksForAllClients = ['ClusterCells', 'MarkerGenes'];
+const tasksForAllClients = ['ClusterCells', 'MarkerHeatmap'];
 
 const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();

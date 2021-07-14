@@ -2,6 +2,7 @@ import { updateBackendStatus, updateProcessingSettingsFromQC, loadedProcessingCo
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 import { updateCellSetsClustering } from '../redux/actions/cellSets';
+import { genesExpressionLoaded } from '../redux/actions/genes';
 
 const updateTypes = {
   QC: 'qc',
@@ -69,6 +70,10 @@ const onWorkerUpdate = (experimentId, update, dispatch) => {
     ];
 
     dispatch(updateCellSetsClustering(experimentId, newCellSets));
+  } else if (reqName === 'MarkerHeatmap') {
+    const markerGeneExpressions = JSON.parse(update.response.results[0].body);
+
+    dispatch(genesExpressionLoaded(experimentId, 'interactiveHeatmap', markerGeneExpressions));
   }
 };
 
