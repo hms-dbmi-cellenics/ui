@@ -3,9 +3,7 @@ import {
 } from '../../actionTypes/genes';
 import sendWork from '../../../utils/sendWork';
 
-const MINUTE = 60;
-
-const REQUEST_TIMEOUT = 5 * MINUTE;
+const REQUEST_TIMEOUT = 60;
 
 const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState) => {
   const {
