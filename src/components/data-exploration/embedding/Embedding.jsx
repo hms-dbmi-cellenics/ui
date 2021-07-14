@@ -6,6 +6,8 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import * as vega from "vega";
+
 import Loader from '../../Loader';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
@@ -22,8 +24,8 @@ import {
   clearPleaseWait,
   renderCellSetColors,
   colorByGeneExpression,
+  colorInterpolator,
 } from '../../../utils/embeddingPlotHelperFunctions/helpers';
-import legend from '../../../../public/static/media/viridis.png';
 import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
 
@@ -227,22 +229,28 @@ const Embedding = (props) => {
     );
   }
 
+
   const renderExpressionView = () => {
     if (focusData.store === 'genes') {
+
+      const colorScale =
+        vega.scale('sequential')()
+        .interpolator(colorInterpolator);
+
       return (
         <div>
           <label htmlFor='continuous data name'>
             <strong>{focusData.key}</strong>
           </label>
-          <div>
-            <img
-              src={legend}
-              alt='gene expression legend'
-              style={{
-                height: 200, width: 20, position: 'absolute', top: 70,
-              }}
-            />
-          </div>
+          <div
+            style={{
+              position: 'absolute',
+              background: `linear-gradient(${colorScale(1)}, ${colorScale(0)})`,
+              height: 200,
+              width: 20,
+              top: 70,
+            }}
+          />
         </div>
       );
     }
@@ -277,7 +285,7 @@ const Embedding = (props) => {
         data ? (
 
           <Scatterplot
-            cellOpacity={0.1}
+            cellOpacity={0.8}
             cellRadiusScale={0.1}
             uuid={embeddingType}
             view={view}
