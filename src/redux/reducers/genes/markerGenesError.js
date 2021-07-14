@@ -2,7 +2,7 @@ const markerGenesLoading = (state) => ({
   ...state,
   markers: {
     ...state.markers,
-    needToBeLoaded: true,
+    loading: true,
     error: true,
   },
 });

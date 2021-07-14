@@ -5,17 +5,25 @@ import sendWork from '../../../utils/sendWork';
 
 const REQUEST_TIMEOUT = 60;
 
-const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState) => {
+const loadMarkerGenes = (experimentId, resolution = null) => async (dispatch, getState) => {
   const {
     backendStatus,
+    processing,
   } = getState().experimentSettings;
+
+  let resolutionToSend = resolution;
+
+  if (!resolution) {
+    resolutionToSend = processing
+      .configureEmbedding.clusteringSettings.methodSettings.louvain.resolution;
+  }
 
   const body = {
     name: 'MarkerHeatmap',
     nGenes: 2,
     type: 'louvain',
     config: {
-      resolution,
+      resolution: resolutionToSend,
     },
   };
 

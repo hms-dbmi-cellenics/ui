@@ -71,7 +71,7 @@ const onWorkerUpdate = (experimentId, update, dispatch) => {
 
     dispatch(updateCellSetsClustering(experimentId, newCellSets));
   } else if (reqName === 'MarkerHeatmap') {
-    const markerGeneExpressions = JSON.parse(update.response.results[0].body);
+    const { data: markerGeneExpressions, order } = JSON.parse(update.response.results[0].body);
 
     dispatch(markerGenesLoaded(experimentId, 'interactiveHeatmap', markerGeneExpressions));
   }

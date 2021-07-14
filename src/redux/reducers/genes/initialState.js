@@ -28,8 +28,9 @@ const initialState = {
   selected: [],
   focused: undefined,
   markers: {
-    needToBeLoaded: true,
+    loading: true,
     error: false,
+    order: null,
   },
 };
 

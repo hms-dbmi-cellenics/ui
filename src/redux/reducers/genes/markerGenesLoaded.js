@@ -24,8 +24,8 @@ const markerGenesLoaded = (state, action) => {
     },
     markers: {
       ...state.markers,
-      markersNeedToBeLoaded: false,
-      markersError: false,
+      loading: false,
+      error: false,
     },
   };
 };
