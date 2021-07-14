@@ -43,9 +43,9 @@ const DataManagementPage = ({ route }) => {
     const substrings = uuid.split('-');
 
     // If UUID is prefixed with sandbox_id, remove prefix
-    const uuidToUse = substrings.length > 4 ? substrings.slice(-4).join('-') : uuid;
+    const projectUuid = substrings.length > 5 ? substrings.slice(-5).join('-') : uuid;
 
-    return validate(uuidToUse);
+    return validate(projectUuid);
   };
 
   // const experimentsAreLoaded = (project, experiments) => {}
