@@ -12,7 +12,8 @@ import PreloadContent from '../../PreloadContent';
 
 import { updateFilterSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
 
-import runCellSetsClustering from '../../../redux/actions/cellSets/runCellSetsClustering';
+import { runCellSetsClustering } from '../../../redux/actions/cellSets';
+import { loadMarkerGenes } from '../../../redux/actions/genes';
 
 import SliderWithInput from '../../SliderWithInput';
 
@@ -46,8 +47,11 @@ const CalculationConfig = (props) => {
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
-  const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(runCellSetsClustering(experimentId, resolution)), 1500),
+  const debouncedClusteringAndMarkerGenes = useCallback(
+    _.debounce((resolution) => {
+      dispatch(runCellSetsClustering(experimentId, resolution));
+      dispatch(loadMarkerGenes(experimentId, resolution));
+    }, 1500),
     [],
   );
 
@@ -408,7 +412,7 @@ const CalculationConfig = (props) => {
                   },
                 });
 
-                debouncedCellSetClustering(value);
+                debouncedClusteringAndMarkerGenes(value);
               }}
             />
           </Form.Item>

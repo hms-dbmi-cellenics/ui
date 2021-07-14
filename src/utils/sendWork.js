@@ -6,6 +6,8 @@ import WorkResponseError from './WorkResponseError';
 import WorkTimeoutError from './WorkTimeoutError';
 import getAuthJWT from './getAuthJWT';
 
+const tasksForAllClients = ['ClusterCells', 'MarkerGenes'];
+
 const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();
   const io = await connectionPromise();
@@ -21,7 +23,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
 
   const authJWT = await getAuthJWT();
 
-  const isOnlyForThisClient = body.name !== 'ClusterCells';
+  const isOnlyForThisClient = !tasksForAllClients.includes(body.name);
   const socketId = isOnlyForThisClient ? io.id : 'broadcast';
 
   const request = {
