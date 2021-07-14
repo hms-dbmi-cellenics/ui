@@ -13,7 +13,7 @@ const trackingInfo = {
     siteId: 1,
   },
   [Env.STAGING]: {
-    enabled: true,
+    enabled: true, // TODO disable for staging before merging
     siteId: 2,
   },
   [Env.DEVELOPMENT]: {
@@ -31,7 +31,6 @@ const initTracking = async (environment) => {
   env = environment;
   const { siteId, enabled } = getTrackingDetails(env);
   if (enabled === false) {
-    console.log(`tracking init disabled in env ${env}`);
     return;
   }
 
@@ -39,16 +38,14 @@ const initTracking = async (environment) => {
   // first set the user ID and then initialize the tracking so it correctly tracks first page.
   push(['setUserId', user.attributes.email]);
   init({ url: MATOMO_URL, siteId });
-
-  console.log(`initialized tracking to ${siteId} for ${env}`);
 };
 
 const resetTrackingId = () => {
   const { enabled } = getTrackingDetails(env);
   if (enabled === false) {
-    console.log(`setting tracking ID disabled in env ${env}`);
     return;
   }
+
   push(['resetUserId']);
   // we also force a new visit to be created for the pageviews after logout
   push(['appendToTrackingUrl', 'new_visit=1']);
@@ -57,10 +54,8 @@ const resetTrackingId = () => {
 const trackAnalysisLaunched = () => {
   const { enabled } = getTrackingDetails(env);
   if (enabled === false) {
-    console.log(`tracking analysis launched disabled in env ${env}`);
     return;
   }
-  console.log(`tracking analysis launched in ${env}`);
   push(['trackEvent', 'data-management', 'launch-analysis']);
 };
 
