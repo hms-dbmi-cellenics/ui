@@ -6,6 +6,8 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import * as vega from "vega";
+
 import Loader from '../../Loader';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
@@ -28,7 +30,6 @@ import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
 
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
-import * as d3 from 'd3-scale';
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
@@ -231,7 +232,10 @@ const Embedding = (props) => {
 
   const renderExpressionView = () => {
     if (focusData.store === 'genes') {
-      const colorScale = d3.scaleSequential(colorInterpolator);
+
+      const colorScale =
+        vega.scale('sequential')()
+        .interpolator(colorInterpolator);
 
       return (
         <div>
@@ -281,7 +285,7 @@ const Embedding = (props) => {
         data ? (
 
           <Scatterplot
-            cellOpacity={0.1}
+            cellOpacity={0.8}
             cellRadiusScale={0.1}
             uuid={embeddingType}
             view={view}

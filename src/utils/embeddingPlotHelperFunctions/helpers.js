@@ -1,9 +1,8 @@
-import * as d3Chromatic from 'd3-scale-chromatic';
-import * as d3 from 'd3-scale';
+import * as vega from 'vega';
 
 import { union } from '../cellSetOperations';
 
-const colorInterpolator = d3Chromatic.interpolatePurples;
+const colorInterpolator = vega.scheme('purplered');
 
 const hexToRgb = (hex) => {
   if (hex) {
@@ -58,11 +57,9 @@ const colorByGeneExpression = (focusedGene) => {
   // Use truncated values for coloring
   const { expression, min, max } = focusedGene.truncatedExpression;
 
-  // this sometimes generates hex (e.g. '#000000') and sometimes rgb colour
-  // (e.g. 'rgb(0, 0, 0)') strings for different interpolators. Amazing.
-  // So if you change the interpolators and the colours break, use hexToRgb
-  // instead!
-  const scaleFunction = d3.scaleSequential([min, max], colorInterpolator);
+  const scaleFunction = vega.scale('sequential')()
+    .domain([min, max])
+    .interpolator(colorInterpolator);
 
   return Object.fromEntries(expression.map(
     (expressionValue, cellId) => [cellId, cssRgbToRgb(scaleFunction(expressionValue))],
