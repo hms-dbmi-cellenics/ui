@@ -39,7 +39,14 @@ const DataManagementPage = ({ route }) => {
   const experimentIds = new Set(experiments.ids);
   const experimentsAreLoaded = activeProject?.experiments
     .every((experimentId) => experimentIds.has(experimentId));
-  const isUuid = (uuid) => validate(uuid);
+  const isUuid = (uuid) => {
+    const substrings = uuid.split('-');
+
+    // If UUID is prefixed with sandbox_id, remove prefix
+    const uuidToUse = substrings.length > 4 ? substrings.slice(-4).join('-') : uuid;
+
+    validate(uuidToUse);
+  };
 
   // const experimentsAreLoaded = (project, experiments) => {}
   useEffect(() => {
