@@ -154,6 +154,17 @@ const HeatmapPlot = (props) => {
     );
   };
 
+  if (error || viewError || markerGenesLoadingError) {
+    return (
+      <PlatformError
+        error={error}
+        onClick={() => {
+          dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
+        }}
+      />
+    );
+  }
+
   if (cellSetsLoading || expressionData.loading.length || markerGenesLoading) {
     return (
       <center>
@@ -184,16 +195,6 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (error || viewError || markerGenesLoadingError) {
-    return (
-      <PlatformError
-        error={error}
-        onClick={() => {
-          dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
-        }}
-      />
-    );
-  }
   return (
     <div>
       <VegaHeatmap

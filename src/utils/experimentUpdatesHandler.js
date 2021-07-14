@@ -2,7 +2,7 @@ import { updateBackendStatus, updateProcessingSettingsFromQC, loadedProcessingCo
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 import { updateCellSetsClustering } from '../redux/actions/cellSets';
-import { markerGenesLoaded } from '../redux/actions/genes';
+import { markerGenesLoaded, markerGenesError } from '../redux/actions/genes';
 
 const updateTypes = {
   QC: 'qc',
@@ -71,8 +71,14 @@ const onWorkerUpdate = (experimentId, update, dispatch) => {
 
     dispatch(updateCellSetsClustering(experimentId, newCellSets));
   } else if (reqName === 'MarkerHeatmap') {
-    const { data: markerGeneExpressions, order } = JSON.parse(update.response.results[0].body);
+    if (update.response.response.error) {
+      dispatch(markerGenesError(experimentId, update.response.results[0].body));
+      return;
+    }
 
+    // TODO store and use order
+    // eslint-disable-next-line no-unused-vars
+    const { data: markerGeneExpressions, order } = JSON.parse(update.response.results[0].body);
     dispatch(markerGenesLoaded(experimentId, 'interactiveHeatmap', markerGeneExpressions));
   }
 };
