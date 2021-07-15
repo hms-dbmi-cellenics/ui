@@ -9,6 +9,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -27,6 +31,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -49,6 +57,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -70,6 +82,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -118,6 +134,10 @@ Object {
     },
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -136,6 +156,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {
       "gene1": Object {
@@ -175,6 +199,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {
       "gene1": Object {
@@ -217,6 +245,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [
@@ -259,6 +291,10 @@ Object {
     },
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -277,6 +313,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [
@@ -310,6 +350,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [
@@ -337,6 +381,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -359,6 +407,10 @@ Object {
     "views": Object {},
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -387,6 +439,10 @@ Object {
     },
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -422,6 +478,10 @@ Object {
     },
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],
@@ -450,6 +510,10 @@ Object {
     },
   },
   "focused": undefined,
+  "markers": Object {
+    "error": false,
+    "loading": true,
+  },
   "properties": Object {
     "data": Object {},
     "loading": Array [],

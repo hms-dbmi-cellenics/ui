@@ -30,7 +30,6 @@ const initialState = {
   markers: {
     loading: true,
     error: false,
-    order: null,
   },
 };
 

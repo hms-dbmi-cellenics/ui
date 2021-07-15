@@ -51,6 +51,10 @@ const initialState = {
         },
       },
     },
+    markers: {
+      loading: false,
+      error: false,
+    },
   },
   cellSets: {
     hierarchy: [
@@ -87,6 +91,13 @@ const initialState = {
       config: {
         groupedTracks: ['sample'],
         selectedTracks: ['louvain'],
+      },
+    },
+  },
+  experimentSettings: {
+    processing: {
+      meta: {
+        loading: false,
       },
     },
   },
