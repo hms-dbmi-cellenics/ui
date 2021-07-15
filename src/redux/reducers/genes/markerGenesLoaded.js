@@ -1,7 +1,10 @@
 import { initialViewState } from './initialState';
+import { calculateZScore } from '../../../utils/postRequestProcessing';
 
 const markerGenesLoaded = (state, action) => {
   const { data, genes } = action.payload;
+
+  const dataWithZScore = calculateZScore(data);
 
   return {
     ...state,
@@ -19,7 +22,7 @@ const markerGenesLoaded = (state, action) => {
       },
       data: {
         ...state.expression.data,
-        ...data,
+        ...dataWithZScore,
       },
     },
     markers: {
