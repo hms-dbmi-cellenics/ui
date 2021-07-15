@@ -1,3 +1,4 @@
+[![codecov](https://codecov.io/gh/biomage-ltd/ui/branch/develop/graph/badge.svg?token=zI99mV1YZo)](https://codecov.io/gh/biomage-ltd/ui)
 ui
 ==
 
