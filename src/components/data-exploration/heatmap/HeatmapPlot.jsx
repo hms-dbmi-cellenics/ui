@@ -29,6 +29,7 @@ const HeatmapPlot = (props) => {
 
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
+
   const [vegaData, setVegaData] = useState(null);
   const [vegaSpec, setVegaSpec] = useState(spec);
 
@@ -109,6 +110,7 @@ const HeatmapPlot = (props) => {
     );
     setDataDebounce(data);
   }, [loadingGenes,
+    selectedGenes,
     hidden,
     selectedTracks,
     groupedTracks,

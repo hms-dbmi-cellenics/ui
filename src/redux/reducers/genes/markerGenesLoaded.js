@@ -24,7 +24,6 @@ const markerGenesLoaded = (state, action) => {
         ...state.expression.data,
         ...dataWithZScore,
       },
-      loading: [],
     },
     markers: {
       ...state.markers,
