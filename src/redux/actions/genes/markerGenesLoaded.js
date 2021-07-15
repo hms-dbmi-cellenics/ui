@@ -1,13 +1,13 @@
 import { MARKER_GENES_LOADED } from '../../actionTypes/genes';
 
 const markerGenesLoaded = (
-  experimentId, loadedGeneExpressions,
+  experimentId, loadedGeneExpressions, orderedGenes,
 ) => async (dispatch) => {
   dispatch({
     type: MARKER_GENES_LOADED,
     payload: {
       experimentId,
-      genes: Object.keys(loadedGeneExpressions),
+      genes: orderedGenes,
       data: loadedGeneExpressions,
     },
   });

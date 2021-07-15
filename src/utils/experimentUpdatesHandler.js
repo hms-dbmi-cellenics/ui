@@ -76,10 +76,8 @@ const onWorkerUpdate = (experimentId, update, dispatch) => {
       return;
     }
 
-    // TODO store and use order
-    // eslint-disable-next-line no-unused-vars
     const { data: markerGeneExpressions, order } = JSON.parse(update.response.results[0].body);
-    dispatch(markerGenesLoaded(experimentId, 'interactiveHeatmap', markerGeneExpressions));
+    dispatch(markerGenesLoaded(experimentId, markerGeneExpressions, order));
   }
 };
 
