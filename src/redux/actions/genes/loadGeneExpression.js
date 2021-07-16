@@ -21,7 +21,6 @@ const loadGeneExpression = (
 
   const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
 
-  const upperCaseGenes = new Set(upperCaseArray(genes));
   // Dispatch loading state.
   dispatch({
     type: GENES_EXPRESSION_LOADING,
@@ -44,9 +43,8 @@ const loadGeneExpression = (
     );
   }
 
-  const displayedGenes = genesAlreadyLoaded.filter(
-    (gene) => upperCaseGenes.has(gene.toUpperCase()),
-  );
+  const upperGenesAlreadyLoaded = new Set(upperCaseArray(genesAlreadyLoaded));
+  const displayedGenes = genes.filter((gene) => upperGenesAlreadyLoaded.has(gene.toUpperCase()));
 
   if (genesToFetch.length === 0) {
     return dispatch({
