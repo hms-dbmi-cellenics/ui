@@ -6,6 +6,7 @@ const MATOMO_URL = 'https://biomage.matomo.cloud/';
 
 // To test a staging deployment, you'll need to go to biomage.matomo.cloud
 // and change the URL there to point to your staging env URL.
+// To test locally, just enable the development environemnt.
 // The Site Ids are defined in biomage.matomo.cloud
 const trackingInfo = {
   [Env.PRODUCTION]: {
@@ -13,11 +14,11 @@ const trackingInfo = {
     siteId: 1,
   },
   [Env.STAGING]: {
-    enabled: true, // TODO disable for staging before merging
+    enabled: false,
     siteId: 2,
   },
   [Env.DEVELOPMENT]: {
-    enabled: true,
+    enabled: false,
     siteId: 3,
   },
 };
@@ -40,6 +41,7 @@ const initTracking = async (environment) => {
   init({ url: MATOMO_URL, siteId });
 };
 
+// reset the user ID when loggging out
 const resetTrackingId = () => {
   const { enabled } = getTrackingDetails(env);
   if (enabled === false) {
@@ -50,12 +52,19 @@ const resetTrackingId = () => {
   // we also force a new visit to be created for the pageviews after logout
   push(['appendToTrackingUrl', 'new_visit=1']);
 };
-// the push method takes as parameter t
+
 const trackAnalysisLaunched = () => {
   const { enabled } = getTrackingDetails(env);
   if (enabled === false) {
     return;
   }
+  // Matomo events consist of four primary components which need to be configured,
+  // only two of which are required:
+  // * Category(Required) , and Form Events.
+  // * Action(Required)
+  // * Name(Optional – Recommended)
+  // * Value(Optional)
+  // See https://matomo.org/docs/event-tracking/ for more info
   push(['trackEvent', 'data-management', 'launch-analysis']);
 };
 

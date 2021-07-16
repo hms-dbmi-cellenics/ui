@@ -38,11 +38,7 @@ const UserButton = () => {
       }
     });
 
-    getUser().then((userData) => {
-      setUser(userData);
-      // set the user email as tracking ID
-      // setTrackingId(userData.attributes.email);
-    });
+    getUser().then((userData) => setUser(userData));
   }, []);
 
   const content = () => (
