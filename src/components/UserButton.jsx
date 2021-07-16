@@ -8,6 +8,7 @@ import {
 import Link from 'next/link';
 import { Auth, Hub } from 'aws-amplify';
 import endUserMessages from '../utils/endUserMessages';
+import { resetTrackingId } from '../utils/tracking';
 import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const UserButton = () => {
@@ -25,6 +26,7 @@ const UserButton = () => {
           getUser().then((userData) => setUser(userData));
           break;
         case 'signOut':
+          resetTrackingId();
           setUser(null);
           break;
         case 'signIn_failure':
