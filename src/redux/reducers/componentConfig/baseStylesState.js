@@ -35,7 +35,7 @@ const fontStyleBaseState = {
 
 const colourBaseState = {
   masterColour: '#000000',
-  gradient: 'default',
+  gradient: 'viridis',
   toggleInvert: '#FFFFFF',
   invert: 'standard',
   reverseColourBar: false,
