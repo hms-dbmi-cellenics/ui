@@ -97,7 +97,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     },
     {
       panelTitle: 'Colours',
-      controls: ['colourScheme', 'colourInversion'],
+      controls: ['colourScheme', 'colourInversion', 'colourScaling'],
     },
     {
       panelTitle: 'Markers',
@@ -154,7 +154,12 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
                   experimentId={experimentId}
                   config={config}
                   plotUuid={plotUuid}
-                  plotData={geneExpression.data[shownGene]?.truncatedExpression.expression}
+                  plotData={
+                    geneExpression.data[shownGene]?.rawExpression.expression
+                  }
+                  truncatedPlotData={
+                    geneExpression.data[shownGene]?.truncatedExpression.expression
+                  }
                   loading={geneExpression.loading.length > 0}
                   error={geneExpression.error}
                   reloadPlotData={() => loadGeneExpression(experimentId, [shownGene], plotUuid)}

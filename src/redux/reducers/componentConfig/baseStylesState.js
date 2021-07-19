@@ -39,6 +39,7 @@ const colourBaseState = {
   toggleInvert: '#FFFFFF',
   invert: 'standard',
   reverseColourBar: false,
+  truncatedValues: false,
 };
 
 const markerBaseState = {

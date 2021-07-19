@@ -153,7 +153,7 @@ const HeatmapPlot = ({ experimentId }) => {
     },
     {
       panelTitle: 'Colours',
-      controls: ['colourScheme'],
+      controls: ['colourScheme', 'colourScaling'],
     },
     {
       panelTitle: 'Legend',
