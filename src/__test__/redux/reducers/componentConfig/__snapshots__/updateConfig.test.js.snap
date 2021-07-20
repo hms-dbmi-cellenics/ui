@@ -16,11 +16,12 @@ Object {
         "yAxisText": "UMAP 2",
       },
       "colour": Object {
-        "gradient": "default",
+        "gradient": "viridis",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
+        "truncatedValues": false,
       },
       "dimensions": Object {
         "height": 550,
@@ -77,11 +78,12 @@ Object {
         "yAxisText": "-log10(adj p-value)",
       },
       "colour": Object {
-        "gradient": "default",
+        "gradient": "viridis",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
+        "truncatedValues": false,
       },
       "dimensions": Object {
         "height": 500,
