@@ -31,7 +31,6 @@ import ConfigureEmbedding from '../../../../components/data-processing/Configure
 
 import PlatformError from '../../../../components/PlatformError';
 
-import StepsIndicator from '../../../../components/data-processing/StepsIndicator';
 import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
@@ -509,16 +508,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             </Col>
             <Col style={{ minHeight: '100%', alignItems: 'center', display: 'flex' }}>
               <Space>
-                <StepsIndicator
+                <StatusIndicator 
                   allSteps={steps}
                   currentStep={stepIdx}
                   completedSteps={completedSteps.length}
                 />
-                <Text>{`${completedSteps.length} of ${steps.length} steps complete`}</Text>
               </Space>
-            </Col>
-            <Col style={{ alignItems: 'center', display: 'flex' }}>
-              <StatusIndicator />
             </Col>
             <Col style={{ marginLeft: 'auto', alignItems: 'center', display: 'flex' }}>
               <Space size='small'>
