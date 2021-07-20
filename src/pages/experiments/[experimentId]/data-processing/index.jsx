@@ -521,37 +521,40 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               <StatusIndicator />
             </Col>
             <Col style={{ marginLeft: 'auto', alignItems: 'center', display: 'flex' }}>
-              <Space size='middle'>
-                <Button
-                  data-testid='pipelinePrevStep'
-                  disabled={stepIdx === 0}
-                  icon={<LeftOutlined />}
-                  onClick={() => changeStepId(Math.max(stepIdx - 1, 0))}
-                >
-                  Previous
-                </Button>
-                {stepIdx !== steps.length - 1 ? (
+              <Space size='small'>
+                <Tooltip title='Previous filter'>
                   <Button
-                    data-testid='pipelineNextStep'
-                    onClick={() => {
-                      const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
-                      changeStepId(newStepIdx);
-                    }}
-                    disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                    data-testid='pipelinePrevStep'
+                    disabled={stepIdx === 0}
+                    icon={<LeftOutlined />}
+                    onClick={() => changeStepId(Math.max(stepIdx - 1, 0))}
                   >
-                    Next
-                    <RightOutlined />
                   </Button>
+                </Tooltip>
+                {stepIdx !== steps.length - 1 ? (
+                  <Tooltip title='Next filter'>
+                    <Button
+                      data-testid='pipelineNextStep'
+                      onClick={() => {
+                        const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
+                        changeStepId(newStepIdx);
+                      }}
+                      disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                      icon={<RightOutlined />}
+                    >
+                  </Button>
+                  </Tooltip>
                 )
                   : (
                     <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
+                      <Tooltip title="Finish QC">
                       <Button
                         type='primary'
                         disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                        icon={<CheckOutlined />}
                       >
-                        <span style={{ marginRight: '0.25rem' }}>Finish</span>
-                        <CheckOutlined />
                       </Button>
+                      </Tooltip>
                     </Link>
                   )}
               </Space>
