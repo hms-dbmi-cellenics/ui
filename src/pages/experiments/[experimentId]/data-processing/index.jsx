@@ -482,18 +482,22 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
             </Col>
             <Col>
               {steps[stepIdx].multiSample && (
-                <Button
-                  disabled={stepDisabledByCondition}
-                  data-testid='enableFilterButton'
-                  onClick={() => {
-                    dispatch(setQCStepEnabled(steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled));
-                    dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
-                  }}>
-                  {
-                    !processingConfig[steps[stepIdx].key]?.enabled
-                      ? 'Enable' : 'Disable'
-                  }
-                </Button>
+                <Tooltip title={`${
+                    !processingConfig[steps[stepIdx].key]?.enabled ? 
+                    'Enable' : 'Disable'} this filter`}>
+                  <Button
+                    disabled={stepDisabledByCondition}
+                    data-testid='enableFilterButton'
+                    onClick={() => {
+                      dispatch(setQCStepEnabled(steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled));
+                      dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
+                    }}>
+                    {
+                      !processingConfig[steps[stepIdx].key]?.enabled
+                        ? 'Enable' : 'Disable'
+                    }
+                  </Button>
+                </Tooltip>
               )}
             </Col>
           </Row>
