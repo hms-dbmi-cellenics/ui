@@ -217,9 +217,6 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
         };
       }
 
-      console.log('expressionValuesDebug');
-      console.log(expressionValues);
-
       data.heatmapData.push({
         cellId,
         gene,
