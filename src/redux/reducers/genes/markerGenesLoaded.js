@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import produce, { current } from 'immer';
+import produce from 'immer';
 
 import initialState from './initialState';
 
@@ -10,11 +10,9 @@ const markerGenesLoaded = produce((draft, action) => {
 
   const dataWithZScore = calculateZScore(data);
 
-  draft.expression.views.interactiveHeatmap.fetching = false;
-  draft.expression.views.interactiveHeatmap.error = false;
-  draft.expression.views.interactiveHeatmap.data = genes;
+  draft.expression.views.interactiveHeatmap = { fetching: false, error: false, data: genes };
 
-  draft.expression.data = { ...current(draft.expression.data), ...dataWithZScore };
+  draft.expression.data = { ...draft.expression.data, ...dataWithZScore };
 
   draft.markers.loading = false;
   draft.markers.error = false;
