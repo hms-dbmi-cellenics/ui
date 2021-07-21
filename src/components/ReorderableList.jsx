@@ -6,12 +6,13 @@ import { UpOutlined, DownOutlined } from '@ant-design/icons';
 
 const ReorderableList = (props) => {
   const {
-    onChange, defaultList, leftItem, rightItem,
+    onChange, defaultList, listValue, leftItem, rightItem,
   } = props;
-  const [reorderableList, setReorderableList] = useState(defaultList);
+  const [reorderableList, setReorderableList] = useState(listValue ?? defaultList ?? []);
+
   useEffect(() => {
-    setReorderableList(defaultList);
-  }, [defaultList]);
+    setReorderableList(listValue);
+  }, [listValue]);
 
   const moveUp = (source, id) => {
     const index = source.findIndex((e) => e.key === id);
@@ -57,7 +58,7 @@ const ReorderableList = (props) => {
       icon={<UpOutlined />}
       style={{ marginLeft: '5px' }}
       onClick={() => {
-        onChange(moveUp(defaultList, key));
+        onChange(moveUp(reorderableList, key));
       }}
     />
   );
@@ -66,11 +67,11 @@ const ReorderableList = (props) => {
     <Button
       size='small'
       shape='circle'
-      disabled={currentPosition === defaultList.length - 1}
+      disabled={currentPosition === reorderableList.length - 1}
       icon={<DownOutlined />}
       style={{ marginRight: '5px' }}
       onClick={() => {
-        onChange(moveDown(defaultList, key));
+        onChange(moveDown(reorderableList, key));
       }}
     />
   );
@@ -97,12 +98,15 @@ const ReorderableList = (props) => {
 
 ReorderableList.propTypes = {
   onChange: PropTypes.func.isRequired,
-  defaultList: PropTypes.array.isRequired,
+  defaultList: PropTypes.array,
+  listValue: PropTypes.array,
   leftItem: () => { },
   rightItem: () => { },
 };
 
 ReorderableList.defaultProps = {
+  defaultList: null,
+  listValue: null,
   leftItem: () => { },
   rightItem: () => { },
 };

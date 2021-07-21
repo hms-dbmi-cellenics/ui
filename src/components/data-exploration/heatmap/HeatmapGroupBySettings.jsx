@@ -132,7 +132,7 @@ const HeatmapGroupBySettings = (props) => {
 
         <ReorderableList
           onChange={setCellSetsOrder}
-          defaultList={cellSetsOrder}
+          listValue={cellSetsOrder}
           rightItem={(cellSet) => cellSet.name}
         />
       </Space>
