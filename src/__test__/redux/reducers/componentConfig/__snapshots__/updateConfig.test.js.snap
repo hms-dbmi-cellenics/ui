@@ -21,7 +21,6 @@ Object {
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
-        "truncatedValues": false,
       },
       "dimensions": Object {
         "height": 550,
@@ -83,7 +82,6 @@ Object {
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
-        "truncatedValues": false,
       },
       "dimensions": Object {
         "height": 500,

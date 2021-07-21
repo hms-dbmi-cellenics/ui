@@ -6,13 +6,13 @@ import { UpOutlined, DownOutlined } from '@ant-design/icons';
 
 const ReorderableList = (props) => {
   const {
-    onChange, defaultList, listValue, leftItem, rightItem,
+    onChange, defaultList, listData, leftItem, rightItem,
   } = props;
-  const [reorderableList, setReorderableList] = useState(listValue ?? defaultList ?? []);
+  const [reorderableList, setReorderableList] = useState(listData ?? defaultList ?? []);
 
   useEffect(() => {
-    setReorderableList(listValue);
-  }, [listValue]);
+    setReorderableList(listData);
+  }, [listData]);
 
   const moveUp = (source, id) => {
     const index = source.findIndex((e) => e.key === id);
@@ -99,14 +99,14 @@ const ReorderableList = (props) => {
 ReorderableList.propTypes = {
   onChange: PropTypes.func.isRequired,
   defaultList: PropTypes.array,
-  listValue: PropTypes.array,
+  listData: PropTypes.array,
   leftItem: () => { },
   rightItem: () => { },
 };
 
 ReorderableList.defaultProps = {
   defaultList: null,
-  listValue: null,
+  listData: null,
   leftItem: () => { },
   rightItem: () => { },
 };

@@ -77,7 +77,7 @@ const MetadataTracksDisplayEditor = (props) => {
     <div style={{ padding: '5px' }}>
       <ReorderableList
         onChange={setTrackData}
-        listValue={trackData}
+        listData={trackData}
         leftItem={leftItem}
         rightItem={rightItem}
       />
