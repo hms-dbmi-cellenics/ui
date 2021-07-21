@@ -5,7 +5,7 @@ import { union } from '../../../utils/cellSetOperations';
 const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsampling = false) => {
   const { hierarchy, properties, hidden } = cellSets;
   const {
-    selectedTracks, groupedTracks, expressionValue, colour,
+    selectedTracks, groupedTracks, expressionValue, truncatedValues,
   } = config;
 
   const maxCells = 1000;
@@ -212,7 +212,7 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
         const { rawExpression, truncatedExpression } = expressionDataForGene;
 
         expressionValues = {
-          color: colour.truncatedValues ? truncatedExpression.expression : rawExpression.expression,
+          color: truncatedValues ? truncatedExpression.expression : rawExpression.expression,
           display: rawExpression.expression,
         };
       }

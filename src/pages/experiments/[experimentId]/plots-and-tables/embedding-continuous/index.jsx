@@ -78,6 +78,10 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
 
   const plotStylingControlsConfig = [
     {
+      panelTitle: 'Expression Values',
+      controls: ['expressionValuesCapping'],
+    },
+    {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
       children: [
@@ -97,7 +101,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     },
     {
       panelTitle: 'Colours',
-      controls: ['colourScheme', 'colourInversion', 'expressionValuesCapping'],
+      controls: ['colourScheme', 'colourInversion'],
     },
     {
       panelTitle: 'Markers',

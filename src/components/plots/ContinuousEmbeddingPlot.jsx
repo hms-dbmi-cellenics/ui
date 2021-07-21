@@ -61,7 +61,7 @@ const ContinuousEmbeddingPlot = (props) => {
           generateData(
             cellSets,
             config.selectedSample,
-            config.colour.truncatedValues ? truncatedPlotData : plotData,
+            config.truncatedValues ? truncatedPlotData : plotData,
             embeddingData,
           ),
         ),

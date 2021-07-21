@@ -7,9 +7,14 @@ import {
 
 const ExpressionValuesCapping = (props) => {
   const { onUpdate, config } = props;
+
+  const { expressionValue, truncatedValues } = config;
+
   const onChange = (e) => {
-    onUpdate({ colour: { truncatedValues: e.target.value } });
+    onUpdate({ truncatedValues: e.target.value });
   };
+
+  const showingZScore = expressionValue === 'zScore';
 
   return (
     <>
@@ -20,8 +25,8 @@ const ExpressionValuesCapping = (props) => {
       >
         <p><strong>Capping</strong></p>
         <Form.Item>
-          <Radio.Group onChange={onChange} value={config.colour.truncatedValues}>
-            <Radio value>Capped</Radio>
+          <Radio.Group onChange={onChange} value={!showingZScore && truncatedValues}>
+            <Radio disabled={showingZScore} value>Capped</Radio>
             <Radio value={false}>Uncapped</Radio>
           </Radio.Group>
         </Form.Item>
