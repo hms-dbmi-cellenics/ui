@@ -542,6 +542,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                         type='primary'
                         disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
                         icon={<CheckOutlined />}
+                        size="small"
                       >
                       </Button>
                       </Tooltip>
