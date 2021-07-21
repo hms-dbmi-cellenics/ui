@@ -120,14 +120,16 @@ const StatusIndicator = (props) => {
       <Paragraph>
         {statusIndicators[status].description}
       </Paragraph>
-
     </Card>
   );
 
   return (
     <Dropdown overlay={renderOverlay}>
-      <Button type='text'>
-        <Space size='small' direction='horizontal'>
+      <Button
+        type='text'
+        style={{ paddingTop: '1px' }}
+      >
+        <Space size='small'>
           <Text strong style={{ fontSize: '0.9rem' }}>
             Status:
           </Text>
@@ -136,7 +138,9 @@ const StatusIndicator = (props) => {
             currentStep={currentStep}
             completedSteps={completedSteps}
           />
-          {statusIndicators[status].icon}
+          <div style={{ display: 'inline-block' }}>
+            {statusIndicators[status].icon}
+          </div>
         </Space>
       </Button>
     </Dropdown>
