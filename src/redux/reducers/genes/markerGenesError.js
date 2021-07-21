@@ -1,4 +1,4 @@
-const markerGenesLoading = (state) => ({
+const markerGenesError = (state) => ({
   ...state,
   markers: {
     ...state.markers,
@@ -7,4 +7,4 @@ const markerGenesLoading = (state) => ({
   },
 });
 
-export default markerGenesLoading;
+export default markerGenesError;
