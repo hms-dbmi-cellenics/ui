@@ -5,7 +5,7 @@ import {
   Radio,
 } from 'antd';
 
-const ColourScaling = (props) => {
+const ExpressionValuesCapping = (props) => {
   const { onUpdate, config } = props;
   const onChange = (e) => {
     onUpdate({ colour: { truncatedValues: e.target.value } });
@@ -18,7 +18,7 @@ const ColourScaling = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <p><strong>Color Scaling</strong></p>
+        <p><strong>Capping</strong></p>
         <Form.Item>
           <Radio.Group onChange={onChange} value={config.colour.truncatedValues}>
             <Radio value>Capped</Radio>
@@ -30,9 +30,9 @@ const ColourScaling = (props) => {
   );
 };
 
-ColourScaling.propTypes = {
+ExpressionValuesCapping.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
 };
 
-export default ColourScaling;
+export default ExpressionValuesCapping;

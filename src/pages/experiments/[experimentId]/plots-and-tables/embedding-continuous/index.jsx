@@ -97,7 +97,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     },
     {
       panelTitle: 'Colours',
-      controls: ['colourScheme', 'colourInversion', 'colourScaling'],
+      controls: ['colourScheme', 'colourInversion', 'expressionValuesCapping'],
     },
     {
       panelTitle: 'Markers',

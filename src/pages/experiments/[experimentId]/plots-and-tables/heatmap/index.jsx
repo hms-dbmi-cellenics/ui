@@ -157,8 +157,12 @@ const HeatmapPlot = ({ experimentId }) => {
       ],
     },
     {
+      panelTitle: 'Expression Values',
+      controls: ['expressionValuesType', 'expressionValuesCapping'],
+    },
+    {
       panelTitle: 'Colours',
-      controls: ['colourScheme', 'colourScaling'],
+      controls: ['colourScheme'],
     },
     {
       panelTitle: 'Legend',
