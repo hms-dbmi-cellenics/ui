@@ -111,4 +111,22 @@ describe('CalculationConfigContainer', () => {
     state = store.getState().experimentSettings.processing;
     expect(state[filterName][sampleIds[0]]).toEqual(state[filterName][sampleIds[1]]);
   });
+  it('updates the redux store for all samples when auto is applied to one sample and then copied to all', () => {
+    let state = store.getState().experimentSettings.processing;
+
+    // Apply manual settings to first sample and copy to all samples
+    setRadioButton('manual');
+    userEvent.click(screen.getByText('Copy to all samples'));
+    state = store.getState().experimentSettings.processing;
+    expect(state[filterName][sampleIds[0]].auto).toEqual(false);
+    expect(state[filterName][sampleIds[1]].auto).toEqual(false);
+
+    // Apply automatic settings to first sample and copy to all samples
+    // The other samples should also have auto set to automatic.
+    setRadioButton('automatic');
+    userEvent.click(screen.getByText('Copy to all samples'));
+    state = store.getState().experimentSettings.processing;
+    expect(state[filterName][sampleIds[0]].auto).toEqual(true);
+    expect(state[filterName][sampleIds[1]].auto).toEqual(true);
+  });
 });
