@@ -133,7 +133,6 @@ const CellSetsTool = (props) => {
             {numSelected === 1 ? '' : 's'}
             {' '}
             selected
-            {activeTab === 'metadataCategorical' && ' (including filtered cells)'}
           </Text>
         </Space>
       );
