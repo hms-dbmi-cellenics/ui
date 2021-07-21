@@ -28,7 +28,7 @@ const initialState = {
   selected: [],
   focused: undefined,
   markers: {
-    loading: true,
+    loading: false,
     error: false,
   },
 };

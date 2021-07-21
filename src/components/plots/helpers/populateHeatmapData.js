@@ -17,6 +17,7 @@ const populateHeatmapData = (
   // e.g: node = {key: louvain, children: []}, {...}
   const getCellsSetInGroup = (node) => {
     let cellIdsInAnyGroupBy = new Set();
+
     node.children.forEach(({ key }) => {
       const cellSet = getCellsInSet(key);
       // Union of allCellsInSets and cellSet

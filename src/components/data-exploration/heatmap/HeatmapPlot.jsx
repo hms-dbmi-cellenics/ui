@@ -13,6 +13,7 @@ import PlatformError from '../../PlatformError';
 import { updateCellInfo } from '../../../redux/actions/cellInfo';
 import { loadGeneExpression, loadMarkerGenes } from '../../../redux/actions/genes';
 import { loadCellSets } from '../../../redux/actions/cellSets';
+
 import { loadComponentConfig } from '../../../redux/actions/componentConfig';
 import populateHeatmapData from '../../plots/helpers/populateHeatmapData';
 import Loader from '../../Loader';
@@ -152,7 +153,18 @@ const HeatmapPlot = (props) => {
     );
   };
 
-  if (error || viewError || markerGenesLoadingError) {
+  if (markerGenesLoadingError) {
+    return (
+      <PlatformError
+        error={error}
+        onClick={() => {
+          dispatch(loadMarkerGenes(experimentId, louvainClustersResolution));
+        }}
+      />
+    );
+  }
+
+  if (error || viewError) {
     return (
       <PlatformError
         error={error}
