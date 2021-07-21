@@ -11,12 +11,14 @@ const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState)
   // eslint-disable-next-line eqeqeq
   if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
 
-  const { backendStatus } = getState().experimentSettings;
+  const { backendStatus, processing } = getState().experimentSettings;
+
+  const { method } = processing.configureEmbedding.clusteringSettings;
 
   const body = {
     name: 'MarkerHeatmap',
     nGenes: 2,
-    type: 'louvain',
+    type: method,
     config: {
       resolution,
     },
