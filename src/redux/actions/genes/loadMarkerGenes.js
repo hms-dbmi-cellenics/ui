@@ -1,7 +1,8 @@
 import {
-  MARKER_GENES_ERROR, MARKER_GENES_LOADING,
+  MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from '../../actionTypes/genes';
-import sendWork from '../../../utils/sendWork';
+
+import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const REQUEST_TIMEOUT = 60;
 
@@ -32,7 +33,18 @@ const loadMarkerGenes = (experimentId, resolution = null) => async (dispatch, ge
   });
 
   try {
-    await sendWork(experimentId, REQUEST_TIMEOUT, body, backendStatus.status);
+    const data = await fetchCachedWork(experimentId, REQUEST_TIMEOUT, body, backendStatus.status);
+
+    const { data: markerGeneExpressions, order } = data;
+
+    dispatch({
+      type: MARKER_GENES_LOADED,
+      payload: {
+        experimentId,
+        genes: order,
+        data: markerGeneExpressions,
+      },
+    });
   } catch (e) {
     dispatch({
       type: MARKER_GENES_ERROR,

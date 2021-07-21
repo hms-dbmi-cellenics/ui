@@ -35,7 +35,7 @@ const HeatmapPlot = (props) => {
 
   const expressionData = useSelector((state) => state.genes.expression);
   const {
-    loading: markerGenesLoading, error: markerGenesLoadingError, order: markerGenesOrder,
+    loading: markerGenesLoading, error: markerGenesLoadingError,
   } = useSelector((state) => state.genes.markers);
 
   const hoverCoordinates = useRef({});
@@ -48,10 +48,6 @@ const HeatmapPlot = (props) => {
   const heatmapSettings = useSelector(
     (state) => state.componentConfig[COMPONENT_TYPE]?.config,
   ) || {};
-
-  const loadingProcessingSettings = useSelector(
-    (state) => state.experimentSettings.processing.meta.loading,
-  );
 
   const louvainClustersResolution = useSelector(
     (state) => state.experimentSettings.processing
@@ -120,10 +116,10 @@ const HeatmapPlot = (props) => {
     expressionValue]);
 
   useEffect(() => {
-    if (markerGenesLoading && !markerGenesOrder && !loadingProcessingSettings) {
+    if (louvainClustersResolution) {
       dispatch(loadMarkerGenes(experimentId, louvainClustersResolution));
     }
-  }, [markerGenesOrder, markerGenesLoading, loadingProcessingSettings]);
+  }, [louvainClustersResolution]);
 
   useEffect(() => {
     setMaxCells(Math.floor(width * 0.8));

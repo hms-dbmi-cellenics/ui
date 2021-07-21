@@ -47,10 +47,9 @@ const CalculationConfig = (props) => {
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
-  const debouncedClusteringAndMarkerGenes = useCallback(
+  const debouncedClustering = useCallback(
     _.debounce((resolution) => {
       dispatch(runCellSetsClustering(experimentId, resolution));
-      dispatch(loadMarkerGenes(experimentId, resolution));
     }, 1500),
     [],
   );
@@ -412,7 +411,7 @@ const CalculationConfig = (props) => {
                   },
                 });
 
-                debouncedClusteringAndMarkerGenes(value);
+                debouncedClustering(value);
               }}
             />
           </Form.Item>

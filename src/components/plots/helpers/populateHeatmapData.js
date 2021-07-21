@@ -2,11 +2,14 @@ import _ from 'lodash';
 import SetOperations from '../../../utils/setOperations';
 import { union } from '../../../utils/cellSetOperations';
 
-const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsampling = false) => {
+const populateHeatmapData = (
+  cellSets, heatmapSettings, expression,
+  selectedGenes, downsampling = false,
+) => {
   const { hierarchy, properties, hidden } = cellSets;
   const {
     selectedTracks, groupedTracks, expressionValue,
-  } = config;
+  } = heatmapSettings;
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
 
