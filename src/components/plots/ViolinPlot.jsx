@@ -43,16 +43,19 @@ const ViolinPlot = (props) => {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
   }, [experimentId, config?.shownGene, highestDispersionLoading, highestDispersionGene]);
+
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
+
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
       dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
     }
+
     if (config?.shownGene !== 'notSelected' && config) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
@@ -69,7 +72,9 @@ const ViolinPlot = (props) => {
       && !geneExpression.error
       && !cellSets.loading
       && !cellSets.error) {
-      const geneExpressionData = config.normalised === 'normalised' ? geneExpression.data[config.shownGene].rawExpression.expression : undefined;
+      const geneExpressionData = config.normalised === 'normalised'
+        ? geneExpression.data[config.shownGene].zScore
+        : geneExpression.data[config.shownGene].rawExpression.expression;
 
       const generatedPlotData = generateData(
         cellSets,
