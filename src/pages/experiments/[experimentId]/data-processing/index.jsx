@@ -507,10 +507,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
               <StatusIndicator 
                 allSteps={steps}
                 currentStep={stepIdx}
-                completedSteps={completedSteps.length}
+                completedSteps={completedSteps}
               />
               <Space size='small'>
-                <Tooltip title='Previous filter'>
+                <Tooltip title='Previous'>
                   <Button
                     data-testid='pipelinePrevStep'
                     disabled={stepIdx === 0}
@@ -521,7 +521,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   </Button>
                 </Tooltip>
                 {stepIdx !== steps.length - 1 ? (
-                  <Tooltip title='Next filter'>
+                  <Tooltip title='Next'>
                     <Button
                       data-testid='pipelineNextStep'
                       onClick={() => {

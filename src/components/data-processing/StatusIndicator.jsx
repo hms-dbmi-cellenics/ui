@@ -118,6 +118,9 @@ const StatusIndicator = (props) => {
         </Text>
       </Paragraph>
       <Paragraph>
+        <Text>{`${completedSteps.length} of ${allSteps.length} steps complete`}</Text>
+      </Paragraph>
+      <Paragraph>
         {statusIndicators[status].description}
       </Paragraph>
     </Card>
@@ -136,7 +139,7 @@ const StatusIndicator = (props) => {
           <StepsIndicator
             allSteps={allSteps}
             currentStep={currentStep}
-            completedSteps={completedSteps}
+            completedSteps={completedSteps.length}
           />
           <div style={{ display: 'inline-block' }}>
             {statusIndicators[status].icon}
