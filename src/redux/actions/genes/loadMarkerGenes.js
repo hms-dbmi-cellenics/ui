@@ -7,6 +7,10 @@ import { fetchCachedWork } from '../../../utils/cacheRequest';
 const REQUEST_TIMEOUT = 60;
 
 const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState) => {
+  // Disabled linter because we are using == to check for both null and undefined values
+  // eslint-disable-next-line eqeqeq
+  if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
+
   const { backendStatus } = getState().experimentSettings;
 
   const body = {
