@@ -11,7 +11,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -33,7 +33,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -59,7 +59,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -84,7 +84,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -136,7 +136,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -158,7 +158,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {
@@ -201,7 +201,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {
@@ -247,7 +247,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -293,7 +293,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -315,7 +315,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -352,7 +352,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -383,7 +383,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -409,7 +409,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -441,7 +441,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -480,7 +480,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
@@ -512,7 +512,7 @@ Object {
   "focused": undefined,
   "markers": Object {
     "error": false,
-    "loading": true,
+    "loading": false,
   },
   "properties": Object {
     "data": Object {},
