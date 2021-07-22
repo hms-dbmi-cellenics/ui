@@ -82,7 +82,7 @@ const fetchCachedWork = async (
   backendStatus,
   optionals = {},
 ) => {
-  const { extras = null, timeout = 60 } = optionals;
+  const { extras = undefined, timeout = 60 } = optionals;
 
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');

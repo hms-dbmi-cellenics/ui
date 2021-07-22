@@ -162,7 +162,7 @@ describe('tests for fetchCachedWork', () => {
       { timeout: 10 },
     );
     expect(res).toEqual({ D: fakeData.D });
-    expect(mockSendWork).toHaveBeenCalledWith(experimentId, { name: 'GeneExpression', genes: ['D'] }, 10);
+    expect(mockSendWork).toHaveBeenCalledWith(experimentId, 10, { name: 'GeneExpression', genes: ['D'] });
     expect(mockGet).toHaveBeenCalledTimes(4);
     expect(mockSet).toHaveBeenCalledTimes(1);
     expect(mockSet).toHaveBeenCalledWith(fakeCacheKeyMappings.D, fakeData.D);
