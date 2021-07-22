@@ -93,9 +93,7 @@ const HeatmapPlot = (props) => {
   }, [legendIsVisible]);
 
   useEffect(() => {
-    const louvainClusters = hierarchy.find((clusters) => clusters.key === 'louvain');
-
-    if (!selectedGenes || selectedGenes.length === 0 || !louvainClusters) {
+    if (!selectedGenes || selectedGenes.length === 0) {
       return;
     }
 
@@ -119,7 +117,9 @@ const HeatmapPlot = (props) => {
     expressionValue]);
 
   useEffect(() => {
-    if (louvainClustersResolution) {
+    const louvainClusters = hierarchy.find((clusters) => clusters.key === 'louvain');
+
+    if (louvainClustersResolution && louvainClusters) {
       dispatch(loadMarkerGenes(experimentId, louvainClustersResolution));
     }
   }, [louvainClustersResolution]);
