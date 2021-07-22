@@ -6,7 +6,6 @@ import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 
-const REQUEST_TIMEOUT = 60;
 const loadDifferentialExpression = (
   experimentId, cellSets, comparisonType, tableState,
 ) => async (dispatch, getState) => {
@@ -55,7 +54,7 @@ const loadDifferentialExpression = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, REQUEST_TIMEOUT, body, backendStatus.status, pagination,
+      experimentId, body, backendStatus.status, pagination,
     );
 
     let { total } = data;

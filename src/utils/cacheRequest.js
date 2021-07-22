@@ -78,10 +78,11 @@ const fetchCachedGeneExpressionWork = async (
 
 const fetchCachedWork = async (
   experimentId,
-  timeout,
   body,
   backendStatus,
-  extras) => {
+  extras,
+  timeout = 60,
+) => {
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }

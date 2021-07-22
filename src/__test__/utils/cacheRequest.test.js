@@ -148,7 +148,7 @@ describe('tests for fetchCachedWork', () => {
   it('test fetchCachedWork with GeneExpression task', async () => {
     const experimentId = '1234';
     const res = await fetchCachedWork(
-      experimentId, 10,
+      experimentId,
       {
         name: 'GeneExpression',
         genes: ['A', 'B', 'C', 'D'],
@@ -159,6 +159,7 @@ describe('tests for fetchCachedWork', () => {
           startDate: '2021-01-01T01:01:01.000Z',
         },
       },
+      10,
     );
     expect(res).toEqual({ D: fakeData.D });
     expect(mockSendWork).toHaveBeenCalledWith(experimentId, 10, { name: 'GeneExpression', genes: ['D'] });

@@ -4,8 +4,6 @@ import {
 
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
-const REQUEST_TIMEOUT = 60;
-
 const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
@@ -17,7 +15,7 @@ const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState)
 
   const body = {
     name: 'MarkerHeatmap',
-    nGenes: 2,
+    nGenes: 5,
     type: method,
     config: {
       resolution,
@@ -29,7 +27,7 @@ const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState)
   });
 
   try {
-    const data = await fetchCachedWork(experimentId, REQUEST_TIMEOUT, body, backendStatus.status);
+    const data = await fetchCachedWork(experimentId, body, backendStatus.status);
 
     const { data: markerGeneExpressions, order } = data;
 

@@ -46,7 +46,7 @@ const loadPaginatedGeneProperties = (
 
   try {
     const { rows, total } = await fetchCachedWork(
-      experimentId, TIMEOUT_SECONDS, body, backendStatus.status,
+      experimentId, body, backendStatus.status, TIMEOUT_SECONDS,
     );
 
     const loadedProperties = {};
