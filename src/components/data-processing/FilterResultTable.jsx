@@ -6,8 +6,6 @@ import { Table, Typography } from 'antd';
 const { Text, Paragraph } = Typography;
 
 const FilterResultTable = (props) => {
-  console.log(props);
-
   const { tableData: { before, after } } = props;
 
   // Rearrange data to fit table
@@ -21,6 +19,7 @@ const FilterResultTable = (props) => {
   const roundedDecimal = (number, total, decimalPoints = 2) => Math.round((number / total) * (10 ** decimalPoints)) / 10 ** decimalPoints;
 
   const dataSource = Object.keys(before).map((key) => ({
+    key,
     title: titles[key],
     before: before[key],
     after: after[key],
