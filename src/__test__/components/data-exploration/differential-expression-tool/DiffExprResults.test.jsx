@@ -211,7 +211,11 @@ describe('DiffExprResults', () => {
     // // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(store, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
-    expect(fetchCachedWork).toHaveBeenCalledWith('1234',
+    console.log('fetchCachedWorkMockDebug');
+    console.log(JSON.stringify(fetchCachedWork.mock));
+
+    expect(fetchCachedWork).toHaveBeenCalledWith(
+      '1234',
       {
         cellSet: 'cluster-a',
         compareWith: 'cluster-b',
@@ -226,8 +230,8 @@ describe('DiffExprResults', () => {
             limit: 4, offset: 0, orderBy: 'gene_names', orderDirection: 'ASC', responseKey: 0,
           },
         },
-        timeout: 60,
-      });
+      },
+    );
 
     expect(store.getActions()[0]).toMatchSnapshot();
     expect(store.getActions()[1]).toMatchSnapshot();
