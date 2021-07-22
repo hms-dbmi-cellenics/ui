@@ -21,7 +21,6 @@ const ColourbarDesign = (props) => {
             <Radio value='viridis'>Viridis</Radio>
             <Radio value='inferno'>Inferno</Radio>
             <Radio value='spectral'>Spectral</Radio>
-            <Radio value='redblue'>Red-Blue</Radio>
           </Radio.Group>
         </Form.Item>
       </Form>
