@@ -12,8 +12,8 @@ import { saveProcessingSettings, loadBackendStatus } from '../experimentSettings
 
 import { loadEmbedding } from '../embedding';
 
-const runOnlyConfigureEmbedding = (experimentId, embeddingMethod, dispatch) => {
-  dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
+const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {
+  await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
   dispatch({
     type: EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
     payload: {},

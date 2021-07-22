@@ -46,8 +46,6 @@ const loadEmbedding = (
   };
 
   try {
-    console.log('LoadEmbeddingCALLED');
-
     const data = await fetchCachedWork(
       experimentId, TIMEOUT_SECONDS, body, backendStatus.status,
     );

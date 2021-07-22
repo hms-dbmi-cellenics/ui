@@ -80,9 +80,6 @@ const CalculationConfig = (props) => {
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
     }
 
-    console.log('updateDebug');
-    console.log(diff);
-
     dispatch(updateFilterSettings(
       FILTER_UUID,
       diff,
