@@ -52,8 +52,8 @@ const CellSizeDistribution = (props) => {
   const [selectedPlot, setSelectedPlot] = useState('kneePlot');
   const [plot, setPlot] = useState(null);
   const highestUmiRef = useRef(null);
-
   const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 3);
+  const filterTableData = useSelector((state) => state.componentConfig[filterTableUuid]?.plotData);
 
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
@@ -122,8 +122,6 @@ const CellSizeDistribution = (props) => {
       }
     });
   }, []);
-
-  const filterTableData = useSelector((state) => state.componentConfig[filterTableUuid]?.plotData);
 
   useEffect(() => {
     if (!filterTableData) dispatch(loadPlotConfig(experimentId, filterTableUuid, 'filterTable'));
