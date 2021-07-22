@@ -21,9 +21,8 @@ const experimentId = 'e1234';
 const filterName = 'numGenesVsNumUmis';
 const PLOTS_PER_SAMPLE = 1;
 
-const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
-
-const sample1FilterStatistics = generateDataProcessingPlotUuid(sampleId, filterName, 1);
+const plotData1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const filterStatistics = generateDataProcessingPlotUuid(sampleId, filterName, 1);
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
@@ -32,8 +31,11 @@ const noData = {
     ...initialExperimentState,
   },
   componentConfig: {
-    [sample1]: {
+    [plotData1]: {
       config: initialPlotConfigStates.featuresVsUMIsScatterplot,
+      plotData: [],
+    },
+    [filterStatistics]: {
       plotData: [],
     },
   },
@@ -43,8 +45,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    [sample1]: {
-      ...noData.componentConfig[sample1],
+    [plotData1]: {
+      ...noData.componentConfig[plotData1],
       plotData: [
         {
           log_genes: 2.41995574848976,
@@ -66,9 +68,7 @@ const withData = {
         },
       ],
     },
-    [sample1FilterStatistics]: {
-      ...cellFilterStaticsMock(),
-    },
+    [filterStatistics]: cellFilterStaticsMock(),
   },
 };
 
@@ -102,7 +102,7 @@ describe('GenesVsUMIs', () => {
     expect(screen.queryByText('Filtering Settings')).toBeInTheDocument();
     expect(screen.queryByText(/Results will appear here/i)).toBeInTheDocument();
     expect(screen.queryByTestId('vega-container')).not.toBeInTheDocument();
-    expect(screen.queryByText('Filter statistics')).not.toBeInTheDocument();
+    expect(screen.queryByText('Estimated number of cells')).not.toBeInTheDocument();
   });
 
   it('Shows plot with data', () => {
@@ -118,7 +118,7 @@ describe('GenesVsUMIs', () => {
     // Quering by test id because canvases are note created with tests
     expect(screen.queryByText('Filtering Settings')).toBeInTheDocument();
     expect(screen.queryAllByTestId('vega-container').length).toEqual(PLOTS_PER_SAMPLE);
-    expect(screen.queryAllByText('Filter statistics').length).toEqual(PLOTS_PER_SAMPLE);
+    expect(screen.queryAllByText('Estimated number of cells').length).toEqual(PLOTS_PER_SAMPLE);
     expect(screen.queryByText(/Results will appear here/i)).not.toBeInTheDocument();
   });
 });

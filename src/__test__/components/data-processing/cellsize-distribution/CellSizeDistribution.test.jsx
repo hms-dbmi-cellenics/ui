@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
+import { Table } from 'antd';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import CalculationConfig from '../../../../components/data-processing/CellSizeDistribution/CalculationConfig';
@@ -13,6 +14,7 @@ import generateExperimentSettingsMock from '../../../test-utils/experimentSettin
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
+import cellFilterStaticsMock from '../../../test-utils/plotData.mock';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -22,8 +24,9 @@ const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const experimentId = 'e1234';
 const filterName = 'cellSizeDistribution';
 
-const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
-const sample2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);
+const plotData1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const plotData2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);
+const filterStatistics = generateDataProcessingPlotUuid(sampleId, filterName, 3);
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
@@ -32,12 +35,15 @@ const noData = {
     ...initialExperimentState,
   },
   componentConfig: {
-    [sample1]: {
+    [plotData1]: {
       config: initialPlotConfigStates.cellSizeDistributionHistogram,
       plotData: [],
     },
-    [sample2]: {
+    [plotData2]: {
       config: initialPlotConfigStates.cellSizeDistributionKneePlot,
+      plotData: [],
+    },
+    [filterStatistics]: {
       plotData: [],
     },
   },
@@ -47,8 +53,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    [sample1]: {
-      ...noData.componentConfig[sample1],
+    [plotData1]: {
+      ...noData.componentConfig[plotData1],
       plotData: [{
         u: 8890.246597269077,
         status: 'low',
@@ -62,8 +68,8 @@ const withData = {
         status: 'low',
       }],
     },
-    [sample2]: {
-      ...noData.componentConfig[sample2],
+    [plotData2]: {
+      ...noData.componentConfig[plotData2],
       plotData: [{
         u: 864,
         rank: 1365,
@@ -83,6 +89,7 @@ const withData = {
         logUValue: 7670.1470,
       }],
     },
+    [filterStatistics]: cellFilterStaticsMock(),
   },
 };
 
@@ -114,9 +121,11 @@ describe('CellSizeDistribution', () => {
     expect(calculationConfig.length).toEqual(1);
 
     const plots = page.find(Vega);
+    const tables = page.find(Table);
 
     // No plots when there are no data
     expect(plots.length).toEqual(0);
+    expect(tables.length).toEqual(0);
   });
 
   it('Shows plot with data', async () => {
@@ -140,8 +149,10 @@ describe('CellSizeDistribution', () => {
     expect(calculationConfig.length).toEqual(1);
 
     const plots = page.find(Vega);
+    const tables = page.find(Table);
 
     // 1 main 2 miniature
     expect(plots.length).toEqual(3);
+    expect(tables.length).toEqual(1);
   });
 });

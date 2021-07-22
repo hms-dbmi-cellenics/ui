@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
+import { Table } from 'antd';
 
 import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
 import CalculationConfig from '../../../../components/data-processing/DoubletScores/CalculationConfig';
@@ -13,6 +14,7 @@ import generateExperimentSettingsMock from '../../../test-utils/experimentSettin
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
+import cellFilterStaticsMock from '../../../test-utils/plotData.mock';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -24,15 +26,19 @@ const experimentId = 'e1234';
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
-const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const plotData1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const filterStatistics = generateDataProcessingPlotUuid(sampleId, filterName, 1);
 
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    [sample1]: {
+    [plotData1]: {
       config: initialPlotConfigStates.doubletScoreHistogram,
+      plotData: [],
+    },
+    [filterStatistics]: {
       plotData: [],
     },
   },
@@ -42,8 +48,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    [sample1]: {
-      ...noData.componentConfig[sample1],
+    [plotData1]: {
+      ...noData.componentConfig[plotData1],
       plotData: [
         {
           doubletP: 0.174785100286533,
@@ -59,6 +65,7 @@ const withData = {
         },
       ],
     },
+    [filterStatistics]: cellFilterStaticsMock(),
   },
 };
 
@@ -89,9 +96,11 @@ describe('DoubletScores', () => {
     expect(calculationConfig.length).toEqual(1);
 
     const plots = page.find(Vega);
+    const tables = page.find(Table);
 
-    // No plots when there are no data
+    // No plots or table when there are no data
     expect(plots.length).toEqual(0);
+    expect(tables.length).toEqual(0);
   });
 
   it('Shows plot with data', () => {
@@ -114,8 +123,12 @@ describe('DoubletScores', () => {
     expect(calculationConfig.length).toEqual(1);
 
     const plots = page.find(Vega);
+    const tables = page.find(Table);
 
     // 1 main 2 miniatures
     expect(plots.length).toEqual(1);
+
+    // 1 table
+    expect(tables.length).toEqual(1);
   });
 });
