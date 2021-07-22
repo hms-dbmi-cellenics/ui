@@ -143,6 +143,10 @@ const HeatmapPlot = ({ experimentId }) => {
 
   const plotStylingControlsConfig = [
     {
+      panelTitle: 'Expression Values',
+      controls: ['expressionValuesType', 'expressionValuesCapping'],
+    },
+    {
       panelTitle: 'Main Schema',
       controls: ['dimensions'],
       children: [
@@ -155,6 +159,10 @@ const HeatmapPlot = ({ experimentId }) => {
           controls: ['font'],
         },
       ],
+    },
+    {
+      panelTitle: 'Metadata Tracks',
+      controls: ['metadataTracksDisplayEditor'],
     },
     {
       panelTitle: 'Colours',
