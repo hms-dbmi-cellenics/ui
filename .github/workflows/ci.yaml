@@ -1,4 +1,4 @@
-name: Build and Deploy the API
+name: Build and Deploy the UI
 on:
   push:
     branches:
@@ -241,7 +241,7 @@ jobs:
           | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
           | yq w -d1 - spec.values.image.repository "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.values.image.tag "$IMAGE_TAG" \
-          | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/api-role-$KUBERNETES_ENV" \
+          | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/ui-role-$KUBERNETES_ENV" \
           > $DEPLOYMENT_NAME.yaml
 
           cat $DEPLOYMENT_NAME.yaml
