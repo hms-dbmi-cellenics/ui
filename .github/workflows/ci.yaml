@@ -7,8 +7,8 @@ on:
     types:
       - released
 jobs:
-  test:
-    name: Run tests
+  build:
+    name: Build website
     runs-on: ubuntu-20.04
     env:
       CI: "true"
@@ -24,6 +24,7 @@ jobs:
     - id: install
       name: Install dependencies
       run: |-
+        git config --global url."https://".insteadOf ssh://
         npm ci
 
     - id: test
@@ -35,13 +36,33 @@ jobs:
       with:
         test-command: "npm run coverage"
         coverage-comment: false
-
-    - name: Upload coverage to Codecov
+    
+    - id: upload-coverage
+      name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
 
+    - id: next-cache-seek
+      name: Look up the Next.js build cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.workspace }}/.next/cache
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+
+    - id: build
+      name: Build project
+      run: |-
+        npm run build
+    - id: upload-build-out
+      name: Upload Next.js build output
+      uses: actions/upload-artifact@v2
+      with:
+        name: next-build-out
+        path: |
+          .next/
+          !.next/cache
     - id: send-to-slack
       name: Send failure notification to Slack
-      if: failure()
+      if: failure() && github.event_name == 'push'
       env:
         SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
       uses: voxmedia/github-action-slack-notify-build@v1
@@ -49,15 +70,22 @@ jobs:
         channel: pipelines
         status: FAILED
         color: danger
-        
+ 
   build-docker:
     name: Build Docker container
     runs-on: ubuntu-20.04
-    needs: test
+    needs: build
     steps:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v2
+
+      - id: download-build-out
+        name: Download Next.js build output
+        uses: actions/download-artifact@v2
+        with:
+          name: next-build-out
+          path: .next/
 
       - id: ref
         name: Format docker tag and repository name.
