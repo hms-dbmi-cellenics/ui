@@ -80,9 +80,10 @@ const fetchCachedWork = async (
   experimentId,
   body,
   backendStatus,
-  extras,
-  timeout = 60,
+  optionals = {},
 ) => {
+  const { extras = null, timeout = 60 } = optionals;
+
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }

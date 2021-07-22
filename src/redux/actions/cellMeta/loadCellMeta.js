@@ -35,7 +35,7 @@ const loadCellMeta = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, body, backendStatus.status, 30,
+      experimentId, body, backendStatus.status, { timeout: 30 },
     );
     dispatch({
       type: CELL_META_LOADED,
