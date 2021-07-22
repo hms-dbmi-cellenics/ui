@@ -14,6 +14,7 @@ import { loadEmbedding } from '../embedding';
 
 const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {
   await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
+
   dispatch({
     type: EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
     payload: {},
