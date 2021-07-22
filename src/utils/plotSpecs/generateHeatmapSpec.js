@@ -73,7 +73,7 @@ const generateSpec = (config, groupName) => {
   }
 
   return {
-    $schema: 'http//s:vega.github.io/schema/vega/v5.json',
+    $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
     height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },
