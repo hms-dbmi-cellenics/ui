@@ -1,4 +1,4 @@
-const cellFilterStaticsMock = () => ({
+const filterStatisticsMock = () => ({
   plotData: {
     before: {
       num_cells: 3936,
@@ -15,4 +15,4 @@ const cellFilterStaticsMock = () => ({
   },
 });
 
-export default cellFilterStaticsMock;
+export default filterStatisticsMock;

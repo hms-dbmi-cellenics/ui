@@ -12,7 +12,10 @@ const FilterResultTable = (props) => {
     // loadPlotConfig returns an empty array in case plot data does not exist
     // Meanwhile, this data for this table is an object. So if tableData is an array
     // That means table data does not exist
-    if (Array.isArray(tableData)) {
+    if (Array.isArray(tableData)
+        || !tableData?.after
+        || !tableData?.before
+    ) {
       return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
     }
 

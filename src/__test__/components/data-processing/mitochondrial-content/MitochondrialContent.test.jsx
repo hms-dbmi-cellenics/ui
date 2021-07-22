@@ -14,7 +14,7 @@ import generateExperimentSettingsMock from '../../../test-utils/experimentSettin
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
-import cellFilterStaticsMock from '../../../test-utils/plotData.mock';
+import filterStatisticsMock from '../../../test-utils/plotData.mock';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -86,7 +86,7 @@ const withData = {
         },
       ],
     },
-    [filterStatistics]: cellFilterStaticsMock(),
+    [filterStatistics]: filterStatisticsMock(),
   },
 };
 
