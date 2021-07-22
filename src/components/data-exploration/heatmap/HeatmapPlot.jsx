@@ -93,7 +93,9 @@ const HeatmapPlot = (props) => {
   }, [legendIsVisible]);
 
   useEffect(() => {
-    if (!selectedGenes || selectedGenes.length === 0) {
+    const louvainClusters = hierarchy.find((clusters) => clusters.key === 'louvain');
+
+    if (!selectedGenes || selectedGenes.length === 0 || !louvainClusters) {
       return;
     }
 
