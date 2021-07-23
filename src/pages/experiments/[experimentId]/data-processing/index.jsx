@@ -388,121 +388,125 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const renderTitle = () => (
     <>
       <Row justify="space-between">
-        <Col sm={24} xxl={changesOutstanding ? 7 : 10} style={{ paddingBottom: "8px"}}>
+        <Col style={{ paddingBottom: "8px"}}>
           {/* Should be just wide enough that no ellipsis appears */}
-            <Space size="small">
-                <Select
-                  value={stepIdx}
-                  onChange={(idx) => {
-                    changeStepId(idx);
-                  }}
-                  style={{ fontWeight: 'bold', width: 290 }}
-                  placeholder='Jump to a step...'
-                >
-                  {
-                    steps.map(
-                      ({ name, key }, i) => {
-                        const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
-                        const text = `${i + 1}. ${name}`;
+          <Row>
+            <Col style={{ paddingBottom: "8px", paddingRight: "8px"}}>
+              <Space size="small">
+                  <Select
+                    value={stepIdx}
+                    onChange={(idx) => {
+                      changeStepId(idx);
+                    }}
+                    style={{ fontWeight: 'bold', width: 290 }}
+                    placeholder='Jump to a step...'
+                  >
+                    {
+                      steps.map(
+                        ({ name, key }, i) => {
+                          const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
+                          const text = `${i + 1}. ${name}`;
 
-                        return (
-                          <Option
-                            value={i}
-                            key={key}
-                            disabled={
-                              disabledByPipeline
-                            }
-                          >
-                            {processingConfig[key]?.enabled === false ? (
-                              <>
-                                {/* disabled */}
-                                <Text
-                                  type='secondary'
+                          return (
+                            <Option
+                              value={i}
+                              key={key}
+                              disabled={
+                                disabledByPipeline
+                              }
+                            >
+                              {processingConfig[key]?.enabled === false ? (
+                                <>
+                                  {/* disabled */}
+                                  <Text
+                                    type='secondary'
 
-                                >
-                                  <CloseOutlined />
-                                </Text>
-                                <span
-                                  style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
-                                >
-                                  {text}
-                                </span>
-                              </>
-                            ) : !disabledByPipeline ? (
-                              <>
-                                {/* finished */}
-                                <Text
-                                  type='success'
+                                  >
+                                    <CloseOutlined />
+                                  </Text>
+                                  <span
+                                    style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
+                                  >
+                                    {text}
+                                  </span>
+                                </>
+                              ) : !disabledByPipeline ? (
+                                <>
+                                  {/* finished */}
+                                  <Text
+                                    type='success'
 
-                                >
-                                  <CheckOutlined />
-                                </Text>
-                                <span
-                                  style={{ marginLeft: '0.25rem' }}
-                                >
-                                  {text}
-                                </span>
-                              </>
-                            ) : pipelineRunning && !isStepComplete(key) ? (
-                              <>
-                                {/* incomplete */}
-                                <Text
-                                  type='warning'
-                                  strong
-                                >
-                                  <EllipsisOutlined />
-                                </Text>
-                                <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                              </>
-                            ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
-                              <>
-                                {/* failed */}
-                                <Text
-                                  type='danger'
-                                  strong
-                                >
-                                  <WarningOutlined />
-                                </Text>
-                                <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                              </>
-                            ) : <></>}
-                          </Option>
-                        );
-                      }
-                    )
-                  }
-                </Select>
-                {steps[stepIdx].description && (
-                  <Tooltip title={steps[stepIdx].description}>
-                    <Button icon={<InfoCircleOutlined />} />
-                  </Tooltip>
-                )}
-                {steps[stepIdx].multiSample && (
-                  <Tooltip title={`${
-                      !processingConfig[steps[stepIdx].key]?.enabled ? 
-                      'Enable' : 'Disable'} this filter`}>
-                    <Button
-                      disabled={stepDisabledByCondition}
-                      data-testid='enableFilterButton'
-                      onClick={() => {
-                        dispatch(setQCStepEnabled(steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled));
-                        dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
-                      }}
-                      >
-                      {
-                        !processingConfig[steps[stepIdx].key]?.enabled
-                          ? 'Enable' : 'Disable'
-                      }
-                    </Button>
-                  </Tooltip>
-                )}
-                </Space>
-        </Col>
-        <Col sm={24} xxl={changesOutstanding ? 17 : 14}>
+                                  >
+                                    <CheckOutlined />
+                                  </Text>
+                                  <span
+                                    style={{ marginLeft: '0.25rem' }}
+                                  >
+                                    {text}
+                                  </span>
+                                </>
+                              ) : pipelineRunning && !isStepComplete(key) ? (
+                                <>
+                                  {/* incomplete */}
+                                  <Text
+                                    type='warning'
+                                    strong
+                                  >
+                                    <EllipsisOutlined />
+                                  </Text>
+                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                </>
+                              ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
+                                <>
+                                  {/* failed */}
+                                  <Text
+                                    type='danger'
+                                    strong
+                                  >
+                                    <WarningOutlined />
+                                  </Text>
+                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                </>
+                              ) : <></>}
+                            </Option>
+                          );
+                        }
+                      )
+                    }
+                  </Select>
+                  {steps[stepIdx].description && (
+                    <Tooltip title={steps[stepIdx].description}>
+                      <Button icon={<InfoCircleOutlined />} />
+                    </Tooltip>
+                  )}
+                  {steps[stepIdx].multiSample && (
+                    <Tooltip title={`${
+                        !processingConfig[steps[stepIdx].key]?.enabled ? 
+                        'Enable' : 'Disable'} this filter`}>
+                      <Button
+                        disabled={stepDisabledByCondition}
+                        data-testid='enableFilterButton'
+                        onClick={() => {
+                          dispatch(setQCStepEnabled(steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled));
+                          dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
+                        }}
+                        >
+                        {
+                          !processingConfig[steps[stepIdx].key]?.enabled
+                            ? 'Enable' : 'Disable'
+                        }
+                      </Button>
+                    </Tooltip>
+                  )}
+                  </Space>
+                </Col>
+                <Col>
+                  {renderRunOrDiscardButtons()}
+                </Col>
+              </Row>
+          </Col>
+        <Col>
           <Row align="middle" justify="space-between">
-            <Col>
-              {renderRunOrDiscardButtons()}
-            </Col>
             <Col>
               <StatusIndicator 
                 allSteps={steps}
