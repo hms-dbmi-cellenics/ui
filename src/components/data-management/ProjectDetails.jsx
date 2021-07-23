@@ -6,10 +6,13 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   UploadOutlined,
+  MenuOutlined,
 } from '@ant-design/icons';
+import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
+import arrayMove from 'array-move';
 
 import { saveAs } from 'file-saver';
 import { Storage } from 'aws-amplify';
@@ -44,7 +47,7 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../.
 import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
 import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
-import '../../utils/css/hover.css';
+import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 
 const { Title, Text, Paragraph } = Typography;
@@ -53,6 +56,7 @@ const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
+  const samplesTableElement = useRef(null);
 
   const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
@@ -390,8 +394,18 @@ const ProjectDetails = ({ width, height }) => {
     return newMetadataColumn;
   };
 
+  const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+
   const columns = [
     {
+      index: 0,
+      key: 'sort',
+      dataIndex: 'sort',
+      width: 30,
+      render: () => <DragHandle />,
+    },
+    {
+      index: 1,
       key: 'sample',
       title: 'Sample',
       dataIndex: 'name',
@@ -399,24 +413,28 @@ const ProjectDetails = ({ width, height }) => {
       render: renderSampleCells,
     },
     {
+      index: 2,
       key: 'barcodes',
       title: 'Barcodes.csv',
       dataIndex: 'barcodes',
       render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
     },
     {
+      index: 3,
       key: 'genes',
       title: 'Genes.csv',
       dataIndex: 'genes',
       render: (tableCellData) => renderUploadCell('genes', tableCellData),
     },
     {
+      index: 4,
       key: 'matrix',
       title: 'Matrix.mtx',
       dataIndex: 'matrix',
       render: (tableCellData) => renderUploadCell('matrix', tableCellData),
     },
     {
+      index: 0,
       key: 'species',
       title: () => (
         <Space>
@@ -575,6 +593,36 @@ const ProjectDetails = ({ width, height }) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    if (oldIndex !== newIndex) {
+      const newData = arrayMove([].concat(tableData), oldIndex, newIndex).filter((el) => !!el);
+
+      console.log('== SORT END ==');
+      console.log(newData);
+
+      setTableData(newData);
+    }
+  };
+
+  const SortableItem = sortableElement((props) => <tr {...props} className={`${props.className} drag-visible`} />);
+  const SortableContainer = sortableContainer((props) => <tbody {...props} />);
+
+  const DraggableContainer = (props) => (
+    <SortableContainer
+      useDragHandle
+      disableAutoscroll
+      helperClass='row-dragging'
+      onSortEnd={onSortEnd}
+      {...props}
+    />
+  );
+
+  const DraggableBodyRow = (props) => {
+    // function findIndex base on Table rowKey props and should always be a right array index
+    const index = tableData.findIndex((x) => x.key === props['data-row-key']);
+    return <SortableItem index={index} {...props} />;
+  };
+
   return (
     <>
       <FileUploadModal
@@ -667,16 +715,23 @@ const ProjectDetails = ({ width, height }) => {
           <Row>
             <Col>
               <Table
+                ref={samplesTableElement}
                 size='small'
                 scroll={{
                   x: 'max-content',
                   y: height - 250,
                 }}
                 bordered
-                columns={tableColumns}
+                columns={columns}
                 dataSource={tableData}
                 sticky
                 pagination={false}
+                components={{
+                  body: {
+                    wrapper: DraggableContainer,
+                    row: DraggableBodyRow,
+                  },
+                }}
               />
             </Col>
           </Row>
