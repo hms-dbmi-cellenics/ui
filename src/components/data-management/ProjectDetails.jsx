@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col,
@@ -596,10 +597,7 @@ const ProjectDetails = ({ width, height }) => {
   const onSortEnd = ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
       const newData = arrayMove([].concat(tableData), oldIndex, newIndex).filter((el) => !!el);
-
-      console.log('== SORT END ==');
-      console.log(newData);
-
+      dispatch(updateProject(activeProjectUuid, { samples: newData.map((sample) => sample.uuid) }));
       setTableData(newData);
     }
   };
