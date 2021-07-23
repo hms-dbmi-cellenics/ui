@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   EyeOutlined,
@@ -10,18 +10,14 @@ import {
   Switch,
 } from 'antd';
 
-import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
 
-const HeatmapMetadataTrackSettings = (props) => {
-  const dispatch = useDispatch();
+const MetadataTracksDisplayEditor = (props) => {
+  const { onUpdate, config } = props;
 
-  const { componentType } = props;
+  const { selectedTracks } = config;
 
   const cellSets = useSelector((state) => state.cellSets);
-  const selectedTracks = useSelector(
-    (state) => state.componentConfig[componentType].config.selectedTracks,
-  );
 
   const getCellSets = (category) => {
     if (!cellSets || cellSets.loading) {
@@ -43,7 +39,6 @@ const HeatmapMetadataTrackSettings = (props) => {
     (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
   );
 
-  const isInitialRenderRef = useRef(true);
   const [trackData, setTrackData] = useState(getTrackData());
 
   const getUpdatedTrackData = () => _.unionBy(
@@ -53,33 +48,12 @@ const HeatmapMetadataTrackSettings = (props) => {
   );
 
   useEffect(() => {
-    // Prevent initial dispatch when object appears
-    if (isInitialRenderRef.current) {
-      return;
-    }
-
     setTrackData(getUpdatedTrackData());
   }, [cellSets.hierarchy]);
 
   useEffect(() => {
-    // Prevent initial dispatch when object appears
-    if (isInitialRenderRef.current) {
-      return;
-    }
-
-    if (trackData.length === 0) {
-      return;
-    }
-    dispatch(
-      updatePlotConfig(componentType, {
-        selectedTracks: trackData.filter((o) => o.selected).map((o) => o.key),
-      }),
-    );
+    onUpdate({ selectedTracks: trackData.filter((o) => o.selected).map((o) => o.key) });
   }, [trackData]);
-
-  useEffect(() => {
-    isInitialRenderRef.current = false;
-  });
 
   const leftItem = (trackDataItem, i) => (
     <Switch
@@ -111,11 +85,9 @@ const HeatmapMetadataTrackSettings = (props) => {
   );
 };
 
-HeatmapMetadataTrackSettings.defaultProps = {
+MetadataTracksDisplayEditor.propTypes = {
+  onUpdate: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
-HeatmapMetadataTrackSettings.propTypes = {
-  componentType: PropTypes.string.isRequired,
-};
-
-export default HeatmapMetadataTrackSettings;
+export default MetadataTracksDisplayEditor;
