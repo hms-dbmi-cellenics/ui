@@ -247,6 +247,13 @@ jobs:
           | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/ui-role-$KUBERNETES_ENV" \
           > $DEPLOYMENT_NAME.yaml
 
+          if [ "${{ matrix.environment }}" = "production" ]
+          then
+            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp.biomage.net" > $DEPLOYMENT_NAME.yaml
+          else
+            mv $DEPLOYMENT_NAME-without-host.yaml $DEPLOYMENT_NAME.yaml
+          fi
+
           cat $DEPLOYMENT_NAME.yaml
         env:
           IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, needs.build-docker.outputs.repo-name, needs.build-docker.outputs.tag) }}
