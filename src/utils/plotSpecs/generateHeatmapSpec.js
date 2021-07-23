@@ -143,7 +143,9 @@ const generateSpec = (config, groupName) => {
         name: 'color',
         type: 'linear',
         range: {
-          scheme: config.colour.gradient,
+          scheme: config.colour.gradient === 'default'
+            ? 'purplered'
+            : config.colour.gradient,
         },
         domain: {
           data: 'heatmapData',
