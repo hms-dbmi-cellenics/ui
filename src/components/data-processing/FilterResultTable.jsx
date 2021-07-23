@@ -27,11 +27,12 @@ const FilterResultTable = (props) => {
       median_umis: 'Median UMI counts per cell',
     };
 
-    const percentChanged = (number, total, decimalPoints = 2) => { 
-      let percentChanged = Math.round((number / total) * (10 ** decimalPoints)) / 10 ** decimalPoints * 100 // percent;
-      percentChanged = percentChanged.toFixed(3)
-      return percentChanged > 0 ? `+${percentChanged}` : percentChanged;
-    }
+    const percentChanged = (number, total, decimalPoints = 2) => {
+      const ratio = Math.round((number / total) * (10 ** decimalPoints)) / (10 ** decimalPoints);
+      const percent = ratio * 100;
+      const fixedDecimal = percent.toFixed(3);
+      return fixedDecimal > 0 ? `+${fixedDecimal}` : `${fixedDecimal}`;
+    };
 
     const dataSource = Object.keys(before).map((key) => ({
       key,
@@ -71,12 +72,11 @@ const FilterResultTable = (props) => {
         columns={columns}
         pagination={false}
         size='small'
-        style={{ width: '100%' }}
       />
     );
   };
 
-  return renderTable()
+  return renderTable();
 };
 
 const filterTableDataShape = PropTypes.shape({

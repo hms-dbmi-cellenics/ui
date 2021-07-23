@@ -212,10 +212,12 @@ const CellSizeDistribution = (props) => {
             </Col>
           </Row>
           <Divider />
-          <Row style={{ marginTop: '0.5em' }}>
-            {filterTableData
-              ? <FilterResultTable tableData={filterTableData} />
-              : <Skeleton />}
+          <Row style={{ marginBottom: '1em' }}>
+            <Col>
+              {filterTableData
+                ? <FilterResultTable tableData={filterTableData} />
+                : <Skeleton />}
+            </Col>
           </Row>
         </Col>
         <Col flex='1 0px'>
