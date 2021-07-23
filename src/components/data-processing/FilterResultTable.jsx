@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Table, Typography, Empty } from 'antd';
-
-const { Text, Paragraph } = Typography;
+import { Table, Empty } from 'antd';
 
 const FilterResultTable = (props) => {
   const { tableData } = props;
@@ -29,19 +27,23 @@ const FilterResultTable = (props) => {
       median_umis: 'Median UMI counts per cell',
     };
 
-    const roundedDecimal = (number, total, decimalPoints = 2) => Math.round((number / total) * (10 ** decimalPoints)) / 10 ** decimalPoints;
+    const percentChanged = (number, total, decimalPoints = 2) => { 
+      let percentChanged = Math.round((number / total) * (10 ** decimalPoints)) / 10 ** decimalPoints * 100 // percent;
+      percentChanged = percentChanged.toFixed(3)
+      return percentChanged > 0 ? `+${percentChanged}` : percentChanged;
+    }
 
     const dataSource = Object.keys(before).map((key) => ({
       key,
       title: titles[key],
       before: before[key],
       after: after[key],
-      perc_removed: roundedDecimal(before[key] - after[key], before[key], 4).toFixed(4),
+      percentChanged: percentChanged(after[key] - before[key], before[key], 5),
     }));
 
     const columns = [
       {
-        title: '',
+        title: 'Statistics',
         dataIndex: 'title',
         key: 'title',
       },
@@ -56,9 +58,9 @@ const FilterResultTable = (props) => {
         key: 'after',
       },
       {
-        title: '% removed',
-        dataIndex: 'perc_removed',
-        key: 'perc_removed',
+        title: '% changed',
+        dataIndex: 'percentChanged',
+        key: 'percentChanged',
       },
     ];
 
@@ -74,14 +76,7 @@ const FilterResultTable = (props) => {
     );
   };
 
-  return (
-    <>
-      <Paragraph>
-        <Text style={{ fontSize: '1.2em' }} strong>Filter statistics</Text>
-      </Paragraph>
-      {renderTable()}
-    </>
-  );
+  return renderTable()
 };
 
 const filterTableDataShape = PropTypes.shape({
