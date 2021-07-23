@@ -18,7 +18,6 @@ const ColourbarDesign = (props) => {
         <p><strong>Colour Schemes</strong></p>
         <Form.Item>
           <Radio.Group onChange={(e) => onUpdate({ colour: { gradient: e.target.value } })} value={config.colour.gradient}>
-            <Radio value='default'>Default</Radio>
             <Radio value='viridis'>Viridis</Radio>
             <Radio value='inferno'>Inferno</Radio>
             <Radio value='spectral'>Spectral</Radio>
