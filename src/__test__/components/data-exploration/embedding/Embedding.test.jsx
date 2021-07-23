@@ -352,9 +352,6 @@ describe('Embedding', () => {
       </Provider>,
     );
 
-    const legend = embedding.find('Embedding div div img');
-    expect(legend.length).toEqual(1);
-
     const focusedGeneInfo = embedding.find('Embedding div label strong');
     expect(focusedGeneInfo.length).toEqual(1);
     expect(focusedGeneInfo.props().children).toEqual('REALGENE');

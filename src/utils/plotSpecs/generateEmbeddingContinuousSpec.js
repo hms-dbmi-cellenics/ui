@@ -57,7 +57,11 @@ const generateSpec = (config, plotData) => {
       {
         name: 'color',
         type: 'linear',
-        range: { scheme: config.colour.gradient },
+        range: {
+          scheme: config.colour.gradient === 'default'
+            ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
+            : config.colour.gradient,
+        },
         domain: { data: 'plotData', field: 'value' },
         reverse: config.colour.reverseCbar,
       },

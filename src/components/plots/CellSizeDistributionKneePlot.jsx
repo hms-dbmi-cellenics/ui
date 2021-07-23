@@ -34,7 +34,7 @@ const CellSizeDistributionKneePlot = (props) => {
 
   return (
     <>
-      { render()}
+      {render()}
     </>
   );
 };

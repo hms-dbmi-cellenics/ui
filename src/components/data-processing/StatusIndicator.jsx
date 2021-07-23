@@ -1,5 +1,6 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
+
 import {
   Button,
   Space,
@@ -11,16 +12,18 @@ import {
 import { useSelector } from 'react-redux';
 
 import {
-  DownOutlined,
   CheckCircleOutlined,
 } from '@ant-design/icons';
 
 import PrettyTime from '../PrettyTime';
+import StepsIndicator from './StepsIndicator';
 import pipelineStatus from '../../utils/pipelineStatusValues';
 
 const { Text, Paragraph } = Typography;
 
-const StatusIndicator = () => {
+const StatusIndicator = (props) => {
+  const { allSteps, currentStep, completedSteps } = props;
+
   const {
     status: { pipeline },
   } = useSelector((state) => state.experimentSettings.backendStatus);
@@ -87,7 +90,7 @@ const StatusIndicator = () => {
       ),
     },
     [pipelineStatus.SUCCEEDED]: {
-      icon: <Text strong type='success'><CheckCircleOutlined /></Text>,
+      icon: <Text strong type='success' style={{ fontSize: '1.2rem' }}><CheckCircleOutlined /></Text>,
       title: <Text strong type='success'>finished</Text>,
       description: (
         <Text>
@@ -115,24 +118,41 @@ const StatusIndicator = () => {
         </Text>
       </Paragraph>
       <Paragraph>
+        <Text>{`${completedSteps.length} of ${allSteps.length} steps complete`}</Text>
+      </Paragraph>
+      <Paragraph>
         {statusIndicators[status].description}
       </Paragraph>
-
     </Card>
   );
 
   return (
     <Dropdown overlay={renderOverlay}>
-      <Button type='text'>
-        <Space>
-          Status:
-          {statusIndicators[status].icon}
-          <Text type='secondary'><DownOutlined /></Text>
+      <Button
+        type='text'
+        style={{ paddingTop: '1px' }}
+      >
+        <Space size='small'>
+          <Text strong style={{ fontSize: '0.9rem' }}>
+            Status:
+          </Text>
+          <StepsIndicator
+            allSteps={allSteps}
+            currentStep={currentStep}
+            completedSteps={completedSteps.length}
+          />
+          <div style={{ display: 'inline-block' }}>
+            {statusIndicators[status].icon}
+          </div>
         </Space>
       </Button>
     </Dropdown>
   );
 };
 
-StatusIndicator.propTypes = {};
+StatusIndicator.propTypes = {
+  allSteps: PropTypes.array.isRequired,
+  currentStep: PropTypes.number.isRequired,
+  completedSteps: PropTypes.number.isRequired,
+};
 export default StatusIndicator;
