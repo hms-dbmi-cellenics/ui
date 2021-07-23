@@ -59,7 +59,7 @@ const HeatmapPlot = (props) => {
     selectedTracks, groupedTracks, expressionValue, legendIsVisible,
   } = heatmapSettings;
 
-  const { error } = expressionData;
+  const { error: expressionDataError } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
   const [maxCells, setMaxCells] = useState(1000);
@@ -158,7 +158,7 @@ const HeatmapPlot = (props) => {
   if (markerGenesLoadingError) {
     return (
       <PlatformError
-        error={error}
+        error={expressionDataError}
         onClick={() => {
           dispatch(loadMarkerGenes(experimentId, louvainClustersResolution));
         }}
@@ -166,11 +166,11 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (error || viewError) {
+  if (expressionDataError || viewError) {
     return (
       <PlatformError
-        error={error}
-        onClick={() => {
+        error={expressionDataError}
+        onClick={async () => {
           dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
         }}
       />

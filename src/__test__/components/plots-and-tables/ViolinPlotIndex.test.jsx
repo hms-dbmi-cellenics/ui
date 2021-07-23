@@ -79,6 +79,7 @@ describe('ViolinIndex', () => {
   beforeAll(async () => {
     await preloadAll();
   });
+
   beforeEach(() => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
     fetchMock.resetMocks();
