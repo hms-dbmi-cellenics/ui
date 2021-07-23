@@ -5,8 +5,8 @@ const StepsIndicator = (props) => {
   const { allSteps, completedSteps, currentStep } = props;
   const colors = {
     notCompleted: '#d9d9d9', // gray
-    currentStep: '#cf1322', // red
-    completed: '#1890ff', // blue
+    currentStep: '#ff6f00', // orange
+    completed: '#009930', // blue
   };
   return (
     <div

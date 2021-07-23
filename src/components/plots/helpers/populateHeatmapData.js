@@ -5,8 +5,9 @@ import { union } from '../../../utils/cellSetOperations';
 const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsampling = false) => {
   const { hierarchy, properties, hidden } = cellSets;
   const {
-    selectedTracks, groupedTracks, expressionValue,
+    selectedTracks, groupedTracks, expressionValue, truncatedValues,
   } = config;
+
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
 
@@ -201,11 +202,20 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
         return;
       }
 
-      const expressionValues = (
-        expressionValue === 'raw' ? { color: expressionDataForGene.truncatedExpression.expression, display: expressionDataForGene.rawExpression.expression }
-          : expressionValue === 'zScore' ? { color: expressionDataForGene.zScore, display: expressionDataForGene.zScore }
-            : undefined
-      );
+      let expressionValues = {};
+
+      if (expressionValue === 'zScore') {
+        expressionValues = {
+          color: expressionDataForGene.zScore, display: expressionDataForGene.zScore,
+        };
+      } else {
+        const { rawExpression, truncatedExpression } = expressionDataForGene;
+
+        expressionValues = {
+          color: truncatedValues ? truncatedExpression.expression : rawExpression.expression,
+          display: rawExpression.expression,
+        };
+      }
 
       data.heatmapData.push({
         cellId,

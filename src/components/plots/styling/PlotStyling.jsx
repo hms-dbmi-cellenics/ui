@@ -16,6 +16,10 @@ import AxesDesign from './AxesDesign';
 import PointDesign from './PointDesign';
 import ColourbarDesign from './ColourbarDesign';
 import ColourInversion from './ColourInversion';
+import ExpressionValuesType from './ExpressionValuesType';
+import ExpressionValuesCapping from './ExpressionValuesCapping';
+
+import MetadataTracksDisplayEditor from './MetadataTracksDisplayEditor';
 
 import ViolinMarkersEditor from './violin/MarkersEditor';
 
@@ -37,6 +41,8 @@ const PlotStyling = (props) => {
     axes: (attr) => <AxesDesign key='axes' config={config} onUpdate={onUpdate} {...attr} />,
     colourScheme: (attr) => <ColourbarDesign key='colourScheme' config={config} onUpdate={onUpdate} {...attr} />,
     colourInversion: (attr) => <ColourInversion key='colourInversion' config={config} onUpdate={onUpdate} {...attr} />,
+    expressionValuesType: (attr) => <ExpressionValuesType key='expressionValuesType' config={config} onUpdate={onUpdate} {...attr} />,
+    expressionValuesCapping: (attr) => <ExpressionValuesCapping key='expressionValuesCapping' config={config} onUpdate={onUpdate} {...attr} />,
     markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
     legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
     labels: (attr) => <LabelsDesign key='legend' onUpdate={onUpdate} config={config} {...attr} />,
@@ -45,6 +51,7 @@ const PlotStyling = (props) => {
     volcanoThresholds: (attr) => <VolcanoThresholdsGuidesEditor key='volcanoThresholds' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoMarkers: (attr) => <VolcanoMarkersEditor key='volcanoMarkers' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoLabels: (attr) => <VolcanoDisplayLabels key='volcanoLabels' config={config} onUpdate={onUpdate} {...attr} />,
+    metadataTracksDisplayEditor: (attr) => <MetadataTracksDisplayEditor key='metadataTracksDisplayEditor' config={config} onUpdate={onUpdate} {...attr} />,
   };
 
   const buildForm = (configObj) => configObj.map((el) => {
@@ -69,7 +76,7 @@ const PlotStyling = (props) => {
               && el.children.length > 0
               ? (
                 <Collapse accordion>
-                  { buildForm(el.children)}
+                  {buildForm(el.children)}
                 </Collapse>
               )
               : ''
