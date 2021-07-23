@@ -8,8 +8,9 @@ const populateHeatmapData = (
 ) => {
   const { hierarchy, properties, hidden } = cellSets;
   const {
-    selectedTracks, groupedTracks, expressionValue,
+    selectedTracks, groupedTracks, expressionValue, truncatedValues,
   } = heatmapSettings;
+
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
 
@@ -205,11 +206,20 @@ const populateHeatmapData = (
         return;
       }
 
-      const expressionValues = (
-        expressionValue === 'raw' ? { color: expressionDataForGene.truncatedExpression.expression, display: expressionDataForGene.rawExpression.expression }
-          : expressionValue === 'zScore' ? { color: expressionDataForGene.zScore, display: expressionDataForGene.zScore }
-            : undefined
-      );
+      let expressionValues = {};
+
+      if (expressionValue === 'zScore') {
+        expressionValues = {
+          color: expressionDataForGene.zScore, display: expressionDataForGene.zScore,
+        };
+      } else {
+        const { rawExpression, truncatedExpression } = expressionDataForGene;
+
+        expressionValues = {
+          color: truncatedValues ? truncatedExpression.expression : rawExpression.expression,
+          display: rawExpression.expression,
+        };
+      }
 
       data.heatmapData.push({
         cellId,
