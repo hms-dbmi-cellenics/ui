@@ -211,9 +211,6 @@ describe('DiffExprResults', () => {
     // // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(store, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
-    console.log('fetchCachedWorkMockDebug');
-    console.log(JSON.stringify(fetchCachedWork.mock));
-
     expect(fetchCachedWork).toHaveBeenCalledWith(
       '1234',
       {
