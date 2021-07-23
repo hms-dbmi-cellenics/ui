@@ -65,12 +65,7 @@ const HeatmapPlot = ({ experimentId }) => {
   }, [selectedGenes]);
 
   useEffect(() => {
-    if (!config
-      || cellSets.loading
-      || _.isEmpty(expressionData)
-      || _.isEmpty(selectedGenes)
-      || !loading
-    ) {
+    if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes) || !loading) {
       return;
     }
 
