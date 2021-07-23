@@ -277,7 +277,7 @@ jobs:
 
       - name: Change name of deployment file for staging deployment
         if:
-          github.event_name == 'push' && matrix.environment == 'staging'
+          github.event_name == 'pull_request' && matrix.environment == 'staging'
         env:
           DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
           REF_DASHED: ${{ steps.fill-metadata.outputs.ref-dashed }}
