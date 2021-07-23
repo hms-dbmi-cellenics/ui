@@ -8,11 +8,9 @@ configure({ adapter: new Adapter() });
 
 describe('ReorderableList', () => {
   let onChangeCount;
-  let latestOnChangeListReceived;
 
-  const onChangeMock = (list) => {
+  const onChangeMock = () => {
     onChangeCount += 1;
-    latestOnChangeListReceived = list;
   };
 
   let reorderableListMock;
@@ -24,14 +22,13 @@ describe('ReorderableList', () => {
 
   beforeEach(() => {
     onChangeCount = 0;
-    latestOnChangeListReceived = null;
 
     reorderableListMock = [{ key: 1 }, { key: 2 }, { key: 3 }];
 
     component = mount(
       <ReorderableList
         onChange={onChangeMock}
-        defaultList={reorderableListMock}
+        listData={reorderableListMock}
         leftItem={leftItemMock}
         rightItem={rightItemMock}
       />,

@@ -12,7 +12,9 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const ContinuousEmbeddingPlot = (props) => {
   const {
-    experimentId, config, plotUuid, plotData, actions, loading, error, reloadPlotData,
+    experimentId, config, plotUuid,
+    plotData, truncatedPlotData,
+    actions, loading, error, reloadPlotData,
   } = props;
   const dispatch = useDispatch();
 
@@ -59,7 +61,7 @@ const ContinuousEmbeddingPlot = (props) => {
           generateData(
             cellSets,
             config.selectedSample,
-            plotData,
+            config.truncatedValues ? truncatedPlotData : plotData,
             embeddingData,
           ),
         ),
@@ -82,7 +84,7 @@ const ContinuousEmbeddingPlot = (props) => {
     if (loading || embeddingLoading || !plotComponent) {
       return (
         <center>
-          { fastLoad()}
+          {fastLoad()}
         </center>
       );
     }
@@ -110,6 +112,7 @@ ContinuousEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
+  truncatedPlotData: PropTypes.array,
   plotUuid: PropTypes.string.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
@@ -122,6 +125,7 @@ ContinuousEmbeddingPlot.propTypes = {
 
 ContinuousEmbeddingPlot.defaultProps = {
   reloadPlotData: () => { },
+  truncatedPlotData: null,
 };
 
 export default ContinuousEmbeddingPlot;

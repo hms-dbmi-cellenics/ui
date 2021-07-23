@@ -96,6 +96,7 @@ const heatmapInitialConfig = {
   selectedTracks: ['louvain'],
   groupedTracks: ['sample', 'louvain'],
   expressionValue: 'raw',
+  truncatedValues: false,
 };
 
 // PLOTS & TABLES - Volcano plot
