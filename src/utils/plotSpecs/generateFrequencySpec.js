@@ -40,6 +40,18 @@ const generateSpec = (config, plotData) => {
 
     ];
   }
+
+  const additionalTransform = config.frequencyType === 'proportional' ? [
+    {
+      type: 'joinaggregate',
+      groupby: ['x'],
+      ops: ['sum'],
+      fields: ['y'],
+      as: ['totalY'],
+    },
+    { type: 'formula', as: 'y', expr: '(datum.y / datum.totalY) * 100' },
+  ] : [];
+
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
@@ -53,20 +65,7 @@ const generateSpec = (config, plotData) => {
         name: 'plotData',
         values: plotData,
         transform: [
-          ...(
-            config.frequencyType === 'proportional' && [{
-              type: 'joinaggregate',
-              groupby: ['x'],
-              ops: ['sum'],
-              fields: ['y'],
-              as: ['totalY'],
-            }]
-          ),
-          ...(
-            config.frequencyType === 'proportional' && [
-              { type: 'formula', as: 'y', expr: '(datum.y / datum.totalY) * 100' },
-            ]
-          ),
+          ...additionalTransform,
           {
             type: 'stack',
             groupby: ['x'],
