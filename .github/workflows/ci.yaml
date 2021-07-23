@@ -245,7 +245,14 @@ jobs:
           | yq w -d1 - spec.values.image.repository "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.values.image.tag "$IMAGE_TAG" \
           | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/ui-role-$KUBERNETES_ENV" \
-          > $DEPLOYMENT_NAME.yaml
+          > $DEPLOYMENT_NAME-without-host.yaml
+
+          if [ "${{ matrix.environment }}" = "production" ]
+          then
+            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp.biomage.net" > $DEPLOYMENT_NAME.yaml
+          else
+            mv $DEPLOYMENT_NAME-without-host.yaml $DEPLOYMENT_NAME.yaml
+          fi
 
           cat $DEPLOYMENT_NAME.yaml
         env:
@@ -277,7 +284,7 @@ jobs:
 
       - name: Change name of deployment file for staging deployment
         if:
-          github.event_name == 'pull_request' && matrix.environment == 'staging'
+          (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
         env:
           DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
           REF_DASHED: ${{ steps.fill-metadata.outputs.ref-dashed }}
@@ -286,7 +293,7 @@ jobs:
 
       - name: Push staging deployment template to iac
         if:
-          github.event_name == 'pull_request' && matrix.environment == 'staging'
+          (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
