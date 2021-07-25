@@ -1,7 +1,7 @@
 import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../../actionTypes/embeddings';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
-const TIMEOUT_SECONDS = 90;
+const REQUEST_TIMEOUT = 90;
 
 const loadEmbedding = (
   experimentId,
@@ -47,7 +47,7 @@ const loadEmbedding = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, TIMEOUT_SECONDS, body, backendStatus.status,
+      experimentId, body, backendStatus.status, { timeout: REQUEST_TIMEOUT },
     );
     return dispatch({
       type: EMBEDDINGS_LOADED,

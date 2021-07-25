@@ -26,7 +26,7 @@ jest.mock('localforage');
 enableFetchMocks();
 jest.mock('../../../components/plots/Header', () => () => <div />);
 jest.mock('../../../utils/cacheRequest', () => ({
-  fetchCachedWork: jest.fn().mockImplementation((expId, timedOut, body) => {
+  fetchCachedWork: jest.fn().mockImplementation((expId, body) => {
     if (body.name === 'ListGenes') {
       return new Promise((resolve) => resolve({
         rows: [{ gene_names: 'MockGeneWithHighestDispersion', dispersions: 54.0228 }],
@@ -79,6 +79,7 @@ describe('ViolinIndex', () => {
   beforeAll(async () => {
     await preloadAll();
   });
+
   beforeEach(() => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
     fetchMock.resetMocks();

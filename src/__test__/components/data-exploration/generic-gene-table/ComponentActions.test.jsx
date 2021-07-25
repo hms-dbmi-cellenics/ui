@@ -145,12 +145,13 @@ describe('ComponentActions', () => {
     await waitForActions(store, [GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
 
     expect(fetchCachedWork).toHaveBeenCalledWith(
-      experimentId, 30,
+      experimentId,
       {
         name: 'GeneExpression',
         genes: ['A', 'B', 'C'],
       },
       backendStatus.status,
+      { timeout: 30 },
     );
 
     expect(store.getActions().length).toEqual(2);
