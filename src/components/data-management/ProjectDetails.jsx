@@ -435,7 +435,7 @@ const ProjectDetails = ({ width, height }) => {
       render: (tableCellData) => renderUploadCell('matrix', tableCellData),
     },
     {
-      index: 0,
+      index: 5,
       key: 'species',
       title: () => (
         <Space>
