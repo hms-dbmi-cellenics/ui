@@ -107,7 +107,6 @@ exports[`loadGeneExpression action Does not send work for already loaded express
   "calls": Array [
     Array [
       "1234",
-      30,
       Object {
         "genes": Array [
           "b",
@@ -120,6 +119,9 @@ exports[`loadGeneExpression action Does not send work for already loaded express
           "startDate": "2021-01-01T01:01:01.000Z",
           "status": "SUCCEEDED",
         },
+      },
+      Object {
+        "timeout": 30,
       },
     ],
   ],
@@ -137,7 +139,6 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
   "calls": Array [
     Array [
       "1234",
-      30,
       Object {
         "genes": Array [
           "b",
@@ -151,10 +152,12 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
           "status": "SUCCEEDED",
         },
       },
+      Object {
+        "timeout": 30,
+      },
     ],
     Array [
       "1234",
-      30,
       Object {
         "genes": Array [
           "a",
@@ -168,6 +171,9 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
           "startDate": "2021-01-01T01:01:01.000Z",
           "status": "SUCCEEDED",
         },
+      },
+      Object {
+        "timeout": 30,
       },
     ],
   ],
