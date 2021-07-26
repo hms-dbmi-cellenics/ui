@@ -40,13 +40,13 @@ const loadGeneExpression = (
   if (!forceReloadAll) {
     genesToFetch = genesToFetch.filter(
       (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
-    ).map((gene) => gene.replace(' ', ''));
+    );
   }
 
   const displayedGenes = genesAlreadyLoaded.filter(
     (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
   );
-  console.log('DISPLAYED GENES ARE ', displayedGenes, 'ALREADY LOADED GENES ARE ', genesAlreadyLoaded, 'GENES ARE ', genes);
+  console.log('DISPLAYED GENES ARE ', displayedGenes, 'ALREADY LOADED GENES ARE ', genesAlreadyLoaded, 'GENES ARE ', genes, ' genes to load are ', genesToFetch);
   if (genesToFetch.length === 0) {
     return dispatch({
       type: GENES_EXPRESSION_LOADED,
@@ -67,7 +67,7 @@ const loadGeneExpression = (
     const data = await fetchCachedWork(
       experimentId, body, backendStatus.status, { timeout: 30 },
     );
-
+    console.log('DATA IS ', data);
     if (data[genesToFetch[0]]?.error) {
       pushNotificationMessage('error', data[genesToFetch[0]].message);
       dispatch({

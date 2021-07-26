@@ -95,8 +95,9 @@ const ViolinIndex = ({ experimentId }) => {
   ];
 
   const changeDisplayedGene = (geneName) => {
+    const geneNameNoSpaces = geneName.replace(/\s/g, '');
     updatePlotWithChanges({
-      shownGene: geneName,
+      shownGene: geneNameNoSpaces,
       title: { text: '' },
     });
   };
