@@ -45,8 +45,24 @@ const GENES_EXPRESSION_LOADED = `${GENES}/expressionLoaded`;
  */
 const GENES_EXPRESSION_ERROR = `${GENES}/expressionError`;
 
+/**
+ * Sets marker genes as loading
+ */
+const MARKER_GENES_LOADING = `${GENES}/markerGenesLoading`;
+
+/**
+ * Marker genes have finished loading
+ */
+const MARKER_GENES_LOADED = `${GENES}/markerGenesLoaded`;
+
+/**
+ * Marker genes load task had some kind of error
+ */
+const MARKER_GENES_ERROR = `${GENES}/markerGenesError`;
+
 export {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
+  MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
 };

@@ -17,7 +17,8 @@ jest.mock('../../../../utils/sendWork', () => ({
 
 const startDate = '2021-01-01T00:00:00';
 
-const backendStatusStore = {
+const experimentSettingsStore = {
+  processing: { configureEmbedding: { clusteringSettings: { method: 'louvain' } } },
   backendStatus: { status: { pipeline: { startDate } } },
 };
 
@@ -39,7 +40,7 @@ describe('runCellSetsClustering action', () => {
   it('Does not dispatch on loading state', async () => {
     const store = mockStore({
       cellSets: { loading: true, error: false },
-      experimentSettings: backendStatusStore,
+      experimentSettings: experimentSettingsStore,
     });
     store.dispatch(runCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
@@ -48,7 +49,7 @@ describe('runCellSetsClustering action', () => {
   it('Does not dispatch on error state', async () => {
     const store = mockStore({
       cellSets: { loading: false, error: true },
-      experimentSettings: backendStatusStore,
+      experimentSettings: experimentSettingsStore,
     });
     store.dispatch(runCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
@@ -70,7 +71,7 @@ describe('runCellSetsClustering action', () => {
           },
         },
       },
-      experimentSettings: backendStatusStore,
+      experimentSettings: experimentSettingsStore,
     });
 
     const flushPromises = () => new Promise(setImmediate);
@@ -86,7 +87,7 @@ describe('runCellSetsClustering action', () => {
       type: 'louvain',
       cellSetKey: 'louvain',
       config: { resolution: 0.5 },
-    }, backendStatusStore.backendStatus.status);
+    }, experimentSettingsStore.backendStatus.status);
 
     await flushPromises();
 
@@ -104,7 +105,7 @@ describe('runCellSetsClustering action', () => {
   it('Dispatches error action when sendWord fails', async () => {
     const store = mockStore({
       cellSets: { ...initialState, loading: false },
-      experimentSettings: backendStatusStore,
+      experimentSettings: experimentSettingsStore,
     });
 
     sendWork.mockImplementation(() => Promise.reject());
@@ -120,7 +121,7 @@ describe('runCellSetsClustering action', () => {
       type: 'louvain',
       cellSetKey: 'louvain',
       config: { resolution: 0.5 },
-    }, backendStatusStore.backendStatus.status);
+    }, experimentSettingsStore.backendStatus.status);
 
     await flushPromises();
 

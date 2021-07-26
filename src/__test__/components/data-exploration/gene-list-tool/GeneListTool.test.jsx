@@ -153,7 +153,7 @@ describe('GeneListTool', () => {
     await waitForActions(store, [GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED]);
 
     expect(fetchCachedWork).toHaveBeenCalledWith(
-      '1234', 30,
+      '1234',
       {
         limit: 4,
         name: 'ListGenes',
@@ -163,6 +163,7 @@ describe('GeneListTool', () => {
         selectFields: ['gene_names', 'dispersions'],
       },
       backendStatus.status,
+      { timeout: 30 },
     );
 
     expect(store.getActions()[0]).toMatchSnapshot();

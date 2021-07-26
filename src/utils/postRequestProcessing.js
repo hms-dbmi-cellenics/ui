@@ -6,6 +6,10 @@ const calculateZScore = (responseData) => {
     /* eslint-disable no-param-reassign */
     responseData[gene].zScore = [];
     responseData[gene].rawExpression.expression.forEach((x) => {
+      if (x === null) {
+        return responseData[gene].zScore.push(null);
+      }
+
       responseData[gene].zScore.push((x - mean) / stdev);
     });
   });
