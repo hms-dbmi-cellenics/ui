@@ -40,12 +40,13 @@ const loadGeneExpression = (
   if (!forceReloadAll) {
     genesToFetch = genesToFetch.filter(
       (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
-    );
+    ).map((gene) => gene.replace(' ', ''));
   }
 
-  const upperGenesAlreadyLoaded = new Set(upperCaseArray(genesAlreadyLoaded));
-  const displayedGenes = genes.filter((gene) => upperGenesAlreadyLoaded.has(gene.toUpperCase()));
-
+  const displayedGenes = genesAlreadyLoaded.filter(
+    (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
+  );
+  console.log('DISPLAYED GENES ARE ', displayedGenes, 'ALREADY LOADED GENES ARE ', genesAlreadyLoaded, 'GENES ARE ', genes);
   if (genesToFetch.length === 0) {
     return dispatch({
       type: GENES_EXPRESSION_LOADED,
