@@ -602,11 +602,11 @@ const ProjectDetails = ({ width, height }) => {
     }
   };
 
-  const SortableItem = sortableElement((props) => <tr {...props} className={`${props.className} drag-visible`} />);
-  const SortableContainer = sortableContainer((props) => <tbody {...props} />);
+  const SortableRow = sortableElement((props) => <tr {...props} className={`${props.className} drag-visible`} />);
+  const SortableTable = sortableContainer((props) => <tbody {...props} />);
 
-  const DraggableContainer = (props) => (
-    <SortableContainer
+  const DragContainer = (props) => (
+    <SortableTable
       useDragHandle
       disableAutoscroll
       helperClass='row-dragging'
@@ -615,10 +615,9 @@ const ProjectDetails = ({ width, height }) => {
     />
   );
 
-  const DraggableBodyRow = (props) => {
-    // function findIndex base on Table rowKey props and should always be a right array index
+  const DraggableRow = (props) => {
     const index = tableData.findIndex((x) => x.key === props['data-row-key']);
-    return <SortableItem index={index} {...props} />;
+    return <SortableRow index={index} {...props} />;
   };
 
   return (
@@ -726,8 +725,8 @@ const ProjectDetails = ({ width, height }) => {
                 pagination={false}
                 components={{
                   body: {
-                    wrapper: DraggableContainer,
-                    row: DraggableBodyRow,
+                    wrapper: DragContainer,
+                    row: DraggableRow,
                   },
                 }}
               />
