@@ -52,7 +52,7 @@ const generateSpec = (configSrc, data) => {
     ? [0, config.maxNegativeLogpValueDomain]
     : { data: 'data', field: 'neglogpvalue' };
 
-  // adding gene labels above the set Y value only for the signi
+  // adding gene labels above the set Y value only for the significant genes
   const textEquation = `datum.avg_log2FC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
 
   let legend = [];
