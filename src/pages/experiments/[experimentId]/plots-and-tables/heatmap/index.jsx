@@ -42,7 +42,7 @@ const HeatmapPlot = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-  }, [experimentId]);
+  }, []);
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
       return;
@@ -65,7 +65,12 @@ const HeatmapPlot = ({ experimentId }) => {
   }, [selectedGenes]);
 
   useEffect(() => {
-    if (!config || cellSets.loading || _.isEmpty(expressionData) || _.isEmpty(selectedGenes) || !loading) {
+    if (!config
+      || cellSets.loading
+      || _.isEmpty(expressionData)
+      || _.isEmpty(selectedGenes)
+      || !loading
+    ) {
       return;
     }
 
@@ -138,6 +143,10 @@ const HeatmapPlot = ({ experimentId }) => {
 
   const plotStylingControlsConfig = [
     {
+      panelTitle: 'Expression Values',
+      controls: ['expressionValuesType', 'expressionValuesCapping'],
+    },
+    {
       panelTitle: 'Main Schema',
       controls: ['dimensions'],
       children: [
@@ -150,6 +159,10 @@ const HeatmapPlot = ({ experimentId }) => {
           controls: ['font'],
         },
       ],
+    },
+    {
+      panelTitle: 'Metadata Tracks',
+      controls: ['metadataTracksDisplayEditor'],
     },
     {
       panelTitle: 'Colours',

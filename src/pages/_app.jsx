@@ -9,6 +9,7 @@ import Amplify, { Storage, withSSRContext } from 'aws-amplify';
 import _ from 'lodash';
 import AWS from 'aws-sdk';
 import { Credentials } from '@aws-amplify/core';
+import { initTracking } from '../utils/tracking';
 import ContentWrapper from '../components/ContentWrapper';
 import NotFoundPage from './404';
 import UnauthorizedPage from './401';
@@ -16,6 +17,8 @@ import Error from './_error';
 import { wrapper } from '../redux/store';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
+import { ssrGetCurrentEnvironment } from '../utils/environment';
+
 import CustomError from '../utils/customError';
 
 const mockCredentialsForInframock = () => {
@@ -61,6 +64,10 @@ const WrappedApp = ({ Component, pageProps }) => {
   const [amplifyConfigured, setAmplifyConfigured] = useState(!amplifyConfig);
 
   const environment = useSelector((state) => state.networkResources.environment);
+
+  useEffect(() => {
+    initTracking(environment);
+  }, []);
 
   useEffect(() => {
     if (amplifyConfig) {
@@ -110,7 +117,7 @@ const WrappedApp = ({ Component, pageProps }) => {
         return (
           <UnauthorizedPage
             title='Log in to continue'
-            subTitle={'You don\'t have access to this page.'}
+            subTitle="We can't show you this page."
             hint='You may be able to view it by logging in.'
           />
         );
@@ -183,6 +190,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   try {
     const { Auth } = withSSRContext(ctx);
     Auth.configure(results.amplifyConfig.Auth);
+
     if (query?.experimentId) {
       const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);

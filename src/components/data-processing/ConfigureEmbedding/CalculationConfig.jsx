@@ -9,13 +9,11 @@ import {
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import PreloadContent from '../../PreloadContent';
-import {
-  updateProcessingSettings,
-  saveProcessingSettings,
-} from '../../../redux/actions/experimentSettings';
 
-import updateCellSetsClustering from '../../../redux/actions/cellSets/updateCellSetsClustering';
-import { loadEmbedding } from '../../../redux/actions/embedding';
+import { updateFilterSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
+
+import { runCellSetsClustering } from '../../../redux/actions/cellSets';
+import { loadMarkerGenes } from '../../../redux/actions/genes';
 
 import SliderWithInput from '../../SliderWithInput';
 
@@ -26,7 +24,7 @@ const { Text } = Typography;
 const MIN_DIST_TEXT = 'This controls how tightly the embedding is allowed to compress points together. '
   + 'Larger values ensure embedded points are more evenly distributed, while '
   + 'smaller values allow the algorithm to optimise more accurately with regard '
-  + 'to local structure. Expected range: 0.001 to 0.5. Default is 0.1.';
+  + 'to local structure. Expected range: 0.001 to 1. Default is 0.3.';
 
 const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some information and there are several methods available. '
   + 'PCA (Principal component analysis) is fast and preserves the global structure of the data, whereas nonlinear techniques '
@@ -35,44 +33,29 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
   + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
-  const { experimentId, onPipelineRun } = props;
+  const { experimentId, onPipelineRun, onConfigChange } = props;
   const FILTER_UUID = 'configureEmbedding';
-
   const dispatch = useDispatch();
 
-  const [changesOutstanding, setChangesOutstanding] = useState(false);
-
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
+
   const { method: clusteringMethod } = data?.clusteringSettings || {};
   const { method: embeddingMethod } = data?.embeddingSettings || {};
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
-  const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 1500),
+  const debouncedClustering = useCallback(
+    _.debounce((resolution) => {
+      dispatch(runCellSetsClustering(experimentId, resolution));
+    }, 1500),
     [],
   );
 
   const [resolution, setResolution] = useState(null);
   const [minDistance, setMinDistance] = useState(null);
-
-  const initialValues = {
-    embeddingSettings: {
-      method: embeddingMethod,
-      methodSettings: {
-        umap: {
-          minimumDistance: umapSettings?.minimumDistance,
-          distanceMetric: umapSettings?.distanceMetric,
-        },
-        tsne: {
-          perplexity: tsneSettings?.perplexity,
-          learningRate: tsneSettings?.learningRate,
-        },
-
-      },
-    },
-  };
-  const [changes, setChanges] = useState(initialValues);
 
   useEffect(() => {
     if (!resolution && louvainSettings) {
@@ -94,166 +77,179 @@ const CalculationConfig = (props) => {
     if (diff.embeddingSettings) {
       // If this is an embedding change, indicate to user that their changes are not
       // applied until they hit Run.
-
-      setChangesOutstanding(true);
-      dispatch(updateProcessingSettings(
-        experimentId,
-        FILTER_UUID,
-        diff,
-      ));
+      onConfigChange();
     } else {
       // If it's a clustering change, debounce the save process at 1.5s.
       dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
-
-      dispatch(updateProcessingSettings(
-        experimentId,
-        FILTER_UUID,
-        diff,
-      ));
     }
-  };
 
-  // When the Run button is pressed
-  // remove the warning, update the settings and trigger the pipeline run.
-  const runWithCurrentEmbeddingSettings = () => {
-    updateSettings(changes);
-    setChangesOutstanding(false);
-    dispatch(loadEmbedding(experimentId, embeddingMethod, true));
+    dispatch(updateFilterSettings(
+      FILTER_UUID,
+      diff,
+    ));
   };
-  const newChanges = changes;
 
   const setMinimumDistance = (value) => {
-    newChanges.embeddingSettings.methodSettings.umap.minimumDistance = parseFloat(value);
-    setChanges({ ...newChanges });
+    updateSettings({
+      embeddingSettings: {
+        methodSettings: {
+          umap: {
+            minimumDistance: parseFloat(value),
+          },
+        },
+      },
+    });
+
+    onConfigChange();
   };
   const setDistanceMetric = (value) => {
-    newChanges.embeddingSettings.methodSettings.umap.distanceMetric = parseFloat(value);
-    setChanges({ ...newChanges });
+    updateSettings({
+      embeddingSettings: {
+        methodSettings: {
+          umap: {
+            distanceMetric: parseFloat(value),
+          },
+        },
+      },
+    });
+
+    onConfigChange();
   };
-  if (!changesOutstanding && !_.isEqual(changes, initialValues)) {
-    setChangesOutstanding(true);
-  }
-  if (changesOutstanding && _.isEqual(changes, initialValues)) {
-    setChangesOutstanding(false);
-  }
-  const renderUMAPSettings = () => {
-    const { umap } = changes.embeddingSettings.methodSettings;
-    return (
-      <>
-        <Form.Item>
-          <Text strong>Settings for UMAP:</Text>
-        </Form.Item>
-        <Form.Item label={(
-          <span>
-            Minimum distance&nbsp;
-            <Tooltip title={MIN_DIST_TEXT}>
-              <QuestionCircleOutlined />
-            </Tooltip>
-          </span>
-        )}
-        >
-          <InputNumber
-            value={umap.minimumDistance}
-            min={0}
-            step={0.1}
-            onChange={(value) => setMinimumDistance(value)}
-            onStep={(value) => setMinimumDistance(value)}
-            onPressEnter={(e) => e.preventDefault()}
-            onBlur={(e) => setMinimumDistance(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item label={(
-          <span>
-            Distance metric&nbsp;
-            <Tooltip overlay={(
-              <span>
-                A metric determines how similarity between cells is measured.
-                "Euclidean" is the standard for most normalized datasets.
-                Cosine might be a good choice for unnormalized data.
-                More information
-                <a
-                  href='https://satijalab.org/seurat/reference/runumap'
-                  target='_blank'
-                  rel='noreferrer'
-                >
-                  {' '}
-                  <code>here</code>
-                </a>
-              </span>
-            )}
-            >
-              <QuestionCircleOutlined />
-            </Tooltip>
-          </span>
-        )}
-        >
-          <Select
-            value={umap.distanceMetric}
-            onChange={(value) => setDistanceMetric(value)}
-          >
-            <Option value='euclidean'>Euclidean</Option>
-            <Option value='cosine' disabled>
-              {' '}
-              <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
-                Cosine
-              </Tooltip>
-            </Option>
-          </Select>
-        </Form.Item>
-      </>
-    );
-  };
+
   const setLearningRate = (value) => {
-    newChanges.embeddingSettings.methodSettings.tsne.learningRate = parseFloat(value);
-    setChanges({ ...newChanges });
+    updateSettings({
+      embeddingSettings: {
+        methodSettings: {
+          tsne: {
+            learningRate: parseFloat(value),
+          },
+        },
+      },
+    });
+
+    onConfigChange();
   };
   const setPerplexity = (value) => {
-    newChanges.embeddingSettings.methodSettings.tsne.perplexity = parseFloat(value);
-    setChanges({ ...newChanges });
+    updateSettings({
+      embeddingSettings: {
+        methodSettings: {
+          tsne: {
+            perplexity: parseFloat(value),
+          },
+        },
+      },
+    });
+
+    onConfigChange();
   };
-  const renderTSNESettings = () => {
-    const { tsne } = changes.embeddingSettings.methodSettings;
-    return (
-      <>
-        <Form.Item>
-          <Text strong>Settings for t-SNE:</Text>
-        </Form.Item>
-        <Form.Item label='Perplexity'>
-          <InputNumber
-            value={tsne.perplexity}
-            min={5}
-            onChange={(value) => setPerplexity(value)}
-            onStep={(value) => setPerplexity(value)}
-            onPressEnter={(e) => e.preventDefault()}
-            onBlur={(e) => setPerplexity(e.target.value)}
-          />
-          <Tooltip title='Determines how to much emphasis should be on local or global aspects of your data.
+
+  const renderUMAPSettings = () => (
+    <>
+      <Form.Item>
+        <Text strong>Settings for UMAP:</Text>
+      </Form.Item>
+      <Form.Item label={(
+        <span>
+          Minimum distance&nbsp;
+          <Tooltip title={MIN_DIST_TEXT}>
+            <QuestionCircleOutlined />
+          </Tooltip>
+        </span>
+      )}
+      >
+        <InputNumber
+          value={umapSettings.minimumDistance}
+          min={0}
+          step={0.1}
+          onChange={(value) => setMinimumDistance(value)}
+          onStep={(value) => setMinimumDistance(value)}
+          onPressEnter={(e) => e.preventDefault()}
+          onBlur={(e) => setMinimumDistance(e.target.value)}
+        />
+      </Form.Item>
+      <Form.Item label={(
+        <span>
+          Distance metric&nbsp;
+          <Tooltip overlay={(
+            <span>
+              A metric determines how similarity between cells is measured.
+              "Euclidean" is the standard for most normalized datasets.
+              Cosine might be a good choice for unnormalized data.
+              More information
+              <a
+                href='https://satijalab.org/seurat/reference/runumap'
+                target='_blank'
+                rel='noreferrer'
+              >
+                {' '}
+                <code>here</code>
+              </a>
+            </span>
+          )}
+          >
+            <QuestionCircleOutlined />
+          </Tooltip>
+        </span>
+      )}
+      >
+        <Select
+          value={umapSettings.distanceMetric}
+          onChange={(value) => setDistanceMetric(value)}
+        >
+          <Option value='euclidean'>Euclidean</Option>
+          <Option value='cosine' disabled>
+            {' '}
+            <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
+              Cosine
+            </Tooltip>
+          </Option>
+        </Select>
+      </Form.Item>
+    </>
+  );
+
+  const renderTSNESettings = () => (
+    <>
+      <Form.Item>
+        <Text strong>Settings for t-SNE:</Text>
+      </Form.Item>
+      <Form.Item label='Perplexity'>
+        <InputNumber
+          value={tsneSettings.perplexity}
+          min={5}
+          onChange={(value) => setPerplexity(value)}
+          onStep={(value) => setPerplexity(value)}
+          onPressEnter={(e) => e.preventDefault()}
+          onBlur={(e) => setPerplexity(e.target.value)}
+        />
+        <Tooltip title='Determines how to much emphasis should be on local or global aspects of your data.
           The parameter is, in a sense, a guess about the number of close neighbors each cell has.
           In most implementations, perplexity defaults to 30. This focuses the attention of t-SNE on preserving the
           distances to its 30 nearest neighbors and puts virtually no weight on preserving distances to the remaining points.
-          The perplexity value has a complex effect on the resulting pictures.'>
-            <QuestionCircleOutlined />
-          </Tooltip>
-        </Form.Item>
-        <Form.Item label='Learning rate'>
-          <InputNumber
-            value={tsne.learningRate}
-            min={10}
-            max={1000}
-            step={10}
-            onChange={(value) => setLearningRate(value)}
-            onStep={(value) => setLearningRate(value)}
-            onPressEnter={(e) => e.preventDefault()}
-            onBlur={(e) => setLearningRate(e.target.value)}
-          />
-          <Tooltip title='If the learning rate is too high, the data may look like a "ball" with any point approximately equidistant from its nearest neighbours.
-          If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'>
-            <QuestionCircleOutlined />
-          </Tooltip>
-        </Form.Item>
-      </>
-    );
-  };
+          The perplexity value has a complex effect on the resulting pictures.'
+        >
+          <QuestionCircleOutlined />
+        </Tooltip>
+      </Form.Item>
+      <Form.Item label='Learning rate'>
+        <InputNumber
+          value={tsneSettings.learningRate}
+          min={10}
+          max={1000}
+          step={10}
+          onChange={(value) => setLearningRate(value)}
+          onStep={(value) => setLearningRate(value)}
+          onPressEnter={(e) => e.preventDefault()}
+          onBlur={(e) => setLearningRate(e.target.value)}
+        />
+        <Tooltip title='If the learning rate is too high, the data may look like a "ball" with any point approximately equidistant from its nearest neighbours.
+          If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'
+        >
+          <QuestionCircleOutlined />
+        </Tooltip>
+      </Form.Item>
+    </>
+  );
 
   if (!data) {
     return <PreloadContent />;
@@ -263,11 +259,12 @@ const CalculationConfig = (props) => {
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
       <Panel header='Embedding settings' key='embedding-settings'>
         <Form size='small'>
-          {changesOutstanding && (
+          {Boolean(changedQCFilters.size) && (
             <Form.Item>
               <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
             </Form.Item>
           )}
+
           <Form.Item label={(
             <span>
               Method&nbsp;
@@ -302,29 +299,30 @@ const CalculationConfig = (props) => {
           )}
           >
             <Select
-              value={changes.embeddingSettings.method}
-              // changes.({ embeddingSettings: { method: value } })
+              value={embeddingMethod}
               onChange={(value) => {
-                newChanges.embeddingSettings.method = value;
-                setChanges({ ...newChanges });
+                updateSettings({
+                  embeddingSettings: {
+                    method: value,
+                  },
+                });
               }}
             >
               <Option value='umap'>UMAP</Option>
               <Option value='tsne'>t-SNE</Option>
             </Select>
 
-
           </Form.Item>
-          {changes.embeddingSettings.method === 'umap' && renderUMAPSettings()}
-          {changes.embeddingSettings.method === 'tsne' && renderTSNESettings()}
+          {embeddingMethod === 'umap' && renderUMAPSettings()}
+          {embeddingMethod === 'tsne' && renderTSNESettings()}
 
           <Form.Item>
-            <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
+            <Tooltip title={!changedQCFilters.size ? 'No outstanding changes' : ''}>
               <Button
                 type='primary'
                 htmlType='submit'
-                disabled={!changesOutstanding}
-                onClick={runWithCurrentEmbeddingSettings}
+                disabled={!changedQCFilters.size}
+                onClick={() => onPipelineRun()}
                 size='medium'
               >
                 Run
@@ -387,7 +385,7 @@ const CalculationConfig = (props) => {
                   Resolution is a parameter for the Louvain community detection algorithm that affects the size of the recovered clusters.
                   Smaller resolutions recover smaller, and therefore more clusters,
                   and conversely, larger values recover fewer clusters containing more data points.
-                  Default: 0.3
+                  Default: 0.8
                 </span>
               )}
               >
@@ -413,7 +411,7 @@ const CalculationConfig = (props) => {
                   },
                 });
 
-                debouncedCellSetClustering(value);
+                debouncedClustering(value);
               }}
             />
           </Form.Item>
@@ -425,6 +423,7 @@ const CalculationConfig = (props) => {
 
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
 };
 

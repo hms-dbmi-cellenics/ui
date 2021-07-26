@@ -19,42 +19,37 @@ import CalculationConfig from './CalculationConfig';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Panel } = Collapse;
+
+const allowedPlotActions = {
+  export: true,
+  compiled: false,
+  source: false,
+  editor: false,
+};
+
+const filterName = 'doubletScores';
+const plotType = 'doubletScoreHistogram';
+
 const DoubletScores = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
-  const filterName = 'doubletScores';
-
   const plotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
-  const plotType = 'doubletScoreHistogram';
 
   const dispatch = useDispatch();
 
-  const allowedPlotActions = {
-    export: true,
-    compiled: false,
-    source: false,
-    editor: false,
-  };
+  const [renderConfig, setRenderConfig] = useState(null);
 
   const debounceSave = useCallback(
     _.debounce((uuid) => dispatch(savePlotConfig(experimentId, uuid)), 2000), [],
   );
 
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-    debounceSave(plotUuid);
-  };
-
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
-      || state.experimentSettings.processing[filterName].filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
   );
   const plotData = useSelector((state) => state.componentConfig[plotUuid]?.plotData);
-
-  const [renderConfig, setRenderConfig] = useState(null);
 
   useEffect(() => {
     const newConfig = _.clone(config);
@@ -67,7 +62,12 @@ const DoubletScores = (props) => {
     if (!config) {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
-  }, [experimentId]);
+  }, []);
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+    debounceSave(plotUuid);
+  };
 
   const plotStylingControlsConfig = [
     {
@@ -123,7 +123,6 @@ const DoubletScores = (props) => {
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
                 filterUuid={filterName}
-                experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}

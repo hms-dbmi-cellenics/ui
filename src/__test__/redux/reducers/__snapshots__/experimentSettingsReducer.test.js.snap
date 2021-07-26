@@ -11,6 +11,16 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {
+    "configureEmbedding": Object {
+      "embeddingSettings": Object {
+        "newProperty": Object {
+          "name": "a",
+          "value": "b",
+        },
+      },
+    },
+  },
   "processing": Object {
     "configureEmbedding": Object {
       "embeddingSettings": Object {
@@ -21,12 +31,12 @@ Object {
       },
     },
     "meta": Object {
+      "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
-    "test": "test data",
   },
 }
 `;
@@ -42,6 +52,13 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {
+    "configureEmbedding": Object {
+      "embeddingSettings": Object {
+        "newProperty": "property",
+      },
+    },
+  },
   "processing": Object {
     "configureEmbedding": Object {
       "embeddingSettings": Object {
@@ -49,12 +66,12 @@ Object {
       },
     },
     "meta": Object {
+      "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
-    "test": "test data",
   },
 }
 `;
@@ -70,6 +87,13 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {
+    "configureEmbedding": Object {
+      "embeddingSettings": Object {
+        "method": "newMethod",
+      },
+    },
+  },
   "processing": Object {
     "configureEmbedding": Object {
       "embeddingSettings": Object {
@@ -77,12 +101,12 @@ Object {
       },
     },
     "meta": Object {
+      "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
-    "test": "test data",
   },
 }
 `;
@@ -98,14 +122,10 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {},
   "processing": Object {
     "cellSizeDistribution": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "binStep": 200,
-        "minCellSize": 10800,
-      },
       "sample-KO": Object {
         "auto": true,
         "filterSettings": Object {
@@ -115,10 +135,12 @@ Object {
       },
     },
     "classifier": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "FDR": 0.1,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "FDR": 0.1,
+        },
       },
     },
     "configureEmbedding": Object {
@@ -171,45 +193,51 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "binStep": 0.05,
-        "probabilityThreshold": 0.2,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "binStep": 0.05,
+          "probabilityThreshold": 0.2,
+        },
       },
     },
     "meta": Object {
+      "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "method": "absolute_threshold",
-        "methodSettings": Object {
-          "absolute_threshold": Object {
-            "binStep": 200,
-            "maxFraction": 0.1,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "method": "absolute_threshold",
+          "methodSettings": Object {
+            "absolute_threshold": Object {
+              "binStep": 200,
+              "maxFraction": 0.1,
+            },
           },
         },
       },
     },
     "numGenesVsNumUmis": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "regressionType": "gam",
-        "regressionTypeSettings": Object {
-          "gam": Object {
-            "p.level": 0.00009,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "regressionType": "gam",
+          "regressionTypeSettings": Object {
+            "gam": Object {
+              "p.level": 0.00009,
+            },
           },
         },
       },
     },
-    "test": "test data",
   },
 }
 `;
@@ -225,20 +253,25 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {},
   "processing": Object {
     "cellSizeDistribution": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "binStep": 200,
-        "minCellSize": 10800,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "binStep": 200,
+          "minCellSize": 10800,
+        },
       },
     },
     "classifier": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "FDR": 0.1,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "FDR": 0.1,
+        },
       },
     },
     "configureEmbedding": Object {
@@ -291,40 +324,47 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "binStep": 0.05,
-        "probabilityThreshold": 0.2,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "binStep": 0.05,
+          "probabilityThreshold": 0.2,
+        },
       },
     },
     "meta": Object {
+      "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "method": "absolute_threshold",
-        "methodSettings": Object {
-          "absolute_threshold": Object {
-            "binStep": 200,
-            "maxFraction": 0.1,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "method": "absolute_threshold",
+          "methodSettings": Object {
+            "absolute_threshold": Object {
+              "binStep": 200,
+              "maxFraction": 0.1,
+            },
           },
         },
       },
     },
     "numGenesVsNumUmis": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "regressionType": "gam",
-        "regressionTypeSettings": Object {
-          "gam": Object {
-            "p.level": 0.00009,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "regressionType": "gam",
+          "regressionTypeSettings": Object {
+            "gam": Object {
+              "p.level": 0.00009,
+            },
           },
         },
       },
@@ -352,20 +392,25 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {},
   "processing": Object {
     "cellSizeDistribution": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "binStep": 200,
-        "minCellSize": 10800,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "binStep": 200,
+          "minCellSize": 10800,
+        },
       },
     },
     "classifier": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "FDR": 0.1,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "FDR": 0.1,
+        },
       },
     },
     "configureEmbedding": Object {
@@ -418,40 +463,47 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "binStep": 0.05,
-        "probabilityThreshold": 0.2,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "binStep": 0.05,
+          "probabilityThreshold": 0.2,
+        },
       },
     },
     "meta": Object {
+      "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "method": "absolute_threshold",
-        "methodSettings": Object {
-          "absolute_threshold": Object {
-            "binStep": 200,
-            "maxFraction": 0.1,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "method": "absolute_threshold",
+          "methodSettings": Object {
+            "absolute_threshold": Object {
+              "binStep": 200,
+              "maxFraction": 0.1,
+            },
           },
         },
       },
     },
     "numGenesVsNumUmis": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "regressionType": "gam",
-        "regressionTypeSettings": Object {
-          "gam": Object {
-            "p.level": 0.00009,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "regressionType": "gam",
+          "regressionTypeSettings": Object {
+            "gam": Object {
+              "p.level": 0.00009,
+            },
           },
         },
       },
@@ -471,20 +523,25 @@ Object {
     "experimentId": null,
     "experimentName": null,
   },
+  "originalProcessing": Object {},
   "processing": Object {
     "cellSizeDistribution": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "binStep": 200,
-        "minCellSize": 10800,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "binStep": 200,
+          "minCellSize": 10800,
+        },
       },
     },
     "classifier": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "FDR": 0.1,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "FDR": 0.1,
+        },
       },
     },
     "configureEmbedding": Object {
@@ -537,40 +594,47 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "binStep": 0.05,
-        "probabilityThreshold": 0.2,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "binStep": 0.05,
+          "probabilityThreshold": 0.2,
+        },
       },
     },
     "meta": Object {
+      "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": true,
       "loadingSettingsError": false,
-      "selectedConfigureEmbeddingPlot": "sample",
+      "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "method": "absolute_threshold",
-        "methodSettings": Object {
-          "absolute_threshold": Object {
-            "binStep": 200,
-            "maxFraction": 0.1,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "method": "absolute_threshold",
+          "methodSettings": Object {
+            "absolute_threshold": Object {
+              "binStep": 200,
+              "maxFraction": 0.1,
+            },
           },
         },
       },
     },
     "numGenesVsNumUmis": Object {
-      "auto": true,
       "enabled": true,
-      "filterSettings": Object {
-        "regressionType": "gam",
-        "regressionTypeSettings": Object {
-          "gam": Object {
-            "p.level": 0.00009,
+      "sample-KO": Object {
+        "auto": true,
+        "filterSettings": Object {
+          "regressionType": "gam",
+          "regressionTypeSettings": Object {
+            "gam": Object {
+              "p.level": 0.00009,
+            },
           },
         },
       },

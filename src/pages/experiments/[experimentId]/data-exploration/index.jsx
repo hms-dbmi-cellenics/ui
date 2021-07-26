@@ -68,7 +68,7 @@ const ExplorationViewPage = ({
         <HeatmapPlot experimentId={experimentId} width={width} height={height} />
       ),
     },
-    Tools: {
+    Genes: {
       toolbarControls: <MosaicCloseButton key='remove-button-genes' />,
       component: (width, height) => (
         <Tabs
@@ -103,21 +103,21 @@ const ExplorationViewPage = ({
   };
 
   const categoryItems = {
-    Tools: [
+    Genes: [
       {
         description: 'Create and manage interesting groupings of cells.',
         key: 'Data Management',
-        group: 'Tools',
+        group: 'Genes',
       },
       {
         description: 'Find, organize, and annotate genes in your data set.',
         key: 'Gene list',
-        group: 'Tools',
+        group: 'Genes',
       },
       {
         description: 'Find and explore the most characteristic genes in a set of cells.',
         key: 'Differential expression',
-        group: 'Tools',
+        group: 'Genes',
       },
     ],
     Plots: [
@@ -188,10 +188,10 @@ const ExplorationViewPage = ({
                 <MosaicWindow
                   path={path}
                   title={id}
-                  toolbarControls={TILE_MAP[id].toolbarControls}
+                  toolbarControls={TILE_MAP[id]?.toolbarControls}
                   key={id}
                 >
-                  {renderWindow(TILE_MAP[id].component, width, height)}
+                  {renderWindow(TILE_MAP[id]?.component, width, height)}
                 </MosaicWindow>
               )}
             </ReactResizeDetector>

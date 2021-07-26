@@ -4,8 +4,8 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_SAVE,
 } from '../../../../redux/actionTypes/experimentSettings';
-import saveProcessingSettings from '../../../../redux/actions/experimentSettings/saveProcessingSettings';
-import initialState from '../../../test-utils/experimentSettings.mock';
+import saveProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 jest.mock('localforage');
 
@@ -13,13 +13,15 @@ const mockStore = configureStore([thunk]);
 
 enableFetchMocks();
 
+const initialExperimentState = generateExperimentSettingsMock([]);
+
 describe('saveProcessingSettings', () => {
   const experimentId = '1234';
   const settingName = 'test';
 
   const mockState = {
     experimentSettings: {
-      ...initialState,
+      ...initialExperimentState,
     },
   };
 

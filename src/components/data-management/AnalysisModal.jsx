@@ -11,7 +11,7 @@ import {
   List,
 } from 'antd';
 import EditableField from '../EditableField';
-import { updateExperiment } from '../../redux/actions/experiments';
+import { updateExperiment, saveExperiment } from '../../redux/actions/experiments';
 import validateInputs, { rules } from '../../utils/validateInputs';
 
 const { Title } = Typography;
@@ -66,7 +66,7 @@ const NewExperimentModal = (props) => {
               itemLayout='vertical'
               renderItem={(experiment) => (
                 <List.Item
-                  key={`${experiment.name}`}
+                  key={`${experiment.id}`}
                   extra={(
                     <Row type='flex' align='middle'>
                       <Col>
@@ -77,6 +77,12 @@ const NewExperimentModal = (props) => {
                             onLaunch(experiment.id);
                           }}
                           disabled={numFieldsEditing > 0 || isWorking}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              setIsWorking(true);
+                              onLaunch(experiment.id);
+                            }
+                          }}
                         >
                           Launch
                         </Button>
@@ -87,31 +93,29 @@ const NewExperimentModal = (props) => {
                   <Space direction='vertical' size='small'>
                     <strong>
                       <EditableField
-                        onAfterSubmit={(name) => {
+                        onAfterSubmit={async (name) => {
                           dispatch(updateExperiment(experiment.id, { name: name.trim() }));
-                          setNumFieldsEditing(numFieldsEditing - 1);
+                          await dispatch(saveExperiment(experiment.id));
                         }}
-                        onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
                         value={experiment.name}
                         validationFunc={(name) => validateInputs(name, validationChecks).isValid}
                         deleteEnabled={false}
                         onEditing={(editing) => {
-                          if (editing) setNumFieldsEditing(numFieldsEditing + 1);
+                          setNumFieldsEditing(Math.max(0, numFieldsEditing + (editing || -1)));
                         }}
                       />
                     </strong>
                     <EditableField
-                      onAfterSubmit={(description) => {
+                      onAfterSubmit={async (description) => {
                         dispatch(
                           updateExperiment(experiment.id, { description: description.trim() }),
                         );
-                        setNumFieldsEditing(numFieldsEditing - 1);
+                        await dispatch(saveExperiment(experiment.id));
                       }}
-                      onAfterCancel={() => setNumFieldsEditing(numFieldsEditing - 1)}
                       value={experiment.description}
                       deleteEnabled={false}
                       onEditing={(editing) => {
-                        if (editing) setNumFieldsEditing(numFieldsEditing + 1);
+                        setNumFieldsEditing(Math.max(0, numFieldsEditing + (editing || -1)));
                       }}
                     />
                   </Space>

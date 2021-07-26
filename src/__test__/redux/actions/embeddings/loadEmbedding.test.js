@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { loadEmbedding } from '../../../../redux/actions/embedding';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import initialExperimentState, { initialPipelineState } from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock, { initialPipelineState } from '../../../test-utils/experimentSettings.mock';
 
 import {
   EMBEDDINGS_ERROR,
@@ -20,6 +20,8 @@ jest.mock('../../../../utils/sendWork', () => ({
 
 const mockStore = configureStore([thunk]);
 const embeddingType = 'umap';
+
+const initialExperimentState = generateExperimentSettingsMock([]);
 
 describe('loadEmbedding action', () => {
   const experimentId = '1234';

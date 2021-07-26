@@ -3,11 +3,11 @@ import thunk from 'redux-thunk';
 import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import {
-  EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+  EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../../../redux/actionTypes/experimentSettings';
-import loadProcessingSettings from '../../../../redux/actions/experimentSettings/loadProcessingSettings';
-import initialState from '../../../test-utils/experimentSettings.mock';
+import loadProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
@@ -18,12 +18,14 @@ jest.mock('../../../../utils/pushNotificationMessage');
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
+const initialExperimentState = generateExperimentSettingsMock([]);
+
 describe('loadProcessingSettings action', () => {
   const experimentId = '1234';
 
   const mockState = {
     experimentSettings: {
-      ...initialState,
+      ...initialExperimentState,
     },
   };
 
@@ -70,7 +72,7 @@ describe('loadProcessingSettings action', () => {
     const actions = store.getActions();
 
     expect(actions.length).toEqual(1);
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_LOAD);
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED);
   });
 
   it('Correctly sets error if returned an error', async () => {
@@ -106,6 +108,6 @@ describe('loadProcessingSettings action', () => {
 
     const actions = store.getActions();
     expect(actions.length).toEqual(1);
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_LOAD);
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED);
   });
 });

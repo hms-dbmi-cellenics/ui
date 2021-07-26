@@ -22,20 +22,22 @@ import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
+
+const filterName = 'mitochondrialContent';
+
+const allowedPlotActions = {
+  export: true,
+  compiled: false,
+  source: false,
+  editor: false,
+};
+
 const MitochondrialContent = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
   } = props;
 
   const dispatch = useDispatch();
-  const filterName = 'mitochondrialContent';
-
-  const allowedPlotActions = {
-    export: true,
-    compiled: false,
-    source: false,
-    editor: false,
-  };
 
   const [selectedPlot, setSelectedPlot] = useState('histogram');
   const [plot, setPlot] = useState(null);
@@ -78,38 +80,37 @@ const MitochondrialContent = (props) => {
     },
   };
 
-  const config = useSelector(
+  const selectedConfig = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
   );
 
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId]?.filterSettings
-      || state.experimentSettings.processing[filterName].filterSettings,
+    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
   );
 
-  const plotData = useSelector(
+  const selectedPlotData = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
   );
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
-      if (!config) {
+      if (!selectedConfig) {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
-  }, [experimentId]);
+  }, []);
 
   useEffect(() => {
-    if (config && plotData && expConfig) {
-      let newConfig = _.clone(config);
+    if (selectedConfig && selectedPlotData && expConfig) {
+      let newConfig = _.clone(selectedConfig);
 
       const expConfigSettings = expConfig.methodSettings[expConfig.method];
 
       newConfig = _.merge(newConfig, expConfigSettings);
 
-      setPlot(plots[selectedPlot].plot(newConfig, plotData, allowedPlotActions));
+      setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
     }
-  }, [expConfig, config, plotData]);
+  }, [expConfig, selectedConfig, selectedPlotData]);
 
   const plotStylingControlsConfig = [
     {
@@ -136,7 +137,7 @@ const MitochondrialContent = (props) => {
 
   const renderPlot = () => {
     // Spinner for main window
-    if (!config || !plotData) {
+    if (!selectedConfig || !selectedPlotData) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -188,7 +189,6 @@ const MitochondrialContent = (props) => {
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
                 filterUuid={filterName}
-                experimentId={experimentId}
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
@@ -202,7 +202,7 @@ const MitochondrialContent = (props) => {
               <div style={{ height: 8 }} />
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
-                config={config}
+                config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
               />
             </Panel>

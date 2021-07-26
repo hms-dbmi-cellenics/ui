@@ -5,6 +5,9 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
+import * as vega from "vega";
+
 import Loader from '../../Loader';
 import 'vitessce/dist/es/production/static/css/index.css';
 import ClusterPopover from './ClusterPopover';
@@ -21,8 +24,8 @@ import {
   clearPleaseWait,
   renderCellSetColors,
   colorByGeneExpression,
+  colorInterpolator,
 } from '../../../utils/embeddingPlotHelperFunctions/helpers';
-import legend from '../../../../static/media/viridis.png';
 import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
 
@@ -52,6 +55,7 @@ const Embedding = (props) => {
 
   const focusData = useSelector((state) => state.cellInfo.focus);
   const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
+
   const cellSetProperties = useSelector((state) => state.cellSets.properties);
   const cellSetHierarchy = useSelector((state) => state.cellSets.hierarchy);
   const cellSetHidden = useSelector((state) => state.cellSets.hidden);
@@ -63,6 +67,8 @@ const Embedding = (props) => {
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [cellColors, setCellColors] = useState({});
+  const [clusterKeyToNameMap, setClusterKeyToNameMap] = useState({});
+  const [cellSetClusters, setCellSetClusters] = useState({});
 
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
@@ -71,7 +77,7 @@ const Embedding = (props) => {
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId));
     }
-  }, [experimentId]);
+  }, []);
 
   // Then, try to load the embedding with the appropriate data.
   useEffect(() => {
@@ -122,6 +128,25 @@ const Embedding = (props) => {
     setCellColors(colorByGeneExpression(focusedExpression));
   }, [focusedExpression]);
 
+  useEffect(() => {
+    if (cellSetHierarchy) {
+      const mapping = cellSetHierarchy.reduce((keyToClusterNameMap, rootHierarchy) => {
+        if (rootHierarchy.children.length > 0) {
+          rootHierarchy.children.forEach((child) => {
+            // eslint-disable-next-line no-param-reassign
+            keyToClusterNameMap[child.key] = _.capitalize(rootHierarchy.key);
+          });
+        }
+        return keyToClusterNameMap;
+      }, {});
+      setClusterKeyToNameMap(mapping);
+    }
+
+    if (cellSetProperties) {
+      setCellSetClusters(Object.entries(cellSetProperties).filter(([key, cellSet]) => cellSet.type === 'cellSets'));
+    }
+  }, [cellSetProperties, cellSetHierarchy]);
+
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
@@ -134,19 +159,32 @@ const Embedding = (props) => {
     }
   };
 
+  const getContainingCellSets = (cellId) => {
+    const prefixedCellSetNames = cellSetClusters
+      .filter(([, cellSet]) => cellSet.cellIds.has(Number.parseInt(cellId, 10)))
+      .map(([key, containingCellset]) => `${clusterKeyToNameMap[key]}: ${containingCellset.name}`);
+
+    return prefixedCellSetNames;
+  };
+
   const updateCellsHover = (cell) => {
     if (cell) {
       if (focusData.store === 'genes') {
+        const expressionToDispatch = focusedExpression
+          ? focusedExpression.rawExpression.expression[cell.cellId] : undefined;
+
         return dispatch(updateCellInfo({
           cellName: cell.cellId,
+          cellSets: getContainingCellSets(cell.cellId),
           geneName: focusData.key,
-          expression: focusedExpression ? focusedExpression.expression[cell.cellId] : undefined,
+          expression: expressionToDispatch,
           componentType: embeddingType,
         }));
       }
 
       return dispatch(updateCellInfo({
         cellName: cell.cellId,
+        cellSets: getContainingCellSets(cell.cellId),
         geneName: undefined,
         expression: undefined,
         componentType: embeddingType,
@@ -191,22 +229,28 @@ const Embedding = (props) => {
     );
   }
 
+
   const renderExpressionView = () => {
     if (focusData.store === 'genes') {
+
+      const colorScale =
+        vega.scale('sequential')()
+        .interpolator(colorInterpolator);
+
       return (
         <div>
           <label htmlFor='continuous data name'>
             <strong>{focusData.key}</strong>
           </label>
-          <div>
-            <img
-              src={legend}
-              alt='gene expression legend'
-              style={{
-                height: 200, width: 20, position: 'absolute', top: 70,
-              }}
-            />
-          </div>
+          <div
+            style={{
+              position: 'absolute',
+              background: `linear-gradient(${colorScale(1)}, ${colorScale(0)})`,
+              height: 200,
+              width: 20,
+              top: 70,
+            }}
+          />
         </div>
       );
     }
@@ -241,7 +285,7 @@ const Embedding = (props) => {
         data ? (
 
           <Scatterplot
-            cellOpacity={0.1}
+            cellOpacity={0.8}
             cellRadiusScale={0.1}
             uuid={embeddingType}
             view={view}

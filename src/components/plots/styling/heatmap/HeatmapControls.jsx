@@ -5,7 +5,6 @@ import {
 import PropTypes from 'prop-types';
 import HeatmapGroupBySettings from '../../../data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTracksSettings from '../../../data-exploration/heatmap/HeatmapMetadataTrackSettings';
-import HeatmapExpressionValuesSettings from '../../../data-exploration/heatmap/HeatmapExpressionValuesSettings';
 
 const { Panel } = Collapse;
 
@@ -34,9 +33,6 @@ const HeatmapControls = (props) => {
             Reset
           </Button>
         </Space>
-      </Panel>
-      <Panel header='Expression values' key='10'>
-        <HeatmapExpressionValuesSettings componentType={plotUuid} />
       </Panel>
       <Panel header='Metadata tracks' key='11'>
         <HeatmapMetadataTracksSettings componentType={plotUuid} />

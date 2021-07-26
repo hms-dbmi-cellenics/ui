@@ -7,11 +7,11 @@ import Adapter from 'enzyme-adapter-react-16';
 import { act } from 'react-dom/test-utils';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
-
+import { Modal } from 'antd';
 import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
 
 import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
-import initialExperimentSettingsState from '../../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
 
 import { EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING } from '../../../../../redux/actionTypes/experimentSettings';
@@ -22,18 +22,23 @@ jest.mock('localforage');
 
 const mockStore = configureMockStore([thunk]);
 
+const sampleIds = ['sample-1', 'sample-2'];
+
+const initialExperimentState = generateExperimentSettingsMock(sampleIds);
+
 const getStore = (settings = {}) => {
   const initialState = {
     notifications: {},
     experimentSettings: {
-      ...initialExperimentSettingsState,
+      ...initialExperimentState,
       processing: {
-        ...initialExperimentSettingsState.processing,
+        ...initialExperimentState.processing,
         meta: {
           loading: false,
           stepsDone: new Set([]),
           loadingSettingsError: false,
           completingStepError: false,
+          changedQCFilters: new Set(),
         },
       },
       backendStatus: {
@@ -105,7 +110,7 @@ const getStore = (settings = {}) => {
       ...initialPlotConfigStates,
     },
     samples: {
-      ids: ['sample-1', 'sample-2'],
+      ids: sampleIds,
       meta: {
         loading: false,
         error: false,
@@ -145,14 +150,13 @@ describe('DataProcessingPage', () => {
     expect(card.length).toEqual(1);
 
     const runFilterButton = page.find('#runFilterButton').filter('Button');
-    expect(runFilterButton.length).toEqual(1);
 
-    // Run filter is disabled initially
-    expect(runFilterButton.at(0).props().disabled).toEqual(true);
+    // Run filter doesn't exist initially
+    expect(runFilterButton.length).toEqual(0);
   });
 
   it('triggers the pipeline on click run filter', async () => {
-    const store = getStore();
+    const store = getStore({ experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
 
     const page = mount(
       <Provider store={store}>
@@ -169,23 +173,24 @@ describe('DataProcessingPage', () => {
     });
 
     page.update();
-    // Run filter is enabled after changes take place
-    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(false);
 
-    act(() => {
-      page
-        .find('#runFilterButton').filter('Button')
-        .at(0).props()
-        .onClick();
-    });
+    const runFilterButton = page.find('#runFilterButton').filter('Button');
 
+    // Run filter shows up after changes take place
+    expect(runFilterButton.length).toEqual(1);
+
+    act(() => { runFilterButton.at(0).props().onClick(); });
     page.update();
+    const modal = page.find(Modal);
+    const startButton = modal.find('Button').at(1);
+    act(() => startButton.simulate('click'));
 
     // Pipeline is triggered on clicking run button
-    await waitForActions(store, [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING]);
-
-    // Run filter is disabled after triggering the pipeline
-    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);
+    await waitForActions(
+      store,
+      [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING],
+      { matcher: waitForActions.matchers.containing },
+    );
   });
 
   it('preFiltered on a sample disables filter', async () => {
@@ -205,7 +210,7 @@ describe('DataProcessingPage', () => {
       </Provider>,
     );
 
-    // Run filter button is disabled on the first
-    expect(page.find('#runFilterButton').filter('Button').at(0).props().disabled).toEqual(true);
+    // Run filter button doesn't show up on the first
+    expect(page.find('#runFilterButton').filter('Button').length).toEqual(0);
   });
 });

@@ -61,6 +61,7 @@ const fetchCachedGeneExpressionWork = async (
       ...extras,
     },
   );
+
   const responseData = JSON.parse(response.results[0].body);
 
   if (!responseData[missingGenes[0]]?.error) {
@@ -71,15 +72,18 @@ const fetchCachedGeneExpressionWork = async (
       await cache.set(missingDataKeys[gene], processedData[gene]);
     });
   }
+
   return responseData;
 };
 
 const fetchCachedWork = async (
   experimentId,
-  timeout,
   body,
   backendStatus,
-  extras) => {
+  optionals = {},
+) => {
+  const { extras = undefined, timeout = 60 } = optionals;
+
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }

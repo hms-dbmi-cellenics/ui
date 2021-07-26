@@ -1,6 +1,7 @@
 import React from 'react';
+import _ from 'lodash';
 import {
-  Form, Select, Alert, Button,
+  Form, Select,
 } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -8,24 +9,27 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
-import waitForActions from 'redux-mock-store-await-actions';
 import { act } from 'react-dom/test-utils';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
-import initialExperimentState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import {
-  EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+  EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
 
 jest.mock('localforage');
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
+const initialExperimentState = generateExperimentSettingsMock([]);
+
 describe('Data Integration Calculation Config', () => {
   const filterName = 'dataIntegration';
+
+  const onConfigChange = jest.fn(() => {});
 
   const PCObject = () => ({ PC: 1, percent: 0.02, percentVariance: 0.02 });
   const storeState = {
@@ -59,10 +63,12 @@ describe('Data Integration Calculation Config', () => {
     fetchMock.mockResolvedValue(response);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const experimentId = '1234';
   const config = storeState.experimentSettings.processing.dataIntegration;
-
-  const onPipelineRun = () => { };
 
   it('renders correctly when nothing is loaded', () => {
     const store = mockStore({
@@ -80,7 +86,12 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
+        <CalculationConfig
+          experimentId={experimentId}
+          changedFilters={{ current: new Set() }}
+          config={config}
+          onConfigChange={onConfigChange}
+        />
       </Provider>,
     );
 
@@ -95,7 +106,12 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
+        <CalculationConfig
+          experimentId={experimentId}
+          changedFilters={{ current: new Set() }}
+          config={config}
+          onConfigChange={onConfigChange}
+        />
       </Provider>,
     );
 
@@ -108,75 +124,25 @@ describe('Data Integration Calculation Config', () => {
     expect(form.length).toBeGreaterThan(0);
   });
 
-  it('shows settings changed warning when the settings is changed', () => {
+  it('fires action to update config when a setting is changed', async () => {
     const store = mockStore(storeState);
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
+        <CalculationConfig
+          experimentId={experimentId}
+          changedFilters={{ current: new Set() }}
+          config={config}
+          onConfigChange={onConfigChange}
+        />
       </Provider>,
     );
 
     act(() => { component.find(Select).at(0).getElement().props.onChange('seuratv3'); });
+
     component.update();
 
-    expect(component.find(Alert).length).toEqual(1);
-  });
-
-  it('fires action to update config settings when options are changed', () => {
-    const store = mockStore(storeState);
-
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
-      </Provider>,
-    );
-
-    act(() => { component.find(Select).at(0).getElement().props.onChange('seuratv3'); });
-    component.update();
-
-    const actions = store.getActions();
-    expect(actions.length).toEqual(1);
-
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_UPDATE);
-  });
-
-  it('button is disabled if there are no changes', () => {
-    const store = mockStore(storeState);
-
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
-      </Provider>,
-    );
-
-    const button = component.find(Button).at(0).getElement();
-    expect(button.props.disabled).toBe(true);
-  });
-
-  it('fires action to update config when run is pressed', async () => {
-    const store = mockStore(storeState);
-
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
-      </Provider>,
-    );
-
-    act(() => { component.find(Select).at(0).getElement().props.onChange('seuratv3'); });
-    component.update();
-
-    expect(component.find(Alert).length).toEqual(1);
-
-    // Simulate click
-    const button = component.find(Button).at(0);
-    button.simulate('click');
-    component.update();
-
-    // Alert disappears
-    expect(component.find(Alert).length).toEqual(0);
-
-    await waitForActions(store, [EXPERIMENT_SETTINGS_PROCESSING_UPDATE]);
+    expect(onConfigChange).toHaveBeenCalledTimes(1);
   });
 
   it('displays the correct proportion of variation explained value', async () => {
@@ -184,7 +150,12 @@ describe('Data Integration Calculation Config', () => {
 
     const component = mount(
       <Provider store={store}>
-        <CalculationConfig experimentId={experimentId} config={config} onPipelineRun={onPipelineRun} />
+        <CalculationConfig
+          experimentId={experimentId}
+          changedFilters={{ current: new Set() }}
+          config={config}
+          onConfigChange={onConfigChange}
+        />
       </Provider>,
     );
 

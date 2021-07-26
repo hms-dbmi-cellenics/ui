@@ -21,8 +21,7 @@ import {
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
-import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
+import { updateFilterSettings } from '../../../redux/actions/experimentSettings';
 import loadCellMeta from '../../../redux/actions/cellMeta';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 import Loader from '../../Loader';
@@ -30,22 +29,21 @@ import Loader from '../../Loader';
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
-  const { experimentId, onPipelineRun } = props;
+  const { experimentId, onPipelineRun, onConfigChange } = props;
   const [plot, setPlot] = useState(null);
   const cellSets = useSelector((state) => state.cellSets);
   const cellMeta = useSelector((state) => state.cellMeta);
-  const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector((state) => state.experimentSettings.processing.meta);
+
+  const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector(
+    (state) => state.experimentSettings.processing.meta,
+  );
+
   const filterName = 'configureEmbedding';
 
   const router = useRouter();
   const dispatch = useDispatch();
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
-  );
-
-  const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
-    [],
   );
 
   const continuousEmbeddingPlots = ['mitochondrialContent', 'doubletScores'];
@@ -56,7 +54,7 @@ const ConfigureEmbedding = (props) => {
         dispatch(loadCellMeta(experimentId, dataName));
       }
     });
-  }, [experimentId]);
+  }, []);
 
   const plots = {
     cellCluster: {
@@ -104,7 +102,7 @@ const ConfigureEmbedding = (props) => {
           plotData={cellMeta.mitochondrialContent.data}
           loading={cellMeta.mitochondrialContent.loading}
           error={cellMeta.mitochondrialContent.error}
-          reloadPlotData={() => loadCellMeta(experimentId, 'mitochondrialContent')}
+          reloadPlotData={() => dispatch(loadCellMeta(experimentId, 'mitochondrialContent'))}
         />
       ),
     },
@@ -121,7 +119,7 @@ const ConfigureEmbedding = (props) => {
           plotData={cellMeta.doubletScores.data}
           loading={cellMeta.doubletScores.loading}
           error={cellMeta.doubletScores.error}
-          reloadPlotData={() => loadCellMeta(experimentId, 'doubletScores')}
+          reloadPlotData={() => dispatch(loadCellMeta(experimentId, 'doubletScores'))}
         />
       ),
     },
@@ -266,7 +264,7 @@ const ConfigureEmbedding = (props) => {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
-  }, [experimentId]);
+  }, []);
 
   useEffect(() => {
     // if we change a plot and the config is not saved yet
@@ -286,18 +284,9 @@ const ConfigureEmbedding = (props) => {
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
       && selectedConfig
-      && plotData) {
+      && plotData
+    ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData));
-      if (!selectedConfig.selectedCellSet) { return; }
-
-      const propertiesArray = Object.keys(cellSets.properties);
-      const cellSetClusteringLength = propertiesArray.filter(
-        (cellSet) => cellSet === selectedConfig.selectedCellSet,
-      ).length;
-
-      if (!cellSetClusteringLength) {
-        debouncedCellSetClustering(0.5);
-      }
     }
   }, [selectedConfig, cellSets, plotData]);
 
@@ -380,8 +369,7 @@ const ConfigureEmbedding = (props) => {
                 type='button'
                 key={key}
                 onClick={() => dispatch(
-                  updateProcessingSettings(
-                    experimentId,
+                  updateFilterSettings(
                     'meta',
                     { selectedConfigureEmbeddingPlot: key },
                   ),
@@ -408,7 +396,7 @@ const ConfigureEmbedding = (props) => {
         </Col>
 
         <Col flex='1 0px'>
-          <CalculationConfig experimentId={experimentId} onPipelineRun={onPipelineRun} />
+          <CalculationConfig experimentId={experimentId} onPipelineRun={onPipelineRun} onConfigChange={onConfigChange} />
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
@@ -427,6 +415,7 @@ const ConfigureEmbedding = (props) => {
 
 ConfigureEmbedding.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
   onPipelineRun: PropTypes.func.isRequired,
 };
 

@@ -37,6 +37,7 @@ describe('updateExperiment', () => {
   it('Dispatches action when called', async () => {
     const store = mockStore(mockState);
     await store.dispatch(updateExperiment(experimentId, updatedExperiment));
+    await store.dispatch(saveExperiment(experimentId));
 
     const actions = store.getActions();
 
@@ -48,6 +49,7 @@ describe('updateExperiment', () => {
   it('Dispatches call to save experiment', async () => {
     const store = mockStore(mockState);
     await store.dispatch(updateExperiment(experimentId, updatedExperiment));
+    await store.dispatch(saveExperiment(experimentId));
 
     expect(saveExperiment).toHaveBeenCalled();
   });

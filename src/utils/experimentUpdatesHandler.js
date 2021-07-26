@@ -1,14 +1,12 @@
-import { updateProcessingSettings, updateBackendStatus } from '../redux/actions/experimentSettings';
+import { updateBackendStatus, updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
-import {
-  CELL_SETS_CLUSTERING_UPDATED, CELL_SETS_ERROR,
-} from '../redux/actionTypes/cellSets';
+import { updateCellSetsClustering } from '../redux/actions/cellSets';
 
 const updateTypes = {
   QC: 'qc',
   GEM2S: 'gem2s',
-  DATA: 'data_update',
+  WORKER_DATA_UPDATE: 'workerDataUpdate',
 };
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
@@ -18,35 +16,35 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 
   switch (update.type) {
     case updateTypes.QC: {
-      dispatch(updateBackendStatus(experimentId, update.status));
-      return onQCUpdate(experimentId, update, dispatch);
+      dispatch(updateBackendStatus(update.status));
+      return onQCUpdate(update, dispatch);
     }
     case updateTypes.GEM2S: {
-      dispatch(updateBackendStatus(experimentId, update.status));
-      return onGEM2SUpdate(experimentId, update, dispatch);
+      dispatch(updateBackendStatus(update.status));
+      return onGEM2SUpdate(update, dispatch, experimentId);
     }
-    // this should be used to notify the UI that a request has changed and the UI is out-of-sync
-    case updateTypes.DATA: {
+    case updateTypes.WORKER_DATA_UPDATE: {
       return onWorkerUpdate(experimentId, update, dispatch);
     }
+
     default: {
       console.log(`Error, unrecognized message type ${update.type}`);
     }
   }
 };
 
-const onQCUpdate = (experimentId, update, dispatch) => {
+const onQCUpdate = (update, dispatch) => {
   const { input, output } = update;
 
   const processingConfigUpdate = output.config;
+
   if (processingConfigUpdate) {
-    dispatch(
-      updateProcessingSettings(
-        experimentId,
-        input.taskName,
-        { [input.sampleUuid]: processingConfigUpdate },
-      ),
-    );
+    dispatch(updateProcessingSettingsFromQC(
+      input.taskName,
+      processingConfigUpdate,
+      input.sampleUuid,
+      false,
+    ));
 
     Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
       dispatch(updatePlotData(plotUuid, plotData));
@@ -54,8 +52,11 @@ const onQCUpdate = (experimentId, update, dispatch) => {
   }
 };
 
-const onGEM2SUpdate = () => {
-
+const onGEM2SUpdate = (update, dispatch, experimentId) => {
+  const processingConfig = update?.item?.processingConfig;
+  if (processingConfig) {
+    dispatch(loadedProcessingConfig(experimentId, processingConfig, true));
+  }
 };
 
 const onWorkerUpdate = (experimentId, update, dispatch) => {
@@ -66,23 +67,8 @@ const onWorkerUpdate = (experimentId, update, dispatch) => {
     const newCellSets = [
       louvainSets,
     ];
-    try {
-      dispatch({
-        type: CELL_SETS_CLUSTERING_UPDATED,
-        payload: {
-          experimentId,
-          data: newCellSets,
-        },
-      });
-    } catch (e) {
-      dispatch({
-        type: CELL_SETS_ERROR,
-        payload: {
-          experimentId,
-          error: e,
-        },
-      });
-    }
+
+    dispatch(updateCellSetsClustering(experimentId, newCellSets));
   }
 };
 

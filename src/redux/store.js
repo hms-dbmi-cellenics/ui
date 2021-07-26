@@ -2,17 +2,22 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { createWrapper } from 'next-redux-wrapper';
+import { enableMapSet } from 'immer';
+
 import rootReducer from './reducers/index';
 
+enableMapSet();
+
 const bindMiddleware = (middleware) => {
-  if (process.env.NODE_ENV !== 'production') {
+  const { composeWithDevTools } = require('redux-devtools-extension');
+
+  if (process.env.K8S_ENV !== 'production') {
     // eslint-disable-next-line import/no-extraneous-dependencies
-    const { composeWithDevTools } = require('redux-devtools-extension');
     const { logger } = require('redux-logger');
     middleware.push(logger);
-    return composeWithDevTools(applyMiddleware(...middleware));
   }
-  return applyMiddleware(...middleware);
+
+  return composeWithDevTools(applyMiddleware(...middleware));
 };
 
 const makeStore = () => {
@@ -33,5 +38,4 @@ const makeStore = () => {
 };
 
 const wrapper = createWrapper(makeStore);
-
 export { wrapper, makeStore };

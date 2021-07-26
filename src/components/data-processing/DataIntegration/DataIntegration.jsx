@@ -3,18 +3,17 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, PageHeader, Collapse, Skeleton, Alert,
+  Row, Col, Space, PageHeader, Collapse, Alert,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 
 import CalculationConfig from './CalculationConfig';
-import MiniPlot from '../../plots/MiniPlot';
-
-import { updateCellSetsClustering } from '../../../redux/actions/cellSets';
-
 import PlotStyling from '../../plots/styling/PlotStyling';
+
+import MiniPlot from '../../plots/MiniPlot';
+import EmptyPlot from '../../plots/helpers/EmptyPlot';
 
 import {
   updatePlotConfig,
@@ -30,7 +29,7 @@ import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessin
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
   const {
-    experimentId, onPipelineRun, stepDisabled, disableDataIntegration,
+    experimentId, onConfigChange, stepDisabled, disableDataIntegration,
   } = props;
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
@@ -45,12 +44,7 @@ const DataIntegration = (props) => {
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
 
-  const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(updateCellSetsClustering(experimentId, resolution)), 2000),
-    [],
-  );
-
-  const plots = {
+  const [plots] = useState({
     embedding: {
       title: 'Sample embedding',
       plotUuid: generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1),
@@ -100,7 +94,7 @@ const DataIntegration = (props) => {
       ),
       blockedByConfigureEmbedding: false,
     },
-  };
+  });
 
   const plotSpecificStylingControl = {
     embedding: [
@@ -224,7 +218,7 @@ const DataIntegration = (props) => {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
-  }, [experimentId]);
+  }, []);
 
   useEffect(() => {
     // if we change a plot and the config is not saved yet
@@ -244,18 +238,9 @@ const DataIntegration = (props) => {
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
       && selectedConfig
-      && plotData) {
+      && plotData
+    ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData, true));
-      if (!selectedConfig.selectedCellSet) { return; }
-
-      const propertiesArray = Object.keys(cellSets.properties);
-      const cellSetClusteringLength = propertiesArray.filter(
-        (cellSet) => cellSet === selectedConfig.selectedCellSet,
-      ).length;
-
-      if (!cellSetClusteringLength) {
-        debouncedCellSetClustering(0.5);
-      }
     }
   }, [selectedConfig, cellSets, plotData, calculationConfig]);
 
@@ -308,7 +293,7 @@ const DataIntegration = (props) => {
     if (!selectedConfig || disabledByConfigEmbedding) {
       return (
         <center>
-          <Skeleton.Image style={{ width: 400, height: 400 }} />
+          <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
         </center>
       );
     }
@@ -348,7 +333,7 @@ const DataIntegration = (props) => {
                 {plotObj.blockedByConfigureEmbedding && !configureEmbeddingFinished.current
                   ? (
                     <center>
-                      <Skeleton.Image />
+                      <EmptyPlot mini />
                     </center>
                   )
                   : (
@@ -367,8 +352,8 @@ const DataIntegration = (props) => {
         <Col flex='1 0px'>
           <CalculationConfig
             experimentId={experimentId}
+            onConfigChange={onConfigChange}
             config={calculationConfig}
-            onPipelineRun={onPipelineRun}
             disabled={stepDisabled}
             disableDataIntegration={disableDataIntegration}
           />
@@ -389,8 +374,8 @@ const DataIntegration = (props) => {
 };
 
 DataIntegration.propTypes = {
-  onPipelineRun: PropTypes.func.isRequired,
   experimentId: PropTypes.string.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
   disableDataIntegration: PropTypes.bool,
 };

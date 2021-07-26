@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import { Skeleton } from 'antd';
+import Loader from '../Loader';
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateViolinSpec';
 import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/actions/genes';
@@ -43,16 +43,19 @@ const ViolinPlot = (props) => {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
   }, [experimentId, config?.shownGene, highestDispersionLoading, highestDispersionGene]);
+
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
+
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
       dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
     }
+
     if (config?.shownGene !== 'notSelected' && config) {
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
@@ -69,10 +72,13 @@ const ViolinPlot = (props) => {
       && !geneExpression.error
       && !cellSets.loading
       && !cellSets.error) {
-      const expressionType = config.normalised === 'normalised' ? 'expression' : 'raw TO-DO';
+      const geneExpressionData = config.normalised === 'normalised'
+        ? geneExpression.data[config.shownGene].zScore
+        : geneExpression.data[config.shownGene].rawExpression.expression;
+
       const generatedPlotData = generateData(
         cellSets,
-        geneExpression.data[config.shownGene][expressionType],
+        geneExpressionData,
         config.selectedCellSet,
         config.selectedPoints,
       );
@@ -117,7 +123,7 @@ const ViolinPlot = (props) => {
       || highestDispersionLoading) {
       return (
         <center>
-          <Skeleton.Image style={{ width: 400, height: 400 }} />
+          <Loader />
         </center>
       );
     }

@@ -10,11 +10,7 @@ import {
   Form,
   Checkbox,
   Tooltip,
-  Button,
   Typography,
-  Alert,
-  Row,
-  Col,
 } from 'antd';
 
 import {
@@ -25,7 +21,7 @@ import _ from 'lodash';
 
 import NormalisationOptions from './NormalisationOptions';
 
-import { updateProcessingSettings } from '../../../redux/actions/experimentSettings';
+import { updateFilterSettings } from '../../../redux/actions/experimentSettings';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Option } = Select;
@@ -34,7 +30,7 @@ const { Panel } = Collapse;
 
 const CalculationConfig = (props) => {
   const {
-    experimentId, onPipelineRun, disabled, disableDataIntegration,
+    onConfigChange, disabled, disableDataIntegration,
   } = props;
   const FILTER_UUID = 'dataIntegration';
 
@@ -47,6 +43,11 @@ const CalculationConfig = (props) => {
   const data = useSelector((state) => state.componentConfig[elbowPlotUuid]?.plotData);
 
   const methods = [
+    {
+      value: 'harmony',
+      text: 'Harmony',
+      disabled: false,
+    },
     {
       value: 'seuratv4',
       text: 'Seurat v4',
@@ -68,11 +69,6 @@ const CalculationConfig = (props) => {
       disabled: true,
     },
     {
-      value: 'harmony',
-      text: 'Harmony',
-      disabled: true,
-    },
-    {
       value: 'conos',
       text: 'Conos',
       disabled: true,
@@ -85,20 +81,13 @@ const CalculationConfig = (props) => {
   ];
 
   const [numPCs, setNumPCs] = useState(dimensionalityReduction.numPCs);
-  const [changesOutstanding, setChangesOutstanding] = useState(false);
 
   const updateSettings = (diff) => {
-    setChangesOutstanding(true);
-    dispatch(updateProcessingSettings(
-      experimentId,
+    onConfigChange();
+    dispatch(updateFilterSettings(
       FILTER_UUID,
       diff,
     ));
-  };
-
-  const runWithCurrentDataIntegrationSettings = () => {
-    setChangesOutstanding(false);
-    onPipelineRun();
   };
 
   const roundedVariationExplained = () => {
@@ -116,15 +105,6 @@ const CalculationConfig = (props) => {
       <Panel header='Data Integration' key='data-integration'>
         <Space direction='vertical' style={{ width: '100%' }} />
         <Form size='small'>
-          {changesOutstanding && (
-            <Form.Item>
-              <Alert
-                message='Your changes are not yet applied. To rerun data integration, click Apply.'
-                type='warning'
-                showIcon
-              />
-            </Form.Item>
-          )}
           <Form.Item>
             <Text>
               <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
@@ -154,7 +134,7 @@ const CalculationConfig = (props) => {
               config={dataIntegration.methodSettings[dataIntegration.method]}
               onUpdate={updateSettings}
               methodId={dataIntegration.method}
-              onChange={() => setChangesOutstanding(true)}
+              onChange={() => onConfigChange()}
               disabled={disableDataIntegration || disabled}
             />
 
@@ -174,7 +154,7 @@ const CalculationConfig = (props) => {
                 max={data?.length || 100}
                 min={0}
                 onChange={(value) => {
-                  setChangesOutstanding(true);
+                  onConfigChange();
                   setNumPCs(value);
                 }}
                 onPressEnter={(e) => e.preventDefault()}
@@ -207,7 +187,7 @@ const CalculationConfig = (props) => {
                   { dimensionalityReduction: { excludeGeneCategories: val } },
                 )}
                 value={dimensionalityReduction.excludeGeneCategories}
-                disabled={disabled}
+                disabled
               >
                 <Space direction='vertical'>
                   <Checkbox value='ribosomal'>ribosomal</Checkbox>
@@ -255,26 +235,9 @@ const CalculationConfig = (props) => {
                 disabled={disabled}
               >
                 <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
-                <Option key='cca' value='cca'>Cannonical Correlation Analysis (CCA)</Option>
+                <Option key='cca' value='cca'>Canonical Correlation Analysis (CCA)</Option>
               </Select>
 
-            </Form.Item>
-            <Form.Item>
-              <Row>
-                <Col span={6}>
-                  <Tooltip title={!changesOutstanding ? 'No outstanding changes' : ''}>
-                    <Button
-                      size='small'
-                      type='primary'
-                      htmlType='submit'
-                      disabled={!changesOutstanding}
-                      onClick={runWithCurrentDataIntegrationSettings}
-                    >
-                      Run
-                    </Button>
-                  </Tooltip>
-                </Col>
-              </Row>
             </Form.Item>
           </div>
         </Form>
@@ -284,8 +247,7 @@ const CalculationConfig = (props) => {
 };
 
 CalculationConfig.propTypes = {
-  experimentId: PropTypes.string.isRequired,
-  onPipelineRun: PropTypes.func.isRequired,
+  onConfigChange: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   disableDataIntegration: PropTypes.bool,
 };

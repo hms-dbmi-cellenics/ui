@@ -1,3 +1,7 @@
+import _ from 'lodash';
+
+import { intersection } from '../cellSetOperations';
+
 const generateSpec = (config, plotData) => {
   let legend = [];
 
@@ -16,7 +20,7 @@ const generateSpec = (config, plotData) => {
         orient: config.legend.position,
         offset: 40,
         symbolType: 'square',
-        symbolSize: { value: 200 },
+        symbolSize: 200,
         encode: {
           labels: {
             update: {
@@ -28,13 +32,26 @@ const generateSpec = (config, plotData) => {
           },
         },
         direction: 'horizontal',
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
+        labelFont: config.fontStyle.font,
+        titleFont: config.fontStyle.font,
         columns: legendColumns,
         labelLimit,
       },
+
     ];
   }
+
+  const additionalTransform = config.frequencyType === 'proportional' ? [
+    {
+      type: 'joinaggregate',
+      groupby: ['x'],
+      ops: ['sum'],
+      fields: ['y'],
+      as: ['totalY'],
+    },
+    { type: 'formula', as: 'y', expr: '(datum.y / datum.totalY) * 100' },
+  ] : [];
+
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
@@ -48,6 +65,7 @@ const generateSpec = (config, plotData) => {
         name: 'plotData',
         values: plotData,
         transform: [
+          ...additionalTransform,
           {
             type: 'stack',
             groupby: ['x'],
@@ -76,8 +94,12 @@ const generateSpec = (config, plotData) => {
       {
         name: 'c',
         type: 'ordinal',
-        range: { data: 'plotData', field: 'c' },
-        domain: { data: 'plotData', field: 'c' },
+        range: {
+          data: 'plotData', field: 'c',
+        },
+        domain: {
+          data: 'plotData', field: 'c',
+        },
       },
       {
         name: 'color',
@@ -92,37 +114,39 @@ const generateSpec = (config, plotData) => {
         orient: 'bottom',
         scale: 'x',
         zindex: 1,
-        title: { value: config.axes.xAxisText },
-        titleFont: { value: config.fontStyle.font },
-        labelFont: { value: config.fontStyle.font },
-        labelColor: { value: config.colour.masterColour },
-        tickColor: { value: config.colour.masterColour },
-        gridColor: { value: config.colour.masterColour },
-        gridOpacity: { value: (config.axes.gridOpacity / 20) },
-        gridWidth: { value: (config.axes.gridWidth / 20) },
-        offset: { value: config.axes.offset },
-        titleFontSize: { value: config.axes.titleFontSize },
-        titleColor: { value: config.colour.masterColour },
-        labelFontSize: { value: config.axes.labelFontSize },
-        domainWidth: { value: config.axes.domainWidth },
+        title: config.axes.xAxisText,
+        titleFont: config.fontStyle.font,
+        labelFont: config.fontStyle.font,
+        labelColor: config.colour.masterColour,
+        tickColor: config.colour.masterColour,
+        gridColor: config.colour.masterColour,
+        gridOpacity: (config.axes.gridOpacity / 20),
+        gridWidth: (config.axes.gridWidth / 20),
+        offset: config.axes.offset,
+        titleFontSize: config.axes.titleFontSize,
+        titleColor: config.colour.masterColour,
+        labelFontSize: config.axes.labelFontSize,
+        domainWidth: config.axes.domainWidth,
+        labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
+        labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
       },
       {
         orient: 'left',
         scale: 'y',
         zindex: 1,
-        gridColor: { value: config.colour.masterColour },
-        gridOpacity: { value: (config.axes.gridOpacity / 20) },
-        gridWidth: { value: (config.axes.gridWidth / 20) },
-        tickColor: { value: config.colour.masterColour },
-        offset: { value: config.axes.offset },
-        title: { value: config.axes.yAxisText },
-        titleFont: { value: config.fontStyle.font },
-        labelFont: { value: config.fontStyle.font },
-        labelColor: { value: config.colour.masterColour },
-        titleFontSize: { value: config.axes.titleFontSize },
-        titleColor: { value: config.colour.masterColour },
-        labelFontSize: { value: config.axes.labelFontSize },
-        domainWidth: { value: config.axes.domainWidth },
+        gridColor: config.colour.masterColour,
+        gridOpacity: (config.axes.gridOpacity / 20),
+        gridWidth: (config.axes.gridWidth / 20),
+        tickColor: config.colour.masterColour,
+        offset: config.axes.offset,
+        title: config.axes.yAxisText,
+        titleFont: config.fontStyle.font,
+        labelFont: config.fontStyle.font,
+        labelColor: config.colour.masterColour,
+        titleFontSize: config.axes.titleFontSize,
+        titleColor: config.colour.masterColour,
+        labelFontSize: config.axes.labelFontSize,
+        domainWidth: config.axes.domainWidth,
       },
     ],
 
@@ -139,7 +163,7 @@ const generateSpec = (config, plotData) => {
             fill: { scale: 'color', field: 'c' },
           },
           update: {
-            fillOpacity: { value: 1 },
+            fillOpacity: 1,
           },
         },
       },
@@ -147,88 +171,50 @@ const generateSpec = (config, plotData) => {
     legends: legend,
     title:
     {
-      text: { value: config.title.text },
-      color: { value: config.colour.masterColour },
-      anchor: { value: config.title.anchor },
-      font: { value: config.fontStyle.font },
+      text: config.title.text,
+      color: config.colour.masterColour,
+      anchor: config.title.anchor,
+      font: config.fontStyle.font,
       dx: 10,
-      fontSize: { value: config.title.fontSize },
+      fontSize: config.title.fontSize,
     },
   };
 };
 
 const generateData = (hierarchy, properties, config) => {
-  const calculateSum = (proportionClusters, xAxisClustersIds) => {
-    let sum = 0;
-
-    if (!xAxisClustersIds.length) {
-      proportionClusters.forEach((cellSetCluster) => {
-        sum += properties[cellSetCluster.key].cellIds.size;
-      });
-      return sum;
-    }
-    proportionClusters.forEach((cellSetCluster) => {
-      const cellSetIds = Array.from(properties[cellSetCluster.key].cellIds);
-      sum += xAxisClustersIds.filter((id) => cellSetIds.includes(id)).length;
-    });
-    return sum;
+  // The key of the cell set root nodes to display on the x and y axes.
+  const cellSetGroupByRoots = {
+    x: config.xAxisGrouping,
+    y: config.proportionGrouping,
   };
 
-  const getClustersForGrouping = (name) => hierarchy.filter((cluster) => (
-    cluster.key === name))[0]?.children;
+  // Get cell sets under the nodes.
+  const cellSets = _.mapValues(cellSetGroupByRoots, (key) => (
+    hierarchy.find((rootNode) => rootNode.key === key)?.children
+  ));
 
-  const populateData = (x, y, cluster, sum, data) => {
-    let value = y;
-    if (config.frequencyType === 'proportional') {
-      value = (y / sum) * 100;
-    }
-
-    data.push({
-      x,
-      y: value,
-      c: cluster.name,
-      color: cluster.color,
-    });
-
-    return data;
-  };
-
-  let data = [];
-
-  const proportionClusters = hierarchy.filter((cluster) => (
-    cluster.key === config.proportionGrouping))[0]?.children;
-
-  if (!proportionClusters) {
+  if (!cellSets.x || !cellSets.y) {
     return [];
   }
 
-  const clustersInXAxis = getClustersForGrouping(config.xAxisGrouping);
-  if (!clustersInXAxis) {
-    const sum = calculateSum(proportionClusters, []);
-    proportionClusters.forEach((clusterName) => {
-      const x = 1;
-      const y = properties[clusterName.key].cellIds.size;
-      const cluster = properties[clusterName.key];
-      data = populateData(x, y, cluster, sum, data);
-    });
-  } else {
-    clustersInXAxis.forEach((clusterInXAxis) => {
-      const clusterInXAxisIds = Array.from(properties[clusterInXAxis.key].cellIds);
+  // eslint-disable-next-line no-shadow
+  const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
 
-      const sum = calculateSum(proportionClusters, clusterInXAxisIds);
+  const cellSetCombinations = cartesian(cellSets.x, cellSets.y);
 
-      proportionClusters.forEach((clusterName) => {
-        const x = properties[clusterInXAxis.key].name;
-        const cellSetIds = Array.from(properties[clusterName.key].cellIds);
-        const y = clusterInXAxisIds.filter((id) => cellSetIds.includes(id)).length;
-        const cluster = properties[clusterName.key];
+  const data = cellSetCombinations.map(([{ key: xCellSetKey }, { key: yCellSetKey }]) => {
+    const xCellSet = properties[xCellSetKey];
+    const yCellSet = properties[yCellSetKey];
 
-        if (y !== 0) {
-          data = populateData(x, y, cluster, sum, data);
-        }
-      });
-    });
-  }
+    const sum = intersection([xCellSetKey, yCellSetKey], properties).size;
+
+    return {
+      x: xCellSet.name,
+      y: sum,
+      c: yCellSet.name,
+      color: yCellSet.color,
+    };
+  });
 
   return data;
 };

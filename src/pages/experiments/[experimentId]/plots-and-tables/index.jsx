@@ -8,12 +8,12 @@ import { useSelector } from 'react-redux';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import SearchMenu from '../../../../components/SearchMenu';
-import heatmap from '../../../../../static/media/heatmap.png';
-import embeddingContinuous from '../../../../../static/media/embeddingContinuous.png';
-import embeddingCategorical from '../../../../../static/media/embeddingCategorical.png';
-import violin from '../../../../../static/media/violin.png';
-import volcano from '../../../../../static/media/volcano.png';
-import frequency from '../../../../../static/media/frequency.png';
+import heatmap from '../../../../../public/static/media/heatmap.png';
+import embeddingContinuous from '../../../../../public/static/media/embeddingContinuous.png';
+import embeddingCategorical from '../../../../../public/static/media/embeddingCategorical.png';
+import violin from '../../../../../public/static/media/violin.png';
+import volcano from '../../../../../public/static/media/volcano.png';
+import frequency from '../../../../../public/static/media/frequency.png';
 import Header from '../../../../components/Header';
 
 const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (

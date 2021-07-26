@@ -2,19 +2,21 @@ import _ from 'lodash';
 
 import experimentSettingsReducer from '../../../redux/reducers/experimentSettings';
 import initialState from '../../../redux/reducers/experimentSettings/initialState';
-import initialExperimentState from '../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
 
 import {
-  EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
-  EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+  EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
+  EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
-  EXPERIMENT_SETTINGS_SAMPLE_UPDATE,
+  EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
 } from '../../../redux/actionTypes/experimentSettings';
 
 import errorTypes from '../../../redux/actions/experimentSettings/errorTypes';
+
+const initialExperimentState = generateExperimentSettingsMock(['sample-KO']);
 
 describe('experimentSettingsReducer', () => {
   it('Reduces identical state on unknown action', () => expect(
@@ -32,7 +34,7 @@ describe('experimentSettingsReducer', () => {
 
     const newState = experimentSettingsReducer({ ...initialState }, {
       payload: { data: newData },
-      type: EXPERIMENT_SETTINGS_PROCESSING_LOAD,
+      type: EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
     });
 
     expect(newState.processing.meta.loading).toEqual(false);
@@ -53,10 +55,10 @@ describe('experimentSettingsReducer', () => {
   it('Updates existing value properly', () => {
     const newState = experimentSettingsReducer(initialState,
       {
-        type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+        type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
         payload:
         {
-          settingName: 'configureEmbedding',
+          step: 'configureEmbedding',
           configChange: { embeddingSettings: { method: 'newMethod' } },
         },
       });
@@ -68,10 +70,10 @@ describe('experimentSettingsReducer', () => {
   it('Adds new value properly', () => {
     const newState = experimentSettingsReducer(initialState,
       {
-        type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+        type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
         payload:
         {
-          settingName: 'configureEmbedding',
+          step: 'configureEmbedding',
           configChange: { embeddingSettings: { newProperty: 'property' } },
         },
       });
@@ -83,10 +85,10 @@ describe('experimentSettingsReducer', () => {
   it('Adds new object properly', () => {
     const newState = experimentSettingsReducer(initialState,
       {
-        type: EXPERIMENT_SETTINGS_PROCESSING_UPDATE,
+        type: EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
         payload:
         {
-          settingName: 'configureEmbedding',
+          step: 'configureEmbedding',
           configChange: { embeddingSettings: { newProperty: { name: 'a', value: 'b' } } },
         },
       });
@@ -98,22 +100,17 @@ describe('experimentSettingsReducer', () => {
   it('Updates sample settings properly', () => {
     const newState = experimentSettingsReducer(initialExperimentState,
       {
-        type: EXPERIMENT_SETTINGS_SAMPLE_UPDATE,
+        type: EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
         payload:
         {
-          settingName: 'cellSizeDistribution',
+          step: 'cellSizeDistribution',
           sampleId: 'sample-KO',
-          diff: { filterSettings: { binStep: 400 } },
+          diff: { binStep: 400 },
         },
       });
 
     const expectedCellSizeDistribution = {
       enabled: true,
-      auto: true,
-      filterSettings: {
-        minCellSize: 10800,
-        binStep: 200,
-      },
       'sample-KO': {
         auto: true,
         filterSettings: {

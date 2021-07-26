@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import mime from 'mime-types';
-import path from 'path';
 
 import {
   Modal,
@@ -20,7 +18,7 @@ import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-des
 import Dropzone from 'react-dropzone';
 import techOptions from '../../utils/fileUploadSpecifications';
 import UploadStatus from '../../utils/UploadStatus';
-
+import checkIfFileValid from '../../utils/checkIfFileValid';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 
 const { Text, Title, Paragraph } = Typography;
@@ -42,9 +40,6 @@ const FileUploadModal = (props) => {
   // Handle on Drop
   const onDrop = (acceptedFiles) => {
     const newList = [];
-
-    const acceptedFilesRegexp = `(${techOptions[selectedTech].acceptedFiles.join('|')})$`;
-
     let filesNotInFolder = false;
     const filteredFiles = acceptedFiles
       // Remove all hidden files
@@ -65,28 +60,14 @@ const FileUploadModal = (props) => {
     filteredFiles.forEach((file) => {
       let fileName = null;
       const error = [];
-
       // First character of file.path === '/' means a directory is uploaded
       // Remove initial slash so that it does not create an empty directory in S3
       const paths = file.path.split('/');
       fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
+      const valid = checkIfFileValid(fileName, selectedTech);
 
-      const isValidType = (
-        techOptions[selectedTech].validMimeTypes
-          .includes(
-            mime.lookup(file.path),
-          )
-        || techOptions[selectedTech].validExtensionTypes
-          .includes(
-            path.extname(file.path),
-          )
-      );
-
-      if (!isValidType) error.push('Invalid file type.');
-
-      const acceptedFilenames = new RegExp(acceptedFilesRegexp, 'gi');
-      const isValidFilename = fileName.match(acceptedFilenames) !== null;
-      if (!isValidFilename) error.push('Invalid file name.');
+      if (!valid.isValidType) error.push('Invalid file type.');
+      if (!valid.isValidFilename) error.push('Invalid file name.');
 
       newList.push({
         name: fileName,
@@ -95,7 +76,7 @@ const FileUploadModal = (props) => {
           status: UploadStatus.UPLOADING,
           progress: 0,
         },
-        valid: isValidType && isValidFilename,
+        valid: valid.isValidType && valid.isValidFilename,
         errors: error.join(', '),
       });
     });
@@ -186,7 +167,6 @@ const FileUploadModal = (props) => {
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
               <Select
-                style={{ width: 250 }}
                 defaultValue={selectedTech}
                 onChange={(value) => setSelectedTech(value)}
               >
@@ -216,7 +196,7 @@ const FileUploadModal = (props) => {
 
         {filesList.length ? (
           <>
-            <Divider orientation='center'>Uploaded files</Divider>
+            <Divider orientation='center'>To upload</Divider>
             <ul style={{
               columnCount: 4, listStyleType: 'none', padding: 0, margin: 0,
             }}

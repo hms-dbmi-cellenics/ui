@@ -1,14 +1,23 @@
-import * as d3Chromatic from 'd3-scale-chromatic';
-import * as d3 from 'd3-scale';
+import * as vega from 'vega';
 
 import { union } from '../cellSetOperations';
 
+const colorInterpolator = vega.scheme('purplered');
+
 const hexToRgb = (hex) => {
   if (hex) {
-    return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i,
-      (m, r, g, b) => `#${r}${r}${g}${g}${b}${b}`)
-      .substring(1).match(/.{2}/g)
-      .map((x) => parseInt(x, 16));
+    const i = parseInt(hex.replace(/^#/, ''), 16);
+    const r = (i >> 16) & 255;
+    const g = (i >> 8) & 255;
+    const b = i & 255;
+    return [r, g, b];
+  }
+  return null;
+};
+
+const cssRgbToRgb = (rgb) => {
+  if (rgb) {
+    return rgb.match(/\d+/g).map(Number);
   }
   return null;
 };
@@ -45,17 +54,16 @@ const renderCellSetColors = (rootKey, cellSetHierarchy, cellSetProperties) => {
 };
 
 const colorByGeneExpression = (focusedGene) => {
-  const { expression, min, max } = focusedGene;
+  // Use truncated values for coloring
+  const { expression, min, max } = focusedGene.truncatedExpression;
 
-  const scaleFunction = d3.scaleSequential(d3Chromatic.interpolateViridis)
-    .domain([min, max]);
-  const cellColoring = {};
+  const scaleFunction = vega.scale('sequential')()
+    .domain([min, max])
+    .interpolator(colorInterpolator);
 
-  expression.forEach((expressionValue, cellId) => {
-    cellColoring[cellId] = hexToRgb(scaleFunction(expressionValue));
-  });
-
-  return cellColoring;
+  return Object.fromEntries(expression.map(
+    (expressionValue, cellId) => [cellId, cssRgbToRgb(scaleFunction(expressionValue))],
+  ));
 };
 
 const convertCellsData = (results, hidden, properties) => {
@@ -86,4 +94,5 @@ export {
   updateStatus,
   clearPleaseWait,
   colorByGeneExpression,
+  colorInterpolator,
 };

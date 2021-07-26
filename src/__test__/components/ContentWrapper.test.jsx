@@ -42,6 +42,11 @@ const mockStore = configureMockStore([thunk]);
 const store = mockStore({
   notifications: {},
   experimentSettings: {
+    processing: {
+      meta: {
+        changedQCFilters: new Set(),
+      },
+    },
     backendStatus: {
       loading: false,
       error: false,
@@ -71,19 +76,20 @@ describe('ContentWrapper', () => {
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);
-    expect(menus.length).toEqual(4);
 
-    const dataManagementLink = menus.at(0).find('Link');
-    expect(dataManagementLink.props().as).toEqual('/data-management');
+    // Menu item renders twice to support HOC usage (?)
+    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
+    const visibleMenuLength = menus.length / 2;
 
-    const dataProcessingLink = menus.at(1).find('Link');
-    expect(dataProcessingLink.props().as).toEqual('/experiments/1234/data-processing');
+    expect(visibleMenuLength).toEqual(4);
 
-    const dataExplorationLink = menus.at(2).find('Link');
-    expect(dataExplorationLink.props().as).toEqual('/experiments/1234/data-exploration');
+    expect(menus.at(0).prop('id')).toEqual('/data-management');
 
-    const plotsTablesLink = menus.at(3).find('Link');
-    expect(plotsTablesLink.props().as).toEqual('/experiments/1234/plots-and-tables');
+    expect(menus.at(1).prop('id')).toEqual('/experiments/[experimentId]/data-processing');
+
+    expect(menus.at(2).prop('id')).toEqual('/experiments/[experimentId]/data-exploration');
+
+    expect(menus.at(3).prop('id')).toEqual('/experiments/[experimentId]/plots-and-tables');
   });
 
   it('links are disabled if there is no experimentId', async () => {
@@ -101,7 +107,12 @@ describe('ContentWrapper', () => {
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);
-    expect(menus.length).toEqual(4);
+
+    // Menu item renders twice to support HOC usage (?)
+    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
+    const visibleMenuLength = menus.length / 2;
+
+    expect(visibleMenuLength).toEqual(4);
 
     // Data Management is not disabled
     expect(menus.at(0).props().disabled).toEqual(false);
@@ -125,6 +136,11 @@ describe('ContentWrapper', () => {
     const testStore = mockStore({
       notifications: {},
       experimentSettings: {
+        processing: {
+          meta: {
+            changedQCFilters: new Set(),
+          },
+        },
         backendStatus: {
           loading: false,
           error: false,
@@ -152,7 +168,12 @@ describe('ContentWrapper', () => {
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);
-    expect(menus.length).toEqual(4);
+
+    // Menu item renders twice to support HOC usage (?)
+    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
+    const visibleMenuLength = menus.length / 2;
+
+    expect(visibleMenuLength).toEqual(4);
 
     const pipelineRedirects = wrapper.find('PipelineRedirectToDataProcessing');
     expect(pipelineRedirects.length).toEqual(1);

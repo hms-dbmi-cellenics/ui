@@ -96,6 +96,7 @@ const heatmapInitialConfig = {
   selectedTracks: ['louvain'],
   groupedTracks: ['sample', 'louvain'],
   expressionValue: 'raw',
+  truncatedValues: false,
 };
 
 // PLOTS & TABLES - Volcano plot
@@ -110,7 +111,7 @@ const volcanoInitialConfig = {
   axes: {
     ...axesBaseState,
     xAxisText: 'log2 fold change',
-    yAxisText: ' - log10(adj.p - value)',
+    yAxisText: '-log10(adj p-value)',
     gridOpacity: 5,
     offset: 10,
   },
@@ -121,18 +122,9 @@ const volcanoInitialConfig = {
   noDifferenceColor: '#aaaaaa',
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',
-  notSignificantDownregulatedColor: '#aaaaaa',
-  notSignificantUpregulatedColor: '#aaaaaa',
-  significantChangeDirectionUnknownColor: '#aaaaaa',
 
-  // `null` automatically scales to range. This is a problem
-  // because our DE is bad right now, so it throws off the
-  // range to extreme values. TODO: set this back when we have
-  // good DE
-  // logFoldChangeDomain: null,
-
-  logFoldChangeDomain: 20,
-  maxNegativeLogpValueDomain: null,
+  logFoldChangeDomain: 0,
+  maxNegativeLogpValueDomain: 0,
   negLogpValueThreshold: 4,
   logFoldChangeThreshold: 1,
   logFoldChangeTickCount: 5,
@@ -375,7 +367,7 @@ const cellSizeDistributionKneePlot = {
   axes: {
     ...axesBaseState,
     xAxisText: 'Cell rank',
-    yAxisText: 'log #UMIs in cell',
+    yAxisText: '#UMIs in cell',
   },
   title: {
     ...titleBaseState,
@@ -446,6 +438,34 @@ const mitochondrialFractionLogHistogram = {
   label: labelBaseState,
   binStep: 0.05,
   maxFraction: 0.2,
+};
+
+// CLASSIFIER - Classifier Knee Plot
+const classifierKneePlot = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top-right',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 530,
+    height: 400,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Droplet Rank',
+    yAxisText: 'Droplet #UMIs',
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  minCellSize: 990,
 };
 
 // CLASSIFIER - Classifier Empty Drops
@@ -647,6 +667,7 @@ const initialPlotConfigStates = {
   cellSizeDistributionKneePlot,
   mitochondrialFractionHistogram,
   mitochondrialFractionLogHistogram,
+  classifierKneePlot,
   classifierEmptyDropsPlot,
   featuresVsUMIsScatterplot,
   doubletScoreHistogram,

@@ -51,12 +51,11 @@ const VolcanoPlot = ({ experimentId }) => {
   const [spec, setSpec] = useState({
     spec: null,
     maxNegativeLogpValue: null,
-    xMax: null,
   });
 
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }, [experimentId]);
+  }, []);
 
   useEffect(() => {
     // Sync plot and settings with last used config
@@ -76,8 +75,8 @@ const VolcanoPlot = ({ experimentId }) => {
       controls: [{
         name: 'volcanoDimensions',
         props: {
-          xMax: Math.round(spec.xMax),
-          yMax: Math.round(spec.maxNegativeLogpValue) + 2,
+          xMax: 20,
+          yMax: Math.round(spec.maxNegativeLogpValue) * 2,
         },
       }],
       children: [
@@ -182,30 +181,18 @@ const VolcanoPlot = ({ experimentId }) => {
           p_val_adj <= pvalueThreshold
           && avg_log2FC >= config.logFoldChangeThreshold
         ) {
-          status = '1_significantUpregulated';
+          status = 'Upregulated';
         } else if (
           p_val_adj <= pvalueThreshold
           && avg_log2FC <= config.logFoldChangeThreshold * -1
         ) {
-          status = '2_significantDownregulated';
+          status = 'Downregulated';
         } else if (
           p_val_adj > pvalueThreshold
           && datum.avg_log2FC >= config.logFoldChangeThreshold
         ) {
-          status = '3_notSignificantUpregulated';
-        } else if (
-          p_val_adj > pvalueThreshold
-          && avg_log2FC <= config.logFoldChangeThreshold * -1
-        ) {
-          status = '4_notSignificantDownregulated';
-        } else if (
-          p_val_adj <= pvalueThreshold
-          && avg_log2FC > config.logFoldChangeThreshold * -1
-          && avg_log2FC < config.logFoldChangeThreshold
-        ) {
-          status = '5_significantChangeDirectionUnknown';
         } else {
-          status = '6_noDifference';
+          status = 'No difference';
         }
         // eslint-disable-next-line no-param-reassign
         datum.status = status;
@@ -221,13 +208,6 @@ const VolcanoPlot = ({ experimentId }) => {
   };
 
   const onComputeDiffExp = () => {
-    // These reset the ranges to `null`, which makes them automatically
-    // determined by the algorithm. Because of our bad DE, we have issues
-    // where we have extreme values, so this is not necessary right now.
-    // TODO: fix this when we have good DE
-
-    // maxNegativeLogpValueDomain: null,
-    // logFoldChangeDomain: null,
     comparisonCreated.current = true;
     dispatch(
       loadDifferentialExpression(experimentId, comparison.group[comparison.type], comparison.type),

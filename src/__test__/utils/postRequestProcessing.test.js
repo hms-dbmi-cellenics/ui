@@ -4,17 +4,21 @@ describe('calculateZScore correctly', () => {
   it('Should not break when there is no data', () => {
     const input = {
       geneA: {
-        mean: 1,
-        stdev: 1,
-        expression: [],
+        rawExpression: {
+          mean: 1,
+          stdev: 1,
+          expression: [],
+        },
       },
     };
 
     const output = {
       geneA: {
-        mean: 1,
-        stdev: 1,
-        expression: [],
+        rawExpression: {
+          mean: 1,
+          stdev: 1,
+          expression: [],
+        },
         zScore: [],
       },
     };
@@ -28,17 +32,21 @@ describe('calculateZScore correctly', () => {
 
     const input = {
       geneA: {
-        mean: 1,
-        stdev: 0,
-        expression: [2, 3, 4],
+        rawExpression: {
+          mean: 1,
+          stdev: 0,
+          expression: [2, 3, 4],
+        },
       },
     };
 
     const output = {
       geneA: {
-        mean: 1,
-        stdev: 0,
-        expression: [2, 3, 4],
+        rawExpression: {
+          mean: 1,
+          stdev: 0,
+          expression: [2, 3, 4],
+        },
         zScore: [Infinity, Infinity, Infinity],
       },
     };
@@ -50,17 +58,21 @@ describe('calculateZScore correctly', () => {
   it('Calculates zScore properly', () => {
     const input = {
       geneA: {
-        mean: 2,
-        stdev: 1,
-        expression: [1, 2, 3],
+        rawExpression: {
+          mean: 2,
+          stdev: 1,
+          expression: [1, 2, 3],
+        },
       },
     };
 
     const output = {
       geneA: {
-        mean: 2,
-        stdev: 1,
-        expression: [1, 2, 3],
+        rawExpression: {
+          mean: 2,
+          stdev: 1,
+          expression: [1, 2, 3],
+        },
         zScore: [-1, 0, 1],
       },
     };

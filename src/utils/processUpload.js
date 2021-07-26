@@ -112,16 +112,24 @@ const compressAndUploadSingleFile = async (
   );
 };
 
+const renameFileIfNeeded = (fileName, type) => {
+  // rename files to include .gz
+  const uncompressed = !['application/gzip', 'application/x-gzip'].includes(type) && !fileName.endsWith('.gz');
+  let newFileName = uncompressed ? `${fileName}.gz` : fileName;
+
+  // We rename genes.tsv files to features.tsv (for a single entry)
+  newFileName = newFileName.replace('genes', 'features');
+
+  return newFileName;
+};
+
 const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
   const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
-    const uncompressed = !['application/gzip', 'application/x-gzip'].includes(file.bundle.type);
-
-    const newFileName = uncompressed ? `${fileName}.gz` : fileName;
+    const newFileName = renameFileIfNeeded(fileName, file.bundle.type);
     const newFile = {
       ...file,
       name: newFileName,
     };
-
     result[newFileName] = newFile;
 
     return result;
@@ -146,10 +154,7 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
     const sampleName = pathToArray[0];
-    let fileName = _.last(pathToArray);
-
-    // We rename genes.tsv files to features.tsv (for a single entry)
-    fileName = fileName.replace('genes', 'features');
+    const fileName = _.last(pathToArray);
 
     // Update the file name so that instead of being saved as
     // e.g. WT13/matrix.tsv.gz, we save it as matrix.tsv.gz
@@ -191,5 +196,5 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   });
 };
 
-export { compressAndUploadSingleFile, metadataForBundle };
+export { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded };
 export default processUpload;

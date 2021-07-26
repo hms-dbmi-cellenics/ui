@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
 import CalculationConfig from '../../../../components/data-processing/MitochondrialContent/CalculationConfig';
-import initialExperimentState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
@@ -21,6 +21,8 @@ const sampleId = 'sample-WT';
 const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const experimentId = 'e1234';
 const filterName = 'mitochondrialContent';
+
+const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
 const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
 const sample2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);

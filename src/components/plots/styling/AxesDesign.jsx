@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Slider, Form, Input,
+  Slider, Form, Input, Radio, Switch,
 } from 'antd';
 import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
@@ -33,7 +33,8 @@ const AxesDesign = (props) => {
           }}
         />
       </Form.Item>
-      <Form.Item label='Axes Label Size'>
+
+      <Form.Item label='Axes Title Size'>
         <Slider
           value={newConfig.axes.titleFontSize}
           min={5}
@@ -45,7 +46,17 @@ const AxesDesign = (props) => {
         />
       </Form.Item>
 
-      <Form.Item label='Axes Ticks Size'>
+      <Form.Item label='Rotate X-Axis Labels'>
+        <Switch
+          checked={newConfig.axes.xAxisRotateLabels}
+          onChange={(checked) => {
+              handleChange({ axes: { xAxisRotateLabels: checked } })
+            }}
+          >
+        </Switch>
+      </Form.Item>
+
+      <Form.Item label='Axes Label Size'>
         <Slider
           value={newConfig.axes.labelFontSize}
           min={5}
@@ -69,7 +80,7 @@ const AxesDesign = (props) => {
         />
       </Form.Item>
 
-      <Form.Item label='Grid-line weight'>
+      <Form.Item label='Grid Line Weight'>
         <Slider
           value={newConfig.axes.gridOpacity}
           min={0}

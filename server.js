@@ -2,7 +2,6 @@ const express = require('express');
 const cp = require('child_process');
 const next = require('next');
 const os = require('os');
-const { publicRuntimeConfig, serverRuntimeConfig } = require('./next.config');
 
 function getIPAdress() {
   const interfaces = os.networkInterfaces();
@@ -19,8 +18,8 @@ function getIPAdress() {
   }
 }
 
-const { isDev } = publicRuntimeConfig;
-const { PORT } = serverRuntimeConfig;
+const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+const port = isDev ? 5000 : (process.env.PORT || 5000);
 
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
@@ -31,13 +30,13 @@ app.prepare()
 
     server.get('*', (req, res) => handle(req, res));
 
-    server.listen(PORT, (err) => {
+    server.listen(port, (err) => {
       if (err) throw err;
-      const serverUrl = `http://localhost:${PORT}`;
+      const serverUrl = `http://localhost:${port}`;
       console.log(`
         App is running at:
         - Local: ${serverUrl}
-        - Network: http://${getIPAdress()}:${PORT}
+        - Network: http://${getIPAdress()}:${port}
       `);
       // development auto open browser
       if (isDev) {

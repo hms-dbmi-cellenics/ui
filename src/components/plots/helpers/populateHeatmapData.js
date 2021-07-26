@@ -2,11 +2,15 @@ import _ from 'lodash';
 import SetOperations from '../../../utils/setOperations';
 import { union } from '../../../utils/cellSetOperations';
 
-const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsampling = false) => {
+const populateHeatmapData = (
+  cellSets, heatmapSettings, expression,
+  selectedGenes, downsampling = false,
+) => {
   const { hierarchy, properties, hidden } = cellSets;
   const {
-    selectedTracks, groupedTracks, expressionValue,
-  } = config;
+    selectedTracks, groupedTracks, expressionValue, truncatedValues,
+  } = heatmapSettings;
+
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
 
@@ -14,6 +18,7 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
   // e.g: node = {key: louvain, children: []}, {...}
   const getCellsSetInGroup = (node) => {
     let cellIdsInAnyGroupBy = new Set();
+
     node.children.forEach(({ key }) => {
       const cellSet = getCellsInSet(key);
       // Union of allCellsInSets and cellSet
@@ -112,13 +117,12 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
 
     return intersectedCellSets;
   };
-  const getAllEnabledCellIds = (groupByRootNodes) => {
-    // const cellIdsInAnyGroupBy = getAllCellsSet(groupByRootNodes);
-
+  const getAllEnabledCellIds = () => {
     // we want to avoid displaying elements which are not in a louvain cluster
     // so initially consider as enabled only cells in louvain clusters
     // See: https://biomage.atlassian.net/browse/BIOMAGE-809
-    const louvainClusters = groupByRootNodes.find((groupingName) => groupingName.key === 'louvain');
+    const louvainClusters = hierarchy.find((clusters) => clusters.key === 'louvain');
+
     const cellIsInLouvainCluster = getCellsSetInGroup(louvainClusters);
 
     // Remove cells from groups marked as hidden by the user in the UI.
@@ -130,7 +134,7 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
   };
   const splitByCartesianProductIntersections = (groupByRootNodes) => {
     // Beginning with only one set of all the cells that we want to see
-    let buckets = [getAllEnabledCellIds(groupByRootNodes)];
+    let buckets = [getAllEnabledCellIds()];
 
     // Perform successive cartesian product intersections across each groupby
     groupByRootNodes.forEach((currentRootNode) => {
@@ -191,25 +195,37 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
   // eslint-disable-next-line no-shadow
   const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
 
-  // Mapping between expressionValue with key to data
-  const dataSource = {
-    raw: 'expression',
-    zScore: 'zScore',
-  };
-
   // Directly generate heatmap data.
   cartesian(
     data.geneOrder, data.cellOrder,
   ).forEach(
     ([gene, cellId]) => {
-      if (!expression.data[gene]) {
+      const expressionDataForGene = expression.data[gene];
+
+      if (!expressionDataForGene) {
         return;
+      }
+
+      let expressionValues = {};
+
+      if (expressionValue === 'zScore') {
+        expressionValues = {
+          color: expressionDataForGene.zScore, display: expressionDataForGene.zScore,
+        };
+      } else {
+        const { rawExpression, truncatedExpression } = expressionDataForGene;
+
+        expressionValues = {
+          color: truncatedValues ? truncatedExpression.expression : rawExpression.expression,
+          display: rawExpression.expression,
+        };
       }
 
       data.heatmapData.push({
         cellId,
         gene,
-        expression: expression.data[gene][dataSource[expressionValue]][cellId],
+        expression: expressionValues.color[cellId],
+        displayExpression: expressionValues.display[cellId],
       });
     },
   );

@@ -103,7 +103,7 @@ const HeatmapMetadataTrackSettings = (props) => {
     <div style={{ padding: '5px' }}>
       <ReorderableList
         onChange={setTrackData}
-        defaultList={trackData}
+        listData={trackData}
         leftItem={leftItem}
         rightItem={rightItem}
       />

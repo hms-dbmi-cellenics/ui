@@ -5,7 +5,7 @@ const generateSpec = (config, plotData) => {
 
   const minCellSizeItem = _.findLast(
     plotData,
-    (element) => element.log_u >= Math.log(config.minCellSize),
+    (element) => element.u >= config.minCellSize,
   );
 
   const minCellSizeRank = minCellSizeItem?.rank ?? 0;
@@ -65,7 +65,7 @@ const generateSpec = (config, plotData) => {
           },
           {
             type: 'filter',
-            expr: 'datum.log_u > 0 && datum.rank > 0',
+            expr: 'datum.u > 0 && datum.rank > 0',
           },
         ],
       },
@@ -100,10 +100,10 @@ const generateSpec = (config, plotData) => {
       },
       {
         name: 'yscale',
-        type: 'linear',
-        range: 'height',
+        type: 'log',
         nice: true,
-        domain: { data: 'plotData', field: 'log_u' },
+        range: 'height',
+        domain: { data: 'plotData', field: 'u' },
       },
       {
         name: 'color',
@@ -120,26 +120,28 @@ const generateSpec = (config, plotData) => {
         tickCount: 5,
         grid: true,
         zindex: 1,
-        title: { value: config.axes.xAxisText },
-        titleFont: { value: config.fontStyle.font },
-        labelFont: { value: config.fontStyle.font },
-        titleFontSize: { value: config.axes.titleFontSize },
-        labelFontSize: { value: config.axes.labelFontSize },
-        offset: { value: config.axes.offset },
-        gridOpacity: { value: config.axes.gridOpacity / 20 },
+        title: config.axes.xAxisText,
+        titleFont: config.fontStyle.font,
+        labelFont: config.fontStyle.font,
+        titleFontSize: config.axes.titleFontSize,
+        labelFontSize: config.axes.labelFontSize,
+        offset: config.axes.offset,
+        gridOpacity: config.axes.gridOpacity / 20,
+        labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
+        labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
       },
       {
         orient: 'left',
         scale: 'yscale',
         grid: true,
         zindex: 1,
-        title: { value: config.axes.yAxisText },
-        titleFont: { value: config.fontStyle.font },
-        labelFont: { value: config.fontStyle.font },
-        titleFontSize: { value: config.axes.titleFontSize },
-        labelFontSize: { value: config.axes.labelFontSize },
-        offset: { value: config.axes.offset },
-        gridOpacity: { value: config.axes.gridOpacity / 20 },
+        title: config.axes.yAxisText,
+        titleFont: config.fontStyle.font,
+        labelFont: config.fontStyle.font,
+        titleFontSize: config.axes.titleFontSize,
+        labelFontSize: config.axes.labelFontSize,
+        offset: config.axes.offset,
+        gridOpacity: config.axes.gridOpacity / 20,
       },
     ],
 
@@ -147,11 +149,12 @@ const generateSpec = (config, plotData) => {
       {
         type: 'area',
         from: { data: 'lowerHalfPlotData' },
+        clip: true,
         encode: {
           enter: {
             x: { scale: 'xscale', field: 'rank' },
-            y: { scale: 'yscale', field: 'log_u' },
-            y2: { scale: 'yscale', value: 0 },
+            y: { scale: 'yscale', field: 'u' },
+            y2: { scale: 'yscale', value: 1 },
             fill: { value: 'green' },
           },
         },
@@ -159,11 +162,12 @@ const generateSpec = (config, plotData) => {
       {
         type: 'area',
         from: { data: 'higherHalfPlotData' },
+        clip: true,
         encode: {
           enter: {
             x: { scale: 'xscale', field: 'rank' },
-            y: { scale: 'yscale', field: 'log_u' },
-            y2: { scale: 'yscale', value: 0 },
+            y: { scale: 'yscale', field: 'u' },
+            y2: { scale: 'yscale', value: 1 },
             fill: { value: '#f57b42' },
           },
         },
@@ -173,7 +177,7 @@ const generateSpec = (config, plotData) => {
         encode: {
           update: {
             x: { scale: 'xscale', value: minCellSizeRank },
-            y: { value: 0 },
+            y: 0,
             y2: { field: { group: 'height' } },
             strokeWidth: { value: 2 },
             strokeDash: { value: [8, 4] },
@@ -184,11 +188,11 @@ const generateSpec = (config, plotData) => {
     ],
     legends: legend,
     title: {
-      text: { value: config.title.text },
-      anchor: { value: config.title.anchor },
-      font: { value: config.fontStyle.font },
-      dx: { value: config.title.dx },
-      fontSize: { value: config.title.fontSize },
+      text: config.title.text,
+      anchor: config.title.anchor,
+      font: config.fontStyle.font,
+      dx: config.title.dx,
+      fontSize: config.title.fontSize,
     },
   };
 };

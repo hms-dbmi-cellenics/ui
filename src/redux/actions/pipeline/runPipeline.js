@@ -5,10 +5,42 @@ import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from '../../actionTypes/experimentSettings';
-import loadBackendStatus from '../experimentSettings/loadBackendStatus';
+import loadBackendStatus from '../experimentSettings/backendStatus/loadBackendStatus';
 
-const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) => {
+import { loadEmbedding } from '../embedding';
+
+const runOnlyConfigureEmbedding = (experimentId, embeddingMethod, dispatch) => {
+  dispatch({
+    type: EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
+    payload: {},
+  });
+
+  // Only configure embedding was changed so we run loadEmbedding
+  dispatch(
+    loadEmbedding(
+      experimentId,
+      embeddingMethod,
+      true,
+    ),
+  );
+};
+
+const runPipeline = (experimentId) => async (dispatch, getState) => {
+  const { processing } = getState().experimentSettings;
+  const { changedQCFilters } = processing.meta;
+
+  if (changedQCFilters.size === 1 && changedQCFilters.has('configureEmbedding')) {
+    runOnlyConfigureEmbedding(
+      experimentId,
+      processing.configureEmbedding.embeddingSettings.method,
+      dispatch,
+    );
+
+    return;
+  }
+
   dispatch({
     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
@@ -16,7 +48,13 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
     },
   });
 
-  const processingConfig = getState().experimentSettings.processing[callerStepKey];
+  const changesToProcessingConfig = Array.from(changedQCFilters).map((key) => {
+    const currentConfig = processing[key];
+    return {
+      name: key,
+      body: currentConfig,
+    };
+  });
 
   const url = `/v1/experiments/${experimentId}/pipelines`;
   try {
@@ -34,18 +72,12 @@ const runPipeline = (experimentId, callerStepKey) => async (dispatch, getState) 
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          processingConfig: [
-            {
-              name: callerStepKey,
-              body: processingConfig,
-            },
-          ],
+          processingConfig: changesToProcessingConfig,
         }),
       },
     );
     const json = await response.json();
     throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
-
     dispatch({
       type: EXPERIMENT_SETTINGS_PIPELINE_START,
       payload: {},

@@ -16,7 +16,7 @@ import CrossHair from '../../../../components/data-exploration/embedding/CrossHa
 import CellInfo from '../../../../components/data-exploration/CellInfo';
 import { CELL_SETS_CREATE } from '../../../../redux/actionTypes/cellSets';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import initialExperimentState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import { CELL_INFO_UPDATE } from '../../../../redux/actionTypes/cellInfo';
 
 jest.mock('localforage');
@@ -27,6 +27,8 @@ let store;
 
 const width = 100;
 const height = 200;
+
+const initialExperimentState = generateExperimentSettingsMock([]);
 
 describe('Embedding', () => {
   const initialState = {
@@ -318,9 +320,16 @@ describe('Embedding', () => {
           loading: [],
           data: {
             REALGENE: {
-              min: 0,
-              max: 1.6,
-              expression: [0, 0.4, 0.5, 1.6],
+              rawExpression: {
+                min: 0,
+                max: 1.6,
+                expression: [0, 0.4, 0.5, 1.6],
+              },
+              truncatedExpression: {
+                min: 0,
+                max: 1.6,
+                expression: [0, 0.4, 0.5, 1.6],
+              },
             },
           },
         },
@@ -342,9 +351,6 @@ describe('Embedding', () => {
         <Embedding experimentId='1234' width={width} height={height} />
       </Provider>,
     );
-
-    const legend = embedding.find('Embedding div div img');
-    expect(legend.length).toEqual(1);
 
     const focusedGeneInfo = embedding.find('Embedding div label strong');
     expect(focusedGeneInfo.length).toEqual(1);

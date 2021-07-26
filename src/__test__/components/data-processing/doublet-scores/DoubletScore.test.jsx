@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
 import CalculationConfig from '../../../../components/data-processing/DoubletScores/CalculationConfig';
-import initialExperimentState from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
@@ -21,6 +21,8 @@ const sampleId = 'sample-WT';
 const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const filterName = 'doubletScores';
 const experimentId = 'e1234';
+
+const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
 const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
 
