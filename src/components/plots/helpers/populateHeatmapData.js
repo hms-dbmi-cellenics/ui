@@ -2,11 +2,14 @@ import _ from 'lodash';
 import SetOperations from '../../../utils/setOperations';
 import { union } from '../../../utils/cellSetOperations';
 
-const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsampling = false) => {
+const populateHeatmapData = (
+  cellSets, heatmapSettings, expression,
+  selectedGenes, downsampling = false,
+) => {
   const { hierarchy, properties, hidden } = cellSets;
   const {
     selectedTracks, groupedTracks, expressionValue, truncatedValues,
-  } = config;
+  } = heatmapSettings;
 
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
@@ -15,6 +18,7 @@ const populateHeatmapData = (cellSets, config, expression, selectedGenes, downsa
   // e.g: node = {key: louvain, children: []}, {...}
   const getCellsSetInGroup = (node) => {
     let cellIdsInAnyGroupBy = new Set();
+
     node.children.forEach(({ key }) => {
       const cellSet = getCellsInSet(key);
       // Union of allCellsInSets and cellSet

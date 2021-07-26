@@ -27,6 +27,10 @@ const initialState = {
   },
   selected: [],
   focused: undefined,
+  markers: {
+    loading: false,
+    error: false,
+  },
 };
 
 export { initialViewState, initialExpressionState };
