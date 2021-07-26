@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Row,
@@ -13,18 +14,18 @@ import { CSVLink } from 'react-csv';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
-import { generateSpec } from '../../../../../utils/plotSpecs/generateVolcanoSpec';
-import Header from '../../../../../components/plots/Header';
-import DiffExprCompute from '../../../../../components/data-exploration/differential-expression-tool/DiffExprCompute';
+import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import Header from 'components/plots/Header';
+import { generateSpec } from 'utils/plotSpecs/generateVolcanoSpec';
+import DiffExprCompute from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig';
-import loadDifferentialExpression from '../../../../../redux/actions/differentialExpression/loadDifferentialExpression';
-import PlatformError from '../../../../../components/PlatformError';
-import { setComparisonGroup } from '../../../../../redux/actions/differentialExpression';
-import Loader from '../../../../../components/Loader';
+} from 'redux/actions/componentConfig';
+import PlatformError from 'components/PlatformError';
+import { setComparisonGroup } from 'redux/actions/differentialExpression';
+import Loader from 'components/Loader';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
