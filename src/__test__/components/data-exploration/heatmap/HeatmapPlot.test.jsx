@@ -3,9 +3,13 @@ import { configure, mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
-import { enableFetchMocks } from 'jest-fetch-mock';
+import waitForActions from 'redux-mock-store-await-actions';
+import configureStore from 'redux-mock-store';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { Empty } from 'antd';
+
+import { MARKER_GENES_LOADING } from '../../../../redux/actionTypes/genes';
+
 // eslint-disable-next-line import/no-named-as-default
 import HeatmapPlot from '../../../../components/data-exploration/heatmap/HeatmapPlot';
 import VegaHeatmap from '../../../../components/data-exploration/heatmap/VegaHeatmap';
@@ -14,12 +18,15 @@ import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
 
 jest.mock('localforage');
 jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
+
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
 enableFetchMocks();
 
-const mockStore = configureMockStore([thunk]);
+const mockStore = configureStore([thunk]);
 configure({ adapter: new Adapter() });
+
 let component;
+
 const componentType = 'interactiveHeatmap';
 
 const initialState = {
@@ -50,6 +57,10 @@ const initialState = {
           error: false,
         },
       },
+    },
+    markers: {
+      loading: false,
+      error: false,
     },
   },
   cellSets: {
@@ -90,11 +101,27 @@ const initialState = {
       },
     },
   },
+  experimentSettings: {
+    processing: {
+      meta: {
+        loading: false,
+      },
+    },
+  },
 };
 
 describe('HeatmapPlot', () => {
+  beforeEach(() => {
+    const response = new Response(JSON.stringify({}));
+
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResolvedValue(response);
+  });
+
   afterEach(() => {
     component.unmount();
+    jest.clearAllMocks();
   });
 
   it('renders Empty component when no selected gene', () => {
@@ -242,5 +269,47 @@ describe('HeatmapPlot', () => {
 
     expect(loadAction.type).toBe(CELL_SETS_LOADING);
     expect(loadAction).toMatchSnapshot();
+  });
+
+  it('loads marker genes if it can', async () => {
+    const store = mockStore({
+      ...initialState,
+      cellSets: {
+        ...initialState.cellSets,
+        loading: true,
+        error: false,
+      },
+      genes: {
+        ...initialState.genes,
+        expression: {
+          ...initialState.genes.expression,
+          loading: false,
+          error: 'Some error',
+        },
+      },
+      experimentSettings: {
+        ...initialState.experimentSettings,
+        processing: {
+          ...initialState.processing,
+          configureEmbedding: {
+            clusteringSettings: { methodSettings: { louvain: { resolution: 10 } } },
+          },
+        },
+      },
+    });
+
+    component = mount(
+      <Provider store={store}>
+        <HeatmapPlot experimentId='123' width={200} height={200} />
+      </Provider>,
+    );
+
+    expect(component.find('HeatmapPlot').length).toEqual(1);
+
+    await waitForActions(
+      store,
+      [MARKER_GENES_LOADING],
+      { matcher: waitForActions.matchers.containing },
+    );
   });
 });

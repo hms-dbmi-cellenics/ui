@@ -6,8 +6,8 @@ const generateSpec = (config, groupName) => {
       orient: 'bottom',
       direction: 'horizontal',
       title: ['Intensity'],
-      labelFont: { value: config.fontStyle.font },
-      titleFont: { value: config.fontStyle.font },
+      labelFont: config.fontStyle.font,
+      titleFont: config.fontStyle.font,
       gradientLength: {
         signal: 'width',
       },
@@ -20,7 +20,7 @@ const generateSpec = (config, groupName) => {
       direction: 'vertical',
       offset: 40,
       symbolType: 'square',
-      symbolSize: { value: 200 },
+      symbolSize: 200,
       encode: {
         labels: {
           update: {
@@ -28,8 +28,8 @@ const generateSpec = (config, groupName) => {
           },
         },
       },
-      labelFont: { value: config.fontStyle.font },
-      titleFont: { value: config.fontStyle.font },
+      labelFont: config.fontStyle.font,
+      titleFont: config.fontStyle.font,
     },
   ];
 
@@ -40,8 +40,8 @@ const generateSpec = (config, groupName) => {
         type: 'gradient',
         title: ['Intensity'],
         orient: 'left',
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
+        labelFont: config.fontStyle.font,
+        titleFont: config.fontStyle.font,
         gradientLength: {
           signal: 'height / 3',
         },
@@ -52,7 +52,7 @@ const generateSpec = (config, groupName) => {
         type: 'symbol',
         orient: 'right',
         symbolType: 'square',
-        symbolSize: { value: 200 },
+        symbolSize: 200,
         encode: {
           labels: {
             update: {
@@ -61,8 +61,8 @@ const generateSpec = (config, groupName) => {
           },
         },
         direction: 'vertical',
-        labelFont: { value: config.fontStyle.font },
-        titleFont: { value: config.fontStyle.font },
+        labelFont: config.fontStyle.font,
+        titleFont: config.fontStyle.font,
         labels: {
           text: 'asdsa',
         },
@@ -286,12 +286,12 @@ const generateSpec = (config, groupName) => {
     ],
     title:
     {
-      text: { value: config.title.text },
-      color: { value: config.colour.masterColour },
-      anchor: { value: config.title.anchor },
-      font: { value: config.fontStyle.font },
-      dx: { value: config.title.dx },
-      fontSize: { value: config.title.fontSize },
+      text: config.title.text,
+      color: config.colour.masterColour,
+      anchor: config.title.anchor,
+      font: config.fontStyle.font,
+      dx: config.title.dx,
+      fontSize: config.title.fontSize,
     },
   };
 };
