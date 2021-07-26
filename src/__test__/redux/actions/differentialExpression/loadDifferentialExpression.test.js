@@ -62,7 +62,7 @@ describe('loadDifferentialExpression action', () => {
     expect(loadingAction.type).toEqual(DIFF_EXPR_LOADING);
 
     expect(fetchCachedWork).toHaveBeenCalledTimes(1);
-    expect(fetchCachedWork).toHaveBeenCalledWith('1234', 60,
+    expect(fetchCachedWork).toHaveBeenCalledWith('1234',
       {
         cellSet: 'louvain-0',
         compareWith: 'louvain-1',
@@ -72,8 +72,10 @@ describe('loadDifferentialExpression action', () => {
       },
       backendStatus.status,
       {
-        pagination: {
-          limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
+        extras: {
+          pagination: {
+            limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
+          },
         },
       });
     expect(loadingAction).toMatchSnapshot();
@@ -129,7 +131,7 @@ describe('loadDifferentialExpression action', () => {
     expect(loadingAction).toMatchSnapshot();
 
     expect(fetchCachedWork).toHaveBeenCalledTimes(1);
-    expect(fetchCachedWork).toHaveBeenCalledWith('1234', 60,
+    expect(fetchCachedWork).toHaveBeenCalledWith('1234',
       {
         cellSet: 'louvain-0',
         compareWith: 'louvain-1',
@@ -139,8 +141,10 @@ describe('loadDifferentialExpression action', () => {
       },
       backendStatus.status,
       {
-        pagination: {
-          limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
+        extras: {
+          pagination: {
+            limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
+          },
         },
       });
 

@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`markerGenesLoaded returns correct state 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {
+      "geneA": Object {
+        "rawExpression": Object {
+          "expression": Array [
+            1,
+          ],
+          "mean": 1,
+          "stdev": 1,
+        },
+        "zScore": Array [
+          0,
+        ],
+      },
+    },
+    "views": Object {
+      "interactiveHeatmap": Object {
+        "data": Array [
+          "geneA",
+        ],
+        "error": false,
+        "fetching": false,
+      },
+    },
+  },
+  "markers": Object {
+    "error": false,
+    "loading": false,
+  },
+}
+`;
