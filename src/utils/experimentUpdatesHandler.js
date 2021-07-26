@@ -1,7 +1,7 @@
 import { updateBackendStatus, updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
-import { updateCellSetsClustering } from '../redux/actions/cellSets';
+import { updateCellSetsClustering, updateCellSets } from '../redux/actions/cellSets';
 
 const updateTypes = {
   QC: 'qc',
@@ -37,7 +37,6 @@ const onQCUpdate = (update, dispatch) => {
   const { input, output } = update;
 
   const processingConfigUpdate = output.config;
-
   if (processingConfigUpdate) {
     dispatch(updateProcessingSettingsFromQC(
       input.taskName,
@@ -49,6 +48,11 @@ const onQCUpdate = (update, dispatch) => {
     Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
       dispatch(updatePlotData(plotUuid, plotData));
     });
+  }
+
+  const updatedCellSets = output.cellSets;
+  if (updatedCellSets) {
+    dispatch(updateCellSets(updatedCellSets));
   }
 };
 
