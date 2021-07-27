@@ -52,7 +52,9 @@ const generateSpec = (configSrc, data) => {
     ? [0, config.maxNegativeLogpValueDomain]
     : { data: 'data', field: 'neglogpvalue' };
 
-  const textEquation = `datum.avg_log2FC !== 'NA' && datum.neglogpvalue >${config.textThresholdValue}`;
+  // adding gene labels above the set Y value only for the significant genes
+  const geneLabelsEquation = `datum.avg_log2FC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
+
   let legend = [];
   if (config.legend.enabled) {
     legend = [
@@ -123,7 +125,7 @@ const generateSpec = (configSrc, data) => {
         transform: [
           {
             type: 'filter',
-            expr: textEquation,
+            expr: geneLabelsEquation,
           }],
       },
 
@@ -252,7 +254,7 @@ const generateSpec = (configSrc, data) => {
             x: { scale: 'x', field: 'avg_log2FC' },
             y: { scale: 'y', field: 'neglogpvalue' },
 
-            fill: config.colour.masterColour,
+            fill: { value: config.colour.masterColour },
             text: { field: 'gene_names' },
           },
           transform: [
