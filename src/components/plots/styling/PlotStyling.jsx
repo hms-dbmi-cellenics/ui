@@ -27,6 +27,7 @@ import VolcanoDimensionsRangeEditor from './volcano/DimensionsRangeEditor';
 import VolcanoThresholdsGuidesEditor from './volcano/ThresholdsGuidesEditor';
 import VolcanoMarkersEditor from './volcano/MarkersEditor';
 import VolcanoDisplayLabels from './volcano/DisplayLabels';
+import SingleGeneSelection from './SingleGeneSelection';
 
 const { Panel } = Collapse;
 const PlotStyling = (props) => {
@@ -61,7 +62,17 @@ const PlotStyling = (props) => {
       return (
         <Panel header={el.panelTitle} key={el.panelTitle}>
           {el.header}
-
+          {/* {
+            panelTitle: 'Legend',
+          controls: [{
+            name: 'legend',
+          props: {
+            option: {
+            positions: 'top-bottom',
+          },
+        },
+      }],
+    }, */}
           {el.controls.map((control) => {
             // If control is a string, no prop is passed
             if (_.isString(control)) {

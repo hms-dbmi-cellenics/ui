@@ -1,5 +1,6 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -16,15 +17,16 @@ import {
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
-import SelectData from '../../../../../components/plots/styling/violin/SelectData';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import SelectData from 'components/plots/styling/violin/SelectData';
+import ViolinControls from 'components/plots/styling/violin/ViolinControls';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig/index';
-import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import Header from '../../../../../components/plots/Header';
-import ViolinPlot from '../../../../../components/plots/ViolinPlot';
+} from 'redux/actions/componentConfig/index';
+import { loadCellSets } from 'redux/actions/cellSets';
+import Header from 'components/plots/Header';
+import ViolinPlot from 'components/plots/ViolinPlot';
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -42,6 +44,7 @@ const plotType = 'violin';
 const ViolinIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const [shownGene, setShownGene] = useState(config?.gene);
   const cellSets = useSelector((state) => state?.cellSets);
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -92,6 +95,7 @@ const ViolinIndex = ({ experimentId }) => {
         },
       }],
     },
+
   ];
 
   const changeDisplayedGene = (geneName) => {
@@ -104,7 +108,7 @@ const ViolinIndex = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene Selection' key='666'>
+      {/* <Panel header='Gene Selection' key='666'>
         {config ? (
           <Search
             style={{ width: '100%' }}
@@ -113,8 +117,8 @@ const ViolinIndex = ({ experimentId }) => {
             onSearch={(val) => changeDisplayedGene(val)}
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
-      </Panel>
-      <Panel header='Select Data' key='15'>
+      </Panel> */}
+      {/* <Panel header='Select Data' key='15'>
         {config && !cellSets.loading && !cellSets.error ? (
           <SelectData
             config={config}
@@ -147,7 +151,12 @@ const ViolinIndex = ({ experimentId }) => {
             </Form.Item>
           </div>
         ) : <Skeleton.Input style={{ width: 200 }} active />}
-      </Panel>
+      </Panel> */}
+      <ViolinControls
+        config={config}
+        onUpdate={updatePlotWithChanges}
+        setShownGene={setShownGene}
+      />
     </>
   );
 
