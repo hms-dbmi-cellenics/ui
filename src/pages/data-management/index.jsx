@@ -86,7 +86,7 @@ const DataManagementPage = ({ route }) => {
   };
 
   const TILE_MAP = {
-    'Projects List': {
+    'Projects': {
       toolbarControls: [],
       component: (width, height) => (
         <Space
@@ -102,7 +102,7 @@ const DataManagementPage = ({ route }) => {
         </Space>
       ),
     },
-    'Data Management': {
+    'Samples': {
       toolbarControls: [],
       component: (width, height) => (
         <ProjectDetails width={width} height={height} />
@@ -112,8 +112,8 @@ const DataManagementPage = ({ route }) => {
 
   const windows = {
     direction: 'row',
-    first: 'Projects List',
-    second: 'Data Management',
+    first: 'Projects',
+    second: 'Samples',
     splitPercentage: 23,
   };
 
