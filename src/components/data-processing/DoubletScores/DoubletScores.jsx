@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space, Skeleton,
+  Collapse, Row, Col, Space, Skeleton, Divider,
 } from 'antd';
 import {
   updatePlotConfig,
@@ -12,11 +12,12 @@ import {
 } from '../../../redux/actions/componentConfig';
 
 import DoubletScoreHistogram from '../../plots/DoubletScoreHistogram';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
-import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
+import FilterResultTable from '../FilterResultTable';
 
 const { Panel } = Collapse;
 
@@ -36,6 +37,8 @@ const DoubletScores = (props) => {
   } = props;
 
   const plotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+  const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 1);
+  const filterTableData = useSelector((state) => state.componentConfig[filterTableUuid]?.plotData);
 
   const dispatch = useDispatch();
 
@@ -57,6 +60,10 @@ const DoubletScores = (props) => {
 
     setRenderConfig(newConfig);
   }, [config, expConfig]);
+
+  useEffect(() => {
+    if (!filterTableData) dispatch(loadPlotConfig(experimentId, filterTableUuid, 'filterTable'));
+  }, []);
 
   useEffect(() => {
     if (!config) {
@@ -113,8 +120,19 @@ const DoubletScores = (props) => {
   return (
     <>
       <Row gutter={16}>
-        <Col flex='auto'>
-          {renderPlot()}
+        <Col span={18}>
+          <Row>
+            <Col flex='auto'>
+              {renderPlot()}
+            </Col>
+          </Row>
+
+          <Divider />
+          <Row style={{ marginTop: '0.5em' }}>
+            {filterTableData
+              ? <FilterResultTable tableData={filterTableData} />
+              : <Skeleton />}
+          </Row>
         </Col>
 
         <Col flex='1 0px'>
