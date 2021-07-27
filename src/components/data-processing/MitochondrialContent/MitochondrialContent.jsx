@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Row, Col, Space, Skeleton,
+  Collapse, Row, Col, Space, Skeleton, Divider,
 } from 'antd';
 
 import {
@@ -20,6 +20,7 @@ import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
 import CalculationConfigContainer from '../CalculationConfigContainer';
 import CalculationConfig from './CalculationConfig';
+import FilterResultTable from '../FilterResultTable';
 
 const { Panel } = Collapse;
 
@@ -41,6 +42,8 @@ const MitochondrialContent = (props) => {
 
   const [selectedPlot, setSelectedPlot] = useState('histogram');
   const [plot, setPlot] = useState(null);
+  const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 2);
+  const filterTableData = useSelector((state) => state.componentConfig[filterTableUuid]?.plotData);
 
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
@@ -101,6 +104,10 @@ const MitochondrialContent = (props) => {
   }, []);
 
   useEffect(() => {
+    if (!filterTableData) dispatch(loadPlotConfig(experimentId, filterTableUuid, 'filterTable'));
+  }, []);
+
+  useEffect(() => {
     if (selectedConfig && selectedPlotData && expConfig) {
       let newConfig = _.clone(selectedConfig);
 
@@ -152,38 +159,47 @@ const MitochondrialContent = (props) => {
   return (
     <>
       <Row gutter={16}>
-        <Col flex='auto'>
-          {renderPlot()}
+        <Col span={18}>
+          <Row>
+            <Col flex='auto'>
+              {renderPlot()}
+            </Col>
+
+            <Col flex='1 0px'>
+              <Space direction='vertical'>
+                {Object.entries(plots).map(([key, plotObj]) => (
+                  <button
+                    type='button'
+                    key={key}
+                    onClick={() => setSelectedPlot(key)}
+                    style={{
+                      margin: 0,
+                      backgroundColor: 'transparent',
+                      align: 'center',
+                      padding: '8px',
+                      border: '1px solid #000',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <MiniPlot
+                      experimentId={experimentId}
+                      plotUuid={plotObj.plotUuid}
+                      plotFn={plotObj.plot}
+                      actions={false}
+                    />
+                  </button>
+
+                ))}
+              </Space>
+            </Col>
+          </Row>
+          <Divider />
+          <Row style={{ marginTop: '0.5em' }}>
+            {filterTableData
+              ? <FilterResultTable tableData={filterTableData} />
+              : <Skeleton />}
+          </Row>
         </Col>
-
-        <Col flex='1 0px'>
-          <Space direction='vertical'>
-            {Object.entries(plots).map(([key, plotObj]) => (
-              <button
-                type='button'
-                key={key}
-                onClick={() => setSelectedPlot(key)}
-                style={{
-                  margin: 0,
-                  backgroundColor: 'transparent',
-                  align: 'center',
-                  padding: '8px',
-                  border: '1px solid #000',
-                  cursor: 'pointer',
-                }}
-              >
-                <MiniPlot
-                  experimentId={experimentId}
-                  plotUuid={plotObj.plotUuid}
-                  plotFn={plotObj.plot}
-                  actions={false}
-                />
-              </button>
-
-            ))}
-          </Space>
-        </Col>
-
         <Col flex='1 0px'>
           <Collapse defaultActiveKey={['settings']}>
             <Panel header='Filtering Settings' key='settings'>
