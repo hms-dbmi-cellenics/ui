@@ -36,7 +36,6 @@ const loadGeneExpression = (
 
   let genesToFetch = [...genes];
   const genesAlreadyLoaded = Object.keys(geneData);
-
   if (!forceReloadAll) {
     genesToFetch = genesToFetch.filter(
       (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
@@ -46,8 +45,11 @@ const loadGeneExpression = (
   const displayedGenes = genesAlreadyLoaded.filter(
     (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
   );
-  console.log('DISPLAYED GENES ARE ', displayedGenes, 'ALREADY LOADED GENES ARE ', genesAlreadyLoaded, 'GENES ARE ', genes, ' genes to load are ', genesToFetch);
   if (genesToFetch.length === 0) {
+    // All genes are already loaded.
+    if (onUpdate) {
+      onUpdate({ shownGene: displayedGenes[0] });
+    }
     return dispatch({
       type: GENES_EXPRESSION_LOADED,
       payload: {
@@ -67,7 +69,9 @@ const loadGeneExpression = (
     const data = await fetchCachedWork(
       experimentId, body, backendStatus.status, { timeout: 30 },
     );
-    console.log('DATA IS ', data);
+    if (onUpdate) {
+      onUpdate({ shownGene: Object.keys(data)[0] });
+    }
     if (data[genesToFetch[0]]?.error) {
       pushNotificationMessage('error', data[genesToFetch[0]].message);
       dispatch({

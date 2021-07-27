@@ -12,7 +12,7 @@ import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
 
 const ViolinPlot = (props) => {
   const {
-    experimentId, config, plotUuid, plotData, actions,
+    experimentId, config, plotUuid, plotData, actions, searchedGene,
   } = props;
   const dispatch = useDispatch();
 
@@ -37,29 +37,46 @@ const ViolinPlot = (props) => {
     geneNamesFilter: null,
     sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
   };
+  const updatePlotWithChanges = (changes) => {
+    dispatch(updatePlotConfig(plotUuid, changes));
+  };
 
   useEffect(() => {
-    if (config?.shownGene === 'notSelected' && !highestDispersionLoading && !highestDispersionGene) {
+    // initially if there is a saved gene in the config
+    if (config?.shownGene !== 'notSelected') {
+      dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
+    }
+  }, []);
+
+  useEffect(() => {
+    // if no saved gene - load the highest dispersion one
+    if (config.shownGene === 'notSelected' && !highestDispersionLoading && !highestDispersionGene) {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
   }, [experimentId, config?.shownGene, highestDispersionLoading, highestDispersionGene]);
+
+  useEffect(() => {
+    // if no saved gene and highest dispersion gene is loaded - use it
+    updatePlotWithChanges({ title: { text: config.shownGene } });
+
+    if (config.shownGene === 'notSelected' && highestDispersionGene) {
+      updatePlotWithChanges({ shownGene: highestDispersionGene });
+      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
+    }
+  }, [experimentId, highestDispersionGene, config.shownGene]);
+
+  useEffect(() => {
+    // search for gene and update config.shownGene if letter-cases are not correct
+    if (searchedGene) {
+      dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid, updatePlotWithChanges));
+    }
+  }, [searchedGene]);
 
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
-
-  useEffect(() => {
-    if (config?.shownGene === 'notSelected' && highestDispersionGene) {
-      dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
-      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
-    }
-
-    if (config?.shownGene !== 'notSelected' && config) {
-      dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
-    }
-  }, [experimentId, highestDispersionGene, config?.shownGene]);
 
   useEffect(() => {
     if (plotData) {
@@ -152,6 +169,7 @@ ViolinPlot.propTypes = {
   config: PropTypes.object.isRequired,
   plotUuid: PropTypes.string.isRequired,
   plotData: PropTypes.object,
+  searchedGene: PropTypes.string.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,

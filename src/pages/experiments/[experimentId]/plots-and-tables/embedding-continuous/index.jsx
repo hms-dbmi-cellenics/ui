@@ -1,23 +1,24 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
 import React, { useState, useEffect } from 'react';
 import {
-  Row, Col, Space, Collapse, Input, Skeleton,
+  Row, Col, Space, Collapse, Skeleton,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
-import SelectData from '../../../../../components/plots/styling/embedding-continuous/SelectData';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig/index';
-import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import { loadGeneExpression, loadPaginatedGeneProperties } from '../../../../../redux/actions/genes';
-import Header from '../../../../../components/plots/Header';
-import ContinuousEmbeddingPlot from '../../../../../components/plots/ContinuousEmbeddingPlot';
+} from 'redux/actions/componentConfig/index';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { loadGeneExpression, loadPaginatedGeneProperties } from 'redux/actions/genes';
+import Header from 'components/plots/Header';
+import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
+import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
 
 const { Panel } = Collapse;
-const { Search } = Input;
 
 const route = {
   path: 'embedding-continuous',
@@ -52,22 +53,28 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
   };
 
-  const [shownGene, setShownGene] = useState('notSelected');
+  const [searchedGene, setSearchedGene] = useState();
+
+  useEffect(() => {
+    if (config?.shownGene !== 'notSelected' && config && !searchedGene) {
+      // if there is a saved gene in the config in the initial loading of the plot
+      dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
+    }
+  }, [config?.shownGene]);
 
   if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 
   useEffect(() => {
-    if (config?.shownGene === 'notSelected' && highestDispersionGene) {
-      dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
-      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
-      setShownGene(highestDispersionGene);
+    if (searchedGene) {
+      dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid, updatePlotWithChanges));
     }
-
-    if (config?.shownGene !== 'notSelected' && config) {
-      dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
-      setShownGene(config.shownGene);
+  }, [searchedGene]);
+  useEffect(() => {
+    if (config?.shownGene === 'notSelected' && highestDispersionGene) {
+      updatePlotWithChanges({ shownGene: highestDispersionGene });
+      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
     }
   }, [highestDispersionGene, config]);
 
@@ -113,21 +120,13 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     },
   ];
 
-  const changeDisplayedGene = (geneName) => {
-    updatePlotWithChanges({ shownGene: geneName });
-  };
-
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene Selection' key='666'>
-        {config ? (
-          <Search
-            style={{ width: '100%' }}
-            enterButton='Search'
-            defaultValue={config.shownGene}
-            onSearch={(val) => changeDisplayedGene(val)}
-          />
-        ) : <Skeleton.Input style={{ width: 200 }} active />}
+        <SingleGeneSelection
+          config={config}
+          setSearchedGene={setSearchedGene}
+        />
       </Panel>
       <Panel header='Select Data' key='15'>
         {config && !cellSets.loading && !cellSets.error ? (
@@ -159,14 +158,14 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
                   config={config}
                   plotUuid={plotUuid}
                   plotData={
-                    geneExpression.data[shownGene]?.rawExpression.expression
+                    geneExpression.data[config?.shownGene]?.rawExpression.expression
                   }
                   truncatedPlotData={
-                    geneExpression.data[shownGene]?.truncatedExpression.expression
+                    geneExpression.data[config?.shownGene]?.truncatedExpression.expression
                   }
                   loading={geneExpression.loading.length > 0}
                   error={geneExpression.error}
-                  reloadPlotData={() => loadGeneExpression(experimentId, [shownGene], plotUuid)}
+                  reloadPlotData={() => loadGeneExpression(experimentId, [config?.shownGene], plotUuid)}
                 />
               </Panel>
             </Collapse>

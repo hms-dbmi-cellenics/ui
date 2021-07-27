@@ -96,7 +96,9 @@ describe('loadGeneExpression action', () => {
       // No need to mock the result accurately.
       new Promise((resolve) => resolve({}))));
 
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
+    await store.dispatch(
+      loadGeneExpression(experimentId, loadingGenes, componentUuid, false, true),
+    );
 
     const firstCall = fetchCachedWork.mock.calls[1];
     expect(firstCall[1].genes).toEqual(['a', 'b', 'c']);
@@ -122,7 +124,9 @@ describe('loadGeneExpression action', () => {
 
     fetchCachedWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
+    await store.dispatch(
+      loadGeneExpression(experimentId, loadingGenes, componentUuid, false, true),
+    );
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);
@@ -143,7 +147,9 @@ describe('loadGeneExpression action', () => {
     });
 
     fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
+    await store.dispatch(
+      loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
+    );
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);

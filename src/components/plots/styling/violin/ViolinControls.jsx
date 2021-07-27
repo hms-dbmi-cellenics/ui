@@ -11,13 +11,17 @@ import SingleGeneSelection from '../SingleGeneSelection';
 const { Panel } = Collapse;
 
 const ViolinControls = (props) => {
-  const { config, onUpdate } = props;
+  const { config, onUpdate, setSearchedGene } = props;
   const cellSets = useSelector((state) => state.cellSets);
+
   return (
     <>
       <Collapse>
         <Panel header='Gene Selection' key='geneSelection'>
-          <SingleGeneSelection config={config} />
+          <SingleGeneSelection
+            config={config}
+            setSearchedGene={setSearchedGene}
+          />
         </Panel>
         <Panel header='Select Data' key='15'>
           {config && !cellSets.loading && !cellSets.error ? (
@@ -61,5 +65,6 @@ const ViolinControls = (props) => {
 ViolinControls.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  setSearchedGene: PropTypes.func.isRequired,
 };
 export default ViolinControls;
