@@ -595,11 +595,15 @@ const ProjectDetails = ({ width, height }) => {
       </Menu.Item>
       <Menu.Item
         onClick={async () => {
-          await dispatch(loadProcessingSettings(activeProject.experiments[0]));
+          const experiment = activeProject.experiments[0];
+          const experimentName = experiments[experiment]?.name
+
+          // load processing configuration
+          await dispatch(loadProcessingSettings(experiment));
           const config = _.omit(processingConfig, ['meta']);
 
           // // TODO: disable button if this is false
-          // const pipelineYetToRun = _.isEqual(Object.keys(config), ['meta'])
+          // const pipelineYetToRun = Object.keys(config).length === 0
 
           const filteredConfig = Object.entries(config)
             .map(([step, stepConfig]) =>
@@ -616,7 +620,12 @@ const ProjectDetails = ({ width, height }) => {
               ]
             )
 
-          console.log(INI.stringify(Object.fromEntries(filteredConfig)))
+          // TODO: remove unused method settings
+          // console.log(Object.fromEntries(filteredConfig))
+
+          const string = INI.stringify(Object.fromEntries(filteredConfig))
+          const blob = new Blob([string], {type: 'text/plain;charset=utf-8'});
+          saveAs(blob, `Data Processing Settings for ${experimentName}.txt`);
         }
         }>
         Data Processing settings
