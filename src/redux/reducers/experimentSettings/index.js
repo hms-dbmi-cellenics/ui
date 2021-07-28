@@ -16,6 +16,7 @@ import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
   EXPERIMENT_SETTINGS_UPDATE_SAMPLE_FROM_QC,
+  EXPERIMENT_SETTINGS_PROCESSING_SAVE,
 } from '../../actionTypes/experimentSettings';
 
 import updateNonSampleFilterSettings from './processingConfig/updateNonSampleFilterSettings';
@@ -31,6 +32,7 @@ import setSampleFilterSettingsAuto from './processingConfig/setSampleFilterSetti
 import addChangedQCFilter from './processingConfig/addChangedQCFilter';
 import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
 import updateSampleProcessingSettingsFromQC from './processingConfig/updateSampleProcessingSettingsFromQC';
+import processingSettingsSaved from './processingConfig/processingSettingsSaved';
 
 import updateExperimentInfo from './updateExperimentInfo';
 import pipelineStart from './pipelineStart';
@@ -51,6 +53,9 @@ const experimentSettingsReducer = (state = initialState, action) => {
     }
     case EXPERIMENT_SETTINGS_UPDATE_SAMPLE_FROM_QC: {
       return updateSampleProcessingSettingsFromQC(state, action);
+    }
+    case EXPERIMENT_SETTINGS_PROCESSING_SAVE: {
+      return processingSettingsSaved(state, action);
     }
     case EXPERIMENT_SETTINGS_PROCESSING_ERROR: {
       return processingSettingsError(state, action);

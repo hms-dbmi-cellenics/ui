@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col,
+  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Menu, Dropdown,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -575,6 +575,28 @@ const ProjectDetails = ({ width, height }) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
+  const DownloadDataMenu = (
+    <Menu>
+      <Menu.Item disabled>
+        <Tooltip title='Coming soon!' placement='left'>
+          {/* <Tooltip title='Samples have been merged' placement='left'> */}
+          Raw Seurat object (.rds)
+        </Tooltip>
+      </Menu.Item>
+      <Menu.Item disabled>
+        <Tooltip title='Coming soon!' placement='left'>
+          {/* <Tooltip title='Data Processing filters have been applied' placement='left'> */}
+          Processed Seurat object (.rds)
+        </Tooltip>
+      </Menu.Item>
+      <Menu.Item disabled>
+        <Tooltip title='Coming soon!' placement='left'>
+          Data Processing settings
+        </Tooltip>
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <>
       <FileUploadModal
@@ -631,6 +653,11 @@ const ProjectDetails = ({ width, height }) => {
               >
                 Add metadata
               </Button>
+              <Dropdown overlay={DownloadDataMenu} trigger={['click']}>
+                <Button>
+                  Download
+                </Button>
+              </Dropdown>
               <Button
                 type='primary'
                 disabled={

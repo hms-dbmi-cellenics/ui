@@ -107,7 +107,7 @@ const CalculationConfig = (props) => {
       embeddingSettings: {
         methodSettings: {
           umap: {
-            distanceMetric: parseFloat(value),
+            distanceMetric: value,
           },
         },
       },
@@ -196,13 +196,8 @@ const CalculationConfig = (props) => {
           value={umapSettings.distanceMetric}
           onChange={(value) => setDistanceMetric(value)}
         >
+          <Option value='cosine'>Cosine</Option>
           <Option value='euclidean'>Euclidean</Option>
-          <Option value='cosine' disabled>
-            {' '}
-            <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
-              Cosine
-            </Tooltip>
-          </Option>
         </Select>
       </Form.Item>
     </>
