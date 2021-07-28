@@ -66,7 +66,7 @@ const ProjectDetails = ({ width, height }) => {
     getFromUrlExpectOK,
   );
   const projects = useSelector((state) => state.projects);
-  const processingConfig = useSelector((state) => state.experimentSettings.processing)
+  const experimentSettings = useSelector((state) => state.experimentSettings)
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
@@ -600,7 +600,7 @@ const ProjectDetails = ({ width, height }) => {
 
           // load processing configuration
           await dispatch(loadProcessingSettings(experiment));
-          const config = _.omit(processingConfig, ['meta']);
+          const config = _.omit(experimentSettings.processing, ['meta']);
 
           // // TODO: disable button if this is false
           // const pipelineYetToRun = Object.keys(config).length === 0
