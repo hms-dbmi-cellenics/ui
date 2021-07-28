@@ -20,7 +20,7 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
     });
   }
 
-  const sampleOrder = { sample: getState().experimentSettings.info.sampleIds };
+  const sampleIds = { sample: getState().experimentSettings.info.sampleIds };
 
   const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
@@ -32,7 +32,7 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
       payload: {
         experimentId,
         data: json.cellSets,
-        order: sampleOrder,
+        order: sampleIds,
       },
     });
   } catch (e) {

@@ -46,7 +46,7 @@ const runGem2s = (projectId, experimentId) => async (dispatch, getState) => {
       payload: {
         experimentId,
         experimentName: experiments[experimentId].name,
-        projectId: experiments[experimentId].projectUuid,
+        projectId,
         sampleIds: projects[projectId].samples,
       },
     });
