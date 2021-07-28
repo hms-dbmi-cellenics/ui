@@ -5,12 +5,12 @@ import {
   Select,
 } from 'antd';
 
-import composeTree, { setHierarchyOrder } from '../../../../utils/composeTree';
+import composeTree from '../../../../utils/composeTree';
 
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
   const {
-    onUpdate, config, cellSets, sampleOrder,
+    onUpdate, config, cellSets,
   } = props;
   const { hierarchy, properties } = cellSets;
 
@@ -21,10 +21,7 @@ const SelectData = (props) => {
     onUpdate({ selectedPoints: value });
   };
 
-  console.log('== SAMPLE ORDER ==');
-  console.log(sampleOrder);
-
-  const tree = composeTree(setHierarchyOrder(hierarchy, sampleOrder), properties);
+  const tree = composeTree(hierarchy, properties);
 
   const renderChildren = (rootKey, children) => {
     if (!children || children.length === 0) { return (<></>); }
@@ -92,6 +89,5 @@ SelectData.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   cellSets: PropTypes.object.isRequired,
-  sampleOrder: PropTypes.array.isRequired,
 };
 export default SelectData;

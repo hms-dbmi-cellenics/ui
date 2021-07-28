@@ -41,10 +41,10 @@ const setHierarchyOrder = (inputHierarchy, order = null) => {
     .map((root) => {
       if (
         root.children.length > 0
-            && order.includes(root.children[0].key)) {
+            && order[root.key].includes(root.children[0].key)) {
         return {
           key: root.key,
-          children: order.map((sampleId) => ({ key: sampleId })),
+          children: order[root.key].map((sampleId) => ({ key: sampleId })),
         };
       }
       return root;

@@ -1,12 +1,12 @@
 import { createHierarchyFromTree, createPropertiesFromTree } from './helpers';
 
 const cellSetsLoaded = (state, action) => {
-  const { data } = action.payload;
+  const { data, order } = action.payload;
 
   return {
     ...state,
     loading: false,
-    hierarchy: createHierarchyFromTree(data),
+    hierarchy: createHierarchyFromTree(data, order),
     properties: createPropertiesFromTree(data),
   };
 };
