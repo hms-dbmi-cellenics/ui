@@ -18,6 +18,10 @@ const loadSamples = (
     const response = await fetchAPI(url);
     const data = await response.json();
 
+    let samples;
+    if (!experimentId) samples = data[0].samples;
+    if (!projectUuid) samples = data.samples;
+
     throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
 
     dispatch({
@@ -25,7 +29,7 @@ const loadSamples = (
       payload: {
         // Data[0] because 1 project contains only 1 experiment right now.
         // This has to be changed when we support multiple experiments per project.
-        samples: data[0].samples,
+        samples,
       },
     });
   } catch (e) {

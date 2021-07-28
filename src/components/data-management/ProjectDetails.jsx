@@ -590,7 +590,7 @@ const ProjectDetails = ({ width, height }) => {
 
   const launchAnalysis = async (experimentId) => {
     trackAnalysisLaunched();
-    await dispatch(runGem2s(experimentId));
+    await dispatch(runGem2s(activeProjectUuid, experimentId));
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
@@ -641,7 +641,7 @@ const ProjectDetails = ({ width, height }) => {
       </Menu.Item>
     </Menu>
   );
-  
+
   return (
     <>
       <FileUploadModal
