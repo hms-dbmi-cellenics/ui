@@ -10,9 +10,11 @@ import {
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
-
+import * as INI from 'ini'
+import _ from 'lodash'
 import { saveAs } from 'file-saver';
 import { Storage } from 'aws-amplify';
+
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
@@ -46,6 +48,7 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
+import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -63,6 +66,7 @@ const ProjectDetails = ({ width, height }) => {
     getFromUrlExpectOK,
   );
   const projects = useSelector((state) => state.projects);
+  const processingConfig = useSelector((state) => state.experimentSettings.processing)
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
@@ -589,7 +593,32 @@ const ProjectDetails = ({ width, height }) => {
           Processed Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
-      <Menu.Item disabled>
+      <Menu.Item
+        onClick={async () => {
+          await dispatch(loadProcessingSettings(activeProject.experiments[0]));
+          const config = _.omit(processingConfig, ['meta']);
+
+          // // TODO: disable button if this is false
+          // const pipelineYetToRun = _.isEqual(Object.keys(config), ['meta'])
+
+          const filteredConfig = Object.entries(config)
+            .map(([step, stepConfig]) =>
+              [
+                step,
+                Object.fromEntries(
+                  activeProject.samples.map((sample) =>
+                  [
+                    samples[sample]?.name,
+                    stepConfig[sample]?.filterSettings ?? stepConfig
+                  ]
+                )
+                )
+              ]
+            )
+
+          console.log(INI.stringify(Object.fromEntries(filteredConfig)))
+        }
+        }>
         Data Processing settings
       </Menu.Item>
     </Menu>
