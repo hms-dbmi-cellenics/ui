@@ -40,6 +40,21 @@ const EXPERIMENTS_SAVED = `${EXPERIMENTS}/saved`;
  */
 const EXPERIMENTS_ERROR = `${EXPERIMENTS}/error`;
 
+/**
+ * Experiment data downloading
+ */
+const EXPERIMENTS_DATA_DOWNLOAD_REQUESTED = `${EXPERIMENTS}/downloadRequested`;
+
+/**
+ * Experiment data downloading
+ */
+const EXPERIMENTS_DATA_DOWNLOAD_STARTED = `${EXPERIMENTS}/downloadStarted`;
+
+/**
+ * Experiment data error
+ */
+const EXPERIMENTS_DATA_DOWNLOAD_ERROR = `${EXPERIMENTS}/downloadError`;
+
 export {
   EXPERIMENTS_CREATED,
   EXPERIMENTS_UPDATED,
@@ -49,4 +64,7 @@ export {
   EXPERIMENTS_DELETED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_SAVED,
+  EXPERIMENTS_DATA_DOWNLOAD_REQUESTED,
+  EXPERIMENTS_DATA_DOWNLOAD_STARTED,
+  EXPERIMENTS_DATA_DOWNLOAD_ERROR,
 };

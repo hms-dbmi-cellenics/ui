@@ -10,9 +10,10 @@ import {
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
+import { Storage } from 'aws-amplify';
 
 import { saveAs } from 'file-saver';
-import { Storage } from 'aws-amplify';
+
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
@@ -46,6 +47,8 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
+import downloadExperimentData from '../../redux/actions/experiments/downloadExperimentData';
+import downloadTypes from '../../utils/downloadTypes';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -577,19 +580,29 @@ const ProjectDetails = ({ width, height }) => {
 
   const DownloadDataMenu = (
     <Menu>
-      <Menu.Item disabled>
+      <Menu.Item disabled key='download-raw-seurat'>
         <Tooltip title='Feature coming soon!' placement='left'>
           {/* <Tooltip title='Samples have been merged' placement='left'> */}
           Raw Seurat object (.rds)
         </Tooltip>
+        s
       </Menu.Item>
-      <Menu.Item disabled>
-        <Tooltip title='Feature coming soon!' placement='left'>
-          {/* <Tooltip title='Data Processing filters have been applied' placement='left'> */}
+      <Menu.Item
+        key='download-processed-seurat'
+        onClick={() => {
+          // Right now we only have one experiment in the project
+          const experimentId = activeProject.experiments[0];
+          dispatch(downloadExperimentData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT));
+        }}
+      >
+        <Tooltip title='Data Processing filters have been applied' placement='left'>
           Processed Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
-      <Menu.Item disabled>
+      <Menu.Item
+        disabled
+        key='download-processing-settings'
+      >
         Data Processing settings
       </Menu.Item>
     </Menu>

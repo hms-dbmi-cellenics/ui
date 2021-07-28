@@ -6,6 +6,7 @@ export default {
   EMPTY_CLUSTER_NOT_CREATED: 'Cannot create a cluster that would be empty.',
   ERROR_DELETING_PROJECT: 'We couldn\'t delete your project.',
   ERROR_DELETING_SAMPLES: 'We couldn\'t delete samples from your project.',
+  ERROR_DOWNLOADING_DATA: 'Error downloading data',
   ERROR_FETCHING_CELL_SETS: 'We couldn\'t get the list of cell sets.',
   ERROR_FETCHING_EXPERIMENTS: 'We couldn\'t get the list of experiments.',
   ERROR_FETCHING_PLOT_CONFIG: 'We couldn\'t get the plot settings.',
@@ -22,4 +23,5 @@ export default {
   NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Data Management` window.',
   SAVING_SAMPLE: 'Saving sample...',
   SAVING_PROJECT: 'Saving project...',
+  DOWNLOAD_START: 'Starting download...',
 };

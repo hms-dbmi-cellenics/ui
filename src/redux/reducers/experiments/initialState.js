@@ -13,6 +13,7 @@ const initialState = {
     loading: false,
     error: false,
     saving: false,
+    download: {},
   },
   ids: [],
 };
