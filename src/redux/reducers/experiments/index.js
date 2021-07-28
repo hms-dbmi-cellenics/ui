@@ -9,7 +9,8 @@ import {
   EXPERIMENTS_SAVING,
   EXPERIMENTS_DELETED,
   EXPERIMENTS_DATA_DOWNLOAD_REQUESTED,
-  EXPERIMENTS_DATA_DOWNLOAD_STARTED,
+  EXPERIMENTS_DATA_DOWNLOAD_READY,
+  EXPERIMENTS_DATA_DOWNLOADED,
   EXPERIMENTS_DATA_DOWNLOAD_ERROR,
 } from '../../actionTypes/experiments';
 import experimentsCreate from './experimentsCreate';
@@ -21,7 +22,8 @@ import experimentsError from './experimentsError';
 import experimentsSaving from './experimentsSaving';
 import exprimentsSaved from './experimentsSaved';
 import experimentsDownloadRequested from './experimentsDownloadRequested';
-import experimentsDownloadStarted from './experimentsDownloadStarted';
+import experimentsDownloadReady from './experimentsDownloadReady';
+import experimentsDataDownloaded from './experimentsDataDownloaded';
 import experimentsDownloadError from './experimentsDownloadError';
 
 const experimentsReducer = (state = initialState, action) => {
@@ -62,8 +64,12 @@ const experimentsReducer = (state = initialState, action) => {
       return experimentsDownloadRequested(state, action);
     }
 
-    case EXPERIMENTS_DATA_DOWNLOAD_STARTED: {
-      return experimentsDownloadStarted(state, action);
+    case EXPERIMENTS_DATA_DOWNLOAD_READY: {
+      return experimentsDownloadReady(state, action);
+    }
+
+    case EXPERIMENTS_DATA_DOWNLOADED: {
+      return experimentsDataDownloaded(state, action);
     }
 
     case EXPERIMENTS_DATA_DOWNLOAD_ERROR: {

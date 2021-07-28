@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Menu, Dropdown,
+  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Menu, Dropdown, Anchor,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -27,7 +27,6 @@ import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
-
 import {
   updateProject,
   createMetadataTrack,
@@ -37,7 +36,9 @@ import {
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
-import { updateExperiment, saveExperiment } from '../../redux/actions/experiments';
+import {
+  updateExperiment, saveExperiment, downloadExperimentData, dataDownloaded,
+} from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
@@ -47,7 +48,7 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
-import downloadExperimentData from '../../redux/actions/experiments/downloadExperimentData';
+
 import downloadTypes from '../../utils/downloadTypes';
 
 const { Title, Text, Paragraph } = Typography;
@@ -67,6 +68,7 @@ const ProjectDetails = ({ width, height }) => {
   );
   const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
+  const { download: downloadStatus } = experiments.meta;
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -76,6 +78,7 @@ const ProjectDetails = ({ width, height }) => {
   const [sampleNames, setSampleNames] = useState(new Set());
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
+  const [processedRdsDownloadLink, setProcessedRdsDownloadLink] = useState('');
 
   const metadataNameValidation = [
     rules.MIN_1_CHAR,
@@ -578,6 +581,32 @@ const ProjectDetails = ({ width, height }) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
+  const renderDownloadLink = (defaultText, downloadLink, downloadType) => {
+    const status = downloadStatus[downloadType];
+
+    if (status?.loading) {
+      return <Text>Preparing download...</Text>;
+    }
+
+    if (status?.ready) {
+      return (
+        <a onClick={() => dispatch(dataDownloaded(downloadType))} href={downloadLink}>{`${defaultText} - Ready to download`}</a>
+      );
+    }
+
+    return (
+      <Text onClick={() => {
+      // Right now we only have one experiment in the project
+        const experimentId = activeProject.experiments[0];
+        dispatch(downloadExperimentData(Storage, experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT))
+          .then((link) => setProcessedRdsDownloadLink(link));
+      }}
+      >
+        {defaultText}
+      </Text>
+    );
+  };
+
   const DownloadDataMenu = (
     <Menu>
       <Menu.Item disabled key='download-raw-seurat'>
@@ -589,14 +618,13 @@ const ProjectDetails = ({ width, height }) => {
       </Menu.Item>
       <Menu.Item
         key='download-processed-seurat'
-        onClick={() => {
-          // Right now we only have one experiment in the project
-          const experimentId = activeProject.experiments[0];
-          dispatch(downloadExperimentData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT));
-        }}
       >
         <Tooltip title='Data Processing filters have been applied' placement='left'>
-          Processed Seurat object (.rds)
+          {renderDownloadLink(
+            'Processed Seurat object (.rds)',
+            processedRdsDownloadLink,
+            downloadTypes.PROCESSED_SEURAT_OBJECT,
+          )}
         </Tooltip>
       </Menu.Item>
       <Menu.Item
@@ -664,7 +692,7 @@ const ProjectDetails = ({ width, height }) => {
               >
                 Add metadata
               </Button>
-              <Dropdown overlay={DownloadDataMenu} trigger={['click']}>
+              <Dropdown overlay={DownloadDataMenu} trigger={['click']} placement='bottomRight'>
                 <Button>
                   Download
                 </Button>

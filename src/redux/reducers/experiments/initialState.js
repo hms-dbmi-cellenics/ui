@@ -8,6 +8,12 @@ const experimentTemplate = {
   meta: { organism: null, type: '10x' },
 };
 
+const downloadStatusTemplate = {
+  loading: false,
+  error: false,
+  ready: false,
+};
+
 const initialState = {
   meta: {
     loading: false,
@@ -19,4 +25,4 @@ const initialState = {
 };
 
 export default initialState;
-export { experimentTemplate };
+export { experimentTemplate, downloadStatusTemplate };

@@ -9,6 +9,7 @@ const experimentsDownloadRequested = (state, action) => {
         ...state.meta.download,
         [type]: {
           loading: true,
+          ready: false,
           error: false,
         },
       },

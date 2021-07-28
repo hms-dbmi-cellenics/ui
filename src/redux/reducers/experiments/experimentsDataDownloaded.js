@@ -1,4 +1,4 @@
-const experimentsDownloadStarted = (state, action) => {
+const experimentsDataDownload = (state, action) => {
   const { type } = action.payload;
 
   return {
@@ -9,6 +9,7 @@ const experimentsDownloadStarted = (state, action) => {
         ...state.meta.download,
         [type]: {
           loading: false,
+          ready: false,
           error: false,
         },
       },
@@ -16,4 +17,4 @@ const experimentsDownloadStarted = (state, action) => {
   };
 };
 
-export default experimentsDownloadStarted;
+export default experimentsDataDownload;
