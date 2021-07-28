@@ -606,22 +606,21 @@ const ProjectDetails = ({ width, height }) => {
           // const pipelineYetToRun = Object.keys(config).length === 0
 
           const filteredConfig = Object.entries(config)
-            .map(([step, stepConfig]) =>
-              [
+            .map(([step, stepConfig]) => [
                 step,
                 Object.fromEntries(
-                  activeProject.samples.map((sample) =>
-                  [
+                  activeProject.samples.map((sample) => [
                     samples[sample]?.name,
-                    stepConfig[sample]?.filterSettings ?? stepConfig
-                  ]
+                    stepConfig[sample]?.filterSettings ??
+                    // for steps with multiple methods to choose from, only include
+                    // configuration for the method that is actually selected
+                    _.mapValues(stepConfig, (substepConfig) => ({
+                        method: substepConfig.method,
+                        ..._.get(substepConfig.methodSettings, substepConfig.method)
+                      }))
+                  ])
                 )
-                )
-              ]
-            )
-
-          // TODO: remove unused method settings
-          // console.log(Object.fromEntries(filteredConfig))
+              ])
 
           const string = INI.stringify(Object.fromEntries(filteredConfig))
           const blob = new Blob([string], {type: 'text/plain;charset=utf-8'});
