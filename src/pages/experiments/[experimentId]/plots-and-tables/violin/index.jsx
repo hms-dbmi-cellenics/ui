@@ -43,6 +43,7 @@ const ViolinIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state?.cellSets);
+  const sampleOrder = useSelector((state) => state?.experimentSettings.info.sampleIds);
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
@@ -119,6 +120,7 @@ const ViolinIndex = ({ experimentId }) => {
             config={config}
             onUpdate={updatePlotWithChanges}
             cellSets={cellSets}
+            sampleOrder={sampleOrder}
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>

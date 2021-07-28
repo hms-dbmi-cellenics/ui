@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import { loadCellSets } from '../../../redux/actions/cellSets';
 import { setComparisonGroup, setComparisonType } from '../../../redux/actions/differentialExpression';
 
-import composeTree from '../../../utils/composeTree';
+import composeTree, { setHierarchyOrder } from '../../../utils/composeTree';
 
 const { Option, OptGroup } = Select;
 
@@ -31,6 +31,7 @@ const DiffExprCompute = (props) => {
   const [numSamples, setNumSamples] = useState(1);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
+  const sampleOrder = useSelector((state) => state.experimentSettings.info.sampleIds)
 
 
   // Metadata marks whether cells belong to the same sample/group
@@ -140,9 +141,9 @@ const DiffExprCompute = (props) => {
   }) => {
     // Dependiung on the cell set type specified, set the default name
     const placeholder = filterType === 'metadataCategorical' ? 'sample/group' : 'cell set';
+    const hierarchyOrder = filterType === 'metadataCategorical' ? sampleOrder : null;
 
-    // Get all the stuff we are going to show.
-    const tree = composeTree(hierarchy, properties, filterType);
+    const tree = composeTree(setHierarchyOrder(hierarchy, hierarchyOrder), properties, filterType);
 
     const renderChildren = (rootKey, children) => {
       if (!children || children.length === 0) { return (<></>); }

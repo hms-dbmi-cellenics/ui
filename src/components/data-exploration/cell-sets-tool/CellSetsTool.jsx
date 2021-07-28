@@ -21,7 +21,7 @@ import {
   updateCellSetProperty,
   unhideAllCellSets,
 } from '../../../redux/actions/cellSets';
-import composeTree from '../../../utils/composeTree';
+import composeTree, { setHierarchyOrder } from '../../../utils/composeTree';
 import { isBrowser } from '../../../utils/environment';
 import endUserMessages from '../../../utils/endUserMessages';
 import PlatformError from '../../PlatformError';
@@ -39,6 +39,7 @@ const CellSetsTool = (props) => {
 
   const cellSets = useSelector((state) => state.cellSets);
   const notifications = useSelector((state) => state.notifications);
+  const sampleOrder = useSelector((state) => state.experimentSettings.info.sampleIds);
 
   const [activeTab, setActiveTab] = useState('cellSets');
 
@@ -140,7 +141,7 @@ const CellSetsTool = (props) => {
     }
 
     const cellSetTreeData = composeTree(hierarchy, properties, 'cellSets');
-    const metadataTreeData = composeTree(hierarchy, properties, 'metadataCategorical');
+    const metadataTreeData = composeTree(setHierarchyOrder(hierarchy, sampleOrder), properties, 'metadataCategorical', sampleOrder);
 
     return (
       <>
