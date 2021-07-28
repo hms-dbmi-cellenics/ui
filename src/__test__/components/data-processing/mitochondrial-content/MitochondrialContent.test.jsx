@@ -7,12 +7,14 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
 
+import { Table } from 'antd';
 import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
 import CalculationConfig from '../../../../components/data-processing/MitochondrialContent/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
+import filterStatisticsMock from '../../../test-utils/plotData.mock';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -24,20 +26,24 @@ const filterName = 'mitochondrialContent';
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
-const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
-const sample2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);
+const plotData1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const plotData2 = generateDataProcessingPlotUuid(sampleId, filterName, 1);
+const filterStatistics = generateDataProcessingPlotUuid(sampleId, filterName, 2);
 
 const noData = {
   experimentSettings: {
     ...initialExperimentState,
   },
   componentConfig: {
-    [sample1]: {
+    [plotData1]: {
       config: initialPlotConfigStates.mitochondrialFractionHistogram,
       plotData: [],
     },
-    [sample2]: {
+    [plotData2]: {
       config: initialPlotConfigStates.mitochondrialFractionLogHistogram,
+      plotData: [],
+    },
+    [filterStatistics]: {
       plotData: [],
     },
   },
@@ -47,8 +53,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    [sample1]: {
-      ...noData.componentConfig[sample1],
+    [plotData1]: {
+      ...noData.componentConfig[plotData1],
       plotData: [
         {
           fracMito: 0.0321412215329531,
@@ -63,8 +69,8 @@ const withData = {
         },
       ],
     },
-    [sample2]: {
-      ...noData.componentConfig[sample2],
+    [plotData2]: {
+      ...noData.componentConfig[plotData2],
       plotData: [
         {
           fracMito: 0.0321412215329531,
@@ -80,6 +86,7 @@ const withData = {
         },
       ],
     },
+    [filterStatistics]: filterStatisticsMock(),
   },
 };
 
@@ -110,9 +117,11 @@ describe('MitochondrialContent', () => {
     expect(calculationConfig.length).toEqual(1);
 
     const plots = page.find(Vega);
+    const tables = page.find(Table);
 
-    // No plots when there are no data
+    // No plots or table when there are no data
     expect(plots.length).toEqual(0);
+    expect(tables.length).toEqual(0);
   });
 
   it('Shows plot with data', () => {
@@ -135,8 +144,10 @@ describe('MitochondrialContent', () => {
     expect(calculationConfig.length).toEqual(1);
 
     const plots = page.find(Vega);
+    const tables = page.find(Table);
 
     // 1 main 2 miniature
     expect(plots.length).toEqual(3);
+    expect(tables.length).toEqual(1);
   });
 });

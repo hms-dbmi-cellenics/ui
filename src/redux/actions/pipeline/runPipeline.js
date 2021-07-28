@@ -7,11 +7,14 @@ import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from '../../actionTypes/experimentSettings';
-import loadBackendStatus from '../experimentSettings/backendStatus/loadBackendStatus';
+
+import { saveProcessingSettings, loadBackendStatus } from '../experimentSettings';
 
 import { loadEmbedding } from '../embedding';
 
-const runOnlyConfigureEmbedding = (experimentId, embeddingMethod, dispatch) => {
+const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {
+  await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
+
   dispatch({
     type: EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
     payload: {},

@@ -5,6 +5,7 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import loadBackendStatus from '../../../../redux/actions/experimentSettings/backendStatus/loadBackendStatus';
+import saveProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 
 import {
   EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
@@ -25,6 +26,8 @@ enableFetchMocks();
 
 jest.mock('../../../../redux/actions/experimentSettings/backendStatus/loadBackendStatus',
   () => jest.fn().mockImplementation(() => async () => { }));
+
+jest.mock('../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
 
 const experimentId = 'experiment-id';
 
@@ -87,6 +90,8 @@ describe('runPipeline action', () => {
 
   it('Runs only the embedding if only changed filter was configureEmbedding', async () => {
     fetchMock.resetMocks();
+
+    saveProcessingSettings.mockImplementation(() => () => Promise.resolve());
 
     const onlyConfigureEmbeddingChangedState = _.cloneDeep(initialState);
     onlyConfigureEmbeddingChangedState.experimentSettings.processing.meta.changedQCFilters = new Set(['configureEmbedding']);

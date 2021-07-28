@@ -582,13 +582,13 @@ const ProjectDetails = ({ width, height }) => {
   const DownloadDataMenu = (
     <Menu>
       <Menu.Item disabled>
-        <Tooltip title='Feature coming soon!' placement='left'>
+        <Tooltip title='Coming soon!' placement='left'>
           {/* <Tooltip title='Samples have been merged' placement='left'> */}
           Raw Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
       <Menu.Item disabled>
-        <Tooltip title='Feature coming soon!' placement='left'>
+        <Tooltip title='Coming soon!' placement='left'>
           {/* <Tooltip title='Data Processing filters have been applied' placement='left'> */}
           Processed Seurat object (.rds)
         </Tooltip>

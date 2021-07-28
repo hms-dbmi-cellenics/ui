@@ -7,12 +7,14 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
 
+import { Table } from 'antd';
 import Classifier from '../../../../components/data-processing/Classifier/Classifier';
 import CalculationConfig from '../../../../components/data-processing/Classifier/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
+import filterStatisticsMock from '../../../test-utils/plotData.mock';
 
 jest.mock('localforage');
 const mockStore = configureStore([thunk]);
@@ -22,7 +24,8 @@ const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const filterName = 'classifier';
 const experimentId = 'e1234';
 
-const sample1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const plotData1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const filterStatistics = generateDataProcessingPlotUuid(sampleId, filterName, 2);
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
@@ -31,8 +34,11 @@ const noData = {
     ...initialExperimentState,
   },
   componentConfig: {
-    [sample1]: {
+    [plotData1]: {
       config: initialPlotConfigStates.classifierEmptyDropsPlot,
+      plotData: [],
+    },
+    [filterStatistics]: {
       plotData: [],
     },
   },
@@ -42,8 +48,8 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    [sample1]: {
-      ...noData.componentConfig[sample1],
+    [plotData1]: {
+      ...noData.componentConfig[plotData1],
       plotData: [
         {
           classifierP: 0.994553522823595,
@@ -59,6 +65,7 @@ const withData = {
         },
       ],
     },
+    [filterStatistics]: filterStatisticsMock(),
   },
 };
 
@@ -89,9 +96,11 @@ describe('Classifier', () => {
     expect(calculationConfig.length).toEqual(1);
 
     const plots = page.find(Vega);
+    const tables = page.find(Table);
 
     // No plots when there are no data
     expect(plots.length).toEqual(0);
+    expect(tables.length).toEqual(0);
   });
 
   it('Shows plot with data', () => {
@@ -114,8 +123,10 @@ describe('Classifier', () => {
     expect(calculationConfig.length).toEqual(1);
 
     const plots = page.find(Vega);
+    const tables = page.find(Table);
 
     // 1 main
     expect(plots.length).toEqual(1);
+    expect(tables.length).toEqual(1);
   });
 });
