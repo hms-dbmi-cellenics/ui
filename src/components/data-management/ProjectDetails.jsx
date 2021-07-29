@@ -627,12 +627,11 @@ const ProjectDetails = ({ width, height }) => {
 
   const DownloadDataMenu = (
     <Menu>
-      <Menu.Item disabled key='download-raw-seurat'>
-        <Tooltip title='Feature coming soon!' placement='left'>
+      <Menu.Item key='download-raw-seurat'>
+        <Tooltip title='Samples have been merged' placement='left'>
           {/* <Tooltip title='Samples have been merged' placement='left'> */}
           Raw Seurat object (.rds)
         </Tooltip>
-        s
       </Menu.Item>
       <Menu.Item
         key='download-processed-seurat'
