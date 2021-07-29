@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -39,6 +40,20 @@ const CellSetsTool = (props) => {
 
   const cellSets = useSelector((state) => state.cellSets);
   const notifications = useSelector((state) => state.notifications);
+
+  const geneProperties = useSelector((state) => state.genes.properties.data);
+  const someGeneId = _.findKey(geneProperties, () => true);
+  console.log('someGeneIdDebug');
+  console.log(someGeneId);
+  const isFilteredCellArray = useSelector((state) => state.genes.expression.data[someGeneId]?.rawExpression.expression) ?? [];
+  console.log('isFilteredCellArrayDebug');
+  console.log(isFilteredCellArray);
+  const isFilteredCell = isFilteredCellArray.reduce((acum, current, index) => {
+    if (current === null) {
+      acum.add(index);
+    }
+    return acum;
+  }, new Set());
 
   const [activeTab, setActiveTab] = useState('cellSets');
 
@@ -98,7 +113,10 @@ const CellSetsTool = (props) => {
     }
     const selected = allSelected[activeTab];
     let operations = null;
-    const numSelected = union(selected, properties).size;
+    const numSelectedArr = union(selected, properties);
+
+    const numSelectedUnfiltered = new Set([...numSelectedArr].filter((cellIndex) => !isFilteredCell.has(cellIndex)));
+    const numSelected = numSelectedUnfiltered.size;
 
     if (numSelected) {
       operations = (
@@ -128,7 +146,7 @@ const CellSetsTool = (props) => {
           />
           <Text type='primary' id='selectedCellSets'>
             {`${numSelected} gene${numSelected === 1 ? '' : 's'} selected`}
-            {activeTab === 'metadataCategorical' && ' (including filtered cells)'}
+            {activeTab === 'metadataCategorical'}
           </Text>
         </Space>
       );

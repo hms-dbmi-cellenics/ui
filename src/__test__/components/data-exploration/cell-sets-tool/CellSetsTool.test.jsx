@@ -312,7 +312,7 @@ describe('CellSetsTool', () => {
     const text = component.find('#selectedCellSets').first();
     expect(text.text()).toEqual('3 cells selected');
     tabs.props().onChange('metadataCategorical');
-    expect(text.text()).toEqual('4 cells selected (including filtered cells)');
+    expect(text.text()).toEqual('4 cells selected');
     tabs.props().onChange('cellSets');
     expect(text.text()).toEqual('3 cells selected');
   });
