@@ -12,8 +12,9 @@ import {
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import ViolinControls from 'components/plots/styling/violin/ViolinControls';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -134,6 +135,7 @@ const ViolinIndex = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
+
             <PlotStyling
               formConfig={plotStylingControlsConfig}
               config={config}

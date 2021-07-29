@@ -17,7 +17,7 @@ const ViolinControls = (props) => {
   return (
     <>
       <Collapse>
-        <Panel header='Gene Selection' key='geneSelection'>
+        <Panel header='Gene Selection' key='666'>
           <SingleGeneSelection
             config={config}
             setSearchedGene={setSearchedGene}

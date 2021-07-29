@@ -7,7 +7,6 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-
 import {
   initialComponentConfigStates,
 } from '../../../redux/reducers/componentConfig/initialState';
@@ -106,6 +105,7 @@ describe('ViolinIndex', () => {
     await renderViolinIndex();
 
     const geneSelection = rtl.screen.getAllByRole('tab')[0];
+    console.log('tabs are ', rtl.screen.getAllByRole('tab'));
     expect(geneSelection).toHaveTextContent('Gene Selection');
     const panelContainer = geneSelection.parentElement;
 
