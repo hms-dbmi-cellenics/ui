@@ -53,6 +53,7 @@ import prepareDownloadLink from '../../utils/prepareDownloadLink';
 import downloadTypes from '../../utils/downloadTypes';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import endUserMessages from '../../utils/endUserMessages';
+import pipelineStatusValues from '../../utils/pipelineStatusValues';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -75,6 +76,8 @@ const ProjectDetails = ({ width, height }) => {
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+  const { backendStatus } = useSelector((state) => state.experimentSettings);
+
   const [tableData, setTableData] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
@@ -82,6 +85,7 @@ const ProjectDetails = ({ width, height }) => {
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
   const [processedRdsDownloadLink, setProcessedRdsDownloadLink] = useState('');
+  const [pipelineHasRun, setPipelineHasRun] = useState(true);
 
   const metadataNameValidation = [
     rules.MIN_1_CHAR,
@@ -136,6 +140,19 @@ const ProjectDetails = ({ width, height }) => {
       getDownloadLink(downloadTypes.PROCESSED_SEURAT_OBJECT, setProcessedRdsDownloadLink);
     }
   }, [activeProject]);
+
+  useEffect(() => {
+    const { loading, error, status } = backendStatus;
+
+    if (
+      !loading
+      && !error
+      && status?.pipeline
+      && status.pipeline?.status === pipelineStatusValues.SUCCEEDED
+    ) {
+      setPipelineHasRun(true);
+    }
+  }, [backendStatus]);
 
   useEffect(() => {
     if (!speciesData) {
@@ -619,11 +636,11 @@ const ProjectDetails = ({ width, height }) => {
       </Menu.Item>
       <Menu.Item
         key='download-processed-seurat'
+        disabled={!pipelineHasRun}
       >
         <Tooltip title='Data Processing filters have been applied' placement='left'>
           <a
             href={processedRdsDownloadLink}
-            disabled={!processedRdsDownloadLink}
           >
             Processed Seurat object (.rds)
           </a>

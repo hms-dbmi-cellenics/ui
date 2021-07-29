@@ -15,6 +15,7 @@ import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
 import LoadingModal from '../../components/LoadingModal';
+import loadBackendStatus from '../../redux/actions/experimentSettings/backendStatus/loadBackendStatus';
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
@@ -62,6 +63,14 @@ const DataManagementPage = ({ route }) => {
 
     dispatch(loadExperiments(activeProjectUuid));
   }, [activeProject]);
+
+  useEffect(() => {
+    // Right now we have one experiment per project, so we can just load the experiment
+    // This has to be changed when we have more than one experiment
+    const activeExperimentId = activeProject.experiments[0];
+
+    dispatch(loadBackendStatus(activeExperimentId));
+  }, [activeProjectUuid]);
 
   useEffect(() => {
     if (projectsLoading === true) {
