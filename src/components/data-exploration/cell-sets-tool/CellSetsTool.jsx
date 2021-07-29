@@ -41,13 +41,12 @@ const CellSetsTool = (props) => {
   const cellSets = useSelector((state) => state.cellSets);
   const notifications = useSelector((state) => state.notifications);
 
-  const geneProperties = useSelector((state) => state.genes.properties.data);
-  const someGeneId = _.findKey(geneProperties, () => true);
-  console.log('someGeneIdDebug');
-  console.log(someGeneId);
-  const isFilteredCellArray = useSelector((state) => state.genes.expression.data[someGeneId]?.rawExpression.expression) ?? [];
-  console.log('isFilteredCellArrayDebug');
-  console.log(isFilteredCellArray);
+  const geneExpressions = useSelector(
+    (state) => state.genes.expression.data,
+  ) ?? [];
+
+  const someGeneExpressionObj = _.find(geneExpressions, () => true);
+  const isFilteredCellArray = someGeneExpressionObj?.rawExpression.expression ?? [];
   const isFilteredCell = isFilteredCellArray.reduce((acum, current, index) => {
     if (current === null) {
       acum.add(index);
@@ -112,12 +111,13 @@ const CellSetsTool = (props) => {
       );
     }
     const selected = allSelected[activeTab];
-    let operations = null;
-    const numSelectedArr = union(selected, properties);
+    const selectedCells = union(selected, properties);
 
-    const numSelectedUnfiltered = new Set([...numSelectedArr].filter((cellIndex) => !isFilteredCell.has(cellIndex)));
+    const numSelectedUnfiltered = new Set([...selectedCells]
+      .filter((cellIndex) => !isFilteredCell.has(cellIndex)));
     const numSelected = numSelectedUnfiltered.size;
 
+    let operations = null;
     if (numSelected) {
       operations = (
         <Space>
