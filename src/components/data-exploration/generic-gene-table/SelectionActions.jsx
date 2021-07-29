@@ -75,10 +75,7 @@ const SelectionActions = (props) => {
       {selectedGenes.length !== 0 ? (
         <>
           <Text type='secondary'>
-            {selectedGenes.length}
-            {' gene'}
-            {selectedGenes.length === 1 ? '' : 's'}
-            {' selected'}
+            {`${selectedGenes.length} gene${selectedGenes.length === 1 ? '' : 's'} selected`}
           </Text>
           <Button type='link' size='small' onClick={clearAll}>Clear</Button>
           {renderCopyClipboard()}
