@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Menu, Dropdown, Anchor,
+  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Menu, Dropdown,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -37,7 +37,7 @@ import {
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
 import {
-  updateExperiment, saveExperiment, downloadExperimentData, dataDownloaded,
+  updateExperiment, saveExperiment,
 } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
@@ -49,7 +49,10 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 
+import prepareDownloadLink from '../../utils/prepareDownloadLink';
 import downloadTypes from '../../utils/downloadTypes';
+import pushNotificationMessage from '../../utils/pushNotificationMessage';
+import endUserMessages from '../../utils/endUserMessages';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -68,7 +71,7 @@ const ProjectDetails = ({ width, height }) => {
   );
   const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
-  const { download: downloadStatus } = experiments.meta;
+  const { environment } = useSelector((state) => state.networkResources);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -109,6 +112,27 @@ const ProjectDetails = ({ width, height }) => {
       setSampleNames(new Set());
     }
   }, [samples, activeProject]);
+
+  useEffect(() => {
+    const getDownloadLink = async (downloadType, setState) => {
+      // const experimentId = activeProject?.experiments[0];
+      const experimentId = activeProject?.samples[0];
+
+      try {
+        const donwloadLink = await prepareDownloadLink(
+          Storage,
+          environment,
+          experimentId,
+          downloadType,
+        );
+        setState(donwloadLink);
+      } catch (e) {
+        pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
+      }
+    };
+
+    getDownloadLink(downloadTypes.PROCESSED_SEURAT_OBJECT, setProcessedRdsDownloadLink);
+  }, []);
 
   useEffect(() => {
     if (!speciesData) {
@@ -581,32 +605,6 @@ const ProjectDetails = ({ width, height }) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
-  const renderDownloadLink = (defaultText, downloadLink, downloadType) => {
-    const status = downloadStatus[downloadType];
-
-    if (status?.loading) {
-      return <Text>Preparing download...</Text>;
-    }
-
-    if (status?.ready) {
-      return (
-        <a onClick={() => dispatch(dataDownloaded(downloadType))} href={downloadLink}>{`${defaultText} - Ready to download`}</a>
-      );
-    }
-
-    return (
-      <Text onClick={() => {
-      // Right now we only have one experiment in the project
-        const experimentId = activeProject.experiments[0];
-        dispatch(downloadExperimentData(Storage, experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT))
-          .then((link) => setProcessedRdsDownloadLink(link));
-      }}
-      >
-        {defaultText}
-      </Text>
-    );
-  };
-
   const DownloadDataMenu = (
     <Menu>
       <Menu.Item disabled key='download-raw-seurat'>
@@ -620,11 +618,12 @@ const ProjectDetails = ({ width, height }) => {
         key='download-processed-seurat'
       >
         <Tooltip title='Data Processing filters have been applied' placement='left'>
-          {renderDownloadLink(
-            'Processed Seurat object (.rds)',
-            processedRdsDownloadLink,
-            downloadTypes.PROCESSED_SEURAT_OBJECT,
-          )}
+          <a
+            href={processedRdsDownloadLink}
+            disabled={!processedRdsDownloadLink}
+          >
+            Processed Seurat object (.rds)
+          </a>
         </Tooltip>
       </Menu.Item>
       <Menu.Item
