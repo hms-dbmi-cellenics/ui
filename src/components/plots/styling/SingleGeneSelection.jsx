@@ -10,7 +10,7 @@ const SingleGeneSelection = (props) => {
     const geneNameNoSpaces = geneName.replace(/\s/g, '');
     setSearchedGene(geneNameNoSpaces);
   };
-
+  console.log('CONFIG IS ', config);
   if (config) {
     return (
       <Search

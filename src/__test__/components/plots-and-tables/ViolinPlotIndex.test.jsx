@@ -7,14 +7,14 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import '@testing-library/jest-dom';
 import {
-  initialComponentConfigStates,
+  initialPlotConfigStates,
 } from '../../../redux/reducers/componentConfig/initialState';
 import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
 import rootReducer from '../../../redux/reducers/index';
 import genes from '../../../redux/reducers/genes/initialState';
 import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
-import { updatePlotConfig } from '../../../redux/actions/componentConfig/index';
 import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
@@ -49,10 +49,11 @@ jest.mock('../../../utils/cacheRequest', () => ({
     }
   }),
 }));
+const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 
 const defaultStore = {
   cellSets,
-  componentConfig: initialComponentConfigStates,
+  componentConfig: { [plotUuid]: { config: initialPlotConfigStates.violin } },
   embeddings: {},
   experimentSettings: {
     ...initialExperimentState,
@@ -68,7 +69,6 @@ const defaultStore = {
 };
 
 const experimentId = 'mockExperimentId';
-const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 
 describe('ViolinIndex', () => {
   let store = null;
@@ -98,14 +98,13 @@ describe('ViolinIndex', () => {
       </Provider>,
     );
     await rtl.waitFor(() => expect(loadConfigSpy).toHaveBeenCalledTimes(1));
-    await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(2));
+    await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(3));
   };
 
   it('loads by default the gene with the highest dispersion, allows another to be selected, and updates the plot\'s title', async () => {
     await renderViolinIndex();
 
     const geneSelection = rtl.screen.getAllByRole('tab')[0];
-    console.log('tabs are ', rtl.screen.getAllByRole('tab'));
     expect(geneSelection).toHaveTextContent('Gene Selection');
     const panelContainer = geneSelection.parentElement;
 
