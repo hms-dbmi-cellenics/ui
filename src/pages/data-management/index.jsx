@@ -20,6 +20,7 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
   const projectsList = useSelector(((state) => state.projects));
+  const samples = useSelector((state) => state.samples);
   const {
     saving: projectSaving,
   } = projectsList.meta;
@@ -69,7 +70,7 @@ const DataManagementPage = ({ route }) => {
     if (!activeProjectUuid || experimentsAreLoaded || !isUuid(activeProjectUuid)) return;
 
     dispatch(loadExperiments(activeProjectUuid));
-  }, [activeProject]);
+  }, [activeProject, samples]);
 
   useEffect(() => {
     if (projectsLoading === true) {

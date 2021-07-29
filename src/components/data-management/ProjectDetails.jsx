@@ -48,7 +48,6 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
-import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -579,6 +578,17 @@ const ProjectDetails = ({ width, height }) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
+  const pipelineHasRun = () => {
+    // Returns whether the pipeline has been started for all samples in the
+    // currently active project by checking that the processing config has been
+    // generated for all those samples.
+    const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
+
+    return steps.length > 0 &&
+      activeProject.samples.length > 0 &&
+      activeProject.samples.every((s) => steps[0].hasOwnProperty(s))
+  }
+
   const DownloadDataMenu = (
     <Menu>
       <Menu.Item disabled>
@@ -594,16 +604,13 @@ const ProjectDetails = ({ width, height }) => {
         </Tooltip>
       </Menu.Item>
       <Menu.Item
-        onClick={async () => {
+        disabled={!pipelineHasRun()}
+        onClick={() => {
           const experiment = activeProject.experiments[0];
           const experimentName = experiments[experiment]?.name
 
           // load processing configuration
           const config = _.omit(experimentSettings.processing, ['meta']);
-
-          // TODO: disable button if config is empty or only property is meta
-          // It gets more complicated when one sample is done but others aren't
-          // const pipelineYetToRun = Object.keys(config).length === 0
 
           const filteredConfig = Object.entries(config)
             .map(([step, stepConfig]) => [
@@ -627,7 +634,13 @@ const ProjectDetails = ({ width, height }) => {
           saveAs(blob, `Data Processing Settings for ${experimentName}.txt`);
         }
         }>
-        Data Processing settings (.txt)
+        {
+          pipelineHasRun()
+          ? 'Data Processing settings (.txt)'
+          : <Tooltip title='One or more of your samples has not been analysed yet' placement='left'>
+              Data Processing settings (.txt)
+            </Tooltip>
+        }
       </Menu.Item>
     </Menu>
   );
