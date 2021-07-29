@@ -71,7 +71,7 @@ const ProjectDetails = ({ width, height }) => {
   );
   const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
-  const { environment } = useSelector((state) => state.networkResources);
+  const environment = useSelector((state) => state.networkResources?.environment);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -119,6 +119,8 @@ const ProjectDetails = ({ width, height }) => {
       const experimentId = activeProject?.samples[0];
 
       try {
+        if (!environment) throw new Error('Environment is not set');
+
         const donwloadLink = await prepareDownloadLink(
           Storage,
           environment,
