@@ -115,8 +115,7 @@ const ProjectDetails = ({ width, height }) => {
 
   useEffect(() => {
     const getDownloadLink = async (downloadType, setState) => {
-      // const experimentId = activeProject?.experiments[0];
-      const experimentId = activeProject?.samples[0];
+      const experimentId = activeProject?.experiments[0];
 
       try {
         if (!environment) throw new Error('Environment is not set');
@@ -133,8 +132,10 @@ const ProjectDetails = ({ width, height }) => {
       }
     };
 
-    getDownloadLink(downloadTypes.PROCESSED_SEURAT_OBJECT, setProcessedRdsDownloadLink);
-  }, []);
+    if (activeProject) {
+      getDownloadLink(downloadTypes.PROCESSED_SEURAT_OBJECT, setProcessedRdsDownloadLink);
+    }
+  }, [activeProject]);
 
   useEffect(() => {
     if (!speciesData) {
