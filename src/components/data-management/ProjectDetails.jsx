@@ -599,10 +599,10 @@ const ProjectDetails = ({ width, height }) => {
           const experimentName = experiments[experiment]?.name
 
           // load processing configuration
-          await dispatch(loadProcessingSettings(experiment));
           const config = _.omit(experimentSettings.processing, ['meta']);
 
-          // // TODO: disable button if this is false
+          // TODO: disable button if config is empty or only property is meta
+          // It gets more complicated when one sample is done but others aren't
           // const pipelineYetToRun = Object.keys(config).length === 0
 
           const filteredConfig = Object.entries(config)
@@ -622,12 +622,12 @@ const ProjectDetails = ({ width, height }) => {
                 )
               ])
 
-          const string = INI.stringify(Object.fromEntries(filteredConfig))
+          const string = INI.stringify(Object.fromEntries(filteredConfig), {whitespace: true})
           const blob = new Blob([string], {type: 'text/plain;charset=utf-8'});
           saveAs(blob, `Data Processing Settings for ${experimentName}.txt`);
         }
         }>
-        Data Processing settings
+        Data Processing settings (.txt)
       </Menu.Item>
     </Menu>
   );

@@ -15,6 +15,7 @@ import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
 import LoadingModal from '../../components/LoadingModal';
+import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
@@ -54,6 +55,13 @@ const DataManagementPage = ({ route }) => {
   }, []);
 
   useEffect(() => {
+    if (activeProject?.experiments.length > 0) {
+      // Right now we have one experiment per project, so we can just load the experiment
+      // This has to be changed when we have more than one experiment
+      const activeExperimentId = activeProject.experiments[0];
+      dispatch(loadProcessingSettings(activeExperimentId));
+    }
+
     // old experiments don't have a project so the activeProjectUuid will actually be an experiment
     // ID so the experiments load will fail this should be addressed by migrating experiments
     // for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
