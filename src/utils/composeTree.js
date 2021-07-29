@@ -25,31 +25,4 @@ const composeTree = (hierarchy, properties, filterType = null) => {
   return composeTreeRecursive(hierarchy, filterType);
 };
 
-/**
- * Reorders tree to conform to a specific ordering.
- *
- * `order` is a list containing the property keys that we want to reorder.
- *
- */
-const setHierarchyOrder = (inputHierarchy, order = null) => {
-  if (!order) {
-    return inputHierarchy;
-  }
-
-  return inputHierarchy
-    .filter((root) => root.children !== undefined)
-    .map((root) => {
-      if (
-        root.children.length > 0
-            && order[root.key].includes(root.children[0].key)) {
-        return {
-          key: root.key,
-          children: order[root.key].map((sampleId) => ({ key: sampleId })),
-        };
-      }
-      return root;
-    });
-};
-
 export default composeTree;
-export { setHierarchyOrder };

@@ -1,10 +1,10 @@
-const createHierarchyFromTree = (data, order = null) => data && data.map((rootNode) => {
+const createHierarchyFromTree = (data, order) => data && data.map((rootNode) => {
   const rootNodeObject = {
     key: rootNode.key,
   };
 
   if (rootNode.children) {
-    const children = order && order[rootNode.key]
+    const children = order && order?.[rootNode.key]
       ? order[rootNode.key].map((key) => ({ key })) : rootNode.children;
     rootNodeObject.children = children.map((child) => ({ key: child.key }));
   }
