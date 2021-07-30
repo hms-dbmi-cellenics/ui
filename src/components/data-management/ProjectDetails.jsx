@@ -641,19 +641,21 @@ const ProjectDetails = ({ width, height }) => {
         disabled={!pipelineHasRun}
       >
         <Tooltip
-          title='Data Processing filters have been applied'
+          title='Data with filters applied'
           placement='left'
           onClick={() => downloadData(downloadTypes.PROCESSED_SEURAT_OBJECT)}
         >
           Processed Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
-      <Menu.Item
-        disabled
-        key='download-processing-settings'
-      >
-        Data Processing settings
-      </Menu.Item>
+      <Tooltip title='Feature coming soon!' placement='left'>
+        <Menu.Item
+          disabled
+          key='download-processing-settings'
+        >
+          Data Processing settings
+        </Menu.Item>
+      </Tooltip>
     </Menu>
   );
 
