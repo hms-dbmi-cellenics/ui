@@ -13,7 +13,7 @@ import saveSamples from './saveSamples';
 import { saveProject } from '../projects';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import updateExperiment from '../experiments/updateExperiment';
+// import updateExperiment from '../experiments/updateExperiment';
 
 import { sampleTemplate } from '../../reducers/samples/initialState';
 
@@ -30,8 +30,6 @@ const createSample = (
 
   // Right now there is only one experiment per project
   // This has to be changed if we have more than one experiment per project
-  const experimentId = project.experiments[0];
-  const experiment = getState().experiments[experimentId];
 
   const newSample = {
     ...sampleTemplate,
@@ -55,7 +53,15 @@ const createSample = (
   try {
     dispatch(saveSamples(projectUuid, newSample));
     dispatch(saveProject(projectUuid, newProject));
-    dispatch(updateExperiment(experimentId, { samples: [...experiment.samples, newSampleUuid] }));
+
+    // Uncommenting the lines below will allow update of samples when creating experiment.
+    // It causes error when adding sample to a project that already exists, after a refresh
+    // The dispatch calls seems to block update of samples, causing the failure to save files.
+    // const experimentId = project.experiments[0];
+    // const experiment = getState().experiments[experimentId];
+    // dispatch(updateExperiment(experimentId, {
+    //    samples: [...experiment.samples, newSampleUuid]
+    // }));
 
     dispatch({
       type: SAMPLES_CREATE,

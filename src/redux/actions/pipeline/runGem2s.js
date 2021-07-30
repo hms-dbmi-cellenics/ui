@@ -49,7 +49,7 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
         experimentId,
         experimentName: experiments[experimentId].name,
         projectId,
-        samples: experiments[experimentId].samples,
+        sampleIds: experiments[experimentId].sampleIds,
       },
     });
   } catch (e) {

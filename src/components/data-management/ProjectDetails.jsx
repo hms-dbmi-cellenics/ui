@@ -517,7 +517,10 @@ const ProjectDetails = ({ width, height }) => {
     setTableColumns(newColumns);
     // Set table data
 
-    const newData = activeProject.samples.map((sampleUuid, idx) => {
+    const sampleIds = Object.keys(samples).filter((sampleUuid) => sampleUuid !== 'meta');
+    const projectSamples = sampleIds.filter((sampleUuid) => activeProject.samples.includes(sampleUuid));
+
+    const newData = projectSamples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
       const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
@@ -590,7 +593,7 @@ const ProjectDetails = ({ width, height }) => {
 
   const launchAnalysis = async (experimentId) => {
     trackAnalysisLaunched();
-    await dispatch(runGem2s(activeProjectUuid, experimentId));
+    await dispatch(runGem2s(experimentId));
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
