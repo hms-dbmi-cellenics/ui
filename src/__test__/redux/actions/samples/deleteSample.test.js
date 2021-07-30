@@ -60,11 +60,11 @@ describe('deleteSample action', () => {
 
     expect(saveProject).toHaveBeenCalled();
 
-    // Delete sample
-    expect(actions[1].type).toEqual(SAMPLES_DELETE);
+    // Delete sample from project
+    expect(actions[1].type).toEqual(PROJECTS_UPDATE);
 
-    // Delete project
-    expect(actions[2].type).toEqual(PROJECTS_UPDATE);
+    // Delete sample
+    expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
     // Resolve loading state
     expect(actions[3].type).toEqual(SAMPLES_SAVED);
