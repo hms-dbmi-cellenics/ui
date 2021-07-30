@@ -615,18 +615,20 @@ const ProjectDetails = ({ width, height }) => {
           const filteredConfig = Object.entries(config)
             .map(([step, stepConfig]) => [
                 step,
-                Object.fromEntries(
-                  activeProject.samples.map((sample) => [
-                    samples[sample]?.name,
-                    stepConfig[sample]?.filterSettings ??
-                    // for steps with multiple methods to choose from, only include
-                    // configuration for the method that is actually selected
-                    _.mapValues(stepConfig, (substepConfig) => ({
-                        method: substepConfig.method,
-                        ..._.get(substepConfig.methodSettings, substepConfig.method)
-                      }))
-                  ])
-                )
+                (!_.get(stepConfig, 'enabled', true)
+                  ? {disabled: true}
+                  : Object.fromEntries(
+                      activeProject.samples.map((sample) => [
+                        samples[sample]?.name,
+                        stepConfig[sample]?.filterSettings ??
+                        // for steps with multiple methods to choose from, only include
+                        // configuration for the method that is actually selected
+                        _.mapValues(stepConfig, (substepConfig) => ({
+                            method: substepConfig.method,
+                            ..._.get(substepConfig.methodSettings, substepConfig.method)
+                          }))
+                      ])
+                ))
               ])
 
           const string = INI.stringify(Object.fromEntries(filteredConfig), {whitespace: true})
