@@ -517,10 +517,7 @@ const ProjectDetails = ({ width, height }) => {
     setTableColumns(newColumns);
     // Set table data
 
-    const sampleIds = Object.keys(samples).filter((sampleUuid) => sampleUuid !== 'meta');
-    const projectSamples = sampleIds.filter((sampleUuid) => activeProject.samples.includes(sampleUuid));
-
-    const newData = projectSamples.map((sampleUuid, idx) => {
+    const newData = activeProject.samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
       const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
