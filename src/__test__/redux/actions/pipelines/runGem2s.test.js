@@ -30,6 +30,8 @@ const initialState = {
       ...experimentTemplate,
       name: 'Mock experiment',
       id: experimentId,
+      projectUuid: projectId,
+      sampleIds: ['sample-1', 'sample-2'],
     },
   },
   projects: {
@@ -57,7 +59,7 @@ describe('runGem2s action', () => {
 
   it('Dispatches events properly', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(runGem2s(projectId, experimentId));
+    await store.dispatch(runGem2s(experimentId));
 
     const actions = store.getActions();
 
@@ -74,7 +76,7 @@ describe('runGem2s action', () => {
     fetchMock.mockResponse(JSON.stringify({ message: 'some weird error that happened' }), { status: 400 });
 
     const store = mockStore(initialState);
-    await store.dispatch(runGem2s(projectId, experimentId));
+    await store.dispatch(runGem2s(experimentId));
 
     const actions = store.getActions();
 

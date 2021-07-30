@@ -9,6 +9,7 @@ import initialProjectState, { projectTemplate } from '../../../../redux/reducers
 import { saveProject } from '../../../../redux/actions/projects';
 import { SAMPLES_DELETE, SAMPLES_SAVED } from '../../../../redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
+import { EXPERIMENTS_UPDATED } from '../../../../redux/actionTypes/experiments';
 
 enableFetchMocks();
 
@@ -67,6 +68,9 @@ describe('deleteSample action', () => {
     expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
     // Resolve loading state
-    expect(actions[3].type).toEqual(SAMPLES_SAVED);
+    expect(actions[3].type).toEqual(EXPERIMENTS_UPDATED);
+
+    // Resolve loading state
+    expect(actions[4].type).toEqual(SAMPLES_SAVED);
   });
 });

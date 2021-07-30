@@ -28,6 +28,7 @@ describe('experimentsReducer', () => {
       organism: null,
       type: '10x',
     },
+    sampleIds: [],
   };
 
   const rawExperiment2 = {
@@ -41,6 +42,7 @@ describe('experimentsReducer', () => {
       organism: null,
       type: '10x',
     },
+    sampleIds: [],
   };
 
   const experiment1 = {
@@ -51,6 +53,7 @@ describe('experimentsReducer', () => {
     description: 'this is a test description',
     createdDate: '01-01-2021',
     lastViewed: '01-01-2021',
+    sampleIds: [],
   };
 
   const experiment2 = {
@@ -61,6 +64,7 @@ describe('experimentsReducer', () => {
     description: 'this is a test description',
     createdDate: '01-01-2021',
     lastViewed: '01-01-2021',
+    sampleIds: [],
   };
 
   const updatedExperiment = {
