@@ -83,7 +83,6 @@ const ProjectDetails = ({ width, height }) => {
   const [sampleNames, setSampleNames] = useState(new Set());
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
-  const [processedRdsDownloadLink, setProcessedRdsDownloadLink] = useState('');
   const [pipelineHasRun, setPipelineHasRun] = useState(true);
 
   const metadataNameValidation = [
@@ -116,25 +115,34 @@ const ProjectDetails = ({ width, height }) => {
     }
   }, [samples, activeProject]);
 
-  useEffect(() => {
-    const getDownloadLink = async (type, setState) => {
-      const experimentId = activeProject?.experiments[0];
+  const downloadData = async (type) => {
+    const experimentId = activeProject?.experiments[0];
 
-      try {
-        if (!environment) throw new Error('Environment is not set');
-        if (!Object.values(downloadTypes).includes(type)) throw new Error('Invalid download type');
+    try {
+      if (!environment) throw new Error('Environment is not set');
+      if (!Object.values(downloadTypes).includes(type)) throw new Error('Invalid download type');
 
-        const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
-        setState(signedUrl);
-      } catch (e) {
-        pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
-      }
-    };
+      const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
 
-    if (activeProject) {
-      getDownloadLink(downloadTypes.PROCESSED_SEURAT_OBJECT, setProcessedRdsDownloadLink);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = signedUrl;
+      link.download = `${type}_${experimentId}.rds`;
+
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+        link.parentNode.removeChild(link);
+      }, 0);
+    } catch (e) {
+      console.log('== TESTING ==');
+      console.log(e);
+
+      pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
-  }, [activeProject]);
+  };
 
   useEffect(() => {
     const { loading, error, status } = backendStatus;
@@ -627,18 +635,17 @@ const ProjectDetails = ({ width, height }) => {
           {/* <Tooltip title='Samples have been merged' placement='left'> */}
           Raw Seurat object (.rds)
         </Tooltip>
-        s
       </Menu.Item>
       <Menu.Item
         key='download-processed-seurat'
         disabled={!pipelineHasRun}
       >
-        <Tooltip title='Data Processing filters have been applied' placement='left'>
-          <a
-            href={processedRdsDownloadLink}
-          >
-            Processed Seurat object (.rds)
-          </a>
+        <Tooltip
+          title='Data Processing filters have been applied'
+          placement='left'
+          onClick={() => downloadData(downloadTypes.PROCESSED_SEURAT_OBJECT)}
+        >
+          Processed Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
       <Menu.Item
