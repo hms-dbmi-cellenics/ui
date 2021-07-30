@@ -6,6 +6,7 @@ const experimentTemplate = {
   createdDate: null,
   lastViewed: null,
   meta: { organism: null, type: '10x' },
+  samples: [],
 };
 
 const initialState = {

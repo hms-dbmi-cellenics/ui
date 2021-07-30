@@ -1,4 +1,5 @@
-const createHierarchyFromTree = (data, order) => data && data.map((rootNode) => {
+// if order is not specified, it will preserve the previous order
+const createHierarchyFromTree = (data, order = null) => data && data.map((rootNode) => {
   const rootNodeObject = {
     key: rootNode.key,
   };

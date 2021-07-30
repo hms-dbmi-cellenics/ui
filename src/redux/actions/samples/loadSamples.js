@@ -8,7 +8,7 @@ import {
 } from '../../actionTypes/samples';
 
 const loadSamples = (
-  experimentId = false, projectUuid = false,
+  experimentId = null, projectUuid = null,
 ) => async (dispatch) => {
   const url = experimentId ? `/v1/experiments/${experimentId}/samples` : `/v1/projects/${projectUuid}/samples`;
   try {

@@ -596,8 +596,15 @@ const ProjectDetails = ({ width, height }) => {
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
+      // This can be done because there is only one experiment per project
+      // Has to be changed when we support multiple experiments per project
+      const experimentId = activeProject.experiments[0];
+
       const newData = arrayMove([].concat(tableData), oldIndex, newIndex).filter((el) => !!el);
-      dispatch(updateProject(activeProjectUuid, { samples: newData.map((sample) => sample.uuid) }));
+      const newSampleOrder = newData.map((sample) => sample.uuid);
+
+      dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
+      dispatch(updateExperiment(experimentId, { samples: newSampleOrder }));
       setTableData(newData);
     }
   };
