@@ -151,6 +151,7 @@ const ProjectDetails = ({ width, height }) => {
       && status.pipeline?.status === pipelineStatusValues.SUCCEEDED
     ) {
       setPipelineHasRun(true);
+      return;
     }
 
     setPipelineHasRun(false);
