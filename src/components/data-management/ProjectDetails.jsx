@@ -23,7 +23,7 @@ import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
 import { trackAnalysisLaunched } from '../../utils/tracking';
-import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
+import { getFromApiExpectOK, getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
@@ -49,7 +49,6 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 
-import prepareDownloadLink from '../../utils/prepareDownloadLink';
 import downloadTypes from '../../utils/downloadTypes';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import endUserMessages from '../../utils/endUserMessages';
@@ -118,19 +117,15 @@ const ProjectDetails = ({ width, height }) => {
   }, [samples, activeProject]);
 
   useEffect(() => {
-    const getDownloadLink = async (downloadType, setState) => {
+    const getDownloadLink = async (type, setState) => {
       const experimentId = activeProject?.experiments[0];
 
       try {
         if (!environment) throw new Error('Environment is not set');
+        if (!Object.values(downloadTypes).includes(type)) throw new Error('Invalid download type');
 
-        const donwloadLink = await prepareDownloadLink(
-          Storage,
-          environment,
-          experimentId,
-          downloadType,
-        );
-        setState(donwloadLink);
+        const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
+        setState(signedUrl);
       } catch (e) {
         pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
       }
