@@ -607,7 +607,7 @@ const ProjectDetails = ({ width, height }) => {
       const newSampleOrder = newData.map((sample) => sample.uuid);
 
       dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
-      dispatch(updateExperiment(experimentId, { samples: newSampleOrder }));
+      dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
       setTableData(newData);
     }
   };
