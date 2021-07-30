@@ -9,8 +9,10 @@ import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import '@testing-library/jest-dom';
 import {
-  initialPlotConfigStates,
+  initialComponentConfigStates,
 } from '../../../redux/reducers/componentConfig/initialState';
+import { updatePlotConfig } from '../../../redux/actions/componentConfig/index';
+
 import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
 import rootReducer from '../../../redux/reducers/index';
 import genes from '../../../redux/reducers/genes/initialState';
@@ -53,7 +55,7 @@ const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 
 const defaultStore = {
   cellSets,
-  componentConfig: { [plotUuid]: { config: initialPlotConfigStates.violin } },
+  componentConfig: initialComponentConfigStates,
   embeddings: {},
   experimentSettings: {
     ...initialExperimentState,
@@ -98,13 +100,13 @@ describe('ViolinIndex', () => {
       </Provider>,
     );
     await rtl.waitFor(() => expect(loadConfigSpy).toHaveBeenCalledTimes(1));
-    await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(3));
+    await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(2));
   };
 
   it('loads by default the gene with the highest dispersion, allows another to be selected, and updates the plot\'s title', async () => {
     await renderViolinIndex();
 
-    const geneSelection = rtl.screen.getAllByRole('tab')[0];
+    const geneSelection = rtl.screen.getAllByText('Gene Selection')[0];
     expect(geneSelection).toHaveTextContent('Gene Selection');
     const panelContainer = geneSelection.parentElement;
 
@@ -115,17 +117,20 @@ describe('ViolinIndex', () => {
 
     const newGeneShown = 'NewGeneShown';
     userEvent.type(geneInput, `{selectall}{del}${newGeneShown}`);
-    userEvent.click(rtl.getByRole(panelContainer, 'button'));
+    const searchButton = rtl.getByText(panelContainer, 'Search');
+    userEvent.click(searchButton);
+    await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(3));
+
     expect(store.getState().componentConfig[plotUuid].config.shownGene).toBe(newGeneShown);
 
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(3));
     await expectStringInVegaCanvas(newGeneShown, 1);
   });
 
   it('allows selection of the grouping/points, defaulting to louvain and All', async () => {
     await renderViolinIndex();
 
-    const dataSelection = rtl.screen.getAllByRole('tab')[1];
+    const dataSelection = rtl.screen.getAllByText('Select Data')[0];
     expect(dataSelection).toHaveTextContent('Select Data');
     const panelContainer = dataSelection.parentElement;
 
@@ -165,7 +170,7 @@ describe('ViolinIndex', () => {
   it('has a Data Tranformation panel', async () => {
     await renderViolinIndex();
 
-    const tabs = rtl.screen.getAllByRole('tab');
+    const tabs = rtl.screen.getAllByText('Data Transformation');
     const dataTransformation = tabs.find((tab) => tab.textContent === 'Data Transformation');
     const panelContainer = dataTransformation.parentElement;
     userEvent.click(dataTransformation);
@@ -214,7 +219,7 @@ describe('ViolinIndex', () => {
     expect(radioButtons[3].parentNode.parentNode).toHaveTextContent('Hide');
   });
 
-  it('has a Lengend panel', async () => {
+  it('has a Legend panel', async () => {
     await renderViolinIndex();
 
     const tabs = rtl.screen.getAllByRole('tab');
@@ -255,24 +260,26 @@ describe('ViolinIndex', () => {
     userEvent.click(titleTab);
     let panelContainer = mainSchema.parentElement;
     const titleInput = rtl.getByRole(panelContainer, 'textbox');
-    expect(titleInput).toHaveValue('');
+    expect(titleInput).toHaveValue('MockGeneWithHighestDispersion');
     await expectStringInVegaCanvas('MockGeneWithHighestDispersion', 1);
 
     const titleOverride = '€'; // Single character so that useUpdateThrottled does not mess with the tests
     generateSpecSpy.mockClear();
     userEvent.type(titleInput, titleOverride);
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalled());
-    await expectStringInVegaCanvas('MockGeneWithHighestDispersion', 0);
+    await expectStringInVegaCanvas('MockGeneWithHighestDispersion', 1);
     await expectStringInVegaCanvas(titleOverride, 1);
 
-    const geneSelection = tabs.find((tab) => tab.textContent === 'Gene Selection');
+    const geneSelection = rtl.screen.getAllByText('Gene Selection')[0];
     panelContainer = geneSelection.parentNode;
     userEvent.click(geneSelection);
     const geneInput = rtl.getByRole(panelContainer, 'textbox');
     const newGeneShown = 'NewGeneShown';
     generateSpecSpy.mockClear();
     userEvent.type(geneInput, `{selectall}{del}${newGeneShown}`);
-    userEvent.click(rtl.getByRole(panelContainer, 'button'));
+    const searchButton = rtl.getByText(panelContainer, 'Search');
+
+    userEvent.click(searchButton);
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalled());
     await expectStringInVegaCanvas(newGeneShown, 1);
   });

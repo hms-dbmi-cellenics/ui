@@ -140,7 +140,7 @@ const ViolinPlot = (props) => {
       || highestDispersionLoading) {
       return (
         <center>
-          <Loader />
+          <Loader experimentId={experimentId} />
         </center>
       );
     }
