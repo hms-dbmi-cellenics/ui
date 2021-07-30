@@ -3,6 +3,7 @@ import {
 } from '../../actionTypes/experiments';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import saveExperiment from './saveExperiment';
 
 const updateExperiment = (
   experimentId,
@@ -16,6 +17,8 @@ const updateExperiment = (
         experiment,
       },
     });
+
+    dispatch(saveExperiment(experimentId));
   } catch (e) {
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
