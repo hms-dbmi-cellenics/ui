@@ -137,9 +137,6 @@ const ProjectDetails = ({ width, height }) => {
         link.parentNode.removeChild(link);
       }, 0);
     } catch (e) {
-      console.log('== TESTING ==');
-      console.log(e);
-
       pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
   };
@@ -155,6 +152,8 @@ const ProjectDetails = ({ width, height }) => {
     ) {
       setPipelineHasRun(true);
     }
+
+    setPipelineHasRun(false);
   }, [backendStatus]);
 
   useEffect(() => {
@@ -641,7 +640,7 @@ const ProjectDetails = ({ width, height }) => {
         disabled={!pipelineHasRun}
       >
         <Tooltip
-          title='Data with filters applied'
+          title={pipelineHasRun ? 'Data with filters applied' : 'Launch analysis to process data'}
           placement='left'
           onClick={() => downloadData(downloadTypes.PROCESSED_SEURAT_OBJECT)}
         >
@@ -715,7 +714,15 @@ const ProjectDetails = ({ width, height }) => {
               >
                 Add metadata
               </Button>
-              <Dropdown overlay={DownloadDataMenu} trigger={['click']} placement='bottomRight'>
+              <Dropdown
+                overlay={DownloadDataMenu}
+                trigger={['click']}
+                placement='bottomRight'
+                disabled={
+                  projects.ids.length === 0
+                  || activeProject?.samples?.length === 0
+                }
+              >
                 <Button>
                   Download
                 </Button>
