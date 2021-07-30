@@ -640,7 +640,11 @@ const ProjectDetails = ({ width, height }) => {
         disabled={!pipelineHasRun}
       >
         <Tooltip
-          title={pipelineHasRun ? 'Data with filters applied' : 'Launch analysis to process data'}
+          title={
+            pipelineHasRun
+              ? 'With Data Processing filters and settings applied'
+              : 'Launch analysis to process data'
+          }
           placement='left'
           onClick={() => downloadData(downloadTypes.PROCESSED_SEURAT_OBJECT)}
         >
