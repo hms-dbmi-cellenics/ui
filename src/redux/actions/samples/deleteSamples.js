@@ -94,6 +94,11 @@ const deleteSamples = (
         dispatch(saveProject(projectUuid, newProject, false));
 
         dispatch({
+          type: SAMPLES_DELETE,
+          payload: { sampleUuids: samplesToDelete },
+        });
+
+        dispatch({
           type: PROJECTS_UPDATE,
           payload: {
             projectUuid,
@@ -101,11 +106,6 @@ const deleteSamples = (
               samples: newSamples,
             },
           },
-        });
-
-        dispatch({
-          type: SAMPLES_DELETE,
-          payload: { sampleUuids: samplesToDelete },
         });
 
         await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
