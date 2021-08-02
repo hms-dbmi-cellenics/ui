@@ -80,6 +80,17 @@ describe('CellSetsTool', () => {
       ],
       hidden: new Set(),
     },
+    genes: {
+      expression: {
+        data: {
+          Lyz2: {
+            rawExpression: {
+              expression: [1, 2, 3, 4, 5],
+            },
+          },
+        },
+      },
+    },
   };
 
   configure({ adapter: new Adapter() });
@@ -285,7 +296,8 @@ describe('CellSetsTool', () => {
     // We should have found the union operation.
     expect.hasAssertions();
   });
-  it('selected cell sets show selected in both tabs including disclaimer', () => {
+
+  it('selected cell sets show selected in both tabs', () => {
     const store = mockStore(
       {
         ...storeState,
@@ -316,6 +328,7 @@ describe('CellSetsTool', () => {
     tabs.props().onChange('cellSets');
     expect(text.text()).toEqual('3 cells selected');
   });
+
   it('Scratchpad cluster deletion works ', () => {
     const store = mockStore(storeState);
     const component = mount(
@@ -334,4 +347,36 @@ describe('CellSetsTool', () => {
     deleteButton.simulate('click');
     expect(store.getActions().length).toEqual(2);
   });
+
+  // it('selected cell sets show selected in ', () => {
+  //   const store = mockStore(
+  //     {
+  //       ...storeState,
+  //       cellSets: {
+  //         ...storeState.cellSets,
+  //         selected: {
+  //           cellSets: ['scratchpad-a', 'cluster-c'],
+  //           metadataCategorical: ['cluster-b'],
+  //         },
+  //       },
+  //     },
+  //   );
+  //   const component = mount(
+  //     <Provider store={store}>
+  //       <CellSetsTool
+  //         experimentId='asd'
+  //         width={50}
+  //         height={50}
+  //       />
+  //     </Provider>,
+  //   );
+  //   waitForComponentToPaint(component);
+  //   const tabs = component.find(Tabs);
+  //   const text = component.find('#selectedCellSets').first();
+  //   expect(text.text()).toEqual('3 cells selected');
+  //   tabs.props().onChange('metadataCategorical');
+  //   expect(text.text()).toEqual('4 cells selected');
+  //   tabs.props().onChange('cellSets');
+  //   expect(text.text()).toEqual('3 cells selected');
+  // });
 });

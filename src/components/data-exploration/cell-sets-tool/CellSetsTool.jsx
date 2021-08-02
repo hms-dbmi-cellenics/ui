@@ -157,7 +157,7 @@ const CellSetsTool = (props) => {
             helpTitle='Create new cell set from the complement of the selected sets'
           />
           <Text type='primary' id='selectedCellSets'>
-            {`${numSelected} gene${numSelected === 1 ? '' : 's'} selected`}
+            {`${numSelected} cell${numSelected === 1 ? '' : 's'} selected`}
             {activeTab === 'metadataCategorical'}
           </Text>
         </Space>
