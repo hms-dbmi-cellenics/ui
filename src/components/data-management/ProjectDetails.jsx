@@ -83,7 +83,6 @@ const ProjectDetails = ({ width, height }) => {
   const [sampleNames, setSampleNames] = useState(new Set());
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
-  const [processedRdsDownloadLink, setProcessedRdsDownloadLink] = useState('');
   const [pipelineHasRun, setPipelineHasRun] = useState(true);
 
   const metadataNameValidation = [
@@ -116,25 +115,31 @@ const ProjectDetails = ({ width, height }) => {
     }
   }, [samples, activeProject]);
 
-  useEffect(() => {
-    const getDownloadLink = async (type, setState) => {
-      const experimentId = activeProject?.experiments[0];
+  const downloadData = async (type) => {
+    const experimentId = activeProject?.experiments[0];
 
-      try {
-        if (!environment) throw new Error('Environment is not set');
-        if (!Object.values(downloadTypes).includes(type)) throw new Error('Invalid download type');
+    try {
+      if (!environment) throw new Error('Environment is not set');
+      if (!Object.values(downloadTypes).includes(type)) throw new Error('Invalid download type');
 
-        const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
-        setState(signedUrl);
-      } catch (e) {
-        pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
-      }
-    };
+      const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
 
-    if (activeProject) {
-      getDownloadLink(downloadTypes.PROCESSED_SEURAT_OBJECT, setProcessedRdsDownloadLink);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = signedUrl;
+      link.download = `${type}_${experimentId}.rds`;
+
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+        link.parentNode.removeChild(link);
+      }, 0);
+    } catch (e) {
+      pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
-  }, [activeProject]);
+  };
 
   useEffect(() => {
     const { loading, error, status } = backendStatus;
@@ -146,7 +151,10 @@ const ProjectDetails = ({ width, height }) => {
       && status.pipeline?.status === pipelineStatusValues.SUCCEEDED
     ) {
       setPipelineHasRun(true);
+      return;
     }
+
+    setPipelineHasRun(false);
   }, [backendStatus]);
 
   useEffect(() => {
@@ -632,20 +640,26 @@ const ProjectDetails = ({ width, height }) => {
         key='download-processed-seurat'
         disabled={!pipelineHasRun}
       >
-        <Tooltip title='Data Processing filters have been applied' placement='left'>
-          <a
-            href={processedRdsDownloadLink}
-          >
-            Processed Seurat object (.rds)
-          </a>
+        <Tooltip
+          title={
+            pipelineHasRun
+              ? 'With Data Processing filters and settings applied'
+              : 'Launch analysis to process data'
+          }
+          placement='left'
+          onClick={() => downloadData(downloadTypes.PROCESSED_SEURAT_OBJECT)}
+        >
+          Processed Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
-      <Menu.Item
-        disabled
-        key='download-processing-settings'
-      >
-        Data Processing settings
-      </Menu.Item>
+      <Tooltip title='Feature coming soon!' placement='left'>
+        <Menu.Item
+          disabled
+          key='download-processing-settings'
+        >
+          Data Processing settings
+        </Menu.Item>
+      </Tooltip>
     </Menu>
   );
 
@@ -705,7 +719,15 @@ const ProjectDetails = ({ width, height }) => {
               >
                 Add metadata
               </Button>
-              <Dropdown overlay={DownloadDataMenu} trigger={['click']} placement='bottomRight'>
+              <Dropdown
+                overlay={DownloadDataMenu}
+                trigger={['click']}
+                placement='bottomRight'
+                disabled={
+                  projects.ids.length === 0
+                  || activeProject?.samples?.length === 0
+                }
+              >
                 <Button>
                   Download
                 </Button>
