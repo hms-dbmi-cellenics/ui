@@ -12,7 +12,8 @@ import PreloadContent from '../../PreloadContent';
 
 import { updateFilterSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
 
-import runCellSetsClustering from '../../../redux/actions/cellSets/runCellSetsClustering';
+import { runCellSetsClustering } from '../../../redux/actions/cellSets';
+import { loadMarkerGenes } from '../../../redux/actions/genes';
 
 import SliderWithInput from '../../SliderWithInput';
 
@@ -46,8 +47,10 @@ const CalculationConfig = (props) => {
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
-  const debouncedCellSetClustering = useCallback(
-    _.debounce((resolution) => dispatch(runCellSetsClustering(experimentId, resolution)), 1500),
+  const debouncedClustering = useCallback(
+    _.debounce((resolution) => {
+      dispatch(runCellSetsClustering(experimentId, resolution));
+    }, 1500),
     [],
   );
 
@@ -104,7 +107,7 @@ const CalculationConfig = (props) => {
       embeddingSettings: {
         methodSettings: {
           umap: {
-            distanceMetric: parseFloat(value),
+            distanceMetric: value,
           },
         },
       },
@@ -193,13 +196,8 @@ const CalculationConfig = (props) => {
           value={umapSettings.distanceMetric}
           onChange={(value) => setDistanceMetric(value)}
         >
+          <Option value='cosine'>Cosine</Option>
           <Option value='euclidean'>Euclidean</Option>
-          <Option value='cosine' disabled>
-            {' '}
-            <Tooltip title='Cosine metric is going to be supported on a future version of the platform.'>
-              Cosine
-            </Tooltip>
-          </Option>
         </Select>
       </Form.Item>
     </>
@@ -408,7 +406,7 @@ const CalculationConfig = (props) => {
                   },
                 });
 
-                debouncedCellSetClustering(value);
+                debouncedClustering(value);
               }}
             />
           </Form.Item>

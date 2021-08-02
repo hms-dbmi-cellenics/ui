@@ -68,7 +68,8 @@ describe('loadGeneExpression action', () => {
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid));
 
     const firstCall = fetchCachedWork.mock.calls[0];
-    expect(firstCall[2].genes).toEqual(['b', 'c']);
+
+    expect(firstCall[1].genes).toEqual(['b', 'c']);
     expect(fetchCachedWork).toMatchSnapshot();
   });
 
@@ -98,7 +99,7 @@ describe('loadGeneExpression action', () => {
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
 
     const firstCall = fetchCachedWork.mock.calls[1];
-    expect(firstCall[2].genes).toEqual(['a', 'b', 'c']);
+    expect(firstCall[1].genes).toEqual(['a', 'b', 'c']);
     expect(fetchCachedWork).toMatchSnapshot();
   });
 

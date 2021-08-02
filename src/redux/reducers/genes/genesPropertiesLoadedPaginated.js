@@ -23,7 +23,7 @@ const genesPropertiesLoadedPaginated = (state, action) => {
         },
       },
       loading: _.difference(state.properties.loading, properties),
-      data: _.merge(state.properties.data, data),
+      data: { ...state.properties.data, ...data },
     },
   };
 };

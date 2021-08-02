@@ -10,9 +10,9 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
     loading, error,
   } = getState().cellSets;
 
-  const {
-    backendStatus,
-  } = getState().experimentSettings;
+  const { backendStatus, processing } = getState().experimentSettings;
+
+  const { method } = processing.configureEmbedding.clusteringSettings;
 
   if (loading || error) {
     return null;
@@ -21,7 +21,7 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   const body = {
     name: 'ClusterCells',
     cellSetName: 'Louvain clusters',
-    type: 'louvain',
+    type: method,
     cellSetKey: 'louvain',
     config: {
       resolution,

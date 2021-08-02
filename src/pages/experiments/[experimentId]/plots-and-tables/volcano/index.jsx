@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Row,
@@ -279,7 +280,6 @@ const VolcanoPlot = ({ experimentId }) => {
     if (plotData.length === 0 || loading || _.isEmpty(spec.spec)) {
       return <Loader experimentId={experimentId} />;
     }
-
     return (
       <Vega data={{ data: plotData }} spec={spec.spec} renderer='canvas' />
     );
