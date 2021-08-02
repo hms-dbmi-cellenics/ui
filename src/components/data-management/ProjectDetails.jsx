@@ -83,6 +83,7 @@ const ProjectDetails = ({ width, height }) => {
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
   const [pipelineHasRun, setPipelineHasRun] = useState(true);
+  const [gem2sHasRun, setGem2sHasRun] = useState(false);
 
   const metadataNameValidation = [
     rules.MIN_1_CHAR,
@@ -116,18 +117,18 @@ const ProjectDetails = ({ width, height }) => {
 
   useEffect(() => {
     const { loading, error, status } = backendStatus;
-
-    if (
-      !loading
-      && !error
-      && status?.pipeline
-      && status.pipeline?.status === pipelineStatusValues.SUCCEEDED
-    ) {
-      setPipelineHasRun(true);
-      return;
+    if (!loading && !error) {
+      if (status?.pipeline && status.pipeline?.status === pipelineStatusValues.SUCCEEDED) {
+        setPipelineHasRun(true);
+      } else {
+        setPipelineHasRun(false);
+      }
+      if (status?.gem2s && status.gem2s?.status === pipelineStatusValues.SUCCEEDED) {
+        setGem2sHasRun(true);
+      } else {
+        setGem2sHasRun(false);
+      }
     }
-
-    setPipelineHasRun(false);
   }, [backendStatus]);
 
   useEffect(() => {
@@ -603,9 +604,18 @@ const ProjectDetails = ({ width, height }) => {
 
   const DownloadDataMenu = (
     <Menu>
-      <Menu.Item key='download-raw-seurat'>
-        <Tooltip title='Samples have been merged' placement='left'>
-          {/* <Tooltip title='Samples have been merged' placement='left'> */}
+      <Menu.Item
+        key='download-raw-seurat'
+        disabled={!gem2sHasRun}
+      >
+        <Tooltip
+          title={gem2sHasRun ? 'Samples have been merged' : 'Launch analysis to merge samples'}
+          placement='left'
+          onClick={() => {
+            const experimentId = activeProject.experiments[0];
+            downloadData(experimentId, downloadTypes.RAW_SEURAT_OBJECT);
+          }}
+        >
           Raw Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
