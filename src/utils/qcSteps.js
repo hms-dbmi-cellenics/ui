@@ -1,3 +1,14 @@
+// canonical ordering of QC steps
+const qcSteps = [
+  'classifier',
+  'cellSizeDistribution',
+  'mitochondrialContent',
+  'numGenesVsNumUmis',
+  'doubletScores',
+  'dataIntegration',
+  'configureEmbedding',
+];
+
 const getUserFriendlyQCStepName = (step) => {
   switch (step) {
     case 'classifier':
@@ -19,4 +30,7 @@ const getUserFriendlyQCStepName = (step) => {
   }
 };
 
-export default getUserFriendlyQCStepName;
+export {
+  qcSteps,
+  getUserFriendlyQCStepName,
+};

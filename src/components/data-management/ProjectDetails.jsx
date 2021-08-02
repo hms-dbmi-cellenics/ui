@@ -584,8 +584,8 @@ const ProjectDetails = ({ width, height }) => {
     const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
 
     return steps.length > 0 &&
-      activeProject.samples.length > 0 &&
-      activeProject.samples.every((s) => steps[0].hasOwnProperty(s))
+      activeProject?.samples.length > 0 &&
+      activeProject?.samples.every((s) => steps[0].hasOwnProperty(s))
   }
 
   const DownloadDataMenu = (
@@ -608,7 +608,7 @@ const ProjectDetails = ({ width, height }) => {
           const config = _.omit(experimentSettings.processing, ['meta']);
           const filteredConfig = filterPipelineParameters(config, activeProject.samples, samples);
           const blob = exportPipelineParameters(filteredConfig);
-          saveAs(blob, `${activeProjectUuid}_settings.txt`);
+          saveAs(blob, `${activeProject.name}_settings.txt`);
         }
         }>
         {

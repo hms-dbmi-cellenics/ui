@@ -1,8 +1,10 @@
 import _ from 'lodash';
 import * as INI from 'ini';
+import { qcSteps } from './qcSteps';
 
 const exportPipelineParameters = (config) => {
-  const string = INI.stringify(config, { whitespace: true });
+  const sortedConfig = qcSteps.map((s, i) => [`${i + 1}-${s}`, config[s]]).sort();
+  const string = INI.stringify(Object.fromEntries(sortedConfig), { whitespace: true });
   return new Blob([string], { type: 'text/plain;charset=utf-8' });
 };
 
