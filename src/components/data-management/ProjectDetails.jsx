@@ -605,13 +605,10 @@ const ProjectDetails = ({ width, height }) => {
       <Menu.Item
         disabled={!allSamplesAnalysed()}
         onClick={() => {
-          const experiment = activeProject.experiments[0];
-          const experimentName = experiments[experiment]?.name
-
           const config = _.omit(experimentSettings.processing, ['meta']);
           const filteredConfig = filterPipelineParameters(config, activeProject.samples, samples);
           const blob = exportPipelineParameters(filteredConfig);
-          saveAs(blob, `Data Processing Settings for ${experimentName}.txt`);
+          saveAs(blob, `${activeProjectUuid}_settings.txt`);
         }
         }>
         {
