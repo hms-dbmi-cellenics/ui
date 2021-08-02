@@ -7,23 +7,28 @@ const exportPipelineParameters = (config) => {
 };
 
 const filterPipelineParameters = (config, projectSamples,
-  samplesStore) => Object.fromEntries(Object.entries(config)
-  .map(([step, stepConfig]) => [
-    step,
-    (
-      !_.get(stepConfig, 'enabled', true)
-        ? { disabled: true }
-        : Object.fromEntries(
-          projectSamples.map((sample) => [
-              samplesStore[sample]?.name,
-              flattenSampleStepConfig(
-                stepConfig[sample]?.filterSettings
-                ?? _.mapValues(stepConfig, flattenSampleStepConfig),
-              ),
-          ]),
-        )
-    ),
-  ]));
+  samplesStore) => {
+  const filtered = _.mapValues(config, (step) => (
+    !_.get(step, 'enabled', true)
+      ? { disabled: true }
+      : Object.fromEntries(
+        projectSamples.map((sample) => [
+          samplesStore[sample]?.name,
+          flattenSampleStepConfig(
+            step[sample]?.filterSettings
+            ?? _.mapValues(step, flattenSampleStepConfig),
+          ),
+        ]),
+      )
+  ));
+
+  // settings for these steps are the same for all samples, so we can remove
+  // duplication
+  [filtered.dataIntegration] = Object.values(filtered.dataIntegration);
+  [filtered.configureEmbedding] = Object.values(filtered.configureEmbedding);
+
+  return filtered;
+};
 
 const flattenSampleStepConfig = (stepConfig) => {
   // for steps with multiple methods to choose from, only include
