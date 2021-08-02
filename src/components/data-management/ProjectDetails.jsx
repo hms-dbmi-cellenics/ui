@@ -48,6 +48,7 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
+import filterPipelineParameters from '../../utils/exportPipelineParameters';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -578,10 +579,9 @@ const ProjectDetails = ({ width, height }) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
-  const pipelineHasRun = () => {
-    // Returns whether the pipeline has been started for all samples in the
-    // currently active project by checking that the processing config has been
-    // generated for all those samples.
+  const allSamplesAnalysed = () => {
+    // Returns true only if there is at least one sample in the currently active
+    // project AND all samples in the project have been analysed.
     const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
 
     return steps.length > 0 &&
@@ -604,7 +604,7 @@ const ProjectDetails = ({ width, height }) => {
         </Tooltip>
       </Menu.Item>
       <Menu.Item
-        disabled={!pipelineHasRun()}
+        disabled={!allSamplesAnalysed()}
         onClick={() => {
           const experiment = activeProject.experiments[0];
           const experimentName = experiments[experiment]?.name
@@ -612,32 +612,15 @@ const ProjectDetails = ({ width, height }) => {
           // load processing configuration
           const config = _.omit(experimentSettings.processing, ['meta']);
 
-          const filteredConfig = Object.entries(config)
-            .map(([step, stepConfig]) => [
-                step,
-                (!_.get(stepConfig, 'enabled', true)
-                  ? {disabled: true}
-                  : Object.fromEntries(
-                      activeProject.samples.map((sample) => [
-                        samples[sample]?.name,
-                        stepConfig[sample]?.filterSettings ??
-                        // for steps with multiple methods to choose from, only include
-                        // configuration for the method that is actually selected
-                        _.mapValues(stepConfig, (substepConfig) => ({
-                            method: substepConfig.method,
-                            ..._.get(substepConfig.methodSettings, substepConfig.method)
-                          }))
-                      ])
-                ))
-              ])
+          const filteredConfig = filterPipelineParameters(config, activeProject.samples, samples)
 
-          const string = INI.stringify(Object.fromEntries(filteredConfig), {whitespace: true})
+          const string = INI.stringify(filteredConfig, {whitespace: true})
           const blob = new Blob([string], {type: 'text/plain;charset=utf-8'});
           saveAs(blob, `Data Processing Settings for ${experimentName}.txt`);
         }
         }>
         {
-          pipelineHasRun()
+          allSamplesAnalysed()
           ? 'Data Processing settings (.txt)'
           : <Tooltip title='One or more of your samples has not been analysed yet' placement='left'>
               Data Processing settings (.txt)
