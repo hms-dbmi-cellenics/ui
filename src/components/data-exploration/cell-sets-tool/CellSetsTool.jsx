@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -33,6 +33,19 @@ const { Text } = Typography;
 
 const { TabPane } = Tabs;
 
+const generateIsFilteredCellIndicator = (geneExpressions) => {
+  const someGeneExpressionObj = _.find(geneExpressions, () => true);
+  const isFilteredCellArray = someGeneExpressionObj?.rawExpression.expression ?? [];
+  const isFilteredCell = isFilteredCellArray.reduce((acum, current, index) => {
+    if (current === null) {
+      acum.add(index);
+    }
+    return acum;
+  }, new Set());
+
+  return isFilteredCell;
+};
+
 const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
 
@@ -45,16 +58,15 @@ const CellSetsTool = (props) => {
     (state) => state.genes.expression.data,
   ) ?? [];
 
-  const someGeneExpressionObj = _.find(geneExpressions, () => true);
-  const isFilteredCellArray = someGeneExpressionObj?.rawExpression.expression ?? [];
-  const isFilteredCell = isFilteredCellArray.reduce((acum, current, index) => {
-    if (current === null) {
-      acum.add(index);
-    }
-    return acum;
-  }, new Set());
+  const isFilteredCellRef = useRef(null);
 
   const [activeTab, setActiveTab] = useState('cellSets');
+
+  useState(() => {
+    if (isFilteredCellRef.current) return;
+
+    isFilteredCellRef.current = generateIsFilteredCellIndicator(geneExpressions);
+  }, [geneExpressions]);
 
   const {
     loading, error, properties, hierarchy, selected: allSelected, hidden,
@@ -114,7 +126,7 @@ const CellSetsTool = (props) => {
     const selectedCells = union(selected, properties);
 
     const numSelectedUnfiltered = new Set([...selectedCells]
-      .filter((cellIndex) => !isFilteredCell.has(cellIndex)));
+      .filter((cellIndex) => !isFilteredCellRef.current.has(cellIndex)));
     const numSelected = numSelectedUnfiltered.size;
 
     let operations = null;
