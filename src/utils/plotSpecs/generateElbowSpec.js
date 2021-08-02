@@ -1,6 +1,7 @@
 const generateSpec = (config, plotData, numPCs) => ({
   width: config.dimensions.width,
   height: config.dimensions.height,
+  background: config.colour.toggleInvert,
   autosize: { type: 'fit', resize: true },
   padding: 5,
 
@@ -49,6 +50,9 @@ const generateSpec = (config, plotData, numPCs) => ({
       labelFont: config.axes.labelFont,
       titleFontSize: config.axes.titleFontSize,
       labelFontSize: config.axes.labelFontSize,
+      labelColor: config.colour.masterColour,
+      tickColor: config.colour.masterColour,
+      titleColor: config.colour.masterColour,
       offset: config.axes.offset,
       gridOpacity: (config.axes.gridOpacity / 20),
       labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
@@ -66,6 +70,9 @@ const generateSpec = (config, plotData, numPCs) => ({
       labelFont: config.axes.labelFont,
       titleFontSize: config.axes.titleFontSize,
       labelFontSize: config.axes.labelFontSize,
+      labelColor: config.colour.masterColour,
+      tickColor: config.colour.masterColour,
+      titleColor: config.colour.masterColour,
       offset: config.axes.offset,
       gridOpacity: (config.axes.gridOpacity / 20),
     },
