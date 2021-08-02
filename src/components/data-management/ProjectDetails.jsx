@@ -662,8 +662,7 @@ const ProjectDetails = ({ width, height }) => {
         visible={analysisModalVisible}
         onLaunch={async (experimentId) => {
           const lastViewed = moment().toISOString();
-          dispatch(updateExperiment(experimentId, { lastViewed }));
-          await dispatch(saveExperiment(experimentId));
+          await dispatch(updateExperiment(experimentId, { lastViewed }));
           await dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
         }}
