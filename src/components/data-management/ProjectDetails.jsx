@@ -10,7 +10,6 @@ import {
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
-import * as INI from 'ini'
 import _ from 'lodash'
 import { saveAs } from 'file-saver';
 import { Storage } from 'aws-amplify';
@@ -48,7 +47,7 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
-import filterPipelineParameters from '../../utils/exportPipelineParameters';
+import { exportPipelineParameters, filterPipelineParameters } from '../../utils/exportPipelineParameters';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -609,13 +608,9 @@ const ProjectDetails = ({ width, height }) => {
           const experiment = activeProject.experiments[0];
           const experimentName = experiments[experiment]?.name
 
-          // load processing configuration
           const config = _.omit(experimentSettings.processing, ['meta']);
-
-          const filteredConfig = filterPipelineParameters(config, activeProject.samples, samples)
-
-          const string = INI.stringify(filteredConfig, {whitespace: true})
-          const blob = new Blob([string], {type: 'text/plain;charset=utf-8'});
+          const filteredConfig = filterPipelineParameters(config, activeProject.samples, samples);
+          const blob = exportPipelineParameters(filteredConfig);
           saveAs(blob, `Data Processing Settings for ${experimentName}.txt`);
         }
         }>
