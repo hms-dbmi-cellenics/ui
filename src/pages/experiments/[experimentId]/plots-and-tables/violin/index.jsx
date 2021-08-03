@@ -38,6 +38,7 @@ const plotType = 'violin';
 const ViolinIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const cellSets = useSelector((state) => state.cellSets);
   const [searchedGene, setSearchedGene] = useState(config?.shownGene);
 
   useEffect(() => {
@@ -97,6 +98,7 @@ const ViolinIndex = ({ experimentId }) => {
       config={config}
       onUpdate={updatePlotWithChanges}
       setSearchedGene={setSearchedGene}
+      cellSets={cellSets}
     />
   );
 

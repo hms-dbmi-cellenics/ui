@@ -4,15 +4,15 @@ import PropTypes from 'prop-types';
 import {
   Collapse, Radio, Form, Slider, Skeleton,
 } from 'antd';
-import { useSelector } from 'react-redux';
 import SelectData from 'components/plots/styling/violin/SelectData';
 import SingleGeneSelection from '../SingleGeneSelection';
 
 const { Panel } = Collapse;
 
 const ViolinControls = (props) => {
-  const { config, onUpdate, setSearchedGene } = props;
-  const cellSets = useSelector((state) => state.cellSets);
+  const {
+    config, onUpdate, setSearchedGene, cellSets,
+  } = props;
 
   return (
     <Collapse>
@@ -64,5 +64,6 @@ ViolinControls.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
   setSearchedGene: PropTypes.func.isRequired,
+  cellSets: PropTypes.object.isRequired,
 };
 export default ViolinControls;

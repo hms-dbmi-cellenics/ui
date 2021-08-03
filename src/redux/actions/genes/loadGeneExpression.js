@@ -6,7 +6,7 @@ import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const loadGeneExpression = (
-  experimentId, genes, componentUuid, onUpdate = false, forceReloadAll = false,
+  experimentId, genes, componentUuid, forceReloadAll = false,
 ) => async (dispatch, getState) => {
   const {
     loading, data: geneData,
@@ -47,9 +47,6 @@ const loadGeneExpression = (
   );
   if (genesToFetch.length === 0) {
     // All genes are already loaded.
-    if (onUpdate) {
-      onUpdate({ shownGene: displayedGenes[0] });
-    }
     return dispatch({
       type: GENES_EXPRESSION_LOADED,
       payload: {
@@ -69,9 +66,7 @@ const loadGeneExpression = (
     const data = await fetchCachedWork(
       experimentId, body, backendStatus.status, { timeout: 30 },
     );
-    if (onUpdate) {
-      onUpdate({ shownGene: Object.keys(data)[0] });
-    }
+
     if (data[genesToFetch[0]]?.error) {
       pushNotificationMessage('error', data[genesToFetch[0]].message);
       dispatch({

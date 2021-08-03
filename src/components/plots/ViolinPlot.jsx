@@ -29,6 +29,18 @@ const ViolinPlot = (props) => {
     (state) => (state.genes.properties.views[plotUuid]?.data
       ? state.genes.properties.views[plotUuid]?.data[0] : undefined),
   );
+
+  const loadedGene = useSelector((state) => state.genes.expression.views[plotUuid]?.data);
+  useEffect(() => {
+    if (loadedGene && loadedGene.length) {
+      updatePlotWithChanges(
+        {
+          shownGene: loadedGene[0],
+          title: { text: loadedGene[0] },
+        },
+      );
+    }
+  }, [loadedGene]);
   const PROPERTIES = ['dispersions'];
   const tableState = {
     pagination: {
@@ -42,7 +54,6 @@ const ViolinPlot = (props) => {
   };
 
   useEffect(() => {
-    // initially if there is a saved gene in the config
     if (config?.shownGene !== 'notSelected') {
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
@@ -57,8 +68,6 @@ const ViolinPlot = (props) => {
 
   useEffect(() => {
     // if no saved gene and highest dispersion gene is loaded - use it
-    updatePlotWithChanges({ title: { text: config.shownGene } });
-
     if (config.shownGene === 'notSelected' && highestDispersionGene) {
       updatePlotWithChanges({ shownGene: highestDispersionGene });
       dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
@@ -68,7 +77,7 @@ const ViolinPlot = (props) => {
   useEffect(() => {
     // search for gene and update config.shownGene if letter-cases are not correct
     if (searchedGene) {
-      dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid, updatePlotWithChanges));
+      dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid));
     }
   }, [searchedGene]);
 

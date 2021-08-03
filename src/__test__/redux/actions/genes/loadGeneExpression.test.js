@@ -97,7 +97,7 @@ describe('loadGeneExpression action', () => {
       new Promise((resolve) => resolve({}))));
 
     await store.dispatch(
-      loadGeneExpression(experimentId, loadingGenes, componentUuid, false, true),
+      loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
     );
 
     const firstCall = fetchCachedWork.mock.calls[1];
@@ -125,7 +125,7 @@ describe('loadGeneExpression action', () => {
     fetchCachedWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(
-      loadGeneExpression(experimentId, loadingGenes, componentUuid, false, true),
+      loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
     );
 
     const loadingAction = store.getActions()[0];

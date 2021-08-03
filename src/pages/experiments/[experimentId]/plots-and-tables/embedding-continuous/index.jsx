@@ -33,6 +33,7 @@ const plotType = 'embeddingContinuous';
 const EmbeddingContinuousIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const loadedGene = useSelector((state) => state.genes.expression.views[plotUuid]?.data);
   const cellSets = useSelector((state) => state?.cellSets);
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -62,13 +63,19 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     }
   }, [config?.shownGene]);
 
+  useEffect(() => {
+    if (loadedGene && loadedGene.length) {
+      updatePlotWithChanges({ shownGene: loadedGene[0] });
+    }
+  }, [loadedGene]);
+
   if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 
   useEffect(() => {
     if (searchedGene) {
-      dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid, updatePlotWithChanges));
+      dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid));
     }
   }, [searchedGene]);
   useEffect(() => {

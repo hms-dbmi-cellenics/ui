@@ -7,7 +7,6 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import '@testing-library/jest-dom';
 import {
   initialComponentConfigStates,
 } from '../../../redux/reducers/componentConfig/initialState';
@@ -106,8 +105,7 @@ describe('ViolinIndex', () => {
   it('loads by default the gene with the highest dispersion, allows another to be selected, and updates the plot\'s title', async () => {
     await renderViolinIndex();
 
-    const geneSelection = rtl.screen.getAllByText('Gene Selection')[0];
-    expect(geneSelection).toHaveTextContent('Gene Selection');
+    const geneSelection = rtl.screen.getByText('Gene Selection');
     const panelContainer = geneSelection.parentElement;
 
     userEvent.click(geneSelection);
@@ -123,15 +121,14 @@ describe('ViolinIndex', () => {
 
     expect(store.getState().componentConfig[plotUuid].config.shownGene).toBe(newGeneShown);
 
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(3));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(5));
     await expectStringInVegaCanvas(newGeneShown, 1);
   });
 
   it('allows selection of the grouping/points, defaulting to louvain and All', async () => {
     await renderViolinIndex();
 
-    const dataSelection = rtl.screen.getAllByText('Select Data')[0];
-    expect(dataSelection).toHaveTextContent('Select Data');
+    const dataSelection = rtl.screen.getByText('Select Data');
     const panelContainer = dataSelection.parentElement;
 
     userEvent.click(dataSelection);
@@ -159,7 +156,7 @@ describe('ViolinIndex', () => {
     expect(inputFields[0].parentNode.parentNode).toHaveTextContent('Louvain clusters');
     expect(inputFields[1].parentNode.parentNode).toHaveTextContent('All');
 
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
     await expectStringInVegaCanvas('cluster a', 1);
 
     // Testing the effect of grouping by sample
@@ -170,8 +167,7 @@ describe('ViolinIndex', () => {
   it('has a Data Tranformation panel', async () => {
     await renderViolinIndex();
 
-    const tabs = rtl.screen.getAllByText('Data Transformation');
-    const dataTransformation = tabs.find((tab) => tab.textContent === 'Data Transformation');
+    const dataTransformation = rtl.screen.getByText('Data Transformation');
     const panelContainer = dataTransformation.parentElement;
     userEvent.click(dataTransformation);
 
@@ -234,11 +230,11 @@ describe('ViolinIndex', () => {
     // toHaveDisplayValue() currently does not support input[type="radio"]
     expect(radioButtons[1].parentNode.parentNode).toHaveTextContent('Hide');
 
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
     await expectStringInVegaCanvas('cluster a', 1);
 
     userEvent.click(radioButtons[0]);
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(3));
     radioButtons = rtl.getAllByRole(panelContainer, 'radio');
     expect(radioButtons.length).toBe(5);
     expect(panelContainer).toHaveTextContent(/position/i);
@@ -250,7 +246,7 @@ describe('ViolinIndex', () => {
 
   it('allows the gene name to be overriden as the title and clears the override upon new gene selection', async () => {
     await renderViolinIndex();
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
 
     let tabs = rtl.screen.getAllByRole('tab');
     const mainSchema = tabs.find((tab) => tab.textContent === 'Main schema');
@@ -270,7 +266,7 @@ describe('ViolinIndex', () => {
     await expectStringInVegaCanvas('MockGeneWithHighestDispersion', 1);
     await expectStringInVegaCanvas(titleOverride, 1);
 
-    const geneSelection = rtl.screen.getAllByText('Gene Selection')[0];
+    const geneSelection = rtl.screen.getByText('Gene Selection');
     panelContainer = geneSelection.parentNode;
     userEvent.click(geneSelection);
     const geneInput = rtl.getByRole(panelContainer, 'textbox');
