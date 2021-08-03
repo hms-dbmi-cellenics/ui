@@ -602,7 +602,7 @@ const ProjectDetails = ({ width, height }) => {
         }
         onClick={() => {
           // Change if we have more than one experiment per project
-          const experimentId = activeProject.experiments[0];
+          const experimentId = activeProject?.experiments[0];
           downloadData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT);
         }}
       >

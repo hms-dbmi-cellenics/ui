@@ -5,6 +5,7 @@ import endUserMessages from './endUserMessages';
 
 const downloadData = async (experimentId, type) => {
   try {
+    if (!experimentId) throw new Error('No experimentId specified');
     if (!Object.values(downloadTypes).includes(type)) throw new Error('Invalid download type');
 
     const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);

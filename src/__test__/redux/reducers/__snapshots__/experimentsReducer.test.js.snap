@@ -189,7 +189,6 @@ Object {
         "status": "SUCCEEDED",
         "stopDate": "2021-01-01T10:00:00.000Z",
       },
-      "organism": null,
       "pipeline": Object {
         "completedSteps": Array [],
         "endDate": null,
@@ -197,7 +196,6 @@ Object {
         "status": "SUCCEEDED",
         "stopDate": "2021-01-01T10:00:00.000Z",
       },
-      "type": "10x",
     },
     "name": "experiment 1",
     "projectUuid": "project-1",
