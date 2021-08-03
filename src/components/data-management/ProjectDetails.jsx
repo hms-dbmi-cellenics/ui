@@ -14,9 +14,9 @@ import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
 import arrayMove from 'array-move';
-
-import { saveAs } from 'file-saver';
 import { Storage } from 'aws-amplify';
+import { saveAs } from 'file-saver';
+
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
@@ -30,7 +30,6 @@ import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
-
 import {
   updateProject,
   createMetadataTrack,
@@ -40,7 +39,9 @@ import {
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
-import { updateExperiment, saveExperiment } from '../../redux/actions/experiments';
+import {
+  updateExperiment, saveExperiment,
+} from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
@@ -50,6 +51,10 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
+import downloadData from '../../utils/downloadExperimentData';
+
+import downloadTypes from '../../utils/downloadTypes';
+import pipelineStatus from '../../utils/pipelineStatusValues';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -72,6 +77,7 @@ const ProjectDetails = ({ width, height }) => {
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+
   const [tableData, setTableData] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
@@ -627,25 +633,50 @@ const ProjectDetails = ({ width, height }) => {
     return <SortableRow index={index} {...props} />;
   };
 
+  const pipelineHasRun = (experimentId) => (
+    experiments[experimentId]?.meta?.pipeline?.status === pipelineStatus.SUCCEEDED
+  );
+
   const DownloadDataMenu = (
     <Menu>
-      <Menu.Item disabled>
-        <Tooltip title='Coming soon!' placement='left'>
+      <Menu.Item disabled key='download-raw-seurat'>
+        <Tooltip title='Feature coming soon!' placement='left'>
           {/* <Tooltip title='Samples have been merged' placement='left'> */}
           Raw Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
-      <Menu.Item disabled>
-        <Tooltip title='Coming soon!' placement='left'>
-          {/* <Tooltip title='Data Processing filters have been applied' placement='left'> */}
+      <Menu.Item
+        key='download-processed-seurat'
+        disabled={
+          activeProject?.experiments?.length > 0
+          && !pipelineHasRun(activeProject.experiments[0])
+        }
+        onClick={() => {
+          // Change if we have more than one experiment per project
+          const experimentId = activeProject?.experiments[0];
+          downloadData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT);
+        }}
+      >
+        <Tooltip
+          title={
+            activeProject?.experiments?.length > 0
+            && pipelineHasRun(activeProject.experiments[0])
+              ? 'With Data Processing filters and settings applied'
+              : 'Launch analysis to process data'
+          }
+          placement='left'
+        >
           Processed Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
-      <Menu.Item disabled>
-        <Tooltip title='Coming soon!' placement='left'>
+      <Tooltip title='Feature coming soon!' placement='left'>
+        <Menu.Item
+          disabled
+          key='download-processing-settings'
+        >
           Data Processing settings
-        </Tooltip>
-      </Menu.Item>
+        </Menu.Item>
+      </Tooltip>
     </Menu>
   );
 
@@ -704,7 +735,15 @@ const ProjectDetails = ({ width, height }) => {
               >
                 Add metadata
               </Button>
-              <Dropdown overlay={DownloadDataMenu} trigger={['click']}>
+              <Dropdown
+                overlay={DownloadDataMenu}
+                trigger={['click']}
+                placement='bottomRight'
+                disabled={
+                  projects.ids.length === 0
+                  || activeProject?.samples?.length === 0
+                }
+              >
                 <Button>
                   Download
                 </Button>
