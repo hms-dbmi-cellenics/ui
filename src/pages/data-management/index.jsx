@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
@@ -8,7 +8,7 @@ import 'react-mosaic-component/react-mosaic-component.css';
 
 import { validate } from 'uuid';
 import { createProject, loadProjects } from '../../redux/actions/projects';
-import { loadExperiments } from '../../redux/actions/experiments';
+import { loadExperiments, updateExperiment } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
@@ -59,7 +59,19 @@ const DataManagementPage = ({ route }) => {
       // Right now we have one experiment per project, so we can just load the experiment
       // This has to be changed when we have more than one experiment
       const activeExperimentId = activeProject.experiments[0];
-      dispatch(loadBackendStatus(activeExperimentId));
+      dispatch(loadBackendStatus(activeExperimentId))
+        .then(
+          (status) => {
+            const experimentBackendStatus = {
+              meta: {
+                pipeline: status.pipeline,
+                gem2s: status.gem2s,
+              },
+            };
+
+            dispatch(updateExperiment(activeExperimentId, experimentBackendStatus));
+          },
+        );
     }
 
     // old experiments don't have a project so the activeProjectUuid will actually be an experiment
@@ -93,10 +105,10 @@ const DataManagementPage = ({ route }) => {
     setNewProjectModalVisible(false);
   };
 
-  const PROJECTS_LIST = 'Projects'
-  const PROJECT_DETAILS = 'Project Details'
+  const PROJECTS_LIST = 'Projects';
+  const PROJECT_DETAILS = 'Project Details';
 
-  let TILE_MAP = {
+  const TILE_MAP = {
     [PROJECTS_LIST]: {
       toolbarControls: [],
       component: (width, height) => (
