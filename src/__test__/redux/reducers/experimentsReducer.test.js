@@ -1,5 +1,6 @@
 import experimentsReducer from '../../../redux/reducers/experiments';
 import initialState, { experimentTemplate } from '../../../redux/reducers/experiments/initialState';
+import { initialPipelineState } from '../../../redux/reducers/experimentSettings/initialState';
 
 import {
   EXPERIMENTS_CREATED,
@@ -8,6 +9,7 @@ import {
   EXPERIMENTS_UPDATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_DELETED,
+  EXPERIMENTS_BACKEND_STATUS_UPDATED,
 } from '../../../redux/actionTypes/experiments';
 
 describe('experimentsReducer', () => {
@@ -51,6 +53,7 @@ describe('experimentsReducer', () => {
     description: 'this is a test description',
     createdDate: '01-01-2021',
     lastViewed: '01-01-2021',
+    meta: experimentTemplate.meta,
   };
 
   const experiment2 = {
@@ -61,6 +64,7 @@ describe('experimentsReducer', () => {
     description: 'this is a test description',
     createdDate: '01-01-2021',
     lastViewed: '01-01-2021',
+    meta: experimentTemplate.meta,
   };
 
   const updatedExperiment = {
@@ -82,6 +86,21 @@ describe('experimentsReducer', () => {
     [experimentId2]: experiment2,
   };
 
+  const backendStatusUpdate = {
+    pipeline: {
+      ...initialPipelineState,
+      startDate: '2021-01-01T00:00:00.000Z',
+      stopDate: '2021-01-01T10:00:00.000Z',
+      status: 'SUCCEEDED',
+    },
+    gem2s: {
+      ...initialPipelineState,
+      startDate: '2021-01-01T00:00:00.000Z',
+      stopDate: '2021-01-01T10:00:00.000Z',
+      status: 'SUCCEEDED',
+    },
+  };
+
   it('Reduces identical state on unknown action', () => expect(
     experimentsReducer(undefined, {
       action: 'well/this/is/not/a/valid/action',
@@ -89,7 +108,7 @@ describe('experimentsReducer', () => {
     }),
   ).toEqual(initialState));
 
-  it('Loads an experiment correct', () => {
+  it('Loads an experiment correctly', () => {
     const newState = experimentsReducer(initialState, {
       type: EXPERIMENTS_LOADED,
       payload: {
@@ -173,6 +192,48 @@ describe('experimentsReducer', () => {
 
     expect(newState.ids).toEqual([experiment1.id]);
     expect(newState).toEqual(oneExperimentState);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Updates the backend status of an experiment correctly', () => {
+    const experimentWithPipelineState = {
+      ...oneExperimentState,
+      [experimentId1]: {
+        ...oneExperimentState[experimentId1],
+        meta: {
+          ...oneExperimentState[experimentId1].meta,
+          pipeline: { ...initialPipelineState },
+          gem2s: { ...initialPipelineState },
+        },
+      },
+    };
+
+    const newState = experimentsReducer(experimentWithPipelineState, {
+      type: EXPERIMENTS_BACKEND_STATUS_UPDATED,
+      payload: {
+        experimentId: experimentId1,
+        backendStatus: backendStatusUpdate,
+      },
+    });
+
+    expect(newState[experimentId1].meta.pipeline.startDate)
+      .toEqual(backendStatusUpdate.pipeline.startDate);
+
+    expect(newState[experimentId1].meta.pipeline.stopDate)
+      .toEqual(backendStatusUpdate.pipeline.stopDate);
+
+    expect(newState[experimentId1].meta.pipeline.status)
+      .toEqual(backendStatusUpdate.pipeline.status);
+
+    expect(newState[experimentId1].meta.gem2s.startDate)
+      .toEqual(backendStatusUpdate.gem2s.startDate);
+
+    expect(newState[experimentId1].meta.gem2s.stopDate)
+      .toEqual(backendStatusUpdate.gem2s.stopDate);
+
+    expect(newState[experimentId1].meta.gem2s.status)
+      .toEqual(backendStatusUpdate.gem2s.status);
+
     expect(newState).toMatchSnapshot();
   });
 

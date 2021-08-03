@@ -14,6 +14,7 @@ export default {
   ERROR_FETCHING_PROJECTS: 'We couldn\'t get the list of projects.',
   ERROR_FETCHING_SAMPLES: 'We couln\'t get your samples.',
   ERROR_FETCHING_STATUS: 'We couldn\'t get the status of pending jobs.',
+  ERROR_FETCHING_BACKEND_STATUS: 'We couldn\'t get the status of processing the experiment\'s processing run.',
   ERROR_NOT_SIGNED_IN: 'You need to sign in first. Click Sign in on the top right to begin.',
   ERROR_SAVING: 'We couldn\'t save your data.',
   ERROR_STARTING_PIPLELINE: 'We couldn\'t start working on your data.',

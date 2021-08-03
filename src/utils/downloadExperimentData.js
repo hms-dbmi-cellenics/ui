@@ -22,9 +22,6 @@ const downloadData = async (experimentId, type) => {
       link.parentNode.removeChild(link);
     }, 0);
   } catch (e) {
-    console.log('== ERROR DOWNLOADING DATA');
-    console.log(e);
-
     pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
   }
 };

@@ -583,9 +583,7 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   const pipelineHasRun = (experimentId) => (
-    experiments[experimentId]
-      && experiments[experimentId].meta?.pipeline
-      && experiments[experimentId].meta?.pipeline.status === pipelineStatus.SUCCEEDED
+    experiments[experimentId]?.meta?.pipeline?.status === pipelineStatus.SUCCEEDED
   );
 
   const DownloadDataMenu = (
@@ -599,15 +597,13 @@ const ProjectDetails = ({ width, height }) => {
       <Menu.Item
         key='download-processed-seurat'
         disabled={
-          activeProject?.experiments
-          && activeProject?.experiments.length > 0
+          activeProject?.experiments?.length > 0
           && !pipelineHasRun(activeProject.experiments[0])
         }
       >
         <Tooltip
           title={
-            activeProject?.experiments
-            && activeProject?.experiments.length > 0
+            activeProject?.experiments?.length > 0
             && pipelineHasRun(activeProject.experiments[0])
               ? 'With Data Processing filters and settings applied'
               : 'Launch analysis to process data'
