@@ -600,6 +600,11 @@ const ProjectDetails = ({ width, height }) => {
           activeProject?.experiments?.length > 0
           && !pipelineHasRun(activeProject.experiments[0])
         }
+        onClick={() => {
+          // Change if we have more than one experiment per project
+          const experimentId = activeProject.experiments[0];
+          downloadData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT);
+        }}
       >
         <Tooltip
           title={
@@ -609,11 +614,6 @@ const ProjectDetails = ({ width, height }) => {
               : 'Launch analysis to process data'
           }
           placement='left'
-          onClick={() => {
-            // Change if we have more than one experiment per project
-            const experimentId = activeProject.experiments[0];
-            downloadData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT);
-          }}
         >
           Processed Seurat object (.rds)
         </Tooltip>

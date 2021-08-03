@@ -12,7 +12,6 @@ const downloadData = async (experimentId, type) => {
     const link = document.createElement('a');
     link.style.display = 'none';
     link.href = signedUrl;
-    link.download = `${type}_${experimentId}.rds`;
 
     document.body.appendChild(link);
     link.click();

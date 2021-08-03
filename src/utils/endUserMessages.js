@@ -24,5 +24,4 @@ export default {
   NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Data Management` window.',
   SAVING_SAMPLE: 'Saving sample...',
   SAVING_PROJECT: 'Saving project...',
-  DOWNLOAD_START: 'Starting download...',
 };
