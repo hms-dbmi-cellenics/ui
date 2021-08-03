@@ -18,6 +18,7 @@ import {
   updateCellSetProperty,
   updateCellSetSelected,
 } from '../../../redux/actions/cellSets';
+import { loadGeneExpression } from '../../../redux/actions/genes';
 import composeTree from '../../../utils/composeTree';
 import { isBrowser } from '../../../utils/environment';
 import endUserMessages from '../../../utils/endUserMessages';
@@ -49,9 +50,9 @@ const CellSetsTool = (props) => {
   const cellSets = useSelector((state) => state.cellSets);
   const notifications = useSelector((state) => state.notifications);
 
-  const geneExpressions = useSelector(
-    (state) => state.genes.expression.data,
-  ) ?? [];
+  const genes = useSelector(
+    (state) => state.genes,
+  );
 
   const filteredCells = useRef(new Set());
 
@@ -60,8 +61,17 @@ const CellSetsTool = (props) => {
   useEffect(() => {
     if (filteredCells.current.size) return;
 
-    filteredCells.current = generateFilteredCellIndices(geneExpressions);
-  }, [geneExpressions]);
+    filteredCells.current = generateFilteredCellIndices(genes.expression.data);
+  }, [genes.expression.data]);
+
+  useEffect(() => {
+    // load the expression data for an arbitrary gene so that we can determine
+    // which cells are filtered
+    const [gene] = Object.keys(genes.properties.data);
+    if (Object.is(gene, undefined)) return;
+
+    dispatch(loadGeneExpression(experimentId, [gene], 'CellSetsTool'));
+  }, [genes.properties.data])
 
   const {
     loading, error, properties, hierarchy, selected: allSelected, hidden,
