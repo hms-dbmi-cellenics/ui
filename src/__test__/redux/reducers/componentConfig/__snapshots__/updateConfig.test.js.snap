@@ -16,7 +16,7 @@ Object {
         "yAxisText": "UMAP 2",
       },
       "colour": Object {
-        "gradient": "viridis",
+        "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
@@ -77,7 +77,7 @@ Object {
         "yAxisText": "-log10(adj p-value)",
       },
       "colour": Object {
-        "gradient": "viridis",
+        "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
