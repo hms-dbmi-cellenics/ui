@@ -205,6 +205,7 @@ Object {
     },
     "name": "experiment 1",
     "projectUuid": "project-1",
+    "sampleIds": Array [],
   },
   "ids": Array [
     "experiment-1",
