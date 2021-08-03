@@ -85,8 +85,11 @@ const DataManagementPage = ({ route }) => {
     setNewProjectModalVisible(false);
   };
 
-  const TILE_MAP = {
-    'Projects List': {
+  const PROJECTS_LIST = 'Projects'
+  const PROJECT_DETAILS = 'Project Details'
+
+  let TILE_MAP = {
+    [PROJECTS_LIST]: {
       toolbarControls: [],
       component: (width, height) => (
         <Space
@@ -102,7 +105,7 @@ const DataManagementPage = ({ route }) => {
         </Space>
       ),
     },
-    'Data Management': {
+    [PROJECT_DETAILS]: {
       toolbarControls: [],
       component: (width, height) => (
         <ProjectDetails width={width} height={height} />
@@ -112,8 +115,8 @@ const DataManagementPage = ({ route }) => {
 
   const windows = {
     direction: 'row',
-    first: 'Projects List',
-    second: 'Data Management',
+    first: PROJECTS_LIST,
+    second: PROJECT_DETAILS,
     splitPercentage: 23,
   };
 
