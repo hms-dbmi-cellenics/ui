@@ -16,7 +16,11 @@ Array [
     "payload": Object {
       "experimentId": "experiment-id",
       "experimentName": "Mock experiment",
-      "projectUuid": null,
+      "projectId": "project-id",
+      "sampleIds": Array [
+        "sample-1",
+        "sample-2",
+      ],
     },
     "type": "experimentSettings/updateInfo",
   },

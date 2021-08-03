@@ -1,5 +1,8 @@
 const samplesLoading = (state) => ({
   ...state,
-  loading: true,
+  meta: {
+    ...state.meta,
+    loading: true,
+  },
 });
 export default samplesLoading;

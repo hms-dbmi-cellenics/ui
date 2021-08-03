@@ -16,6 +16,12 @@ describe('loadCellSets action', () => {
     name: 'one', color: '#ff0000', cellIds: new Set([1, 2, 3]),
   };
 
+  const experimentSettings = {
+    info: {
+      sampleIds: [],
+    },
+  };
+
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
 
@@ -25,25 +31,25 @@ describe('loadCellSets action', () => {
   });
 
   it('Does not dispatch on normal operation', async () => {
-    const store = mockStore({ cellSets: { loading: false, error: false } });
+    const store = mockStore({ cellSets: { loading: false, error: false }, experimentSettings });
     store.dispatch(loadCellSets(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
     expect(store.getActions().length).toEqual(0);
   });
 
   it('Dispatches on loading state', async () => {
-    const store = mockStore({ cellSets: { loading: true, error: false } });
+    const store = mockStore({ cellSets: { loading: true, error: false }, experimentSettings });
     await store.dispatch(loadCellSets(experimentId));
     expect(store.getActions().length).toBeGreaterThan(0);
   });
 
   it('Dispatches on loading and error state', async () => {
-    const store = mockStore({ cellSets: { loading: true, error: true } });
+    const store = mockStore({ cellSets: { loading: true, error: true }, experimentSettings });
     store.dispatch(loadCellSets(experimentId));
     expect(store.getActions().length).toBeGreaterThan(0);
   });
 
   it('Dispatches a loading action when run after an error condition.', async () => {
-    const store = mockStore({ cellSets: { loading: false, error: true } });
+    const store = mockStore({ cellSets: { loading: false, error: true }, experimentSettings });
     store.dispatch(loadCellSets(experimentId));
 
     const firstAction = store.getActions()[0];
@@ -52,7 +58,7 @@ describe('loadCellSets action', () => {
   });
 
   it('Dispatches a loaded action when run with the initial state.', async () => {
-    const store = mockStore({ cellSets: initialState });
+    const store = mockStore({ cellSets: initialState, experimentSettings });
     store.dispatch(loadCellSets(experimentId));
 
     const firstAction = store.getActions()[0];
@@ -61,7 +67,7 @@ describe('loadCellSets action', () => {
   });
 
   it('Dispatches an error condition if fetch fails', async () => {
-    const store = mockStore({ cellSets: initialState });
+    const store = mockStore({ cellSets: initialState, experimentSettings });
 
     fetchMock.resetMocks();
     fetchMock.mockReject(new Error('some weird error that happened'));

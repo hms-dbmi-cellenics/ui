@@ -9,7 +9,9 @@ import composeTree from '../../../../utils/composeTree';
 
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
-  const { onUpdate, config, cellSets } = props;
+  const {
+    onUpdate, config, cellSets,
+  } = props;
   const { hierarchy, properties } = cellSets;
 
   const handleChangeGrouping = (value) => {
