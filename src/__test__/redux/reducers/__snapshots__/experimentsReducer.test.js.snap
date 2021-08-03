@@ -72,7 +72,7 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Loads an experiment correct 1`] = `
+exports[`experimentsReducer Loads an experiment correctly 1`] = `
 Object {
   "experiment-1": Object {
     "createdDate": "01-01-2021",
@@ -161,6 +161,43 @@ Object {
       "type": "10x",
     },
     "name": "updated name",
+    "projectUuid": "project-1",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Updates the backend status of an experiment correctly 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "lastViewed": "01-01-2021",
+    "meta": Object {
+      "gem2s": Object {
+        "completedSteps": Array [],
+        "endDate": null,
+        "startDate": "2021-01-01T00:00:00.000Z",
+        "status": "SUCCEEDED",
+        "stopDate": "2021-01-01T10:00:00.000Z",
+      },
+      "pipeline": Object {
+        "completedSteps": Array [],
+        "endDate": null,
+        "startDate": "2021-01-01T00:00:00.000Z",
+        "status": "SUCCEEDED",
+        "stopDate": "2021-01-01T10:00:00.000Z",
+      },
+    },
+    "name": "experiment 1",
     "projectUuid": "project-1",
   },
   "ids": Array [
