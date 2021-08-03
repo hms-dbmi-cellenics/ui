@@ -48,10 +48,10 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/hover.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
+import downloadData from '../../utils/downloadExperimentData';
 
 import downloadTypes from '../../utils/downloadTypes';
-import pipelineStatusValues from '../../utils/pipelineStatusValues';
-import downloadData from '../../utils/downloadExperimentData';
+import pipelineStatus from '../../utils/pipelineStatusValues';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -70,11 +70,9 @@ const ProjectDetails = ({ width, height }) => {
   );
   const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
-  const environment = useSelector((state) => state.networkResources?.environment);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
-  const { backendStatus } = useSelector((state) => state.experimentSettings);
 
   const [tableData, setTableData] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
@@ -82,7 +80,6 @@ const ProjectDetails = ({ width, height }) => {
   const [sampleNames, setSampleNames] = useState(new Set());
   const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
-  const [pipelineHasRun, setPipelineHasRun] = useState(true);
 
   const metadataNameValidation = [
     rules.MIN_1_CHAR,
@@ -113,22 +110,6 @@ const ProjectDetails = ({ width, height }) => {
       setSampleNames(new Set());
     }
   }, [samples, activeProject]);
-
-  useEffect(() => {
-    const { loading, error, status } = backendStatus;
-
-    if (
-      !loading
-      && !error
-      && status?.pipeline
-      && status.pipeline?.status === pipelineStatusValues.SUCCEEDED
-    ) {
-      setPipelineHasRun(true);
-      return;
-    }
-
-    setPipelineHasRun(false);
-  }, [backendStatus]);
 
   useEffect(() => {
     if (!speciesData) {
@@ -601,6 +582,12 @@ const ProjectDetails = ({ width, height }) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
+  const pipelineHasRun = (experimentId) => (
+    experiments[experimentId]
+      && experiments[experimentId].meta?.pipeline
+      && experiments[experimentId].meta?.pipeline.status === pipelineStatus.SUCCEEDED
+  );
+
   const DownloadDataMenu = (
     <Menu>
       <Menu.Item disabled key='download-raw-seurat'>
@@ -611,11 +598,17 @@ const ProjectDetails = ({ width, height }) => {
       </Menu.Item>
       <Menu.Item
         key='download-processed-seurat'
-        disabled={!pipelineHasRun}
+        disabled={
+          activeProject?.experiments
+          && activeProject?.experiments.length > 0
+          && !pipelineHasRun(activeProject.experiments[0])
+        }
       >
         <Tooltip
           title={
-            pipelineHasRun
+            activeProject?.experiments
+            && activeProject?.experiments.length > 0
+            && pipelineHasRun(activeProject.experiments[0])
               ? 'With Data Processing filters and settings applied'
               : 'Launch analysis to process data'
           }
