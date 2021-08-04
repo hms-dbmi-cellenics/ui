@@ -12,7 +12,7 @@ import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
 
 const ViolinPlot = (props) => {
   const {
-    experimentId, config, plotUuid, plotData, actions, searchedGene,
+    experimentId, config, plotUuid, searchedGene,
   } = props;
   const dispatch = useDispatch();
 
@@ -87,12 +87,9 @@ const ViolinPlot = (props) => {
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
 
-  useEffect(() => {
-    if (plotData) {
-      setPlotSpec(generateSpec(config, plotData));
-      return;
-    }
+  const clustersAvailable = () => cellSets.hierarchy.find((hierarchy) => hierarchy.key === 'config.selectedCellSet');
 
+  useEffect(() => {
     if (config
       && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
@@ -101,16 +98,17 @@ const ViolinPlot = (props) => {
       const geneExpressionData = config.normalised === 'normalised'
         ? geneExpression.data[config.shownGene].zScore
         : geneExpression.data[config.shownGene].rawExpression.expression;
-
-      const generatedPlotData = generateData(
-        cellSets,
-        geneExpressionData,
-        config.selectedCellSet,
-        config.selectedPoints,
-      );
-      setPlotSpec(generateSpec(config, generatedPlotData));
+      if (clustersAvailable()) {
+        const generatedPlotData = generateData(
+          cellSets,
+          geneExpressionData,
+          config.selectedCellSet,
+          config.selectedPoints,
+        );
+        setPlotSpec(generateSpec(config, generatedPlotData));
+      }
     }
-  }, [experimentId, config, plotData, geneExpression, cellSets]);
+  }, [experimentId, config, geneExpression, cellSets]);
 
   const render = () => {
     if (cellSets.error) {
@@ -143,7 +141,16 @@ const ViolinPlot = (props) => {
         />
       );
     }
-
+    console.log('PLOT SPEC IS ', plotSpec);
+    if (!clustersAvailable()) {
+      return (
+        <PlatformError
+          description='No clustering available.'
+          reason='Set up your clustering in the configure embedding step in Data Processing to view this plot, or select different data.'
+          actionable={false}
+        />
+      );
+    }
     if (geneExpression.loading.length
       || cellSets.loading
       || highestDispersionLoading) {
@@ -156,7 +163,7 @@ const ViolinPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+        <Vega spec={plotSpec} renderer='canvas' />
       </center>
     );
   };
@@ -168,21 +175,11 @@ const ViolinPlot = (props) => {
   );
 };
 
-ViolinPlot.defaultProps = {
-  plotData: null,
-  actions: true,
-};
-
 ViolinPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotUuid: PropTypes.string.isRequired,
-  plotData: PropTypes.object,
   searchedGene: PropTypes.string.isRequired,
-  actions: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.object,
-  ]),
 };
 
 export default ViolinPlot;
