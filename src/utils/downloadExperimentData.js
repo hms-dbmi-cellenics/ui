@@ -9,7 +9,6 @@ const downloadData = async (experimentId, type) => {
     if (!Object.values(downloadTypes).includes(type)) throw new Error('Invalid download type');
 
     const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
-    console.log('DOWNLOAD URL IS ', signedUrl);
     const link = document.createElement('a');
     link.style.display = 'none';
     link.href = signedUrl;
