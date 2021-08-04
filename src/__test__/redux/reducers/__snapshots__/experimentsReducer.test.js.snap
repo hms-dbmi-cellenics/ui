@@ -188,20 +188,26 @@ Object {
     "id": "experiment-1",
     "lastViewed": "01-01-2021",
     "meta": Object {
-      "gem2s": Object {
-        "completedSteps": Array [],
-        "endDate": null,
-        "startDate": "2021-01-01T00:00:00.000Z",
-        "status": "SUCCEEDED",
-        "stopDate": "2021-01-01T10:00:00.000Z",
+      "backendStatus": Object {
+        "gem2s": Object {
+          "startDate": "2021-01-01T00:00:00.000Z",
+          "status": "SUCCEEDED",
+          "stopDate": "2021-01-01T10:00:00.000Z",
+        },
+        "pipeline": Object {
+          "startDate": "2021-01-01T00:00:00.000Z",
+          "status": "SUCCEEDED",
+          "stopDate": "2021-01-01T10:00:00.000Z",
+        },
+        "worker": Object {
+          "ready": true,
+          "restartCount": 0,
+          "started": true,
+          "status": "Running",
+        },
       },
-      "pipeline": Object {
-        "completedSteps": Array [],
-        "endDate": null,
-        "startDate": "2021-01-01T00:00:00.000Z",
-        "status": "SUCCEEDED",
-        "stopDate": "2021-01-01T10:00:00.000Z",
-      },
+      "organism": null,
+      "type": "10x",
     },
     "name": "experiment 1",
     "projectUuid": "project-1",

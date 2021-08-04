@@ -4,7 +4,7 @@ import {
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
-const updateExperiment = (
+const updateExperimentBackendStatus = (
   experimentId,
   backendStatus,
 ) => async (dispatch) => {
@@ -21,4 +21,4 @@ const updateExperiment = (
   }
 };
 
-export default updateExperiment;
+export default updateExperimentBackendStatus;
