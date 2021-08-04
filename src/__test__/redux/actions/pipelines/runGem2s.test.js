@@ -2,6 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialExperimentsState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
+import initialProjectsState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 import loadBackendStatus from '../../../../redux/actions/experimentSettings/backendStatus/loadBackendStatus';
 
 import {
@@ -20,6 +21,7 @@ jest.mock('../../../../redux/actions/experimentSettings/backendStatus/loadBacken
   () => jest.fn().mockImplementation(() => async () => { }));
 
 const experimentId = 'experiment-id';
+const projectId = 'project-id';
 
 const initialState = {
   experiments: {
@@ -28,6 +30,16 @@ const initialState = {
       ...experimentTemplate,
       name: 'Mock experiment',
       id: experimentId,
+      projectUuid: projectId,
+      sampleIds: ['sample-1', 'sample-2'],
+    },
+  },
+  projects: {
+    ...initialProjectsState,
+    [projectId]: {
+      ...projectTemplate,
+      name: 'Mock project',
+      samples: ['sample-1', 'sample-2'],
     },
   },
 };

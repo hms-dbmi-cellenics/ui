@@ -15,6 +15,7 @@ Array [
         },
         "name": "updated-experiment",
         "projectUuid": null,
+        "sampleIds": Array [],
       },
       "experimentId": "experiment-1",
     },

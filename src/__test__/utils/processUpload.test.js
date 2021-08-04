@@ -9,6 +9,7 @@ import { SAMPLES_FILE_UPDATE } from '../../redux/actionTypes/samples';
 
 import initialSampleState, { sampleTemplate } from '../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from '../../redux/reducers/experiments/initialState';
 
 import processUpload from '../../utils/processUpload';
 import UploadStatus from '../../utils/UploadStatus';
@@ -55,6 +56,7 @@ const sampleType = '10X Chromium';
 
 const mockSampleUuid = 'sample-uuid';
 const mockProjectUuid = 'project-uuid';
+const mockExperimentId = 'experiment-id';
 
 jest.mock('uuid', () => jest.fn());
 uuid.v4 = jest.fn(() => 'sample-uuid');
@@ -69,6 +71,19 @@ const initialState = {
     [mockProjectUuid]: {
       ...projectTemplate,
       samples: [mockSampleUuid],
+      experiments: [mockExperimentId],
+    },
+    errorProjectUuid: {
+      ...projectTemplate,
+      samples: [mockSampleUuid],
+      experiments: [mockExperimentId],
+    },
+  },
+  experiments: {
+    ...initialExperimentState,
+    [mockExperimentId]: {
+      ...experimentTemplate,
+      id: mockExperimentId,
     },
   },
   samples: {
