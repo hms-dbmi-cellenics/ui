@@ -15,6 +15,7 @@ import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
 import { sampleTemplate } from '../../reducers/samples/initialState';
+import updateExperiment from '../experiments/updateExperiment';
 
 const createSample = (
   projectUuid,
@@ -24,6 +25,9 @@ const createSample = (
   const project = getState().projects[projectUuid];
 
   const createdDate = moment().toISOString();
+
+  const experimentId = project.experiments[0];
+  const experiment = getState().experiments[experimentId];
 
   const newSampleUuid = uuidv4();
 
@@ -62,6 +66,13 @@ const createSample = (
         project: newProject,
       },
     });
+
+    dispatch(
+      updateExperiment(
+        experimentId,
+        { sampleIds: [...experiment.sampleIds, newSampleUuid] },
+      ),
+    );
   } catch (e) {
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }

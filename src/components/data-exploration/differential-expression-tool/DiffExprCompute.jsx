@@ -141,7 +141,6 @@ const DiffExprCompute = (props) => {
     // Dependiung on the cell set type specified, set the default name
     const placeholder = filterType === 'metadataCategorical' ? 'sample/group' : 'cell set';
 
-    // Get all the stuff we are going to show.
     const tree = composeTree(hierarchy, properties, filterType);
 
     const renderChildren = (rootKey, children) => {

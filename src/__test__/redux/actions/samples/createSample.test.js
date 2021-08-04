@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import createSample from '../../../../redux/actions/samples/createSample';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
 import { saveProject } from '../../../../redux/actions/projects';
 import { saveSamples } from '../../../../redux/actions/samples';
 
@@ -20,6 +21,7 @@ const mockStore = configureStore([thunk]);
 describe('createSample action', () => {
   const mockSampleUuid = 'abc123';
   const mockProjectUuid = 'qwe234';
+  const mockExperimentId = 'exp234';
 
   const mockType = '10x Chromium';
 
@@ -33,13 +35,23 @@ describe('createSample action', () => {
     ...projectTemplate,
     name: 'test project',
     uuid: mockProjectUuid,
+    experiments: [mockExperimentId],
+  };
+
+  const mockExperiment = {
+    ...experimentTemplate,
+    name: 'Experiment 1',
+    id: mockExperimentId,
   };
 
   const initialState = {
     samples: {
       ...initialSampleState,
-      ids: [mockSampleUuid],
       [mockSampleUuid]: mockSample,
+    },
+    experiments: {
+      ...initialExperimentState,
+      [mockExperimentId]: mockExperiment,
     },
     projects: {
       ...initialProjectState,
@@ -62,11 +74,7 @@ describe('createSample action', () => {
   });
 
   it('Dispatches call to save sample', async () => {
-    const store = mockStore({
-      projects: {
-        [mockProject.uuid]: mockProject,
-      },
-    });
+    const store = mockStore(initialState);
 
     await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
 
@@ -74,11 +82,7 @@ describe('createSample action', () => {
   });
 
   it('Dispatches call to save project', async () => {
-    const store = mockStore({
-      projects: {
-        [mockProject.uuid]: mockProject,
-      },
-    });
+    const store = mockStore(initialState);
     await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
 
     expect(saveProject).toHaveBeenCalled();

@@ -10,6 +10,7 @@ import ProjectDetails from '../../../components/data-management/ProjectDetails';
 import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
 import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
+import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
 import UploadStatus from '../../../utils/UploadStatus';
 
 const mockStore = configureStore([thunk]);
@@ -44,6 +45,9 @@ const noDataState = {
   experiments: {
     ...initialExperimentsState,
     ids: ['experiment-1'],
+  },
+  experimentSettings: {
+    ...initialExperimentSettingsState,
   },
   samples: {
     ...initialSamplesState,

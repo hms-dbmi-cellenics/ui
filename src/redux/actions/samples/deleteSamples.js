@@ -16,6 +16,7 @@ import saveProject from '../projects/saveProject';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import fetchAPI from '../../../utils/fetchAPI';
+import { updateExperiment } from '../experiments';
 
 const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) => {
   const response = await fetchAPI(
@@ -107,6 +108,8 @@ const deleteSamples = (
           type: SAMPLES_DELETE,
           payload: { sampleUuids: samplesToDelete },
         });
+
+        dispatch(updateExperiment(experimentId, { sampleIds: newSamples }));
 
         await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
       },
