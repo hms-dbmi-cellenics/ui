@@ -111,6 +111,15 @@ const ViolinPlot = (props) => {
   }, [experimentId, config, geneExpression, cellSets]);
 
   const render = () => {
+    if (!clustersAvailable()) {
+      return (
+        <PlatformError
+          description='No clustering available.'
+          reason='Set up your clustering in the configure embedding step in Data Processing to view this plot, or select different data.'
+          actionable={false}
+        />
+      );
+    }
     if (cellSets.error) {
       return (
         <PlatformError
@@ -141,16 +150,7 @@ const ViolinPlot = (props) => {
         />
       );
     }
-    console.log('PLOT SPEC IS ', plotSpec);
-    if (!clustersAvailable()) {
-      return (
-        <PlatformError
-          description='No clustering available.'
-          reason='Set up your clustering in the configure embedding step in Data Processing to view this plot, or select different data.'
-          actionable={false}
-        />
-      );
-    }
+
     if (geneExpression.loading.length
       || cellSets.loading
       || highestDispersionLoading) {
