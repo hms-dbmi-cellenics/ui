@@ -35,13 +35,13 @@ const filterPipelineParameters = (config, projectSamples,
 const flattenSampleStepConfig = (stepConfig) => {
   // for steps with multiple methods to choose from, only include
   // configuration for the method that is actually selected
-  if (_.has(stepConfig, 'method')) {
+  if (_.has(stepConfig, 'methodSettings')) {
     return {
       method: stepConfig.method,
       ..._.get(stepConfig.methodSettings, stepConfig.method),
     };
   }
-  if (_.has(stepConfig, 'regressionType')) {
+  if (_.has(stepConfig, 'regressionTypeSettings')) {
     // numGenesVsNumUmis
     return {
       regressionType: stepConfig.regressionType,
