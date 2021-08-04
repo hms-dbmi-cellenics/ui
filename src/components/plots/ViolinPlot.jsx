@@ -87,7 +87,7 @@ const ViolinPlot = (props) => {
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
 
-  const clustersAvailable = () => cellSets.hierarchy.find((hierarchy) => hierarchy.key === 'config.selectedCellSet');
+  const clustersAvailable = () => cellSets.hierarchy.find((hierarchy) => hierarchy.key === config.selectedCellSet);
 
   useEffect(() => {
     if (config
