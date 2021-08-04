@@ -190,33 +190,23 @@ Object {
     "meta": Object {
       "backendStatus": Object {
         "gem2s": Object {
-          "completedSteps": Array [],
-          "endDate": null,
           "startDate": "2021-01-01T00:00:00.000Z",
           "status": "SUCCEEDED",
           "stopDate": "2021-01-01T10:00:00.000Z",
         },
         "pipeline": Object {
-          "completedSteps": Array [],
-          "endDate": null,
           "startDate": "2021-01-01T00:00:00.000Z",
           "status": "SUCCEEDED",
           "stopDate": "2021-01-01T10:00:00.000Z",
         },
-      },
-      "gem2s": Object {
-        "completedSteps": Array [],
-        "endDate": null,
-        "startDate": null,
-        "status": null,
+        "worker": Object {
+          "ready": true,
+          "restartCount": 0,
+          "started": true,
+          "status": "Running",
+        },
       },
       "organism": null,
-      "pipeline": Object {
-        "completedSteps": Array [],
-        "endDate": null,
-        "startDate": null,
-        "status": null,
-      },
       "type": "10x",
     },
     "name": "experiment 1",
