@@ -220,23 +220,7 @@ describe('experimentsReducer', () => {
       },
     });
 
-    expect(newState[experimentId1].meta.pipeline.startDate)
-      .toEqual(backendStatusUpdate.pipeline.startDate);
-
-    expect(newState[experimentId1].meta.pipeline.stopDate)
-      .toEqual(backendStatusUpdate.pipeline.stopDate);
-
-    expect(newState[experimentId1].meta.pipeline.status)
-      .toEqual(backendStatusUpdate.pipeline.status);
-
-    expect(newState[experimentId1].meta.gem2s.startDate)
-      .toEqual(backendStatusUpdate.gem2s.startDate);
-
-    expect(newState[experimentId1].meta.gem2s.stopDate)
-      .toEqual(backendStatusUpdate.gem2s.stopDate);
-
-    expect(newState[experimentId1].meta.gem2s.status)
-      .toEqual(backendStatusUpdate.gem2s.status);
+    expect(newState[experimentId1].meta.backendStatus).toEqual(backendStatusUpdate);
 
     expect(newState).toMatchSnapshot();
   });
