@@ -99,6 +99,38 @@ const heatmapInitialConfig = {
   truncatedValues: false,
 };
 
+// PLOTS & TABLES - Marker heatmap
+const markerHeatmapInitialConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    show: true,
+    position: 'horizontal',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 500,
+    height: 500,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+    dx: 0,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  label: labelBaseState,
+  selectedGenes: [],
+  selectedCellSet: 'louvain',
+  numGenes: 5,
+  labelColour: 'transparent',
+  selectedTracks: ['louvain'],
+  groupedTracks: ['sample', 'louvain'],
+  expressionValue: 'raw',
+  truncatedValues: false,
+};
+
 // PLOTS & TABLES - Volcano plot
 const volcanoInitialConfig = {
   spec: '1.0.0',
@@ -675,6 +707,7 @@ const initialPlotConfigStates = {
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
+  markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
