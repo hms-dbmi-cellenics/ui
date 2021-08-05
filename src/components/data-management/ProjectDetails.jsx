@@ -513,14 +513,13 @@ const ProjectDetails = ({ width, height }) => {
       setTableColumns([]);
       return;
     }
+
     // Set table columns
     const metadataColumns = activeProject?.metadataKeys.map(
       (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
     ) || [];
 
-    const newColumns = tableColumns.length ? tableColumns : [...columns, ...metadataColumns];
-
-    setTableColumns(newColumns);
+    setTableColumns([...columns, ...metadataColumns]);
     // Set table data
 
     const newData = activeProject.samples.map((sampleUuid, idx) => {
