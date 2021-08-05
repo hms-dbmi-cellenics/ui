@@ -123,6 +123,7 @@ const markerHeatmapInitialConfig = {
   label: labelBaseState,
   selectedGenes: [],
   selectedCellSet: 'louvain',
+  showGeneLabels: true,
   numGenes: 5,
   labelColour: 'transparent',
   selectedTracks: ['louvain'],

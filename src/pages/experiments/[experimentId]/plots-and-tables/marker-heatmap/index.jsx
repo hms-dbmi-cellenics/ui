@@ -220,6 +220,8 @@ const HeatmapPlot = ({ experimentId }) => {
           <Space direction='vertical' style={{ width: '100%' }}>
             <HeatmapControls
               selectedGenes={selectedGenes}
+              onUpdate={updatePlotWithChanges}
+              config={config}
               plotUuid={plotUuid}
               markerHeatmap
               onGeneEnter={onGeneEnter}

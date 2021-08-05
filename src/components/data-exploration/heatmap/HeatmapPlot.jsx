@@ -126,7 +126,7 @@ const HeatmapPlot = (props) => {
       && louvainClustersRef.current !== louvainClusters
     ) {
       louvainClustersRef.current = louvainClusters;
-      dispatch(loadMarkerGenes(experimentId, louvainClustersResolution));
+      dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
     }
   }, [louvainClustersResolution, hierarchy]);
 
@@ -166,7 +166,7 @@ const HeatmapPlot = (props) => {
       <PlatformError
         error={expressionDataError}
         onClick={() => {
-          dispatch(loadMarkerGenes(experimentId, louvainClustersResolution));
+          dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
         }}
       />
     );

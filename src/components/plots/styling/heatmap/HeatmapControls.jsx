@@ -10,7 +10,7 @@ const { Panel } = Collapse;
 
 const HeatmapControls = (props) => {
   const {
-    onGeneEnter, plotUuid, selectedGenes, markerHeatmap,
+    onGeneEnter, plotUuid, selectedGenes, markerHeatmap, onUpdate, config,
   } = props;
   return (
     <Collapse defaultActiveKey={['5']} accordion>
@@ -29,7 +29,12 @@ const HeatmapControls = (props) => {
           {markerHeatmap && (
             <>
               <p>Select the number of top genes to show:</p>
-              <Radio.Group>
+              <Radio.Group
+                onChange={
+                  (e) => onUpdate({ numGenes: e.target.value })
+                }
+                value={config.numGenes}
+              >
                 <Radio value={5}>5</Radio>
                 <Radio value={10}>10</Radio>
                 <Radio value={15}>15</Radio>
@@ -38,9 +43,14 @@ const HeatmapControls = (props) => {
               </Radio.Group>
               {' '}
               <p>Select the gene label options:</p>
-              <Radio.Group>
-                <Radio value='show'>Show</Radio>
-                <Radio value='hide'>Hide</Radio>
+              <Radio.Group
+                onChange={
+                  (e) => onUpdate({ showGeneLabels: e.target.value })
+                }
+                value={config.showGeneLabels}
+              >
+                <Radio value>Show</Radio>
+                <Radio value={false}>Hide</Radio>
               </Radio.Group>
             </>
           )}
@@ -67,9 +77,13 @@ HeatmapControls.propTypes = {
   onGeneEnter: PropTypes.func.isRequired,
   selectedGenes: PropTypes.array.isRequired,
   plotUuid: PropTypes.string.isRequired,
+  onUpdate: PropTypes.func,
   markerHeatmap: PropTypes.bool,
+  config: PropTypes.object,
 };
 HeatmapControls.defaultProps = {
   markerHeatmap: false,
+  onUpdate: () => {},
+  config: {},
 };
 export default HeatmapControls;
