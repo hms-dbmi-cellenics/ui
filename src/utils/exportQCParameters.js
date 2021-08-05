@@ -2,13 +2,13 @@ import _ from 'lodash';
 import * as INI from 'ini';
 import { qcSteps } from './qcSteps';
 
-const exportPipelineParameters = (config) => {
+const exportQCParameters = (config) => {
   const sortedConfig = qcSteps.map((s, i) => [`${i + 1}-${s}`, config[s]]).sort();
   const string = INI.stringify(Object.fromEntries(sortedConfig), { whitespace: true });
   return new Blob([string], { type: 'text/plain;charset=utf-8' });
 };
 
-const filterPipelineParameters = (config, projectSamples,
+const filterQCParameters = (config, projectSamples,
   samplesStore) => {
   const filtered = _.mapValues(config, (step) => (
     !_.get(step, 'enabled', true)
@@ -52,6 +52,6 @@ const flattenSampleStepConfig = (stepConfig) => {
 };
 
 export {
-  exportPipelineParameters,
-  filterPipelineParameters,
+  exportQCParameters,
+  filterQCParameters,
 };

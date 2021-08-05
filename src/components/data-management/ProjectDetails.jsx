@@ -53,7 +53,7 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 
-import { exportPipelineParameters, filterPipelineParameters } from '../../utils/exportPipelineParameters';
+import { exportQCParameters, filterQCParameters } from '../../utils/exportQCParameters';
 import downloadData from '../../utils/downloadExperimentData';
 import downloadTypes from '../../utils/downloadTypes';
 import pipelineStatus from '../../utils/pipelineStatusValues';
@@ -688,8 +688,8 @@ const ProjectDetails = ({ width, height }) => {
         key='download-processing-settings'
         onClick={() => {
           const config = _.omit(experimentSettings.processing, ['meta']);
-          const filteredConfig = filterPipelineParameters(config, activeProject.samples, samples);
-          const blob = exportPipelineParameters(filteredConfig);
+          const filteredConfig = filterQCParameters(config, activeProject.samples, samples);
+          const blob = exportQCParameters(filteredConfig);
           saveAs(blob, `${activeProject.name}_settings.txt`);
         }
         }>
