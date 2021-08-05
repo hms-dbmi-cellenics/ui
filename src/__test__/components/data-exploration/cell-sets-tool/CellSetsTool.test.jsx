@@ -90,6 +90,11 @@ describe('CellSetsTool', () => {
           },
         },
       },
+      properties: {
+        data: {
+          Lyz2: {},
+        },
+      }
     },
   };
 
