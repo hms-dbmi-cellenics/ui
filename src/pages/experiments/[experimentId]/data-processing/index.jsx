@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
   Row, Col, Card, Skeleton,
-  Tooltip, Modal
+  Tooltip, Modal,
 } from 'antd';
 import {
   LeftOutlined,
@@ -39,11 +39,11 @@ import { qcSteps, getUserFriendlyQCStepName } from '../../../../utils/qcSteps';
 
 import {
   loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
-  addChangedQCFilter, discardChangedQCFilters
+  addChangedQCFilter, discardChangedQCFilters,
 } from '../../../../redux/actions/experimentSettings';
 
-import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
-import { loadSamples } from '../../../../redux/actions/samples'
+import { loadSamples } from '../../../../redux/actions/samples';
+import { loadCellSets } from '../../../../redux/actions/cellSets';
 import { runPipeline } from '../../../../redux/actions/pipeline';
 import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
 
@@ -57,7 +57,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const pipelineStatus = useSelector((state) => state.experimentSettings.backendStatus.status.pipeline);
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
-  const samples = useSelector((state) => state.samples)
+  const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);
+  const samples = useSelector((state) => state.samples);
 
   const pipelineStatusKey = pipelineStatus?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
@@ -69,59 +70,45 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedSteps = pipelineStatus?.completedSteps;
 
-  const cellSets = useSelector((state) => state.cellSets);
   const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
 
   const changesOutstanding = Boolean(changedQCFilters.size);
 
   const [stepIdx, setStepIdx] = useState(0);
-  const [applicableFilters, setApplicableFilters] = useState([])
-  const [preFilteredSamples, setPreFilteredSamples] = useState([])
-  const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false)
+  const [applicableFilters, setApplicableFilters] = useState([]);
+  const [preFilteredSamples, setPreFilteredSamples] = useState([]);
+  const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
+  const [inputsList, setInputsList] = useState([]);
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
-    unisample: []
-  }
+    unisample: [],
+  };
 
   const disabledConditionMessage = {
     prefilter: `This filter disabled because samples ${preFilteredSamples.join(', ')} ${preFilteredSamples.length > 1 ? 'are' : 'is'} pre-filtered.
       Click 'Next' to continue processing your data.`,
-    unisample: "This step is disabled as there is only one sample. Click 'Next' to continue processing your data."
-  }
-
-  const sampleKeys = cellSets.hierarchy?.find(
-    (rootNode) => (rootNode.key === 'sample'),
-  )?.children.map(
-    (child) => child.key,
-  );
+    unisample: "This step is disabled as there is only one sample. Click 'Next' to continue processing your data.",
+  };
 
   useEffect(() => {
-    if (cellSets.loading && !cellSets.error) {
-      dispatch(loadCellSets(experimentId));
-    }
-
     dispatch(loadProcessingSettings(experimentId));
+    dispatch(loadSamples(experimentId));
+    dispatch(loadCellSets(experimentId));
   }, []);
 
   useEffect(() => {
-    if (samples.meta.loading) {
-      dispatch(loadSamples(experimentId));
-      return;
-    }
-
     const sampleIds = Object.keys(samples);
 
     if (sampleIds.length > 0) {
       setPreFilteredSamples(
         sampleIds.filter(
-          (sampleUuid) => samples[sampleUuid].preFiltered
-        )
-      )
+          (sampleUuid) => samples[sampleUuid].preFiltered,
+        ),
+      );
     }
-
-  }, [samples.meta.loading, samples])
+  }, [samples]);
 
   useEffect(() => {
     if (
@@ -132,52 +119,60 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     ) {
       disableStepsOnCondition.prefilter.forEach((step) => {
         dispatch(setQCStepEnabled(step, false));
-        dispatch(saveProcessingSettings(experimentId, step))
-      })
+        dispatch(saveProcessingSettings(experimentId, step));
+      });
     }
-
-  }, [stepIdx, preFilteredSamples, processingConfig.meta])
+  }, [stepIdx, preFilteredSamples, processingConfig.meta]);
 
   useEffect(() => {
     if (sampleKeys && sampleKeys.length === 1) {
       disableStepsOnCondition.unisample.forEach((step) => {
         dispatch(setQCStepEnabled(step, false));
-        dispatch(saveProcessingSettings(experimentId, step))
-      })
+        dispatch(saveProcessingSettings(experimentId, step));
+      });
     }
-  }, [cellSets])
+  }, [sampleKeys]);
 
   useEffect(() => {
-    const applicableFilters = Object.entries(disableStepsOnCondition).filter(([key, value]) => value.includes(steps[stepIdx].key))
+    const applicableFilters = Object.entries(disableStepsOnCondition).filter(([key, value]) => value.includes(steps[stepIdx].key));
 
     // Get the first value because return of Object.entries is [filterName,[steps]]
-    setApplicableFilters(applicableFilters.map(filter => filter[0]))
+    setApplicableFilters(applicableFilters.map((filter) => filter[0]));
     setStepDisabledByCondition(
       applicableFilters.length > 0
-      && !processingConfig[steps[stepIdx].key]?.enabled
-    )
-  }, [stepIdx])
+      && !processingConfig[steps[stepIdx].key]?.enabled,
+    );
+  }, [stepIdx]);
 
   // Checks if the step is in the 'completed steps' list we get from the pipeline status
   const isStepComplete = (stepName) => {
     if (stepName === undefined) {
-      return true
+      return true;
     }
 
     const lowerCaseStepName = stepName.toLowerCase();
 
-    const stepAppearances = _.filter(completedSteps, (stepPipelineName) => {
-      return stepPipelineName.toLowerCase().includes(lowerCaseStepName);
-    });
+    const stepAppearances = _.filter(completedSteps, (stepPipelineName) => stepPipelineName.toLowerCase().includes(lowerCaseStepName));
 
     return stepAppearances.length > 0;
-  }
+  };
 
   const onConfigChange = (key) => {
     dispatch(addChangedQCFilter(key));
   };
 
-  const inputsList = sampleKeys?.map((key) => ({ key, headerName: `Sample ${cellSets.properties?.[key].name}`, params: { ...cellSets.properties?.[key], key } }));
+  const prefixSampleName = (name) => {
+    // eslint-disable-next-line no-param-reassign
+    if (!name.match(/$sample/ig)) name = `Sample ${name}`;
+    return name;
+  };
+
+  useEffect(() => {
+    if (sampleKeys && sampleKeys.length > 0 && Object.keys(samples).filter((key) => key !== 'meta').length > 0) {
+      const list = sampleKeys?.map((sampleId) => ({ key: sampleId, headerName: prefixSampleName(samples[sampleId].name), params: { key: sampleId } }));
+      setInputsList(list);
+    }
+  }, [samples, sampleKeys]);
 
   const steps = [
     {
@@ -192,7 +187,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
             <Classifier
-              id={'classifier'}
+              id='classifier'
               experimentId={experimentId}
               filtering
               key={key}
@@ -277,7 +272,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
-      description: <span>Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see <a href="https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding" target="_blank">scDblFinder thresholding</a>.</span>,
+      description: <span>
+        Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see
+        {' '}
+        <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' target='_blank'>scDblFinder thresholding</a>
+        .
+      </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -332,7 +332,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const changeStepId = (newStepIdx) => {
     setStepIdx(newStepIdx);
-  }
+  };
 
   const renderRunButton = (runMessage) => (
     <Tooltip title='Run data processing with the changed settings'>
@@ -342,7 +342,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         type='primary'
         onClick={() => setRunQCModalVisible(true)}
         style={{ minWidth: '80px' }}
-        size="small"
+        size='small'
       >
         {runMessage}
       </Button>
@@ -352,14 +352,16 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const renderRunOrDiscardButtons = () => {
     if (pipelineHadErrors) {
       return renderRunButton('Run Data Processing');
-    } else if (changesOutstanding) {
+    } if (changesOutstanding) {
       return (
         <Alert
           message={<>Your new settings are not yet applied</>}
           type='info'
           showIcon
-          style={{ paddingTop: '3px', paddingBottom: '3px', paddingLeft: '10px', paddingRight: '10px' }}
-          action={
+          style={{
+            paddingTop: '3px', paddingBottom: '3px', paddingLeft: '10px', paddingRight: '10px',
+          }}
+          action={(
             <Space size='small'>
               {renderRunButton('Run')}
               <Tooltip title='Discard your changes since the last run'>
@@ -368,149 +370,145 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   data-testid='discardChangesButton'
                   type='primary'
                   onClick={() => { dispatch(discardChangedQCFilters()); }}
-                  style={{ width: '80px'}}
-                  size="small"
+                  style={{ width: '80px' }}
+                  size='small'
                 >
                   Discard
                 </Button>
               </Tooltip>
-            </Space >
-          }
-        >
-        </Alert >
+            </Space>
+          )}
+        />
       );
     }
-
-    return;
   };
 
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = () => {
-    dispatch(runPipeline(experimentId))
-  }
+    dispatch(runPipeline(experimentId));
+  };
 
   const renderTitle = () => (
     <>
-      <Row justify="space-between">
-        <Col style={{ paddingBottom: "8px"}}>
+      <Row justify='space-between'>
+        <Col style={{ paddingBottom: '8px' }}>
           {/* Should be just wide enough that no ellipsis appears */}
           <Row>
-            <Col style={{ paddingBottom: "8px", paddingRight: "8px"}}>
-              <Space size="small">
-                  <Select
-                    value={stepIdx}
-                    onChange={(idx) => {
-                      changeStepId(idx);
-                    }}
-                    style={{ fontWeight: 'bold', width: 290 }}
-                    placeholder='Jump to a step...'
+            <Col style={{ paddingBottom: '8px', paddingRight: '8px' }}>
+              <Space size='small'>
+                <Select
+                  value={stepIdx}
+                  onChange={(idx) => {
+                    changeStepId(idx);
+                  }}
+                  style={{ fontWeight: 'bold', width: 290 }}
+                  placeholder='Jump to a step...'
+                >
+                  {
+                    steps.map(
+                      ({ name, key }, i) => {
+                        const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
+                        const text = `${i + 1}. ${name}`;
+
+                        return (
+                          <Option
+                            value={i}
+                            key={key}
+                            disabled={
+                              disabledByPipeline
+                            }
+                          >
+                            {processingConfig[key]?.enabled === false ? (
+                              <>
+                                {/* disabled */}
+                                <Text
+                                  type='secondary'
+                                >
+                                  <CloseOutlined />
+                                </Text>
+                                <span
+                                  style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
+                                >
+                                  {text}
+                                </span>
+                              </>
+                            ) : !disabledByPipeline ? (
+                              <>
+                                {/* finished */}
+                                <Text
+                                  type='success'
+                                >
+                                  <CheckOutlined />
+                                </Text>
+                                <span
+                                  style={{ marginLeft: '0.25rem' }}
+                                >
+                                  {text}
+                                </span>
+                              </>
+                            ) : pipelineRunning && !isStepComplete(key) ? (
+                              <>
+                                {/* incomplete */}
+                                <Text
+                                  type='warning'
+                                  strong
+                                >
+                                  <EllipsisOutlined />
+                                </Text>
+                                <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                              </>
+                            ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
+                              <>
+                                {/* failed */}
+                                <Text
+                                  type='danger'
+                                  strong
+                                >
+                                  <WarningOutlined />
+                                </Text>
+                                <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                              </>
+                            ) : <></>}
+                          </Option>
+                        );
+                      },
+                    )
+                  }
+                </Select>
+                {steps[stepIdx].description && (
+                  <Tooltip title={steps[stepIdx].description}>
+                    <Button icon={<InfoCircleOutlined />} />
+                  </Tooltip>
+                )}
+                {steps[stepIdx].multiSample && (
+                  <Tooltip title={`${
+                    !processingConfig[steps[stepIdx].key]?.enabled
+                      ? 'Enable' : 'Disable'} this filter`}
                   >
-                    {
-                      steps.map(
-                        ({ name, key }, i) => {
-                          const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
-                          const text = `${i + 1}. ${name}`;
-
-                          return (
-                            <Option
-                              value={i}
-                              key={key}
-                              disabled={
-                                disabledByPipeline
-                              }
-                            >
-                              {processingConfig[key]?.enabled === false ? (
-                                <>
-                                  {/* disabled */}
-                                  <Text
-                                    type='secondary'
-
-                                  >
-                                    <CloseOutlined />
-                                  </Text>
-                                  <span
-                                    style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
-                                  >
-                                    {text}
-                                  </span>
-                                </>
-                              ) : !disabledByPipeline ? (
-                                <>
-                                  {/* finished */}
-                                  <Text
-                                    type='success'
-
-                                  >
-                                    <CheckOutlined />
-                                  </Text>
-                                  <span
-                                    style={{ marginLeft: '0.25rem' }}
-                                  >
-                                    {text}
-                                  </span>
-                                </>
-                              ) : pipelineRunning && !isStepComplete(key) ? (
-                                <>
-                                  {/* incomplete */}
-                                  <Text
-                                    type='warning'
-                                    strong
-                                  >
-                                    <EllipsisOutlined />
-                                  </Text>
-                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                </>
-                              ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
-                                <>
-                                  {/* failed */}
-                                  <Text
-                                    type='danger'
-                                    strong
-                                  >
-                                    <WarningOutlined />
-                                  </Text>
-                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                </>
-                              ) : <></>}
-                            </Option>
-                          );
-                        }
-                      )
-                    }
-                  </Select>
-                  {steps[stepIdx].description && (
-                    <Tooltip title={steps[stepIdx].description}>
-                      <Button icon={<InfoCircleOutlined />} />
-                    </Tooltip>
-                  )}
-                  {steps[stepIdx].multiSample && (
-                    <Tooltip title={`${
-                        !processingConfig[steps[stepIdx].key]?.enabled ? 
-                        'Enable' : 'Disable'} this filter`}>
-                      <Button
-                        disabled={stepDisabledByCondition}
-                        data-testid='enableFilterButton'
-                        onClick={() => {
-                          dispatch(setQCStepEnabled(steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled));
-                          dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
-                        }}
-                        >
-                        {
-                          !processingConfig[steps[stepIdx].key]?.enabled
-                            ? 'Enable' : 'Disable'
-                        }
-                      </Button>
-                    </Tooltip>
-                  )}
-                  </Space>
-                </Col>
-                <Col>
-                  {renderRunOrDiscardButtons()}
-                </Col>
-              </Row>
-          </Col>
+                    <Button
+                      disabled={stepDisabledByCondition}
+                      data-testid='enableFilterButton'
+                      onClick={() => {
+                        dispatch(setQCStepEnabled(steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled));
+                        dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
+                      }}
+                    >
+                      {
+                        !processingConfig[steps[stepIdx].key]?.enabled
+                          ? 'Enable' : 'Disable'
+                      }
+                    </Button>
+                  </Tooltip>
+                )}
+              </Space>
+            </Col>
+            <Col>
+              {renderRunOrDiscardButtons()}
+            </Col>
+          </Row>
+        </Col>
         <Col>
-          <Row align="middle" justify="space-between">
+          <Row align='middle' justify='space-between'>
             <Col>
               <StatusIndicator
                 allSteps={steps}
@@ -524,9 +522,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     disabled={stepIdx === 0}
                     icon={<LeftOutlined />}
                     onClick={() => changeStepId(Math.max(stepIdx - 1, 0))}
-                    size="small"
-                  >
-                  </Button>
+                    size='small'
+                  />
                 </Tooltip>
                 {stepIdx !== steps.length - 1 ? (
                   <Tooltip title='Next'>
@@ -538,21 +535,19 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                       }}
                       disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
                       icon={<RightOutlined />}
-                      size="small"
-                    >
-                  </Button>
+                      size='small'
+                    />
                   </Tooltip>
                 )
                   : (
                     <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
-                      <Tooltip title="Finish QC">
-                      <Button
-                        type='primary'
-                        disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
-                        icon={<CheckOutlined />}
-                        size="small"
-                      >
-                      </Button>
+                      <Tooltip title='Finish QC'>
+                        <Button
+                          type='primary'
+                          disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                          icon={<CheckOutlined />}
+                          size='small'
+                        />
                       </Tooltip>
                     </Link>
                   )}
@@ -577,15 +572,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <PlatformError
               description={'We don\'t have anything for this step.'}
-              reason={'The last run ended before this step could be finished.'}
-              onClick={() => { onPipelineRun() }}
+              reason='The last run ended before this step could be finished.'
+              onClick={() => { onPipelineRun(); }}
             />
           </div>
         </div>
       );
     }
 
-    if (cellSets.loading || samples.meta.loading || processingConfig.meta.loading) {
+    if (samples.meta.loading || processingConfig.meta.loading) {
       return (
         <div className='preloadContextSkeleton' style={{ padding: '16px 0px' }}>
           <Skeleton.Input style={{ width: '100%', height: 400 }} active />
@@ -593,41 +588,39 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       );
     }
 
-    if (cellSets.error || samples.meta.error || processingConfig.meta.loadingSettingsError) {
+    if (samples.meta.error || processingConfig.meta.loadingSettingsError) {
       return (
         <PlatformError
-          error={cellSets.error.toString()}
-          onClick={() => { dispatch(loadCellSets(experimentId)); }}
+          error={samples.meta.error.toString() || processingConfig.meta.loadingSettingsError.toString()}
+          onClick={() => { dispatch(loadSamples(experimentId)); }}
         />
       );
     }
 
     return (
       <Space direction='vertical' style={{ width: '100%' }}>
-        {processingConfig[steps[stepIdx].key]?.enabled === false && stepDisabledByCondition &&
-          applicableFilters.map(filter =>
+        {processingConfig[steps[stepIdx].key]?.enabled === false && stepDisabledByCondition
+          && applicableFilters.map((filter) => (
             <Alert
               message={disabledConditionMessage[filter]}
-              type="info"
+              type='info'
               showIcon
             />
-          )
-        }
+          ))}
 
-        {processingConfig[steps[stepIdx].key]?.enabled === false && !stepDisabledByCondition &&
-          (
+        {processingConfig[steps[stepIdx].key]?.enabled === false && !stepDisabledByCondition
+          && (
             <Alert
-              message={'This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'}
-              type="info"
+              message='This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'
+              type='info'
               showIcon
             />
-          )
-        }
+          )}
 
         {render(key, experimentId)}
       </Space>
     );
-  }
+  };
 
   return (
     <div style={{
@@ -640,7 +633,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         route={route}
         title='Data Processing'
       />
-      <Modal title='Run data processing with the changed settings'
+      <Modal
+        title='Run data processing with the changed settings'
         visible={runQCModalVisible}
         onCancel={() => setRunQCModalVisible(false)}
         onOk={() => onPipelineRun()}

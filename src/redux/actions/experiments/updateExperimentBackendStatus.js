@@ -1,27 +1,24 @@
 import {
-  EXPERIMENTS_UPDATED,
+  EXPERIMENTS_BACKEND_STATUS_UPDATED,
 } from '../../actionTypes/experiments';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import saveExperiment from './saveExperiment';
 
-const updateExperiment = (
+const updateExperimentBackendStatus = (
   experimentId,
-  experiment,
+  backendStatus,
 ) => async (dispatch) => {
   try {
     dispatch({
-      type: EXPERIMENTS_UPDATED,
+      type: EXPERIMENTS_BACKEND_STATUS_UPDATED,
       payload: {
         experimentId,
-        experiment,
+        backendStatus,
       },
     });
-
-    dispatch(saveExperiment(experimentId));
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    pushNotificationMessage('error', endUserMessages.ERROR_FETCHING_BACKEND_STATUS);
   }
 };
 
-export default updateExperiment;
+export default updateExperimentBackendStatus;

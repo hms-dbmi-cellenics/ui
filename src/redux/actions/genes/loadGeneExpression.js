@@ -36,17 +36,17 @@ const loadGeneExpression = (
 
   let genesToFetch = [...genes];
   const genesAlreadyLoaded = Object.keys(geneData);
-
   if (!forceReloadAll) {
     genesToFetch = genesToFetch.filter(
       (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
     );
   }
 
-  const upperGenesAlreadyLoaded = new Set(upperCaseArray(genesAlreadyLoaded));
-  const displayedGenes = genes.filter((gene) => upperGenesAlreadyLoaded.has(gene.toUpperCase()));
-
+  const displayedGenes = genesAlreadyLoaded.filter(
+    (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
+  );
   if (genesToFetch.length === 0) {
+    // All genes are already loaded.
     return dispatch({
       type: GENES_EXPRESSION_LOADED,
       payload: {

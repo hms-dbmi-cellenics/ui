@@ -95,7 +95,6 @@ const NewExperimentModal = (props) => {
                       <EditableField
                         onAfterSubmit={async (name) => {
                           dispatch(updateExperiment(experiment.id, { name: name.trim() }));
-                          await dispatch(saveExperiment(experiment.id));
                         }}
                         value={experiment.name}
                         validationFunc={(name) => validateInputs(name, validationChecks).isValid}

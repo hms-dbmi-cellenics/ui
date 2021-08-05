@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Menu, Dropdown,
@@ -6,13 +7,16 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   UploadOutlined,
+  MenuOutlined,
 } from '@ant-design/icons';
+import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
 import _ from 'lodash'
-import { saveAs } from 'file-saver';
+import arrayMove from 'array-move';
 import { Storage } from 'aws-amplify';
+import { saveAs } from 'file-saver';
 
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
@@ -27,7 +31,6 @@ import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
-
 import {
   updateProject,
   createMetadataTrack,
@@ -37,7 +40,9 @@ import {
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
-import { updateExperiment, saveExperiment } from '../../redux/actions/experiments';
+import {
+  updateExperiment,
+} from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
@@ -45,9 +50,13 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../.
 import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
 import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
-import '../../utils/css/hover.css';
+import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
+
 import { exportPipelineParameters, filterPipelineParameters } from '../../utils/exportPipelineParameters';
+import downloadData from '../../utils/downloadExperimentData';
+import downloadTypes from '../../utils/downloadTypes';
+import pipelineStatus from '../../utils/pipelineStatusValues';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -55,6 +64,7 @@ const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
+  const samplesTableElement = useRef(null);
 
   const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
@@ -70,6 +80,7 @@ const ProjectDetails = ({ width, height }) => {
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+
   const [tableData, setTableData] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
@@ -393,8 +404,18 @@ const ProjectDetails = ({ width, height }) => {
     return newMetadataColumn;
   };
 
+  const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+
   const columns = [
     {
+      index: 0,
+      key: 'sort',
+      dataIndex: 'sort',
+      width: 30,
+      render: () => <DragHandle />,
+    },
+    {
+      index: 1,
       key: 'sample',
       title: 'Sample',
       dataIndex: 'name',
@@ -402,24 +423,28 @@ const ProjectDetails = ({ width, height }) => {
       render: renderSampleCells,
     },
     {
+      index: 2,
       key: 'barcodes',
       title: 'Barcodes.csv',
       dataIndex: 'barcodes',
       render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
     },
     {
+      index: 3,
       key: 'genes',
       title: 'Genes.csv',
       dataIndex: 'genes',
       render: (tableCellData) => renderUploadCell('genes', tableCellData),
     },
     {
+      index: 4,
       key: 'matrix',
       title: 'Matrix.mtx',
       dataIndex: 'matrix',
       render: (tableCellData) => renderUploadCell('matrix', tableCellData),
     },
     {
+      index: 5,
       key: 'species',
       title: () => (
         <Space>
@@ -491,14 +516,13 @@ const ProjectDetails = ({ width, height }) => {
       setTableColumns([]);
       return;
     }
+
     // Set table columns
     const metadataColumns = activeProject?.metadataKeys.map(
       (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
     ) || [];
 
-    const newColumns = tableColumns.length ? tableColumns : [...columns, ...metadataColumns];
-
-    setTableColumns(newColumns);
+    setTableColumns([...columns, ...metadataColumns]);
     // Set table data
 
     const newData = activeProject.samples.map((sampleUuid, idx) => {
@@ -588,22 +612,80 @@ const ProjectDetails = ({ width, height }) => {
       activeProject?.samples.every((s) => steps[0].hasOwnProperty(s))
   }
 
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    if (oldIndex !== newIndex) {
+      // This can be done because there is only one experiment per project
+      // Has to be changed when we support multiple experiments per project
+      const experimentId = activeProject.experiments[0];
+
+      const newData = arrayMove([].concat(tableData), oldIndex, newIndex).filter((el) => !!el);
+      const newSampleOrder = newData.map((sample) => sample.uuid);
+
+      dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
+      dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
+      setTableData(newData);
+    }
+  };
+
+  // eslint-disable-next-line react/prop-types
+  const SortableRow = sortableElement((props) => <tr {...props} className={`${props.className} drag-visible`} />);
+  const SortableTable = sortableContainer((props) => <tbody {...props} />);
+
+  const DragContainer = (props) => (
+    <SortableTable
+      useDragHandle
+      disableAutoscroll
+      helperClass='row-dragging'
+      onSortEnd={onSortEnd}
+      {...props}
+    />
+  );
+
+  const DraggableRow = (props) => {
+    // eslint-disable-next-line react/prop-types
+    const index = tableData.findIndex((x) => x.key === props['data-row-key']);
+    return <SortableRow index={index} {...props} />;
+  };
+
+  const pipelineHasRun = (experimentId) => (
+    experiments[experimentId]?.meta?.backendStatus?.pipeline?.status === pipelineStatus.SUCCEEDED
+  );
+
   const DownloadDataMenu = (
     <Menu>
-      <Menu.Item disabled>
-        <Tooltip title='Coming soon!' placement='left'>
+      <Menu.Item disabled key='download-raw-seurat'>
+        <Tooltip title='Feature coming soon!' placement='left'>
           {/* <Tooltip title='Samples have been merged' placement='left'> */}
           Raw Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
-      <Menu.Item disabled>
-        <Tooltip title='Coming soon!' placement='left'>
-          {/* <Tooltip title='Data Processing filters have been applied' placement='left'> */}
+      <Menu.Item
+        key='download-processed-seurat'
+        disabled={
+          activeProject?.experiments?.length > 0
+          && !pipelineHasRun(activeProject.experiments[0])
+        }
+        onClick={() => {
+          // Change if we have more than one experiment per project
+          const experimentId = activeProject?.experiments[0];
+          downloadData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT);
+        }}
+      >
+        <Tooltip
+          title={
+            activeProject?.experiments?.length > 0
+            && pipelineHasRun(activeProject.experiments[0])
+              ? 'With Data Processing filters and settings applied'
+              : 'Launch analysis to process data'
+          }
+          placement='left'
+        >
           Processed Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
       <Menu.Item
         disabled={!allSamplesAnalysed()}
+        key='download-processing-settings'
         onClick={() => {
           const config = _.omit(experimentSettings.processing, ['meta']);
           const filteredConfig = filterPipelineParameters(config, activeProject.samples, samples);
@@ -635,8 +717,7 @@ const ProjectDetails = ({ width, height }) => {
         visible={analysisModalVisible}
         onLaunch={async (experimentId) => {
           const lastViewed = moment().toISOString();
-          dispatch(updateExperiment(experimentId, { lastViewed }));
-          await dispatch(saveExperiment(experimentId));
+          await dispatch(updateExperiment(experimentId, { lastViewed }));
           await dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
         }}
@@ -678,7 +759,15 @@ const ProjectDetails = ({ width, height }) => {
               >
                 Add metadata
               </Button>
-              <Dropdown overlay={DownloadDataMenu} trigger={['click']}>
+              <Dropdown
+                overlay={DownloadDataMenu}
+                trigger={['click']}
+                placement='bottomRight'
+                disabled={
+                  projects.ids.length === 0
+                  || activeProject?.samples?.length === 0
+                }
+              >
                 <Button>
                   Download
                 </Button>
@@ -719,6 +808,7 @@ const ProjectDetails = ({ width, height }) => {
           <Row>
             <Col>
               <Table
+                ref={samplesTableElement}
                 size='small'
                 scroll={{
                   x: 'max-content',
@@ -729,6 +819,12 @@ const ProjectDetails = ({ width, height }) => {
                 dataSource={tableData}
                 sticky
                 pagination={false}
+                components={{
+                  body: {
+                    wrapper: DragContainer,
+                    row: DraggableRow,
+                  },
+                }}
               />
             </Col>
           </Row>
