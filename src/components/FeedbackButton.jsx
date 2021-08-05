@@ -136,7 +136,6 @@ const FeedbackButton = (props) => {
     >
       <Button type='dashed' icon={<CommentOutlined />}>
         Feedback?
-        {' '}
         <DownOutlined />
       </Button>
     </Dropdown>

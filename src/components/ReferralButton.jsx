@@ -148,9 +148,8 @@ const ReferralButton = () => {
       placement='bottomRight'
       trigger='click'
     >
-      <Button type='primary' icon={<ShareAltOutlined />}>
+      <Button type='dashed' icon={<ShareAltOutlined />}>
         Invite a friend
-        {' '}
         <DownOutlined />
       </Button>
     </Dropdown>
