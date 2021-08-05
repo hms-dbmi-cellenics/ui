@@ -1,6 +1,5 @@
 import experimentsReducer from '../../../redux/reducers/experiments';
 import initialState, { experimentTemplate } from '../../../redux/reducers/experiments/initialState';
-import { initialPipelineState } from '../../../redux/reducers/experimentSettings/initialState';
 
 import {
   EXPERIMENTS_CREATED,
@@ -92,16 +91,20 @@ describe('experimentsReducer', () => {
 
   const backendStatusUpdate = {
     pipeline: {
-      ...initialPipelineState,
       startDate: '2021-01-01T00:00:00.000Z',
       stopDate: '2021-01-01T10:00:00.000Z',
       status: 'SUCCEEDED',
     },
     gem2s: {
-      ...initialPipelineState,
       startDate: '2021-01-01T00:00:00.000Z',
       stopDate: '2021-01-01T10:00:00.000Z',
       status: 'SUCCEEDED',
+    },
+    worker: {
+      status: 'Running',
+      started: true,
+      ready: true,
+      restartCount: 0,
     },
   };
 
@@ -206,8 +209,6 @@ describe('experimentsReducer', () => {
         ...oneExperimentState[experimentId1],
         meta: {
           ...oneExperimentState[experimentId1].meta,
-          pipeline: { ...initialPipelineState },
-          gem2s: { ...initialPipelineState },
         },
       },
     };
@@ -220,23 +221,7 @@ describe('experimentsReducer', () => {
       },
     });
 
-    expect(newState[experimentId1].meta.pipeline.startDate)
-      .toEqual(backendStatusUpdate.pipeline.startDate);
-
-    expect(newState[experimentId1].meta.pipeline.stopDate)
-      .toEqual(backendStatusUpdate.pipeline.stopDate);
-
-    expect(newState[experimentId1].meta.pipeline.status)
-      .toEqual(backendStatusUpdate.pipeline.status);
-
-    expect(newState[experimentId1].meta.gem2s.startDate)
-      .toEqual(backendStatusUpdate.gem2s.startDate);
-
-    expect(newState[experimentId1].meta.gem2s.stopDate)
-      .toEqual(backendStatusUpdate.gem2s.stopDate);
-
-    expect(newState[experimentId1].meta.gem2s.status)
-      .toEqual(backendStatusUpdate.gem2s.status);
+    expect(newState[experimentId1].meta.backendStatus).toEqual(backendStatusUpdate);
 
     expect(newState).toMatchSnapshot();
   });

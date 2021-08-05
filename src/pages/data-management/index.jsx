@@ -57,13 +57,8 @@ const DataManagementPage = ({ route }) => {
   const updateRunStatus = async (experimentId) => {
     dispatch(loadBackendStatus(experimentId))
       .then(
-        (status) => {
-          const experimentBackendStatus = {
-            pipeline: status.pipeline,
-            gem2s: status.gem2s,
-          };
-
-          dispatch(updateExperimentBackendStatus(experimentId, experimentBackendStatus));
+        (backendStatus) => {
+          dispatch(updateExperimentBackendStatus(experimentId, backendStatus));
         },
       );
   };

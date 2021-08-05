@@ -40,7 +40,7 @@ import {
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
 import {
-  updateExperiment, saveExperiment,
+  updateExperiment,
 } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
@@ -513,14 +513,13 @@ const ProjectDetails = ({ width, height }) => {
       setTableColumns([]);
       return;
     }
+
     // Set table columns
     const metadataColumns = activeProject?.metadataKeys.map(
       (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
     ) || [];
 
-    const newColumns = tableColumns.length ? tableColumns : [...columns, ...metadataColumns];
-
-    setTableColumns(newColumns);
+    setTableColumns([...columns, ...metadataColumns]);
     // Set table data
 
     const newData = activeProject.samples.map((sampleUuid, idx) => {
@@ -615,6 +614,7 @@ const ProjectDetails = ({ width, height }) => {
     }
   };
 
+  // eslint-disable-next-line react/prop-types
   const SortableRow = sortableElement((props) => <tr {...props} className={`${props.className} drag-visible`} />);
   const SortableTable = sortableContainer((props) => <tbody {...props} />);
 
@@ -629,6 +629,7 @@ const ProjectDetails = ({ width, height }) => {
   );
 
   const DraggableRow = (props) => {
+    // eslint-disable-next-line react/prop-types
     const index = tableData.findIndex((x) => x.key === props['data-row-key']);
     return <SortableRow index={index} {...props} />;
   };
@@ -809,7 +810,7 @@ const ProjectDetails = ({ width, height }) => {
                   y: height - 250,
                 }}
                 bordered
-                columns={columns}
+                columns={tableColumns}
                 dataSource={tableData}
                 sticky
                 pagination={false}
