@@ -644,7 +644,8 @@ const ProjectDetails = ({ width, height }) => {
     <Menu>
       <Menu.Item
         key='download-raw-seurat'
-        disabled={!gem2sHasRun(activeProject?.experiments[0])}
+        disabled={activeProject?.experiments?.length
+          && !gem2sHasRun(activeProject?.experiments[0])}
         onClick={() => {
           const experimentId = activeProject?.experiments[0];
           downloadData(experimentId, downloadTypes.RAW_SEURAT_OBJECT);
