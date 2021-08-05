@@ -12,7 +12,7 @@ import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
 
 const ViolinPlot = (props) => {
   const {
-    experimentId, config, plotUuid, plotData, actions,
+    experimentId, config, plotUuid, searchedGene,
   } = props;
   const dispatch = useDispatch();
 
@@ -29,6 +29,18 @@ const ViolinPlot = (props) => {
     (state) => (state.genes.properties.views[plotUuid]?.data
       ? state.genes.properties.views[plotUuid]?.data[0] : undefined),
   );
+
+  const loadedGene = useSelector((state) => state.genes.expression.views[plotUuid]?.data);
+  useEffect(() => {
+    if (loadedGene && loadedGene.length) {
+      updatePlotWithChanges(
+        {
+          shownGene: loadedGene[0],
+          title: { text: loadedGene[0] },
+        },
+      );
+    }
+  }, [loadedGene]);
   const PROPERTIES = ['dispersions'];
   const tableState = {
     pagination: {
@@ -37,12 +49,37 @@ const ViolinPlot = (props) => {
     geneNamesFilter: null,
     sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
   };
+  const updatePlotWithChanges = (changes) => {
+    dispatch(updatePlotConfig(plotUuid, changes));
+  };
 
   useEffect(() => {
-    if (config?.shownGene === 'notSelected' && !highestDispersionLoading && !highestDispersionGene) {
+    if (config?.shownGene !== 'notSelected') {
+      dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
+    }
+  }, []);
+
+  useEffect(() => {
+    // if no saved gene - load the highest dispersion one
+    if (config.shownGene === 'notSelected' && !highestDispersionLoading && !highestDispersionGene) {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
   }, [experimentId, config?.shownGene, highestDispersionLoading, highestDispersionGene]);
+
+  useEffect(() => {
+    // if no saved gene and highest dispersion gene is loaded - use it
+    if (config.shownGene === 'notSelected' && highestDispersionGene) {
+      updatePlotWithChanges({ shownGene: highestDispersionGene });
+      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
+    }
+  }, [experimentId, highestDispersionGene, config.shownGene]);
+
+  useEffect(() => {
+    // search for gene and update config.shownGene if letter-cases are not correct
+    if (searchedGene) {
+      dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid));
+    }
+  }, [searchedGene]);
 
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
@@ -50,23 +87,9 @@ const ViolinPlot = (props) => {
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
 
-  useEffect(() => {
-    if (config?.shownGene === 'notSelected' && highestDispersionGene) {
-      dispatch(updatePlotConfig(plotUuid, { shownGene: highestDispersionGene }));
-      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
-    }
-
-    if (config?.shownGene !== 'notSelected' && config) {
-      dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
-    }
-  }, [experimentId, highestDispersionGene, config?.shownGene]);
+  const clustersAvailable = () => cellSets.hierarchy.find((hierarchy) => hierarchy.key === config.selectedCellSet);
 
   useEffect(() => {
-    if (plotData) {
-      setPlotSpec(generateSpec(config, plotData));
-      return;
-    }
-
     if (config
       && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
@@ -75,16 +98,17 @@ const ViolinPlot = (props) => {
       const geneExpressionData = config.normalised === 'normalised'
         ? geneExpression.data[config.shownGene].zScore
         : geneExpression.data[config.shownGene].rawExpression.expression;
-
-      const generatedPlotData = generateData(
-        cellSets,
-        geneExpressionData,
-        config.selectedCellSet,
-        config.selectedPoints,
-      );
-      setPlotSpec(generateSpec(config, generatedPlotData));
+      if (clustersAvailable()) {
+        const generatedPlotData = generateData(
+          cellSets,
+          geneExpressionData,
+          config.selectedCellSet,
+          config.selectedPoints,
+        );
+        setPlotSpec(generateSpec(config, generatedPlotData));
+      }
     }
-  }, [experimentId, config, plotData, geneExpression, cellSets]);
+  }, [experimentId, config, geneExpression, cellSets]);
 
   const render = () => {
     if (cellSets.error) {
@@ -94,6 +118,15 @@ const ViolinPlot = (props) => {
           onClick={() => {
             dispatch(loadCellSets(experimentId));
           }}
+        />
+      );
+    }
+    if (!clustersAvailable()) {
+      return (
+        <PlatformError
+          description='No clustering available.'
+          reason='Set up your clustering in the configure embedding step in Data Processing to view this plot, or select different data.'
+          actionable={false}
         />
       );
     }
@@ -123,14 +156,14 @@ const ViolinPlot = (props) => {
       || highestDispersionLoading) {
       return (
         <center>
-          <Loader />
+          <Loader experimentId={experimentId} />
         </center>
       );
     }
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+        <Vega spec={plotSpec} renderer='canvas' />
       </center>
     );
   };
@@ -142,20 +175,11 @@ const ViolinPlot = (props) => {
   );
 };
 
-ViolinPlot.defaultProps = {
-  plotData: null,
-  actions: true,
-};
-
 ViolinPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotUuid: PropTypes.string.isRequired,
-  plotData: PropTypes.object,
-  actions: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.object,
-  ]),
+  searchedGene: PropTypes.string.isRequired,
 };
 
 export default ViolinPlot;

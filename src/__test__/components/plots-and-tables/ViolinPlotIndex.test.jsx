@@ -7,15 +7,15 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-
 import {
   initialComponentConfigStates,
 } from '../../../redux/reducers/componentConfig/initialState';
+import { updatePlotConfig } from '../../../redux/actions/componentConfig/index';
+
 import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
 import rootReducer from '../../../redux/reducers/index';
 import genes from '../../../redux/reducers/genes/initialState';
 import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
-import { updatePlotConfig } from '../../../redux/actions/componentConfig/index';
 import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
@@ -50,6 +50,7 @@ jest.mock('../../../utils/cacheRequest', () => ({
     }
   }),
 }));
+const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 
 const defaultStore = {
   cellSets,
@@ -69,7 +70,6 @@ const defaultStore = {
 };
 
 const experimentId = 'mockExperimentId';
-const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 
 describe('ViolinIndex', () => {
   let store = null;
@@ -105,8 +105,7 @@ describe('ViolinIndex', () => {
   it('loads by default the gene with the highest dispersion, allows another to be selected, and updates the plot\'s title', async () => {
     await renderViolinIndex();
 
-    const geneSelection = rtl.screen.getAllByRole('tab')[0];
-    expect(geneSelection).toHaveTextContent('Gene Selection');
+    const geneSelection = rtl.screen.getByText('Gene Selection');
     const panelContainer = geneSelection.parentElement;
 
     userEvent.click(geneSelection);
@@ -116,18 +115,20 @@ describe('ViolinIndex', () => {
 
     const newGeneShown = 'NewGeneShown';
     userEvent.type(geneInput, `{selectall}{del}${newGeneShown}`);
-    userEvent.click(rtl.getByRole(panelContainer, 'button'));
+    const searchButton = rtl.getByText(panelContainer, 'Search');
+    userEvent.click(searchButton);
+    await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(3));
+
     expect(store.getState().componentConfig[plotUuid].config.shownGene).toBe(newGeneShown);
 
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(5));
     await expectStringInVegaCanvas(newGeneShown, 1);
   });
 
   it('allows selection of the grouping/points, defaulting to louvain and All', async () => {
     await renderViolinIndex();
 
-    const dataSelection = rtl.screen.getAllByRole('tab')[1];
-    expect(dataSelection).toHaveTextContent('Select Data');
+    const dataSelection = rtl.screen.getByText('Select Data');
     const panelContainer = dataSelection.parentElement;
 
     userEvent.click(dataSelection);
@@ -155,7 +156,7 @@ describe('ViolinIndex', () => {
     expect(inputFields[0].parentNode.parentNode).toHaveTextContent('Louvain clusters');
     expect(inputFields[1].parentNode.parentNode).toHaveTextContent('All');
 
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
     await expectStringInVegaCanvas('cluster a', 1);
 
     // Testing the effect of grouping by sample
@@ -166,8 +167,7 @@ describe('ViolinIndex', () => {
   it('has a Data Tranformation panel', async () => {
     await renderViolinIndex();
 
-    const tabs = rtl.screen.getAllByRole('tab');
-    const dataTransformation = tabs.find((tab) => tab.textContent === 'Data Transformation');
+    const dataTransformation = rtl.screen.getByText('Data Transformation');
     const panelContainer = dataTransformation.parentElement;
     userEvent.click(dataTransformation);
 
@@ -215,7 +215,7 @@ describe('ViolinIndex', () => {
     expect(radioButtons[3].parentNode.parentNode).toHaveTextContent('Hide');
   });
 
-  it('has a Lengend panel', async () => {
+  it('has a Legend panel', async () => {
     await renderViolinIndex();
 
     const tabs = rtl.screen.getAllByRole('tab');
@@ -230,11 +230,11 @@ describe('ViolinIndex', () => {
     // toHaveDisplayValue() currently does not support input[type="radio"]
     expect(radioButtons[1].parentNode.parentNode).toHaveTextContent('Hide');
 
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
     await expectStringInVegaCanvas('cluster a', 1);
 
     userEvent.click(radioButtons[0]);
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(3));
     radioButtons = rtl.getAllByRole(panelContainer, 'radio');
     expect(radioButtons.length).toBe(5);
     expect(panelContainer).toHaveTextContent(/position/i);
@@ -246,7 +246,7 @@ describe('ViolinIndex', () => {
 
   it('allows the gene name to be overriden as the title and clears the override upon new gene selection', async () => {
     await renderViolinIndex();
-    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(1));
+    await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
 
     let tabs = rtl.screen.getAllByRole('tab');
     const mainSchema = tabs.find((tab) => tab.textContent === 'Main schema');
@@ -256,24 +256,26 @@ describe('ViolinIndex', () => {
     userEvent.click(titleTab);
     let panelContainer = mainSchema.parentElement;
     const titleInput = rtl.getByRole(panelContainer, 'textbox');
-    expect(titleInput).toHaveValue('');
+    expect(titleInput).toHaveValue('MockGeneWithHighestDispersion');
     await expectStringInVegaCanvas('MockGeneWithHighestDispersion', 1);
 
     const titleOverride = '€'; // Single character so that useUpdateThrottled does not mess with the tests
     generateSpecSpy.mockClear();
     userEvent.type(titleInput, titleOverride);
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalled());
-    await expectStringInVegaCanvas('MockGeneWithHighestDispersion', 0);
+    await expectStringInVegaCanvas('MockGeneWithHighestDispersion', 1);
     await expectStringInVegaCanvas(titleOverride, 1);
 
-    const geneSelection = tabs.find((tab) => tab.textContent === 'Gene Selection');
+    const geneSelection = rtl.screen.getByText('Gene Selection');
     panelContainer = geneSelection.parentNode;
     userEvent.click(geneSelection);
     const geneInput = rtl.getByRole(panelContainer, 'textbox');
     const newGeneShown = 'NewGeneShown';
     generateSpecSpy.mockClear();
     userEvent.type(geneInput, `{selectall}{del}${newGeneShown}`);
-    userEvent.click(rtl.getByRole(panelContainer, 'button'));
+    const searchButton = rtl.getByText(panelContainer, 'Search');
+
+    userEvent.click(searchButton);
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalled());
     await expectStringInVegaCanvas(newGeneShown, 1);
   });
