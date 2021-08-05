@@ -7,7 +7,7 @@ const rules = {
   UNIQUE_NAME: 'UNIQUE_NAME',
   UNIQUE_NAME_CASE_INSENSITIVE: 'UNIQUE_NAME_CASE_INSENSITIVE',
   START_WITH_ALPHABET: 'START_WITH_ALPHABET',
-  INVALID_EMAIL: 'INVALID_EMAIL',
+  VALID_EMAIL: 'VALID_EMAIL',
 };
 
 const errorMessages = {
@@ -19,6 +19,7 @@ const errorMessages = {
   [rules.UNIQUE_NAME]: 'Name is already used',
   [rules.UNIQUE_NAME_CASE_INSENSITIVE]: 'Name is already used',
   [rules.START_WITH_ALPHABET]: 'Name can only start with letter',
+  [rules.VALID_EMAIL]: 'Invalid email',
 };
 
 const validationFns = {
@@ -87,9 +88,35 @@ const validationFns = {
     if (input.match(/^[^a-zA-Z]/gm)) return errorMessages[checkName];
     return true;
   },
+
+  // Valid email - Fail if input is not a valid email
+  [rules.VALID_EMAIL](checkName, input) {
+    // Valid email regex based on RFC2822 - https://regexr.com/2rhq7
+    const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+    if (!input.match(emailRegex)) return errorMessages[checkName];
+    return true;
+  },
+
 };
 
+/**
+ * @typedef {Object} ValidateInputsReturns
+ * @property {boolean} isValid - True if all checks passed, false otherwise
+ * @property {results} results - An array of validation results or error messages
+ */
+
+/**
+ * Valide input according to a list of checks which might be configured by passing params.
+ * @param {string} input - The input string to validate.
+ * @param {string[]} checks - Functions to check.
+ * @param {Object} params - Optional parameters passed to checking functions
+ * @returns {ValidateInputsReturns} - An object with isValid and results properties
+ */
+
 const validateInput = (input, checks, params) => {
+  // eslint-disable-next-line no-param-reassign
+  if (!Array.isArray(checks)) checks = [checks];
+
   if (checks.length === 0) {
     return {
       isValid: true,

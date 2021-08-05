@@ -6,13 +6,11 @@ import { ShareAltOutlined, DownOutlined } from '@ant-design/icons';
 import { Auth } from 'aws-amplify';
 import endUserMessages from '../utils/endUserMessages';
 import pushNotificationMessage from '../utils/pushNotificationMessage';
+import validateInput, { rules } from '../utils/validateInputs';
 
 const { TextArea } = Input;
 
 const initialMessage = 'Hi,\n\nCheck out Cellscope from Biomage. It will make your single-cell analysis easier.';
-
-// Valid email regex based on RFC2822 - https://regexr.com/2rhq7
-const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 const ReferralButton = () => {
   const [visible, setVisible] = useState(false);
@@ -22,7 +20,7 @@ const ReferralButton = () => {
 
   const HOOK_URL = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDAxNTVEWkZWTTAvQjAyQVk0ODQxQ0cvQ0x3Mms4dTBtMkUzcDBVNUhhbjBqeTBv'; // pragma: allowlist secret
 
-  const submitFeedback = async () => {
+  const submitReferral = async () => {
     setVisible(false);
 
     let user;
@@ -111,7 +109,9 @@ const ReferralButton = () => {
             addonBefore='To: '
             label='Email'
             onChange={(e) => {
-              setIsEmailValid(e.target.value.match(emailRegex));
+              const { isValid } = validateInput(e.target.value, rules.VALID_EMAIL);
+
+              setIsEmailValid(isValid);
               setEmail(e.target.value);
             }}
             placeholder={'Your friend\'s email address'}
@@ -132,7 +132,7 @@ const ReferralButton = () => {
             <Tooltip
               title={!isEmailValid ? 'Please enter a valid email address' : ''}
             >
-              <Button size='small' type='primary' disabled={!isEmailValid} onClick={submitFeedback}>Send invite</Button>
+              <Button size='small' type='primary' disabled={!isEmailValid} onClick={submitReferral}>Send invite</Button>
             </Tooltip>
           </Space>
         </Space>
