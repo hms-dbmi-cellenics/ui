@@ -644,14 +644,14 @@ const ProjectDetails = ({ width, height }) => {
     <Menu>
       <Menu.Item
         key='download-raw-seurat'
-        disabled={!gem2sHasRun(activeProject.experiments[0])}
+        disabled={!gem2sHasRun(activeProject?.experiments[0])}
         onClick={() => {
-          const experimentId = activeProject.experiments[0];
+          const experimentId = activeProject?.experiments[0];
           downloadData(experimentId, downloadTypes.RAW_SEURAT_OBJECT);
         }}
       >
         <Tooltip
-          title={gem2sHasRun(activeProject.experiments[0])
+          title={gem2sHasRun(activeProject?.experiments[0])
             ? 'Samples have been merged'
             : 'Launch analysis to merge samples'}
           placement='left'
@@ -663,7 +663,7 @@ const ProjectDetails = ({ width, height }) => {
         key='download-processed-seurat'
         disabled={
           activeProject?.experiments?.length > 0
-          && !pipelineHasRun(activeProject.experiments[0])
+          && !pipelineHasRun(activeProject?.experiments[0])
         }
         onClick={() => {
           // Change if we have more than one experiment per project
@@ -674,7 +674,7 @@ const ProjectDetails = ({ width, height }) => {
         <Tooltip
           title={
             activeProject?.experiments?.length > 0
-            && pipelineHasRun(activeProject.experiments[0])
+            && pipelineHasRun(activeProject?.experiments[0])
               ? 'With Data Processing filters and settings applied'
               : 'Launch analysis to process data'
           }
