@@ -21,6 +21,8 @@ export default {
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
   FEEDBACK_ERROR: 'We couldn\'t process your feedback. Please try submitting again.',
   FEEDBACK_SUCCESSFUL: 'Your feedback has been successfully sent. Thank you!',
+  REFERRAL_ERROR: 'We couldn\'t process your referral. Please try submitting again',
+  REFERRAL_SUCCESSFUL: 'Your referral has been successfully sent. Thank you!',
   NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Data Management` window.',
   SAVING_SAMPLE: 'Saving sample...',
   SAVING_PROJECT: 'Saving project...',
