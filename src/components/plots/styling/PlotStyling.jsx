@@ -61,7 +61,6 @@ const PlotStyling = (props) => {
       return (
         <Panel header={el.panelTitle} key={el.panelTitle}>
           {el.header}
-
           {el.controls.map((control) => {
             // If control is a string, no prop is passed
             if (_.isString(control)) {
