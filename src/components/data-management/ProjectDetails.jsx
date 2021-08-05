@@ -634,7 +634,7 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   const pipelineHasRun = (experimentId) => (
-    experiments[experimentId]?.meta?.pipeline?.status === pipelineStatus.SUCCEEDED
+    experiments[experimentId]?.meta?.backendStatus?.pipeline?.status === pipelineStatus.SUCCEEDED
   );
 
   const DownloadDataMenu = (
