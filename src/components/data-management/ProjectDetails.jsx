@@ -652,9 +652,12 @@ const ProjectDetails = ({ width, height }) => {
         }}
       >
         <Tooltip
-          title={gem2sHasRun(activeProject?.experiments[0])
-            ? 'Samples have been merged'
-            : 'Launch analysis to merge samples'}
+          title={
+            activeProject?.experiments?.length
+            && gem2sHasRun(activeProject?.experiments[0])
+              ? 'Samples have been merged'
+              : 'Launch analysis to merge samples'
+          }
           placement='left'
         >
           Raw Seurat object (.rds)
