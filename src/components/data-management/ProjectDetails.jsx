@@ -634,10 +634,10 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   const pipelineHasRun = (experimentId) => (
-    experiments[experimentId]?.meta?.pipeline?.status === pipelineStatus.SUCCEEDED
+    experiments[experimentId]?.meta?.backendStatus?.pipeline?.status === pipelineStatus.SUCCEEDED
   );
   const gem2sHasRun = (experimentId) => (
-    experiments[experimentId]?.meta?.gem2s?.status === pipelineStatus.SUCCEEDED
+    experiments[experimentId]?.meta?.backendStatus?.gem2s?.status === pipelineStatus.SUCCEEDED
   );
 
   const DownloadDataMenu = (
