@@ -14,14 +14,14 @@ import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 const createExperiment = (
   projectUuid, newExperimentName,
 ) => async (dispatch) => {
-  const createdAt = moment().toISOString();
+  const createdDate = moment().toISOString();
 
   const newExperiment = {
     ...experimentTemplate,
-    id: hash.MD5(createdAt),
+    id: hash.MD5(createdDate),
     name: newExperimentName,
     projectUuid,
-    createdAt,
+    createdDate,
   };
 
   try {

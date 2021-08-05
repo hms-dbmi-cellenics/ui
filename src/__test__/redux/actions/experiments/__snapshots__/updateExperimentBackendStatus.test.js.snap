@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateExperimentBackendStatus Dispatches action when called 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "backendStatus": Object {
+        "gem2s": Object {
+          "completedSteps": Array [],
+          "endDate": null,
+          "startDate": "2021-01-01T00:00:00.000Z",
+          "status": "SUCCEEDED",
+          "stopDate": "2021-01-01T10:00:00.000Z",
+        },
+        "pipeline": Object {
+          "completedSteps": Array [],
+          "endDate": null,
+          "startDate": "2021-01-01T00:00:00.000Z",
+          "status": "SUCCEEDED",
+          "stopDate": "2021-01-01T10:00:00.000Z",
+        },
+      },
+      "experimentId": "experiment-1",
+    },
+    "type": "experiments/updateExperimentBackendStatus",
+  },
+]
+`;

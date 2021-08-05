@@ -103,7 +103,7 @@ const spec = {
       name: 'color',
       type: 'linear',
       range: {
-        scheme: 'viridis',
+        scheme: 'purplered',
       },
       domain: {
         data: 'heatmapData',

@@ -8,13 +8,14 @@ import 'react-mosaic-component/react-mosaic-component.css';
 
 import { validate } from 'uuid';
 import { createProject, loadProjects } from '../../redux/actions/projects';
-import { loadExperiments } from '../../redux/actions/experiments';
+import { loadExperiments, updateExperimentBackendStatus } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
 import LoadingModal from '../../components/LoadingModal';
+import loadBackendStatus from '../../redux/actions/experimentSettings/backendStatus/loadBackendStatus';
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
@@ -53,14 +54,31 @@ const DataManagementPage = ({ route }) => {
     if (projectsList.ids.length === 0) dispatch(loadProjects());
   }, []);
 
+  const updateRunStatus = async (experimentId) => {
+    dispatch(loadBackendStatus(experimentId))
+      .then(
+        (backendStatus) => {
+          dispatch(updateExperimentBackendStatus(experimentId, backendStatus));
+        },
+      );
+  };
+
   useEffect(() => {
     // old experiments don't have a project so the activeProjectUuid will actually be an experiment
-    // ID so the experiments load will fail this should be addressed by migrating experiments
-    // for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
+    // ID so the experiments load will fail this should be addressed by migrating experiments.
+    // However, for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
     // and we should not try to load the experiments with it
-    if (!activeProjectUuid || experimentsAreLoaded || !isUuid(activeProjectUuid)) return;
+    if (!activeProjectUuid || !isUuid(activeProjectUuid)) return;
 
-    dispatch(loadExperiments(activeProjectUuid));
+    // Right now we have one experiment per project, so we can just load the experiment
+    // This has to be changed when we have more than one experiment
+    const activeExperimentId = activeProject.experiments[0];
+
+    if (!experimentsAreLoaded) {
+      dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
+    }
+
+    if (experiments[activeExperimentId]) updateRunStatus(activeExperimentId);
   }, [activeProject]);
 
   useEffect(() => {
@@ -85,10 +103,10 @@ const DataManagementPage = ({ route }) => {
     setNewProjectModalVisible(false);
   };
 
-  const PROJECTS_LIST = 'Projects'
-  const PROJECT_DETAILS = 'Project Details'
+  const PROJECTS_LIST = 'Projects';
+  const PROJECT_DETAILS = 'Project Details';
 
-  let TILE_MAP = {
+  const TILE_MAP = {
     [PROJECTS_LIST]: {
       toolbarControls: [],
       component: (width, height) => (

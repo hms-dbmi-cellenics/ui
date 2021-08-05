@@ -52,7 +52,6 @@ const createMetadataTrack = (
       },
     })));
   } catch (e) {
-    console.log(e);
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
