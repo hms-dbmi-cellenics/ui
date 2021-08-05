@@ -352,36 +352,4 @@ describe('CellSetsTool', () => {
     deleteButton.simulate('click');
     expect(store.getActions().length).toEqual(2);
   });
-
-  // it('selected cell sets show selected in ', () => {
-  //   const store = mockStore(
-  //     {
-  //       ...storeState,
-  //       cellSets: {
-  //         ...storeState.cellSets,
-  //         selected: {
-  //           cellSets: ['scratchpad-a', 'cluster-c'],
-  //           metadataCategorical: ['cluster-b'],
-  //         },
-  //       },
-  //     },
-  //   );
-  //   const component = mount(
-  //     <Provider store={store}>
-  //       <CellSetsTool
-  //         experimentId='asd'
-  //         width={50}
-  //         height={50}
-  //       />
-  //     </Provider>,
-  //   );
-  //   waitForComponentToPaint(component);
-  //   const tabs = component.find(Tabs);
-  //   const text = component.find('#selectedCellSets').first();
-  //   expect(text.text()).toEqual('3 cells selected');
-  //   tabs.props().onChange('metadataCategorical');
-  //   expect(text.text()).toEqual('4 cells selected');
-  //   tabs.props().onChange('cellSets');
-  //   expect(text.text()).toEqual('3 cells selected');
-  // });
 });
