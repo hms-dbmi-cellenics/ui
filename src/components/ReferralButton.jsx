@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Button, Dropdown, Card, Input, Space,
+  Button, Dropdown, Card, Input, Space, Tooltip,
 } from 'antd';
 import { ShareAltOutlined, DownOutlined } from '@ant-design/icons';
 import { Auth } from 'aws-amplify';
@@ -9,11 +9,15 @@ import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const { TextArea } = Input;
 
-const ReferralButton = () => {
-  const initialMessage = 'Hi,\n\nCheck out Cellscope from Biomage. It will make your single-cell analysis easier.';
+const initialMessage = 'Hi,\n\nCheck out Cellscope from Biomage. It will make your single-cell analysis easier.';
 
+// Valid email regex based on RFC2822 - https://regexr.com/2rhq7
+const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+
+const ReferralButton = () => {
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
+  const [isEmailValid, setIsEmailValid] = useState(false);
   const [customMessage, setCustomMessage] = useState(initialMessage);
 
   const HOOK_URL = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDAxNTVEWkZWTTAvQjAyQVk0ODQxQ0cvQ0x3Mms4dTBtMkUzcDBVNUhhbjBqeTBv'; // pragma: allowlist secret
@@ -95,8 +99,6 @@ const ReferralButton = () => {
       setCustomMessage(initialMessage);
       pushNotificationMessage('success', endUserMessages.REFERRAL_SUCCESSFUL);
     } catch (e) {
-      console.log('== TEST');
-      console.log(e);
       pushNotificationMessage('error', endUserMessages.REFERRAL_ERROR);
     }
   };
@@ -108,7 +110,10 @@ const ReferralButton = () => {
           <Input
             addonBefore='To: '
             label='Email'
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setIsEmailValid(e.target.value.match(emailRegex));
+              setEmail(e.target.value);
+            }}
             placeholder={'Your friend\'s email address'}
           />
           <TextArea
@@ -124,7 +129,11 @@ const ReferralButton = () => {
           />
           <Space>
             <Button size='small' onClick={() => setVisible(false)}>Cancel</Button>
-            <Button size='small' type='primary' onClick={submitFeedback}>Send invite</Button>
+            <Tooltip
+              title={!isEmailValid ? 'Please enter a valid email address' : ''}
+            >
+              <Button size='small' type='primary' disabled={!isEmailValid} onClick={submitFeedback}>Send invite</Button>
+            </Tooltip>
           </Space>
         </Space>
       </Card>
