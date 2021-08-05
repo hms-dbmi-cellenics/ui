@@ -27,7 +27,6 @@ describe('CellSetsTool', () => {
     cellSets: {
       loading: false,
       error: false,
-      selected: [],
       properties: {
         'cluster-a': {
           name: 'cluster a',
@@ -67,6 +66,20 @@ describe('CellSetsTool', () => {
           type: 'cellSets',
           rootNode: true,
         },
+        sample: {
+          cellIds: new Set(),
+          name: 'Samples',
+          key: 'sample',
+          type: 'metadataCategorical',
+          rootNode: true,
+        },
+
+        'sample-a': {
+          cellIds: new Set([1, 2, 3, 4, 5]),
+          name: 'Sample A',
+          key: 'sample-a',
+          color: '#e377c2',
+        },
       },
       hierarchy: [
         {
@@ -77,15 +90,22 @@ describe('CellSetsTool', () => {
           key: 'scratchpad',
           children: [{ key: 'scratchpad-a' }],
         },
+        {
+          key: 'sample',
+          children: [{ key: 'sample-a' }],
+        },
       ],
       hidden: new Set(),
+      selected: []
     },
     genes: {
       expression: {
         data: {
           Lyz2: {
             rawExpression: {
-              expression: [1, 2, 3, 4, 5],
+              // index 0 is null, so filtered, this index is also not included
+              // in any clusters for this reason
+              expression: [null, 1, 2, 3, 4, 5],
             },
           },
         },
@@ -352,4 +372,37 @@ describe('CellSetsTool', () => {
     deleteButton.simulate('click');
     expect(store.getActions().length).toEqual(2);
   });
+
+  it('shows an accurate cell count when all cell sets selected', () => {
+    const store = mockStore(
+      {
+        ...storeState,
+        cellSets: {
+          ...storeState.cellSets,
+          selected: {
+            cellSets: ['cluster-a', 'cluster-b', 'cluster-c'],
+            metadataCategorical: ['sample-a'],
+          },
+        },
+      },
+    );
+
+    const component = mount(
+      <Provider store={store}>
+        <CellSetsTool
+          experimentId='asd'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
+    waitForComponentToPaint(component);
+
+    const tabs = component.find(Tabs);
+    const text = component.find('#selectedCellSets').first();
+    expect(text.text()).toEqual('5 cells selected');
+
+    tabs.props().onChange('metadataCategorical');
+    expect(text.text()).toEqual('5 cells selected');
+  })
 });
