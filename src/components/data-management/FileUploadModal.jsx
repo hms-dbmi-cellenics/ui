@@ -27,7 +27,7 @@ const { Option } = Select;
 const FileUploadModal = (props) => {
   const { visible, onUpload, onCancel } = props;
 
-  const guidanceFileLink = 'https://drive.google.com/file/d/1qX6no9od4pi-Wy87Q06hmjnLNECwItKJ/view?usp=sharing';
+  const guidanceFileLink = 'https://drive.google.com/file/d/1t1u_7F8f-_I165qz4tx8HoXr9vnwSATW/view?usp=sharing';
 
   const [selectedTech, setSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
