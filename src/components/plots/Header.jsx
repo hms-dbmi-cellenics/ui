@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useBeforeunload } from 'react-beforeunload';
 import FeedbackButton from '../FeedbackButton';
+import ReferralButton from '../ReferralButton';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import itemRender from '../../utils/renderBreadcrumbLinks';
 import { getFromApiExpectOK } from '../../utils/getDataExpectOK';
@@ -161,7 +162,8 @@ const Header = (props) => {
           subTitle={`Last saved: ${saveString}`}
           extra={(
             <Space>
-              <FeedbackButton key='feedback' />
+              <FeedbackButton />
+              <ReferralButton />
               <Button
                 key='reset'
                 type='primary'
