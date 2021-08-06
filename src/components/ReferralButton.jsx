@@ -37,16 +37,17 @@ const ReferralButton = () => {
       },
       {
         type: 'mrkdwn',
-        text: user.attributes.email,
+        text: user.attributes.name,
+
       },
 
       {
         type: 'mrkdwn',
-        text: '*User name:*',
+        text: '*User email:*',
       },
       {
         type: 'plain_text',
-        text: user.attributes.name,
+        text: user.attributes.email,
       },
 
       {
