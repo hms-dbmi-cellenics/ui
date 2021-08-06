@@ -2,7 +2,7 @@ import { init, push } from '@socialgouv/matomo-next';
 import { Auth } from 'aws-amplify';
 import Env from './environment';
 
-const MATOMO_URL = 'https://biomage.matomo.cloud/';
+const MATOMO_URL = 'https://biomage.matomo.cloud';
 
 // To test a staging deployment, you'll need to go to biomage.matomo.cloud
 // and change the URL there to point to your staging env URL.
@@ -14,11 +14,11 @@ const trackingInfo = {
     siteId: 1,
   },
   [Env.STAGING]: {
-    enabled: false,
+    enabled: true,
     siteId: 2,
   },
   [Env.DEVELOPMENT]: {
-    enabled: false,
+    enabled: true,
     siteId: 3,
   },
 };
