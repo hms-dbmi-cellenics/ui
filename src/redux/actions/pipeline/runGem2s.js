@@ -12,6 +12,8 @@ import loadBackendStatus from '../experimentSettings/backendStatus/loadBackendSt
 const runGem2s = (experimentId) => async (dispatch, getState) => {
   const { experiments } = getState();
 
+  const projectId = experiments[experimentId].projectUuid;
+
   dispatch({
     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
     payload: {
@@ -46,7 +48,8 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
       payload: {
         experimentId,
         experimentName: experiments[experimentId].name,
-        projectUuid: experiments[experimentId].projectUuid,
+        projectId,
+        sampleIds: experiments[experimentId].sampleIds,
       },
     });
   } catch (e) {

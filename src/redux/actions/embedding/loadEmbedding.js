@@ -1,7 +1,7 @@
 import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../../actionTypes/embeddings';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
-const REQUEST_TIMEOUT = 90;
+const REQUEST_TIMEOUT = 180;
 
 const loadEmbedding = (
   experimentId,

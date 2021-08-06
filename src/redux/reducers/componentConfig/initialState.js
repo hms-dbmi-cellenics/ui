@@ -318,7 +318,7 @@ const embeddingPreviewDoubletScoreInitialConfig = {
 
 const interactiveHeatmapInitialConfig = {
   selectedTracks: ['louvain'],
-  groupedTracks: ['sample', 'louvain'],
+  groupedTracks: ['louvain', 'sample'],
   expressionValue: 'raw',
   legendIsVisible: true,
 };

@@ -31,6 +31,10 @@ const getStore = (settings = {}) => {
     notifications: {},
     experimentSettings: {
       ...initialExperimentState,
+      info: {
+        ...initialExperimentState.info,
+        sampleIds,
+      },
       processing: {
         ...initialExperimentState.processing,
         meta: {
@@ -59,53 +63,6 @@ const getStore = (settings = {}) => {
       },
     },
     experiments: { experimentId: {} },
-    cellSets: {
-      ...initialCellSetsState,
-      properties: {
-        test: {
-          name: 'Test',
-          cellIds: new Set(),
-        },
-        'test-1': {
-          name: 'Test-1',
-          cellIds: new Set([1, 2, 3]),
-        },
-        'test-2': {
-          name: 'Test-1',
-          cellIds: new Set([4, 5, 6]),
-        },
-        sample: {
-          name: 'Test',
-          cellIds: new Set(),
-        },
-        'sample-1': {
-          name: 'Test-1',
-          cellIds: new Set([2, 3]),
-        },
-        'sample-2': {
-          name: 'Test-1',
-          cellIds: new Set([1, 4, 5, 6]),
-        },
-      },
-      hierarchy: [
-        {
-          key: 'test',
-          children: [
-            { key: 'test-1' },
-            { key: 'test-2' },
-          ],
-        },
-        {
-          key: 'sample',
-          children: [
-            { key: 'sample-1' },
-            { key: 'sample-2' },
-          ],
-        },
-      ],
-      loading: false,
-      error: false,
-    },
     componentConfig: {
       ...initialPlotConfigStates,
     },

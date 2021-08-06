@@ -150,7 +150,7 @@ const DataIntegration = (props) => {
     elbow: [
       {
         panelTitle: 'Colours',
-        controls: ['colourScheme', 'colourInversion'],
+        controls: ['colourInversion'],
       },
     ],
   };

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Skeleton, Empty, Typography,
@@ -6,16 +7,16 @@ import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
-import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
-import Header from '../../../../../components/plots/Header';
-import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
-import { loadGeneExpression } from '../../../../../redux/actions/genes';
-import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import PlatformError from '../../../../../components/PlatformError';
-import Loader from '../../../../../components/Loader';
-import populateHeatmapData from '../../../../../components/plots/helpers/populateHeatmapData';
-import HeatmapControls from '../../../../../components/plots/styling/heatmap/HeatmapControls';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
+import Header from 'components/plots/Header';
+import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
+import { loadGeneExpression } from 'redux/actions/genes';
+import { loadCellSets } from 'redux/actions/cellSets';
+import PlatformError from 'components/PlatformError';
+import Loader from 'components/Loader';
+import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
+import HeatmapControls from 'components/plots/styling/heatmap/HeatmapControls';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
