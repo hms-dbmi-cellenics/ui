@@ -262,3 +262,4 @@ CellSetsTool.propTypes = {
 };
 
 export default CellSetsTool;
+export { generateFilteredCellIndices };

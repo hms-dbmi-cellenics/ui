@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import {
   DeleteOutlined,
 } from '@ant-design/icons';
-import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
+import CellSetsTool, { generateFilteredCellIndices } from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import CellSetOperation from '../../../../components/data-exploration/cell-sets-tool/CellSetOperation';
 import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
 
@@ -52,6 +52,13 @@ describe('CellSetsTool', () => {
           name: 'New Cluster',
           color: '#ff00ff',
         },
+        'sample-a': {
+          cellIds: new Set([1, 2, 3, 4, 5]),
+          name: 'Sample A',
+          key: 'sample-a',
+          color: '#e377c2',
+        },
+
         louvain: {
           cellIds: new Set(),
           name: 'Louvain clusters',
@@ -72,13 +79,6 @@ describe('CellSetsTool', () => {
           key: 'sample',
           type: 'metadataCategorical',
           rootNode: true,
-        },
-
-        'sample-a': {
-          cellIds: new Set([1, 2, 3, 4, 5]),
-          name: 'Sample A',
-          key: 'sample-a',
-          color: '#e377c2',
         },
       },
       hierarchy: [
@@ -404,5 +404,10 @@ describe('CellSetsTool', () => {
 
     tabs.props().onChange('metadataCategorical');
     expect(text.text()).toEqual('5 cells selected');
+  })
+
+  it('calculates filtered cell indices correctly', () => {
+    expect(generateFilteredCellIndices(storeState.genes.expression.data))
+      .toEqual(new Set([0]))
   })
 });
