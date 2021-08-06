@@ -3,7 +3,7 @@ import * as INI from 'ini';
 import { qcSteps } from './qcSteps';
 
 const exportQCParameters = (config) => {
-  const sortedConfig = qcSteps.map((s, i) => [`${i + 1}-${s}`, config[s]]).sort();
+  const sortedConfig = qcSteps.map((s, i) => [`${i + 1}-${s}`, config[s] ?? {}]).sort();
   const string = INI.stringify(Object.fromEntries(sortedConfig), { whitespace: true });
   return new Blob([string], { type: 'text/plain;charset=utf-8' });
 };
@@ -38,14 +38,14 @@ const flattenSampleStepConfig = (stepConfig) => {
   if (_.has(stepConfig, 'methodSettings')) {
     return {
       method: stepConfig.method,
-      ..._.get(stepConfig.methodSettings, stepConfig.method),
+      ...stepConfig.methodSettings[stepConfig.method],
     };
   }
   if (_.has(stepConfig, 'regressionTypeSettings')) {
     // numGenesVsNumUmis
     return {
       regressionType: stepConfig.regressionType,
-      ..._.get(stepConfig.regressionTypeSettings, stepConfig.regressionType),
+      ...stepConfig.regressionTypeSettings[stepConfig.regressionType],
     };
   }
   return stepConfig;
