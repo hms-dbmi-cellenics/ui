@@ -6,7 +6,7 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import * as vega from "vega";
+import * as vega from 'vega';
 
 import Loader from '../../Loader';
 import 'vitessce/dist/es/production/static/css/index.css';
@@ -229,12 +229,9 @@ const Embedding = (props) => {
     );
   }
 
-
   const renderExpressionView = () => {
     if (focusData.store === 'genes') {
-
-      const colorScale =
-        vega.scale('sequential')()
+      const colorScale = vega.scale('sequential')()
         .interpolator(colorInterpolator);
 
       return (

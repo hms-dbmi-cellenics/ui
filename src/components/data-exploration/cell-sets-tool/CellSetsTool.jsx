@@ -1,36 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import _ from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {
-  Skeleton, Space,
-  Tabs,
-  Typography, Empty, Button, Alert,
-} from 'antd';
+import { Alert, Button, Empty, Skeleton, Space, Tabs, Typography } from 'antd';
 
 import { BlockOutlined, MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
 
-import { Element, animateScroll } from 'react-scroll';
+import { animateScroll, Element } from 'react-scroll';
 import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
   createCellSet,
-  loadCellSets,
   deleteCellSet,
-  updateCellSetHierarchy,
-  updateCellSetSelected,
-  updateCellSetProperty,
+  loadCellSets,
   unhideAllCellSets,
+  updateCellSetHierarchy,
+  updateCellSetProperty,
+  updateCellSetSelected,
 } from '../../../redux/actions/cellSets';
+import { loadGeneExpression } from '../../../redux/actions/genes';
 import composeTree from '../../../utils/composeTree';
 import { isBrowser } from '../../../utils/environment';
 import endUserMessages from '../../../utils/endUserMessages';
 import PlatformError from '../../PlatformError';
 import CellSetOperation from './CellSetOperation';
-import { union, intersection, complement } from '../../../utils/cellSetOperations';
+import { complement, intersection, union } from '../../../utils/cellSetOperations';
 
 const { Text } = Typography;
 
 const { TabPane } = Tabs;
+
+const generateFilteredCellIndices = (geneExpressions) => {
+  // Determine filtered cells from gene expression data. This is currently
+  // the only way to determine whether a cell is filtered.
+  const [arbitraryGeneExpression] = Object.values(geneExpressions);
+  const expressionValues = arbitraryGeneExpression?.rawExpression.expression ?? [];
+  return new Set(_.filter(
+    _.range(expressionValues.length),
+    (i) => expressionValues[i] === null
+    )
+  );
+};
 
 const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
@@ -40,7 +50,26 @@ const CellSetsTool = (props) => {
   const cellSets = useSelector((state) => state.cellSets);
   const notifications = useSelector((state) => state.notifications);
 
+  const genes = useSelector(
+    (state) => state.genes,
+  );
+
+  const filteredCells = useRef(new Set());
+
   const [activeTab, setActiveTab] = useState('cellSets');
+
+  useEffect(() => {
+    filteredCells.current = generateFilteredCellIndices(genes.expression.data);
+  }, [genes.expression.data]);
+
+  useEffect(() => {
+    // load the expression data for an arbitrary gene so that we can determine
+    // which cells are filtered
+    const [gene] = Object.keys(genes.properties.data);
+    if (Object.is(gene, undefined)) return;
+
+    dispatch(loadGeneExpression(experimentId, [gene], 'CellSetsTool'));
+  }, [genes.properties.data])
 
   const {
     loading, error, properties, hierarchy, selected: allSelected, hidden,
@@ -97,9 +126,13 @@ const CellSetsTool = (props) => {
       );
     }
     const selected = allSelected[activeTab];
-    let operations = null;
-    const numSelected = union(selected, properties).size;
+    const selectedCells = union(selected, properties);
 
+    const numSelectedUnfiltered = new Set([...selectedCells]
+      .filter((cellIndex) => !filteredCells.current.has(cellIndex)));
+    const numSelected = numSelectedUnfiltered.size;
+
+    let operations = null;
     if (numSelected) {
       operations = (
         <Space>
@@ -127,13 +160,8 @@ const CellSetsTool = (props) => {
             helpTitle='Create new cell set from the complement of the selected sets'
           />
           <Text type='primary' id='selectedCellSets'>
-            {numSelected}
-            {' '}
-            cell
-            {numSelected === 1 ? '' : 's'}
-            {' '}
-            selected
-            {activeTab === 'metadataCategorical' && ' (including filtered cells)'}
+            {`${numSelected} cell${numSelected === 1 ? '' : 's'} selected`}
+            {activeTab === 'metadataCategorical'}
           </Text>
         </Space>
       );
@@ -232,3 +260,4 @@ CellSetsTool.propTypes = {
 };
 
 export default CellSetsTool;
+export { generateFilteredCellIndices };
