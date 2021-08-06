@@ -13,6 +13,20 @@ describe('validateUnit unit test', () => {
     expect(results).toEqual([]);
   });
 
+  it('Can take the 1 or an array of arguments', () => {
+    const input = 'Input';
+    const singleCheck = rules.MIN_1_CHAR;
+
+    const singleCheckResult = validateInputs(input, singleCheck);
+
+    expect(singleCheckResult.isValid).toEqual(true);
+
+    const multipleChecks = [rules.MIN_1_CHAR, rules.MIN_2_SEQUENTIAL_CHARS];
+    const multipleChecksResult = validateInputs(input, multipleChecks);
+
+    expect(multipleChecksResult.isValid).toEqual(true);
+  });
+
   it('Each check is checked', () => {
     const input = 'Input';
     const checks = [
@@ -106,6 +120,18 @@ describe('validateUnit unit test', () => {
 
     expect(isValid).toEqual(false);
     expect(invalidResult).toEqual([errorMessages.START_WITH_ALPHABET]);
+  });
+
+  it('Correctly invalidate invalid email', () => {
+    const invalidEmails = ['abc.def', 'abc.def@mail.c', 'abc.def@mail#archive.com', 'abc.def@mail', 'abc.def@mail..com'];
+
+    const checks = [rules.VALID_EMAIL];
+
+    invalidEmails.forEach((email) => {
+      const { isValid, results: invalidResult } = validateInputs(email, checks);
+      expect(isValid).toEqual(false);
+      expect(invalidResult).toEqual([errorMessages.VALID_EMAIL]);
+    });
   });
 
   it('Correctly invalidates should not be the same with existing values', () => {
