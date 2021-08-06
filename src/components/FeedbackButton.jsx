@@ -9,7 +9,7 @@ import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const { TextArea } = Input;
 
-const FeedbackButton = () => {
+const FeedbackButton = (props) => {
   const [visible, setVisible] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
 
@@ -33,7 +33,7 @@ const FeedbackButton = () => {
     try {
       user = await Auth.currentAuthenticatedUser();
     } catch (e) {
-      console.warn('User not authenticated')
+      console.warn('User not authenticated');
     }
 
     const userContext = user ? [
@@ -136,7 +136,6 @@ const FeedbackButton = () => {
     >
       <Button type='dashed' icon={<CommentOutlined />}>
         Feedback?
-        {' '}
         <DownOutlined />
       </Button>
     </Dropdown>

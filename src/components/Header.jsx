@@ -7,6 +7,7 @@ import { NextSeo } from 'next-seo';
 import { useSelector } from 'react-redux';
 import UserButton from './UserButton';
 import FeedbackButton from './FeedbackButton';
+import ReferralButton from './ReferralButton';
 import itemRender from '../utils/renderBreadcrumbLinks';
 
 const Header = (props) => {
@@ -70,6 +71,7 @@ const Header = (props) => {
           <Space size='large'>
             <Space>
               <FeedbackButton />
+              <ReferralButton />
               {extra}
             </Space>
             <UserButton />
