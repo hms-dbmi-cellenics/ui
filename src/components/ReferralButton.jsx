@@ -33,7 +33,7 @@ const ReferralButton = () => {
     const userContext = user ? [
       {
         type: 'mrkdwn',
-        text: '*User email:*',
+        text: '*Recommending user:*',
       },
       {
         type: 'mrkdwn',
@@ -65,8 +65,11 @@ const ReferralButton = () => {
           type: 'section',
           text: {
             type: 'plain_text',
-            text: `Email: ${email}`,
+            text: `Referred email: ${email}`,
           },
+        },
+        {
+          type: 'divider',
         },
         {
           type: 'section',
@@ -74,6 +77,9 @@ const ReferralButton = () => {
             type: 'plain_text',
             text: `Message:\n ${customMessage}`,
           },
+        },
+        {
+          type: 'divider',
         },
         {
           type: 'context',

@@ -91,8 +91,8 @@ const validationFns = {
 
   // Valid email - Fail if input is not a valid email
   [rules.VALID_EMAIL](checkName, input) {
-    // Valid email regex based on RFC2822 - https://regexr.com/2rhq7
-    const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+    // Valid email regex based on RC 5322 - https://emailregex.com/
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!input.match(emailRegex)) return errorMessages[checkName];
     return true;
   },
