@@ -59,8 +59,6 @@ const CellSetsTool = (props) => {
   const [activeTab, setActiveTab] = useState('cellSets');
 
   useEffect(() => {
-    if (filteredCells.current.size) return;
-
     filteredCells.current = generateFilteredCellIndices(genes.expression.data);
   }, [genes.expression.data]);
 
