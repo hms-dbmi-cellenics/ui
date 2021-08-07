@@ -152,7 +152,7 @@ const generateSpec = (config, { FDR }, plotData) => {
         name: 'color',
         type: 'ordinal',
         range: ['green', 'lightgray', '#f57b42'],
-        domain: ['above', 'mixed', 'below'],
+        domain: ['below', 'mixed', 'above'],
       },
       {
         name: 'keep',
