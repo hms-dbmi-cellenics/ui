@@ -714,7 +714,7 @@ const ProjectDetails = ({ width, height }) => {
         {
           allSamplesAnalysed()
           ? 'Data Processing settings (.txt)'
-          : <Tooltip title='One or more of your samples has not yet been analysed' placement='left'>
+          : <Tooltip title='One or more of your samples has yet to be analysed' placement='left'>
               Data Processing settings (.txt)
             </Tooltip>
         }
