@@ -708,7 +708,7 @@ const ProjectDetails = ({ width, height }) => {
           const config = _.omit(experimentSettings.processing, ['meta']);
           const filteredConfig = filterQCParameters(config, activeProject.samples, samples);
           const blob = exportQCParameters(filteredConfig);
-          saveAs(blob, `${activeProject.name}_settings.txt`);
+          saveAs(blob, `${activeProjectUuid.split('-')[0]}_settings.txt`);
         }
         }>
         {
