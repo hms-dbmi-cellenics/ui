@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
+import _ from 'lodash';
 import {
   Select, Space, Button, Typography, Alert,
   Row, Col, Card, Skeleton,
@@ -17,9 +18,11 @@ import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
 
-import _ from 'lodash';
+import { captureNewPageView } from '../../../../utils/tracking';
 
 import Header from '../../../../components/Header';
+import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
+import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
@@ -30,10 +33,6 @@ import DataIntegration from '../../../../components/data-processing/DataIntegrat
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
 
 import PlatformError from '../../../../components/PlatformError';
-
-import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
-
-import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 
 import getUserFriendlyQCStepName from '../../../../utils/getUserFriendlyQCStepName';
 
@@ -80,6 +79,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
   const [inputsList, setInputsList] = useState([]);
+  const [newPageView, setNewPageView] = useState(true);
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
@@ -134,12 +134,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [sampleKeys]);
 
   useEffect(() => {
-    const applicableFilters = Object.entries(disableStepsOnCondition).filter(([key, value]) => value.includes(steps[stepIdx].key));
+    const filters = Object.entries(disableStepsOnCondition).filter(([key, value]) => value.includes(steps[stepIdx].key));
 
     // Get the first value because return of Object.entries is [filterName,[steps]]
-    setApplicableFilters(applicableFilters.map((filter) => filter[0]));
+    setApplicableFilters(filters.map((filter) => filter[0]));
     setStepDisabledByCondition(
-      applicableFilters.length > 0
+      filters.length > 0
       && !processingConfig[steps[stepIdx].key]?.enabled,
     );
   }, [stepIdx]);
@@ -283,17 +283,24 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <SingleComponentMultipleDataContainer
           defaultActiveKey={sampleKeys}
           inputsList={inputsList}
-          baseComponentRenderer={(sample) => (
-            <DoubletScores
-              experimentId={experimentId}
-              filtering
-              key={key}
-              sampleId={sample.key}
-              sampleIds={sampleKeys}
-              onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
-            />
-          )}
+          baseComponentRenderer={(sample) => {
+            if (newPageView) {
+              captureNewPageView();
+              setNewPageView(false);
+            }
+
+            return (
+              <DoubletScores
+                experimentId={experimentId}
+                filtering
+                key={key}
+                sampleId={sample.key}
+                sampleIds={sampleKeys}
+                onConfigChange={() => onConfigChange(key)}
+                stepDisabled={!processingConfig[key].enabled}
+              />
+            );
+          }}
         />
       ),
     },
