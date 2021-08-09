@@ -40,7 +40,7 @@ import {
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
 import {
-  updateExperiment, saveExperiment,
+  updateExperiment,
 } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
@@ -513,14 +513,13 @@ const ProjectDetails = ({ width, height }) => {
       setTableColumns([]);
       return;
     }
+
     // Set table columns
     const metadataColumns = activeProject?.metadataKeys.map(
       (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
     ) || [];
 
-    const newColumns = tableColumns.length ? tableColumns : [...columns, ...metadataColumns];
-
-    setTableColumns(newColumns);
+    setTableColumns([...columns, ...metadataColumns]);
     // Set table data
 
     const newData = activeProject.samples.map((sampleUuid, idx) => {
@@ -615,6 +614,7 @@ const ProjectDetails = ({ width, height }) => {
     }
   };
 
+  // eslint-disable-next-line react/prop-types
   const SortableRow = sortableElement((props) => <tr {...props} className={`${props.className} drag-visible`} />);
   const SortableTable = sortableContainer((props) => <tbody {...props} />);
 
@@ -629,6 +629,7 @@ const ProjectDetails = ({ width, height }) => {
   );
 
   const DraggableRow = (props) => {
+    // eslint-disable-next-line react/prop-types
     const index = tableData.findIndex((x) => x.key === props['data-row-key']);
     return <SortableRow index={index} {...props} />;
   };
@@ -636,12 +637,30 @@ const ProjectDetails = ({ width, height }) => {
   const pipelineHasRun = (experimentId) => (
     experiments[experimentId]?.meta?.backendStatus?.pipeline?.status === pipelineStatus.SUCCEEDED
   );
+  const gem2sHasRun = (experimentId) => (
+    experiments[experimentId]?.meta?.backendStatus?.gem2s?.status === pipelineStatus.SUCCEEDED
+  );
 
   const DownloadDataMenu = (
     <Menu>
-      <Menu.Item disabled key='download-raw-seurat'>
-        <Tooltip title='Feature coming soon!' placement='left'>
-          {/* <Tooltip title='Samples have been merged' placement='left'> */}
+      <Menu.Item
+        key='download-raw-seurat'
+        disabled={activeProject?.experiments?.length
+          && !gem2sHasRun(activeProject?.experiments[0])}
+        onClick={() => {
+          const experimentId = activeProject?.experiments[0];
+          downloadData(experimentId, downloadTypes.RAW_SEURAT_OBJECT);
+        }}
+      >
+        <Tooltip
+          title={
+            activeProject?.experiments?.length
+            && gem2sHasRun(activeProject?.experiments[0])
+              ? 'Samples have been merged'
+              : 'Launch analysis to merge samples'
+          }
+          placement='left'
+        >
           Raw Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
@@ -649,7 +668,7 @@ const ProjectDetails = ({ width, height }) => {
         key='download-processed-seurat'
         disabled={
           activeProject?.experiments?.length > 0
-          && !pipelineHasRun(activeProject.experiments[0])
+          && !pipelineHasRun(activeProject?.experiments[0])
         }
         onClick={() => {
           // Change if we have more than one experiment per project
@@ -660,7 +679,7 @@ const ProjectDetails = ({ width, height }) => {
         <Tooltip
           title={
             activeProject?.experiments?.length > 0
-            && pipelineHasRun(activeProject.experiments[0])
+            && pipelineHasRun(activeProject?.experiments[0])
               ? 'With Data Processing filters and settings applied'
               : 'Launch analysis to process data'
           }
@@ -791,7 +810,7 @@ const ProjectDetails = ({ width, height }) => {
                   y: height - 250,
                 }}
                 bordered
-                columns={columns}
+                columns={tableColumns}
                 dataSource={tableData}
                 sticky
                 pagination={false}

@@ -19,7 +19,9 @@ jest.mock('localforage');
 const mockStore = configureMockStore([thunk]);
 
 const defaultStore = {
-  cellSets: {},
+  cellSets: {
+    hierarchy: [{ key: 'louvain' }],
+  },
   componentConfig: initialComponentConfigStates,
   embeddings: {},
   experimentSettings: {

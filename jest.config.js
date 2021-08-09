@@ -31,6 +31,8 @@ module.exports = {
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   modulePaths: [],
+  moduleDirectories: ['node_modules', 'src'],
+
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
     '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
