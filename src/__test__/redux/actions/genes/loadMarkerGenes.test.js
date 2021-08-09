@@ -83,7 +83,7 @@ describe('loadMarkerGenes action', () => {
 
     fetchCachedWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
-    await store.dispatch(loadMarkerGenes(experimentId, 10));
+    await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHeatmap'));
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(MARKER_GENES_LOADING);
