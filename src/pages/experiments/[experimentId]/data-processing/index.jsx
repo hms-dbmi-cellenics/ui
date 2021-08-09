@@ -35,7 +35,7 @@ import StatusIndicator from '../../../../components/data-processing/StatusIndica
 
 import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
 
-import getUserFriendlyQCStepName from '../../../../utils/getUserFriendlyQCStepName';
+import { qcSteps, getUserFriendlyQCStepName } from '../../../../utils/qcSteps';
 
 import {
   loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
@@ -325,6 +325,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       ),
     },
   ];
+
+  // check that the order and identities of the QC steps above match
+  // the canonical representation
+  console.assert(_.isEqual(qcSteps, steps.map((s) => s.key)))
 
   const changeStepId = (newStepIdx) => {
     setStepIdx(newStepIdx);

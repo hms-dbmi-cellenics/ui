@@ -4,7 +4,7 @@ import {
   Modal, Typography, Space, Button,
 } from 'antd';
 
-import getUserFriendlyQCStepName from '../utils/getUserFriendlyQCStepName';
+import { getUserFriendlyQCStepName } from '../utils/qcSteps';
 
 const { Text } = Typography;
 
