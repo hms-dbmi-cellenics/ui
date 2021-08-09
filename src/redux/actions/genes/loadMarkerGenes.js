@@ -4,7 +4,9 @@ import {
 
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
-const loadMarkerGenes = (experimentId, resolution, plotUuid, numGenes = 5) => async (dispatch, getState) => {
+const loadMarkerGenes = (
+  experimentId, resolution, plotUuid, numGenes = 5,
+) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
   if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
