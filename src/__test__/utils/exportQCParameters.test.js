@@ -2,6 +2,7 @@ import {
   exportQCParameters,
   filterQCParameters,
 } from '../../utils/exportQCParameters';
+import { qcSteps } from '../../utils/qcSteps';
 
 describe('Export of QC parameters', () => {
   const projectSamples = ['sample1'];
@@ -54,10 +55,10 @@ describe('Export of QC parameters', () => {
 
   // eslint-disable-next-line operator-linebreak
   const exportedConfig =
-`[2-cellSizeDistribution.WT1]
+`[${qcSteps.indexOf('cellSizeDistribution') + 1}-cellSizeDistribution.WT1]
 blah = true
 
-[6-dataIntegration.dataIntegration]
+[${qcSteps.indexOf('dataIntegration') + 1}-dataIntegration.dataIntegration]
 method = harmony
 blah = true
 `;
