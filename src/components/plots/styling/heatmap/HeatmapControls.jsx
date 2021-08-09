@@ -10,7 +10,8 @@ const { Panel } = Collapse;
 
 const HeatmapControls = (props) => {
   const {
-    onGeneEnter, plotUuid, selectedGenes, markerHeatmap, onUpdate, config,
+    onGeneEnter, plotUuid, selectedGenes,
+    markerHeatmap, onUpdate, config, onReset = () => onGeneEnter([]),
   } = props;
   return (
     <Collapse defaultActiveKey={['5']} accordion>
@@ -56,7 +57,7 @@ const HeatmapControls = (props) => {
           )}
           <Button
             type='primary'
-            onClick={() => onGeneEnter([])}
+            onClick={onReset}
           >
             Reset
           </Button>
@@ -91,10 +92,12 @@ HeatmapControls.propTypes = {
   onUpdate: PropTypes.func,
   markerHeatmap: PropTypes.bool,
   config: PropTypes.object,
+  onReset: PropTypes.func,
 };
 HeatmapControls.defaultProps = {
   markerHeatmap: false,
   onUpdate: () => {},
   config: {},
+  onReset: () => {},
 };
 export default HeatmapControls;

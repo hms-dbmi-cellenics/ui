@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row, Col, Space, Collapse, Skeleton, Empty, Typography,
 } from 'antd';
@@ -11,7 +11,7 @@ import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
 import Header from '../../../../../components/plots/Header';
 import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
-import { loadGeneExpression, loadMarkerGenes } from '../../../../../redux/actions/genes';
+import { loadGeneExpression, loadMarkerGenes, setGeneOrder } from '../../../../../redux/actions/genes';
 import { loadCellSets } from '../../../../../redux/actions/cellSets';
 import PlatformError from '../../../../../components/PlatformError';
 import Loader from '../../../../../components/Loader';
@@ -34,11 +34,14 @@ const HeatmapPlot = ({ experimentId }) => {
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
   const cellSets = useSelector((state) => state.cellSets);
-  const { hierarchy } = cellSets;
+  const { hierarchy, properties } = cellSets;
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
-  const { loading: loadingMarkerGenes, error: errorMarkerGenes } = useSelector((state) => state.genes.markers);
+  const [genesUnsorted, setGenesUnsorted] = useState();
+  const {
+    loading: loadingMarkerGenes,
+    error: errorMarkerGenes, order,
+  } = useSelector((state) => state.genes.markers);
   const [vegaSpec, setVegaSpec] = useState();
-  const displaySavedGenes = useRef(true);
   const louvainClustersResolution = useSelector(
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
@@ -58,18 +61,66 @@ const HeatmapPlot = ({ experimentId }) => {
     }
   }, [louvainClustersResolution, hierarchy, config?.numGenes]);
 
+  const sortGenes = (newGenes) => {
+    const clusters = hierarchy.find((cluster) => cluster.key === config.selectedCellSet).children;
+    const getCellIdsForCluster = (clusterId) => properties[clusterId].cellIds;
+
+    const getAverageExpressionForGene = (gene, currentCellIds) => {
+      const expressionValues = expressionData.data[gene].rawExpression.expression;
+      let totalValue = 0;
+      currentCellIds.forEach((cellId) => {
+        totalValue += expressionValues[cellId];
+      });
+      return totalValue / currentCellIds.size;
+    };
+
+    const getClusterForGene = (gene) => {
+      let maxAverageExpression = [0];
+
+      clusters.forEach((cluster, clusterIndx) => {
+        const currentCellIds = getCellIdsForCluster(cluster.key);
+        const currentAverageExpression = getAverageExpressionForGene(gene, currentCellIds);
+        if (currentAverageExpression > maxAverageExpression[0]) {
+          maxAverageExpression = [currentAverageExpression, clusterIndx];
+        }
+      });
+      return maxAverageExpression[1];
+    };
+
+    const newOrder = _.cloneDeep(order);
+
+    newGenes.forEach((gene) => {
+      const clusterIndx = getClusterForGene(gene);
+      newOrder.forEach((oldGene) => {
+        if (!_.includes(newOrder, gene)) {
+          const currentClusterIndx = getClusterForGene(oldGene);
+          if (currentClusterIndx === clusterIndx) {
+            const geneIndex = newOrder.indexOf(oldGene);
+            newOrder.splice(geneIndex, 0, gene);
+          }
+        }
+      });
+    });
+    dispatch(setGeneOrder(newOrder));
+    setGenesUnsorted([]);
+  };
+
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
       return;
     }
 
     if (!_.isEqual(selectedGenes, config.selectedGenes) && !_.isEmpty(selectedGenes)) {
+      if (genesUnsorted) {
+        const newGenes = _.difference(selectedGenes, order);
+        sortGenes(newGenes);
+      }
       updatePlotWithChanges({ selectedGenes });
     }
   }, [selectedGenes]);
 
   useEffect(() => {
-    if (!config
+    if (!config?.selectedGenes.length
       || cellSets.loading
       || _.isEmpty(expressionData)
       || _.isEmpty(selectedGenes)
@@ -79,7 +130,7 @@ const HeatmapPlot = ({ experimentId }) => {
     }
 
     const spec = generateSpec(config, 'Cluster ID', plotUuid);
-    const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
+    const data = populateHeatmapData(cellSets, config, expressionData, order);
 
     const newVegaSpec = {
       ...spec,
@@ -90,7 +141,7 @@ const HeatmapPlot = ({ experimentId }) => {
       })),
     };
     setVegaSpec(newVegaSpec);
-  }, [expressionData, config, cellSets]);
+  }, [expressionData, config, cellSets, order]);
 
   const displayLabels = () => {
     // if there are more than 53 genes - do not display the labels axe
@@ -113,10 +164,10 @@ const HeatmapPlot = ({ experimentId }) => {
   };
 
   const onGeneEnter = (genes) => {
-    // updating the selected genes in the config too so they are saved in dynamodb
-
+    setGenesUnsorted(true);
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
+
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading || loadingMarkerGenes) {
       return (<Loader experimentId={experimentId} />);
@@ -136,7 +187,11 @@ const HeatmapPlot = ({ experimentId }) => {
         <PlatformError
           description='Could not load marker genes.'
           error={errorMarkerGenes}
-          onClick={() => dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes))}
+          onClick={
+            () => dispatch(
+              loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes),
+            )
+          }
         />
       );
     }
@@ -151,6 +206,10 @@ const HeatmapPlot = ({ experimentId }) => {
     if (vegaSpec) {
       return <Vega spec={vegaSpec} renderer='canvas' />;
     }
+  };
+  const onReset = () => {
+    onGeneEnter([]);
+    dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes));
   };
 
   const plotStylingControlsConfig = [
@@ -223,6 +282,7 @@ const HeatmapPlot = ({ experimentId }) => {
               plotUuid={plotUuid}
               markerHeatmap
               onGeneEnter={onGeneEnter}
+              onReset={onReset}
             />
             <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} defaultActiveKey={['5']} />
           </Space>

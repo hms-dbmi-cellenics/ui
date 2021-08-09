@@ -185,7 +185,6 @@ const populateHeatmapData = (
     if (!groupByRootNodes.length) {
       return [];
     }
-    console.log('GROUP BY ROOT NODES IS ', groupByRootNodes);
     const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
 
     if (downsampling) {
@@ -262,7 +261,6 @@ const populateHeatmapData = (
   data.trackColorData = trackData[0].trackColorData;
   data.trackGroupData = trackData[0].groupData;
 
-  console.log('DATA IS ', data);
   return data;
 };
 export default populateHeatmapData;
