@@ -28,7 +28,7 @@ const HeatmapControls = (props) => {
           />
           {markerHeatmap && (
             <>
-              <p>Select the number of top genes to show:</p>
+              <p>Select the number of top genes per cluster to show:</p>
               <Radio.Group
                 onChange={
                   (e) => onUpdate({ numGenes: e.target.value })
@@ -42,7 +42,7 @@ const HeatmapControls = (props) => {
                 <Radio value={25}>25</Radio>
               </Radio.Group>
               {' '}
-              <p>Select the gene label options:</p>
+              <p>Gene labels:</p>
               <Radio.Group
                 onChange={
                   (e) => onUpdate({ showGeneLabels: e.target.value })
@@ -62,10 +62,21 @@ const HeatmapControls = (props) => {
           </Button>
         </Space>
       </Panel>
-      <Panel header='Metadata tracks' key='11'>
+      {markerHeatmap && (
+        <Panel header='Cluster guardlines' key='clusterGuardlines'>
+          <Radio.Group
+            value={config.guardLines}
+            onChange={(e) => onUpdate({ guardLines: e.target.value })}
+          >
+            <Radio value>Show</Radio>
+            <Radio value={false}>Hide</Radio>
+          </Radio.Group>
+        </Panel>
+      )}
+      <Panel header='Metadata tracks' key='metadataTracks'>
         <HeatmapMetadataTracksSettings componentType={plotUuid} />
       </Panel>
-      <Panel header='Group by' key='12'>
+      <Panel header='Group by' key='groupBy'>
         <HeatmapGroupBySettings componentType={plotUuid} />
       </Panel>
     </Collapse>

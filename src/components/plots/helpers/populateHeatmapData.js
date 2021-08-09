@@ -16,6 +16,7 @@ const populateHeatmapData = (
 
   // return a set with all the cells found in group node
   // e.g: node = {key: louvain, children: []}, {...}
+
   const getCellsSetInGroup = (node) => {
     let cellIdsInAnyGroupBy = new Set();
 
@@ -28,6 +29,17 @@ const populateHeatmapData = (
   };
 
   const trackOrder = Array.from(selectedTracks).reverse();
+
+  const getCellClusterFromCellId = (clusters, cellId) => {
+    let cluster;
+    clusters.forEach(({ key }) => {
+      if (properties[key].cellIds.has(cellId)) {
+        cluster = key;
+      }
+    });
+    return cluster;
+  };
+
   const generateTrackData = (cells, track) => {
     // Find the `groupBy` root node.
     const rootNodes = hierarchy.filter((clusters) => clusters.key === track);
@@ -41,8 +53,19 @@ const populateHeatmapData = (
 
     const trackColorData = [];
     const groupData = [];
-
     // Iterate over each child node.
+
+    const clusterSeparationLines = [];
+    if (heatmapSettings.guardLines) {
+      let currentCluster = getCellClusterFromCellId(childrenCellSets, cells[0]);
+      cells.forEach((cell) => {
+        const newCluster = getCellClusterFromCellId(childrenCellSets, cell);
+        if (currentCluster !== newCluster) {
+          currentCluster = newCluster;
+          clusterSeparationLines.push(cell);
+        }
+      });
+    }
     childrenCellSets.forEach(({ key }) => {
       const { cellIds, name, color } = properties[key];
 
@@ -65,8 +88,7 @@ const populateHeatmapData = (
         color,
       }));
     });
-
-    return { trackColorData, groupData };
+    return { trackColorData, groupData, clusterSeparationLines };
   };
 
   const downsampleWithProportions = (buckets, cellIdsLength) => {
@@ -163,7 +185,7 @@ const populateHeatmapData = (
     if (!groupByRootNodes.length) {
       return [];
     }
-
+    console.log('GROUP BY ROOT NODES IS ', groupByRootNodes);
     const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
 
     if (downsampling) {
@@ -236,9 +258,11 @@ const populateHeatmapData = (
     rootNode,
   ));
 
-  data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
-  data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
+  data.clusterSeparationLines = trackData[0].clusterSeparationLines;
+  data.trackColorData = trackData[0].trackColorData;
+  data.trackGroupData = trackData[0].groupData;
 
+  console.log('DATA IS ', data);
   return data;
 };
 export default populateHeatmapData;

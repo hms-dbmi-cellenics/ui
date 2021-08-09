@@ -1,4 +1,4 @@
-const generateSpec = (config, groupName) => {
+const generateSpec = (config, groupName, plotUuid = false) => {
   let legend = [
     {
       fill: 'color',
@@ -68,10 +68,29 @@ const generateSpec = (config, groupName) => {
         },
       }];
   }
+
   if (!config.legend.enabled) {
     legend = null;
   }
 
+  // drawing the guard lines between every cellSet
+  const extraMarks = plotUuid === 'markerHeatmapPlotMain'
+    ? {
+      type: 'rule',
+      from: { data: 'clusterSeparationLines' },
+      encode: {
+        enter: {
+          stroke: { value: 'white' },
+        },
+        update: {
+          x: { scale: 'x', field: 'data' },
+          y: 0,
+          y2: { field: { group: 'height' } },
+          strokeWidth: { value: 1 },
+          strokeOpacity: { value: 1 },
+        },
+      },
+    } : {};
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
@@ -105,18 +124,24 @@ const generateSpec = (config, groupName) => {
         name: 'trackGroupData',
         values: [],
       },
-
+      {
+        name: 'clusterSeparationLines',
+        values: [],
+        sort: 'ascending',
+      },
     ],
 
     scales: [
       {
         name: 'x',
         type: 'band',
+
         domain: {
           data: 'cellOrder',
           field: 'data',
         },
         range: 'width',
+
       },
       {
         name: 'y',
@@ -285,6 +310,7 @@ const generateSpec = (config, groupName) => {
           },
         },
       },
+      extraMarks,
     ],
     title:
     {

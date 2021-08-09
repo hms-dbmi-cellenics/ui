@@ -36,6 +36,7 @@ const HeatmapPlot = ({ experimentId }) => {
   const cellSets = useSelector((state) => state.cellSets);
   const { hierarchy } = cellSets;
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
+  const { loading: loadingMarkerGenes, error: errorMarkerGenes } = useSelector((state) => state.genes.markers);
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
   const louvainClustersResolution = useSelector(
@@ -52,21 +53,10 @@ const HeatmapPlot = ({ experimentId }) => {
   }, []);
 
   useEffect(() => {
-    if (louvainClustersResolution) {
+    if (louvainClustersResolution && config) {
       dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes));
     }
-  }, [louvainClustersResolution, hierarchy]);
-
-  useEffect(() => {
-    if (!config || _.isEmpty(expressionData)) {
-      return;
-    }
-
-    if (!_.isEqual(selectedGenes, config.selectedGenes) && displaySavedGenes.current) {
-      onGeneEnter(config.selectedGenes);
-      displaySavedGenes.current = false;
-    }
-  }, [config, expressionData]);
+  }, [louvainClustersResolution, hierarchy, config?.numGenes]);
 
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
@@ -88,7 +78,7 @@ const HeatmapPlot = ({ experimentId }) => {
       return;
     }
 
-    const spec = generateSpec(config, 'Cluster ID');
+    const spec = generateSpec(config, 'Cluster ID', plotUuid);
     const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
 
     const newVegaSpec = {
@@ -128,7 +118,7 @@ const HeatmapPlot = ({ experimentId }) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
   const renderPlot = () => {
-    if (!config || loading.length > 0 || cellSets.loading) {
+    if (!config || loading.length > 0 || cellSets.loading || loadingMarkerGenes) {
       return (<Loader experimentId={experimentId} />);
     }
 
@@ -141,7 +131,15 @@ const HeatmapPlot = ({ experimentId }) => {
         />
       );
     }
-
+    if (errorMarkerGenes) {
+      return (
+        <PlatformError
+          description='Could not load marker genes.'
+          error={errorMarkerGenes}
+          onClick={() => dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes))}
+        />
+      );
+    }
     if (selectedGenes.length === 0) {
       return (
         <Empty description={(
