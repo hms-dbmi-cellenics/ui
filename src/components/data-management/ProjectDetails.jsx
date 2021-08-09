@@ -476,7 +476,7 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   const checkLaunchAnalysis = () => {
-    if (activeProject?.samples.length === 0) return false;
+    if (activeProject?.samples?.length === 0) return false;
 
     const allSampleFilesUploaded = (sample) => {
       // Check if all files for a given tech has been uploaded
@@ -499,7 +499,7 @@ const ProjectDetails = ({ width, height }) => {
       return Object.values(sample.metadata).every((value) => value && value.length > 0);
     };
 
-    const canLaunch = activeProject?.samples.every((sampleUuid) => {
+    const canLaunch = activeProject?.samples?.every((sampleUuid) => {
       const checkedSample = samples[sampleUuid];
 
       return allSampleFilesUploaded(checkedSample)
@@ -608,8 +608,8 @@ const ProjectDetails = ({ width, height }) => {
     const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
 
     return steps.length > 0 &&
-      activeProject?.samples.length > 0 &&
-      activeProject?.samples.every((s) => steps[0].hasOwnProperty(s))
+      activeProject?.samples?.length > 0 &&
+      activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s))
   }
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
