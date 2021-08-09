@@ -17,6 +17,7 @@ import { loadGeneExpression, loadPaginatedGeneProperties } from 'redux/actions/g
 import Header from 'components/plots/Header';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
 import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
+import { captureNewPageView } from 'utils/tracking';
 
 const { Panel } = Collapse;
 
@@ -38,6 +39,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
+    captureNewPageView();
   }, []);
 
   const geneExpression = useSelector((state) => state.genes.expression);

@@ -1,5 +1,5 @@
 /* eslint-disable import/no-duplicates */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Row, Col, Space, Button, List, Card, Tooltip, Dropdown,
@@ -7,6 +7,7 @@ import {
 import { useSelector } from 'react-redux';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import { captureNewPageView } from '../../../../utils/tracking';
 import SearchMenu from '../../../../components/SearchMenu';
 import heatmap from '../../../../../public/static/media/heatmap.png';
 import embeddingContinuous from '../../../../../public/static/media/embeddingContinuous.png';
@@ -130,6 +131,14 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
 
   const [openedPlots, setOpenedPlots] = useState(plots);
   const [addMenuVisible, setAddMenuVisible] = useState(false);
+  const [newPageView, setNewPageView] = useState(true);
+
+  useEffect(() => {
+    if (newPageView) {
+      captureNewPageView();
+      setNewPageView(false);
+    }
+  }, []);
 
   const openPlot = (key) => {
     if (openedPlots.find((obj) => obj.key === key)) {

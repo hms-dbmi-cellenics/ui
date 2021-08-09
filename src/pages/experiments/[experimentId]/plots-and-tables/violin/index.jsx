@@ -22,6 +22,7 @@ import {
 import { loadCellSets } from 'redux/actions/cellSets';
 import Header from 'components/plots/Header';
 import ViolinPlot from 'components/plots/ViolinPlot';
+import { captureNewPageView } from 'utils/tracking';
 
 const { Panel } = Collapse;
 
@@ -44,6 +45,7 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
+    captureNewPageView();
   }, []);
 
   // updateField is a subset of what default config has and contains only the things we want change

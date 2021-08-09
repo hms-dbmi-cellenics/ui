@@ -17,6 +17,7 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
 import HeatmapControls from 'components/plots/styling/heatmap/HeatmapControls';
+import { captureNewPageView } from 'utils/tracking';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -43,6 +44,7 @@ const HeatmapPlot = ({ experimentId }) => {
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
+    captureNewPageView();
   }, []);
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {

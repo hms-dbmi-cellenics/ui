@@ -6,6 +6,7 @@ import {
   Collapse, Row, Col, Space, Skeleton, Divider,
 } from 'antd';
 
+import { captureNewPageView } from 'utils/tracking';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -120,6 +121,7 @@ const Classifier = (props) => {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
+    captureNewPageView();
   }, []);
 
   useEffect(() => {
