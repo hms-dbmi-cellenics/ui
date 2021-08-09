@@ -14,11 +14,11 @@ const trackingInfo = {
     siteId: 1,
   },
   [Env.STAGING]: {
-    enabled: false,
+    enabled: true,
     siteId: 2,
   },
   [Env.DEVELOPMENT]: {
-    enabled: false,
+    enabled: true,
     siteId: 3,
   },
 };
@@ -38,6 +38,7 @@ const initTracking = async (environment) => {
   const user = await Auth.currentAuthenticatedUser();
   // first set the user ID and then initialize the tracking so it correctly tracks first page.
   push(['setUserId', user.attributes.email]);
+  push(['HeatmapSessionRecording::disableAutoDetectNewPageView']);
   init({ url: MATOMO_URL, siteId });
 };
 
@@ -68,6 +69,15 @@ const trackAnalysisLaunched = () => {
   push(['trackEvent', 'data-management', 'launch-analysis']);
 };
 
+const captureNewPageView = () => {
+  const { enabled } = getTrackingDetails(env);
+  if (enabled === false) {
+    return;
+  }
+
+  push(['HeatmapSessionRecording::setNewPageView()']);
+};
+
 export {
-  initTracking, resetTrackingId, trackAnalysisLaunched,
+  initTracking, resetTrackingId, trackAnalysisLaunched, captureNewPageView,
 };

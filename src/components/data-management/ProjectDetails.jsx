@@ -25,7 +25,7 @@ import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
-import { trackAnalysisLaunched } from '../../utils/tracking';
+import { trackAnalysisLaunched, captureNewPageView } from '../../utils/tracking';
 import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
@@ -63,6 +63,7 @@ const ProjectDetails = ({ width, height }) => {
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
   const samplesTableElement = useRef(null);
+  const [newPageView, setNewPageView] = useState(true);
 
   const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
@@ -279,16 +280,23 @@ const ProjectDetails = ({ width, height }) => {
     </div>
   );
 
-  const renderSampleCells = (text, record, idx) => (
-    <Text strong key={`sample-cell-${idx}`}>
-      <EditableField
-        deleteEnabled
-        value={text}
-        onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
-        onDelete={() => dispatch(deleteSamples([record.uuid]))}
-      />
-    </Text>
-  );
+  const renderSampleCells = (text, record, idx) => {
+    if (newPageView) {
+      captureNewPageView(newPageView);
+      setNewPageView(false);
+    }
+
+    return (
+      <Text strong key={`sample-cell-${idx}`}>
+        <EditableField
+          deleteEnabled
+          value={text}
+          onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
+          onDelete={() => dispatch(deleteSamples([record.uuid]))}
+        />
+      </Text>
+    );
+  };
 
   const createMetadataColumn = () => {
     const key = temporaryMetadataKey(tableColumns);
