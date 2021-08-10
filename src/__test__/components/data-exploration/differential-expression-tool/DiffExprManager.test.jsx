@@ -17,6 +17,11 @@ jest.mock('../../../../utils/environment', () => ({
   isBrowser: () => false,
 }));
 
+jest.mock('../../../../utils/tracking', () => ({
+  __esModule: true,
+  captureNewPageView: () => jest.fn(),
+}));
+
 const mockStore = configureMockStore([thunk]);
 
 const emptyState = {

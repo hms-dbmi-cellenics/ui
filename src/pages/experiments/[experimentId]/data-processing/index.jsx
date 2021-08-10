@@ -30,7 +30,6 @@ import DataIntegration from '../../../../components/data-processing/DataIntegrat
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
 
 import PlatformError from '../../../../components/PlatformError';
-import { captureNewPageView } from '../../../../utils/tracking';
 
 import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
 
@@ -81,7 +80,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
   const [inputsList, setInputsList] = useState([]);
-  const [newPageView, setNewPageView] = useEffect(true);
 
   const disableStepsOnCondition = {
     prefilter: ['classifier'],
@@ -279,7 +277,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         {' '}
         <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' target='_blank'>scDblFinder thresholding</a>
         .
-                   </span>,
+      </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -593,11 +591,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           onClick={() => { dispatch(loadSamples(experimentId)); }}
         />
       );
-    }
-
-    if (newPageView) {
-      captureNewPageView();
-      setNewPageView(false);
     }
 
     return (
