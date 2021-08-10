@@ -36,7 +36,6 @@ const HeatmapPlot = ({ experimentId }) => {
   const cellSets = useSelector((state) => state.cellSets);
   const { hierarchy, properties } = cellSets;
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
-  const [genesUnsorted, setGenesUnsorted] = useState();
   const {
     loading: loadingMarkerGenes,
     error: errorMarkerGenes, order,
@@ -101,8 +100,8 @@ const HeatmapPlot = ({ experimentId }) => {
         }
       });
     });
+    updatePlotWithChanges({ selectedGenes: newOrder });
     dispatch(setGeneOrder(newOrder));
-    setGenesUnsorted([]);
   };
 
   useEffect(() => {
@@ -111,17 +110,23 @@ const HeatmapPlot = ({ experimentId }) => {
     }
 
     if (!_.isEqual(selectedGenes, config.selectedGenes) && !_.isEmpty(selectedGenes)) {
-      if (genesUnsorted) {
+      if (selectedGenes.length !== order.length) {
         const newGenes = _.difference(selectedGenes, order);
-        sortGenes(newGenes);
+        if (!newGenes.length) {
+          // gene was removed instead of added - no need to sort
+          const removedGenes = _.difference(order, selectedGenes);
+          let newOrder = _.cloneDeep(order);
+          newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
+          dispatch(setGeneOrder(newOrder));
+        } else {
+          sortGenes(newGenes);
+        }
       }
-      updatePlotWithChanges({ selectedGenes });
     }
   }, [selectedGenes]);
 
   useEffect(() => {
-    if (!config?.selectedGenes.length
-      || cellSets.loading
+    if (cellSets.loading
       || _.isEmpty(expressionData)
       || _.isEmpty(selectedGenes)
       || !loading
@@ -152,7 +157,7 @@ const HeatmapPlot = ({ experimentId }) => {
         scale: 'y',
       },
     ];
-    if (selectedGenes.length <= 53) {
+    if (config.showGeneLabels) {
       return labels;
     }
     return [];
@@ -164,7 +169,6 @@ const HeatmapPlot = ({ experimentId }) => {
   };
 
   const onGeneEnter = (genes) => {
-    setGenesUnsorted(true);
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
@@ -282,6 +286,7 @@ const HeatmapPlot = ({ experimentId }) => {
               plotUuid={plotUuid}
               markerHeatmap
               onGeneEnter={onGeneEnter}
+              cellSets={cellSets}
               onReset={onReset}
             />
             <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} defaultActiveKey={['5']} />

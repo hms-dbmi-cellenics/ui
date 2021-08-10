@@ -14,7 +14,6 @@ const loadMarkerGenes = (
   const { backendStatus, processing } = getState().experimentSettings;
 
   const { method } = processing.configureEmbedding.clusteringSettings;
-
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
@@ -30,7 +29,6 @@ const loadMarkerGenes = (
 
   try {
     const data = await fetchCachedWork(experimentId, body, backendStatus.status);
-
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({

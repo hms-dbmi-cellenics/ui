@@ -90,7 +90,8 @@ const generateSpec = (config, groupName, plotUuid = false) => {
           strokeOpacity: { value: 1 },
         },
       },
-    } : {};
+    } : { type: 'rule' };
+
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,

@@ -1,8 +1,10 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react';
 import {
   Collapse, Select, Space, Button, Radio,
 } from 'antd';
 import PropTypes from 'prop-types';
+import getSelectOptions from 'utils/plots/getSelectOptions';
 import HeatmapGroupBySettings from '../../../data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTracksSettings from '../../../data-exploration/heatmap/HeatmapMetadataTrackSettings';
 
@@ -10,9 +12,30 @@ const { Panel } = Collapse;
 
 const HeatmapControls = (props) => {
   const {
-    onGeneEnter, plotUuid, selectedGenes,
+    onGeneEnter, plotUuid, selectedGenes, cellSets,
     markerHeatmap, onUpdate, config, onReset = () => onGeneEnter([]),
   } = props;
+  const firstLetterUppercase = (word) => word?.charAt(0).toUpperCase() + word?.slice(1);
+
+  const getCellOptions = (type) => {
+    const { hierarchy, properties } = cellSets;
+    const filteredOptions = hierarchy.filter((element) => (
+      properties[element.key].type === type
+    ));
+    if (!filteredOptions.length) {
+      return [];
+    }
+    return filteredOptions;
+  };
+  const changeClusters = (val) => {
+    const newValue = val.key.toLowerCase();
+    onUpdate({ selectedCellSet: newValue });
+  };
+  let clustersForSelect = {};
+  if (markerHeatmap) {
+    clustersForSelect = getSelectOptions(getCellOptions('cellSets'));
+  }
+
   return (
     <Collapse defaultActiveKey={['5']} accordion>
       <Panel header='Gene selection' key='5'>
@@ -29,6 +52,7 @@ const HeatmapControls = (props) => {
           />
           {markerHeatmap && (
             <>
+
               <p>Select the number of top genes per cluster to show:</p>
               <Radio.Group
                 onChange={
@@ -64,15 +88,29 @@ const HeatmapControls = (props) => {
         </Space>
       </Panel>
       {markerHeatmap && (
-        <Panel header='Cluster guardlines' key='clusterGuardlines'>
-          <Radio.Group
-            value={config.guardLines}
-            onChange={(e) => onUpdate({ guardLines: e.target.value })}
-          >
-            <Radio value>Show</Radio>
-            <Radio value={false}>Hide</Radio>
-          </Radio.Group>
-        </Panel>
+        <>
+          <Panel header='Select Data' key='selectData'>
+            <Select
+              value={{
+                key: firstLetterUppercase(config.selectedCellSet),
+              }}
+              onChange={changeClusters}
+              labelInValue
+              style={{ width: '100%' }}
+              placeholder='Select cell set...'
+              options={clustersForSelect}
+            />
+          </Panel>
+          <Panel header='Cluster guardlines' key='clusterGuardlines'>
+            <Radio.Group
+              value={config.guardLines}
+              onChange={(e) => onUpdate({ guardLines: e.target.value })}
+            >
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Radio.Group>
+          </Panel>
+        </>
       )}
       <Panel header='Metadata tracks' key='metadataTracks'>
         <HeatmapMetadataTracksSettings componentType={plotUuid} />
@@ -92,6 +130,7 @@ HeatmapControls.propTypes = {
   onUpdate: PropTypes.func,
   markerHeatmap: PropTypes.bool,
   config: PropTypes.object,
+  cellSets: PropTypes.object,
   onReset: PropTypes.func,
 };
 HeatmapControls.defaultProps = {
@@ -99,5 +138,6 @@ HeatmapControls.defaultProps = {
   onUpdate: () => {},
   config: {},
   onReset: () => {},
+  cellSets: {},
 };
 export default HeatmapControls;

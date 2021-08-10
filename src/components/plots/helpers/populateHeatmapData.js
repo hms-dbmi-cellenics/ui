@@ -143,9 +143,11 @@ const populateHeatmapData = (
     // we want to avoid displaying elements which are not in a louvain cluster
     // so initially consider as enabled only cells in louvain clusters
     // See: https://biomage.atlassian.net/browse/BIOMAGE-809
-    const louvainClusters = hierarchy.find((clusters) => clusters.key === 'louvain');
-
-    const cellIsInLouvainCluster = getCellsSetInGroup(louvainClusters);
+    const selectedCellSet = heatmapSettings?.selectedCellSet ? heatmapSettings.selectedCellSet : 'louvain';
+    const selectedClusters = hierarchy.find(
+      (clusters) => clusters.key === selectedCellSet,
+    );
+    const cellIsInLouvainCluster = getCellsSetInGroup(selectedClusters);
 
     // Remove cells from groups marked as hidden by the user in the UI.
     const hiddenCellIds = union(Array.from(hidden), properties);
