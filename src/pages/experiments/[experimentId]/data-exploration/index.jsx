@@ -9,7 +9,6 @@ import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import Header from '../../../../components/Header';
 
-import { captureNewPageView } from '../../../../utils/tracking';
 import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
 import DiffExprManager from '../../../../components/data-exploration/differential-expression-tool/DiffExprManager';
@@ -42,18 +41,10 @@ const ExplorationViewPage = ({
   const { windows, panel } = layout;
   const [selectedTab, setSelectedTab] = useState(panel);
   const [addMenuVisible, setAddMenuVisible] = useState(false);
-  const [newPageView, setNewPageView] = useState(true);
 
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
-
-  useEffect(() => {
-    if (newPageView) {
-      captureNewPageView();
-      setNewPageView(false);
-    }
-  }, []);
 
   const TILE_MAP = {
     'UMAP Embedding': {

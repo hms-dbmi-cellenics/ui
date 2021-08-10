@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import { captureNewPageView } from '../../../utils/tracking';
 import FilterGenes from './FilterGenes';
 import { changeGeneSelection } from '../../../redux/actions/genes';
 import GeneSelectionStatus from '../../../redux/actions/genes/geneSelectionStatus';
@@ -42,6 +43,7 @@ const GeneTable = (props) => {
 
   useEffect(() => {
     onUpdate(tableState, geneTableUpdateReason.mounted);
+    captureNewPageView();
   }, []);
 
   useLazyEffect(() => {

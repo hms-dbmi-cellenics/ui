@@ -17,7 +17,7 @@ import { loadGeneExpression, loadPaginatedGeneProperties } from 'redux/actions/g
 import Header from 'components/plots/Header';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
 import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
-import { captureNewPageView } from 'utils/tracking';
+import { captureNewPageView } from '../../../../../utils/tracking';
 
 const { Panel } = Collapse;
 

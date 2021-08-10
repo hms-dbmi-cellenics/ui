@@ -121,7 +121,6 @@ const Classifier = (props) => {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
-    captureNewPageView();
   }, []);
 
   useEffect(() => {

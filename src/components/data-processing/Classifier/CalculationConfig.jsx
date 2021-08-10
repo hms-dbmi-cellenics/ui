@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Form,
@@ -7,12 +7,17 @@ import {
   Space,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { captureNewPageView } from '../../../utils/tracking';
 
 const ClassifierConfig = (props) => {
   const {
     // eslint-disable-next-line no-unused-vars
     config, disabled, updateSettings,
   } = props;
+
+  useEffect(() => {
+    captureNewPageView();
+  }, []);
 
   return (
     <>
