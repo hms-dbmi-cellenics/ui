@@ -45,10 +45,7 @@ const ContentWrapper = (props) => {
   const { experimentId, experimentData, children } = props;
   const router = useRouter();
   const route = router?.route || '';
-  const { heatmapSnapshot } = router.query;
-
-  console.log('== HEATMAP');
-  console.log(heatmapSnapshot);
+  const { heatmapSnapshot } = router?.query || {};
 
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
