@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Collapse, Select, Space, Button, Radio,
+  Collapse, Select, Space, Button, Radio, InputNumber,
 } from 'antd';
 import PropTypes from 'prop-types';
 import getSelectOptions from 'utils/plots/getSelectOptions';
@@ -35,6 +35,16 @@ const HeatmapControls = (props) => {
   if (markerHeatmap) {
     clustersForSelect = getSelectOptions(getCellOptions('cellSets'));
   }
+  const [numGenes, setNumGenes] = useState(config.numGenes);
+  const [genesLoaded, setGenesLoaded] = useState(true);
+
+  useEffect(() => {
+    if (numGenes === config.numGenes) {
+      setGenesLoaded(true);
+    } else if (numGenes !== config.numGenes && genesLoaded) {
+      setGenesLoaded(false);
+    }
+  }, [config.numGenes, numGenes]);
 
   return (
     <Collapse defaultActiveKey={['5']} accordion>
@@ -54,19 +64,23 @@ const HeatmapControls = (props) => {
             <>
 
               <p>Select the number of top genes per cluster to show:</p>
-              <Radio.Group
-                onChange={
-                  (e) => onUpdate({ numGenes: e.target.value })
-                }
-                value={config.numGenes}
-              >
-                <Radio value={5}>5</Radio>
-                <Radio value={10}>10</Radio>
-                <Radio value={15}>15</Radio>
-                <Radio value={20}>20</Radio>
-                <Radio value={25}>25</Radio>
-              </Radio.Group>
-              {' '}
+
+              <Space direction='horizontal'>
+                <InputNumber
+                  value={numGenes}
+                  min={1}
+                  max={25}
+                  step={1}
+                  onChange={(e) => setNumGenes(e)}
+                />
+                <Button
+                  onClick={() => onUpdate({ numGenes })}
+                  disabled={genesLoaded}
+                >
+                  Run
+                </Button>
+                {' '}
+              </Space>
               <p>Gene labels:</p>
               <Radio.Group
                 onChange={
