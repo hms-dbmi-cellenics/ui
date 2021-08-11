@@ -14,6 +14,7 @@ const embeddingCategoricalInitialConfig = {
   spec: '1.0.0',
   legend: {
     ...legendBaseState,
+    enabled: false,
     position: 'top',
   },
   dimensions: {
@@ -237,6 +238,7 @@ const embeddingPreviewByCellSetsInitialConfig = {
   spec: '1.0.0',
   legend: {
     ...legendBaseState,
+    enabled: false,
     position: 'top',
   },
   dimensions: {
