@@ -36,7 +36,7 @@ Object {
       },
       "legend": Object {
         "colour": "#000000",
-        "enabled": true,
+        "enabled": false,
         "position": "top",
       },
       "marker": Object {
