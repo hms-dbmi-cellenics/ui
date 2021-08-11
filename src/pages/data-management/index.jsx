@@ -77,8 +77,9 @@ const DataManagementPage = ({ route }) => {
     // This has to be changed when we have more than one experiment
     const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
 
+    dispatch(loadProcessingSettings(activeExperimentId));
+
     if (!experimentsAreLoaded) {
-      dispatch(loadProcessingSettings(activeExperimentId));
       dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
     }
 
