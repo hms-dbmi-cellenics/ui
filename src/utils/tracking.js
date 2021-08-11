@@ -12,14 +12,17 @@ const trackingInfo = {
   [Env.PRODUCTION]: {
     enabled: true,
     siteId: 1,
+    containerID: 'lS8ZRMXJ',
   },
   [Env.STAGING]: {
     enabled: false,
     siteId: 2,
+    containerID: 'FX7UBNS6',
   },
   [Env.DEVELOPMENT]: {
-    enabled: false,
+    enabled: true,
     siteId: 3,
+    containerID: 'lS8ZRMXJ',
   },
 };
 
@@ -30,7 +33,7 @@ const getTrackingDetails = (e) => trackingInfo[e];
 const initTracking = async (environment) => {
   // set the environment for the tracking sytem
   env = environment;
-  const { siteId, enabled } = getTrackingDetails(env);
+  const { siteId, enabled, containerID } = getTrackingDetails(env);
   if (enabled === false) {
     return;
   }
@@ -38,7 +41,8 @@ const initTracking = async (environment) => {
   const user = await Auth.currentAuthenticatedUser();
   // first set the user ID and then initialize the tracking so it correctly tracks first page.
   push(['setUserId', user.attributes.email]);
-  init({ url: MATOMO_URL, siteId });
+  init({ url: MATOMO_URL, siteId, jsTrackerFile: `js/container_${containerID}.js` });
+  // init({ url: MATOMO_URL, siteId });
 };
 
 // reset the user ID when loggging out
