@@ -59,9 +59,9 @@ const populateHeatmapData = (
     if (heatmapSettings.guardLines) {
       let currentCluster = getCellClusterFromCellId(childrenCellSets, cells[0]);
       cells.forEach((cell) => {
-        const newCluster = getCellClusterFromCellId(childrenCellSets, cell);
-        if (currentCluster !== newCluster) {
-          currentCluster = newCluster;
+        const isTheSameCluster = properties[currentCluster]?.cellIds?.has(cell);
+        if (!isTheSameCluster) {
+          currentCluster = getCellClusterFromCellId(childrenCellSets, cell);
           clusterSeparationLines.push(cell);
         }
       });
