@@ -67,29 +67,29 @@ const DataManagementPage = ({ route }) => {
   };
 
   useEffect(() => {
-    if (activeProject?.experiments.length > 0) {
-      // Right now we have one experiment per project, so we can just load the experiment
-      // This has to be changed when we have more than one experiment
-      const activeExperimentId = activeProject.experiments[0];
-      dispatch(loadProcessingSettings(activeExperimentId));
-    }
-
     // old experiments don't have a project so the activeProjectUuid will actually be an experiment
     // ID so the experiments load will fail this should be addressed by migrating experiments.
     // However, for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
     // and we should not try to load the experiments with it
-    if (!activeProjectUuid || !isUuid(activeProjectUuid)) return;
+    if (
+      !activeProjectUuid
+      || !isUuid(activeProjectUuid)
+      || !projectsList[activeProjectUuid]?.experiments
+      || !projectsList[activeProjectUuid]?.experiments[0]
+    ) return;
 
     // Right now we have one experiment per project, so we can just load the experiment
     // This has to be changed when we have more than one experiment
-    const activeExperimentId = activeProject.experiments[0];
+    const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
+
+    dispatch(loadProcessingSettings(activeExperimentId));
 
     if (!experimentsAreLoaded) {
       dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
     }
 
     if (experiments[activeExperimentId]) updateRunStatus(activeExperimentId);
-  }, [activeProject, samples]);
+  }, [activeProjectUuid]);
 
   useEffect(() => {
     if (projectsLoading === true) {
