@@ -75,7 +75,7 @@ const captureNewPageView = () => {
     return;
   }
 
-  push(['HeatmapSessionRecording::setNewPageView()']);
+  push(['HeatmapSessionRecording::setNewPageView']);
 };
 
 export {
