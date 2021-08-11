@@ -21,7 +21,6 @@ const useUpdateThrottled = (onUpdate, value, throttleTime = 1000) => {
     const changes = _.cloneDeep(newValue);
     _.merge(changes, updatedField);
     setNewValue(changes);
-    console.log('UPDATE TRHOTTLE');
     updateThrottled(updatedField);
   };
   return [newValue, update];

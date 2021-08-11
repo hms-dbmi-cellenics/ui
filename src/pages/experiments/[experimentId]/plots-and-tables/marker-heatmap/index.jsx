@@ -36,6 +36,7 @@ const HeatmapPlot = ({ experimentId }) => {
   const cellSets = useSelector((state) => state.cellSets);
   const { hierarchy, properties } = cellSets;
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
+  const [currentSearchedGenes, setCurrentSearchedGenes] = useState([]);
   const {
     loading: loadingMarkerGenes,
     error: errorMarkerGenes, order,
@@ -101,7 +102,7 @@ const HeatmapPlot = ({ experimentId }) => {
       });
     });
     updatePlotWithChanges({ selectedGenes: newOrder });
-    dispatch(setGeneOrder(newOrder));
+    return newOrder;
   };
 
   useEffect(() => {
@@ -112,19 +113,21 @@ const HeatmapPlot = ({ experimentId }) => {
     if (!_.isEqual(selectedGenes, config.selectedGenes) && !_.isEmpty(selectedGenes)) {
       if (selectedGenes.length !== order.length) {
         const newGenes = _.difference(selectedGenes, order);
+        let newOrder;
         if (!newGenes.length) {
           // gene was removed instead of added - no need to sort
           const removedGenes = _.difference(order, selectedGenes);
-          let newOrder = _.cloneDeep(order);
+          newOrder = _.cloneDeep(order);
           newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
           dispatch(setGeneOrder(newOrder));
         } else {
-          sortGenes(newGenes);
+          newOrder = sortGenes(newGenes);
         }
+        setCurrentSearchedGenes(newOrder);
+        dispatch(setGeneOrder(newOrder));
       }
     }
   }, [selectedGenes]);
-
   useEffect(() => {
     if (cellSets.loading
       || _.isEmpty(expressionData)
@@ -133,12 +136,8 @@ const HeatmapPlot = ({ experimentId }) => {
     ) {
       return;
     }
-    console.time('spec');
     const spec = generateSpec(config, 'Cluster ID', plotUuid);
-    console.timeEnd('spec');
-    console.time('data');
     const data = populateHeatmapData(cellSets, config, expressionData, order);
-    console.timeEnd('data');
     const newVegaSpec = {
       ...spec,
       axes: [...spec.axes, ...displayLabels()],
@@ -171,6 +170,7 @@ const HeatmapPlot = ({ experimentId }) => {
   };
 
   const onGeneEnter = (genes) => {
+    setCurrentSearchedGenes(genes);
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
@@ -184,7 +184,7 @@ const HeatmapPlot = ({ experimentId }) => {
         <PlatformError
           description='Could not load gene expression data.'
           error={error}
-          onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes, plotUuid))}
+          onClick={() => dispatch(loadGeneExpression(experimentId, currentSearchedGenes, plotUuid))}
         />
       );
     }
