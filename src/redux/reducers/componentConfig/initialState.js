@@ -160,6 +160,7 @@ const frequencyInitialConfig = {
     ...axesBaseState,
     xAxisText: 'Sample',
     yAxisText: 'Proportion',
+    xAxisRotateLabels: true,
     offset: 10,
   },
   fontStyle: fontStyleBaseState,
@@ -184,6 +185,7 @@ const violinConfig = {
   axes: {
     ...axesBaseState,
     offset: 10,
+    xAxisRotateLabels: true,
   },
   title: {
     ...titleBaseState,
@@ -603,6 +605,7 @@ const dataIntegrationFrequencyInitialConfig = {
     ...axesBaseState,
     xAxisText: 'Louvain clusters',
     yAxisText: 'Proportion',
+    xAxisRotateLabels: true,
     offset: 10,
   },
   fontStyle: fontStyleBaseState,
