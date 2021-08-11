@@ -55,7 +55,7 @@ const HeatmapPlot = ({ experimentId }) => {
   }, []);
 
   useEffect(() => {
-    if (louvainClustersResolution && config) {
+    if (louvainClustersResolution && config && !config.selectedGenes.length) {
       dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes));
     }
   }, [louvainClustersResolution, hierarchy, config?.numGenes]);
@@ -133,10 +133,12 @@ const HeatmapPlot = ({ experimentId }) => {
     ) {
       return;
     }
-
+    console.time('spec');
     const spec = generateSpec(config, 'Cluster ID', plotUuid);
+    console.timeEnd('spec');
+    console.time('data');
     const data = populateHeatmapData(cellSets, config, expressionData, order);
-
+    console.timeEnd('data');
     const newVegaSpec = {
       ...spec,
       axes: [...spec.axes, ...displayLabels()],
@@ -271,7 +273,8 @@ const HeatmapPlot = ({ experimentId }) => {
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
                 <center>
-                  {renderPlot()}
+                  {renderPlot() }
+
                 </center>
               </Panel>
             </Collapse>

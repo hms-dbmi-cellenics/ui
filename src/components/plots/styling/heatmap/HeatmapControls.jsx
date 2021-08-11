@@ -90,6 +90,7 @@ const HeatmapControls = (props) => {
       {markerHeatmap && (
         <>
           <Panel header='Select Data' key='selectData'>
+            <p>Select the cell sets to show markers for:</p>
             <Select
               value={{
                 key: firstLetterUppercase(config.selectedCellSet),
