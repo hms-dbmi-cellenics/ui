@@ -13,6 +13,7 @@ import { sortableHandle, sortableContainer, sortableElement } from 'react-sortab
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
+import _ from 'lodash'
 import arrayMove from 'array-move';
 import { Storage } from 'aws-amplify';
 import { saveAs } from 'file-saver';
@@ -51,8 +52,9 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
-import downloadData from '../../utils/downloadExperimentData';
 
+import { exportQCParameters, filterQCParameters } from '../../utils/exportQCParameters';
+import downloadData from '../../utils/downloadExperimentData';
 import downloadTypes from '../../utils/downloadTypes';
 import pipelineStatus from '../../utils/pipelineStatusValues';
 
@@ -74,6 +76,7 @@ const ProjectDetails = ({ width, height }) => {
     getFromUrlExpectOK,
   );
   const projects = useSelector((state) => state.projects);
+  const experimentSettings = useSelector((state) => state.experimentSettings)
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
@@ -481,7 +484,7 @@ const ProjectDetails = ({ width, height }) => {
   ];
 
   const checkLaunchAnalysis = () => {
-    if (activeProject?.samples.length === 0) return false;
+    if (activeProject?.samples?.length === 0) return false;
 
     const allSampleFilesUploaded = (sample) => {
       // Check if all files for a given tech has been uploaded
@@ -504,7 +507,7 @@ const ProjectDetails = ({ width, height }) => {
       return Object.values(sample.metadata).every((value) => value && value.length > 0);
     };
 
-    const canLaunch = activeProject?.samples.every((sampleUuid) => {
+    const canLaunch = activeProject?.samples?.every((sampleUuid) => {
       const checkedSample = samples[sampleUuid];
 
       return allSampleFilesUploaded(checkedSample)
@@ -607,6 +610,16 @@ const ProjectDetails = ({ width, height }) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
+  const allSamplesAnalysed = () => {
+    // Returns true only if there is at least one sample in the currently active
+    // project AND all samples in the project have been analysed.
+    const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
+
+    return steps.length > 0 &&
+      activeProject?.samples?.length > 0 &&
+      activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s))
+  }
+
   const onSortEnd = ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
       // This can be done because there is only one experiment per project
@@ -696,14 +709,24 @@ const ProjectDetails = ({ width, height }) => {
           Processed Seurat object (.rds)
         </Tooltip>
       </Menu.Item>
-      <Tooltip title='Feature coming soon!' placement='left'>
-        <Menu.Item
-          disabled
-          key='download-processing-settings'
-        >
-          Data Processing settings
-        </Menu.Item>
-      </Tooltip>
+      <Menu.Item
+        disabled={!allSamplesAnalysed()}
+        key='download-processing-settings'
+        onClick={() => {
+          const config = _.omit(experimentSettings.processing, ['meta']);
+          const filteredConfig = filterQCParameters(config, activeProject.samples, samples);
+          const blob = exportQCParameters(filteredConfig);
+          saveAs(blob, `${activeProjectUuid.split('-')[0]}_settings.txt`);
+        }
+        }>
+        {
+          allSamplesAnalysed()
+          ? 'Data Processing settings (.txt)'
+          : <Tooltip title='One or more of your samples has yet to be analysed' placement='left'>
+              Data Processing settings (.txt)
+            </Tooltip>
+        }
+      </Menu.Item>
     </Menu>
   );
 
