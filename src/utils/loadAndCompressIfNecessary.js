@@ -1,13 +1,12 @@
 import { gzip } from 'fflate';
 import { Buffer } from 'buffer/';
+import { inspectFile, VERDICT } from './fileInspector';
 
 function uintArrayToBuffer(array) {
   return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
 }
 
-const loadAndCompressIfNecessary = async (bundle, onCompression = () => { }) => {
-  const inGzipFormat = ['application/gzip', 'application/x-gzip'].includes(bundle.type);
-
+const loadAndCompressIfNecessary = async (bundle, onCompression = () => ({})) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onabort = () => reject(new Error('aborted'));
@@ -15,14 +14,16 @@ const loadAndCompressIfNecessary = async (bundle, onCompression = () => { }) => 
     reader.onload = () => {
       const loadedFile = reader.result;
 
-      if (inGzipFormat) {
+      const loadedBuffer = Buffer.from(loadedFile);
+
+      const verdict = inspectFile(name, loadedBuffer, '10X Chromium');
+
+      if (verdict === VERDICT.VALID_ZIPPED) {
         resolve(loadedFile);
       } else {
         onCompression();
 
-        const loadedFileUint = Buffer.from(loadedFile);
-
-        gzip(loadedFileUint, {}, (error, compressedFile) => {
+        gzip(loadedBuffer, {}, (error, compressedFile) => {
           if (error) { reject(new Error('error')); }
 
           resolve(uintArrayToBuffer(compressedFile));

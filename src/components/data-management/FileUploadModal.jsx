@@ -18,8 +18,8 @@ import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-des
 import Dropzone from 'react-dropzone';
 import techOptions from '../../utils/fileUploadSpecifications';
 import UploadStatus from '../../utils/UploadStatus';
-import checkIfFileValid from '../../utils/checkIfFileValid';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
+import { inspectFile, VERDICT } from '../../utils/fileInspector';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -58,16 +58,20 @@ const FileUploadModal = (props) => {
     }
 
     filteredFiles.forEach((file) => {
-      let fileName = null;
       const error = [];
       // First character of file.path === '/' means a directory is uploaded
       // Remove initial slash so that it does not create an empty directory in S3
       const paths = file.path.split('/');
-      fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
-      const valid = checkIfFileValid(fileName, selectedTech);
+      const fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
 
-      if (!valid.isValidType) error.push('Invalid file type.');
-      if (!valid.isValidFilename) error.push('Invalid file name.');
+      const verdict = inspectFile(file.name, new Buffer(0), selectedTech);
+
+      if (verdict === VERDICT.INVALID_NAME) {
+        error.push('Invalid file type.')
+      }
+
+      // if (!valid.isValidType) error.push('Invalid file type.');
+      // if (!valid.isValidFilename) error.push('Invalid file name.');
 
       newList.push({
         name: fileName,
@@ -76,7 +80,7 @@ const FileUploadModal = (props) => {
           status: UploadStatus.UPLOADING,
           progress: 0,
         },
-        valid: valid.isValidType && valid.isValidFilename,
+        valid: verdict !== VERDICT.INVALID_NAME,
         errors: error.join(', '),
       });
     });
