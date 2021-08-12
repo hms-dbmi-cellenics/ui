@@ -8,7 +8,8 @@ import { UploadOutlined } from '@ant-design/icons';
 
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
-import checkIfFileValid from '../../utils/checkIfFileValid';
+import { inspectFile, VERDICT } from '../../utils/fileInspector';
+import readFileToBuffer from '../../utils/readFileToBuffer';
 
 const UploadDetailsModal = (props) => {
   const {
@@ -29,12 +30,15 @@ const UploadDetailsModal = (props) => {
     if (replacementFileBundle) {
       // we'll need to remove the hard-coded 10x tech type once we start
       // supporting other types and save the chosen tech type in redux
-      const valid = checkIfFileValid(replacementFileBundle.name, '10X Chromium');
-      if (valid.isValidFilename && valid.isValidType) {
-        onUpload(replacementFileBundle);
-      } else {
-        pushNotificationMessage('error', 'The selected file name does not match the expected category.', 2);
-      }
+      readFileToBuffer(replacementFileBundle.slice(0, 15)).then((buffer) => {
+        const valid = inspectFile(replacementFileBundle.name, new Buffer(buffer), '10X Chromium');
+        if (valid === VERDICT.VALID_ZIPPED || valid === VERDICT.VALID_UNZIPPED) {
+          onUpload(replacementFileBundle);
+        } else {
+          pushNotificationMessage('error',
+            'The selected file name does not match the expected category.', 2);
+        }
+      })
     }
   }, [replacementFileBundle]);
 
