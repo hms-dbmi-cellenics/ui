@@ -11,11 +11,11 @@ const MATOMO_URL = 'https://biomage.matomo.cloud';
 const trackingInfo = {
   [Env.PRODUCTION]: {
     enabled: true,
-    siteId: 1,
+    siteId: 2,
   },
   [Env.STAGING]: {
     enabled: true,
-    siteId: 2,
+    siteId: 1,
   },
   [Env.DEVELOPMENT]: {
     enabled: true,
