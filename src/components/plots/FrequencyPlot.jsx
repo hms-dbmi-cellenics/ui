@@ -17,7 +17,6 @@ const FrequencyPlot = (props) => {
 
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
-  const [plotLoaded, setPlotLoaded] = useState(false);
 
   const {
     hierarchy, properties,
@@ -32,15 +31,12 @@ const FrequencyPlot = (props) => {
   useEffect(() => {
     if (hierarchy && properties && config) {
       setPlotSpec(generateSpec(config, generateData(hierarchy, properties, config)));
-      setPlotLoaded(plotLoaded);
     }
   }, [hierarchy, properties, config]);
 
   useEffect(() => {
-    if (plotLoaded) {
-      captureNewPageView();
-    }
-  }, [plotLoaded]);
+    captureNewPageView();
+  }, []);
 
   return (
     <center>
