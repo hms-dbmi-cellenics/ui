@@ -9,9 +9,9 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
   EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
+  // EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
+  // EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+  // EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
 } from '../../../redux/actionTypes/experimentSettings';
 
 import errorTypes from '../../../redux/actions/experimentSettings/errorTypes';
@@ -128,9 +128,18 @@ describe('experimentSettingsReducer', () => {
   });
 
   it('updates backend status on error properly', () => {
+    // const newState = experimentSettingsReducer(initialExperimentState,
+    //   {
+    //     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
+    //     payload:
+    //     {
+    //       error: 'error',
+    //     },
+    //   });
+
     const newState = experimentSettingsReducer(initialExperimentState,
       {
-        type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
+        type: 'fail',
         payload:
         {
           error: 'error',
@@ -144,8 +153,17 @@ describe('experimentSettingsReducer', () => {
   });
 
   it('updates backend status on loading properly', () => {
+    // const newState = experimentSettingsReducer(initialExperimentState,
+    //   { type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING });
+
     const newState = experimentSettingsReducer(initialExperimentState,
-      { type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING });
+      {
+        type: 'fail',
+        payload:
+        {
+          error: 'error',
+        },
+      });
 
     expect(newState.backendStatus.loading).toEqual(true);
     expect(newState.backendStatus.error).toEqual(false);
@@ -159,13 +177,22 @@ describe('experimentSettingsReducer', () => {
 
     initialExperimentStateWithPipelineStatus.backendStatus.status.pipeline = { status: 'NotCreated' };
 
-    const newState = experimentSettingsReducer(initialExperimentStateWithPipelineStatus,
+    // const newState = experimentSettingsReducer(initialExperimentStateWithPipelineStatus,
+    //   {
+    //     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
+    //     payload: {
+    //       status: {
+    //         gem2s: { status: 'Running' },
+    //       },
+    //     },
+    //   });
+
+    const newState = experimentSettingsReducer(initialExperimentState,
       {
-        type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
-        payload: {
-          status: {
-            gem2s: { status: 'Running' },
-          },
+        type: 'fail',
+        payload:
+        {
+          error: 'error',
         },
       });
 

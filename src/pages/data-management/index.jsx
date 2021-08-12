@@ -8,7 +8,7 @@ import 'react-mosaic-component/react-mosaic-component.css';
 
 import { validate } from 'uuid';
 import { createProject, loadProjects } from '../../redux/actions/projects';
-import { loadExperiments, updateExperimentBackendStatus } from '../../redux/actions/experiments';
+import { loadExperiments } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
@@ -22,7 +22,7 @@ import loadBackendStatus from '../../redux/actions/experimentSettings/backendSta
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
   const projectsList = useSelector(((state) => state.projects));
-  const samples = useSelector((state) => state.samples);
+
   const {
     saving: projectSaving,
   } = projectsList.meta;
@@ -58,12 +58,7 @@ const DataManagementPage = ({ route }) => {
   }, []);
 
   const updateRunStatus = async (experimentId) => {
-    dispatch(loadBackendStatus(experimentId))
-      .then(
-        (backendStatus) => {
-          dispatch(updateExperimentBackendStatus(experimentId, backendStatus));
-        },
-      );
+    dispatch(loadBackendStatus(experimentId));
   };
 
   useEffect(() => {

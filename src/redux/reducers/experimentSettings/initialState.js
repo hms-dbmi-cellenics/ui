@@ -13,12 +13,6 @@ const initialWorkerState = {
 };
 
 const initialState = {
-  backendStatus: {
-    loading: false,
-    error: false,
-    status: {
-    },
-  },
   info: {
     experimentId: null,
     experimentName: null,

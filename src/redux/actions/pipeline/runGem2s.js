@@ -2,8 +2,8 @@ import fetchAPI from '../../../utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import {
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
+  // EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+  // EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_INFO_UPDATE,
 } from '../../actionTypes/experimentSettings';
@@ -14,12 +14,12 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
 
   const projectId = experiments[experimentId].projectUuid;
 
-  dispatch({
-    type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
-    payload: {
-      experimentId,
-    },
-  });
+  // dispatch({
+  //   type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+  //   payload: {
+  //     experimentId,
+  //   },
+  // });
 
   const url = `/v1/experiments/${experimentId}/gem2s`;
   try {
@@ -58,13 +58,13 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
       console.error(`fetch ${url} error ${message}`);
       message = endUserMessages.CONNECTION_ERROR;
     }
-    dispatch({
-      type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
-      payload: {
-        error: 'Could not start gem2s.',
-        errorType: message,
-      },
-    });
+    // dispatch({
+    //   type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
+    //   payload: {
+    //     error: 'Could not start gem2s.',
+    //     errorType: message,
+    //   },
+    // });
   }
 };
 
