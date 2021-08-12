@@ -6,6 +6,7 @@ function uintArrayToBuffer(array) {
   return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
 }
 
+// eslint-disable-next-line arrow-body-style
 const loadAndCompressIfNecessary = async (bundle, onCompression = () => ({})) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -16,7 +17,7 @@ const loadAndCompressIfNecessary = async (bundle, onCompression = () => ({})) =>
 
       const loadedBuffer = Buffer.from(loadedFile);
 
-      const verdict = inspectFile(name, loadedBuffer, '10X Chromium');
+      const verdict = inspectFile(bundle.name, loadedBuffer, '10X Chromium');
 
       if (verdict === VERDICT.VALID_ZIPPED) {
         resolve(loadedFile);

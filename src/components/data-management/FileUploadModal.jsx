@@ -20,6 +20,7 @@ import techOptions from '../../utils/fileUploadSpecifications';
 import UploadStatus from '../../utils/UploadStatus';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import { inspectFile, VERDICT } from '../../utils/fileInspector';
+import readFileToBuffer from '../../utils/readFileToBuffer';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -38,7 +39,7 @@ const FileUploadModal = (props) => {
   }, [filesList]);
 
   // Handle on Drop
-  const onDrop = (acceptedFiles) => {
+  const onDrop = async (acceptedFiles) => {
     const newList = [];
     let filesNotInFolder = false;
     const filteredFiles = acceptedFiles
@@ -57,28 +58,23 @@ const FileUploadModal = (props) => {
       pushNotificationMessage('error', 'Only files contained in folder are accepted');
     }
 
-    filteredFiles.forEach((file) => {
+    await Promise.all(filteredFiles.map(async (file) => {
       const error = [];
       // First character of file.path === '/' means a directory is uploaded
       // Remove initial slash so that it does not create an empty directory in S3
       const paths = file.path.split('/');
       const fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
 
-      const reader = new FileReader();
-      // reader.onabort = () => reject(new Error('aborted'));
-      // reader.onerror = () => reject(new Error('error'));
-      reader.onload = () => {
-        const verdict = inspectFile(file.name, new Buffer(reader.result), selectedTech);
+      // look at first 16 bytes to validate file
+      const buffer = await readFileToBuffer(file.slice(0, 15));
+      const verdict = inspectFile(file.name, new Buffer(buffer), selectedTech);
 
-        if (verdict === VERDICT.INVALID_NAME) {
-          error.push('Invalid file type.');
-        }
+      if (verdict === VERDICT.INVALID_NAME) {
+        error.push('Invalid file type.');
       }
-      reader.readAsArrayBuffer(file.slice(0, 15));
 
       // if (!valid.isValidType) error.push('Invalid file type.');
       // if (!valid.isValidFilename) error.push('Invalid file name.');
-
 
       // TODO store whether zipped in this
       newList.push({
@@ -90,8 +86,9 @@ const FileUploadModal = (props) => {
         },
         valid: error.length === 0,
         errors: error.join(', '),
+        compressed: verdict === VERDICT.VALID_ZIPPED,
       });
-    });
+    }));
 
     setFilesList([...filesList, ...newList]);
   };
