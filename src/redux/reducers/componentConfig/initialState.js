@@ -586,7 +586,10 @@ const dataIntegrationEmbeddingInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  labels: labelBaseState,
+  labels: {
+    ...labelBaseState,
+    enabled: false,
+  },
   selectedCellSet: 'louvain',
   selectedSample: 'All',
 };
