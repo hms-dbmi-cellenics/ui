@@ -30,13 +30,13 @@ Object {
         "colour": "#000000",
         "font": "sans-serif",
       },
-      "label": Object {
-        "enabled": true,
-        "size": 28,
+      "labels": Object {
+        "enabled": false,
+        "size": 18,
       },
       "legend": Object {
         "colour": "#000000",
-        "enabled": false,
+        "enabled": true,
         "position": "top",
       },
       "marker": Object {
@@ -93,9 +93,9 @@ Object {
         "font": "sans-serif",
       },
       "height": 2000,
-      "label": Object {
+      "labels": Object {
         "enabled": true,
-        "size": 28,
+        "size": 18,
       },
       "legend": Object {
         "colour": "#000000",
