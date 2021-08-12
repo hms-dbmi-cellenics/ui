@@ -43,7 +43,7 @@ const FileUploadModal = (props) => {
     let filesNotInFolder = false;
     const filteredFiles = acceptedFiles
       // Remove all hidden files
-      .filter((file) => !file.name.startsWith('.'))
+      .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'))
       // Remove all files that aren't in a folder
       .filter((file) => {
         const inFolder = file.path.includes('/');
@@ -64,15 +64,23 @@ const FileUploadModal = (props) => {
       const paths = file.path.split('/');
       const fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
 
-      const verdict = inspectFile(file.name, new Buffer(0), selectedTech);
+      const reader = new FileReader();
+      // reader.onabort = () => reject(new Error('aborted'));
+      // reader.onerror = () => reject(new Error('error'));
+      reader.onload = () => {
+        const verdict = inspectFile(file.name, new Buffer(reader.result), selectedTech);
 
-      if (verdict === VERDICT.INVALID_NAME) {
-        error.push('Invalid file type.')
+        if (verdict === VERDICT.INVALID_NAME) {
+          error.push('Invalid file type.');
+        }
       }
+      reader.readAsArrayBuffer(file.slice(0, 15));
 
       // if (!valid.isValidType) error.push('Invalid file type.');
       // if (!valid.isValidFilename) error.push('Invalid file name.');
 
+
+      // TODO store whether zipped in this
       newList.push({
         name: fileName,
         bundle: file,
@@ -80,7 +88,7 @@ const FileUploadModal = (props) => {
           status: UploadStatus.UPLOADING,
           progress: 0,
         },
-        valid: verdict !== VERDICT.INVALID_NAME,
+        valid: error.length === 0,
         errors: error.join(', '),
       });
     });
