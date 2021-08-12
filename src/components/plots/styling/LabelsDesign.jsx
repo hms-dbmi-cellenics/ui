@@ -32,7 +32,7 @@ const LabelsDesign = (props) => {
           max={maxLabelSize}
           disabled={!config.labels.enabled}
           onChange={(value) => {
-            handleChange({ label: { size: value } });
+            handleChange({ labels: { size: value } });
           }}
           marks={{ 0: minLabelSize, 50: maxLabelSize }}
         />
