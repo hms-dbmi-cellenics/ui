@@ -58,7 +58,6 @@ const VolcanoPlot = ({ experimentId }) => {
 
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    captureNewPageView();
   }, []);
 
   useEffect(() => {
@@ -72,6 +71,10 @@ const VolcanoPlot = ({ experimentId }) => {
     if (data.length === 0) return;
     setDataPointStatus();
   }, []);
+
+  useEffect(() => {
+    if (config) captureNewPageView();
+  }, [config]);
 
   const plotStylingControlsConfig = [
     {
