@@ -570,7 +570,7 @@ const ProjectDetails = ({ width, height }) => {
     const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
 
     compressAndUploadSingleFile(
-      bucketKey, sampleUuid, newFileName,
+      bucketKey, sampleUuid, newFileName, file,
       bundleToUpload, dispatch, metadata,
     );
 

@@ -38,13 +38,14 @@ const metadataForBundle = (bundle) => {
 };
 
 const compressAndUploadSingleFile = async (
-  bucketKey, sampleUuid, fileName,
+  bucketKey, sampleUuid, fileName, file,
   bundle, dispatch, metadata = {},
 ) => {
   let loadedFile = null;
 
   try {
     loadedFile = await loadAndCompressIfNecessary(
+      file,
       bundle,
       () => (
         dispatch(
@@ -141,7 +142,7 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
     const metadata = metadataForBundle(file.bundle);
 
     await compressAndUploadSingleFile(
-      bucketKey, sample.uuid, fileName,
+      bucketKey, sample.uuid, fileName, file,
       file.bundle, dispatch, metadata,
     );
   });
