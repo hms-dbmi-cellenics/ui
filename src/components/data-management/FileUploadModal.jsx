@@ -70,13 +70,11 @@ const FileUploadModal = (props) => {
       const verdict = inspectFile(file.name, new Buffer(buffer), selectedTech);
 
       if (verdict === VERDICT.INVALID_NAME) {
-        error.push('Invalid file type.');
+        error.push('Invalid file name.');
+      } else if (verdict === VERDICT.INVALID_FORMAT) {
+        error.push('Invalid file format.')
       }
 
-      // if (!valid.isValidType) error.push('Invalid file type.');
-      // if (!valid.isValidFilename) error.push('Invalid file name.');
-
-      // TODO store whether zipped in this
       newList.push({
         name: fileName,
         bundle: file,
