@@ -45,7 +45,6 @@ const ContentWrapper = (props) => {
   const { experimentId, experimentData, children } = props;
   const router = useRouter();
   const route = router?.route || '';
-  const { heatmapSnapshot } = router?.query || {};
 
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
@@ -246,7 +245,7 @@ const ContentWrapper = (props) => {
   };
 
   const renderContent = () => {
-    if (experimentId && heatmapSnapshot !== 'true') {
+    if (experimentId) {
       if (
         backendLoading || !backendStatusRequested) {
         return <PreloadContent />;
