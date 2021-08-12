@@ -120,9 +120,6 @@ exports[`loadGeneExpression action Does not send work for already loaded express
           "status": "SUCCEEDED",
         },
       },
-      Object {
-        "timeout": 30,
-      },
     ],
   ],
   "results": Array [
@@ -152,9 +149,6 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
           "status": "SUCCEEDED",
         },
       },
-      Object {
-        "timeout": 30,
-      },
     ],
     Array [
       "1234",
@@ -171,9 +165,6 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
           "startDate": "2021-01-01T01:01:01.000Z",
           "status": "SUCCEEDED",
         },
-      },
-      Object {
-        "timeout": 30,
       },
     ],
   ],
