@@ -34,7 +34,10 @@ const embeddingCategoricalInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: {
+    ...labelBaseState,
+    enabled: false,
+  },
   selectedCellSet: 'louvain',
   selectedSample: 'All',
 };
@@ -62,7 +65,7 @@ const embeddingContinuousInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   logEquation: 'datum.expression*1',
   shownGene: 'notSelected',
   selectedSample: 'All',
@@ -89,7 +92,7 @@ const heatmapInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   selectedGenes: [],
   selectedCellSet: 'louvain',
   labelColour: 'transparent',
@@ -118,7 +121,7 @@ const volcanoInitialConfig = {
   title: titleBaseState,
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   noDifferenceColor: '#aaaaaa',
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',
@@ -151,7 +154,7 @@ const frequencyInitialConfig = {
     position: 'top',
     offset: 40,
   },
-  label: labelBaseState,
+  labels: labelBaseState,
   dimensions: dimensionsBaseState,
   marker: markerBaseState,
   colour: colourBaseState,
@@ -195,7 +198,7 @@ const violinConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   shownGene: 'notSelected',
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
@@ -229,7 +232,10 @@ const embeddingPreviewBySampleInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: {
+    ...labelBaseState,
+    enabled: false,
+  },
   selectedCellSet: 'louvain',
   selectedSample: 'All',
 };
@@ -259,7 +265,10 @@ const embeddingPreviewByCellSetsInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: {
+    ...labelBaseState,
+    enabled: false,
+  },
   selectedCellSet: 'louvain',
   selectedSample: 'All',
 };
@@ -287,7 +296,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   selectedSample: 'sample',
 };
 
@@ -314,7 +323,7 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   selectedSample: 'sample',
 };
 
@@ -349,7 +358,7 @@ const cellSizeDistributionHistogram = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   minCellSize: 10800,
   binStep: 200,
 };
@@ -378,7 +387,7 @@ const cellSizeDistributionKneePlot = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   minCellSize: 990,
 };
 
@@ -407,7 +416,7 @@ const mitochondrialFractionHistogram = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   binStep: 0.05,
   maxFraction: 0.1,
 };
@@ -437,7 +446,7 @@ const mitochondrialFractionLogHistogram = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   binStep: 0.05,
   maxFraction: 0.2,
 };
@@ -466,7 +475,7 @@ const classifierKneePlot = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   minCellSize: 990,
 };
 
@@ -495,7 +504,7 @@ const classifierEmptyDropsPlot = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   minProbability: 0.82,
   bandwidth: -1,
 };
@@ -520,7 +529,7 @@ const featuresVsUMIsScatterplot = {
   },
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   lower_cutoff: 4.8,
   upper_cutoff: 2.1,
 };
@@ -549,7 +558,7 @@ const doubletScoreHistogram = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: labelBaseState,
   binStep: 0.05,
   probThreshold: 0.2,
 };
@@ -579,7 +588,10 @@ const dataIntegrationEmbeddingInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
   marker: markerBaseState,
-  label: labelBaseState,
+  labels: {
+    ...labelBaseState,
+    enabled: false,
+  },
   selectedCellSet: 'louvain',
   selectedSample: 'All',
 };
@@ -617,7 +629,7 @@ const dataIntegrationElbowPlotInitialConfig = {
     ...legendBaseState,
     position: 'top',
   },
-  label: { ...labelBaseState },
+  labels: labelBaseState,
   dimensions: {
     ...dimensionsBaseState,
     width: 700,

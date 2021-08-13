@@ -151,7 +151,6 @@ describe('ComponentActions', () => {
         genes: ['A', 'B', 'C'],
       },
       backendStatus.status,
-      { timeout: 30 },
     );
 
     expect(store.getActions().length).toEqual(2);

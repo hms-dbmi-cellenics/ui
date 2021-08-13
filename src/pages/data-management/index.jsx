@@ -22,7 +22,6 @@ import loadBackendStatus from '../../redux/actions/experimentSettings/backendSta
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
   const projectsList = useSelector(((state) => state.projects));
-  const samples = useSelector((state) => state.samples);
   const {
     saving: projectSaving,
   } = projectsList.meta;
@@ -124,7 +123,12 @@ const DataManagementPage = ({ route }) => {
           direction='vertical'
           style={{ width: '100%' }}
         >
-          <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
+          <Button
+            id='create-new-project-modal'
+            type='primary'
+            block
+            onClick={() => setNewProjectModalVisible(true)}
+          >
             Create New Project
           </Button>
           <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
