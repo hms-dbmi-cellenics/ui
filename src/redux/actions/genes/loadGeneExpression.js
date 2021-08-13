@@ -78,7 +78,6 @@ const loadGeneExpression = (
       });
     } else {
       const fetchedGenes = _.concat(displayedGenes, Object.keys(data));
-
       dispatch({
         type: GENES_EXPRESSION_LOADED,
         payload: {

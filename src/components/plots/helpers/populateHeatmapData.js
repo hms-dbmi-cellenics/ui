@@ -110,7 +110,7 @@ const populateHeatmapData = (
 
   const getCellSetIntersections = (cellSet, rootNode) => {
     const cellSetsOfRootNode = rootNode.children.map(({ key }) => getCellsInSet(key));
-
+    console.log('cellsets of root node', cellSetsOfRootNode);
     const intersectionsSets = [];
 
     cellSetsOfRootNode.forEach((cellSetOfRootNode) => {

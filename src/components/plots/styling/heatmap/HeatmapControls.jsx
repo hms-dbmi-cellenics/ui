@@ -71,6 +71,7 @@ const HeatmapControls = (props) => {
                   min={1}
                   max={25}
                   step={1}
+                  data-testid='num-genes'
                   onChange={(e) => setNumGenes(e)}
                 />
                 <Button

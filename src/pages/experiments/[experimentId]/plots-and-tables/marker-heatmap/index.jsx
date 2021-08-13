@@ -28,9 +28,10 @@ const route = {
   path: 'marker-heatmap',
   breadcrumbName: 'Marker-Heatmap',
 };
-const HeatmapPlot = ({ experimentId }) => {
+const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
   const cellSets = useSelector((state) => state.cellSets);
@@ -52,7 +53,9 @@ const HeatmapPlot = ({ experimentId }) => {
       dispatch(loadProcessingSettings(experimentId));
     }
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    dispatch(loadCellSets(experimentId));
+    if (!cellSets.hierarchy.length) {
+      dispatch(loadCellSets(experimentId));
+    }
   }, []);
 
   useEffect(() => {
@@ -60,9 +63,9 @@ const HeatmapPlot = ({ experimentId }) => {
       dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes));
     }
   }, [louvainClustersResolution, hierarchy, config?.numGenes]);
-
   const sortGenes = (newGenes) => {
     const clusters = hierarchy.find((cluster) => cluster.key === config.selectedCellSet).children;
+
     const getCellIdsForCluster = (clusterId) => properties[clusterId].cellIds;
 
     const getAverageExpressionForGene = (gene, currentCellIds) => {
@@ -109,7 +112,6 @@ const HeatmapPlot = ({ experimentId }) => {
     if (!config || _.isEmpty(expressionData)) {
       return;
     }
-
     if (!_.isEqual(selectedGenes, config.selectedGenes) && !_.isEmpty(selectedGenes)) {
       if (selectedGenes.length !== order.length) {
         const newGenes = _.difference(selectedGenes, order);
@@ -300,8 +302,8 @@ const HeatmapPlot = ({ experimentId }) => {
   );
 };
 
-HeatmapPlot.propTypes = {
+MarkerHeatmap.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default HeatmapPlot;
+export default MarkerHeatmap;
