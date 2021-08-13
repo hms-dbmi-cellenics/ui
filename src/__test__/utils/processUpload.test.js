@@ -23,32 +23,35 @@ const validFilesList = [
       name: 'features.tsv.gz',
       path: '/WT13/features.tsv.gz',
       type: 'application/gzip',
-      valid: true,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
+    compressed: true,
+    valid: true,
   },
   {
     name: 'WT13/barcodes.tsv.gz',
     bundle: {
-      name: 'features.tsv.gz',
+      name: 'barcodes.tsv.gz',
       path: '/WT13/barcodes.tsv.gz',
       type: 'application/gzip',
-      valid: true,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
+    compressed: true,
+    valid: true,
   },
   {
     name: 'WT13/matrix.mtx.gz',
     bundle: {
-      name: 'features.tsv.gz',
+      name: 'matrix.mtx.gz',
       path: '/WT13/matrix.mtx.gz',
       type: 'application/gzip',
-      valid: true,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
+    compressed: true,
+    valid: true,
   },
 ];
 
@@ -213,11 +216,10 @@ describe('processUpload (in development)', () => {
   it('Updates redux correctly when there are file load and compress errors', async () => {
     const store = mockStore(initialState);
 
-    // eslint-disable-next-line no-param-reassign
-    validFilesList.forEach((file) => { file.bundle.valid = false; });
+    const invalidFiles = validFilesList.map((file) => ({ ...file, valid: false }));
 
     processUpload(
-      validFilesList,
+      invalidFiles,
       sampleType,
       store.getState().samples,
       mockProjectUuid,
