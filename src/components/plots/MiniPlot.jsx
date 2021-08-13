@@ -22,7 +22,7 @@ const getMiniaturizedConfig = (config) => {
     marker: {
       size: 1,
     },
-    label: {
+    labels: {
       enabled: false,
     },
   };
@@ -42,12 +42,8 @@ const MiniPlot = (props) => {
     plotUuid, plotFn, actions,
   } = props;
 
-  const config = useSelector(
-    (state) => state.componentConfig[plotUuid]?.config,
-  );
-
-  const plotData = useSelector(
-    (state) => state.componentConfig[plotUuid]?.plotData,
+  const { config, plotData } = useSelector(
+    (state) => state.componentConfig[plotUuid] || {},
   );
 
   const renderPlot = () => {
@@ -59,7 +55,7 @@ const MiniPlot = (props) => {
       );
     }
 
-    return plotFn(getMiniaturizedConfig(config), plotData, actions);
+    return plotFn(getMiniaturizedConfig(config), plotData || [], actions);
   };
 
   return (
