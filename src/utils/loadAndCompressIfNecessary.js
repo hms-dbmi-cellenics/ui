@@ -1,35 +1,16 @@
-import { gzip } from 'fflate';
-
-function uintArrayToBuffer(array) {
-  return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
-}
+import { gzipSync } from 'fflate';
+import readFileToBuffer from './readFileToBuffer';
 
 // eslint-disable-next-line arrow-body-style
 const loadAndCompressIfNecessary = async (file, bundle, onCompression = () => ({})) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onabort = () => reject(new Error('aborted'));
-    reader.onerror = () => reject(new Error('error'));
-    reader.onload = () => {
-      const loadedFile = reader.result;
-
-      const loadedBuffer = Buffer.from(loadedFile);
-
-      if (!file.compressed) {
-        resolve(loadedFile);
-      } else {
-        onCompression();
-
-        gzip(loadedBuffer, {}, (error, compressedFile) => {
-          if (error) { reject(new Error('error')); }
-
-          resolve(uintArrayToBuffer(compressedFile));
-        });
+  return readFileToBuffer(bundle)
+    .then((buffer) => {
+      if (file.compressed) {
+        return buffer;
       }
-    };
-
-    reader.readAsArrayBuffer(bundle);
-  });
+      onCompression();
+      return Buffer.from(gzipSync(buffer, {}));
+    });
 };
 
 export default loadAndCompressIfNecessary;

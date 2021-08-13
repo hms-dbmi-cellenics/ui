@@ -20,7 +20,6 @@ import techOptions from '../../utils/fileUploadSpecifications';
 import UploadStatus from '../../utils/UploadStatus';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import { inspectFile, VERDICT } from '../../utils/fileInspector';
-import readFileToBuffer from '../../utils/readFileToBuffer';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;

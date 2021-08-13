@@ -4,9 +4,8 @@ const readFileToBuffer = (file) => {
   return new Promise((resolve, reject) => {
     reader.onabort = () => reject(new Error('aborted'));
     reader.onerror = () => reject(new Error('error'));
-    reader.onload = () => {
-      resolve(reader.result);
-    };
+    reader.onload = () => resolve(Buffer.from(reader.result));
+
     reader.readAsArrayBuffer(file);
   });
 };

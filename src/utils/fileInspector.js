@@ -27,7 +27,7 @@ const inspectFile = async (file, technology) => {
   // if name is valid, inspect first 16 bytes to validate format
   const data = await readFileToBuffer(file.slice(0, 16));
 
-  const fileSignature = Buffer.from(data).slice(0, 2);
+  const fileSignature = data.slice(0, 2);
   const isGzipped = !fileSignature.compare(GZIP_SIGNATURE);
   if (isGzipped) {
     return VERDICT.VALID_ZIPPED;
