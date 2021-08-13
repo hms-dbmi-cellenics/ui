@@ -12,7 +12,7 @@ import {
 } from '../../../redux/reducers/componentConfig/initialState';
 import { loadGeneExpression } from '../../../redux/actions/genes/index';
 import * as markerGenesLoaded from '../../../redux/reducers/genes/markerGenesLoaded';
-import * as geneExpressionLoaded from '../../../redux/reducers/genes/geneOrderSet';
+import * as configUpdated from '../../../redux/reducers/componentConfig/updateConfig';
 import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
 import rootReducer from '../../../redux/reducers/index';
 import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
@@ -38,11 +38,9 @@ jest.mock('../../../utils/cacheRequest', () => ({
     if (body.name === 'GeneExpression') {
       return new Promise((resolve) => {
         const requestedExpression = {};
-        body.genes.forEach((geneName) => {
-          requestedExpression[geneName] = {
-            rawExpression: { expression: [0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 5, 0, 0, 0, 0] },
-          };
-        });
+        requestedExpression.gene2 = {
+          rawExpression: { expression: [0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 5, 0, 0, 0, 0] },
+        };
         resolve(requestedExpression);
       });
     }
@@ -51,7 +49,7 @@ jest.mock('../../../utils/cacheRequest', () => ({
 const plotUuid = 'markerHeatmapPlotMain';
 
 const defaultStore = {
-  componentConfig: { [plotUuid]: { config: initialPlotConfigStates.markerHeatmap } },
+  componentConfig: { [plotUuid]: { config: { ...initialPlotConfigStates.markerHeatmap } } },
   embeddings: {},
   experimentSettings: {
     ...initialExperimentState,
@@ -137,7 +135,7 @@ const defaultStore = {
   },
   genes: {
     markers: {
-      order: ['gene0', 'gene1', 'gene3'],
+      error: false,
     },
     expression: {
       loading: [],
@@ -167,7 +165,8 @@ const experimentId = 'randomExperiment';
 let store = null;
 let loadConfigSpy = null;
 let loadMarkersSpy;
-let genesLoadedSpy;
+let configUpdatedSpy;
+let fetchCachedWorkSpy;
 
 const renderHeatmapPage = async () => {
   store = createStore(rootReducer, _.cloneDeep(defaultStore), applyMiddleware(thunk));
@@ -193,7 +192,7 @@ describe('Marker heatmap plot', () => {
     fetchMock.mockResponse(JSON.stringify({}), { status: 404, statusText: '404 Not Found' });
     loadConfigSpy = jest.spyOn(loadConfig, 'default');
     loadMarkersSpy = jest.spyOn(markerGenesLoaded, 'default');
-    genesLoadedSpy = jest.spyOn(geneExpressionLoaded, 'default');
+    configUpdatedSpy = jest.spyOn(configUpdated, 'default');
   });
 
   // marker heatmap renders
@@ -219,13 +218,12 @@ describe('Marker heatmap plot', () => {
 
   it('sorts genes properly', async () => {
     await renderHeatmapPage();
+    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
     const geneSelection = rtl.screen.getByText('Gene selection');
     userEvent.click(geneSelection);
+
     store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene1', 'gene3', 'gene2'], plotUuid));
-
-    await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(2));
-    await rtl.waitFor(() => expect(genesLoadedSpy).toHaveBeenCalled());
-
-    expect(store.getState().genes.markers.order).toEqual(['gene0', 'gene1', 'gene2', 'gene3']);
+    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(2));
+    expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene1', 'gene2', 'gene3']);
   });
 });

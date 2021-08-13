@@ -3,7 +3,7 @@ import {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
-  MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR, GENE_ORDER_SET,
+  MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
 } from '../../actionTypes/genes';
 
 import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
@@ -21,7 +21,6 @@ import markerGenesLoaded from './markerGenesLoaded';
 
 import genesSelect from './genesSelect';
 import genesDeselect from './genesDeselect';
-import geneOrderSet from './geneOrderSet';
 
 const genesReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -60,9 +59,6 @@ const genesReducer = (state = initialState, action) => {
     }
     case MARKER_GENES_ERROR: {
       return markerGenesError(state, action);
-    }
-    case GENE_ORDER_SET: {
-      return geneOrderSet(state, action);
     }
     default: {
       return state;

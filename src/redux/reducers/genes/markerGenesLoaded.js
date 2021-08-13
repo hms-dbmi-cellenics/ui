@@ -14,7 +14,6 @@ const markerGenesLoaded = produce((draft, action) => {
 
   draft.markers.loading = false;
   draft.markers.error = false;
-  draft.markers.order = genes;
 }, initialState);
 
 export default markerGenesLoaded;

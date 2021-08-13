@@ -101,37 +101,10 @@ const heatmapInitialConfig = {
 
 // PLOTS & TABLES - Marker heatmap
 const markerHeatmapInitialConfig = {
-  spec: '1.0.0',
-  legend: {
-    ...legendBaseState,
-    show: true,
-    position: 'horizontal',
-  },
-  dimensions: {
-    ...dimensionsBaseState,
-    width: 500,
-    height: 500,
-  },
-  title: {
-    ...titleBaseState,
-    fontSize: 20,
-    dx: 0,
-  },
-  fontStyle: fontStyleBaseState,
-  colour: colourBaseState,
-  marker: markerBaseState,
-  label: labelBaseState,
-  defaultSelectedGenes: [],
-  selectedGenes: [],
-  selectedCellSet: 'louvain',
-  showGeneLabels: true,
-  numGenes: 5,
-  labelColour: 'transparent',
-  selectedTracks: ['louvain'],
-  groupedTracks: ['louvain'],
+  ...heatmapInitialConfig,
   guardLines: false,
-  expressionValue: 'raw',
-  truncatedValues: false,
+  numGenes: 5,
+  showGeneLabels: true,
 };
 
 // PLOTS & TABLES - Volcano plot
