@@ -65,9 +65,7 @@ const FileUploadModal = (props) => {
       const paths = file.path.split('/');
       const fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
 
-      // look at first 16 bytes to validate file
-      const buffer = await readFileToBuffer(file.slice(0, 15));
-      const verdict = inspectFile(file.name, new Buffer(buffer), selectedTech);
+      const verdict = inspectFile(file, selectedTech);
 
       if (verdict === VERDICT.INVALID_NAME) {
         error.push('Invalid file name.');
