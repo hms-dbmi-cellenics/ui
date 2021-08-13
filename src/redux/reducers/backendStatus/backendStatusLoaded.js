@@ -6,7 +6,7 @@ import initialState from './initialState';
 const backendStatusLoaded = produce((draft, action) => {
   const { experimentId, status } = action.payload;
 
-  const previousStatus = current(draft[experimentId]?.status);
+  const previousStatus = current(draft)[experimentId]?.status;
 
   const newStatus = {
     pipeline: status.pipeline ?? previousStatus?.pipeline,

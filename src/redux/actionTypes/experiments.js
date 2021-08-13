@@ -40,11 +40,6 @@ const EXPERIMENTS_SAVED = `${EXPERIMENTS}/saved`;
  */
 const EXPERIMENTS_ERROR = `${EXPERIMENTS}/error`;
 
-/**
- * Update experiments backend status
- */
-const EXPERIMENTS_BACKEND_STATUS_UPDATED = `${EXPERIMENTS}/updateExperimentBackendStatus`;
-
 export {
   EXPERIMENTS_CREATED,
   EXPERIMENTS_UPDATED,
@@ -54,5 +49,4 @@ export {
   EXPERIMENTS_DELETED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_SAVED,
-  EXPERIMENTS_BACKEND_STATUS_UPDATED,
 };

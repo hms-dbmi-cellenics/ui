@@ -77,6 +77,8 @@ const ProjectDetails = ({ width, height }) => {
   const projects = useSelector((state) => state.projects);
   const experimentSettings = useSelector((state) => state.experimentSettings);
   const experiments = useSelector((state) => state.experiments);
+  const backendStatus = useSelector((state) => state.backendStatus);
+
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -651,10 +653,11 @@ const ProjectDetails = ({ width, height }) => {
   // const gem2sHasRun = () => true;
 
   const pipelineHasRun = (experimentId) => (
-    experiments[experimentId]?.meta?.backendStatus?.pipeline?.status === pipelineStatus.SUCCEEDED
+    backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED
   );
+
   const gem2sHasRun = (experimentId) => (
-    experiments[experimentId]?.meta?.backendStatus?.gem2s?.status === pipelineStatus.SUCCEEDED
+    backendStatus[experimentId]?.status.gem2s?.status === pipelineStatus.SUCCEEDED
   );
 
   const DownloadDataMenu = (
