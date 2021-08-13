@@ -561,6 +561,7 @@ const ProjectDetails = ({ width, height }) => {
     }
     const { sampleUuid, file } = uploadDetailsModalDataRef.current;
 
+    console.debug('WWWW', file, bundleToUpload);
     // when uploading only one file - bundleToUpload doesn't have .name
     const name = file.name || bundleToUpload.name;
     const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
