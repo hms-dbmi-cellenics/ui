@@ -30,9 +30,6 @@ Object {
   "markers": Object {
     "error": false,
     "loading": false,
-    "order": Array [
-      "geneA",
-    ],
   },
 }
 `;
