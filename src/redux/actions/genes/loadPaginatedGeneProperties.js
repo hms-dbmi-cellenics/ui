@@ -8,8 +8,6 @@ import {
 
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
-const TIMEOUT_SECONDS = 30;
-
 const loadPaginatedGeneProperties = (
   experimentId, properties, componentUuid, tableState,
 ) => async (dispatch, getState) => {
@@ -46,7 +44,7 @@ const loadPaginatedGeneProperties = (
 
   try {
     const { rows, total } = await fetchCachedWork(
-      experimentId, body, backendStatus.status, { timeout: TIMEOUT_SECONDS },
+      experimentId, body, backendStatus.status,
     );
 
     const loadedProperties = {};

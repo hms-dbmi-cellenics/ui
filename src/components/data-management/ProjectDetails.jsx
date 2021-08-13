@@ -13,7 +13,7 @@ import { sortableHandle, sortableContainer, sortableElement } from 'react-sortab
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
-import _ from 'lodash'
+import _ from 'lodash';
 import arrayMove from 'array-move';
 import { Storage } from 'aws-amplify';
 import { saveAs } from 'file-saver';
@@ -76,7 +76,7 @@ const ProjectDetails = ({ width, height }) => {
     getFromUrlExpectOK,
   );
   const projects = useSelector((state) => state.projects);
-  const experimentSettings = useSelector((state) => state.experimentSettings)
+  const experimentSettings = useSelector((state) => state.experimentSettings);
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
@@ -615,10 +615,10 @@ const ProjectDetails = ({ width, height }) => {
     // project AND all samples in the project have been analysed.
     const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
 
-    return steps.length > 0 &&
-      activeProject?.samples?.length > 0 &&
-      activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s))
-  }
+    return steps.length > 0
+      && activeProject?.samples?.length > 0
+      && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
+  };
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
@@ -676,7 +676,7 @@ const ProjectDetails = ({ width, height }) => {
         <Tooltip
           title={
             activeProject?.experiments?.length
-            && gem2sHasRun(activeProject?.experiments[0])
+              && gem2sHasRun(activeProject?.experiments[0])
               ? 'Samples have been merged'
               : 'Launch analysis to merge samples'
           }
@@ -700,7 +700,7 @@ const ProjectDetails = ({ width, height }) => {
         <Tooltip
           title={
             activeProject?.experiments?.length > 0
-            && pipelineHasRun(activeProject?.experiments[0])
+              && pipelineHasRun(activeProject?.experiments[0])
               ? 'With Data Processing filters and settings applied'
               : 'Launch analysis to process data'
           }
@@ -717,14 +717,16 @@ const ProjectDetails = ({ width, height }) => {
           const filteredConfig = filterQCParameters(config, activeProject.samples, samples);
           const blob = exportQCParameters(filteredConfig);
           saveAs(blob, `${activeProjectUuid.split('-')[0]}_settings.txt`);
-        }
-        }>
+        }}
+      >
         {
           allSamplesAnalysed()
-          ? 'Data Processing settings (.txt)'
-          : <Tooltip title='One or more of your samples has yet to be analysed' placement='left'>
-              Data Processing settings (.txt)
-            </Tooltip>
+            ? 'Data Processing settings (.txt)'
+            : (
+              <Tooltip title='One or more of your samples has yet to be analysed' placement='left'>
+                Data Processing settings (.txt)
+              </Tooltip>
+            )
         }
       </Menu.Item>
     </Menu>
@@ -761,7 +763,7 @@ const ProjectDetails = ({ width, height }) => {
         onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
-      <div width={width} height={height}>
+      <div id='project-details' width={width} height={height}>
         <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
           <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={3}>{activeProject.name}</Title>
