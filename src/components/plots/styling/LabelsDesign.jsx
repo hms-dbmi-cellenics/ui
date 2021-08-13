@@ -16,7 +16,7 @@ const LabelsDesign = (props) => {
 
       <p><strong>Toggle Labels</strong></p>
       <Form.Item>
-        <Radio.Group onChange={(e) => onUpdate({ label: { enabled: e.target.value } })} value={config.label.enabled}>
+        <Radio.Group onChange={(e) => onUpdate({ labels: { enabled: e.target.value } })} value={config.labels.enabled}>
           <Radio value>Show</Radio>
           <Radio value={false}>Hide</Radio>
         </Radio.Group>
@@ -27,12 +27,12 @@ const LabelsDesign = (props) => {
         label='Size'
       >
         <Slider
-          value={newConfig.label.size}
+          value={newConfig.labels.size}
           min={minLabelSize}
           max={maxLabelSize}
-          disabled={!config.label.enabled}
+          disabled={!config.labels.enabled}
           onChange={(value) => {
-            handleChange({ label: { size: value } });
+            handleChange({ labels: { size: value } });
           }}
           marks={{ 0: minLabelSize, 50: maxLabelSize }}
         />
