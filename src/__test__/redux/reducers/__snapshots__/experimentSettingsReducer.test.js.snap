@@ -2,11 +2,6 @@
 
 exports[`experimentSettingsReducer Adds new object properly 1`] = `
 Object {
-  "backendStatus": Object {
-    "error": false,
-    "loading": false,
-    "status": Object {},
-  },
   "info": Object {
     "experimentId": null,
     "experimentName": null,
@@ -43,11 +38,6 @@ Object {
 
 exports[`experimentSettingsReducer Adds new value properly 1`] = `
 Object {
-  "backendStatus": Object {
-    "error": false,
-    "loading": false,
-    "status": Object {},
-  },
   "info": Object {
     "experimentId": null,
     "experimentName": null,
@@ -78,11 +68,6 @@ Object {
 
 exports[`experimentSettingsReducer Updates existing value properly 1`] = `
 Object {
-  "backendStatus": Object {
-    "error": false,
-    "loading": false,
-    "status": Object {},
-  },
   "info": Object {
     "experimentId": null,
     "experimentName": null,
@@ -113,11 +98,6 @@ Object {
 
 exports[`experimentSettingsReducer Updates sample settings properly 1`] = `
 Object {
-  "backendStatus": Object {
-    "error": false,
-    "loading": false,
-    "status": Object {},
-  },
   "info": Object {
     "experimentId": null,
     "experimentName": null,
