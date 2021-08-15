@@ -10,11 +10,11 @@ import _ from 'lodash';
 import { Modal } from 'antd';
 import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
 
-import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
 import generateExperimentSettingsMock from '../../../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
+import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
 
-// import { EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING } from '../../../../../redux/actionTypes/experimentSettings';
+import { BACKEND_STATUS_LOADING } from '../../../../../redux/actionTypes/backendStatus';
 
 configure({ adapter: new Adapter() });
 
@@ -26,8 +26,26 @@ const sampleIds = ['sample-1', 'sample-2'];
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
-const getStore = (settings = {}) => {
+const getStore = (experimentId, settings = {}) => {
   const initialState = {
+    backendStatus: {
+      [experimentId]: {
+        loading: false,
+        error: false,
+        status: {
+          pipeline: {
+            status: 'SUCCEEDED',
+            completedSteps: [
+              'CellSizeDistributionFilter',
+              'MitochondrialContentFilter',
+              'ClassifierFilter',
+              'NumGenesVsNumUmisFilter',
+              'DoubletScoresFilter',
+            ],
+          },
+        },
+      },
+    },
     notifications: {},
     experimentSettings: {
       ...initialExperimentState,
@@ -45,27 +63,10 @@ const getStore = (settings = {}) => {
           changedQCFilters: new Set(),
         },
       },
-      backendStatus: {
-        loading: false,
-        error: false,
-        status: {
-          pipeline: {
-            status: 'SUCCEEDED',
-            completedSteps: [
-              'CellSizeDistributionFilter',
-              'MitochondrialContentFilter',
-              'ClassifierFilter',
-              'NumGenesVsNumUmisFilter',
-              'DoubletScoresFilter',
-            ],
-          },
-        },
-      },
     },
-    experiments: { experimentId: {} },
-    componentConfig: {
-      ...initialPlotConfigStates,
-    },
+    experiments: { [experimentId]: {} },
+    componentConfig: { ...initialPlotConfigStates },
+    cellSets: { ...initialCellSetsState },
     samples: {
       ids: sampleIds,
       meta: {
@@ -90,11 +91,12 @@ describe('DataProcessingPage', () => {
   const experimentData = {};
 
   it('renders correctly', () => {
-    const store = getStore();
+    const experimentId = 'experimentId';
+    const store = getStore(experimentId);
 
     const page = mount(
       <Provider store={store}>
-        <DataProcessingPage experimentId='experimentId' experimentData={experimentData} route='route'>
+        <DataProcessingPage experimentId={experimentId} experimentData={experimentData} route='route'>
           <></>
         </DataProcessingPage>
       </Provider>,
@@ -113,11 +115,12 @@ describe('DataProcessingPage', () => {
   });
 
   it('triggers the pipeline on click run filter', async () => {
-    const store = getStore({ experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
+    const experimentId = 'experimentId';
+    const store = getStore(experimentId, { experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
 
     const page = mount(
       <Provider store={store}>
-        <DataProcessingPage experimentId='experimentId' experimentData={experimentData} route='route'>
+        <DataProcessingPage experimentId={experimentId} experimentData={experimentData} route='route'>
           <></>
         </DataProcessingPage>
       </Provider>,
@@ -145,24 +148,28 @@ describe('DataProcessingPage', () => {
     // Pipeline is triggered on clicking run button
     await waitForActions(
       store,
-      [],
-      // [EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING],
+      [BACKEND_STATUS_LOADING],
       { matcher: waitForActions.matchers.containing },
     );
   });
 
   it('preFiltered on a sample disables filter', async () => {
-    const store = getStore({
-      samples: {
-        'sample-1': {
-          preFiltered: true,
+    const experimentId = 'experimentId';
+
+    const store = getStore(
+      experimentId,
+      {
+        samples: {
+          'sample-1': {
+            preFiltered: true,
+          },
         },
       },
-    });
+    );
 
     const page = mount(
       <Provider store={store}>
-        <DataProcessingPage experimentId='experimentId' experimentData={experimentData} route='route'>
+        <DataProcessingPage experimentId={experimentId} experimentData={experimentData} route='route'>
           <></>
         </DataProcessingPage>
       </Provider>,
