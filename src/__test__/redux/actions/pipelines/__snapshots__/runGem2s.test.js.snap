@@ -6,7 +6,7 @@ Array [
     "payload": Object {
       "experimentId": "experiment-id",
     },
-    "type": "experimentSettings/backendStatusLoading",
+    "type": "backendStatus/backendStatusLoading",
   },
   Object {
     "payload": Object {},
@@ -27,4 +27,20 @@ Array [
 ]
 `;
 
-exports[`runGem2s action Dispatches status error if loading fails 1`] = `Array []`;
+exports[`runGem2s action Dispatches status error if loading fails 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "experimentId": "experiment-id",
+    },
+    "type": "backendStatus/backendStatusLoading",
+  },
+  Object {
+    "payload": Object {
+      "error": "Could not start gem2s.",
+      "errorType": "some weird error that happened",
+    },
+    "type": "backendStatus/backendStatusError",
+  },
+]
+`;
