@@ -11,7 +11,9 @@ import {
   BACKEND_STATUS_ERROR,
 } from '../../actionTypes/backendStatus';
 
-import { saveProcessingSettings, loadBackendStatus } from '../experimentSettings';
+import { saveProcessingSettings } from '../experimentSettings';
+
+import { loadBackendStatus } from '../backendStatus';
 
 import { loadEmbedding } from '../embedding';
 

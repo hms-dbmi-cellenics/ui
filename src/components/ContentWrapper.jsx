@@ -19,7 +19,8 @@ import {
 import initUpdateSocket from '../utils/initUpdateSocket';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
-import { loadBackendStatus, discardChangedQCFilters } from '../redux/actions/experimentSettings';
+import { discardChangedQCFilters } from '../redux/actions/experimentSettings';
+import { loadBackendStatus } from '../redux/actions/backendStatus';
 import { runPipeline } from '../redux/actions/pipeline';
 
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';

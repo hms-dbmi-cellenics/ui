@@ -1,4 +1,5 @@
-import { updateBackendStatus, updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
+import { updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
+import { updateBackendStatus } from '../redux/actions/backendStatus';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 import { updateCellSetsClustering } from '../redux/actions/cellSets';

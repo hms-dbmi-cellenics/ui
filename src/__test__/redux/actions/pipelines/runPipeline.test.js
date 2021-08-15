@@ -4,7 +4,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import loadBackendStatus from '../../../../redux/actions/experimentSettings/backendStatus/loadBackendStatus';
+import loadBackendStatus from '../../../../redux/actions/backendStatus/loadBackendStatus';
 import saveProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 
 import {
@@ -28,7 +28,7 @@ const mockStore = configureStore([thunk]);
 jest.mock('localforage');
 enableFetchMocks();
 
-jest.mock('../../../../redux/actions/experimentSettings/backendStatus/loadBackendStatus',
+jest.mock('../../../../redux/actions/backendStatus/loadBackendStatus',
   () => jest.fn().mockImplementation(() => async () => { }));
 
 jest.mock('../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings');

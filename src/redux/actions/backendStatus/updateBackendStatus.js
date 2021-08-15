@@ -1,6 +1,6 @@
 import {
   BACKEND_STATUS_LOADED,
-} from '../../../actionTypes/backendStatus';
+} from '../../actionTypes/backendStatus';
 
 const updateBackendStatus = (experimentId, status) => async (dispatch) => {
   dispatch({

@@ -11,7 +11,7 @@ import {
   BACKEND_STATUS_ERROR,
 } from '../../actionTypes/backendStatus';
 
-import loadBackendStatus from '../experimentSettings/backendStatus/loadBackendStatus';
+import loadBackendStatus from '../backendStatus/loadBackendStatus';
 
 const runGem2s = (experimentId) => async (dispatch, getState) => {
   const { experiments } = getState();
