@@ -70,7 +70,6 @@ const VolcanoPlot = ({ experimentId }) => {
     if (data.length === 0) return;
     setDataPointStatus();
   }, []);
-
   const plotStylingControlsConfig = [
     {
       panelTitle: 'Main Schema',

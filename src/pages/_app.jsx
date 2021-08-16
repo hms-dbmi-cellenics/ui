@@ -17,7 +17,6 @@ import Error from './_error';
 import { wrapper } from '../redux/store';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
-import { ssrGetCurrentEnvironment } from '../utils/environment';
 
 import CustomError from '../utils/customError';
 
