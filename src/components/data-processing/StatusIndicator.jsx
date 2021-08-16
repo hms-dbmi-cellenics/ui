@@ -28,15 +28,9 @@ const StatusIndicator = (props) => {
     status: { pipeline },
   } = useSelector((state) => state.experimentSettings.backendStatus);
 
-  const mockPipelineData = {
-    startDate: '2021-01-01T00:00:00',
-    stopDate: '2021-01-01T00:00:00',
-    status: pipelineStatus.SUCCEEDED,
-  };
-
   const {
     startDate, stopDate, status, error,
-  } = pipeline || mockPipelineData;
+  } = pipeline;
 
   const statusIndicators = {
     [pipelineStatus.NOT_CREATED]: {
@@ -124,7 +118,7 @@ const StatusIndicator = (props) => {
         </Text>
       </Paragraph>
       <Paragraph>
-        <Text>{`${completedSteps?.length || 0} of ${allSteps.length} steps complete`}</Text>
+        <Text>{`${completedSteps} of ${allSteps.length} steps complete`}</Text>
       </Paragraph>
       <Paragraph>
         {statusIndicators[status].description}
@@ -145,7 +139,7 @@ const StatusIndicator = (props) => {
           <StepsIndicator
             allSteps={allSteps}
             currentStep={currentStep}
-            completedSteps={completedSteps?.length || []}
+            completedSteps={completedSteps}
           />
           <div style={{ display: 'inline-block' }}>
             {statusIndicators[status].icon}

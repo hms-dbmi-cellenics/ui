@@ -19,7 +19,7 @@ const CategoricalEmbeddingPlot = (props) => {
   const cellSets = useSelector((state) => state.cellSets);
 
   const embeddingSettings = useSelector(
-    (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings || {},
+    (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
   );
   const {
     data: embeddingData,

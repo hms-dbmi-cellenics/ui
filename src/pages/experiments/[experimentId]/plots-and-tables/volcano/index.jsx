@@ -27,7 +27,6 @@ import {
 import PlatformError from 'components/PlatformError';
 import { setComparisonGroup } from 'redux/actions/differentialExpression';
 import Loader from 'components/Loader';
-import { captureNewPageView } from 'utils/tracking';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -71,11 +70,6 @@ const VolcanoPlot = ({ experimentId }) => {
     if (data.length === 0) return;
     setDataPointStatus();
   }, []);
-
-  useEffect(() => {
-    if (config) captureNewPageView();
-  }, [config]);
-
   const plotStylingControlsConfig = [
     {
       panelTitle: 'Main Schema',

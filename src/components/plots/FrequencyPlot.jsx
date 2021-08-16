@@ -4,7 +4,6 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 
 import loadCellSets from '../../redux/actions/cellSets/loadCellSets';
-import { captureNewPageView } from '../../utils/tracking';
 
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateFrequencySpec';
 
@@ -33,10 +32,6 @@ const FrequencyPlot = (props) => {
       setPlotSpec(generateSpec(config, generateData(hierarchy, properties, config)));
     }
   }, [hierarchy, properties, config]);
-
-  useEffect(() => {
-    captureNewPageView();
-  }, []);
 
   return (
     <center>

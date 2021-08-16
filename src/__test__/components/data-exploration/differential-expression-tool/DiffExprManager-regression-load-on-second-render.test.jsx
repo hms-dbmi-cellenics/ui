@@ -22,11 +22,6 @@ jest.mock('../../../../utils/environment', () => ({
   isBrowser: () => true,
 }));
 
-jest.mock('../../../../utils/tracking', () => ({
-  __esModule: true,
-  captureNewPageView: () => jest.fn(),
-}));
-
 jest.mock('../../../../utils/cacheRequest', () => ({
   __esModule: true, // this property makes it work
   fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({

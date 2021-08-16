@@ -13,7 +13,6 @@ import {
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { captureNewPageView } from 'utils/tracking';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
@@ -44,7 +43,6 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
     // try to load the plot configuration.
     dispatch(loadCellSets(experimentId));
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    captureNewPageView();
   }, []);
 
   const generateCellSetOptions = () => {

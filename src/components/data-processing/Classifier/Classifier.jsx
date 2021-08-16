@@ -6,7 +6,6 @@ import {
   Collapse, Row, Col, Space, Skeleton, Divider,
 } from 'antd';
 
-import { captureNewPageView } from 'utils/tracking';
 import {
   updatePlotConfig,
   loadPlotConfig,
