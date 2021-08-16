@@ -40,20 +40,22 @@ const inspectFile = async (file, technology) => {
 
   const valid = isGzipped ? Verdict.VALID_ZIPPED : Verdict.VALID_UNZIPPED;
 
+  // check matrix file starts with matrix signature
   if (file.name.startsWith('matrix')
     && !data.slice(0, MATRIX_SIGNATURE.length).compare(MATRIX_SIGNATURE)) {
     return valid;
   }
 
-  // check file starts with Ensembl Stable ID - ENS or "ENS
+  // check genes file starts with Ensembl Stable ID - ENS or "ENS
   if ((file.name.startsWith('features') || file.name.startsWith('genes'))
       && (!data.slice(0, 3).compare(FEATURES_SIGNATURE)
       || !data.slice(1, 4).compare(FEATURES_SIGNATURE))) {
     return valid;
   }
 
+  // check barcodes file starts with a 16 digit DNA sequence
   if (file.name.startsWith('barcodes')
-      && strFromU8(data).match(/^[CFAGT]+$/)) {
+      && strFromU8(data).match(/^[ACGT]+$/)) {
     return valid;
   }
 
