@@ -761,7 +761,7 @@ const ProjectDetails = ({ width, height }) => {
         onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
-      <div width={width} height={height}>
+      <div id='project-details' width={width} height={height}>
         <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
           <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={3}>{activeProject.name}</Title>

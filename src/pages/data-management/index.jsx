@@ -26,15 +26,19 @@ const DataManagementPage = ({ route }) => {
   const {
     saving: projectSaving,
   } = projectsList.meta;
+
   const {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
+
   const {
     activeProjectUuid,
     loading: projectsLoading,
   } = useSelector((state) => state.projects.meta);
+
   const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
+  const [justLoggedIn, setJustLoggedIn] = useState(true);
   const activeProject = projectsList[activeProjectUuid];
 
   const existingExperiments = activeProject?.experiments
@@ -87,13 +91,15 @@ const DataManagementPage = ({ route }) => {
   }, [activeProjectUuid]);
 
   useEffect(() => {
-    if (projectsLoading === true) {
+    // only open the modal the first time a user logs in if there are no projects
+    if (justLoggedIn === false || projectsLoading === true) {
       return;
     }
+
+    setJustLoggedIn(false);
+
     if (projectsList.ids.length === 0) {
       setNewProjectModalVisible(true);
-    } else {
-      setNewProjectModalVisible(false);
     }
   }, [projectsList, projectsLoading]);
 
@@ -119,7 +125,12 @@ const DataManagementPage = ({ route }) => {
           direction='vertical'
           style={{ width: '100%' }}
         >
-          <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
+          <Button
+            id='create-new-project-modal'
+            type='primary'
+            block
+            onClick={() => setNewProjectModalVisible(true)}
+          >
             Create New Project
           </Button>
           <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
