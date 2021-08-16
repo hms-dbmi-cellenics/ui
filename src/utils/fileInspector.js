@@ -1,4 +1,4 @@
-import { Gunzip } from 'fflate';
+import { Gunzip, strFromU8 } from 'fflate';
 
 import techOptions from './fileUploadSpecifications';
 import readFileToBuffer from './readFileToBuffer';
@@ -52,7 +52,8 @@ const inspectFile = async (file, technology) => {
     return valid;
   }
 
-  if (file.name.startsWith('barcodes')) {
+  if (file.name.startsWith('barcodes')
+      && strFromU8(data).match(/^[CFAGT]+$/)) {
     return valid;
   }
 
