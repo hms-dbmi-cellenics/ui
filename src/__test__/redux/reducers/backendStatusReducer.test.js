@@ -1,88 +1,75 @@
-// import backendStatusReducer from '../../../redux/reducers/backendStatus';
-// import initialState from '../../../redux/reducers/backendStatus/initialState';
+import _ from 'lodash';
+
+import backendStatusReducer from '../../../redux/reducers/backendStatus';
+import initialState, { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
+
+import {
+  BACKEND_STATUS_LOADING,
+  BACKEND_STATUS_ERROR,
+  BACKEND_STATUS_LOADED,
+} from '../../../redux/actionTypes/backendStatus';
 
 /* eslint-disable max-len */
 describe('backendStatusReducer.test.js', () => {
+  const experimentId = '1234';
+
   it('updates backend status on error properly', () => {
-    // const newState = backendStatusReducer(initialExperimentState,
-    //   {
-    //     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
-    //     payload:
-    //     {
-    //       error: 'error',
-    //     },
-    //   });
+    const newState = backendStatusReducer(initialState,
+      {
+        type: BACKEND_STATUS_ERROR,
+        payload:
+        {
+          experimentId,
+          error: 'error',
+        },
+      });
 
-    // const newState = backendStatusReducer(initialExperimentState,
-    //   {
-    //     type: 'fail',
-    //     payload:
-    //     {
-    //       error: 'error',
-    //     },
-    //   });
+    expect(newState[experimentId].error).toEqual('error');
 
-    // expect(newState.backendStatus.error).toEqual('error');
-
-    // // Nothing else changes
-    // expect(newState).toMatchSnapshot();
+    // Nothing else changes
+    expect(newState).toMatchSnapshot();
   });
 
   it('updates backend status on loading properly', () => {
-    // const newState = backendStatusReducer(initialExperimentState,
-    //   { type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING });
+    const newState = backendStatusReducer(initialState,
+      { type: BACKEND_STATUS_LOADING, payload: { experimentId } });
 
-    // const newState = backendStatusReducer(initialExperimentState,
-    //   {
-    //     type: 'fail',
-    //     payload:
-    //     {
-    //       error: 'error',
-    //     },
-    //   });
+    expect(newState[experimentId].loading).toEqual(true);
+    expect(newState[experimentId].error).toEqual(false);
 
-    // expect(newState.backendStatus.loading).toEqual(true);
-    // expect(newState.backendStatus.error).toEqual(false);
-
-    // // Nothing else changes
-    // expect(newState).toMatchSnapshot();
+    // Nothing else changes
+    expect(newState).toMatchSnapshot();
   });
 
   it('updates backend status on loaded properly', () => {
-    // const initialExperimentStateWithPipelineStatus = _.cloneDeep(initialExperimentState);
+    const initialBackendPipelineStatus = _.cloneDeep(initialState);
 
-    // initialExperimentStateWithPipelineStatus.backendStatus.status.pipeline = { status: 'NotCreated' };
+    initialBackendPipelineStatus[experimentId] = initialExperimentBackendStatus;
 
-    // const newState = backendStatusReducer(initialExperimentStateWithPipelineStatus,
-    //   {
-    //     type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
-    //     payload: {
-    //       status: {
-    //         gem2s: { status: 'Running' },
-    //       },
-    //     },
-    //   });
+    initialBackendPipelineStatus[experimentId].status.pipeline = { status: 'NotCreated' };
 
-    // const newState = backendStatusReducer(initialExperimentState,
-    //   {
-    //     type: 'fail',
-    //     payload:
-    //     {
-    //       error: 'error',
-    //     },
-    //   });
+    const newState = backendStatusReducer(initialBackendPipelineStatus,
+      {
+        type: BACKEND_STATUS_LOADED,
+        payload: {
+          experimentId,
+          status: {
+            gem2s: { status: 'Running' },
+          },
+        },
+      });
 
-    // // Sets backend load states correctly
-    // expect(newState.backendStatus.loading).toEqual(false);
-    // expect(newState.backendStatus.error).toEqual(false);
+    // Sets backend load states correctly
+    expect(newState[experimentId].loading).toEqual(false);
+    expect(newState[experimentId].error).toEqual(false);
 
-    // // New state of updated service is there
-    // expect(newState.backendStatus.status.gem2s.status).toEqual('Running');
+    // New state of updated service is there
+    expect(newState[experimentId].status.gem2s.status).toEqual('Running');
 
-    // // Previous state of another service is still there
-    // expect(newState.backendStatus.status.pipeline.status).toEqual('NotCreated');
+    // Previous state of another service is still there
+    expect(newState[experimentId].status.pipeline.status).toEqual('NotCreated');
 
-    // // Nothing else changes
-    // expect(newState).toMatchSnapshot();
+    // Nothing else changes
+    expect(newState).toMatchSnapshot();
   });
 });
