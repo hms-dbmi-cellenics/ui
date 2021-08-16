@@ -20,7 +20,6 @@ const UploadDetailsModal = (props) => {
   } = file;
 
   const status = upload?.status;
-  const bundleName = bundle?.name;
 
   const inputFileRef = useRef(null);
   const [replacementFileBundle, setReplacementFileBundle] = useState(null);
@@ -155,7 +154,7 @@ const UploadDetailsModal = (props) => {
         {!isNotUploadedModal && (
           <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
             <Col span={5}>Filename</Col>
-            <Col span={10}>{bundleName}</Col>
+            <Col span={10}>{file.name}</Col>
           </Row>
         )}
 

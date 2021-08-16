@@ -571,10 +571,7 @@ const ProjectDetails = ({ width, height }) => {
 
     const downloadedS3Object = await Storage.get(bucketKey, { download: true });
 
-    const bundleName = file?.bundle.name;
-    const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
-
-    saveAs(downloadedS3Object.Body, fileNameToSaveWith);
+    saveAs(downloadedS3Object.Body, file.name);
   };
 
   const openAnalysisModal = () => {
