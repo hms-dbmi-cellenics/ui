@@ -15,7 +15,7 @@ const trackingInfo = {
     containerId: 'lkIodjnO',
   },
   [Env.STAGING]: {
-    enabled: false,
+    enabled: true,
     siteId: 2,
     containerId: 'FX7UBNS6',
   },
