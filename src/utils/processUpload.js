@@ -220,11 +220,7 @@ const bundleToFile = async (bundle, technology) => {
 };
 
 export {
-  compressAndUploadSingleFile,
-  metadataForBundle,
-  renameFileIfNeeded,
   bundleToFile,
   uploadSingleFile1,
+  processUpload,
 };
-
-export default processUpload;

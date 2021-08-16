@@ -1,3 +1,5 @@
+import { Gunzip } from 'fflate';
+
 import techOptions from './fileUploadSpecifications';
 import readFileToBuffer from './readFileToBuffer';
 
@@ -25,28 +27,35 @@ const inspectFile = async (file, technology) => {
   }
 
   // if name is valid, inspect first 16 bytes to validate format
-  const data = await readFileToBuffer(file.slice(0, 16));
+  let data = await readFileToBuffer(file.slice(0, 16));
 
   const fileSignature = data.slice(0, 2);
   const isGzipped = !fileSignature.compare(GZIP_SIGNATURE);
+
   if (isGzipped) {
-    return Verdict.VALID_ZIPPED;
+    // eslint-disable-next-line no-unused-vars
+    const deflateStream = new Gunzip((chunk, _) => {
+      data = Buffer.from(chunk.slice(0, 16));
+    });
+    deflateStream.push(await readFileToBuffer(file.slice(0, 128)));
   }
+
+  const valid = isGzipped ? Verdict.VALID_ZIPPED : Verdict.VALID_UNZIPPED;
 
   if (file.name.startsWith('matrix')
     && !data.slice(0, MATRIX_SIGNATURE.length).compare(MATRIX_SIGNATURE)) {
-    return Verdict.VALID_MATRIX;
+    return valid;
   }
 
   // check file starts with Ensembl Stable ID - ENS or "ENS
   if ((file.name.startsWith('features') || file.name.startsWith('genes'))
       && (!data.slice(0, 3).compare(FEATURES_SIGNATURE)
       || !data.slice(1, 4).compare(FEATURES_SIGNATURE))) {
-    return Verdict.VALID_FEATURES;
+    return valid;
   }
 
   if (file.name.startsWith('barcodes')) {
-    return Verdict.VALID_BARCODES;
+    return valid;
   }
 
   return Verdict.INVALID_FORMAT;

@@ -11,7 +11,7 @@ import initialSampleState, { sampleTemplate } from '../../redux/reducers/samples
 import initialProjectState, { projectTemplate } from '../../redux/reducers/projects/initialState';
 import initialExperimentState, { experimentTemplate } from '../../redux/reducers/experiments/initialState';
 
-import processUpload from '../../utils/processUpload';
+import { processUpload } from '../../utils/processUpload';
 import UploadStatus from '../../utils/UploadStatus';
 
 enableFetchMocks();

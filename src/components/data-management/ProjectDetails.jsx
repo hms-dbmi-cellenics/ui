@@ -28,6 +28,7 @@ import MetadataPopover from './MetadataPopover';
 
 import { trackAnalysisLaunched } from '../../utils/tracking';
 import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
+
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
@@ -37,13 +38,13 @@ import {
   updateMetadataTrack,
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
-
-import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
-
 import {
   updateExperiment,
 } from '../../redux/actions/experiments';
-import processUpload, { uploadSingleFile1 } from '../../utils/processUpload';
+
+import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
+
+import { processUpload, uploadSingleFile1 } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
