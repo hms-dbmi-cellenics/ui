@@ -44,7 +44,7 @@ import {
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
-import { processUpload, uploadSingleFile1 } from '../../utils/processUpload';
+import { processUpload, uploadSingleFile } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
@@ -109,6 +109,15 @@ const ProjectDetails = ({ width, height }) => {
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
     setUploadModalVisible(false);
+  };
+
+  const uploadFile = (newFile) => {
+    if (!uploadDetailsModalDataRef.current) {
+      return;
+    }
+    const { sampleUuid } = uploadDetailsModalDataRef.current;
+    uploadSingleFile(newFile, activeProjectUuid, sampleUuid, dispatch);
+    setUploadDetailsModalVisible(false);
   };
 
   useEffect(() => {
@@ -556,18 +565,6 @@ const ProjectDetails = ({ width, height }) => {
     dispatch(updateProject(activeProjectUuid, { description }));
   };
 
-  const uploadSingleFile = (newFile) => {
-    if (!uploadDetailsModalDataRef.current) {
-      return;
-    }
-
-    const { sampleUuid } = uploadDetailsModalDataRef.current;
-
-    uploadSingleFile1(newFile, activeProjectUuid, sampleUuid, dispatch);
-
-    setUploadDetailsModalVisible(false);
-  };
-
   const downloadFile = async () => {
     const { sampleUuid, file } = uploadDetailsModalDataRef.current;
     const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
@@ -742,7 +739,7 @@ const ProjectDetails = ({ width, height }) => {
         file={uploadDetailsModalDataRef.current?.file}
         fileCategory={uploadDetailsModalDataRef.current?.fileCategory}
         visible={uploadDetailsModalVisible}
-        onUpload={uploadSingleFile}
+        onUpload={uploadFile}
         onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />

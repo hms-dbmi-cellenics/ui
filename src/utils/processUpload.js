@@ -124,7 +124,7 @@ const renameFileIfNeeded = (fileName, type) => {
   return newFileName;
 };
 
-const uploadSingleFile1 = (newFile, activeProjectUuid, sampleUuid, dispatch) => {
+const uploadSingleFile = (newFile, activeProjectUuid, sampleUuid, dispatch) => {
   const bucketKey = `${activeProjectUuid}/${sampleUuid}/${newFile.bundle.name}`;
 
   const metadata = metadataForBundle(newFile);
@@ -138,7 +138,7 @@ const uploadSingleFile1 = (newFile, activeProjectUuid, sampleUuid, dispatch) => 
 
 const compressAndUpload = (sample, activeProjectUuid, dispatch) => Object.fromEntries(
   Object.values(sample.files)
-    .map((file) => uploadSingleFile1(file, activeProjectUuid, sample.uuid, dispatch)),
+    .map((file) => uploadSingleFile(file, activeProjectUuid, sample.uuid, dispatch)),
 );
 
 const processUpload = async (filesList, sampleType, samples, activeProjectUuid, dispatch) => {
@@ -221,6 +221,6 @@ const bundleToFile = async (bundle, technology) => {
 
 export {
   bundleToFile,
-  uploadSingleFile1,
+  uploadSingleFile,
   processUpload,
 };
