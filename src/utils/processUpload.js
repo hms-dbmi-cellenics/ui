@@ -191,6 +191,7 @@ const bundleToFile = async (bundle, technology) => {
 
   let filename;
   if (bundle.path) {
+    // trim path to just the file and its folder
     filename = _.takeRight(bundle.path.split('/'), 2).join('/');
   } else {
     filename = bundle.name;
@@ -212,7 +213,7 @@ const bundleToFile = async (bundle, technology) => {
       status: UploadStatus.UPLOADING,
       progress: 0,
     },
-    valid: error.length === 0,
+    valid: !error,
     errors: error,
     compressed: verdict === Verdict.VALID_ZIPPED,
   };
