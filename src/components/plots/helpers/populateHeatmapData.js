@@ -258,9 +258,9 @@ const populateHeatmapData = (
     rootNode,
   ));
 
+  data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
+  data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
   data.clusterSeparationLines = trackData[0].clusterSeparationLines;
-  data.trackColorData = trackData[0].trackColorData;
-  data.trackGroupData = trackData[0].groupData;
   return data;
 };
 export default populateHeatmapData;
