@@ -125,11 +125,11 @@ const renameFileIfNeeded = (fileName, type) => {
 };
 
 const uploadSingleFile = (newFile, activeProjectUuid, sampleUuid, dispatch) => {
-  const bucketKey = `${activeProjectUuid}/${sampleUuid}/${newFile.bundle.name}`;
-
   const metadata = metadataForBundle(newFile);
 
   const newFileName = renameFileIfNeeded(newFile.bundle.name, newFile.bundle.type);
+
+  const bucketKey = `${activeProjectUuid}/${sampleUuid}/${newFileName}`;
 
   compressAndUploadSingleFile(bucketKey, sampleUuid, newFileName, newFile, dispatch, metadata);
 
