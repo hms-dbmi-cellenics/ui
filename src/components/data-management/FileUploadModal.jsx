@@ -59,7 +59,7 @@ const FileUploadModal = (props) => {
       return bundleToFile(file, selectedTech);
     }));
 
-    setFilesList(filesList.concat(newFiles));
+    setFilesList([...filesList, ...newFiles]);
   };
 
   const removeFile = (fileIdx) => {
