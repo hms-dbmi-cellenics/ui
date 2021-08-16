@@ -49,7 +49,7 @@ const markerBaseState = {
 
 const labelBaseState = {
   enabled: true,
-  size: 28,
+  size: 18,
 };
 
 export {

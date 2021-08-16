@@ -15,6 +15,8 @@ import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
 import LoadingModal from '../../components/LoadingModal';
+
+import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import loadBackendStatus from '../../redux/actions/experimentSettings/backendStatus/loadBackendStatus';
 
 const DataManagementPage = ({ route }) => {
@@ -32,6 +34,7 @@ const DataManagementPage = ({ route }) => {
   } = useSelector((state) => state.projects.meta);
   const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
+  const [justLoggedIn, setJustLoggedIn] = useState(true);
   const activeProject = projectsList[activeProjectUuid];
 
   const existingExperiments = activeProject?.experiments
@@ -68,27 +71,36 @@ const DataManagementPage = ({ route }) => {
     // ID so the experiments load will fail this should be addressed by migrating experiments.
     // However, for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
     // and we should not try to load the experiments with it
-    if (!activeProjectUuid || !isUuid(activeProjectUuid)) return;
+    if (
+      !activeProjectUuid
+      || !isUuid(activeProjectUuid)
+      || !projectsList[activeProjectUuid]?.experiments
+      || !projectsList[activeProjectUuid]?.experiments[0]
+    ) return;
 
     // Right now we have one experiment per project, so we can just load the experiment
     // This has to be changed when we have more than one experiment
-    const activeExperimentId = activeProject.experiments[0];
+    const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
+
+    dispatch(loadProcessingSettings(activeExperimentId));
 
     if (!experimentsAreLoaded) {
       dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
     }
 
     if (experiments[activeExperimentId]) updateRunStatus(activeExperimentId);
-  }, [activeProject]);
+  }, [activeProjectUuid]);
 
   useEffect(() => {
-    if (projectsLoading === true) {
+    // only open the modal the first time a user logs in if there are no projects
+    if (justLoggedIn === false || projectsLoading === true) {
       return;
     }
+
+    setJustLoggedIn(false);
+
     if (projectsList.ids.length === 0) {
       setNewProjectModalVisible(true);
-    } else {
-      setNewProjectModalVisible(false);
     }
   }, [projectsList, projectsLoading]);
 
@@ -114,7 +126,12 @@ const DataManagementPage = ({ route }) => {
           direction='vertical'
           style={{ width: '100%' }}
         >
-          <Button type='primary' block onClick={() => setNewProjectModalVisible(true)}>
+          <Button
+            id='create-new-project-modal'
+            type='primary'
+            block
+            onClick={() => setNewProjectModalVisible(true)}
+          >
             Create New Project
           </Button>
           <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
