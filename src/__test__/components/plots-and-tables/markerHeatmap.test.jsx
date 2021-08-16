@@ -216,7 +216,7 @@ describe('Marker heatmap plot', () => {
     expect(loadMarkersSpy).toHaveBeenCalled();
   });
 
-  it('sorts genes properly', async () => {
+  it('sorts genes properly when adding a gene', async () => {
     await renderHeatmapPage();
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
 
@@ -225,7 +225,7 @@ describe('Marker heatmap plot', () => {
     expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene1', 'gene2', 'gene3']);
   });
 
-  it('removing a gene keeps the sorted order', async () => {
+  it('removing a gene keeps the sorted order without re-sorting', async () => {
     await renderHeatmapPage();
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
     store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene3'], plotUuid));
