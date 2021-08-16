@@ -18,7 +18,7 @@ const trackingInfo = {
     siteId: 2,
   },
   [Env.DEVELOPMENT]: {
-    enabled: true,
+    enabled: false,
     siteId: 3,
   },
 };
