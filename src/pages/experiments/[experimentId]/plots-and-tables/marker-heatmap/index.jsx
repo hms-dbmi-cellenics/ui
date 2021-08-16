@@ -37,7 +37,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   const cellSets = useSelector((state) => state.cellSets);
   const { hierarchy, properties } = cellSets;
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
-  const [currentSearchedGenes, setCurrentSearchedGenes] = useState([]);
   const {
     loading: loadingMarkerGenes,
     error: errorMarkerGenes,
@@ -78,16 +77,17 @@ const MarkerHeatmap = ({ experimentId }) => {
     };
 
     const getClusterForGene = (gene) => {
-      let maxAverageExpression = [0];
+      const maxAverageExpression = { expression: 0, clusterId: -1 };
 
       clusters.forEach((cluster, clusterIndx) => {
         const currentCellIds = getCellIdsForCluster(cluster.key);
         const currentAverageExpression = getAverageExpressionForGene(gene, currentCellIds);
-        if (currentAverageExpression > maxAverageExpression[0]) {
-          maxAverageExpression = [currentAverageExpression, clusterIndx];
+        if (currentAverageExpression > maxAverageExpression.expression) {
+          maxAverageExpression.expression = currentAverageExpression;
+          maxAverageExpression.clusterId = clusterIndx;
         }
       });
-      return maxAverageExpression[1];
+      return maxAverageExpression.clusterId;
     };
 
     const newOrder = _.cloneDeep(config.selectedGenes);
@@ -125,7 +125,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       } else {
         newOrder = sortGenes(newGenes);
       }
-      setCurrentSearchedGenes(newOrder);
       updatePlotWithChanges({ selectedGenes: newOrder });
     }
   }, [selectedGenes, config?.selectedGenes]);
@@ -171,7 +170,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   };
 
   const onGeneEnter = (genes) => {
-    setCurrentSearchedGenes(genes);
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
@@ -189,7 +187,7 @@ const MarkerHeatmap = ({ experimentId }) => {
         <PlatformError
           description='Could not load gene expression data.'
           error={error}
-          onClick={() => dispatch(loadGeneExpression(experimentId, currentSearchedGenes, plotUuid))}
+          onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid))}
         />
       );
     }
