@@ -43,7 +43,7 @@ const generateSpec = (config, plotData) => {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config?.dimensions.width,
     height: config?.dimensions.height,
-    autosize: 'fit',
+    autosize: { type: 'fit', resize: true },
     background: config?.colour.toggleInvert,
     padding: 5,
     data: [
@@ -158,16 +158,13 @@ const generateSpec = (config, plotData) => {
           enter: {
             x: { scale: 'x', field: 'meanX' },
             y: { scale: 'y', field: 'meanY' },
-            text: { scale: 'sampleToName', field: 'cluster' },
-            fontSize: config?.label.size,
-            strokeWidth: 1.2,
-            fill: config?.colour.masterColour,
-            fillOpacity: config?.label.enabled,
-            font: config?.fontStyle.font,
-
+            text: { field: 'cluster' },
+            fontSize: { value: config?.labels.size },
+            strokeWidth: { value: 1.2 },
+            fill: { value: config?.colour.masterColour },
+            fillOpacity: { value: config?.labels.enabled },
+            font: { value: config?.fontStyle.font },
           },
-          transform: [
-            { type: 'label', size: ['width', 'height'] }],
         },
       },
     ],

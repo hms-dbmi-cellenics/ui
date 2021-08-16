@@ -35,7 +35,7 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on success 
   "calls": Array [
     Array [
       "1234",
-      30,
+      180,
       Object {
         "limit": 20,
         "name": "ListGenes",

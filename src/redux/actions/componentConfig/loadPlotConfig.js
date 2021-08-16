@@ -18,6 +18,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
       dispatch({
         type: LOAD_CONFIG,
         payload: {
+          plotData: [],
           ...data,
           plotType,
           config,

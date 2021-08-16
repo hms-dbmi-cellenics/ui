@@ -163,7 +163,6 @@ describe('GeneListTool', () => {
         selectFields: ['gene_names', 'dispersions'],
       },
       backendStatus.status,
-      { timeout: 30 },
     );
 
     expect(store.getActions()[0]).toMatchSnapshot();
