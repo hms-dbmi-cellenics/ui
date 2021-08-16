@@ -138,8 +138,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
     const spec = generateSpec(config, 'Cluster ID', plotUuid);
-    const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes);
-
+    const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes, true);
     const newVegaSpec = {
       ...spec,
       axes: [...spec.axes, ...displayLabels()],
@@ -149,7 +148,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       })),
     };
     setVegaSpec(newVegaSpec);
-  }, [expressionData, config, cellSets]);
+  }, [config, cellSets]);
 
   const displayLabels = () => {
     // if there are more than 53 genes - do not display the labels axe
@@ -242,10 +241,6 @@ const MarkerHeatmap = ({ experimentId }) => {
           controls: ['font'],
         },
       ],
-    },
-    {
-      panelTitle: 'Metadata Tracks',
-      controls: ['metadataTracksDisplayEditor'],
     },
     {
       panelTitle: 'Colours',

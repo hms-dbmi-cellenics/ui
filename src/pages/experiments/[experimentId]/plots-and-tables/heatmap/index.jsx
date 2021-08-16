@@ -161,10 +161,6 @@ const HeatmapPlot = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Metadata Tracks',
-      controls: ['metadataTracksDisplayEditor'],
-    },
-    {
       panelTitle: 'Colours',
       controls: ['colourScheme'],
     },

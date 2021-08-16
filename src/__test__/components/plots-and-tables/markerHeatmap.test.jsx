@@ -219,11 +219,17 @@ describe('Marker heatmap plot', () => {
   it('sorts genes properly', async () => {
     await renderHeatmapPage();
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
-    const geneSelection = rtl.screen.getByText('Gene selection');
-    userEvent.click(geneSelection);
 
     store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene1', 'gene3', 'gene2'], plotUuid));
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(2));
     expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene1', 'gene2', 'gene3']);
+  });
+
+  it('removing a gene keeps the sorted order', async () => {
+    await renderHeatmapPage();
+    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
+    store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene3'], plotUuid));
+    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(3));
+    expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene3']);
   });
 });
