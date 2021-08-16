@@ -4,6 +4,7 @@ import _ from 'lodash';
 import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
 import UploadStatus from './UploadStatus';
+import { inspectFile, VERDICT } from './fileInspector';
 
 const putInS3 = async (bucketKey, loadedFileData, dispatch, sampleUuid, fileName, metadata) => (
   Storage.put(
@@ -197,5 +198,46 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   });
 };
 
-export { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded };
+const bundleToFile = async (bundle, technology) => {
+  // This is the first stage in uploading a file.
+  // First character of file.path === '/' means a directory is uploaded
+  // Remove initial slash so that it does not create an empty directory in S3
+  console.debug('HERE', bundle);
+
+  let filename;
+  if (bundle.path && bundle.path.startsWith('/')) {
+    filename = bundle.path.substring(1);
+  } else {
+    filename = bundle.name;
+  }
+
+  const verdict = await inspectFile(bundle, technology);
+
+  let error = '';
+  if (verdict === VERDICT.INVALID_NAME) {
+    error = 'Invalid file name.';
+  } else if (verdict === VERDICT.INVALID_FORMAT) {
+    error = 'Invalid file format.';
+  }
+
+  return {
+    name: filename,
+    bundle,
+    upload: {
+      status: UploadStatus.UPLOADING,
+      progress: 0,
+    },
+    valid: error.length === 0,
+    errors: error,
+    compressed: verdict === VERDICT.VALID_ZIPPED,
+  };
+};
+
+export {
+  compressAndUploadSingleFile,
+  metadataForBundle,
+  renameFileIfNeeded,
+  bundleToFile,
+};
+
 export default processUpload;

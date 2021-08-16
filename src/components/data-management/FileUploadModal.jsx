@@ -17,9 +17,8 @@ import {
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 import techOptions from '../../utils/fileUploadSpecifications';
-import UploadStatus from '../../utils/UploadStatus';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
-import { inspectFile, VERDICT } from '../../utils/fileInspector';
+import { bundleToFile } from '../../utils/processUpload';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -39,7 +38,6 @@ const FileUploadModal = (props) => {
 
   // Handle on Drop
   const onDrop = async (acceptedFiles) => {
-    const newList = [];
     let filesNotInFolder = false;
     const filteredFiles = acceptedFiles
       // Remove all hidden files
@@ -57,35 +55,11 @@ const FileUploadModal = (props) => {
       pushNotificationMessage('error', 'Only files contained in folder are accepted');
     }
 
-    await Promise.all(filteredFiles.map(async (file) => {
-      const error = [];
-      // First character of file.path === '/' means a directory is uploaded
-      // Remove initial slash so that it does not create an empty directory in S3
-      const paths = file.path.split('/');
-      const fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
-
-      const verdict = inspectFile(file, selectedTech);
-
-      if (verdict === VERDICT.INVALID_NAME) {
-        error.push('Invalid file name.');
-      } else if (verdict === VERDICT.INVALID_FORMAT) {
-        error.push('Invalid file format.')
-      }
-
-      newList.push({
-        name: fileName,
-        bundle: file,
-        upload: {
-          status: UploadStatus.UPLOADING,
-          progress: 0,
-        },
-        valid: error.length === 0,
-        errors: error.join(', '),
-        compressed: verdict === VERDICT.VALID_ZIPPED,
-      });
+    const newFiles = await Promise.all(filteredFiles.map(async (file) => {
+      return bundleToFile(file, selectedTech);
     }));
 
-    setFilesList([...filesList, ...newList]);
+    setFilesList(filesList.concat(newFiles));
   };
 
   const removeFile = (fileIdx) => {

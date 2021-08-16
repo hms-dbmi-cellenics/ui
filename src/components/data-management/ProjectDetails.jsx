@@ -555,23 +555,25 @@ const ProjectDetails = ({ width, height }) => {
     dispatch(updateProject(activeProjectUuid, { description }));
   };
 
-  const uploadFileBundle = (bundleToUpload) => {
+  const uploadSingleFile = (newFile) => {
     if (!uploadDetailsModalDataRef.current) {
       return;
     }
-    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
 
-    // when uploading only one file - bundleToUpload doesn't have .name
-    const name = file.name || bundleToUpload.name;
+    // TODO want to call same path as FileUploadModal triggers
+
+    const { sampleUuid } = uploadDetailsModalDataRef.current;
+
+    const name = newFile.name;
     const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
 
-    const metadata = metadataForBundle(bundleToUpload);
+    const metadata = metadataForBundle(newFile);
 
-    const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
+    const newFileName = renameFileIfNeeded(name, newFile.type);
 
     compressAndUploadSingleFile(
-      bucketKey, sampleUuid, newFileName, file,
-      bundleToUpload, dispatch, metadata,
+      bucketKey, sampleUuid, newFileName, newFile,
+      newFile.bundle, dispatch, metadata,
     );
 
     setUploadDetailsModalVisible(false);
@@ -751,7 +753,7 @@ const ProjectDetails = ({ width, height }) => {
         file={uploadDetailsModalDataRef.current?.file}
         fileCategory={uploadDetailsModalDataRef.current?.fileCategory}
         visible={uploadDetailsModalVisible}
-        onUpload={uploadFileBundle}
+        onUpload={uploadSingleFile}
         onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
