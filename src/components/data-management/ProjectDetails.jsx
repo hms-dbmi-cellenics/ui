@@ -43,7 +43,7 @@ import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 import {
   updateExperiment,
 } from '../../redux/actions/experiments';
-import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
+import processUpload, { uploadSingleFile1 } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
@@ -560,18 +560,9 @@ const ProjectDetails = ({ width, height }) => {
       return;
     }
 
-    // TODO want to call same path as FileUploadModal triggers
-
     const { sampleUuid } = uploadDetailsModalDataRef.current;
 
-    const name = newFile.name;
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
-
-    const metadata = metadataForBundle(newFile);
-
-    const newFileName = renameFileIfNeeded(name, newFile.type);
-
-    compressAndUploadSingleFile(bucketKey, sampleUuid, newFileName, newFile, dispatch, metadata);
+    uploadSingleFile1(newFile, activeProjectUuid, sampleUuid, dispatch);
 
     setUploadDetailsModalVisible(false);
   };

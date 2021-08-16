@@ -124,28 +124,22 @@ const renameFileIfNeeded = (fileName, type) => {
   return newFileName;
 };
 
-const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
-  const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
-    const newFileName = renameFileIfNeeded(fileName, file.bundle.type);
-    const newFile = {
-      ...file,
-      name: newFileName,
-    };
-    result[newFileName] = newFile;
+const uploadSingleFile1 = (newFile, activeProjectUuid, sampleUuid, dispatch) => {
+  const bucketKey = `${activeProjectUuid}/${sampleUuid}/${newFile.bundle.name}`;
 
-    return result;
-  }, {});
+  const metadata = metadataForBundle(newFile);
 
-  Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
-    const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
+  const newFileName = renameFileIfNeeded(newFile.bundle.name, newFile.bundle.type);
 
-    const metadata = metadataForBundle(file.bundle);
+  compressAndUploadSingleFile(bucketKey, sampleUuid, newFileName, newFile, dispatch, metadata);
 
-    await compressAndUploadSingleFile(bucketKey, sample.uuid, fileName, file, dispatch, metadata);
-  });
-
-  return updatedSampleFiles;
+  return [newFileName, { ...newFile, name: newFileName }];
 };
+
+const compressAndUpload = (sample, activeProjectUuid, dispatch) => Object.fromEntries(
+  Object.values(sample.files)
+    .map((file) => uploadSingleFile1(file, activeProjectUuid, sample.uuid, dispatch)),
+);
 
 const processUpload = async (filesList, sampleType, samples, activeProjectUuid, dispatch) => {
   const samplesMap = filesList.reduce((acc, file) => {
@@ -178,9 +172,7 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
     // Create sample if not exists
-    if (!sample.uuid) {
-      sample.uuid = await dispatch(createSample(activeProjectUuid, name, sampleType));
-    }
+    sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));
 
     sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
 
@@ -232,6 +224,7 @@ export {
   metadataForBundle,
   renameFileIfNeeded,
   bundleToFile,
+  uploadSingleFile1,
 };
 
 export default processUpload;
