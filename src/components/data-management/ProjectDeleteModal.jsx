@@ -16,6 +16,7 @@ const ProjectDeleteModal = (props) => {
 
   return (
     <Modal
+      className='delete-project-modal'
       title='Confirm delete'
       visible={visible}
       footer={(
