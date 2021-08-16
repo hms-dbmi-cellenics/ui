@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Head from 'next/head';
 import { getTrackingDetails } from '../utils/tracking';
 
@@ -18,6 +19,10 @@ const TagManager = ({ environment }) => {
       <script key='mtm' dangerouslySetInnerHTML={{ __html: mtmTrackingCode }} />
     </Head>
   );
+};
+
+TagManager.propTypes = {
+  environment: PropTypes.oneOf(['environment', 'staging', 'production']).isRequired,
 };
 
 export default TagManager;
