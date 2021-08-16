@@ -188,11 +188,10 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
 
 const bundleToFile = async (bundle, technology) => {
   // This is the first stage in uploading a file.
-  // First character of file.path === '/' means a directory is uploaded
-  // Remove initial slash so that it does not create an empty directory in S3
+
   let filename;
   if (bundle.path) {
-    filename = bundle.path.startsWith('/') ? bundle.path.substring(1) : bundle.path;
+    filename = _.takeRight(bundle.path.split('/'), 2).join('/');
   } else {
     filename = bundle.name;
   }
