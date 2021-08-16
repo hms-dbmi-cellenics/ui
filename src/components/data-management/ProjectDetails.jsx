@@ -571,10 +571,7 @@ const ProjectDetails = ({ width, height }) => {
 
     const newFileName = renameFileIfNeeded(name, newFile.type);
 
-    compressAndUploadSingleFile(
-      bucketKey, sampleUuid, newFileName, newFile,
-      newFile.bundle, dispatch, metadata,
-    );
+    compressAndUploadSingleFile(bucketKey, sampleUuid, newFileName, newFile, dispatch, metadata);
 
     setUploadDetailsModalVisible(false);
   };

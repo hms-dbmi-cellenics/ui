@@ -11,8 +11,8 @@ const compress = (buffer) => new Promise((resolve, reject) => {
 });
 
 // eslint-disable-next-line arrow-body-style
-const loadAndCompressIfNecessary = (file, bundle, onCompression = () => ({})) => {
-  return readFileToBuffer(bundle)
+const loadAndCompressIfNecessary = (file, onCompression = () => ({})) => {
+  return readFileToBuffer(file.bundle)
     .then((buffer) => {
       if (file.compressed) {
         return buffer;

@@ -40,24 +40,20 @@ const metadataForBundle = (bundle) => {
 
 const compressAndUploadSingleFile = async (
   bucketKey, sampleUuid, fileName, file,
-  bundle, dispatch, metadata = {},
+  dispatch, metadata = {},
 ) => {
   let loadedFile = null;
 
   try {
-    loadedFile = await loadAndCompressIfNecessary(
-      file,
-      bundle,
-      () => (
-        dispatch(
-          updateSampleFile(
-            sampleUuid,
-            fileName,
-            { upload: { status: UploadStatus.COMPRESSING } },
-          ),
-        )
-      ),
-    );
+    loadedFile = await loadAndCompressIfNecessary(file, () => (
+      dispatch(
+        updateSampleFile(
+          sampleUuid,
+          fileName,
+          { upload: { status: UploadStatus.COMPRESSING } },
+        ),
+      )
+    ));
   } catch (e) {
     const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
@@ -82,7 +78,10 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        { bundle, upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise } },
+        {
+          bundle: file.bundle,
+          upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise },
+        },
       ),
     );
 
@@ -142,10 +141,7 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
 
     const metadata = metadataForBundle(file.bundle);
 
-    await compressAndUploadSingleFile(
-      bucketKey, sample.uuid, fileName, file,
-      file.bundle, dispatch, metadata,
-    );
+    await compressAndUploadSingleFile(bucketKey, sample.uuid, fileName, file, dispatch, metadata);
   });
 
   return updatedSampleFiles;
