@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
-import fetchAPI from './fetchAPI';
 import connectionPromise from './socketConnection';
 import WorkResponseError from './WorkResponseError';
 import WorkTimeoutError from './WorkTimeoutError';
@@ -12,14 +11,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();
   const io = await connectionPromise();
 
-  // Check if we need to have a bigger timeout because the worker being down.
-  const statusResponse = await fetchAPI(`/v1/experiments/${experimentId}/backendStatus`);
-  const jsonResponse = await statusResponse.json();
-
-  const { worker: { started, ready } } = jsonResponse;
-  const adjustedTimeout = (started && ready) ? timeout : timeout + 120;
-
-  const timeoutDate = moment().add(adjustedTimeout, 's').toISOString();
+  const timeoutDate = moment().add(timeout, 's').toISOString();
 
   const authJWT = await getAuthJWT();
 
@@ -59,7 +51,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
     const id = setTimeout(() => {
       clearTimeout(id);
       reject(new WorkTimeoutError(timeoutDate, request));
-    }, adjustedTimeout * 1000);
+    }, timeout * 1000);
   });
 
   return Promise.race([responsePromise, timeoutPromise]);
