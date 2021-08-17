@@ -10,6 +10,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import {
   initialPlotConfigStates,
 } from '../../../redux/reducers/componentConfig/initialState';
+
 import { loadGeneExpression } from '../../../redux/actions/genes/index';
 import * as markerGenesLoaded from '../../../redux/reducers/genes/markerGenesLoaded';
 import * as configUpdated from '../../../redux/reducers/componentConfig/updateConfig';
@@ -239,7 +240,16 @@ describe('Marker heatmap plot', () => {
 
   it('loads cellsets if not available', async () => {
     const newStore = { ...defaultStore, cellSets: { loading: true } };
-    await renderHeatmapPage(newStore);
+    store = createStore(rootReducer, _.cloneDeep(newStore), applyMiddleware(thunk));
+    rtl.render(
+      <Provider store={store}>
+        <MarkerHeatmap
+          experimentId={experimentId}
+        />
+      </Provider>,
+    );
+    const skeleton = rtl.screen.queryAllByRole('list');
+    expect(skeleton.length).toBe(1);
     await rtl.waitFor(() => expect(cellSetsLoadedSpy).toHaveBeenCalled());
   });
 
