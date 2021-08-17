@@ -18,7 +18,7 @@ import { loadComponentConfig } from '../../../redux/actions/componentConfig';
 import populateHeatmapData from '../../plots/helpers/populateHeatmapData';
 import Loader from '../../Loader';
 
-const COMPONENT_TYPE = 'interactiveHeatmap';
+const COMPONENT_UUID = 'interactiveHeatmap';
 const { Text } = Typography;
 
 const HeatmapPlot = (props) => {
@@ -29,7 +29,7 @@ const HeatmapPlot = (props) => {
   const dispatch = useDispatch();
 
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
-  const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
+  const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_UUID]?.data);
 
   const [vegaData, setVegaData] = useState(null);
   const [vegaSpec, setVegaSpec] = useState(spec);
@@ -49,7 +49,7 @@ const HeatmapPlot = (props) => {
   } = cellSets;
 
   const heatmapSettings = useSelector(
-    (state) => state.componentConfig[COMPONENT_TYPE]?.config,
+    (state) => state.componentConfig[COMPONENT_UUID]?.config,
   ) || {};
 
   const louvainClustersResolution = useSelector(
@@ -62,7 +62,7 @@ const HeatmapPlot = (props) => {
   } = heatmapSettings;
 
   const { error: expressionDataError } = expressionData;
-  const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
+  const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_UUID]?.error);
 
   const [maxCells, setMaxCells] = useState(1000);
 
@@ -82,7 +82,7 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    dispatch(loadComponentConfig(experimentId, COMPONENT_TYPE, COMPONENT_TYPE));
+    dispatch(loadComponentConfig(experimentId, COMPONENT_UUID, COMPONENT_UUID));
   }, [heatmapSettings]);
 
   useEffect(() => {
@@ -126,7 +126,7 @@ const HeatmapPlot = (props) => {
       && louvainClustersRef.current !== louvainClusters
     ) {
       louvainClustersRef.current = louvainClusters;
-      dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
+      dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_UUID));
     }
   }, [louvainClustersResolution, hierarchy]);
 
@@ -166,7 +166,7 @@ const HeatmapPlot = (props) => {
       <PlatformError
         error={expressionDataError}
         onClick={() => {
-          dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
+          dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_UUID));
         }}
       />
     );
@@ -177,7 +177,7 @@ const HeatmapPlot = (props) => {
       <PlatformError
         error={expressionDataError}
         onClick={async () => {
-          dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
+          dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_UUID));
         }}
       />
     );
@@ -239,4 +239,4 @@ HeatmapPlot.propTypes = {
 
 export default HeatmapPlot;
 
-export { HeatmapPlot, COMPONENT_TYPE };
+export { HeatmapPlot, COMPONENT_UUID };

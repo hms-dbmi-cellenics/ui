@@ -17,7 +17,8 @@ import initialExperimentState from '../../../redux/reducers/experimentSettings/i
 import rootReducer from '../../../redux/reducers/index';
 import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
 import MarkerHeatmap from '../../../pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import * as cellSetsLoaded from '../../../redux/actions/cellSets/loadCellSets';
+import * as loadedProcessingConfig from '../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 
 jest.mock('localforage');
 enableFetchMocks();
@@ -166,10 +167,11 @@ let store = null;
 let loadConfigSpy = null;
 let loadMarkersSpy;
 let configUpdatedSpy;
-let fetchCachedWorkSpy;
+let cellSetsLoadedSpy;
+let loadedProcessingConfigSpy;
 
-const renderHeatmapPage = async () => {
-  store = createStore(rootReducer, _.cloneDeep(defaultStore), applyMiddleware(thunk));
+const renderHeatmapPage = async (newStore) => {
+  store = createStore(rootReducer, _.cloneDeep(newStore), applyMiddleware(thunk));
 
   rtl.render(
     <Provider store={store}>
@@ -193,17 +195,18 @@ describe('Marker heatmap plot', () => {
     loadConfigSpy = jest.spyOn(loadConfig, 'default');
     loadMarkersSpy = jest.spyOn(markerGenesLoaded, 'default');
     configUpdatedSpy = jest.spyOn(configUpdated, 'default');
+    cellSetsLoadedSpy = jest.spyOn(cellSetsLoaded, 'default');
+    loadedProcessingConfigSpy = jest.spyOn(loadedProcessingConfig, 'default');
   });
 
-  // marker heatmap renders
   it('loads initially', async () => {
-    await renderHeatmapPage();
-
+    await renderHeatmapPage(defaultStore);
     expect(loadMarkersSpy).toHaveBeenCalled();
+    expect(configUpdatedSpy).toHaveBeenCalled();
   });
 
   it('loads marker genes on selecting', async () => {
-    await renderHeatmapPage();
+    await renderHeatmapPage(defaultStore);
 
     const geneSelection = rtl.screen.getByText('Gene selection');
     userEvent.click(geneSelection);
@@ -213,23 +216,53 @@ describe('Marker heatmap plot', () => {
     const runButton = rtl.getByText(geneSelection.parentElement, 'Run');
     userEvent.click(runButton);
 
-    expect(loadMarkersSpy).toHaveBeenCalled();
+    await rtl.waitFor(() => expect(loadMarkersSpy).toHaveBeenCalled());
   });
 
   it('sorts genes properly when adding a gene', async () => {
-    await renderHeatmapPage();
+    await renderHeatmapPage(defaultStore);
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
-
     store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene1', 'gene3', 'gene2'], plotUuid));
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(2));
     expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene1', 'gene2', 'gene3']);
+    expect(loadMarkersSpy).toHaveBeenCalledTimes(1);
   });
 
   it('removing a gene keeps the sorted order without re-sorting', async () => {
-    await renderHeatmapPage();
+    await renderHeatmapPage(defaultStore);
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
     store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene3'], plotUuid));
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(3));
     expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene3']);
+    expect(loadMarkersSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('loads cellsets if not available', async () => {
+    const newStore = { ...defaultStore, cellSets: { loading: true } };
+    await renderHeatmapPage(newStore);
+    await rtl.waitFor(() => expect(cellSetsLoadedSpy).toHaveBeenCalled());
+  });
+
+  it('loads processing settings if louvainresolution is not available', async () => {
+    const newStore = {
+      ...defaultStore,
+      experimentSettings: {
+        ...defaultStore.experimentSettings,
+        processing: {
+          configureEmbedding: {
+            clusteringSettings: {
+              methodSettings: {
+                louvain: {
+                  resolution: false,
+                },
+              },
+            },
+          },
+          meta: { loading: true, loadingSettingsError: false },
+        },
+      },
+    };
+    await renderHeatmapPage(newStore);
+    await rtl.waitFor(() => expect(loadedProcessingConfigSpy).toHaveBeenCalled());
   });
 });

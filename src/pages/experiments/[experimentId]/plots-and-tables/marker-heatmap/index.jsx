@@ -52,7 +52,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       dispatch(loadProcessingSettings(experimentId));
     }
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (!cellSets.hierarchy.length) {
+    if (!cellSets?.hierarchy?.length) {
       dispatch(loadCellSets(experimentId));
     }
   }, []);
@@ -133,6 +133,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       || _.isEmpty(expressionData)
       || _.isEmpty(selectedGenes)
       || !loading
+      || !hierarchy?.length
     ) {
       return;
     }
@@ -259,7 +260,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     },
   ];
 
-  if (!config || cellSets.loading) {
+  if (!config || cellSets.loading || !hierarchy) {
     return (<Skeleton />);
   }
 
