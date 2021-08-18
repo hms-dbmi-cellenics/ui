@@ -159,10 +159,10 @@ describe('tests for fetchCachedWork', () => {
           startDate: '2021-01-01T01:01:01.000Z',
         },
       },
-      { timeout: 10 },
+      { timeout: 3600 },
     );
     expect(res).toEqual({ D: fakeData.D });
-    expect(mockSendWork).toHaveBeenCalledWith(experimentId, 10, { name: 'GeneExpression', genes: ['D'] });
+    expect(mockSendWork).toHaveBeenCalledWith(experimentId, 3600, { name: 'GeneExpression', genes: ['D'] });
     expect(mockGet).toHaveBeenCalledTimes(4);
     expect(mockSet).toHaveBeenCalledTimes(1);
     expect(mockSet).toHaveBeenCalledWith(fakeCacheKeyMappings.D, fakeData.D);
