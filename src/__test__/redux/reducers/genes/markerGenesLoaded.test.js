@@ -25,6 +25,7 @@ describe('markerGenesLoaded', () => {
       payload: {
         genes,
         data,
+        plotUuid: 'interactiveHeatmap',
       },
     });
 

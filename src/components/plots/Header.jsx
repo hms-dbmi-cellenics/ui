@@ -48,6 +48,7 @@ const Header = (props) => {
       frequency: ['proportionGrouping', 'xAxisGrouping'],
       embeddingContinuous: ['shownGene'],
       violin: ['shownGene'],
+      markerHeatmap: ['selectedGenes'],
     };
 
     const currentKey = Object.keys(config).find((key) => config[key] === otherValue || false);
