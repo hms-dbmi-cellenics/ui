@@ -34,6 +34,7 @@ const HeatmapPlot = (props) => {
   const [vegaData, setVegaData] = useState(null);
   const [vegaSpec, setVegaSpec] = useState(spec);
   const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
+  const currentHeatmapSettings = useRef();
 
   const louvainClustersRef = useRef(null);
 
@@ -59,7 +60,7 @@ const HeatmapPlot = (props) => {
   );
 
   const {
-    selectedTracks, groupedTracks, expressionValue, legendIsVisible,
+    legendIsVisible,
   } = heatmapSettings;
 
   const { error: expressionDataError } = expressionData;
@@ -107,9 +108,14 @@ const HeatmapPlot = (props) => {
   }, [legendIsVisible]);
 
   useEffect(() => {
-    if (!selectedGenes || selectedGenes.length === 0) {
+    if (!selectedGenes
+      || selectedGenes.length === 0
+      || _.isEqual(currentHeatmapSettings, heatmapSettings)
+    ) {
       return;
     }
+
+    currentHeatmapSettings.current = heatmapSettings;
 
     const data = populateHeatmapData(
       cellSets, heatmapSettings, expressionData, selectedGenes, true,
@@ -117,10 +123,8 @@ const HeatmapPlot = (props) => {
     setVegaDataWithDebounce(data);
   }, [
     selectedGenes,
-    selectedTracks,
-    groupedTracks,
-    maxCells,
-    expressionValue]);
+    heatmapSettings,
+    maxCells]);
 
   useEffect(() => {
     const louvainClusters = hierarchy.find((clusters) => clusters.key === 'louvain');

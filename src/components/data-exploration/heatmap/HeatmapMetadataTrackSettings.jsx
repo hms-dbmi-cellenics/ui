@@ -47,8 +47,8 @@ const HeatmapMetadataTrackSettings = (props) => {
   const [trackData, setTrackData] = useState(getTrackData());
 
   const getUpdatedTrackData = () => _.unionBy(
-    trackData,
     getTrackData(),
+    trackData,
     'key',
   );
 
