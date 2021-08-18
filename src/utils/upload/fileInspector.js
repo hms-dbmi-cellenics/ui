@@ -31,8 +31,7 @@ const inspectFile = async (file, technology) => {
 
   if (isGzipped) {
     // if gzipped, decompress a small chunk to further validate contents
-    // eslint-disable-next-line no-unused-vars
-    const gunzip = new Gunzip((chunk, _) => {
+    const gunzip = new Gunzip((chunk) => {
       data = Buffer.from(chunk.slice(0, 16));
     });
     gunzip.push(await readFileToBuffer(file.slice(0, 128)));
