@@ -73,7 +73,7 @@ Object {
         "offset": 10,
         "titleFontSize": 13,
         "xAxisRotateLabels": false,
-        "xAxisText": "log2 fold change",
+        "xAxisText": "log fold change",
         "yAxisText": "-log10(adj p-value)",
       },
       "colour": Object {
