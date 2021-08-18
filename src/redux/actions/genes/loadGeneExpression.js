@@ -41,7 +41,6 @@ const loadGeneExpression = (
       (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
     );
   }
-
   const displayedGenes = genesAlreadyLoaded.filter(
     (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
   );
@@ -66,7 +65,6 @@ const loadGeneExpression = (
     const data = await fetchCachedWork(
       experimentId, body, backendStatus.status,
     );
-
     if (data[genesToFetch[0]]?.error) {
       pushNotificationMessage('error', data[genesToFetch[0]].message);
       dispatch({
@@ -79,7 +77,6 @@ const loadGeneExpression = (
       });
     } else {
       const fetchedGenes = _.concat(displayedGenes, Object.keys(data));
-
       dispatch({
         type: GENES_EXPRESSION_LOADED,
         payload: {

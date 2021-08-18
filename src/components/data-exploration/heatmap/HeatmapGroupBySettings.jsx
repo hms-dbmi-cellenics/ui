@@ -121,7 +121,7 @@ const HeatmapGroupBySettings = (props) => {
   );
 
   return (
-    <div style={{ padding: '5px' }}>
+    <div style={{ padding: '5px' }} key='dropdown'>
       <Space direction='vertical'>
         <Dropdown overlay={menu} trigger='click hover'>
           <div style={{ padding: '7px', border: '1px solid rgb(238,238,238)' }}>

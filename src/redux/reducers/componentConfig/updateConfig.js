@@ -10,7 +10,6 @@ const updateConfig = (state, action) => {
   }
 
   const newData = dataChanges ?? state[plotUuid]?.plotData;
-
   return {
     ...state,
     [plotUuid]: {

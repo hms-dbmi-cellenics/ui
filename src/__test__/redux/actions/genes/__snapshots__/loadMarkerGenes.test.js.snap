@@ -38,6 +38,7 @@ Object {
     "genes": Array [
       "geneA",
     ],
+    "plotUuid": "interactiveHeatmap",
   },
   "type": "genes/markerGenesLoaded",
 }

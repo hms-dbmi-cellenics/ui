@@ -16,6 +16,7 @@ const populateHeatmapData = (
 
   // return a set with all the cells found in group node
   // e.g: node = {key: louvain, children: []}, {...}
+
   const getCellsSetInGroup = (node) => {
     let cellIdsInAnyGroupBy = new Set();
 
@@ -28,6 +29,17 @@ const populateHeatmapData = (
   };
 
   const trackOrder = Array.from(selectedTracks).reverse();
+
+  const getCellClusterFromCellId = (clusters, cellId) => {
+    let cluster;
+    clusters.forEach(({ key }) => {
+      if (properties[key].cellIds.has(cellId)) {
+        cluster = key;
+      }
+    });
+    return cluster;
+  };
+
   const generateTrackData = (cells, track) => {
     // Find the `groupBy` root node.
     const rootNodes = hierarchy.filter((clusters) => clusters.key === track);
@@ -41,8 +53,19 @@ const populateHeatmapData = (
 
     const trackColorData = [];
     const groupData = [];
-
     // Iterate over each child node.
+
+    const clusterSeparationLines = [];
+    if (heatmapSettings.guardLines) {
+      let currentCluster = getCellClusterFromCellId(childrenCellSets, cells[0]);
+      cells.forEach((cell) => {
+        const isTheSameCluster = properties[currentCluster]?.cellIds?.has(cell);
+        if (!isTheSameCluster) {
+          currentCluster = getCellClusterFromCellId(childrenCellSets, cell);
+          clusterSeparationLines.push(cell);
+        }
+      });
+    }
     childrenCellSets.forEach(({ key }) => {
       const { cellIds, name, color } = properties[key];
 
@@ -65,8 +88,7 @@ const populateHeatmapData = (
         color,
       }));
     });
-
-    return { trackColorData, groupData };
+    return { trackColorData, groupData, clusterSeparationLines };
   };
 
   const downsampleWithProportions = (buckets, cellIdsLength) => {
@@ -88,7 +110,6 @@ const populateHeatmapData = (
 
   const getCellSetIntersections = (cellSet, rootNode) => {
     const cellSetsOfRootNode = rootNode.children.map(({ key }) => getCellsInSet(key));
-
     const intersectionsSets = [];
 
     cellSetsOfRootNode.forEach((cellSetOfRootNode) => {
@@ -121,9 +142,11 @@ const populateHeatmapData = (
     // we want to avoid displaying elements which are not in a louvain cluster
     // so initially consider as enabled only cells in louvain clusters
     // See: https://biomage.atlassian.net/browse/BIOMAGE-809
-    const louvainClusters = hierarchy.find((clusters) => clusters.key === 'louvain');
-
-    const cellIsInLouvainCluster = getCellsSetInGroup(louvainClusters);
+    const selectedCellSet = heatmapSettings?.selectedCellSet ? heatmapSettings.selectedCellSet : 'louvain';
+    const selectedClusters = hierarchy.find(
+      (clusters) => clusters.key === selectedCellSet,
+    );
+    const cellIsInLouvainCluster = getCellsSetInGroup(selectedClusters);
 
     // Remove cells from groups marked as hidden by the user in the UI.
     const hiddenCellIds = union(Array.from(hidden), properties);
@@ -163,7 +186,6 @@ const populateHeatmapData = (
     if (!groupByRootNodes.length) {
       return [];
     }
-
     const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
 
     if (downsampling) {
@@ -238,7 +260,7 @@ const populateHeatmapData = (
 
   data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
   data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
-
+  data.clusterSeparationLines = trackData[0].clusterSeparationLines;
   return data;
 };
 export default populateHeatmapData;
