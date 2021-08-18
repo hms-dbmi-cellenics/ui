@@ -55,9 +55,9 @@ const FileUploadModal = (props) => {
       pushNotificationMessage('error', 'Only files contained in folder are accepted');
     }
 
-    const newFiles = await Promise.all(filteredFiles.map(async (file) => {
-      return bundleToFile(file, selectedTech);
-    }));
+    const newFiles = await Promise.all(filteredFiles.map(async (file) => (
+      bundleToFile(file, selectedTech)
+    )));
 
     setFilesList([...filesList, ...newFiles]);
   };
