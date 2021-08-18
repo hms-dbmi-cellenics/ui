@@ -28,7 +28,6 @@ const HeatmapPlot = (props) => {
 
   const dispatch = useDispatch();
 
-  const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
 
   const [vegaData, setVegaData] = useState(null);
@@ -45,7 +44,7 @@ const HeatmapPlot = (props) => {
 
   const cellSets = useSelector((state) => state.cellSets);
   const {
-    hierarchy, properties, hidden, loading: cellSetsLoading,
+    hierarchy, loading: cellSetsLoading,
   } = cellSets;
 
   const heatmapSettings = useSelector(
@@ -66,7 +65,7 @@ const HeatmapPlot = (props) => {
 
   const [maxCells, setMaxCells] = useState(1000);
 
-  const setDataDebounce = useCallback(_.debounce((data) => {
+  const setVegaDataWithDebounce = useCallback(_.debounce((data) => {
     setVegaData(data);
   }, 1500, { leading: true }), []);
 
@@ -86,7 +85,7 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
-    if (hierarchy.length === 0 || cellSetsLoading) {
+    if (cellSetsLoading || hierarchy.length === 0) {
       return;
     }
 
@@ -99,23 +98,15 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    if (_.intersection(selectedGenes, loadingGenes).length > 0) {
-      setVegaData(null);
-      return;
-    }
-
     const data = populateHeatmapData(
       cellSets, heatmapSettings, expressionData, selectedGenes, true,
     );
-    setDataDebounce(data);
-  }, [loadingGenes,
+    setVegaDataWithDebounce(data);
+  }, [
     selectedGenes,
-    hidden,
     selectedTracks,
     groupedTracks,
     maxCells,
-    properties,
-    hierarchy,
     expressionValue]);
 
   useEffect(() => {
@@ -183,7 +174,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (cellSetsLoading || expressionData.loading.length || markerGenesLoading) {
+  if (markerGenesLoading) {
     return (
       <center>
         <Loader experimentId={experimentId} />
