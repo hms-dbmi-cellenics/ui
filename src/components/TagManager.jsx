@@ -22,7 +22,7 @@ const TagManager = ({ environment }) => {
 };
 
 TagManager.propTypes = {
-  environment: PropTypes.oneOf(['environment', 'staging', 'production']).isRequired,
+  environment: PropTypes.oneOf(['development', 'staging', 'production']).isRequired,
 };
 
 export default TagManager;
