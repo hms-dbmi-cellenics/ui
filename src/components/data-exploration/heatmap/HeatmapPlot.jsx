@@ -28,10 +28,12 @@ const HeatmapPlot = (props) => {
 
   const dispatch = useDispatch();
 
+  const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
 
   const [vegaData, setVegaData] = useState(null);
   const [vegaSpec, setVegaSpec] = useState(spec);
+  const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
 
   const louvainClustersRef = useRef(null);
 
@@ -85,6 +87,17 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
+    const selectedGenesLoading = _.intersection(selectedGenes, loadingGenes).length > 0;
+
+    if (markerGenesLoading || selectedGenesLoading) {
+      setIsHeatmapGenesLoading(true);
+      return;
+    }
+
+    setIsHeatmapGenesLoading(false);
+  }, [selectedGenes, loadingGenes, markerGenesLoading]);
+
+  useEffect(() => {
     if (cellSetsLoading || hierarchy.length === 0) {
       return;
     }
@@ -114,7 +127,7 @@ const HeatmapPlot = (props) => {
 
     if (louvainClustersResolution
       && louvainClusters
-      && louvainClustersRef.current !== louvainClusters
+      && !_.isEqual(louvainClustersRef.current, louvainClusters)
     ) {
       louvainClustersRef.current = louvainClusters;
       dispatch(loadMarkerGenes(experimentId, louvainClustersResolution));
@@ -174,7 +187,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (markerGenesLoading) {
+  if (isHeatmapGenesLoading) {
     return (
       <center>
         <Loader experimentId={experimentId} />
