@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import SelectionActions from './SelectionActions';
 import ComponentActions from './ComponentActions';
 
-import { COMPONENT_UUID } from '../heatmap/HeatmapPlot';
+import { COMPONENT_TYPE } from '../heatmap/HeatmapPlot';
 
 const GeneSelectionMenu = (props) => {
   const { onExportCSV, experimentId } = props;
@@ -35,7 +35,7 @@ const GeneSelectionMenu = (props) => {
           />
         ) : (<></>)}
       </Space>
-      <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_UUID} />
+      <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
     </>
   );
 };
