@@ -2,7 +2,7 @@
 import { Storage } from 'aws-amplify';
 import _ from 'lodash';
 import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
-import { createSample, updateSampleFile } from '../redux/actions/samples';
+import { createSample, updateSampleFile } from '../../redux/actions/samples';
 import UploadStatus from './UploadStatus';
 import { inspectFile, Verdict } from './fileInspector';
 

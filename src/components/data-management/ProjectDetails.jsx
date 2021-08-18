@@ -44,12 +44,12 @@ import {
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
-import { processUpload, uploadSingleFile } from '../../utils/processUpload';
+import { processUpload, uploadSingleFile } from '../../utils/upload/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
-import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
-import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
+import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
+import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';

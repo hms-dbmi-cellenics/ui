@@ -7,8 +7,8 @@ import {
 import { UploadOutlined } from '@ant-design/icons';
 
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
-import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
-import { bundleToFile } from '../../utils/processUpload';
+import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
+import { bundleToFile } from '../../utils/upload/processUpload';
 
 const UploadDetailsModal = (props) => {
   const {
