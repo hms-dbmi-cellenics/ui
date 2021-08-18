@@ -6,11 +6,9 @@ import initialState from './initialState';
 import { calculateZScore } from '../../../utils/postRequestProcessing';
 
 const markerGenesLoaded = produce((draft, action) => {
-  const { data, genes } = action.payload;
-
+  const { data, genes, plotUuid } = action.payload;
   const dataWithZScore = calculateZScore(data);
-
-  draft.expression.views.interactiveHeatmap = { fetching: false, error: false, data: genes };
+  draft.expression.views[plotUuid] = { fetching: false, error: false, data: genes };
 
   draft.expression.data = { ...draft.expression.data, ...dataWithZScore };
 

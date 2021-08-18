@@ -102,6 +102,14 @@ const heatmapInitialConfig = {
   truncatedValues: false,
 };
 
+// PLOTS & TABLES - Marker heatmap
+const markerHeatmapInitialConfig = {
+  ...heatmapInitialConfig,
+  guardLines: false,
+  numGenes: 5,
+  showGeneLabels: true,
+};
+
 // PLOTS & TABLES - Volcano plot
 const volcanoInitialConfig = {
   spec: '1.0.0',
@@ -690,6 +698,7 @@ const initialPlotConfigStates = {
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
+  markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
