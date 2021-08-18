@@ -19,8 +19,6 @@ import ColourInversion from './ColourInversion';
 import ExpressionValuesType from './ExpressionValuesType';
 import ExpressionValuesCapping from './ExpressionValuesCapping';
 
-import MetadataTracksDisplayEditor from './MetadataTracksDisplayEditor';
-
 import ViolinMarkersEditor from './violin/MarkersEditor';
 
 import VolcanoDimensionsRangeEditor from './volcano/DimensionsRangeEditor';
@@ -51,7 +49,6 @@ const PlotStyling = (props) => {
     volcanoThresholds: (attr) => <VolcanoThresholdsGuidesEditor key='volcanoThresholds' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoMarkers: (attr) => <VolcanoMarkersEditor key='volcanoMarkers' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoLabels: (attr) => <VolcanoDisplayLabels key='volcanoLabels' config={config} onUpdate={onUpdate} {...attr} />,
-    metadataTracksDisplayEditor: (attr) => <MetadataTracksDisplayEditor key='metadataTracksDisplayEditor' config={config} onUpdate={onUpdate} {...attr} />,
   };
 
   const buildForm = (configObj) => configObj.map((el) => {

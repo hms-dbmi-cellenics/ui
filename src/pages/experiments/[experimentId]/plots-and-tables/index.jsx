@@ -14,6 +14,7 @@ import embeddingCategorical from '../../../../../public/static/media/embeddingCa
 import violin from '../../../../../public/static/media/violin.png';
 import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
+import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
 import Header from '../../../../components/Header';
 
 const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
@@ -64,6 +65,9 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
   let lastUpdatedViolin = useSelector(
     (state) => state.componentConfig.violinPlotMain?.lastUpdated,
   );
+  let lastUpdatedMarkerHeatmap = useSelector(
+    (state) => state.componentConfig.markerHeatmapPlotMain?.lastUpdated,
+  );
 
   if (!lastUpdatedVolcano) {
     lastUpdatedVolcano = 'never';
@@ -83,6 +87,10 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
   if (!lastUpdatedViolin) {
     lastUpdatedViolin = 'never';
   }
+  if (!lastUpdatedMarkerHeatmap) {
+    lastUpdatedMarkerHeatmap = 'never';
+  }
+
   const plots = [
     {
       name: 'Continuous Embedding',
@@ -99,11 +107,18 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       description: `Last updated: ${lastUpdatedCategorical}`,
     },
     {
-      name: 'Heatmap',
+      name: 'Custom Heatmap',
       image: heatmap,
       key: 'heatmap-key',
       link: 'heatmap',
       description: `Last updated: ${lastUpdatedHeatmap}`,
+    },
+    {
+      name: 'Marker Heatmap',
+      image: markerHeatmap,
+      key: 'marker-heatmap-key',
+      link: 'marker-heatmap',
+      description: `Last updated: ${lastUpdatedMarkerHeatmap}`,
     },
     {
       name: 'Volcano plot',
