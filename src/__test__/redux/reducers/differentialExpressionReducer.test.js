@@ -38,37 +38,37 @@ describe('differentialExpressionReducer', () => {
         data: [
           {
             gene_names: 'A',
-            avg_log2FC: 3.45,
+            logFC: 3.45,
             p_val: 1.16,
             p_val_adj: 2.16,
           },
           {
             gene_names: 'B',
-            avg_log2FC: 4.45,
+            logFC: 4.45,
             p_val: 2.16,
             p_val_adj: 3.16,
           },
           {
             gene_names: 'C',
-            avg_log2FC: 5.45,
+            logFC: 5.45,
             p_val: 3.16,
             p_val_adj: 4.16,
           },
           {
             gene_names: 'D',
-            avg_log2FC: 6.45,
+            logFC: 6.45,
             p_val: 4.16,
             p_val_adj: 5.16,
           },
           {
             gene_names: 'E',
-            avg_log2FC: 7.45,
+            logFC: 7.45,
             p_val: 5.16,
             p_val_adj: 6.16,
           },
           {
             gene_names: 'F',
-            avg_log2FC: 8.45,
+            logFC: 8.45,
             p_val: 6.16,
             p_val_adj: 7.16,
           },

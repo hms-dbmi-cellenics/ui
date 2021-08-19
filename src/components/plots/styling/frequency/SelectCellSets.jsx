@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -5,6 +6,7 @@ import {
   Select,
   Tooltip,
 } from 'antd';
+import getSelectOptions from 'utils/plots/getSelectOptions';
 
 const SelectCellSets = (props) => {
   const {
@@ -23,18 +25,6 @@ const SelectCellSets = (props) => {
     onUpdate({ xAxisGrouping: newValue });
   };
 
-  const getSelectOptions = (options) => {
-    const selectOptions = [];
-    if (!options.length) {
-      return;
-    }
-    Array.from(options).forEach((option) => {
-      selectOptions.push({
-        value: firstLetterUppercase(option.key),
-      });
-    });
-    return selectOptions;
-  };
   const metadataMenu = getSelectOptions(optionsMetadata);
   const cellSetMenu = getSelectOptions(optionsCellSets);
   let menuValue;

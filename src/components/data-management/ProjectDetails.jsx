@@ -26,7 +26,6 @@ import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
-import { trackAnalysisLaunched } from '../../utils/tracking';
 import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 
 import {
@@ -582,7 +581,6 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   const launchAnalysis = async (experimentId) => {
-    trackAnalysisLaunched();
     await dispatch(runGem2s(experimentId));
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };

@@ -77,7 +77,6 @@ const HeatmapPlot = ({ experimentId }) => {
 
     const spec = generateSpec(config, 'Cluster ID');
     const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
-
     const newVegaSpec = {
       ...spec,
       axes: [...spec.axes, ...displayLabels()],
@@ -160,10 +159,6 @@ const HeatmapPlot = ({ experimentId }) => {
           controls: ['font'],
         },
       ],
-    },
-    {
-      panelTitle: 'Metadata Tracks',
-      controls: ['metadataTracksDisplayEditor'],
     },
     {
       panelTitle: 'Colours',

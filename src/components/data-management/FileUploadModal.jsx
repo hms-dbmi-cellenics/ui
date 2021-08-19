@@ -63,9 +63,10 @@ const FileUploadModal = (props) => {
     setFilesList([...filesList, ...newFiles]);
   };
 
-  const removeFile = (fileIdx) => {
+  const removeFile = (fileName) => {
     const newArray = _.cloneDeep(filesList);
 
+    const fileIdx = newArray.findIndex((file) => file.name === fileName);
     newArray.splice(fileIdx, 1);
     setFilesList(newArray);
   };
@@ -149,8 +150,8 @@ const FileUploadModal = (props) => {
                 defaultValue={selectedTech}
                 onChange={(value) => setSelectedTech(value)}
               >
-                {Object.keys(techOptions).map((val, idx) => (
-                  <Option key={`key-${idx}`} value={val}>{val}</Option>
+                {Object.keys(techOptions).map((val) => (
+                  <Option key={`key-${val}`} value={val}>{val}</Option>
                 ))}
               </Select>
             </Space>
@@ -176,32 +177,41 @@ const FileUploadModal = (props) => {
         {filesList.length ? (
           <>
             <Divider orientation='center'>To upload</Divider>
-            <ul style={{
-              columnCount: 4, listStyleType: 'none', padding: 0, margin: 0,
-            }}
-            >
-              {filesList.map((file, idx) => (
-                <li key={`file-${idx}`}>
+            <List
+              dataSource={filesList}
+              size='small'
+              itemLayout='horizontal'
+              grid='{column: 4}'
+              renderItem={(file) => (
+
+                <List.Item
+                  key={file.name}
+                  style={{ width: '100%' }}
+                >
                   <Space>
                     {file.valid
                       ? (
                         <>
                           <CheckCircleTwoTone twoToneColor='#52c41a' />
-                          {file.name}
                         </>
                       ) : (
                         <>
                           <CloseCircleTwoTone twoToneColor='#f5222d' />
-                          <span>
-                            {`${file.name} - ${file.errors}`}
-                          </span>
                         </>
                       )}
-                    <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(idx); }} />
+                    <Text
+                      ellipsis={{ tooltip: file.name }}
+                      style={{ width: '200px' }}
+                    >
+                      {file.name}
+
+                    </Text>
+                    <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(file.name); }} />
                   </Space>
-                </li>
-              ))}
-            </ul>
+                </List.Item>
+
+              )}
+            />
           </>
         ) : ''}
       </Row>

@@ -39,7 +39,9 @@ const PipelineRedirectToDataProcessing = ({ experimentId, pipelineStatus }) => {
     },
   };
 
-  const { status, title, subTitle } = texts[pipelineStatus];
+  const {
+    status, title, subTitle, image, alt,
+  } = texts[pipelineStatus];
 
   return (
     <Result
@@ -50,8 +52,8 @@ const PipelineRedirectToDataProcessing = ({ experimentId, pipelineStatus }) => {
         <img
           width={250}
           height={250}
-          alt='A woman fitting an oversized clipboard next to other clipboards (illustration).'
-          src='/undraw_Timeline_re_aw6g.svg'
+          alt={image}
+          src={alt}
           style={{
             display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%',
           }}

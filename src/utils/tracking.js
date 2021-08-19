@@ -12,14 +12,17 @@ const trackingInfo = {
   [Env.PRODUCTION]: {
     enabled: true,
     siteId: 1,
+    containerId: 'lkIodjnO',
   },
   [Env.STAGING]: {
     enabled: false,
     siteId: 2,
+    containerId: 'FX7UBNS6',
   },
   [Env.DEVELOPMENT]: {
     enabled: false,
     siteId: 3,
+    containerId: 'lS8ZRMXJ',
   },
 };
 
@@ -53,21 +56,6 @@ const resetTrackingId = () => {
   push(['appendToTrackingUrl', 'new_visit=1']);
 };
 
-const trackAnalysisLaunched = () => {
-  const { enabled } = getTrackingDetails(env);
-  if (enabled === false) {
-    return;
-  }
-  // Matomo events consist of four primary components which need to be configured,
-  // only two of which are required:
-  // * Category(Required) , and Form Events.
-  // * Action(Required)
-  // * Name(Optional – Recommended)
-  // * Value(Optional)
-  // See https://matomo.org/docs/event-tracking/ for more info
-  push(['trackEvent', 'data-management', 'launch-analysis']);
-};
-
 export {
-  initTracking, resetTrackingId, trackAnalysisLaunched,
+  initTracking, resetTrackingId, getTrackingDetails,
 };

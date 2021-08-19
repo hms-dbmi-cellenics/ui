@@ -99,22 +99,22 @@ describe('loadDifferentialExpression action', () => {
       const resolveWith = {
         rows: [
           {
-            p_val: 1.16, p_val_adj: 2.16, avg_log2FC: 3.45, gene_names: 'A',
+            p_val: 1.16, p_val_adj: 2.16, logFC: 3.45, gene_names: 'A',
           },
           {
-            p_val: 2.16, p_val_adj: 3.16, avg_log2FC: 4.45, gene_names: 'B',
+            p_val: 2.16, p_val_adj: 3.16, logFC: 4.45, gene_names: 'B',
           },
           {
-            p_val: 3.16, p_val_adj: 4.16, avg_log2FC: 5.45, gene_names: 'C',
+            p_val: 3.16, p_val_adj: 4.16, logFC: 5.45, gene_names: 'C',
           },
           {
-            p_val: 4.16, p_val_adj: 5.16, avg_log2FC: 6.45, gene_names: 'D',
+            p_val: 4.16, p_val_adj: 5.16, logFC: 6.45, gene_names: 'D',
           },
           {
-            p_val: 5.16, p_val_adj: 6.16, avg_log2FC: 7.45, gene_names: 'E',
+            p_val: 5.16, p_val_adj: 6.16, logFC: 7.45, gene_names: 'E',
           },
           {
-            p_val: 6.16, p_val_adj: 7.16, avg_log2FC: 8.45, gene_names: 'F',
+            p_val: 6.16, p_val_adj: 7.16, logFC: 8.45, gene_names: 'F',
           },
         ],
       };
