@@ -2,7 +2,14 @@ import socketIOClient from 'socket.io-client';
 import getApiEndpoint from './apiEndpoint';
 
 const connectionPromise = new Promise((resolve, reject) => {
-  const io = socketIOClient(getApiEndpoint(), { transports: ['websocket'] });
+  const io = socketIOClient(
+    getApiEndpoint(),
+    {
+      transports: ['websocket'],
+      reconnection: true,
+      reconnectionDelay: 500,
+    },
+  );
 
   io.on('connect', () => {
     // There is a bug where `io.id` is simply not getting assigned straight away
@@ -27,4 +34,4 @@ const connectionPromise = new Promise((resolve, reject) => {
   });
 });
 
-export default connectionPromise;
+export default () => connectionPromise;
