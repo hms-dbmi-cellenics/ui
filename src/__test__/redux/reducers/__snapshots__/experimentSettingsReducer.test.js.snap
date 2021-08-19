@@ -28,7 +28,7 @@ Object {
     "meta": Object {
       "changedQCFilters": Set {},
       "completingStepError": false,
-      "loading": true,
+      "loading": false,
       "loadingSettingsError": false,
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
@@ -58,7 +58,7 @@ Object {
     "meta": Object {
       "changedQCFilters": Set {},
       "completingStepError": false,
-      "loading": true,
+      "loading": false,
       "loadingSettingsError": false,
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
@@ -88,7 +88,7 @@ Object {
     "meta": Object {
       "changedQCFilters": Set {},
       "completingStepError": false,
-      "loading": true,
+      "loading": false,
       "loadingSettingsError": false,
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
@@ -185,7 +185,7 @@ Object {
     "meta": Object {
       "changedQCFilters": Set {},
       "completingStepError": false,
-      "loading": true,
+      "loading": false,
       "loadingSettingsError": false,
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },

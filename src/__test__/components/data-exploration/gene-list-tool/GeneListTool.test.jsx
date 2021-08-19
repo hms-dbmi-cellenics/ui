@@ -32,13 +32,17 @@ const mockStore = configureMockStore([thunk]);
 let component;
 let store;
 
+const experimentId = '1234';
+
 const TEST_UUID = 'testList';
 
 const backendStatus = {
-  status: {
-    pipeline: {
-      status: 'SUCCEEDED',
-      startDate: '2021-01-01T01:01:01.000Z',
+  [experimentId]: {
+    status: {
+      pipeline: {
+        status: 'SUCCEEDED',
+        startDate: '2021-01-01T01:01:01.000Z',
+      },
     },
   },
 };
@@ -78,9 +82,7 @@ const initialState = {
       store: null,
     },
   },
-  experimentSettings: {
-    backendStatus,
-  },
+  backendStatus,
 };
 
 const eventStub = { stopPropagation: () => null };
@@ -95,7 +97,7 @@ describe('GeneListTool', () => {
 
     component = mount(
       <Provider store={store}>
-        <GeneListTool experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
+        <GeneListTool experimentId={experimentId} uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
   });
@@ -145,6 +147,11 @@ describe('GeneListTool', () => {
 
     const table = component.find('Table Table');
 
+    console.log('newPaginationDebug');
+    console.log(newPagination);
+
+    console.log('newSorterDebug');
+    console.log(newSorter);
     act(() => {
       table.getElement().props.onChange(newPagination, {}, newSorter);
     });
@@ -153,7 +160,7 @@ describe('GeneListTool', () => {
     await waitForActions(store, [GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED]);
 
     expect(fetchCachedWork).toHaveBeenCalledWith(
-      '1234',
+      experimentId,
       {
         limit: 4,
         name: 'ListGenes',
@@ -162,7 +169,7 @@ describe('GeneListTool', () => {
         orderDirection: 'ASC',
         selectFields: ['gene_names', 'dispersions'],
       },
-      backendStatus.status,
+      backendStatus[experimentId].status,
     );
 
     expect(store.getActions()[0]).toMatchSnapshot();
@@ -227,7 +234,7 @@ describe('GeneListTool', () => {
 
     component = mount(
       <Provider store={store}>
-        <GeneListTool experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
+        <GeneListTool experimentId={experimentId} uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
 
@@ -259,7 +266,7 @@ describe('GeneListTool', () => {
 
     component = mount(
       <Provider store={store}>
-        <GeneListTool experimentId='1234' uuid={TEST_UUID} width={100} height={200} />
+        <GeneListTool experimentId={experimentId} uuid={TEST_UUID} width={100} height={200} />
       </Provider>,
     );
 

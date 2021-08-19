@@ -74,6 +74,8 @@ const GeneListTool = (props) => {
       return;
     }
 
+    console.log('newStateDebug');
+    console.log(newState);
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, newState));
   };
 

@@ -11,6 +11,7 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   } = getState().cellSets;
 
   const { backendStatus, experimentSettings } = getState();
+
   const { processing } = experimentSettings;
   const { status } = backendStatus[experimentId];
 

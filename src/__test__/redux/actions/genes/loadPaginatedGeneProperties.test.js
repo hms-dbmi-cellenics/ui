@@ -24,8 +24,8 @@ describe('loadPaginatedGeneProperties action', () => {
   const properties = ['a', 'b', 'c'];
   const componentUuid = 'asd';
 
-  const experimentSettings = {
-    backendStatus: {
+  const backendStatus = {
+    [experimentId]: {
       status: {
         pipeline: {
           status: 'SUCCEEDED',
@@ -35,10 +35,9 @@ describe('loadPaginatedGeneProperties action', () => {
     },
   };
 
-  // experimentId, properties, componentUuid, tableState
-
   it('Does not dispatch when some of the properties are already loading', async () => {
     const store = mockStore({
+      backendStatus,
       genes:
       {
         ...initialState,
@@ -47,7 +46,6 @@ describe('loadPaginatedGeneProperties action', () => {
           loading: ['b'],
         },
       },
-      experimentSettings,
     });
 
     store.dispatch(loadPaginatedGeneProperties(experimentId, properties, componentUuid, {}));
@@ -60,7 +58,7 @@ describe('loadPaginatedGeneProperties action', () => {
       {
         ...initialState,
       },
-      experimentSettings,
+      backendStatus,
     });
 
     sendWork.mockImplementation(() => {
@@ -124,7 +122,7 @@ describe('loadPaginatedGeneProperties action', () => {
       {
         ...initialState,
       },
-      experimentSettings,
+      backendStatus,
     });
 
     sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));

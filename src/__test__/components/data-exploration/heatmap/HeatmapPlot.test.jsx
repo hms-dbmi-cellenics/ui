@@ -29,6 +29,7 @@ let component;
 
 const componentType = 'interactiveHeatmap';
 
+const experimentId = '123';
 const initialState = {
   genes: {
     expression: {
@@ -102,6 +103,9 @@ const initialState = {
     },
   },
   experimentSettings: {
+    info: {
+      sampleIds: [],
+    },
     processing: {
       meta: {
         loading: false,
@@ -147,7 +151,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' width={200} height={200} />
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
@@ -177,7 +181,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' width={200} height={200} />
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
@@ -188,7 +192,7 @@ describe('HeatmapPlot', () => {
     const store = mockStore(initialState);
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' width={200} height={200} />
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
@@ -209,7 +213,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' width={200} height={200} />
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
       </Provider>,
     );
 
@@ -237,7 +241,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' width={200} height={200} />
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
       </Provider>,
     );
 
@@ -259,7 +263,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' width={200} height={200} />
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
       </Provider>,
     );
 
@@ -300,7 +304,7 @@ describe('HeatmapPlot', () => {
 
     component = mount(
       <Provider store={store}>
-        <HeatmapPlot experimentId='123' width={200} height={200} />
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
       </Provider>,
     );
 

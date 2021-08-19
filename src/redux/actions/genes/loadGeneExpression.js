@@ -17,7 +17,7 @@ const loadGeneExpression = (
     return null;
   }
 
-  const status = getState().backendStatus[experimentId];
+  const { status } = getState().backendStatus[experimentId];
 
   const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
 
