@@ -10,7 +10,7 @@ const tasksForAllClients = ['ClusterCells'];
 
 const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const requestUuid = uuidv4();
-  const io = await connectionPromise();
+  const io = await connectionPromise;
 
   // Check if we need to have a bigger timeout because the worker being down.
   const statusResponse = await fetchAPI(`/v1/experiments/${experimentId}/backendStatus`);

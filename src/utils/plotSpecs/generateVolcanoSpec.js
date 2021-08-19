@@ -16,7 +16,7 @@ const generateSpec = (configSrc, data) => {
   });
 
   const logFoldChangeFilterExpr = (config.logFoldChangeDomain)
-    ? `datum.avg_log2FC > ${config.logFoldChangeDomain * -1} && datum.avg_log2FC < ${config.logFoldChangeDomain}`
+    ? `datum.logFC > ${config.logFoldChangeDomain * -1} && datum.logFC < ${config.logFoldChangeDomain}`
     : 'true';
 
   const negativeLogpValueFilterExpr = (config.maxNegativeLogpValueDomain)
@@ -46,14 +46,14 @@ const generateSpec = (configSrc, data) => {
   // the data in the set.
   const logFoldChangeDomain = config.logFoldChangeDomain
     ? [config.logFoldChangeDomain * -1, config.logFoldChangeDomain]
-    : { data: 'data', field: 'avg_log2FC' };
+    : { data: 'data', field: 'logFC' };
 
   const maxNegativeLogpValueDomain = config.maxNegativeLogpValueDomain
     ? [0, config.maxNegativeLogpValueDomain]
     : { data: 'data', field: 'neglogpvalue' };
 
   // adding gene labels above the set Y value only for the significant genes
-  const geneLabelsEquation = `datum.avg_log2FC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
+  const geneLabelsEquation = `datum.logFC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
 
   let legend = [];
   if (config.legend.enabled) {
@@ -101,7 +101,7 @@ const generateSpec = (configSrc, data) => {
         transform: [
           {
             type: 'filter',
-            expr: 'datum.avg_log2FC && datum.p_val_adj && datum.avg_log2FC !== 0 && datum.p_val_adj !== 0',
+            expr: 'datum.logFC && datum.p_val_adj && datum.logFC !== 0 && datum.p_val_adj !== 0',
           },
           {
             type: 'formula',
@@ -228,7 +228,7 @@ const generateSpec = (configSrc, data) => {
         from: { data: 'data' },
         encode: {
           enter: {
-            x: { scale: 'x', field: 'avg_log2FC' },
+            x: { scale: 'x', field: 'logFC' },
             y: { scale: 'y', field: 'neglogpvalue' },
             size: config.marker.size,
             shape: config.marker.shape,
@@ -251,7 +251,7 @@ const generateSpec = (configSrc, data) => {
         from: { data: 'dex2' },
         encode: {
           enter: {
-            x: { scale: 'x', field: 'avg_log2FC' },
+            x: { scale: 'x', field: 'logFC' },
             y: { scale: 'y', field: 'neglogpvalue' },
 
             fill: { value: config.colour.masterColour },

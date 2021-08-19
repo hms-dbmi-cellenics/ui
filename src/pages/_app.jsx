@@ -11,13 +11,13 @@ import AWS from 'aws-sdk';
 import { Credentials } from '@aws-amplify/core';
 import { initTracking } from '../utils/tracking';
 import ContentWrapper from '../components/ContentWrapper';
+import TagManager from '../components/TagManager';
 import NotFoundPage from './404';
 import UnauthorizedPage from './401';
 import Error from './_error';
 import { wrapper } from '../redux/store';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
-import { ssrGetCurrentEnvironment } from '../utils/environment';
 
 import CustomError from '../utils/customError';
 
@@ -157,6 +157,9 @@ const WrappedApp = ({ Component, pageProps }) => {
           locale: 'en_US',
           site_name: 'Biomage Cellscope',
         }}
+      />
+      <TagManager
+        environment={environment}
       />
       {mainContent(Component, pageProps)}
     </>

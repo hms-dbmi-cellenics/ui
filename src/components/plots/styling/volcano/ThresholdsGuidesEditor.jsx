@@ -108,7 +108,7 @@ const ThresholdsGuidesEditor = (props) => {
             <span>
               Fold change
               {' '}
-              <em>(log2)</em>
+              <em>(log)</em>
             </span>
           )}
         >

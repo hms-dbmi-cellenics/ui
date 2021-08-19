@@ -16,7 +16,7 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 
-import initUpdateSocket from '../utils/initUpdateSocket';
+import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
 import { discardChangedQCFilters } from '../redux/actions/experimentSettings';
@@ -78,15 +78,16 @@ const ContentWrapper = (props) => {
 
   const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
 
-  const updateSocket = useRef(null);
-  useEffect(() => {
+  useEffect(async () => {
     if (!experimentId) {
       return;
     }
 
     dispatch(loadBackendStatus(experimentId));
 
-    updateSocket.current = initUpdateSocket(experimentId, experimentUpdatesHandler(dispatch));
+    const io = await connectionPromise;
+    const cb = experimentUpdatesHandler(dispatch);
+    io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
   }, [experimentId]);
 
   useEffect(() => {

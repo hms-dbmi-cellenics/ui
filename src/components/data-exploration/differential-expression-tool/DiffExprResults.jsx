@@ -37,8 +37,8 @@ const DiffExprResults = (props) => {
 
   const columns = [
     {
-      title: 'Avg log2FC',
-      key: 'avg_log2FC',
+      title: 'logFC',
+      key: 'logFC',
       sorter: true,
       showSorterTooltip: false,
     },

@@ -70,7 +70,6 @@ const VolcanoPlot = ({ experimentId }) => {
     if (data.length === 0) return;
     setDataPointStatus();
   }, []);
-
   const plotStylingControlsConfig = [
     {
       panelTitle: 'Main Schema',
@@ -147,12 +146,12 @@ const VolcanoPlot = ({ experimentId }) => {
     const dataPoints = _.cloneDeep(data);
     dataPoints
       .filter((datum) => {
-        const { avg_log2FC } = datum;
+        const { logFC } = datum;
         const p_val_adj = parseFloat(datum.p_val_adj);
 
         // Downsample insignificant, not changing genes by the appropriate amount.
-        const isSignificant = (avg_log2FC < config.logFoldChangeThreshold * -1
-          || avg_log2FC > config.logFoldChangeThreshold)
+        const isSignificant = (logFC < config.logFoldChangeThreshold * -1
+          || logFC > config.logFoldChangeThreshold)
           && p_val_adj < config.pvalueThreshold;
 
         if (isSignificant) {
@@ -171,7 +170,7 @@ const VolcanoPlot = ({ experimentId }) => {
         // order the colors by the names, and the names are declared sorted,
         // so they must be alphabetically ordered.
         let status;
-        const { avg_log2FC } = datum;
+        const { logFC } = datum;
         const p_val_adj = parseFloat(datum.p_val_adj);
 
         const pvalueThreshold = (
@@ -181,17 +180,17 @@ const VolcanoPlot = ({ experimentId }) => {
 
         if (
           p_val_adj <= pvalueThreshold
-          && avg_log2FC >= config.logFoldChangeThreshold
+          && logFC >= config.logFoldChangeThreshold
         ) {
           status = 'Upregulated';
         } else if (
           p_val_adj <= pvalueThreshold
-          && avg_log2FC <= config.logFoldChangeThreshold * -1
+          && logFC <= config.logFoldChangeThreshold * -1
         ) {
           status = 'Downregulated';
         } else if (
           p_val_adj > pvalueThreshold
-          && datum.avg_log2FC >= config.logFoldChangeThreshold
+          && datum.logFC >= config.logFoldChangeThreshold
         ) {
         } else {
           status = 'No difference';

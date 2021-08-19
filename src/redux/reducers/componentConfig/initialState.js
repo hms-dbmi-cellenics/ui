@@ -102,6 +102,14 @@ const heatmapInitialConfig = {
   truncatedValues: false,
 };
 
+// PLOTS & TABLES - Marker heatmap
+const markerHeatmapInitialConfig = {
+  ...heatmapInitialConfig,
+  guardLines: false,
+  numGenes: 5,
+  showGeneLabels: true,
+};
+
 // PLOTS & TABLES - Volcano plot
 const volcanoInitialConfig = {
   spec: '1.0.0',
@@ -113,7 +121,7 @@ const volcanoInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'log2 fold change',
+    xAxisText: 'log fold change',
     yAxisText: '-log10(adj p-value)',
     gridOpacity: 5,
     offset: 10,
@@ -690,6 +698,7 @@ const initialPlotConfigStates = {
   embeddingContinuous: embeddingContinuousInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
+  markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,

@@ -8,6 +8,7 @@ import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import Header from '../../../../components/Header';
+
 import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
 import DiffExprManager from '../../../../components/data-exploration/differential-expression-tool/DiffExprManager';

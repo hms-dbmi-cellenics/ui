@@ -4,7 +4,9 @@ import {
 
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
-const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState) => {
+const loadMarkerGenes = (
+  experimentId, resolution, plotUuid, numGenes = 5,
+) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
   if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
@@ -12,10 +14,9 @@ const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState)
   const { backendStatus, processing } = getState().experimentSettings;
 
   const { method } = processing.configureEmbedding.clusteringSettings;
-
   const body = {
     name: 'MarkerHeatmap',
-    nGenes: 5,
+    nGenes: numGenes,
     type: method,
     config: {
       resolution,
@@ -28,7 +29,6 @@ const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState)
 
   try {
     const data = await fetchCachedWork(experimentId, body, backendStatus.status);
-
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({
@@ -37,6 +37,7 @@ const loadMarkerGenes = (experimentId, resolution) => async (dispatch, getState)
         experimentId,
         genes: order,
         data: markerGeneExpressions,
+        plotUuid,
       },
     });
   } catch (e) {
