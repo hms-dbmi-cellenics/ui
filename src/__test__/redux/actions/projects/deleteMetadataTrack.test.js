@@ -1,6 +1,6 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { metadataNameToKey } from '../../../../utils/metadataUtils';
+import { metadataNameToKey } from '../../../../utils/data-management/metadataUtils';
 import deleteMetadataTrack from '../../../../redux/actions/projects/deleteMetadataTrack';
 import initialProjectState from '../../../../redux/reducers/projects';
 import initialSampleState from '../../../../redux/reducers/samples';

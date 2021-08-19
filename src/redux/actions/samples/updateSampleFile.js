@@ -7,7 +7,7 @@ import {
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
-import UploadStatus from '../../../utils/UploadStatus';
+import UploadStatus from '../../../utils/data-management/UploadStatus';
 
 const updateSampleFile = (
   sampleUuid,

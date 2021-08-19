@@ -1,7 +1,7 @@
 import downloadTypes from './downloadTypes';
-import { getFromApiExpectOK } from './getDataExpectOK';
-import pushNotificationMessage from './pushNotificationMessage';
-import endUserMessages from './endUserMessages';
+import { getFromApiExpectOK } from '../getDataExpectOK';
+import pushNotificationMessage from '../pushNotificationMessage';
+import endUserMessages from '../endUserMessages';
 
 const downloadData = async (experimentId, type) => {
   try {

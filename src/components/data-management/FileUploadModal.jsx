@@ -17,7 +17,7 @@ import {
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 import techOptions from '../../utils/fileUploadSpecifications';
-import UploadStatus from '../../utils/UploadStatus';
+import UploadStatus from '../../utils/data-management/UploadStatus';
 import checkIfFileValid from '../../utils/checkIfFileValid';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 

@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Menu, Dropdown,
+  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Dropdown,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -13,7 +13,6 @@ import { sortableHandle, sortableContainer, sortableElement } from 'react-sortab
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
-import _ from 'lodash';
 import arrayMove from 'array-move';
 import { Storage } from 'aws-amplify';
 import { saveAs } from 'file-saver';
@@ -44,18 +43,14 @@ import {
 } from '../../redux/actions/experiments';
 import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
-import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
+import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
 
-import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
+import UploadStatus, { messageForStatus } from '../../utils/data-management/UploadStatus';
 import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
-
-import { exportQCParameters, filterQCParameters } from '../../utils/exportQCParameters';
-import downloadData from '../../utils/downloadExperimentData';
-import downloadTypes from '../../utils/downloadTypes';
-import pipelineStatus from '../../utils/pipelineStatusValues';
+import DownloadData from './DownloadData';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -600,16 +595,6 @@ const ProjectDetails = ({ width, height }) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
-  const allSamplesAnalysed = () => {
-    // Returns true only if there is at least one sample in the currently active
-    // project AND all samples in the project have been analysed.
-    const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
-
-    return steps.length > 0
-      && activeProject?.samples?.length > 0
-      && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
-  };
-
   const onSortEnd = ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
       // This can be done because there is only one experiment per project
@@ -644,83 +629,6 @@ const ProjectDetails = ({ width, height }) => {
     const index = tableData.findIndex((x) => x.key === props['data-row-key']);
     return <SortableRow index={index} {...props} />;
   };
-
-  const pipelineHasRun = (experimentId) => (
-    experiments[experimentId]?.meta?.backendStatus?.pipeline?.status === pipelineStatus.SUCCEEDED
-  );
-  const gem2sHasRun = (experimentId) => (
-    experiments[experimentId]?.meta?.backendStatus?.gem2s?.status === pipelineStatus.SUCCEEDED
-  );
-
-  const DownloadDataMenu = (
-    <Menu>
-      <Menu.Item
-        key='download-raw-seurat'
-        disabled={activeProject?.experiments?.length
-          && !gem2sHasRun(activeProject?.experiments[0])}
-        onClick={() => {
-          const experimentId = activeProject?.experiments[0];
-          downloadData(experimentId, downloadTypes.RAW_SEURAT_OBJECT);
-        }}
-      >
-        <Tooltip
-          title={
-            activeProject?.experiments?.length
-              && gem2sHasRun(activeProject?.experiments[0])
-              ? 'Samples have been merged'
-              : 'Launch analysis to merge samples'
-          }
-          placement='left'
-        >
-          Raw Seurat object (.rds)
-        </Tooltip>
-      </Menu.Item>
-      <Menu.Item
-        key='download-processed-seurat'
-        disabled={
-          activeProject?.experiments?.length > 0
-          && !pipelineHasRun(activeProject?.experiments[0])
-        }
-        onClick={() => {
-          // Change if we have more than one experiment per project
-          const experimentId = activeProject?.experiments[0];
-          downloadData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT);
-        }}
-      >
-        <Tooltip
-          title={
-            activeProject?.experiments?.length > 0
-              && pipelineHasRun(activeProject?.experiments[0])
-              ? 'With Data Processing filters and settings applied'
-              : 'Launch analysis to process data'
-          }
-          placement='left'
-        >
-          Processed Seurat object (.rds)
-        </Tooltip>
-      </Menu.Item>
-      <Menu.Item
-        disabled={!allSamplesAnalysed()}
-        key='download-processing-settings'
-        onClick={() => {
-          const config = _.omit(experimentSettings.processing, ['meta']);
-          const filteredConfig = filterQCParameters(config, activeProject.samples, samples);
-          const blob = exportQCParameters(filteredConfig);
-          saveAs(blob, `${activeProjectUuid.split('-')[0]}_settings.txt`);
-        }}
-      >
-        {
-          allSamplesAnalysed()
-            ? 'Data Processing settings (.txt)'
-            : (
-              <Tooltip title='One or more of your samples has yet to be analysed' placement='left'>
-                Data Processing settings (.txt)
-              </Tooltip>
-            )
-        }
-      </Menu.Item>
-    </Menu>
-  );
 
   return (
     <>
@@ -778,7 +686,15 @@ const ProjectDetails = ({ width, height }) => {
                 Add metadata
               </Button>
               <Dropdown
-                overlay={DownloadDataMenu}
+                overlay={() => (
+                  <DownloadData
+                    activeProject={activeProject}
+                    experiments={experiments}
+                    experimentSettings={experimentSettings}
+                    samples={samples}
+                    activeProjectUuid={activeProjectUuid}
+                  />
+                )}
                 trigger={['click']}
                 placement='bottomRight'
                 disabled={

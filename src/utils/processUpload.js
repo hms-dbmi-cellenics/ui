@@ -3,7 +3,7 @@ import { Storage } from 'aws-amplify';
 import _ from 'lodash';
 import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { createSample, updateSampleFile } from '../redux/actions/samples';
-import UploadStatus from './UploadStatus';
+import UploadStatus from './data-management/UploadStatus';
 
 const putInS3 = async (bucketKey, loadedFileData, dispatch, sampleUuid, fileName, metadata) => (
   Storage.put(

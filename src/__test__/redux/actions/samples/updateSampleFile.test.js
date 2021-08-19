@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import updateSampleFile from '../../../../redux/actions/samples/updateSampleFile';
 import initialState, { sampleTemplate, sampleFileTemplate } from '../../../../redux/reducers/samples/initialState';
 import { saveSamples } from '../../../../redux/actions/samples';
-import UploadStatus from '../../../../utils/UploadStatus';
+import UploadStatus from '../../../../utils/data-management/UploadStatus';
 
 import { SAMPLES_FILE_UPDATE } from '../../../../redux/actionTypes/samples';
 

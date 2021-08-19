@@ -12,7 +12,7 @@ import initialProjectState, { projectTemplate } from '../../redux/reducers/proje
 import initialExperimentState, { experimentTemplate } from '../../redux/reducers/experiments/initialState';
 
 import processUpload from '../../utils/processUpload';
-import UploadStatus from '../../utils/UploadStatus';
+import UploadStatus from '../../utils/data-management/UploadStatus';
 
 enableFetchMocks();
 

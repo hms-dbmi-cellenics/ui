@@ -7,7 +7,7 @@ import {
 import { UploadOutlined } from '@ant-design/icons';
 
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
-import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
+import UploadStatus, { messageForStatus } from '../../utils/data-management/UploadStatus';
 import checkIfFileValid from '../../utils/checkIfFileValid';
 
 const UploadDetailsModal = (props) => {
