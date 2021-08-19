@@ -150,9 +150,6 @@ describe('processUpload (in development)', () => {
   });
 
   beforeEach(() => {
-    // eslint-disable-next-line no-param-reassign
-    validFilesList.forEach((file) => { file.bundle.valid = true; });
-
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResponse(JSON.stringify({}));
