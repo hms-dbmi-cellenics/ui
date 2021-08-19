@@ -124,7 +124,9 @@ const HeatmapPlot = (props) => {
   }, [
     selectedGenes,
     heatmapSettings,
-    maxCells]);
+    maxCells,
+    markerGenesLoading,
+  ]);
 
   useEffect(() => {
     if (louvainClustersResolution
