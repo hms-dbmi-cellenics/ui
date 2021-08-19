@@ -1,4 +1,4 @@
-import { Gunzip, strFromU8 } from 'fflate';
+import { Gunzip } from 'fflate';
 
 import techOptions from './fileUploadSpecifications';
 import readFileToBuffer from './readFileToBuffer';
@@ -10,9 +10,8 @@ const Verdict = {
   VALID_UNZIPPED: 1,
 };
 
-const MATRIX_SIGNATURE = Buffer.from('%%MatrixMarket', 'ascii');
-const FEATURES_SIGNATURE = Buffer.from('ENS', 'ascii');
-
+const MATRIX_SIGNATURE = Buffer.from('%%MatrixMarket');
+const FEATURES_SIGNATURE = Buffer.from('ENS');
 const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 
 const inspectFile = async (file, technology) => {
@@ -54,7 +53,7 @@ const inspectFile = async (file, technology) => {
 
   // check barcodes file starts with a 16 digit DNA sequence
   if (file.name.startsWith('barcodes')
-      && strFromU8(data).match(/^[ACGT]+$/)) {
+      && data.toString().match(/^[ACGT]+$/)) {
     return valid;
   }
 
