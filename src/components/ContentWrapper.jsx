@@ -16,7 +16,7 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 
-import connectionPromise from 'utils/socketConnection';
+import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
 import { loadBackendStatus, discardChangedQCFilters } from '../redux/actions/experimentSettings';

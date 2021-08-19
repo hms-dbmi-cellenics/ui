@@ -25,7 +25,7 @@ const mockOn = jest.fn(async (x, f) => {
 
 const mockEmit = jest.fn();
 const io = { emit: mockEmit, on: mockOn, id: '5678' };
-connectionPromise.mockImplementation(() => new Promise((resolve) => {
+connectionPromise.mockImplementation(new Promise((resolve) => {
   resolve(io);
 }));
 
