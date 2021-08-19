@@ -110,8 +110,7 @@ const HeatmapPlot = (props) => {
   }, [legendIsVisible]);
 
   useEffect(() => {
-    if (!selectedGenes
-      || selectedGenes.length === 0
+    if (!selectedGenes?.length > 0
       || _.isEqual(currentHeatmapSettings, heatmapSettings)
     ) {
       return;
