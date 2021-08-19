@@ -5,7 +5,7 @@ const initialState = {
   },
   processing: {
     meta: {
-      loading: true,
+      loading: false,
       completingStepError: false,
       loadingSettingsError: false,
       selectedConfigureEmbeddingPlot: 'cellCluster',

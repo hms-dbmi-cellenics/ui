@@ -55,7 +55,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const pipelineStatus = useSelector((state) => state.backendStatus[experimentId]?.status?.pipeline);
+  const pipelineStatus = useSelector(
+    (state) => state.backendStatus[experimentId]?.status?.pipeline,
+  );
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);
   const samples = useSelector((state) => state.samples);
@@ -70,7 +72,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedSteps = pipelineStatus?.completedSteps;
 
-  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   const changesOutstanding = Boolean(changedQCFilters.size);
 
@@ -93,7 +97,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   };
 
   useEffect(() => {
-    dispatch(loadProcessingSettings(experimentId));
+    // If processingConfig is not loaded then reload
+    if (Object.keys(processingConfig).length <= 1) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+
     dispatch(loadSamples(experimentId));
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -581,7 +589,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       );
     }
 
-    if (samples.meta.loading || processingConfig.meta.loading) {
+    if (samples.meta.loading
+      || processingConfig.meta.loading
+      || Object.keys(processingConfig).length <= 1
+    ) {
       return (
         <div className='preloadContextSkeleton' style={{ padding: '16px 0px' }}>
           <Skeleton.Input style={{ width: '100%', height: 400 }} active />

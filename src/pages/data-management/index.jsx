@@ -70,6 +70,7 @@ const DataManagementPage = ({ route }) => {
     // ID so the experiments load will fail this should be addressed by migrating experiments.
     // However, for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
     // and we should not try to load the experiments with it
+
     if (
       !activeProjectUuid
       || !isUuid(activeProjectUuid)
