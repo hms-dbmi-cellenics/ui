@@ -34,4 +34,4 @@ const connectionPromise = new Promise((resolve, reject) => {
   });
 });
 
-export default () => connectionPromise;
+export default connectionPromise;
