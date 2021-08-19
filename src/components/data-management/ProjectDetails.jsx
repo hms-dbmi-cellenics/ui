@@ -649,9 +649,6 @@ const ProjectDetails = ({ width, height }) => {
     return <SortableRow index={index} {...props} />;
   };
 
-  // const pipelineHasRun = () => true;
-  // const gem2sHasRun = () => true;
-
   const pipelineHasRun = (experimentId) => (
     backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED
   );

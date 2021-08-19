@@ -66,9 +66,6 @@ describe('runGem2s action', () => {
 
     const actions = store.getActions();
 
-    console.log('actionsDebug');
-    console.log(actions);
-
     expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
     expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
     expect(loadBackendStatus).toHaveBeenCalled();

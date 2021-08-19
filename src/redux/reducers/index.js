@@ -24,10 +24,10 @@ export default combineReducers({
   embeddings: embeddingsReducer,
   experiments: experimentsReducer,
   experimentSettings: experimentSettingsReducer,
+  backendStatus: backendStatusReducer,
   genes: genesReducer,
   layout: layoutReducer,
   projects: projectsReducer,
   samples: sampleReducer,
   networkResources: networkResourcesReducer,
-  backendStatus: backendStatusReducer,
 });
