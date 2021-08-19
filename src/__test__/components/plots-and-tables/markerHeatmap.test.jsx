@@ -21,10 +21,15 @@ import MarkerHeatmap from '../../../pages/experiments/[experimentId]/plots-and-t
 import * as cellSetsLoaded from '../../../redux/actions/cellSets/loadCellSets';
 import * as loadedProcessingConfig from '../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 
-jest.mock('localforage');
 enableFetchMocks();
+jest.mock('localforage');
 jest.mock('../../../components/plots/Header', () => () => <div />);
-
+jest.mock('../../../utils/socketConnection', () => ({
+  __esModule: true,
+  default: new Promise((resolve) => {
+    resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
+  }),
+}));
 jest.mock('../../../utils/cacheRequest', () => ({
   fetchCachedWork: jest.fn().mockImplementation((expId, body) => {
     if (body.name === 'ListGenes') {
