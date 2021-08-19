@@ -90,7 +90,9 @@ const HeatmapPlot = (props) => {
   useEffect(() => {
     const selectedGenesLoading = _.intersection(selectedGenes, loadingGenes).length > 0;
 
-    if (markerGenesLoading || selectedGenesLoading) {
+    // markerGenesLoading only happen on the first load
+    // selectedGenesLoading happens every time the selected genes are changed
+    if (selectedGenesLoading || markerGenesLoading) {
       setIsHeatmapGenesLoading(true);
       return;
     }
