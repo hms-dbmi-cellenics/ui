@@ -299,6 +299,7 @@ const ProjectDetails = ({ width, height }) => {
       fixed: 'right',
       title: () => (
         <MetadataPopover
+          id='metadata-popover'
           existingMetadata={activeProject.metadataKeys}
           onCreate={(name) => {
             const newMetadataColumn = createInitializedMetadataColumn(name);
@@ -765,6 +766,7 @@ const ProjectDetails = ({ width, height }) => {
                 Add samples
               </Button>
               <Button
+                id='add-metadata-button'
                 disabled={
                   projects.ids.length === 0
                   || activeProject?.samples?.length === 0

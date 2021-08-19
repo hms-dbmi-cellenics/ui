@@ -74,7 +74,7 @@ const ProjectsListContainer = (props) => {
         projectName={projects[deleteProjectUuid]?.name}
       />
 
-      <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
+      <Space id='projects-list-space' direction='vertical' style={{ width: '100%', height: height - 90 }}>
         {
           projects.ids.map((uuid) => (
             <Card
