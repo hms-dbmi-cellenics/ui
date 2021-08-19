@@ -189,13 +189,11 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
 const bundleToFile = async (bundle, technology) => {
   // This is the first stage in uploading a file.
 
-  let filename;
-  if (bundle.path) {
-    // trim path to just the file and its folder
-    filename = _.takeRight(bundle.path.split('/'), 2).join('/');
-  } else {
-    filename = bundle.name;
-  }
+  // if the file has a path, trim to just the file and its folder.
+  // otherwise simply use its name
+  const filename = (bundle.path)
+    ? _.takeRight(bundle.path.split('/'), 2).join('/')
+    : bundle.name;
 
   const verdict = await inspectFile(bundle, technology);
 
