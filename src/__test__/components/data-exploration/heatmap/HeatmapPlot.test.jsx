@@ -112,6 +112,9 @@ const initialState = {
       },
     },
   },
+  backendStatus: {
+    [experimentId]: { status: {} },
+  },
 };
 
 describe('HeatmapPlot', () => {

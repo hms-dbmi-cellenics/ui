@@ -14,8 +14,6 @@ const loadEmbedding = (
     return null;
   }
 
-  console.log('debugdebugdebug');
-
   const { status } = getState().backendStatus[experimentId];
 
   // Does not load anything if experiment settings is not loaded

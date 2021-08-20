@@ -147,11 +147,6 @@ describe('GeneListTool', () => {
 
     const table = component.find('Table Table');
 
-    console.log('newPaginationDebug');
-    console.log(newPagination);
-
-    console.log('newSorterDebug');
-    console.log(newSorter);
     act(() => {
       table.getElement().props.onChange(newPagination, {}, newSorter);
     });

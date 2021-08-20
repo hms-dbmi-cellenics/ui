@@ -3,6 +3,7 @@ import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import waitForActions from 'redux-mock-store-await-actions';
 
 import loadBackendStatus from '../../../../redux/actions/backendStatus/loadBackendStatus';
 import saveProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
@@ -47,6 +48,11 @@ const initialState = {
       meta: {
         changedQCFilters: new Set(['cellSizeDistribution']),
       },
+    },
+  },
+  backendStatus: {
+    [experimentId]: {
+      status: {},
     },
   },
 };
@@ -102,6 +108,11 @@ describe('runPipeline action', () => {
 
     const store = mockStore(onlyConfigureEmbeddingChangedState);
     await store.dispatch(runPipeline(experimentId));
+
+    await waitForActions(
+      store,
+      [EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS, EMBEDDINGS_LOADING],
+    );
 
     const actions = store.getActions();
 
