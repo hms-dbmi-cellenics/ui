@@ -75,16 +75,20 @@ const ContentWrapper = (props) => {
 
   const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
 
-  useEffect(async () => {
+  const setUpConnection = async () => {
+    const io = await connectionPromise;
+    const cb = experimentUpdatesHandler(dispatch);
+    io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
+  };
+
+  useEffect(() => {
     if (!experimentId) {
       return;
     }
 
     dispatch(loadBackendStatus(experimentId));
 
-    const io = await connectionPromise;
-    const cb = experimentUpdatesHandler(dispatch);
-    io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
+    setUpConnection();
   }, [experimentId]);
 
   useEffect(() => {
