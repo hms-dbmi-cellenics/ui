@@ -62,7 +62,7 @@ const HeatmapGroupBySettings = (props) => {
   const previousGroupedKeys = () => cellSetsOrder.map((cellSet) => cellSet.key);
 
   useEffect(() => {
-    if (isInitialRenderRef.current || !_.isEqual(previousGroupedKeys(), groupedTracksKeys)) {
+    if (isInitialRenderRef.current) {
       isInitialRenderRef.current = false;
       return;
     }
@@ -83,7 +83,6 @@ const HeatmapGroupBySettings = (props) => {
       setCellSetsOrder(newOrder);
     }
   }, [groupedTracksKeys]);
-
   const indexOfCellSet = (cellSet) => cellSetsOrder.findIndex((elem) => (elem.key === cellSet.key));
 
   // This is so that a click on + or - buttons doesn't close the menu
