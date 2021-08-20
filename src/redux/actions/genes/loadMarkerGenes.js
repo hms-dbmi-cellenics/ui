@@ -5,7 +5,7 @@ import {
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const loadMarkerGenes = (
-  experimentId, resolution, plotUuid, numGenes = 5,
+  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSets = false,
 ) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
@@ -21,6 +21,7 @@ const loadMarkerGenes = (
     config: {
       resolution,
     },
+    typeOfSets: selectedCellSets || 'louvain',
   };
 
   dispatch({

@@ -59,9 +59,22 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   useEffect(() => {
     if (louvainClustersResolution && config) {
-      dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes));
+      dispatch(loadMarkerGenes(
+        experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+      ));
     }
-  }, [louvainClustersResolution, hierarchy, config?.numGenes]);
+  }, [louvainClustersResolution, config?.selectedCellSet, config?.numGenes]);
+
+  useEffect(() => {
+    if (!config) {
+      return;
+    }
+    // grouping and metadata tracks should change when data is changed
+    updatePlotWithChanges(
+      { selectedTracks: [config.selectedCellSet], groupedTracks: [config.selectedCellSet] },
+    );
+  }, [config?.selectedCellSet]);
+
   const sortGenes = (newGenes) => {
     const clusters = hierarchy.find((cluster) => cluster.key === config.selectedCellSet).children;
 
