@@ -10,6 +10,10 @@ import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
 import { bundleToFile } from '../../utils/upload/processUpload';
 
+// we'll need to remove the hard-coded 10x tech type once we start
+// supporting other types and save the chosen tech type in redux
+const SELECTED_TECH = '10X Chromium';
+
 const UploadDetailsModal = (props) => {
   const {
     sampleName, file, visible, fileCategory, onUpload, onDownload, onCancel,
@@ -26,9 +30,7 @@ const UploadDetailsModal = (props) => {
 
   useEffect(() => {
     if (replacementFileBundle) {
-      // we'll need to remove the hard-coded 10x tech type once we start
-      // supporting other types and save the chosen tech type in redux
-      bundleToFile(replacementFileBundle, '10X Chromium').then((newFile) => {
+      bundleToFile(replacementFileBundle, SELECTED_TECH).then((newFile) => {
         if (newFile.valid) {  // && newFile.name === file.name ?
           onUpload(newFile);
         } else {
