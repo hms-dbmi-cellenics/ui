@@ -5,14 +5,14 @@ import uuid from 'uuid';
 
 import { Storage } from 'aws-amplify';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { SAMPLES_FILE_UPDATE } from '../../redux/actionTypes/samples';
+import { SAMPLES_FILE_UPDATE } from '../../../redux/actionTypes/samples';
 
-import initialSampleState, { sampleTemplate } from '../../redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from '../../redux/reducers/projects/initialState';
-import initialExperimentState, { experimentTemplate } from '../../redux/reducers/experiments/initialState';
+import initialSampleState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
+import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from '../../../redux/reducers/experiments/initialState';
 
-import processUpload from '../../utils/processUpload';
-import UploadStatus from '../../utils/UploadStatus';
+import { processUpload } from '../../../utils/upload/processUpload';
+import UploadStatus from '../../../utils/upload/UploadStatus';
 
 enableFetchMocks();
 
@@ -23,32 +23,35 @@ const validFilesList = [
       name: 'features.tsv.gz',
       path: '/WT13/features.tsv.gz',
       type: 'application/gzip',
-      valid: true,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
+    compressed: true,
+    valid: true,
   },
   {
     name: 'WT13/barcodes.tsv.gz',
     bundle: {
-      name: 'features.tsv.gz',
+      name: 'barcodes.tsv.gz',
       path: '/WT13/barcodes.tsv.gz',
       type: 'application/gzip',
-      valid: true,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
+    compressed: true,
+    valid: true,
   },
   {
     name: 'WT13/matrix.mtx.gz',
     bundle: {
-      name: 'features.tsv.gz',
+      name: 'matrix.mtx.gz',
       path: '/WT13/matrix.mtx.gz',
       type: 'application/gzip',
-      valid: true,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
+    compressed: true,
+    valid: true,
   },
 ];
 
@@ -106,7 +109,7 @@ const flushPromises = () => new Promise(setImmediate);
 
 const mockStore = configureMockStore([thunk]);
 
-jest.mock('../../utils/loadAndCompressIfNecessary',
+jest.mock('../../../utils/upload/loadAndCompressIfNecessary',
   () => jest.fn().mockImplementation(
     (bundle) => {
       if (!bundle.valid) {
@@ -117,13 +120,13 @@ jest.mock('../../utils/loadAndCompressIfNecessary',
     },
   ));
 
-jest.mock('../../utils/environment', () => ({
+jest.mock('../../../utils/environment', () => ({
   __esModule: true,
   isBrowser: () => false,
   ssrGetCurrentEnvironment: () => 'development',
 }));
 
-jest.mock('../../redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
+jest.mock('../../../redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
   type: 'samples/saved',
 })));
 
@@ -147,9 +150,6 @@ describe('processUpload (in development)', () => {
   });
 
   beforeEach(() => {
-    // eslint-disable-next-line no-param-reassign
-    validFilesList.forEach((file) => { file.bundle.valid = true; });
-
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResponse(JSON.stringify({}));
@@ -213,11 +213,10 @@ describe('processUpload (in development)', () => {
   it('Updates redux correctly when there are file load and compress errors', async () => {
     const store = mockStore(initialState);
 
-    // eslint-disable-next-line no-param-reassign
-    validFilesList.forEach((file) => { file.bundle.valid = false; });
+    const invalidFiles = validFilesList.map((file) => ({ ...file, valid: false }));
 
     processUpload(
-      validFilesList,
+      invalidFiles,
       sampleType,
       store.getState().samples,
       mockProjectUuid,
