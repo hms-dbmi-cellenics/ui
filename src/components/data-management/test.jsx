@@ -291,8 +291,6 @@ const ProjectDetails = ({ width, height }) => {
   );
 
   const createMetadataColumn = () => {
-    setIsAddingMetadata(true);
-
     const key = temporaryMetadataKey(tableColumns);
     const metadataColumn = {
       key,
@@ -604,6 +602,7 @@ const ProjectDetails = ({ width, height }) => {
                   || isAddingMetadata
                 }
                 onClick={() => {
+                  setIsAddingMetadata(true);
                   createMetadataColumn();
                 }}
               >

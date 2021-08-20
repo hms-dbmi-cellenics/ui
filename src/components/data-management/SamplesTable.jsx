@@ -51,8 +51,6 @@ const SamplesTable = (props) => {
     });
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
-  const SortableRow = sortableElement((otherProps) => <tr {...otherProps} className={`${otherProps.className} drag-visible`} />);
-  const SortableTable = sortableContainer((otherProps) => <tbody {...otherProps} />);
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
@@ -69,6 +67,9 @@ const SamplesTable = (props) => {
     }
   };
 
+  const SortableRow = sortableElement((otherProps) => <tr {...otherProps} className={`${otherProps.className} drag-visible`} />);
+  const SortableTable = sortableContainer((otherProps) => <tbody {...otherProps} />);
+
   const DragContainer = (otherProps) => (
     <SortableTable
       useDragHandle
@@ -80,8 +81,7 @@ const SamplesTable = (props) => {
   );
 
   const DraggableRow = (otherProps) => {
-    // eslint-disable-next-line react/prop-types
-    const index = tableData.findIndex((x) => x.key === props['data-row-key']);
+    const index = tableData.findIndex((x) => x.key === otherProps['data-row-key']);
     return <SortableRow index={index} {...otherProps} />;
   };
 
@@ -117,4 +117,4 @@ SamplesTable.propTypes = {
   tableColumns: PropTypes.array.isRequired,
 };
 
-export default SamplesTable;
+export default React.memo(SamplesTable);
