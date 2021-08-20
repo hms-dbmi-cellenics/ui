@@ -11,7 +11,10 @@ const Verdict = {
 };
 
 const MATRIX_SIGNATURE = Buffer.from('%%MatrixMarket');
-const FEATURES_SIGNATURE = Buffer.from('ENS');
+
+const FEATURES_SIGNATURE = Buffer.from('ENS'); // Ensembl Stable ID prefix
+const FEATURES_NC_SIGNATURE = Buffer.from('lnc'); // long non-coding region
+
 const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 
 const inspectFile = async (file, technology) => {
@@ -46,8 +49,13 @@ const inspectFile = async (file, technology) => {
 
   // check genes file starts with Ensembl Stable ID - ENS or "ENS
   if ((file.name.startsWith('features') || file.name.startsWith('genes'))
-      && (!data.slice(0, 3).compare(FEATURES_SIGNATURE)
-      || !data.slice(1, 4).compare(FEATURES_SIGNATURE))) {
+      && (
+        !data.slice(0, 3).compare(FEATURES_SIGNATURE)
+        || !data.slice(1, 4).compare(FEATURES_SIGNATURE)
+        || !data.slice(0, 3).compare(FEATURES_NC_SIGNATURE)
+        || !data.slice(1, 4).compare(FEATURES_NC_SIGNATURE)
+      )
+  ) {
     return valid;
   }
 

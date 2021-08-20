@@ -19,16 +19,16 @@ describe('fileInspector', () => {
       slice() { },
     };
 
-    readFileToBuffer.mockReturnValueOnce(
-      Promise.resolve(Buffer.from('%%MatrixMarket')),
-    );
+    readFileToBuffer
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('%%MatrixMarket')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('Def. not a matrix')),
+      );
 
     expect(await inspectFile(file, '10X Chromium'))
       .toEqual(Verdict.VALID_UNZIPPED);
-
-    readFileToBuffer.mockReturnValueOnce(
-      Promise.resolve(Buffer.from('Def. not a matrix')),
-    );
 
     expect(await inspectFile(file, '10X Chromium'))
       .toEqual(Verdict.INVALID_FORMAT);
@@ -40,16 +40,34 @@ describe('fileInspector', () => {
       slice() { },
     };
 
-    readFileToBuffer.mockReturnValueOnce(
-      Promise.resolve(Buffer.from('ENS00123456789-1')),
-    );
+    readFileToBuffer
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('ENS00123456789-1')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('lnc_inter_chr1_1')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('"ENS00123456789-')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('"lnc_inter_chr1_')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('%%MatrixMarket')),
+      );
 
     expect(await inspectFile(file, '10X Chromium'))
       .toEqual(Verdict.VALID_UNZIPPED);
 
-    readFileToBuffer.mockReturnValue(
-      Promise.resolve(Buffer.from('%%MatrixMarket')),
-    );
+    expect(await inspectFile(file, '10X Chromium'))
+      .toEqual(Verdict.VALID_UNZIPPED);
+
+    expect(await inspectFile(file, '10X Chromium'))
+      .toEqual(Verdict.VALID_UNZIPPED);
+
+    expect(await inspectFile(file, '10X Chromium'))
+      .toEqual(Verdict.VALID_UNZIPPED);
 
     expect(await inspectFile(file, '10X Chromium'))
       .toEqual(Verdict.INVALID_FORMAT);
@@ -61,16 +79,16 @@ describe('fileInspector', () => {
       slice() { },
     };
 
-    readFileToBuffer.mockReturnValueOnce(
-      Promise.resolve(Buffer.from('ACGTTACGTGACCTGA')),
-    );
+    readFileToBuffer
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('ACGTTACGTGACCTGA')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('ENS00123456789-1')),
+      );
 
     expect(await inspectFile(file, '10X Chromium'))
       .toEqual(Verdict.VALID_UNZIPPED);
-
-    readFileToBuffer.mockReturnValue(
-      Promise.resolve(Buffer.from('ENS00123456789-1')),
-    );
 
     expect(await inspectFile(file, '10X Chromium'))
       .toEqual(Verdict.INVALID_FORMAT);
