@@ -212,7 +212,10 @@ const MarkerHeatmap = ({ experimentId }) => {
           error={errorMarkerGenes}
           onClick={
             () => dispatch(
-              loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes),
+              loadMarkerGenes(
+                experimentId, louvainClustersResolution,
+                plotUuid, config.numGenes, config.selectedCellSet,
+              ),
             )
           }
         />
@@ -232,7 +235,9 @@ const MarkerHeatmap = ({ experimentId }) => {
   };
   const onReset = () => {
     onGeneEnter([]);
-    dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes));
+    dispatch(loadMarkerGenes(
+      experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+    ));
   };
 
   const plotStylingControlsConfig = [
