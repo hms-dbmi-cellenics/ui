@@ -24,7 +24,7 @@ import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
-
+import SamplesTable from './SamplesTable';
 import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   deleteSamples, updateSample,
@@ -58,7 +58,6 @@ const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
-  const samplesTableElement = useRef(null);
 
   const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
@@ -69,7 +68,6 @@ const ProjectDetails = ({ width, height }) => {
     getFromUrlExpectOK,
   );
   const projects = useSelector((state) => state.projects);
-  const experimentSettings = useSelector((state) => state.experimentSettings);
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
@@ -105,8 +103,18 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   useEffect(() => {
+    if (!projects.ids.length) {
+      setTableColumns([]);
+      return;
+    }
     if (activeProject && activeProject.samples.length > 0) {
       setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
+      // Set table columns
+      const metadataColumns = activeProject?.metadataKeys.map(
+        (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
+      ) || [];
+      setTableColumns([...columns, ...metadataColumns]);
+      checkLaunchAnalysis();
     } else {
       setSampleNames(new Set());
     }
@@ -140,6 +148,42 @@ const ProjectDetails = ({ width, height }) => {
 
     setSortedSpeciesData(d);
   }, [speciesData]);
+
+  useEffect(() => {
+    if (projects.ids.length === 0
+      || !activeProject
+      || !samples[activeProject.samples[0]]) {
+      setTableData([]);
+      setTableColumns([]);
+      return;
+    }
+
+    // Set table data
+
+    const newData = activeProject.samples.map((sampleUuid, idx) => {
+      const sampleFiles = samples[sampleUuid].files;
+
+      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+
+      const barcodesData = { sampleUuid, file: barcodesFile };
+      const genesData = { sampleUuid, file: genesFile };
+      const matrixData = { sampleUuid, file: matrixFile };
+
+      return {
+        key: idx,
+        name: samples[sampleUuid].name,
+        uuid: sampleUuid,
+        barcodes: barcodesData,
+        genes: genesData,
+        matrix: matrixData,
+        species: samples[sampleUuid].species || DEFAULT_NA,
+        ...samples[sampleUuid].metadata,
+      };
+    });
+    setTableData(newData);
+  }, [projects, samples, activeProjectUuid]);
 
   const renderUploadCell = (columnId, tableCellData) => {
     const {
@@ -495,55 +539,13 @@ const ProjectDetails = ({ width, height }) => {
 
     const canLaunch = activeProject?.samples?.every((sampleUuid) => {
       const checkedSample = samples[sampleUuid];
+      console.log(sampleUuid, 'ALLSAMPLEFILES UPLOADED', allSampleFilesUploaded(checkedSample), 'allsample metadata inserted', allSampleMetadataInserted(checkedSample));
 
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });
     setCanLaunchAnalysis(canLaunch);
   };
-
-  useEffect(() => {
-    if (projects.ids.length === 0
-      || !activeProject
-      || !samples[activeProject.samples[0]]) {
-      setTableData([]);
-      setTableColumns([]);
-      return;
-    }
-
-    // Set table columns
-    const metadataColumns = activeProject?.metadataKeys.map(
-      (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
-    ) || [];
-
-    setTableColumns([...columns, ...metadataColumns]);
-    // Set table data
-
-    const newData = activeProject.samples.map((sampleUuid, idx) => {
-      const sampleFiles = samples[sampleUuid].files;
-
-      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-
-      const barcodesData = { sampleUuid, file: barcodesFile };
-      const genesData = { sampleUuid, file: genesFile };
-      const matrixData = { sampleUuid, file: matrixFile };
-
-      return {
-        key: idx,
-        name: samples[sampleUuid].name,
-        uuid: sampleUuid,
-        barcodes: barcodesData,
-        genes: genesData,
-        matrix: matrixData,
-        species: samples[sampleUuid].species || DEFAULT_NA,
-        ...samples[sampleUuid].metadata,
-      };
-    });
-    checkLaunchAnalysis();
-    setTableData(newData);
-  }, [projects, samples, activeProjectUuid]);
 
   const changeDescription = (description) => {
     dispatch(updateProject(activeProjectUuid, { description }));
@@ -643,12 +645,9 @@ const ProjectDetails = ({ width, height }) => {
         visible={analysisModalVisible}
         onLaunch={async (experimentId) => {
           const lastViewed = moment().toISOString();
-          await dispatch(updateExperiment(experimentId, { lastViewed }));
-          await dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+          dispatch(updateExperiment(experimentId, { lastViewed }));
+          dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
-        }}
-        onChange={() => {
-          // Update experiments details
         }}
         onCancel={() => { setAnalysisModalVisible(false); }}
       />
@@ -688,10 +687,6 @@ const ProjectDetails = ({ width, height }) => {
               <Dropdown
                 overlay={() => (
                   <DownloadData
-                    activeProject={activeProject}
-                    experiments={experiments}
-                    experimentSettings={experimentSettings}
-                    samples={samples}
                     activeProjectUuid={activeProjectUuid}
                   />
                 )}
@@ -738,11 +733,14 @@ const ProjectDetails = ({ width, height }) => {
               }
             </Col>
           </Row>
-
+          {/* <SamplesTable
+            height={height}
+            activeProjectUuid={activeProjectUuid}
+            tableColumns={tableColumns}
+          /> */}
           <Row>
             <Col>
               <Table
-                ref={samplesTableElement}
                 size='small'
                 scroll={{
                   x: 'max-content',

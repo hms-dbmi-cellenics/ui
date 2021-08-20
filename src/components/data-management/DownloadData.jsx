@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { Menu, Tooltip } from 'antd';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { saveAs } from 'file-saver';
 import pipelineStatus from '../../utils/pipelineStatusValues';
@@ -10,8 +11,12 @@ import { exportQCParameters, filterQCParameters } from '../../utils/exportQCPara
 
 const DownloadData = (props) => {
   const {
-    activeProject, experiments, experimentSettings, samples, activeProjectUuid,
+    activeProjectUuid,
   } = props;
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  const experimentSettings = useSelector((state) => state.experimentSettings);
+  const experiments = useSelector((state) => state.experiments);
+  const samples = useSelector((state) => state.samples);
 
   const pipelineHasRun = (experimentId) => (
     experiments[experimentId]?.meta?.backendStatus?.pipeline?.status === pipelineStatus.SUCCEEDED
@@ -102,10 +107,6 @@ const DownloadData = (props) => {
 };
 
 DownloadData.propTypes = {
-  activeProject: PropTypes.object.isRequired,
-  experiments: PropTypes.object.isRequired,
-  experimentSettings: PropTypes.object.isRequired,
-  samples: PropTypes.object.isRequired,
   activeProjectUuid: PropTypes.string.isRequired,
 };
-export default DownloadData;
+export default React.memo(DownloadData);
