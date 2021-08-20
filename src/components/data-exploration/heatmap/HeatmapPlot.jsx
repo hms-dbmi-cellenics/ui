@@ -127,6 +127,7 @@ const HeatmapPlot = (props) => {
     heatmapSettings,
     maxCells,
     markerGenesLoading,
+    cellSetsLoading,
   ]);
 
   useEffect(() => {
