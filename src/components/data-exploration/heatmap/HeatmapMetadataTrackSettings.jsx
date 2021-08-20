@@ -58,6 +58,10 @@ const HeatmapMetadataTrackSettings = (props) => {
       return;
     }
 
+    // Do not re-render if visible track data hasn't changed
+    const newTrackData = getUpdatedTrackData();
+    if (_.isEqual(trackData, newTrackData)) return;
+
     setTrackData(getUpdatedTrackData());
   }, [cellSets.hierarchy]);
 

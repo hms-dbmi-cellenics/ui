@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import '../utils/wdyr';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DefaultSeo } from 'next-seo';
