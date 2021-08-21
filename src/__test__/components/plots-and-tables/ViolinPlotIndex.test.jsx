@@ -18,7 +18,7 @@ import genes from '../../../redux/reducers/genes/initialState';
 import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
 import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec';
-import { fetchWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
 import { mockCellSets1 as cellSets } from '../../test-utils/cellSets.mock';
 import { expectStringInVegaCanvas } from '../../test-utils/vega-utils';
 
@@ -31,7 +31,7 @@ jest.mock('../../../utils/socketConnection', () => ({
     resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
   }),
 }));
-jest.mock('../../../utils/cacheRequest', () => ({
+jest.mock('../../../utils/work/fetchWork', () => ({
   fetchWork: jest.fn().mockImplementation((expId, body) => {
     if (body.name === 'ListGenes') {
       return new Promise((resolve) => resolve({

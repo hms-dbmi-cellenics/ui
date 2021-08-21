@@ -4,7 +4,7 @@ import {
   CELL_META_ERROR,
 } from '../../actionTypes/cellMeta';
 
-import { fetchWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
 
 const loadCellMeta = (
   experimentId, metaName,

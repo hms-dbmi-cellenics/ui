@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import loadPaginatedGeneProperties from '../../../../redux/actions/genes/loadPaginatedGeneProperties';
 import initialState from '../../../../redux/reducers/genes/initialState';
 
-import { seekFromAPI } from '../../../../utils/seekWorkResponse';
+import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
 
 import {
   GENES_PROPERTIES_LOADING,

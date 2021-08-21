@@ -3,14 +3,14 @@ import thunk from 'redux-thunk';
 import loadDifferentialExpression from '../../../../redux/actions/differentialExpression/loadDifferentialExpression';
 
 import initialState from '../../../../redux/reducers/differentialExpression/initialState';
-import { fetchWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
 } from '../../../../redux/actionTypes/differentialExpression';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/cacheRequest');
+jest.mock('../../../../utils/work/fetchWork');
 
 const mockStore = configureStore([thunk]);
 

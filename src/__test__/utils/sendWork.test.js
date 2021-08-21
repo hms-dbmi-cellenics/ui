@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import seekFromAPI from '../../utils/seekWorkResponse';
+import seekFromAPI from '../../utils/work/seekWorkResponse';
 
 /**
  * jest.mock calls are automatically hoisted to the top of the javascript

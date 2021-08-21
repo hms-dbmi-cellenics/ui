@@ -10,13 +10,13 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 
 import DiffExprResults from '../../../../components/data-exploration/differential-expression-tool/DiffExprResults';
-import { fetchWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from '../../../../redux/actionTypes/differentialExpression';
 
 import Loader from '../../../../components/Loader';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/cacheRequest', () => ({
+jest.mock('../../../../utils/work/fetchWork', () => ({
   __esModule: true, // this property makes it work
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [

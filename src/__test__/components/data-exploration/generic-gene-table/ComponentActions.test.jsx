@@ -8,12 +8,12 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import configureMockStore from 'redux-mock-store';
 import ComponentActions from '../../../../components/data-exploration/generic-gene-table/ComponentActions';
-import { fetchWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 
 import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/cacheRequest', () => ({
+jest.mock('../../../../utils/work/fetchWork', () => ({
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     A: {
       min: 0,

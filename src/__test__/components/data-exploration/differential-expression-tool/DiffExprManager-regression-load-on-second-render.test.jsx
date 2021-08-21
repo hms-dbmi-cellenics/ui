@@ -22,7 +22,7 @@ jest.mock('../../../../utils/environment', () => ({
   isBrowser: () => true,
 }));
 
-jest.mock('../../../../utils/cacheRequest', () => ({
+jest.mock('../../../../utils/work/fetchWork', () => ({
   __esModule: true, // this property makes it work
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [

@@ -1,5 +1,5 @@
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { /* cacheFetch, */ fetchWork } from '../../utils/cacheRequest';
+import { /* cacheFetch, */ fetchWork } from '../../utils/work/fetchWork';
 
 enableFetchMocks();
 

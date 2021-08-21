@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import loadGeneExpression from '../../../../redux/actions/genes/loadGeneExpression';
 import initialState from '../../../../redux/reducers/genes/initialState';
-import { fetchWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 
 import pipelineStatusValues from '../../../../utils/pipelineStatusValues';
 
@@ -12,7 +12,7 @@ import {
 } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/cacheRequest');
+jest.mock('../../../../utils/work/fetchWork');
 
 const mockStore = configureStore([thunk]);
 

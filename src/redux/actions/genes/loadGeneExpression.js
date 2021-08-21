@@ -3,7 +3,7 @@ import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from '../../actionTypes/genes';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import { fetchWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
 
 const loadGeneExpression = (
   experimentId, genes, componentUuid, forceReloadAll = false,

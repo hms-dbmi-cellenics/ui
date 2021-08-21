@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { Empty } from 'antd';
 import waitForActions from 'redux-mock-store-await-actions';
 import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
-import { fetchWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 
 import Loader from '../../../../components/Loader';
 
@@ -18,7 +18,7 @@ import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../
 
 jest.mock('localforage');
 
-jest.mock('../../../../utils/cacheRequest', () => ({
+jest.mock('../../../../utils/work/fetchWork', () => ({
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [{
       gene_names: 'R3ALG3N3',

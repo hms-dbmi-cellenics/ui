@@ -2,7 +2,7 @@ import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from '../../actionTypes/genes';
 
-import { fetchWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5,

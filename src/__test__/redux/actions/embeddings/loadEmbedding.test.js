@@ -9,7 +9,7 @@ import {
   EMBEDDINGS_LOADING,
 } from '../../../../redux/actionTypes/embeddings';
 
-import { seekFromAPI } from '../../../../utils/seekWorkResponse';
+import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
 
 jest.mock('localforage');
 

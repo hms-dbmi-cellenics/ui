@@ -1,9 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import hash from 'object-hash';
-import cache from './cache';
+import cache from '../cache';
 import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
-import { isBrowser } from './environment';
-import { calculateZScore } from './postRequestProcessing';
+import { isBrowser } from '../environment';
+import { calculateZScore } from '../postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
 

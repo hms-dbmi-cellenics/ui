@@ -1,10 +1,10 @@
 import moment from 'moment';
 import Amplify, { Storage } from 'aws-amplify';
 
-import connectionPromise from './socketConnection';
-import WorkResponseError from './WorkResponseError';
-import WorkTimeoutError from './WorkTimeoutError';
-import getAuthJWT from './getAuthJWT';
+import connectionPromise from '../socketConnection';
+import WorkResponseError from '../WorkResponseError';
+import WorkTimeoutError from '../WorkTimeoutError';
+import getAuthJWT from '../getAuthJWT';
 
 const tasksForAllClients = ['ClusterCells'];
 
