@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import sendWork from '../../utils/sendWork';
+import seekFromAPI from '../../utils/seekWorkResponse';
 
 /**
  * jest.mock calls are automatically hoisted to the top of the javascript
@@ -29,7 +29,7 @@ jest.mock('../../utils/socketConnection', () => {
   };
 });
 
-describe('sendWork unit tests', () => {
+describe('seekFromAPI unit tests', () => {
   const experimentId = '1234';
   const timeout = 30;
   const body = {
@@ -64,7 +64,7 @@ describe('sendWork unit tests', () => {
   });
 
   it('Sends work to the backend when called and returns valid response.', async () => {
-    const response = await sendWork(
+    const response = await seekFromAPI(
       experimentId, timeout, body,
     );
 
@@ -99,7 +99,7 @@ describe('sendWork unit tests', () => {
       });
     });
 
-    expect(sendWork(experimentId, timeout, body)).rejects.toEqual(new Error('The backend returned an error'));
+    expect(seekFromAPI(experimentId, timeout, body)).rejects.toEqual(new Error('The backend returned an error'));
     await flushPromises();
 
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {

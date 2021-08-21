@@ -1,7 +1,7 @@
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from '../../actionTypes/cellSets';
-import sendWork from '../../../utils/sendWork';
+import seekFromAPI from '../../../utils/seekWorkResponse';
 
 const REQUEST_TIMEOUT = 30;
 
@@ -33,7 +33,8 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   });
 
   try {
-    await sendWork(experimentId, REQUEST_TIMEOUT, body, backendStatus.status);
+    // TODO: this will break
+    await seekFromAPI(experimentId, REQUEST_TIMEOUT, body, backendStatus.status);
   } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,

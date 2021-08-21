@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import loadDifferentialExpression from '../../../../redux/actions/differentialExpression/loadDifferentialExpression';
 
 import initialState from '../../../../redux/reducers/differentialExpression/initialState';
-import { fetchCachedWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/cacheRequest';
 
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
@@ -52,7 +52,7 @@ describe('loadDifferentialExpression action', () => {
         backendStatus,
       },
     });
-    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     await store.dispatch(
       loadDifferentialExpression(experimentId, cellSets, comparisonType, defaultTableState),
@@ -61,8 +61,8 @@ describe('loadDifferentialExpression action', () => {
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(DIFF_EXPR_LOADING);
 
-    expect(fetchCachedWork).toHaveBeenCalledTimes(1);
-    expect(fetchCachedWork).toHaveBeenCalledWith('1234',
+    expect(fetchWork).toHaveBeenCalledTimes(1);
+    expect(fetchWork).toHaveBeenCalledWith('1234',
       {
         cellSet: 'louvain-0',
         compareWith: 'louvain-1',
@@ -95,7 +95,7 @@ describe('loadDifferentialExpression action', () => {
       },
     });
 
-    fetchCachedWork.mockImplementationOnce(() => {
+    fetchWork.mockImplementationOnce(() => {
       const resolveWith = {
         rows: [
           {
@@ -130,8 +130,8 @@ describe('loadDifferentialExpression action', () => {
     expect(loadingAction.type).toEqual(DIFF_EXPR_LOADING);
     expect(loadingAction).toMatchSnapshot();
 
-    expect(fetchCachedWork).toHaveBeenCalledTimes(1);
-    expect(fetchCachedWork).toHaveBeenCalledWith('1234',
+    expect(fetchWork).toHaveBeenCalledTimes(1);
+    expect(fetchWork).toHaveBeenCalledWith('1234',
       {
         cellSet: 'louvain-0',
         compareWith: 'louvain-1',

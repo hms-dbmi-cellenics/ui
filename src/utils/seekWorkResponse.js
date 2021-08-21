@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
-import fetchAPI from './fetchAPI';
+import Amplify, { Storage } from 'aws-amplify';
+
 import connectionPromise from './socketConnection';
 import WorkResponseError from './WorkResponseError';
 import WorkTimeoutError from './WorkTimeoutError';
@@ -8,26 +8,35 @@ import getAuthJWT from './getAuthJWT';
 
 const tasksForAllClients = ['ClusterCells'];
 
-const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
-  const requestUuid = uuidv4();
+const seekFromS3 = async (key) => {
+  const configuredBucket = Amplify.configure().Storage.AWSS3.bucket;
+  const storageUrl = await Storage.get(
+    key,
+    {
+      bucket: configuredBucket.replace('biomage-originals', 'worker-results'),
+    },
+  );
+
+  const storageResp = await fetch(storageUrl);
+  if (!storageResp.ok) {
+    return null;
+  }
+
+  const response = await storageResp.json();
+
+  return response;
+};
+
+const seekFromAPI = async (experimentId, timeout, key, body, requestProps = {}) => {
   const io = await connectionPromise;
 
-  // Check if we need to have a bigger timeout because the worker being down.
-  const statusResponse = await fetchAPI(`/v1/experiments/${experimentId}/backendStatus`);
-  const jsonResponse = await statusResponse.json();
-
-  const { worker: { started, ready } } = jsonResponse;
-  const adjustedTimeout = (started && ready) ? timeout : timeout + 120;
-
-  const timeoutDate = moment().add(adjustedTimeout, 's').toISOString();
-
+  const timeoutDate = moment().add(timeout, 's').toISOString();
   const authJWT = await getAuthJWT();
-
   const isOnlyForThisClient = !tasksForAllClients.includes(body.name);
   const socketId = isOnlyForThisClient ? io.id : 'broadcast';
 
   const request = {
-    uuid: requestUuid,
+    uuid: key,
     socketId,
     experimentId,
     ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
@@ -44,7 +53,7 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   if (!isOnlyForThisClient) { return; }
 
   const responsePromise = new Promise((resolve, reject) => {
-    io.on(`WorkResponse-${requestUuid}`, (res) => {
+    io.on(`WorkResponse-${key}`, (res) => {
       const { response: { error } } = res;
 
       if (error) {
@@ -59,10 +68,10 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
     const id = setTimeout(() => {
       clearTimeout(id);
       reject(new WorkTimeoutError(timeoutDate, request));
-    }, adjustedTimeout * 1000);
+    }, timeout * 1000);
   });
 
   return Promise.race([responsePromise, timeoutPromise]);
 };
 
-export default sendWork;
+export { seekFromAPI, seekFromS3 };

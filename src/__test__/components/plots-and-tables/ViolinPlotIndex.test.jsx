@@ -18,7 +18,7 @@ import genes from '../../../redux/reducers/genes/initialState';
 import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
 import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec';
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/cacheRequest';
 import { mockCellSets1 as cellSets } from '../../test-utils/cellSets.mock';
 import { expectStringInVegaCanvas } from '../../test-utils/vega-utils';
 
@@ -32,7 +32,7 @@ jest.mock('../../../utils/socketConnection', () => ({
   }),
 }));
 jest.mock('../../../utils/cacheRequest', () => ({
-  fetchCachedWork: jest.fn().mockImplementation((expId, body) => {
+  fetchWork: jest.fn().mockImplementation((expId, body) => {
     if (body.name === 'ListGenes') {
       return new Promise((resolve) => resolve({
         rows: [{ gene_names: 'MockGeneWithHighestDispersion', dispersions: 54.0228 }],
@@ -105,7 +105,7 @@ describe('ViolinIndex', () => {
       </Provider>,
     );
     await rtl.waitFor(() => expect(loadConfigSpy).toHaveBeenCalledTimes(1));
-    await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(2));
+    await rtl.waitFor(() => expect(fetchWork).toHaveBeenCalledTimes(2));
   };
 
   it('loads by default the gene with the highest dispersion, allows another to be selected, and updates the plot\'s title', async () => {
@@ -123,7 +123,7 @@ describe('ViolinIndex', () => {
     userEvent.type(geneInput, `{selectall}{del}${newGeneShown}`);
     const searchButton = rtl.getByText(panelContainer, 'Search');
     userEvent.click(searchButton);
-    await rtl.waitFor(() => expect(fetchCachedWork).toHaveBeenCalledTimes(3));
+    await rtl.waitFor(() => expect(fetchWork).toHaveBeenCalledTimes(3));
 
     expect(store.getState().componentConfig[plotUuid].config.shownGene).toBe(newGeneShown);
 

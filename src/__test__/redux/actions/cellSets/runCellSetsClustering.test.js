@@ -3,14 +3,14 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import runCellSetsClustering from '../../../../redux/actions/cellSets/runCellSetsClustering';
 import initialState from '../../../../redux/reducers/cellSets/initialState';
-import sendWork from '../../../../utils/sendWork';
+import seekFromAPI from '../../../../utils/seekWorkResponse';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 jest.mock('localforage');
 jest.mock('../../../../utils/cacheRequest');
 
-jest.mock('../../../../utils/sendWork', () => ({
+jest.mock('../../../../utils/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   default: jest.fn(),
 }));
@@ -76,12 +76,12 @@ describe('runCellSetsClustering action', () => {
 
     const flushPromises = () => new Promise(setImmediate);
 
-    sendWork.mockImplementation(() => Promise.resolve());
+    seekFromAPI.mockImplementation(() => Promise.resolve());
 
     store.dispatch(runCellSetsClustering(experimentId, 0.5));
 
-    expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith(experimentId, 30, {
+    expect(seekFromAPI).toHaveBeenCalledTimes(1);
+    expect(seekFromAPI).toHaveBeenCalledWith(experimentId, 30, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',
@@ -108,14 +108,14 @@ describe('runCellSetsClustering action', () => {
       experimentSettings: experimentSettingsStore,
     });
 
-    sendWork.mockImplementation(() => Promise.reject());
+    seekFromAPI.mockImplementation(() => Promise.reject());
 
     const flushPromises = () => new Promise(setImmediate);
 
     store.dispatch(runCellSetsClustering(experimentId, 0.5));
 
-    expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith(experimentId, 30, {
+    expect(seekFromAPI).toHaveBeenCalledTimes(1);
+    expect(seekFromAPI).toHaveBeenCalledWith(experimentId, 30, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',

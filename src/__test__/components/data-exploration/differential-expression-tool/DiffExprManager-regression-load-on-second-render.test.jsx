@@ -24,7 +24,7 @@ jest.mock('../../../../utils/environment', () => ({
 
 jest.mock('../../../../utils/cacheRequest', () => ({
   __esModule: true, // this property makes it work
-  fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
+  fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [
       {
         p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, logFC: -1.4274754343649423, gene_names: 'A',

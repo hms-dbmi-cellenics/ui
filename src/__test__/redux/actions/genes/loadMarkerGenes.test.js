@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import loadMarkerGenes from '../../../../redux/actions/genes/loadMarkerGenes';
 import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from '../../../../redux/actionTypes/genes';
 import initialState from '../../../../redux/reducers/genes/initialState';
-import { fetchCachedWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/cacheRequest';
 
 jest.mock('localforage');
 jest.mock('../../../../utils/cacheRequest');
@@ -81,7 +81,7 @@ describe('loadMarkerGenes action', () => {
 
     const mockResult = { order, data };
 
-    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHeatmap'));
 
@@ -104,7 +104,7 @@ describe('loadMarkerGenes action', () => {
       experimentSettings,
     });
 
-    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     await store.dispatch(loadMarkerGenes(experimentId, 10));
 

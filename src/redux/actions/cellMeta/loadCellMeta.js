@@ -4,7 +4,7 @@ import {
   CELL_META_ERROR,
 } from '../../actionTypes/cellMeta';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/cacheRequest';
 
 const loadCellMeta = (
   experimentId, metaName,
@@ -34,7 +34,7 @@ const loadCellMeta = (
   };
 
   try {
-    const data = await fetchCachedWork(
+    const data = await fetchWork(
       experimentId, body, backendStatus.status,
     );
     dispatch({

@@ -1,20 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 import hash from 'object-hash';
 import cache from './cache';
-import sendWork from './sendWork';
+import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
 import { isBrowser } from './environment';
 import { calculateZScore } from './postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
-
-// eslint-disable-next-line no-unused-vars
-const objectToSortedString = (object) => {
-  let sortedString = '';
-  Object.keys(object).sort().forEach((key) => {
-    sortedString = `${sortedString}${key}${object[key]}`;
-  });
-  return sortedString;
-};
 
 const decomposeBody = async (body, experimentId) => {
   const { genes: requestedGenes } = body;
@@ -38,29 +29,46 @@ const decomposeBody = async (body, experimentId) => {
   return { missingDataKeys, cachedData };
 };
 
-const fetchCachedGeneExpressionWork = async (
+const fetchGeneExpressionWork = async (
   experimentId,
   timeout,
   body,
   backendStatus,
-  extras) => {
+  extras,
+) => {
+  // Get only genes that are not already found in local storage.
   const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
   const missingGenes = Object.keys(missingDataKeys);
+
   if (missingGenes.length === 0) {
     return cachedData;
   }
 
+  // If new genes are needed, construct payload, try S3 for results,
+  // and send out to worker if there's a miss.
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
-  const response = await sendWork(
-    experimentId,
-    timeout,
-    { ...body, genes: missingGenes },
-    {
-      ETagPipelineRun: qcPipelineStartDate,
-      ...extras,
-    },
-  );
+  const missingGenesBody = { ...body, genes: missingGenes };
+  const key = createObjectHash({
+    experimentId, missingGenesBody, qcPipelineStartDate, extras,
+  });
+
+  // Then, we may be able to find this in S3.
+  let response = await seekFromS3(key);
+  console.warn('The response from S3 is', response);
+
+  if (!response) {
+    response = await seekFromAPI(
+      experimentId,
+      timeout,
+      key,
+      missingGenesBody,
+      {
+        ETagPipelineRun: qcPipelineStartDate,
+        ...extras,
+      },
+    );
+  }
 
   const responseData = JSON.parse(response.results[0].body);
 
@@ -76,7 +84,7 @@ const fetchCachedGeneExpressionWork = async (
   return responseData;
 };
 
-const fetchCachedWork = async (
+const fetchWork = async (
   experimentId,
   body,
   backendStatus,
@@ -89,31 +97,42 @@ const fetchCachedWork = async (
   }
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
-
   if (body.name === 'GeneExpression') {
-    return fetchCachedGeneExpressionWork(experimentId, timeout, body, backendStatus, extras);
+    return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, extras);
   }
 
   const key = createObjectHash({
     experimentId, body, qcPipelineStartDate, extras,
   });
 
+  // First, let's try to fetch this information from the local cache.
   const data = await cache.get(key);
-  if (data) return data;
+  if (data) {
+    return data;
+  }
 
-  const response = await sendWork(
-    experimentId,
-    timeout,
-    body,
-    {
-      PipelineRunETag: qcPipelineStartDate,
-      ...extras,
-    },
-  );
+  // Then, we may be able to find this in S3.
+  let response = await seekFromS3(key);
+  console.warn('The response from S3 is', response);
+
+  // If response cannot be fetched, go to the worker.
+  if (!response) {
+    console.warn('no response in s3 for', body, 'sending to worker');
+    response = await seekFromAPI(
+      experimentId,
+      timeout,
+      key,
+      body,
+      {
+        PipelineRunETag: qcPipelineStartDate,
+        ...extras,
+      },
+    );
+  }
 
   const responseData = JSON.parse(response.results[0].body);
   await cache.set(key, responseData);
   return responseData;
 };
 
-export { fetchCachedWork, fetchCachedGeneExpressionWork };
+export { fetchWork, fetchGeneExpressionWork };

@@ -2,7 +2,7 @@ import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from '../../actionTypes/genes';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/cacheRequest';
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5,
@@ -28,7 +28,7 @@ const loadMarkerGenes = (
   });
 
   try {
-    const data = await fetchCachedWork(experimentId, body, backendStatus.status);
+    const data = await fetchWork(experimentId, body, backendStatus.status);
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({

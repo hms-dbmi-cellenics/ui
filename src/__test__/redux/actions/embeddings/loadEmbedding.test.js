@@ -9,11 +9,11 @@ import {
   EMBEDDINGS_LOADING,
 } from '../../../../redux/actionTypes/embeddings';
 
-import sendWork from '../../../../utils/sendWork';
+import seekFromAPI from '../../../../utils/seekWorkResponse';
 
 jest.mock('localforage');
 
-jest.mock('../../../../utils/sendWork', () => ({
+jest.mock('../../../../utils/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   default: jest.fn(),
 }));
@@ -89,7 +89,7 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on a previously unseen embedding', async () => {
-    sendWork.mockImplementation(() => {
+    seekFromAPI.mockImplementation(() => {
       // We are resolving with two identical results, because in the transition period
       // the worker will return both types of results. TODO: reduce this to just one
       // result when the initial version of the UI is pushed.
@@ -127,7 +127,7 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on a previous error condition', async () => {
-    sendWork.mockImplementation(() => {
+    seekFromAPI.mockImplementation(() => {
       // We are resolving with two identical results, because in the transition period
       // the worker will return both types of results. TODO: reduce this to just one
       // result when the initial version of the UI is pushed.
@@ -173,7 +173,7 @@ describe('loadEmbedding action', () => {
       },
     );
 
-    sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    seekFromAPI.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     await store.dispatch(loadEmbedding(experimentId, embeddingType));
 
@@ -228,7 +228,7 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on if forceReload is set to true', async () => {
-    sendWork.mockImplementation(() => {
+    seekFromAPI.mockImplementation(() => {
       // We are resolving with two identical results, because in the transition period
       // the worker will return both types of results. TODO: reduce this to just one
       // result when the initial version of the UI is pushed.

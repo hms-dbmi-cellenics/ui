@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import loadPaginatedGeneProperties from '../../../../redux/actions/genes/loadPaginatedGeneProperties';
 import initialState from '../../../../redux/reducers/genes/initialState';
 
-import sendWork from '../../../../utils/sendWork';
+import seekFromAPI from '../../../../utils/seekWorkResponse';
 
 import {
   GENES_PROPERTIES_LOADING,
@@ -12,7 +12,7 @@ import {
 } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/sendWork', () => ({
+jest.mock('../../../../utils/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   default: jest.fn(),
 }));
@@ -63,7 +63,7 @@ describe('loadPaginatedGeneProperties action', () => {
       experimentSettings,
     });
 
-    sendWork.mockImplementation(() => {
+    seekFromAPI.mockImplementation(() => {
       // No need to mock the result accurately.
 
       const resolveWith = {
@@ -105,7 +105,7 @@ describe('loadPaginatedGeneProperties action', () => {
       loadPaginatedGeneProperties(experimentId, properties, componentUuid, tableState),
     );
 
-    expect(sendWork).toMatchSnapshot();
+    expect(seekFromAPI).toMatchSnapshot();
 
     expect(store.getActions().length).toEqual(2);
 
@@ -127,7 +127,7 @@ describe('loadPaginatedGeneProperties action', () => {
       experimentSettings,
     });
 
-    sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    seekFromAPI.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     const tableState = {
       sorter: {

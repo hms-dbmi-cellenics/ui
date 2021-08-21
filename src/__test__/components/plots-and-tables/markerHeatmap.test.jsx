@@ -31,7 +31,7 @@ jest.mock('../../../utils/socketConnection', () => ({
   }),
 }));
 jest.mock('../../../utils/cacheRequest', () => ({
-  fetchCachedWork: jest.fn().mockImplementation((expId, body) => {
+  fetchWork: jest.fn().mockImplementation((expId, body) => {
     if (body.name === 'ListGenes') {
       return new Promise((resolve) => resolve({
         rows: [{ gene_names: 'MockGeneWithHighestDispersion', dispersions: 54.0228 }],

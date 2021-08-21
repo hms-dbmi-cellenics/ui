@@ -3,7 +3,7 @@ import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from '../../actionTypes/genes';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/cacheRequest';
 
 const loadGeneExpression = (
   experimentId, genes, componentUuid, forceReloadAll = false,
@@ -62,7 +62,7 @@ const loadGeneExpression = (
   };
 
   try {
-    const data = await fetchCachedWork(
+    const data = await fetchWork(
       experimentId, body, backendStatus.status,
     );
     if (data[genesToFetch[0]]?.error) {

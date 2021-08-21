@@ -6,7 +6,7 @@ import {
   GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
 } from '../../actionTypes/genes';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/cacheRequest';
 
 const loadPaginatedGeneProperties = (
   experimentId, properties, componentUuid, tableState,
@@ -43,7 +43,7 @@ const loadPaginatedGeneProperties = (
   }
 
   try {
-    const { rows, total } = await fetchCachedWork(
+    const { rows, total } = await fetchWork(
       experimentId, body, backendStatus.status,
     );
 

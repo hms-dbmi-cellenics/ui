@@ -1,5 +1,5 @@
 import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../../actionTypes/embeddings';
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/cacheRequest';
 
 const loadEmbedding = (
   experimentId,
@@ -44,7 +44,7 @@ const loadEmbedding = (
   };
 
   try {
-    const data = await fetchCachedWork(
+    const data = await fetchWork(
       experimentId, body, backendStatus.status,
     );
     return dispatch({

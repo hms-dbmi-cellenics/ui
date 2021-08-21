@@ -8,13 +8,13 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import configureMockStore from 'redux-mock-store';
 import ComponentActions from '../../../../components/data-exploration/generic-gene-table/ComponentActions';
-import { fetchCachedWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/cacheRequest';
 
 import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
 jest.mock('../../../../utils/cacheRequest', () => ({
-  fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
+  fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     A: {
       min: 0,
       max: 1.6,
@@ -144,7 +144,7 @@ describe('ComponentActions', () => {
     // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(store, [GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
 
-    expect(fetchCachedWork).toHaveBeenCalledWith(
+    expect(fetchWork).toHaveBeenCalledWith(
       experimentId,
       {
         name: 'GeneExpression',
@@ -181,7 +181,7 @@ describe('ComponentActions', () => {
     // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(store, [GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
 
-    expect(fetchCachedWork).toHaveBeenCalledTimes(0);
+    expect(fetchWork).toHaveBeenCalledTimes(0);
 
     expect(store.getActions().length).toEqual(2);
 
@@ -211,7 +211,7 @@ describe('ComponentActions', () => {
     // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(store, [GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
 
-    expect(fetchCachedWork).toHaveBeenCalledTimes(0);
+    expect(fetchWork).toHaveBeenCalledTimes(0);
 
     expect(store.getActions().length).toEqual(2);
     expect(store.getActions()[0]).toMatchSnapshot();
