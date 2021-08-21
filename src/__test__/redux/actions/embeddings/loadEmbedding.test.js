@@ -9,13 +9,13 @@ import {
   EMBEDDINGS_LOADING,
 } from '../../../../redux/actionTypes/embeddings';
 
-import seekFromAPI from '../../../../utils/seekWorkResponse';
+import { seekFromAPI } from '../../../../utils/seekWorkResponse';
 
 jest.mock('localforage');
 
 jest.mock('../../../../utils/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  default: jest.fn(),
+  seekFromAPI: jest.fn(),
 }));
 
 const mockStore = configureStore([thunk]);

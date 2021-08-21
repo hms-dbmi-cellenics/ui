@@ -1,7 +1,7 @@
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from '../../actionTypes/cellSets';
-import seekFromAPI from '../../../utils/seekWorkResponse';
+import { seekFromAPI } from '../../../utils/seekWorkResponse';
 
 const REQUEST_TIMEOUT = 30;
 

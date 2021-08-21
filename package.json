@@ -88,6 +88,7 @@
     "null-loader": "^3.0.0",
     "object-hash": "^2.0.3",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "p-timeout": "^5.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.6",

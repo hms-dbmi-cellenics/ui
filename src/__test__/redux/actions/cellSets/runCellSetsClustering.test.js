@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import runCellSetsClustering from '../../../../redux/actions/cellSets/runCellSetsClustering';
 import initialState from '../../../../redux/reducers/cellSets/initialState';
-import seekFromAPI from '../../../../utils/seekWorkResponse';
+import { seekFromAPI } from '../../../../utils/seekWorkResponse';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
@@ -12,7 +12,7 @@ jest.mock('../../../../utils/cacheRequest');
 
 jest.mock('../../../../utils/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  default: jest.fn(),
+  seekFromAPI: jest.fn(),
 }));
 
 const startDate = '2021-01-01T00:00:00';
