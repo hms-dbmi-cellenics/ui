@@ -6,6 +6,8 @@ import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import endUserMessages from 'utils/endUserMessages';
 import loadProcessingSettings from '../../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
@@ -57,13 +59,19 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
   }, []);
 
+  const selectedClustersAvailable = (node) => hierarchy.filter((cluster) => (
+    cluster.key === node))[0]?.children.length;
   useEffect(() => {
-    if (louvainClustersResolution && config) {
-      dispatch(loadMarkerGenes(
-        experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
-      ));
+    if (louvainClustersResolution && config && hierarchy.length) {
+      if (selectedClustersAvailable(config.selectedCellSet)) {
+        dispatch(loadMarkerGenes(
+          experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+        ));
+      } else {
+        pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
+      }
     }
-  }, [louvainClustersResolution, config?.selectedCellSet, config?.numGenes]);
+  }, [louvainClustersResolution, config?.selectedCellSet, config?.numGenes, hierarchy]);
 
   useEffect(() => {
     if (!config) {
@@ -135,8 +143,12 @@ const MarkerHeatmap = ({ experimentId }) => {
         const removedGenes = _.difference(config.selectedGenes, selectedGenes);
         newOrder = _.cloneDeep(config.selectedGenes);
         newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
-      } else {
+      } else if (newGenes.length === 1) {
+        // single gene difference - added manually by user
         newOrder = sortGenes(newGenes);
+      } else {
+        // selected data was changed
+        newOrder = selectedGenes;
       }
       updatePlotWithChanges({ selectedGenes: newOrder });
     }

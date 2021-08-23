@@ -25,6 +25,7 @@ export default {
   REFERRAL_EMAIL_ERROR: 'The error you submitted was invalid. Please check again.',
   REFERRAL_SUCCESSFUL: 'Your invitation has been successfully sent. Thank you!',
   NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Data Management` window.',
+  NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
   SAVING_SAMPLE: 'Saving sample...',
   SAVING_PROJECT: 'Saving project...',
 };
