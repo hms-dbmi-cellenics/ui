@@ -4,8 +4,10 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Radio,
+  Button, Form, Select, Radio, Tooltip, Space,
 } from 'antd';
+
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 import PropTypes from 'prop-types';
 import { loadCellSets } from '../../../redux/actions/cellSets';
@@ -180,13 +182,13 @@ const DiffExprCompute = (props) => {
             option === 'basis' &&
             <Option key='all'>
               All
-              </Option>
+            </Option>
           }
           {
             option === 'compareWith' &&
             <Option key='background'>
               All other cells
-              </Option>
+            </Option>
           }
           {
             tree && tree.map(({ key, children }) => (
@@ -271,13 +273,32 @@ const DiffExprCompute = (props) => {
         )}
 
       <Form.Item>
-        <Button
-          size='small'
-          disabled={!isFormValid}
-          onClick={() => onCompute()}
-        >
-          Compute
-        </Button>
+        <Space direction='horizontal'>
+
+          <Button
+            size='small'
+            disabled={!isFormValid}
+            onClick={() => onCompute()}
+          >
+            Compute
+          </Button>
+          <Tooltip overlay={(
+            <span>
+              Differential expression is calculated using the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
+              {' '}
+              <a
+                href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
+                target='_blank'
+                rel='noreferrer'
+              >
+                presto vignette
+              </a>.
+            </span>
+          )}
+          >
+            <InfoCircleOutlined />
+          </Tooltip>
+        </Space>
       </Form.Item>
     </Form>
   );
