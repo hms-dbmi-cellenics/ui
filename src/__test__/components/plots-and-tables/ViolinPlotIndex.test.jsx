@@ -57,6 +57,7 @@ jest.mock('../../../utils/cacheRequest', () => ({
   }),
 }));
 const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
+const experimentId = 'mockExperimentId';
 
 const defaultStore = {
   cellSets,
@@ -64,7 +65,10 @@ const defaultStore = {
   embeddings: {},
   experimentSettings: {
     ...initialExperimentState,
-    backendStatus: {
+  },
+  genes,
+  backendStatus: {
+    [experimentId]: {
       status: {
         pipeline: {
           startDate: '2020-01-01T00:00:00',
@@ -72,10 +76,7 @@ const defaultStore = {
       },
     },
   },
-  genes,
 };
-
-const experimentId = 'mockExperimentId';
 
 describe('ViolinIndex', () => {
   let store = null;

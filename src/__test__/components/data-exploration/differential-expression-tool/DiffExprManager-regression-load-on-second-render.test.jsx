@@ -48,6 +48,8 @@ jest.mock('../../../../utils/cacheRequest', () => ({
 
 const mockStore = configureMockStore([thunk]);
 
+const experimentId = '1234';
+
 const storeState = {
   cellSets: {
     hierarchy: [],
@@ -72,8 +74,8 @@ const storeState = {
       },
     },
   },
-  experimentSettings: {
-    backendStatus: {
+  backendStatus: {
+    [experimentId]: {
       status: {
         pipeline: {
           startDate: '2021-01-01T00:00:00',
@@ -99,7 +101,7 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
   it('on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions', async () => {
     const component = mount(
       <Provider store={store}>
-        <DiffExprManager experimentId='1234' view='compute' width={100} height={200} />
+        <DiffExprManager experimentId={experimentId} view='compute' width={100} height={200} />
       </Provider>,
     );
 
@@ -122,7 +124,7 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
   it('if we then go back and change the parameters again, the new differential expression data should be loading', async () => {
     const component = mount(
       <Provider store={store}>
-        <DiffExprManager experimentId='1234' view='compute' width={100} height={200} />
+        <DiffExprManager experimentId={experimentId} view='compute' width={100} height={200} />
       </Provider>,
     );
 

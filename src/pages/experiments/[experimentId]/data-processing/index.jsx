@@ -55,7 +55,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const pipelineStatus = useSelector((state) => state.experimentSettings.backendStatus.status.pipeline);
+  const pipelineStatus = useSelector(
+    (state) => state.backendStatus[experimentId]?.status?.pipeline,
+  );
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);
   const samples = useSelector((state) => state.samples);
@@ -70,7 +72,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedSteps = pipelineStatus?.completedSteps;
 
-  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   const changesOutstanding = Boolean(changedQCFilters.size);
 
@@ -93,7 +97,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   };
 
   useEffect(() => {
-    dispatch(loadProcessingSettings(experimentId));
+    // If processingConfig is not loaded then reload
+    if (Object.keys(processingConfig).length <= 1) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+
     dispatch(loadSamples(experimentId));
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -273,12 +281,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
       description:
-  <span>
-    Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see
-    {' '}
-    <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' target='_blank'>scDblFinder thresholding</a>
-    .
-  </span>,
+        <span>
+          Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see
+          {' '}
+          <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' target='_blank'>scDblFinder thresholding</a>
+          .
+        </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -481,9 +489,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   </Tooltip>
                 )}
                 {steps[stepIdx].multiSample && (
-                  <Tooltip title={`${
-                    !processingConfig[steps[stepIdx].key]?.enabled
-                      ? 'Enable' : 'Disable'} this filter`}
+                  <Tooltip title={`${!processingConfig[steps[stepIdx].key]?.enabled
+                    ? 'Enable' : 'Disable'} this filter`}
                   >
                     <Button
                       disabled={stepDisabledByCondition}
@@ -511,6 +518,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           <Row align='middle' justify='space-between'>
             <Col>
               <StatusIndicator
+                experimentId={experimentId}
                 allSteps={steps}
                 currentStep={stepIdx}
                 completedSteps={completedSteps}
@@ -580,7 +588,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       );
     }
 
-    if (samples.meta.loading || processingConfig.meta.loading) {
+    if (samples.meta.loading
+      || processingConfig.meta.loading
+      || Object.keys(processingConfig).length <= 1
+    ) {
       return (
         <div className='preloadContextSkeleton' style={{ padding: '16px 0px' }}>
           <Skeleton.Input style={{ width: '100%', height: 400 }} active />
