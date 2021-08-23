@@ -18,6 +18,9 @@ import ViolinPlot from '../../../components/plots/ViolinPlot';
 jest.mock('localforage');
 const mockStore = configureMockStore([thunk]);
 
+const experimentId = 'mockExperimentId';
+const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
+
 const defaultStore = {
   cellSets: {
     hierarchy: [{ key: 'louvain' }],
@@ -28,10 +31,12 @@ const defaultStore = {
     ...initialExperimentState,
   },
   genes,
+  backendStatus: {
+    [experimentId]: {
+      status: {},
+    },
+  },
 };
-
-const experimentId = 'mockExperimentId';
-const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 
 describe('ViolinPlot', () => {
   let store = null;
@@ -55,6 +60,7 @@ describe('ViolinPlot', () => {
       </Provider>,
     );
   };
+
   const actionCount = (action) => store.getActions().filter(
     (item) => (item.type === action),
   ).length;
@@ -72,19 +78,23 @@ describe('ViolinPlot', () => {
     userEvent.click(rtl.screen.getByRole('button'));
     expect(actionCount(actionOnTryAgain)).toBe(loadingActions + 1);
   });
+
   it('displays an error panel with Try Again if error getting gene disperssion', () => {
     const actionOnTryAgain = 'genes/propertiesLoading';
     const storeContents = {
       ..._.cloneDeep(defaultStore),
     };
+
     storeContents.genes.properties.views[plotUuid] = {
       error: 'Broken dispersion',
     };
+
     renderViolinPlot(storeContents);
     const loadingActions = actionCount(actionOnTryAgain);
     userEvent.click(rtl.screen.getByRole('button'));
     expect(actionCount(actionOnTryAgain)).toBe(loadingActions + 1);
   });
+
   it('displays an error panel with Try Again if error getting gene expression', () => {
     const actionOnTryAgain = 'genes/expressionLoading';
     const storeContents = {
@@ -97,6 +107,7 @@ describe('ViolinPlot', () => {
     userEvent.click(rtl.screen.getByRole('button'));
     expect(actionCount(actionOnTryAgain)).toBe(loadingActions + 1);
   });
+
   it('does not fetch dispersion if gene already selected', () => {
     renderViolinPlot(defaultStore);
     expect(actionCount('genes/propertiesLoading')).toBe(1);

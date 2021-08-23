@@ -8,7 +8,6 @@ import {
   EXPERIMENTS_SAVED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_DELETED,
-  EXPERIMENTS_BACKEND_STATUS_UPDATED,
 } from '../../actionTypes/experiments';
 import experimentsCreate from './experimentsCreate';
 import experimentsUpdate from './experimentsUpdate';
@@ -18,7 +17,6 @@ import experimentsLoaded from './experimentsLoaded';
 import experimentsError from './experimentsError';
 import experimentsSaving from './experimentsSaving';
 import exprimentsSaved from './experimentsSaved';
-import experimentBackendStatusUpdated from './experimentsBackendStatusUpdated';
 
 const experimentsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -52,10 +50,6 @@ const experimentsReducer = (state = initialState, action) => {
 
     case EXPERIMENTS_SAVED: {
       return exprimentsSaved(state, action);
-    }
-
-    case EXPERIMENTS_BACKEND_STATUS_UPDATED: {
-      return experimentBackendStatusUpdated(state, action);
     }
 
     default: {

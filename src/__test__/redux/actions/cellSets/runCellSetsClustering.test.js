@@ -17,13 +17,13 @@ jest.mock('../../../../utils/sendWork', () => ({
 
 const startDate = '2021-01-01T00:00:00';
 
-const experimentSettingsStore = {
-  processing: { configureEmbedding: { clusteringSettings: { method: 'louvain' } } },
-  backendStatus: { status: { pipeline: { startDate } } },
-};
-
 describe('runCellSetsClustering action', () => {
   const experimentId = '1234';
+
+  const backendStatus = { [experimentId]: { status: { pipeline: { startDate } } } };
+  const experimentSettingsStore = {
+    processing: { configureEmbedding: { clusteringSettings: { method: 'louvain' } } },
+  };
 
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
@@ -41,7 +41,9 @@ describe('runCellSetsClustering action', () => {
     const store = mockStore({
       cellSets: { loading: true, error: false },
       experimentSettings: experimentSettingsStore,
+      backendStatus,
     });
+
     store.dispatch(runCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
   });
@@ -50,6 +52,7 @@ describe('runCellSetsClustering action', () => {
     const store = mockStore({
       cellSets: { loading: false, error: true },
       experimentSettings: experimentSettingsStore,
+      backendStatus,
     });
     store.dispatch(runCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
@@ -72,6 +75,7 @@ describe('runCellSetsClustering action', () => {
         },
       },
       experimentSettings: experimentSettingsStore,
+      backendStatus,
     });
 
     const flushPromises = () => new Promise(setImmediate);
@@ -87,7 +91,7 @@ describe('runCellSetsClustering action', () => {
       type: 'louvain',
       cellSetKey: 'louvain',
       config: { resolution: 0.5 },
-    }, experimentSettingsStore.backendStatus.status);
+    }, backendStatus[experimentId].status);
 
     await flushPromises();
 
@@ -106,6 +110,7 @@ describe('runCellSetsClustering action', () => {
     const store = mockStore({
       cellSets: { ...initialState, loading: false },
       experimentSettings: experimentSettingsStore,
+      backendStatus,
     });
 
     sendWork.mockImplementation(() => Promise.reject());
@@ -121,7 +126,7 @@ describe('runCellSetsClustering action', () => {
       type: 'louvain',
       cellSetKey: 'louvain',
       config: { resolution: 0.5 },
-    }, experimentSettingsStore.backendStatus.status);
+    }, backendStatus[experimentId].status);
 
     await flushPromises();
 
