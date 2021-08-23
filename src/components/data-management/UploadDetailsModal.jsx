@@ -5,20 +5,24 @@ import {
   Modal, Button, Col, Row,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-
+import { useDispatch } from 'react-redux';
+import { saveAs } from 'file-saver';
+import { Storage } from 'aws-amplify';
+import { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/data-management/UploadStatus';
 import checkIfFileValid from '../../utils/checkIfFileValid';
 
 const UploadDetailsModal = (props) => {
+  const dispatch = useDispatch();
   const {
-    sampleName, file, visible, fileCategory, onUpload, onDownload, onCancel,
+    sampleName, visible, onCancel, uploadDetailsModalDataRef, activeProjectUuid,
   } = props;
-
+  const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current || false;
+  const file = uploadDetailsModalDataRef.current?.file || {};
   const {
     upload = {}, bundle = {},
   } = file;
-
   const status = upload?.status;
   const bundleName = bundle?.name;
 
@@ -31,7 +35,7 @@ const UploadDetailsModal = (props) => {
       // supporting other types and save the chosen tech type in redux
       const valid = checkIfFileValid(replacementFileBundle.name, '10X Chromium');
       if (valid.isValidFilename && valid.isValidType) {
-        onUpload(replacementFileBundle);
+        uploadFileBundle(replacementFileBundle);
       } else {
         pushNotificationMessage('error', 'The selected file name does not match the expected category.', 2);
       }
@@ -54,13 +58,42 @@ const UploadDetailsModal = (props) => {
     return `${weekDayName}, ${fullDate} at ${fullTime}`;
   };
 
+  const downloadFile = async () => {
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
+
+    const downloadedS3Object = await Storage.get(bucketKey, { download: true });
+
+    const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
+
+    saveAs(downloadedS3Object.Body, fileNameToSaveWith);
+  };
+
+  const uploadFileBundle = (bundleToUpload) => {
+    if (!uploadDetailsModalDataRef.current) {
+      return;
+    }
+    // when uploading only one file - bundleToUpload doesn't have .name
+    const name = file.name || bundleToUpload.name;
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
+
+    const metadata = metadataForBundle(bundleToUpload);
+
+    const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
+
+    compressAndUploadSingleFile(
+      bucketKey, sampleUuid, newFileName,
+      bundleToUpload, dispatch, metadata,
+    );
+    onCancel();
+  };
+
   const retryButton = () => (
     <Button
       type='primary'
       key='retry'
       block
       onClick={() => {
-        onUpload(bundle);
+        uploadFileBundle(bundle);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -107,7 +140,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        onDownload();
+        downloadFile();
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -191,17 +224,16 @@ UploadDetailsModal.propTypes = {
   sampleName: PropTypes.string,
   file: PropTypes.object,
   visible: PropTypes.bool,
-  onUpload: PropTypes.func,
-  onDownload: PropTypes.func,
   onCancel: PropTypes.func,
+  sampleUuid: PropTypes.string.isRequired,
+  activeProjectUuid: PropTypes.string.isRequired,
+  uploadDetailsModalDataRef: PropTypes.object.isRequired,
 };
 
 UploadDetailsModal.defaultProps = {
   sampleName: '',
   file: {},
   visible: true,
-  onUpload: () => { },
-  onDownload: () => { },
   onCancel: () => { },
 };
 

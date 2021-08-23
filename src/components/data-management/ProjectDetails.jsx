@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Dropdown,
+  Typography, Space, Tooltip, Button, Input, Progress,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -13,9 +13,6 @@ import { sortableHandle } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
-import { Storage } from 'aws-amplify';
-import { saveAs } from 'file-saver';
-
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
@@ -36,11 +33,10 @@ import {
 } from '../../redux/actions/projects';
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
-
 import {
   updateExperiment,
 } from '../../redux/actions/experiments';
-import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
+import processUpload from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
 
@@ -49,9 +45,9 @@ import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
 
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
-import DownloadData from './DownloadData';
+import Header from './Header';
 
-const { Title, Text, Paragraph } = Typography;
+const { Text } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
@@ -66,7 +62,6 @@ const ProjectDetails = ({ width, height }) => {
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromUrlExpectOK,
   );
-  const projects = useSelector((state) => state.projects);
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
@@ -500,50 +495,10 @@ const ProjectDetails = ({ width, height }) => {
 
     const canLaunch = activeProject?.samples?.every((sampleUuid) => {
       const checkedSample = samples[sampleUuid];
-      console.log(sampleUuid, 'ALLSAMPLEFILES UPLOADED', allSampleFilesUploaded(checkedSample), 'allsample metadata inserted', allSampleMetadataInserted(checkedSample));
-
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });
     setCanLaunchAnalysis(canLaunch);
-  };
-
-  const changeDescription = (description) => {
-    dispatch(updateProject(activeProjectUuid, { description }));
-  };
-
-  const uploadFileBundle = (bundleToUpload) => {
-    if (!uploadDetailsModalDataRef.current) {
-      return;
-    }
-    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
-
-    // when uploading only one file - bundleToUpload doesn't have .name
-    const name = file.name || bundleToUpload.name;
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
-
-    const metadata = metadataForBundle(bundleToUpload);
-
-    const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
-
-    compressAndUploadSingleFile(
-      bucketKey, sampleUuid, newFileName,
-      bundleToUpload, dispatch, metadata,
-    );
-
-    setUploadDetailsModalVisible(false);
-  };
-
-  const downloadFile = async () => {
-    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
-
-    const downloadedS3Object = await Storage.get(bucketKey, { download: true });
-
-    const bundleName = file?.bundle.name;
-    const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
-
-    saveAs(downloadedS3Object.Body, fileNameToSaveWith);
   };
 
   const openAnalysisModal = () => {
@@ -579,85 +534,21 @@ const ProjectDetails = ({ width, height }) => {
       />
       <UploadDetailsModal
         sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
-        file={uploadDetailsModalDataRef.current?.file}
-        fileCategory={uploadDetailsModalDataRef.current?.fileCategory}
+        uploadDetailsModalDataRef={uploadDetailsModalDataRef}
         visible={uploadDetailsModalVisible}
-        onUpload={uploadFileBundle}
-        onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
+        activeProjectUuid={activeProjectUuid}
       />
       <div id='project-details' width={width} height={height}>
         <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
-          <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Title level={3}>{activeProject.name}</Title>
-            <Space>
-              <Button
-                disabled={projects.ids.length === 0}
-                onClick={() => setUploadModalVisible(true)}
-              >
-                Add samples
-              </Button>
-              <Button
-                disabled={
-                  projects.ids.length === 0
-                  || activeProject?.samples?.length === 0
-                  || isAddingMetadata
-                }
-                onClick={() => {
-                  createMetadataColumn();
-                }}
-              >
-                Add metadata
-              </Button>
-              <Dropdown
-                overlay={() => (
-                  <DownloadData
-                    activeProjectUuid={activeProjectUuid}
-                  />
-                )}
-                trigger={['click']}
-                placement='bottomRight'
-                disabled={
-                  projects.ids.length === 0
-                  || activeProject?.samples?.length === 0
-                }
-              >
-                <Button>
-                  Download
-                </Button>
-              </Dropdown>
-              <Button
-                type='primary'
-                disabled={
-                  projects.ids.length === 0
-                  || activeProject?.samples?.length === 0
-                  || !canLaunchAnalysis
-                }
-                onClick={() => openAnalysisModal()}
-              >
-                Launch analysis
-              </Button>
-            </Space>
-          </Row>
-
-          <Row>
-            <Col>
-              {
-                activeProjectUuid && (
-                  <Space direction='vertical' size='small'>
-                    <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
-                    <Text strong>Description:</Text>
-                    <Paragraph
-                      editable={{ onChange: changeDescription }}
-                    >
-                      {activeProject.description}
-
-                    </Paragraph>
-                  </Space>
-                )
-              }
-            </Col>
-          </Row>
+          <Header
+            activeProjectUuid={activeProjectUuid}
+            createMetadataColumn={createMetadataColumn}
+            isAddingMetadata={isAddingMetadata}
+            canLaunchAnalysis={canLaunchAnalysis}
+            setUploadModalVisible={setUploadModalVisible}
+            openAnalysisModal={openAnalysisModal}
+          />
           <SamplesTable
             height={height}
             activeProjectUuid={activeProjectUuid}
