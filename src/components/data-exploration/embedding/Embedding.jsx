@@ -62,6 +62,7 @@ const Embedding = (props) => {
 
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
+  const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
   const cellCoordintes = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
@@ -69,7 +70,6 @@ const Embedding = (props) => {
   const [cellColors, setCellColors] = useState({});
   const [clusterKeyToNameMap, setClusterKeyToNameMap] = useState({});
   const [cellSetClusters, setCellSetClusters] = useState({});
-
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
   // Load embedding settings if they aren't already.
@@ -213,9 +213,12 @@ const Embedding = (props) => {
     return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
 
-  // We are focused on a gene and its expression is loading.
+  // The selected gene in can be present in both expression.loading and expression.data.
+  // To make sure that the gene is really loading, we have to check if it exists in the loading array
+  // and is not present in the data array
   if (focusData.store === 'genes'
-    && expressionLoading.includes(focusData.key)) {
+      && !loadedGenes.includes(focusData.key)
+      && expressionLoading.includes(focusData.key)) {
     return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
 
