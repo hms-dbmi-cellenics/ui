@@ -179,7 +179,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
       key: 'classifier',
       name: getUserFriendlyQCStepName('classifier'),
-      description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA. Within the green region all droplets will be kept whereas in the orange region all droplets will be discarded. The grey region contains both droplets that will be kept and droplets that will be discarded.',
+      description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA. Droplets are filtered based on the False Discovery Rate (FDR) value - the red line on the density plot. In the knee plot, the ‘mixed’ population shown in grey contains some cells that are filtered out and some that remain and can be filtered further in the next filter.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
