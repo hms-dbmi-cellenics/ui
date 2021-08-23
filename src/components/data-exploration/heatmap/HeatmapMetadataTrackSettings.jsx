@@ -47,8 +47,8 @@ const HeatmapMetadataTrackSettings = (props) => {
   const [trackData, setTrackData] = useState(getTrackData());
 
   const getUpdatedTrackData = () => _.unionBy(
-    trackData,
     getTrackData(),
+    trackData,
     'key',
   );
 
@@ -57,6 +57,10 @@ const HeatmapMetadataTrackSettings = (props) => {
     if (isInitialRenderRef.current) {
       return;
     }
+
+    // Do not re-render if visible track data hasn't changed
+    const newTrackData = getUpdatedTrackData();
+    if (_.isEqual(trackData, newTrackData)) return;
 
     setTrackData(getUpdatedTrackData());
   }, [cellSets.hierarchy]);

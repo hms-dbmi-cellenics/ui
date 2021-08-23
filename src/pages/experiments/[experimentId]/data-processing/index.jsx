@@ -351,7 +351,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         type='primary'
         onClick={() => setRunQCModalVisible(true)}
         style={{ minWidth: '80px' }}
-        size='small'
       >
         {runMessage}
       </Button>

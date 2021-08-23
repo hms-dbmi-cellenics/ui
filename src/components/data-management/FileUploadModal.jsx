@@ -16,10 +16,9 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
-import techOptions from '../../utils/fileUploadSpecifications';
-import UploadStatus from '../../utils/UploadStatus';
-import checkIfFileValid from '../../utils/checkIfFileValid';
+import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
+import { bundleToFile } from '../../utils/upload/processUpload';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -38,12 +37,11 @@ const FileUploadModal = (props) => {
   }, [filesList]);
 
   // Handle on Drop
-  const onDrop = (acceptedFiles) => {
-    const newList = [];
+  const onDrop = async (acceptedFiles) => {
     let filesNotInFolder = false;
     const filteredFiles = acceptedFiles
       // Remove all hidden files
-      .filter((file) => !file.name.startsWith('.'))
+      .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'))
       // Remove all files that aren't in a folder
       .filter((file) => {
         const inFolder = file.path.includes('/');
@@ -54,34 +52,15 @@ const FileUploadModal = (props) => {
       });
 
     if (filesNotInFolder) {
-      pushNotificationMessage('error', 'Only files contained in folder are accepted');
+      pushNotificationMessage('error',
+        'Only files contained in a folder are accepted');
     }
 
-    filteredFiles.forEach((file) => {
-      let fileName = null;
-      const error = [];
-      // First character of file.path === '/' means a directory is uploaded
-      // Remove initial slash so that it does not create an empty directory in S3
-      const paths = file.path.split('/');
-      fileName = `${paths[paths.length - 2]}/${paths[paths.length - 1]}`;
-      const valid = checkIfFileValid(fileName, selectedTech);
+    const newFiles = await Promise.all(filteredFiles.map((file) => (
+      bundleToFile(file, selectedTech)
+    )));
 
-      if (!valid.isValidType) error.push('Invalid file type.');
-      if (!valid.isValidFilename) error.push('Invalid file name.');
-
-      newList.push({
-        name: fileName,
-        bundle: file,
-        upload: {
-          status: UploadStatus.UPLOADING,
-          progress: 0,
-        },
-        valid: valid.isValidType && valid.isValidFilename,
-        errors: error.join(', '),
-      });
-    });
-
-    setFilesList([...filesList, ...newList]);
+    setFilesList([...filesList, ...newFiles]);
   };
 
   const removeFile = (fileName) => {
