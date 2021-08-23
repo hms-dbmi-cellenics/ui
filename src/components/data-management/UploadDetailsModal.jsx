@@ -220,12 +220,10 @@ const UploadDetailsModal = (props) => {
 };
 
 UploadDetailsModal.propTypes = {
-  fileCategory: PropTypes.string.isRequired,
   sampleName: PropTypes.string,
   file: PropTypes.object,
   visible: PropTypes.bool,
   onCancel: PropTypes.func,
-  sampleUuid: PropTypes.string.isRequired,
   activeProjectUuid: PropTypes.string.isRequired,
   uploadDetailsModalDataRef: PropTypes.object.isRequired,
 };

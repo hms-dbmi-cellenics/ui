@@ -13,6 +13,9 @@ import { sortableHandle } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
+import { Storage } from 'aws-amplify';
+import { saveAs } from 'file-saver';
+
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
@@ -36,7 +39,7 @@ import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 import {
   updateExperiment,
 } from '../../redux/actions/experiments';
-import processUpload from '../../utils/processUpload';
+import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
 
@@ -501,6 +504,40 @@ const ProjectDetails = ({ width, height }) => {
     setCanLaunchAnalysis(canLaunch);
   };
 
+  const uploadFileBundle = (bundleToUpload) => {
+    if (!uploadDetailsModalDataRef.current) {
+      return;
+    }
+    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
+
+    // when uploading only one file - bundleToUpload doesn't have .name
+    const name = file.name || bundleToUpload.name;
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
+
+    const metadata = metadataForBundle(bundleToUpload);
+
+    const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
+
+    compressAndUploadSingleFile(
+      bucketKey, sampleUuid, newFileName,
+      bundleToUpload, dispatch, metadata,
+    );
+
+    setUploadDetailsModalVisible(false);
+  };
+
+  const downloadFile = async () => {
+    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
+    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
+
+    const downloadedS3Object = await Storage.get(bucketKey, { download: true });
+
+    const bundleName = file?.bundle.name;
+    const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
+
+    saveAs(downloadedS3Object.Body, fileNameToSaveWith);
+  };
+
   const openAnalysisModal = () => {
     if (canLaunchAnalysis) {
       // Change the line below when multiple experiments in a project is supported
@@ -536,8 +573,9 @@ const ProjectDetails = ({ width, height }) => {
         sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
         uploadDetailsModalDataRef={uploadDetailsModalDataRef}
         visible={uploadDetailsModalVisible}
+        onUpload={uploadFileBundle}
+        onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
-        activeProjectUuid={activeProjectUuid}
       />
       <div id='project-details' width={width} height={height}>
         <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
