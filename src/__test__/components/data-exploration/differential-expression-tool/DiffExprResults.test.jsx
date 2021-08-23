@@ -42,10 +42,14 @@ jest.mock('../../../../utils/cacheRequest', () => ({
 
 const mockStore = configureMockStore([thunk]);
 
+const experimentId = '1234';
+
 const backendStatus = {
-  status: {
-    pipeline: {
-      startDate: '2021-01-01T00:00:00',
+  [experimentId]: {
+    status: {
+      pipeline: {
+        startDate: '2021-01-01T00:00:00',
+      },
     },
   },
 };
@@ -143,9 +147,7 @@ const store = mockStore({
       },
     },
   },
-  experimentSettings: {
-    backendStatus,
-  },
+  backendStatus,
 });
 
 describe('DiffExprResults', () => {
@@ -157,7 +159,7 @@ describe('DiffExprResults', () => {
   it('renders correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
 
@@ -198,7 +200,7 @@ describe('DiffExprResults', () => {
 
     const component = mount(
       <Provider store={store}>
-        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
 
@@ -220,7 +222,7 @@ describe('DiffExprResults', () => {
         experimentId: '1234',
         name: 'DifferentialExpression',
       },
-      backendStatus.status,
+      backendStatus[experimentId].status,
       {
         extras: {
           pagination: {
@@ -238,7 +240,7 @@ describe('DiffExprResults', () => {
     // Redefine store from `beforeEach`.
     const component = mount(
       <Provider store={store}>
-        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
 
@@ -265,7 +267,7 @@ describe('DiffExprResults', () => {
   it('Show comparison settings button works.', () => {
     const component = mount(
       <Provider store={store}>
-        <DiffExprResults experimentId='1234' onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
     const button = component.find('#settingsButton').first();

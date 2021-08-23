@@ -13,6 +13,7 @@ import layoutReducer from './layout/layout';
 import projectsReducer from './projects';
 import sampleReducer from './samples';
 import networkResourcesReducer from './networkResources';
+import backendStatusReducer from './backendStatus';
 
 export default combineReducers({
   cellInfo: cellInfoReducer,
@@ -23,6 +24,7 @@ export default combineReducers({
   embeddings: embeddingsReducer,
   experiments: experimentsReducer,
   experimentSettings: experimentSettingsReducer,
+  backendStatus: backendStatusReducer,
   genes: genesReducer,
   layout: layoutReducer,
   projects: projectsReducer,

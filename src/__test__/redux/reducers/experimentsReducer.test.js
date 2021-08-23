@@ -8,7 +8,6 @@ import {
   EXPERIMENTS_UPDATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_DELETED,
-  EXPERIMENTS_BACKEND_STATUS_UPDATED,
 } from '../../../redux/actionTypes/experiments';
 
 describe('experimentsReducer', () => {
@@ -87,25 +86,6 @@ describe('experimentsReducer', () => {
     ids: [experimentId1, experimentId2],
     [experimentId1]: experiment1,
     [experimentId2]: experiment2,
-  };
-
-  const backendStatusUpdate = {
-    pipeline: {
-      startDate: '2021-01-01T00:00:00.000Z',
-      stopDate: '2021-01-01T10:00:00.000Z',
-      status: 'SUCCEEDED',
-    },
-    gem2s: {
-      startDate: '2021-01-01T00:00:00.000Z',
-      stopDate: '2021-01-01T10:00:00.000Z',
-      status: 'SUCCEEDED',
-    },
-    worker: {
-      status: 'Running',
-      started: true,
-      ready: true,
-      restartCount: 0,
-    },
   };
 
   it('Reduces identical state on unknown action', () => expect(
@@ -199,30 +179,6 @@ describe('experimentsReducer', () => {
 
     expect(newState.ids).toEqual([experiment1.id]);
     expect(newState).toEqual(oneExperimentState);
-    expect(newState).toMatchSnapshot();
-  });
-
-  it('Updates the backend status of an experiment correctly', () => {
-    const experimentWithPipelineState = {
-      ...oneExperimentState,
-      [experimentId1]: {
-        ...oneExperimentState[experimentId1],
-        meta: {
-          ...oneExperimentState[experimentId1].meta,
-        },
-      },
-    };
-
-    const newState = experimentsReducer(experimentWithPipelineState, {
-      type: EXPERIMENTS_BACKEND_STATUS_UPDATED,
-      payload: {
-        experimentId: experimentId1,
-        backendStatus: backendStatusUpdate,
-      },
-    });
-
-    expect(newState[experimentId1].meta.backendStatus).toEqual(backendStatusUpdate);
-
     expect(newState).toMatchSnapshot();
   });
 
