@@ -2,8 +2,9 @@
 import { Storage } from 'aws-amplify';
 import _ from 'lodash';
 import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
-import { createSample, updateSampleFile } from '../redux/actions/samples';
+import { createSample, updateSampleFile } from '../../redux/actions/samples';
 import UploadStatus from './UploadStatus';
+import { inspectFile, Verdict } from './fileInspector';
 
 const putInS3 = async (bucketKey, loadedFileData, dispatch, sampleUuid, fileName, metadata) => (
   Storage.put(
@@ -38,24 +39,21 @@ const metadataForBundle = (bundle) => {
 };
 
 const compressAndUploadSingleFile = async (
-  bucketKey, sampleUuid, fileName,
-  bundle, dispatch, metadata = {},
+  bucketKey, sampleUuid, fileName, file,
+  dispatch, metadata = {},
 ) => {
   let loadedFile = null;
 
   try {
-    loadedFile = await loadAndCompressIfNecessary(
-      bundle,
-      () => (
-        dispatch(
-          updateSampleFile(
-            sampleUuid,
-            fileName,
-            { upload: { status: UploadStatus.COMPRESSING } },
-          ),
-        )
-      ),
-    );
+    loadedFile = await loadAndCompressIfNecessary(file, () => (
+      dispatch(
+        updateSampleFile(
+          sampleUuid,
+          fileName,
+          { upload: { status: UploadStatus.COMPRESSING } },
+        ),
+      )
+    ));
   } catch (e) {
     const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
@@ -80,7 +78,10 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        { bundle, upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise } },
+        {
+          bundle: file.bundle,
+          upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise },
+        },
       ),
     );
 
@@ -123,31 +124,22 @@ const renameFileIfNeeded = (fileName, type) => {
   return newFileName;
 };
 
-const compressAndUpload = (sample, activeProjectUuid, dispatch) => {
-  const updatedSampleFiles = Object.entries(sample.files).reduce((result, [fileName, file]) => {
-    const newFileName = renameFileIfNeeded(fileName, file.bundle.type);
-    const newFile = {
-      ...file,
-      name: newFileName,
-    };
-    result[newFileName] = newFile;
+const uploadSingleFile = (newFile, activeProjectUuid, sampleUuid, dispatch) => {
+  const metadata = metadataForBundle(newFile);
 
-    return result;
-  }, {});
+  const newFileName = renameFileIfNeeded(newFile.bundle.name, newFile.bundle.type);
 
-  Object.entries(updatedSampleFiles).forEach(async ([fileName, file]) => {
-    const bucketKey = `${activeProjectUuid}/${sample.uuid}/${fileName}`;
+  const bucketKey = `${activeProjectUuid}/${sampleUuid}/${newFileName}`;
 
-    const metadata = metadataForBundle(file.bundle);
+  compressAndUploadSingleFile(bucketKey, sampleUuid, newFileName, newFile, dispatch, metadata);
 
-    await compressAndUploadSingleFile(
-      bucketKey, sample.uuid, fileName,
-      file.bundle, dispatch, metadata,
-    );
-  });
-
-  return updatedSampleFiles;
+  return [newFileName, { ...newFile, name: newFileName }];
 };
+
+const compressAndUpload = (sample, activeProjectUuid, dispatch) => Object.fromEntries(
+  Object.values(sample.files)
+    .map((file) => uploadSingleFile(file, activeProjectUuid, sample.uuid, dispatch)),
+);
 
 const processUpload = async (filesList, sampleType, samples, activeProjectUuid, dispatch) => {
   const samplesMap = filesList.reduce((acc, file) => {
@@ -180,9 +172,7 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
     // Create sample if not exists
-    if (!sample.uuid) {
-      sample.uuid = await dispatch(createSample(activeProjectUuid, name, sampleType));
-    }
+    sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));
 
     sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
 
@@ -196,5 +186,39 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   });
 };
 
-export { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded };
-export default processUpload;
+const bundleToFile = async (bundle, technology) => {
+  // This is the first stage in uploading a file.
+
+  // if the file has a path, trim to just the file and its folder.
+  // otherwise simply use its name
+  const filename = (bundle.path)
+    ? _.takeRight(bundle.path.split('/'), 2).join('/')
+    : bundle.name;
+
+  const verdict = await inspectFile(bundle, technology);
+
+  let error = '';
+  if (verdict === Verdict.INVALID_NAME) {
+    error = 'Invalid file name.';
+  } else if (verdict === Verdict.INVALID_FORMAT) {
+    error = 'Invalid file format.';
+  }
+
+  return {
+    name: filename,
+    bundle,
+    upload: {
+      status: UploadStatus.UPLOADING,
+      progress: 0,
+    },
+    valid: !error,
+    errors: error,
+    compressed: verdict === Verdict.VALID_ZIPPED,
+  };
+};
+
+export {
+  bundleToFile,
+  uploadSingleFile,
+  processUpload,
+};
