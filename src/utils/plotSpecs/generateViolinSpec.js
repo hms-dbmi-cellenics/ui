@@ -423,30 +423,28 @@ const generateData = (
       || cellSets.properties[cellSetToDisplayId].cellIds.has(cellId))
   );
 
-  /*
+  // Format of the generated plotData:
+  // {
+  //   groups: {
+  //     group_id_1: {
+  //       name: cellSet.properties[group_id_1].name,
+  //       color: cellSet.properties[group_id_1].color,
+  //     },
+  //     ...
+  //   },
+  //   cells: [
+  //     {
+  //       group: group_id_1,
+  //       y: selectedExpression[cellId],
+  //       x: Math.random() // only if cell has to be displayed
+  //     },
+  //     ...
+  //   ],
+  //   settings: {
+  //     groupingName: Name of the category used for grouping
+  //   }
+  // }
 
-  Format of the generated plotData:
-  {
-    groups: {
-      group_id_1: {
-        name: cellSet.properties[group_id_1].name,
-        color: cellSet.properties[group_id_1].color,
-      },
-      ...
-    },
-    cells: [
-      {
-        group: group_id_1,
-        y: selectedExpression[cellId],
-        x: Math.random() // only if cell has to be displayed
-      },
-      ...
-    ],
-    settings: {
-      groupingName: Name of the category used for grouping
-    }
-  }
-  */
   const cellSetsIds = cellSets.hierarchy.find(
     (hierarchy) => hierarchy.key === groupingHierarchyId,
   ).children.map((child) => child.key);

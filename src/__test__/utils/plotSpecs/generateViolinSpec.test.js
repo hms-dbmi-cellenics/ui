@@ -5,6 +5,7 @@ import { mockCellSets1 as cellSets } from '../../test-utils/cellSets.mock';
 
 describe('generateData', () => {
   const MOCK_RANDOM = 0.1;
+  const MOCK_EXPECTED_RANDOM = 0.25 + MOCK_RANDOM / 2;
   const mockGeneExpression = [0, 1, 2, 3, 4, 5, null];
   beforeEach(() => {
     jest.spyOn(global.Math, 'random').mockReturnValue(MOCK_RANDOM);
@@ -20,12 +21,12 @@ describe('generateData', () => {
     expect(plotData.groups['cluster-a']).toEqual({ name: 'cluster a', color: '#01FFFF' });
 
     const expectedCells = [
-      { group: 'cluster-a', y: 0, x: MOCK_RANDOM },
-      { group: 'cluster-a', y: 1, x: MOCK_RANDOM },
-      { group: 'cluster-b', y: 2, x: MOCK_RANDOM },
-      { group: 'cluster-b', y: 3, x: MOCK_RANDOM },
-      { group: 'cluster-c', y: 4, x: MOCK_RANDOM },
-      { group: 'cluster-c', y: 5, x: MOCK_RANDOM },
+      { group: 'cluster-a', y: 0, x: MOCK_EXPECTED_RANDOM },
+      { group: 'cluster-a', y: 1, x: MOCK_EXPECTED_RANDOM },
+      { group: 'cluster-b', y: 2, x: MOCK_EXPECTED_RANDOM },
+      { group: 'cluster-b', y: 3, x: MOCK_EXPECTED_RANDOM },
+      { group: 'cluster-c', y: 4, x: MOCK_EXPECTED_RANDOM },
+      { group: 'cluster-c', y: 5, x: MOCK_EXPECTED_RANDOM },
     ];
     expect(plotData.cells).toEqual(expectedCells);
   });
@@ -38,12 +39,12 @@ describe('generateData', () => {
     expect(plotData.groups['sample-1']).toEqual({ name: 'Sample 1', color: '#012FFF' });
 
     const expectedCells = [
-      { group: 'sample-1', y: 0, x: MOCK_RANDOM },
-      { group: 'sample-1', y: 1, x: MOCK_RANDOM },
-      { group: 'sample-1', y: 2, x: MOCK_RANDOM },
-      { group: 'sample-2', y: 3, x: MOCK_RANDOM },
-      { group: 'sample-2', y: 4, x: MOCK_RANDOM },
-      { group: 'sample-2', y: 5, x: MOCK_RANDOM },
+      { group: 'sample-1', y: 0, x: MOCK_EXPECTED_RANDOM },
+      { group: 'sample-1', y: 1, x: MOCK_EXPECTED_RANDOM },
+      { group: 'sample-1', y: 2, x: MOCK_EXPECTED_RANDOM },
+      { group: 'sample-2', y: 3, x: MOCK_EXPECTED_RANDOM },
+      { group: 'sample-2', y: 4, x: MOCK_EXPECTED_RANDOM },
+      { group: 'sample-2', y: 5, x: MOCK_EXPECTED_RANDOM },
     ];
     expect(plotData.cells).toEqual(expectedCells);
   });
@@ -56,7 +57,7 @@ describe('generateData', () => {
     expect(plotData.groups['scratchpad-a']).toEqual({ name: 'New Cluster', color: '#5FFFFF' });
 
     const expectedCells = [
-      { group: 'scratchpad-a', y: 5, x: MOCK_RANDOM },
+      { group: 'scratchpad-a', y: 5, x: MOCK_EXPECTED_RANDOM },
     ];
     expect(plotData.cells).toEqual(expectedCells);
   });
@@ -65,19 +66,10 @@ describe('generateData', () => {
     const groupingId = 'louvain';
     const plotData = generateData(cellSets, mockGeneExpression, groupingId, 'sample/sample-1');
     const expectedCells = [
-      { group: 'cluster-a', y: 0, x: MOCK_RANDOM },
-      { group: 'cluster-a', y: 1, x: MOCK_RANDOM },
-      { group: 'cluster-b', y: 2, x: MOCK_RANDOM },
-      { group: 'cluster-b', y: 3 },
-      { group: 'cluster-c', y: 4 },
-      { group: 'cluster-c', y: 5 },
+      { group: 'cluster-a', y: 0, x: MOCK_EXPECTED_RANDOM },
+      { group: 'cluster-a', y: 1, x: MOCK_EXPECTED_RANDOM },
+      { group: 'cluster-b', y: 2, x: MOCK_EXPECTED_RANDOM },
     ];
     expect(plotData.cells).toEqual(expectedCells);
-  });
-
-  it('generates the no x value when null is specified', () => {
-    const groupingId = 'louvain';
-    const plotData = generateData(cellSets, mockGeneExpression, groupingId, null);
-    expect(plotData.cells.filter((cell) => cell.x).length).toEqual(0);
   });
 });
