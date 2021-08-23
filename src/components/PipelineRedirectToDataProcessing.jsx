@@ -52,8 +52,8 @@ const PipelineRedirectToDataProcessing = ({ experimentId, pipelineStatus }) => {
         <img
           width={250}
           height={250}
-          alt={image}
-          src={alt}
+          alt={alt}
+          src={image}
           style={{
             display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%',
           }}
