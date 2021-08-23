@@ -452,6 +452,7 @@ const generateData = (
     // eslint-disable-next-line prefer-destructuring
     displayId = displayId.split('/')[1];
   }
+
   const toDisplay = displayId && displayId !== 'All' ? cellSets.properties[displayId].cellIds : null;
   groupIds.forEach((groupId) => {
     properties[groupId].cellIds.forEach((cellId) => {
