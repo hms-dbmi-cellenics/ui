@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -65,21 +65,16 @@ const ContentWrapper = (props) => {
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
-  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
-
   const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
-
-  const setUpConnection = async () => {
-    const io = await connectionPromise;
-    const cb = experimentUpdatesHandler(dispatch);
-    io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
-  };
 
   useEffect(() => {
     if (!experimentId) {
@@ -88,7 +83,13 @@ const ContentWrapper = (props) => {
 
     dispatch(loadBackendStatus(experimentId));
 
-    setUpConnection();
+    (async () => {
+      const io = await connectionPromise;
+      const cb = experimentUpdatesHandler(dispatch);
+
+      io.off();
+      io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
+    })();
   }, [experimentId]);
 
   useEffect(() => {

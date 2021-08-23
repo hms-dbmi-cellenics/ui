@@ -1,9 +1,8 @@
+import { fetchWork } from '../../../utils/work/fetchWork';
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from '../../actionTypes/cellSets';
-import { seekFromAPI } from '../../../utils/work/seekWorkResponse';
-
-const REQUEST_TIMEOUT = 30;
+import updateCellSetsClustering from './updateCellSetsClustering';
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
@@ -11,7 +10,6 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   } = getState().cellSets;
 
   const { backendStatus, processing } = getState().experimentSettings;
-
   const { method } = processing.configureEmbedding.clusteringSettings;
 
   if (loading || error) {
@@ -33,8 +31,19 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   });
 
   try {
-    // TODO: this will break
-    await seekFromAPI(experimentId, REQUEST_TIMEOUT, body, backendStatus.status);
+    await fetchWork(experimentId, body, backendStatus.status, {
+      eventCallback: (err, res) => {
+        if (err) {
+          throw err;
+        }
+
+        const louvainSets = JSON.parse(res.results[0].body);
+        const newCellSets = [
+          louvainSets,
+        ];
+        dispatch(updateCellSetsClustering(experimentId, newCellSets));
+      },
+    });
   } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,

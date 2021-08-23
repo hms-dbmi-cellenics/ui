@@ -6,7 +6,7 @@ const cellSetsError = (state, action) => {
   return {
     ...initialState,
     loading: false,
-    error,
+    error: error || true,
   };
 };
 
