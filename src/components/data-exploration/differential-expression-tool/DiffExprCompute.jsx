@@ -182,13 +182,13 @@ const DiffExprCompute = (props) => {
             option === 'basis' &&
             <Option key='all'>
               All
-              </Option>
+            </Option>
           }
           {
             option === 'compareWith' &&
             <Option key='background'>
               All other cells
-              </Option>
+            </Option>
           }
           {
             tree && tree.map(({ key, children }) => (
@@ -275,30 +275,30 @@ const DiffExprCompute = (props) => {
       <Form.Item>
         <Space direction='horizontal'>
 
-        <Button
-          size='small'
-          disabled={!isFormValid}
-          onClick={() => onCompute()}
+          <Button
+            size='small'
+            disabled={!isFormValid}
+            onClick={() => onCompute()}
           >
-          Compute
-        </Button>
-        <Tooltip overlay={(
-          <span>
-              Differential expression is calculated using the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the 
+            Compute
+          </Button>
+          <Tooltip overlay={(
+            <span>
+              Differential expression is calculated using the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
               {' '}
               <a
                 href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
                 target='_blank'
                 rel='noreferrer'
-                >
+              >
                 presto vignette
-              </a>. 
+              </a>.
             </span>
           )}
           >
             <InfoCircleOutlined />
           </Tooltip>
-            </Space>
+        </Space>
       </Form.Item>
     </Form>
   );
