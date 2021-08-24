@@ -64,17 +64,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   const selectedClustersAvailable = (node) => hierarchy.filter((cluster) => (
     cluster.key === node))[0]?.children.length;
   useEffect(() => {
-    if (louvainClustersResolution && louvainClustersResolutionRef.current !== louvainClustersResolution) {
+    if (louvainClustersResolution && config?.numGenes && hierarchy?.length) {
       louvainClustersResolutionRef.current = louvainClustersResolution;
-
-      dispatch(loadMarkerGenes(
-        experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
-      ));
-    }
-  }, [louvainClustersResolution]);
-
-  useEffect(() => {
-    if (louvainClustersResolution && config && hierarchy?.length) {
       if (selectedClustersAvailable(config.selectedCellSet)) {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
@@ -84,6 +75,16 @@ const MarkerHeatmap = ({ experimentId }) => {
       }
     }
   }, [config?.selectedCellSet, config?.numGenes, hierarchy]);
+
+  useEffect(() => {
+    if (louvainClustersResolution && louvainClustersResolutionRef.current !== louvainClustersResolution
+      && config && hierarchy?.length) {
+      louvainClustersResolutionRef.current = louvainClustersResolution;
+      dispatch(loadMarkerGenes(
+        experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+      ));
+    }
+  }, [louvainClustersResolution]);
 
   useEffect(() => {
     if (!config) {
