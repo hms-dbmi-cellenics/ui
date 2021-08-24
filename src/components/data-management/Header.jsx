@@ -44,23 +44,9 @@ const Header = (props) => {
           >
             Add metadata
           </Button>
-          <Dropdown
-            overlay={() => (
-              <DownloadData
-                activeProjectUuid={activeProjectUuid}
-              />
-            )}
-            trigger={['click']}
-            placement='bottomRight'
-            disabled={
-              projects.ids.length === 0
-            || activeProject?.samples?.length === 0
-            }
-          >
-            <Button>
-              Download
-            </Button>
-          </Dropdown>
+          <DownloadData
+            activeProjectUuid={activeProjectUuid}
+          />
           <Button
             type='primary'
             disabled={

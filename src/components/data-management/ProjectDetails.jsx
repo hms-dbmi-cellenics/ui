@@ -512,8 +512,8 @@ const ProjectDetails = ({ width, height }) => {
     }
   };
 
-  const launchAnalysis = async (experimentId) => {
-    await dispatch(runGem2s(experimentId));
+  const launchAnalysis = (experimentId) => {
+    dispatch(runGem2s(experimentId));
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
@@ -528,7 +528,7 @@ const ProjectDetails = ({ width, height }) => {
         activeProject={activeProject}
         experiments={experiments}
         visible={analysisModalVisible}
-        onLaunch={async (experimentId) => {
+        onLaunch={(experimentId) => {
           const lastViewed = moment().toISOString();
           dispatch(updateExperiment(experimentId, { lastViewed }));
           dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
