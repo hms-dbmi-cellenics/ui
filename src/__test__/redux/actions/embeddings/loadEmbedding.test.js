@@ -13,7 +13,7 @@ import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
 
 jest.mock('localforage');
 
-jest.mock('../../../../utils/seekWorkResponse', () => ({
+jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   seekFromAPI: jest.fn(),
 }));

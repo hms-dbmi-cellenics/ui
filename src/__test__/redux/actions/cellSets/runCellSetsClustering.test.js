@@ -10,7 +10,7 @@ const mockStore = configureStore([thunk]);
 jest.mock('localforage');
 jest.mock('../../../../utils/work/fetchWork');
 
-jest.mock('../../../../utils/seekWorkResponse', () => ({
+jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   seekFromAPI: jest.fn(),
 }));

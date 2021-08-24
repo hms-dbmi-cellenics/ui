@@ -135,7 +135,7 @@ jest.mock('../../utils/cache', () => ({
   _remove: jest.fn((key) => mockRemove(key)),
 }));
 
-jest.mock('../../utils/seekWorkResponse', () => ({
+jest.mock('../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   default: jest.fn((experimentId, timeout, body) => mockseekFromAPI(experimentId, timeout, body)),
 }));
