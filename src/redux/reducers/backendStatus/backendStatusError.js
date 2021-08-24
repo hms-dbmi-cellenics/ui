@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 
-import initialState from '../initialState';
+import initialState from './initialState';
 
 const backendStatusError = produce((draft, action) => {
-  const { error } = action.payload;
+  const { experimentId, error } = action.payload;
 
-  draft.backendStatus = {
+  draft[experimentId] = {
     status: {},
     loading: false,
     error,

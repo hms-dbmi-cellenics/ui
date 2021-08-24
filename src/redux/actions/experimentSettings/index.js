@@ -9,17 +9,12 @@ import addChangedQCFilter from './processingConfig/addChangedQCFilter';
 import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
 import updateProcessingSettingsFromQC from './processingConfig/updateProcessingSettingsFromQC';
 
-import loadBackendStatus from './backendStatus/loadBackendStatus';
-import updateBackendStatus from './backendStatus/updateBackendStatus';
-
 import updateExperimentInfo from './updateExperimentInfo';
 
 export {
   loadProcessingSettings,
   loadedProcessingConfig,
   saveProcessingSettings,
-  loadBackendStatus,
-  updateBackendStatus,
   updateExperimentInfo,
   setQCStepEnabled,
   copyFilterSettingsToAllSamples,

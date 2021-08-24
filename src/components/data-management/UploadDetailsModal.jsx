@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -8,10 +9,14 @@ import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
 import { Storage } from 'aws-amplify';
-import { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
+import { uploadSingleFile } from '../../utils/upload/processUpload';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
-import UploadStatus, { messageForStatus } from '../../utils/data-management/UploadStatus';
-import checkIfFileValid from '../../utils/checkIfFileValid';
+import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
+import { bundleToFile } from '../../utils/upload/processUpload';
+
+// we'll need to remove the hard-coded 10x tech type once we start
+// supporting other types and save the chosen tech type in redux
+const SELECTED_TECH = '10X Chromium';
 
 const UploadDetailsModal = (props) => {
   const dispatch = useDispatch();
@@ -25,20 +30,19 @@ const UploadDetailsModal = (props) => {
   } = file;
   const status = upload?.status;
   const bundleName = bundle?.name;
-
   const inputFileRef = useRef(null);
   const [replacementFileBundle, setReplacementFileBundle] = useState(null);
 
   useEffect(() => {
     if (replacementFileBundle) {
-      // we'll need to remove the hard-coded 10x tech type once we start
-      // supporting other types and save the chosen tech type in redux
-      const valid = checkIfFileValid(replacementFileBundle.name, '10X Chromium');
-      if (valid.isValidFilename && valid.isValidType) {
-        uploadFileBundle(replacementFileBundle);
-      } else {
-        pushNotificationMessage('error', 'The selected file name does not match the expected category.', 2);
-      }
+      bundleToFile(replacementFileBundle, SELECTED_TECH).then((newFile) => {
+        if (newFile.valid) { // && newFile.name === file.name ?
+          uploadFileBundle(newFile);
+        } else {
+          pushNotificationMessage('error',
+            'The selected file name does not match the expected category.', 2);
+        }
+      });
     }
   }, [replacementFileBundle]);
 
@@ -68,22 +72,11 @@ const UploadDetailsModal = (props) => {
     saveAs(downloadedS3Object.Body, fileNameToSaveWith);
   };
 
-  const uploadFileBundle = (bundleToUpload) => {
+  const uploadFileBundle = (newFile) => {
     if (!uploadDetailsModalDataRef.current) {
       return;
     }
-    // when uploading only one file - bundleToUpload doesn't have .name
-    const name = file.name || bundleToUpload.name;
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
-
-    const metadata = metadataForBundle(bundleToUpload);
-
-    const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
-
-    compressAndUploadSingleFile(
-      bucketKey, sampleUuid, newFileName,
-      bundleToUpload, dispatch, metadata,
-    );
+    uploadSingleFile(newFile, activeProjectUuid, sampleUuid, dispatch);
     onCancel();
   };
 
@@ -186,7 +179,7 @@ const UploadDetailsModal = (props) => {
         {!isNotUploadedModal && (
           <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
             <Col span={5}>Filename</Col>
-            <Col span={10}>{bundleName}</Col>
+            <Col span={10}>{file.name}</Col>
           </Row>
         )}
 

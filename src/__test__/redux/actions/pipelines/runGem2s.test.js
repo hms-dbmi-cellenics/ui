@@ -3,21 +3,24 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialExperimentsState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
 import initialProjectsState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
-import loadBackendStatus from '../../../../redux/actions/experimentSettings/backendStatus/loadBackendStatus';
+import loadBackendStatus from '../../../../redux/actions/backendStatus/loadBackendStatus';
 
 import {
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_INFO_UPDATE,
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
 } from '../../../../redux/actionTypes/experimentSettings';
+
+import {
+  BACKEND_STATUS_LOADING,
+  BACKEND_STATUS_ERROR,
+} from '../../../../redux/actionTypes/backendStatus';
 
 import { runGem2s } from '../../../../redux/actions/pipeline';
 
 const mockStore = configureStore([thunk]);
 enableFetchMocks();
 
-jest.mock('../../../../redux/actions/experimentSettings/backendStatus/loadBackendStatus',
+jest.mock('../../../../redux/actions/backendStatus/loadBackendStatus',
   () => jest.fn().mockImplementation(() => async () => { }));
 
 const experimentId = 'experiment-id';
@@ -63,7 +66,7 @@ describe('runGem2s action', () => {
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING);
+    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
     expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
     expect(loadBackendStatus).toHaveBeenCalled();
 
@@ -80,9 +83,9 @@ describe('runGem2s action', () => {
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING);
+    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
     expect(loadBackendStatus).not.toHaveBeenCalled();
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR);
+    expect(actions[1].type).toEqual(BACKEND_STATUS_ERROR);
 
     expect(actions).toMatchSnapshot();
   });

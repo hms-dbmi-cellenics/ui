@@ -11,7 +11,7 @@ import initialProjectState, { projectTemplate } from '../../../redux/reducers/pr
 import initialSamplesState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
 import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
-import UploadStatus from '../../../utils/data-management/UploadStatus';
+import UploadStatus from '../../../utils/upload/UploadStatus';
 
 const mockStore = configureStore([thunk]);
 

@@ -13,9 +13,6 @@ import { sortableHandle } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
-import { Storage } from 'aws-amplify';
-import { saveAs } from 'file-saver';
-
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import EditableField from '../EditableField';
@@ -25,6 +22,7 @@ import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 import SamplesTable from './SamplesTable';
 import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
+
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
@@ -39,12 +37,13 @@ import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 import {
   updateExperiment,
 } from '../../redux/actions/experiments';
-import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
+
+import { processUpload } from '../../utils/upload/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
 
-import UploadStatus, { messageForStatus } from '../../utils/data-management/UploadStatus';
-import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
+import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
+import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
@@ -66,6 +65,8 @@ const ProjectDetails = ({ width, height }) => {
     getFromUrlExpectOK,
   );
   const experiments = useSelector((state) => state.experiments);
+  const backendStatus = useSelector((state) => state.backendStatus);
+
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -422,21 +423,21 @@ const ProjectDetails = ({ width, height }) => {
     {
       index: 2,
       key: 'barcodes',
-      title: 'Barcodes.csv',
+      title: 'barcodes.tsv',
       dataIndex: 'barcodes',
       render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
     },
     {
       index: 3,
       key: 'genes',
-      title: 'Genes.csv',
+      title: 'genes.tsv',
       dataIndex: 'genes',
       render: (tableCellData) => renderUploadCell('genes', tableCellData),
     },
     {
       index: 4,
       key: 'matrix',
-      title: 'Matrix.mtx',
+      title: 'matrix.mtx',
       dataIndex: 'matrix',
       render: (tableCellData) => renderUploadCell('matrix', tableCellData),
     },

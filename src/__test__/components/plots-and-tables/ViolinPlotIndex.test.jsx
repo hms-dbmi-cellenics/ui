@@ -25,6 +25,12 @@ import { expectStringInVegaCanvas } from '../../test-utils/vega-utils';
 jest.mock('localforage');
 enableFetchMocks();
 jest.mock('../../../components/plots/Header', () => () => <div />);
+jest.mock('../../../utils/socketConnection', () => ({
+  __esModule: true,
+  default: new Promise((resolve) => {
+    resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
+  }),
+}));
 jest.mock('../../../utils/cacheRequest', () => ({
   fetchCachedWork: jest.fn().mockImplementation((expId, body) => {
     if (body.name === 'ListGenes') {
@@ -51,6 +57,7 @@ jest.mock('../../../utils/cacheRequest', () => ({
   }),
 }));
 const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
+const experimentId = 'mockExperimentId';
 
 const defaultStore = {
   cellSets,
@@ -58,7 +65,10 @@ const defaultStore = {
   embeddings: {},
   experimentSettings: {
     ...initialExperimentState,
-    backendStatus: {
+  },
+  genes,
+  backendStatus: {
+    [experimentId]: {
       status: {
         pipeline: {
           startDate: '2020-01-01T00:00:00',
@@ -66,10 +76,7 @@ const defaultStore = {
       },
     },
   },
-  genes,
 };
-
-const experimentId = 'mockExperimentId';
 
 describe('ViolinIndex', () => {
   let store = null;

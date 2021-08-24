@@ -22,11 +22,13 @@ import pipelineStatus from '../../utils/pipelineStatusValues';
 const { Text, Paragraph } = Typography;
 
 const StatusIndicator = (props) => {
-  const { allSteps, currentStep, completedSteps } = props;
+  const {
+    experimentId, allSteps, currentStep, completedSteps,
+  } = props;
 
   const {
     status: { pipeline },
-  } = useSelector((state) => state.experimentSettings.backendStatus);
+  } = useSelector((state) => state.backendStatus[experimentId]);
 
   const {
     startDate, stopDate, status, error,
@@ -151,6 +153,7 @@ const StatusIndicator = (props) => {
 };
 
 StatusIndicator.propTypes = {
+  experimentId: PropTypes.array.isRequired,
   allSteps: PropTypes.array.isRequired,
   currentStep: PropTypes.number.isRequired,
   completedSteps: PropTypes.number.isRequired,

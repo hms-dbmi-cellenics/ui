@@ -6,7 +6,7 @@ Array [
     "payload": Object {
       "experimentId": "experiment-id",
     },
-    "type": "experimentSettings/backendStatusLoading",
+    "type": "backendStatus/backendStatusLoading",
   },
   Object {
     "payload": Object {},
@@ -21,14 +21,14 @@ Array [
     "payload": Object {
       "experimentId": "experiment-id",
     },
-    "type": "experimentSettings/backendStatusLoading",
+    "type": "backendStatus/backendStatusLoading",
   },
   Object {
     "payload": Object {
       "error": "Could not start the pipeline.",
       "errorType": "some weird error that happened",
     },
-    "type": "experimentSettings/backendStatusError",
+    "type": "backendStatus/backendStatusError",
   },
 ]
 `;

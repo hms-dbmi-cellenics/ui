@@ -21,10 +21,15 @@ import MarkerHeatmap from '../../../pages/experiments/[experimentId]/plots-and-t
 import * as cellSetsLoaded from '../../../redux/actions/cellSets/loadCellSets';
 import * as loadedProcessingConfig from '../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 
-jest.mock('localforage');
 enableFetchMocks();
+jest.mock('localforage');
 jest.mock('../../../components/plots/Header', () => () => <div />);
-
+jest.mock('../../../utils/socketConnection', () => ({
+  __esModule: true,
+  default: new Promise((resolve) => {
+    resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
+  }),
+}));
 jest.mock('../../../utils/cacheRequest', () => ({
   fetchCachedWork: jest.fn().mockImplementation((expId, body) => {
     if (body.name === 'ListGenes') {
@@ -48,14 +53,13 @@ jest.mock('../../../utils/cacheRequest', () => ({
     }
   }),
 }));
+
+const experimentId = 'randomExperiment';
 const plotUuid = 'markerHeatmapPlotMain';
 
 const defaultStore = {
-  componentConfig: { [plotUuid]: { config: { ...initialPlotConfigStates.markerHeatmap } } },
-  embeddings: {},
-  experimentSettings: {
-    ...initialExperimentState,
-    backendStatus: {
+  backendStatus: {
+    [experimentId]: {
       status: {
         pipeline: {
           startDate: '2020-01-01T00:00:00',
@@ -65,6 +69,11 @@ const defaultStore = {
         gem2s: { status: 'SUCCEEDED' },
       },
     },
+  },
+  componentConfig: { [plotUuid]: { config: { ...initialPlotConfigStates.markerHeatmap } } },
+  embeddings: {},
+  experimentSettings: {
+    ...initialExperimentState,
     processing: {
       configureEmbedding: {
         clusteringSettings: {
@@ -163,7 +172,6 @@ const defaultStore = {
   },
 };
 
-const experimentId = 'randomExperiment';
 let store = null;
 let loadConfigSpy = null;
 let loadMarkersSpy;
