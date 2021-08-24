@@ -33,6 +33,8 @@ const SelectData = (props) => {
       // selectedCellSet: 'louvain' and selectedPoints: 'louvain/louvain-0'
       const fallBackCellSetKey = getDefaultCellSetNotIn(value);
       onUpdate({ selectedCellSet: value, selectedPoints: fallBackCellSetKey });
+
+      return;
     }
 
     onUpdate({ selectedCellSet: value });
