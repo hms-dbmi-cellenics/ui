@@ -11,7 +11,6 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
 
   const { backendStatus, experimentSettings } = getState();
   const { processing } = experimentSettings;
-  const { status } = backendStatus[experimentId];
   const { method } = processing.configureEmbedding.clusteringSettings;
 
   if (loading || error) {
@@ -46,7 +45,6 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
         dispatch(updateCellSetsClustering(experimentId, newCellSets));
       },
     });
-
   } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,
