@@ -14,22 +14,6 @@ jest.mock('../../../../utils/cacheRequest');
 
 const mockStore = configureStore([thunk]);
 
-const defaultTableState = {
-  geneNamesFilter: null,
-  pagination: {
-    current: 1, pageSize: 50, showSizeChanger: true, total: 0,
-  },
-  sorter: { field: 'p_val_adj', columnKey: 'p_val_adj', order: 'ascend' },
-};
-
-const backendStatus = {
-  status: {
-    pipeline: {
-      startDate: '2021-01-01T00:00:00',
-    },
-  },
-};
-
 describe('loadDifferentialExpression action', () => {
   const experimentId = '1234';
   const cellSets = {
@@ -38,6 +22,24 @@ describe('loadDifferentialExpression action', () => {
     basis: 'condition/condition-control',
   };
   const comparisonType = 'within';
+
+  const defaultTableState = {
+    geneNamesFilter: null,
+    pagination: {
+      current: 1, pageSize: 50, showSizeChanger: true, total: 0,
+    },
+    sorter: { field: 'p_val_adj', columnKey: 'p_val_adj', order: 'ascend' },
+  };
+
+  const backendStatus = {
+    [experimentId]: {
+      status: {
+        pipeline: {
+          startDate: '2021-01-01T00:00:00',
+        },
+      },
+    },
+  };
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -48,9 +50,7 @@ describe('loadDifferentialExpression action', () => {
       differentialExpression: {
         ...initialState,
       },
-      experimentSettings: {
-        backendStatus,
-      },
+      backendStatus,
     });
     fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
@@ -70,7 +70,7 @@ describe('loadDifferentialExpression action', () => {
         name: 'DifferentialExpression',
         experimentId: '1234',
       },
-      backendStatus.status,
+      backendStatus[experimentId].status,
       {
         extras: {
           pagination: {
@@ -90,9 +90,7 @@ describe('loadDifferentialExpression action', () => {
       differentialExpression: {
         ...initialState,
       },
-      experimentSettings: {
-        backendStatus,
-      },
+      backendStatus,
     });
 
     fetchCachedWork.mockImplementationOnce(() => {
@@ -139,7 +137,7 @@ describe('loadDifferentialExpression action', () => {
         name: 'DifferentialExpression',
         experimentId: '1234',
       },
-      backendStatus.status,
+      backendStatus[experimentId].status,
       {
         extras: {
           pagination: {

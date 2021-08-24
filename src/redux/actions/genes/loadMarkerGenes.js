@@ -11,7 +11,9 @@ const loadMarkerGenes = (
   // eslint-disable-next-line eqeqeq
   if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
 
-  const { backendStatus, processing } = getState().experimentSettings;
+  const { backendStatus, experimentSettings } = getState();
+  const { processing } = experimentSettings;
+  const { status } = backendStatus[experimentId];
 
   const { method } = processing.configureEmbedding.clusteringSettings;
   const body = {
@@ -29,7 +31,7 @@ const loadMarkerGenes = (
   });
 
   try {
-    const data = await fetchCachedWork(experimentId, body, backendStatus.status);
+    const data = await fetchCachedWork(experimentId, body, status);
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({

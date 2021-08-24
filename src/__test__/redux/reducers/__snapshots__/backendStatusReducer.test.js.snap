@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`backendStatusReducer.test.js updates backend status on error properly 1`] = `
+Object {
+  "1234": Object {
+    "error": "error",
+    "loading": false,
+    "status": Object {},
+  },
+}
+`;
+
+exports[`backendStatusReducer.test.js updates backend status on loaded properly 1`] = `
+Object {
+  "1234": Object {
+    "error": false,
+    "loading": false,
+    "status": Object {
+      "gem2s": Object {
+        "status": "Running",
+      },
+      "pipeline": Object {
+        "status": "NotCreated",
+      },
+      "worker": undefined,
+    },
+  },
+}
+`;
+
+exports[`backendStatusReducer.test.js updates backend status on loading properly 1`] = `
+Object {
+  "1234": Object {
+    "error": false,
+    "loading": true,
+    "status": Object {},
+  },
+}
+`;

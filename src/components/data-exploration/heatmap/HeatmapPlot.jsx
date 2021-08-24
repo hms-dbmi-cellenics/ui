@@ -33,6 +33,8 @@ const HeatmapPlot = (props) => {
 
   const [vegaData, setVegaData] = useState(null);
   const [vegaSpec, setVegaSpec] = useState(spec);
+  const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
+  const currentHeatmapSettings = useRef();
 
   const louvainClustersResolutionRef = useRef(null);
 
@@ -45,7 +47,7 @@ const HeatmapPlot = (props) => {
 
   const cellSets = useSelector((state) => state.cellSets);
   const {
-    hierarchy, properties, hidden, loading: cellSetsLoading,
+    hierarchy, loading: cellSetsLoading,
   } = cellSets;
 
   const heatmapSettings = useSelector(
@@ -58,7 +60,7 @@ const HeatmapPlot = (props) => {
   );
 
   const {
-    selectedTracks, groupedTracks, expressionValue, legendIsVisible,
+    legendIsVisible,
   } = heatmapSettings;
 
   const { error: expressionDataError } = expressionData;
@@ -66,7 +68,7 @@ const HeatmapPlot = (props) => {
 
   const [maxCells, setMaxCells] = useState(1000);
 
-  const setDataDebounce = useCallback(_.debounce((data) => {
+  const setVegaDataWithDebounce = useCallback(_.debounce((data) => {
     setVegaData(data);
   }, 1500, { leading: true }), []);
 
@@ -86,7 +88,20 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
-    if (hierarchy.length === 0 || cellSetsLoading) {
+    const selectedGenesLoading = _.intersection(selectedGenes, loadingGenes).length > 0;
+
+    // markerGenesLoading only happen on the first load
+    // selectedGenesLoading happens every time the selected genes are changed
+    if (selectedGenesLoading || markerGenesLoading) {
+      setIsHeatmapGenesLoading(true);
+      return;
+    }
+
+    setIsHeatmapGenesLoading(false);
+  }, [selectedGenes, loadingGenes, markerGenesLoading]);
+
+  useEffect(() => {
+    if (cellSetsLoading || hierarchy.length === 0) {
       return;
     }
 
@@ -95,32 +110,29 @@ const HeatmapPlot = (props) => {
   }, [legendIsVisible]);
 
   useEffect(() => {
-    if (!selectedGenes || selectedGenes.length === 0) {
+    if (!selectedGenes?.length > 0
+      || _.isEqual(currentHeatmapSettings, heatmapSettings)
+    ) {
       return;
     }
 
-    if (_.intersection(selectedGenes, loadingGenes).length > 0) {
-      setVegaData(null);
-      return;
-    }
+    currentHeatmapSettings.current = heatmapSettings;
 
     const data = populateHeatmapData(
       cellSets, heatmapSettings, expressionData, selectedGenes, true,
     );
-    setDataDebounce(data);
-  }, [loadingGenes,
+    setVegaDataWithDebounce(data);
+  }, [
     selectedGenes,
-    hidden,
-    selectedTracks,
-    groupedTracks,
+    heatmapSettings,
     maxCells,
-    properties,
-    hierarchy,
-    expressionValue]);
+    markerGenesLoading,
+    cellSetsLoading,
+  ]);
 
   useEffect(() => {
     if (louvainClustersResolution
-      && louvainClustersResolutionRef.current !== louvainClustersResolution
+      && !_.isEqual(louvainClustersResolutionRef.current, louvainClustersResolutionRef)
     ) {
       louvainClustersResolutionRef.current = louvainClustersResolution;
       dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
@@ -180,7 +192,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (cellSetsLoading || expressionData.loading.length || markerGenesLoading) {
+  if (isHeatmapGenesLoading) {
     return (
       <center>
         <Loader experimentId={experimentId} />

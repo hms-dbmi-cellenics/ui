@@ -7,8 +7,12 @@ import {
 import { UploadOutlined } from '@ant-design/icons';
 
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
-import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
-import checkIfFileValid from '../../utils/checkIfFileValid';
+import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
+import { bundleToFile } from '../../utils/upload/processUpload';
+
+// we'll need to remove the hard-coded 10x tech type once we start
+// supporting other types and save the chosen tech type in redux
+const SELECTED_TECH = '10X Chromium';
 
 const UploadDetailsModal = (props) => {
   const {
@@ -20,21 +24,20 @@ const UploadDetailsModal = (props) => {
   } = file;
 
   const status = upload?.status;
-  const bundleName = bundle?.name;
 
   const inputFileRef = useRef(null);
   const [replacementFileBundle, setReplacementFileBundle] = useState(null);
 
   useEffect(() => {
     if (replacementFileBundle) {
-      // we'll need to remove the hard-coded 10x tech type once we start
-      // supporting other types and save the chosen tech type in redux
-      const valid = checkIfFileValid(replacementFileBundle.name, '10X Chromium');
-      if (valid.isValidFilename && valid.isValidType) {
-        onUpload(replacementFileBundle);
-      } else {
-        pushNotificationMessage('error', 'The selected file name does not match the expected category.', 2);
-      }
+      bundleToFile(replacementFileBundle, SELECTED_TECH).then((newFile) => {
+        if (newFile.valid) {  // && newFile.name === file.name ?
+          onUpload(newFile);
+        } else {
+          pushNotificationMessage('error',
+            'The selected file name does not match the expected category.', 2);
+        }
+      })
     }
   }, [replacementFileBundle]);
 
@@ -153,7 +156,7 @@ const UploadDetailsModal = (props) => {
         {!isNotUploadedModal && (
           <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
             <Col span={5}>Filename</Col>
-            <Col span={10}>{bundleName}</Col>
+            <Col span={10}>{file.name}</Col>
           </Row>
         )}
 

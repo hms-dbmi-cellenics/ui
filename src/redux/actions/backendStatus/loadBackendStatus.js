@@ -1,15 +1,15 @@
-import fetchAPI from '../../../../utils/fetchAPI';
-import endUserMessages from '../../../../utils/endUserMessages';
-import { isServerError, throwIfRequestFailed } from '../../../../utils/fetchErrors';
+import fetchAPI from '../../../utils/fetchAPI';
+import endUserMessages from '../../../utils/endUserMessages';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import {
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
-} from '../../../actionTypes/experimentSettings';
+  BACKEND_STATUS_LOADING,
+  BACKEND_STATUS_LOADED,
+  BACKEND_STATUS_ERROR,
+} from '../../actionTypes/backendStatus';
 
 const loadBackendStatus = (experimentId) => async (dispatch) => {
   dispatch({
-    type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+    type: BACKEND_STATUS_LOADING,
     payload: {
       experimentId,
     },
@@ -23,7 +23,7 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
     throwIfRequestFailed(response, status, endUserMessages.ERROR_FETCHING_STATUS);
 
     dispatch({
-      type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADED,
+      type: BACKEND_STATUS_LOADED,
       payload: {
         experimentId,
         status,
@@ -36,8 +36,9 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
       console.error(`fetch ${url} error ${e.message}`);
     }
     dispatch({
-      type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
+      type: BACKEND_STATUS_ERROR,
       payload: {
+        experimentId,
         error: 'Could not get the status of the backend.',
         errorType: e,
       },

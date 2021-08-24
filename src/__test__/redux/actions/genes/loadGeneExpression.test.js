@@ -21,8 +21,8 @@ describe('loadGeneExpression action', () => {
   const componentUuid = 'asd';
   const loadingGenes = ['a', 'b', 'c'];
 
-  const experimentSettings = {
-    backendStatus: {
+  const backendStatus = {
+    [experimentId]: {
       status: {
         pipeline: {
           status: 'SUCCEEDED',
@@ -58,7 +58,7 @@ describe('loadGeneExpression action', () => {
           },
         },
       },
-      experimentSettings,
+      backendStatus,
     });
 
     fetchCachedWork.mockImplementationOnce(() => (
@@ -89,7 +89,7 @@ describe('loadGeneExpression action', () => {
           },
         },
       },
-      experimentSettings,
+      backendStatus,
     });
 
     fetchCachedWork.mockImplementationOnce(() => (
@@ -110,7 +110,7 @@ describe('loadGeneExpression action', () => {
       genes: {
         ...initialState,
       },
-      experimentSettings,
+      backendStatus,
     });
 
     const mockResult = {
@@ -143,7 +143,7 @@ describe('loadGeneExpression action', () => {
       genes: {
         ...initialState,
       },
-      experimentSettings,
+      backendStatus,
     });
 
     fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
@@ -165,8 +165,8 @@ describe('loadGeneExpression action', () => {
       genes: {
         ...initialState,
       },
-      experimentSettings: {
-        backendStatus: {
+      backendStatus: {
+        [experimentId]: {
           status: {
             pipeline: {
               status: pipelineStatusValues.NOT_CREATED,

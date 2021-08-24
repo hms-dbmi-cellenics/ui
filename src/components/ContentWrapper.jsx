@@ -19,7 +19,8 @@ import {
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
-import { loadBackendStatus, discardChangedQCFilters } from '../redux/actions/experimentSettings';
+import { discardChangedQCFilters } from '../redux/actions/experimentSettings';
+import { loadBackendStatus } from '../redux/actions/backendStatus';
 import { runPipeline } from '../redux/actions/pipeline';
 
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -31,6 +32,8 @@ import ChangesNotAppliedModal from './ChangesNotAppliedModal';
 
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
+
+import { initialExperimentBackendStatus } from '../redux/reducers/backendStatus/initialState';
 
 const { Sider, Footer } = Layout;
 
@@ -53,7 +56,7 @@ const ContentWrapper = (props) => {
     loading: backendLoading,
     error: backendError,
     status: backendStatus,
-  } = useSelector((state) => state.experimentSettings.backendStatus);
+  } = useSelector((state) => state.backendStatus[experimentId] ?? initialExperimentBackendStatus);
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus.pipeline?.status;

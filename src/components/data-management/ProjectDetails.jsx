@@ -27,6 +27,7 @@ import UploadDetailsModal from './UploadDetailsModal';
 import MetadataPopover from './MetadataPopover';
 
 import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
+
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
@@ -36,18 +37,18 @@ import {
   updateMetadataTrack,
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
-
-import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
-
 import {
   updateExperiment,
 } from '../../redux/actions/experiments';
-import processUpload, { compressAndUploadSingleFile, metadataForBundle, renameFileIfNeeded } from '../../utils/processUpload';
+
+import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
+
+import { processUpload, uploadSingleFile } from '../../utils/upload/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
 
-import UploadStatus, { messageForStatus } from '../../utils/UploadStatus';
-import fileUploadSpecifications from '../../utils/fileUploadSpecifications';
+import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
+import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
@@ -76,6 +77,8 @@ const ProjectDetails = ({ width, height }) => {
   const projects = useSelector((state) => state.projects);
   const experimentSettings = useSelector((state) => state.experimentSettings);
   const experiments = useSelector((state) => state.experiments);
+  const backendStatus = useSelector((state) => state.backendStatus);
+
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -107,6 +110,15 @@ const ProjectDetails = ({ width, height }) => {
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
     setUploadModalVisible(false);
+  };
+
+  const uploadFile = (newFile) => {
+    if (!uploadDetailsModalDataRef.current) {
+      return;
+    }
+    const { sampleUuid } = uploadDetailsModalDataRef.current;
+    uploadSingleFile(newFile, activeProjectUuid, sampleUuid, dispatch);
+    setUploadDetailsModalVisible(false);
   };
 
   useEffect(() => {
@@ -424,21 +436,21 @@ const ProjectDetails = ({ width, height }) => {
     {
       index: 2,
       key: 'barcodes',
-      title: 'Barcodes.csv',
+      title: 'barcodes.tsv',
       dataIndex: 'barcodes',
       render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
     },
     {
       index: 3,
       key: 'genes',
-      title: 'Genes.csv',
+      title: 'genes.tsv',
       dataIndex: 'genes',
       render: (tableCellData) => renderUploadCell('genes', tableCellData),
     },
     {
       index: 4,
       key: 'matrix',
-      title: 'Matrix.mtx',
+      title: 'matrix.mtx',
       dataIndex: 'matrix',
       render: (tableCellData) => renderUploadCell('matrix', tableCellData),
     },
@@ -554,38 +566,13 @@ const ProjectDetails = ({ width, height }) => {
     dispatch(updateProject(activeProjectUuid, { description }));
   };
 
-  const uploadFileBundle = (bundleToUpload) => {
-    if (!uploadDetailsModalDataRef.current) {
-      return;
-    }
-    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
-
-    // when uploading only one file - bundleToUpload doesn't have .name
-    const name = file.name || bundleToUpload.name;
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
-
-    const metadata = metadataForBundle(bundleToUpload);
-
-    const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
-
-    compressAndUploadSingleFile(
-      bucketKey, sampleUuid, newFileName,
-      bundleToUpload, dispatch, metadata,
-    );
-
-    setUploadDetailsModalVisible(false);
-  };
-
   const downloadFile = async () => {
     const { sampleUuid, file } = uploadDetailsModalDataRef.current;
     const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
 
     const downloadedS3Object = await Storage.get(bucketKey, { download: true });
 
-    const bundleName = file?.bundle.name;
-    const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
-
-    saveAs(downloadedS3Object.Body, fileNameToSaveWith);
+    saveAs(downloadedS3Object.Body, file.name);
   };
 
   const openAnalysisModal = () => {
@@ -646,10 +633,11 @@ const ProjectDetails = ({ width, height }) => {
   };
 
   const pipelineHasRun = (experimentId) => (
-    experiments[experimentId]?.meta?.backendStatus?.pipeline?.status === pipelineStatus.SUCCEEDED
+    backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED
   );
+
   const gem2sHasRun = (experimentId) => (
-    experiments[experimentId]?.meta?.backendStatus?.gem2s?.status === pipelineStatus.SUCCEEDED
+    backendStatus[experimentId]?.status.gem2s?.status === pipelineStatus.SUCCEEDED
   );
 
   const DownloadDataMenu = (
@@ -749,7 +737,7 @@ const ProjectDetails = ({ width, height }) => {
         file={uploadDetailsModalDataRef.current?.file}
         fileCategory={uploadDetailsModalDataRef.current?.fileCategory}
         visible={uploadDetailsModalVisible}
-        onUpload={uploadFileBundle}
+        onUpload={uploadFile}
         onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />

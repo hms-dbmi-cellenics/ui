@@ -1,4 +1,5 @@
-import { updateBackendStatus, updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
+import { updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
+import { updateBackendStatus } from '../redux/actions/backendStatus';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 import { updateCellSetsClustering } from '../redux/actions/cellSets';
@@ -10,17 +11,19 @@ const updateTypes = {
 };
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
+  if (update.status) {
+    dispatch(updateBackendStatus(experimentId, update.status));
+  }
+
   if (update.response?.error) {
     return;
   }
 
   switch (update.type) {
     case updateTypes.QC: {
-      dispatch(updateBackendStatus(update.status));
       return onQCUpdate(update, dispatch);
     }
     case updateTypes.GEM2S: {
-      dispatch(updateBackendStatus(update.status));
       return onGEM2SUpdate(update, dispatch, experimentId);
     }
     case updateTypes.WORKER_DATA_UPDATE: {
