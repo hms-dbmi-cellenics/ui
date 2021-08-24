@@ -414,7 +414,7 @@ const generateSpec = (config, plotData) => {
 const generateData = (
   cellSets,
   selectedExpression,
-  groupingHierarchyId,
+  rootNodeKey,
   cellSetToDisplayId,
 ) => {
   const shouldBeDisplayed = (
@@ -446,7 +446,7 @@ const generateData = (
   // }
 
   const cellSetsIds = cellSets.hierarchy.find(
-    (hierarchy) => hierarchy.key === groupingHierarchyId,
+    (hierarchy) => hierarchy.key === rootNodeKey,
   ).children.map((child) => child.key);
 
   const properties = _.pick(cellSets.properties, cellSetsIds);
@@ -480,7 +480,7 @@ const generateData = (
   const plotData = {
     groups,
     cells,
-    settings: { groupingName: cellSets.properties[groupingHierarchyId].name },
+    settings: { groupingName: cellSets.properties[rootNodeKey].name },
   };
   return plotData;
 };
