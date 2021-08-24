@@ -1,4 +1,5 @@
-import { updateBackendStatus, updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
+import { updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
+import { updateBackendStatus } from '../redux/actions/backendStatus';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
 const updateTypes = {
@@ -8,7 +9,7 @@ const updateTypes = {
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
   if (update.status) {
-    dispatch(updateBackendStatus(update.status));
+    dispatch(updateBackendStatus(experimentId, update.status));
   }
 
   if (update.response?.error) {

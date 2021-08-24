@@ -8,7 +8,7 @@ import 'react-mosaic-component/react-mosaic-component.css';
 
 import { validate } from 'uuid';
 import { createProject, loadProjects } from '../../redux/actions/projects';
-import { loadExperiments, updateExperimentBackendStatus } from '../../redux/actions/experiments';
+import { loadExperiments } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
@@ -17,21 +17,25 @@ import ProjectDetails from '../../components/data-management/ProjectDetails';
 import LoadingModal from '../../components/LoadingModal';
 
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
-import loadBackendStatus from '../../redux/actions/experimentSettings/backendStatus/loadBackendStatus';
+import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
   const projectsList = useSelector(((state) => state.projects));
+
   const {
     saving: projectSaving,
   } = projectsList.meta;
+
   const {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
+
   const {
     activeProjectUuid,
     loading: projectsLoading,
   } = useSelector((state) => state.projects.meta);
+
   const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
   const [justLoggedIn, setJustLoggedIn] = useState(true);
@@ -58,12 +62,7 @@ const DataManagementPage = ({ route }) => {
   }, []);
 
   const updateRunStatus = async (experimentId) => {
-    dispatch(loadBackendStatus(experimentId))
-      .then(
-        (backendStatus) => {
-          dispatch(updateExperimentBackendStatus(experimentId, backendStatus));
-        },
-      );
+    dispatch(loadBackendStatus(experimentId));
   };
 
   useEffect(() => {
@@ -71,6 +70,7 @@ const DataManagementPage = ({ route }) => {
     // ID so the experiments load will fail this should be addressed by migrating experiments.
     // However, for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
     // and we should not try to load the experiments with it
+
     if (
       !activeProjectUuid
       || !isUuid(activeProjectUuid)
@@ -127,7 +127,7 @@ const DataManagementPage = ({ route }) => {
           style={{ width: '100%' }}
         >
           <Button
-            id='create-new-project-modal'
+            data-test-id='create-new-project-button'
             type='primary'
             block
             onClick={() => setNewProjectModalVisible(true)}

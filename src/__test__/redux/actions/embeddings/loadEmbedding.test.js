@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { loadEmbedding } from '../../../../redux/actions/embedding';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import generateExperimentSettingsMock, { initialPipelineState } from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import {
   EMBEDDINGS_ERROR,
@@ -24,12 +24,22 @@ const embeddingType = 'umap';
 
 const initialExperimentState = generateExperimentSettingsMock([]);
 
+const initialPipelineState = {
+  startDate: null,
+  endDate: null,
+  status: null,
+  completedSteps: [],
+};
+
 describe('loadEmbedding action', () => {
   const experimentId = '1234';
 
   const experimentSettings = {
     ...initialExperimentState,
-    backendStatus: {
+  };
+
+  const backendStatus = {
+    [experimentId]: {
       status: {
         pipeline: {
           ...initialPipelineState,
@@ -46,6 +56,7 @@ describe('loadEmbedding action', () => {
   it('Dispatches if not loaded', async () => {
     const store = mockStore(
       {
+        backendStatus,
         experimentSettings,
         embeddings: {},
       },
@@ -58,6 +69,7 @@ describe('loadEmbedding action', () => {
   it('Does not dispatch if embedding is already loaded', async () => {
     const store = mockStore(
       {
+        backendStatus,
         experimentSettings,
         embeddings:
         {
@@ -80,6 +92,7 @@ describe('loadEmbedding action', () => {
   it('Does not dispatch on a loading embedding', async () => {
     const store = mockStore(
       {
+        backendStatus,
         experimentSettings,
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, loading: true } },
@@ -109,6 +122,7 @@ describe('loadEmbedding action', () => {
 
     const store = mockStore(
       {
+        backendStatus,
         embeddings: {},
         experimentSettings,
       },
@@ -147,6 +161,7 @@ describe('loadEmbedding action', () => {
 
     const store = mockStore(
       {
+        backendStatus,
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, error: true, loading: false } },
         experimentSettings,
@@ -170,6 +185,7 @@ describe('loadEmbedding action', () => {
   it('Dispatches error action on unsuccessful loading', async () => {
     const store = mockStore(
       {
+        backendStatus,
         embeddings: {},
         experimentSettings,
       },
@@ -194,6 +210,7 @@ describe('loadEmbedding action', () => {
   it('Does not return anything while waiting for config data to load', async () => {
     const store = mockStore(
       {
+        backendStatus,
         embeddings: {},
         experimentSettings: {
           ...experimentSettings,
@@ -211,13 +228,16 @@ describe('loadEmbedding action', () => {
   it('Dispatches error if pipeline has not been run', async () => {
     const store = mockStore(
       {
+        backendStatus: {
+          ...backendStatus,
+          1234: {
+            ...backendStatus['1234'],
+            status: {},
+          },
+        },
         embeddings: {},
         experimentSettings: {
           ...experimentSettings,
-          backendStatus: {
-            ...experimentSettings.backendStatus,
-            status: {},
-          },
         },
       },
     );
@@ -248,6 +268,7 @@ describe('loadEmbedding action', () => {
 
     const store = mockStore(
       {
+        backendStatus,
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, error: false, loading: false } },
         experimentSettings,
