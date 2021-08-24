@@ -17,10 +17,12 @@ const SelectData = (props) => {
   const { hierarchy, properties } = cellSets;
 
   const getDefaultCellSetNotIn = (rootNodeKey) => {
-    const fallbackRootNodeKey = ['sample', 'louvain'].filter((val) => val !== rootNodeKey)[0];
+    const fallBackRootNodesKeys = ['sample', 'louvain'];
+
+    const fallbackRootNodeKey = fallBackRootNodesKeys.filter((val) => val !== rootNodeKey)[0];
     const fallBackCellSetId = _.find(
       hierarchy,
-      (rootNode) => { console.log(rootNode.key); return rootNode.key === fallbackRootNodeKey; },
+      (rootNode) => rootNode.key === fallbackRootNodeKey,
     ).children[0].key;
 
     return `${fallbackRootNodeKey}/${fallBackCellSetId}`;
