@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Tree, Space,
+  Tree, Space, Skeleton,
 } from 'antd';
 import { transform, cloneDeep } from 'lodash';
 import {
@@ -36,16 +36,16 @@ const HierarchicalTree = (props) => {
     }
   }, []);
 
-  const onExpand = () => {
+  const onExpand = useCallback(() => {
     setAutoExpandParent(false);
-  };
+  }, []);
 
-  const onCheck = (keys) => {
+  const onCheck = useCallback((keys) => {
     setCheckedKeys(keys);
     propOnCheck(keys);
-  };
+  }, []);
 
-  const onDrop = (info) => {
+  const onDrop = useCallback((info) => {
     /**
      * The `key` values in the data array passed to the <Tree/> component
      * which was dragged, and which was dropped. dropKey can either be
@@ -196,7 +196,7 @@ const HierarchicalTree = (props) => {
     if (shouldUpdateState) {
       props.onHierarchyUpdate(newTreeData);
     }
-  };
+  }, []);
 
   const renderColorPicker = (modified) => {
     if (modified.color) {
@@ -278,7 +278,16 @@ const HierarchicalTree = (props) => {
     return toRender;
   };
 
-  const treeDataToRender = renderTitlesRecursive(treeData);
+  const [renderedTreeData, setRenderedTreeData] = useState([]);
+  useEffect(() => {
+    if (!treeData) {
+      return;
+    }
+
+    setRenderedTreeData(renderTitlesRecursive(treeData));
+  }, [treeData]);
+
+  if (!treeData) return <Skeleton active />;
 
   return (
     <Tree
@@ -287,7 +296,7 @@ const HierarchicalTree = (props) => {
       onExpand={onExpand}
       autoExpandParent={autoExpandParent}
       onCheck={onCheck}
-      treeData={treeDataToRender}
+      treeData={renderedTreeData}
       checkedKeys={checkedKeys}
       onDrop={onDrop}
       switcherIcon={<DownOutlined />}

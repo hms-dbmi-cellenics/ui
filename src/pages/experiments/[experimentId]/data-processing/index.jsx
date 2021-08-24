@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
@@ -160,9 +160,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     return stepAppearances.length > 0;
   };
 
-  const onConfigChange = (key) => {
+  const onConfigChange = useCallback((key) => {
     dispatch(addChangedQCFilter(key));
-  };
+  });
 
   const prefixSampleName = (name) => {
     // eslint-disable-next-line no-param-reassign

@@ -16,6 +16,7 @@ jest.mock('localforage');
 jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   seekFromAPI: jest.fn(),
+  seekFromS3: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Mock S3 cache miss.')); })),
 }));
 
 const mockStore = configureStore([thunk]);
