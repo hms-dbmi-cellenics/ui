@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 
-import initialState from './initialState';
+import initialState, { metaInitialState } from './initialState';
 
 const updateExperimentInfo = produce((draft, action) => {
   const {
@@ -17,7 +17,7 @@ const updateExperimentInfo = produce((draft, action) => {
   draft.info.sampleIds = sampleIds;
 
   // Experiment id was updated so processing config requires reloading
-  draft.processing.meta.loading = true;
+  draft.processing = { meta: metaInitialState };
 }, initialState);
 
 export default updateExperimentInfo;
