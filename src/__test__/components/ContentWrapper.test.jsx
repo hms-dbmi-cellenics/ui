@@ -10,6 +10,8 @@ import ContentWrapper from '../../components/ContentWrapper';
 
 const { Item } = Menu;
 
+const experimentId = '1234';
+
 jest.mock('localforage');
 jest.mock('next/router', () => ({
   useRouter: jest.fn()
@@ -40,6 +42,14 @@ configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({
+  backendStatus: {
+    [experimentId]: {
+      loading: false,
+      error: false,
+      status: {},
+    },
+  },
+
   notifications: {},
   experimentSettings: {
     processing: {
@@ -47,17 +57,12 @@ const store = mockStore({
         changedQCFilters: new Set(),
       },
     },
-    backendStatus: {
-      loading: false,
-      error: false,
-      status: {},
-    },
     info: {
-      experimentId: '1234',
+      experimentId,
       experimentName: 'test experiment',
     },
   },
-  experiments: { 1234: {} },
+  experiments: { [experimentId]: {} },
 });
 
 describe('ContentWrapper', () => {
@@ -65,7 +70,7 @@ describe('ContentWrapper', () => {
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper experimentId='1234'>
+        <ContentWrapper experimentId>
           <></>
         </ContentWrapper>
       </Provider>,
@@ -129,11 +134,18 @@ describe('ContentWrapper', () => {
 
   it('View changes if there is a pipeline run underway', async () => {
     const info = {
-      experimentId: '1234',
+      experimentId,
       experimentName: 'test experiment',
     };
 
     const testStore = mockStore({
+      backendStatus: {
+        [experimentId]: {
+          loading: false,
+          error: false,
+          status: { pipeline: { status: 'RUNNING' } },
+        },
+      },
       notifications: {},
       experimentSettings: {
         processing: {
@@ -141,14 +153,9 @@ describe('ContentWrapper', () => {
             changedQCFilters: new Set(),
           },
         },
-        backendStatus: {
-          loading: false,
-          error: false,
-          status: { pipeline: { status: 'RUNNING' } },
-        },
         info,
       },
-      experiments: { 1234: {} },
+      experiments: { [experimentId]: {} },
     });
 
     // eslint-disable-next-line require-await
@@ -188,7 +195,7 @@ describe('ContentWrapper', () => {
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper experimentId='1234'>
+        <ContentWrapper experimentId>
           <></>
         </ContentWrapper>
       </Provider>,

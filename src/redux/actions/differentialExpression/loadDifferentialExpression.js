@@ -9,9 +9,7 @@ const getCellSetName = (name) => (name?.split('/')[1] || name);
 const loadDifferentialExpression = (
   experimentId, cellSets, comparisonType, tableState,
 ) => async (dispatch, getState) => {
-  const {
-    backendStatus,
-  } = getState().experimentSettings;
+  const { status } = getState().backendStatus[experimentId];
 
   dispatch({
     type: DIFF_EXPR_LOADING,
@@ -54,7 +52,7 @@ const loadDifferentialExpression = (
 
   try {
     const data = await fetchWork(
-      experimentId, body, backendStatus.status, { extras: pagination },
+      experimentId, body, status, { extras: pagination },
     );
 
     let { total } = data;

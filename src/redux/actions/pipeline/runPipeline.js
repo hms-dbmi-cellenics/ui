@@ -2,13 +2,18 @@ import fetchAPI from '../../../utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import {
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
-  EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from '../../actionTypes/experimentSettings';
 
-import { saveProcessingSettings, loadBackendStatus } from '../experimentSettings';
+import {
+  BACKEND_STATUS_LOADING,
+  BACKEND_STATUS_ERROR,
+} from '../../actionTypes/backendStatus';
+
+import { saveProcessingSettings } from '../experimentSettings';
+
+import { loadBackendStatus } from '../backendStatus';
 
 import { loadEmbedding } from '../embedding';
 
@@ -45,7 +50,7 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
   }
 
   dispatch({
-    type: EXPERIMENT_SETTINGS_BACKEND_STATUS_LOADING,
+    type: BACKEND_STATUS_LOADING,
     payload: {
       experimentId,
     },
@@ -93,7 +98,7 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
       message = endUserMessages.CONNECTION_ERROR;
     }
     dispatch({
-      type: EXPERIMENT_SETTINGS_BACKEND_STATUS_ERROR,
+      type: BACKEND_STATUS_ERROR,
       payload: {
         error: 'Could not start the pipeline.',
         errorType: message,

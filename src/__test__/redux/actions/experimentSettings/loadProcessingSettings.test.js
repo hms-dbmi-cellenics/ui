@@ -37,23 +37,6 @@ describe('loadProcessingSettings action', () => {
     fetchMock.mockResolvedValueOnce(response);
   });
 
-  it('Does not dispatch on normal operation', async () => {
-    const state = _.merge(mockState, {
-      experimentSettings: {
-        processing: {
-          meta: {
-            loading: false,
-            error: false,
-          },
-        },
-      },
-    });
-
-    const store = mockStore(state);
-    await store.dispatch(loadProcessingSettings(experimentId));
-    expect(store.getActions().length).toEqual(0);
-  });
-
   it('Dispatches action on initial state', async () => {
     const state = _.merge(mockState, {
       experimentSettings: {

@@ -10,17 +10,19 @@ jest.mock('../../../../utils/work/fetchWork');
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
-const backendStatus = {
-  status: {
-    pipeline: {
-      startDate: '2021-01-01T00:00',
-    },
-  },
-};
-
 describe('loadCellMeta action', () => {
   const experimentId = '1234';
   const metaName = 'mitochondrialContent';
+
+  const backendStatus = {
+    [experimentId]: {
+      status: {
+        pipeline: {
+          startDate: '2021-01-01T00:00',
+        },
+      },
+    },
+  };
 
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
@@ -40,9 +42,7 @@ describe('loadCellMeta action', () => {
           error: false,
         },
       },
-      experimentSettings: {
-        backendStatus,
-      },
+      backendStatus,
     });
 
     store.dispatch(loadCellMeta(experimentId, metaName));
@@ -58,9 +58,7 @@ describe('loadCellMeta action', () => {
           loading: true,
         },
       },
-      experimentSettings: {
-        backendStatus,
-      },
+      backendStatus,
     });
 
     store.dispatch(loadCellMeta(experimentId, metaName));
@@ -78,9 +76,7 @@ describe('loadCellMeta action', () => {
           error,
         },
       },
-      experimentSettings: {
-        backendStatus,
-      },
+      backendStatus,
     });
 
     store.dispatch(loadCellMeta(experimentId, metaName));
@@ -98,9 +94,7 @@ describe('loadCellMeta action', () => {
           error,
         },
       },
-      experimentSettings: {
-        backendStatus,
-      },
+      backendStatus,
     });
 
     store.dispatch(loadCellMeta(experimentId, metaName));
@@ -113,9 +107,7 @@ describe('loadCellMeta action', () => {
   it('Dispatches a loaded action when run with the initial state.', async () => {
     const store = mockStore({
       cellMeta: initialState,
-      experimentSettings: {
-        backendStatus,
-      },
+      backendStatus,
     });
 
     store.dispatch(loadCellMeta(experimentId, metaName));
@@ -128,9 +120,7 @@ describe('loadCellMeta action', () => {
   it('Dispatches an error condition if fetch fails', async () => {
     const store = mockStore({
       cellMeta: initialState,
-      experimentSettings: {
-        backendStatus,
-      },
+      backendStatus,
     });
 
     fetchMock.resetMocks();

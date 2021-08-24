@@ -13,19 +13,22 @@ const mockStore = configureStore([thunk]);
 describe('loadMarkerGenes action', () => {
   const experimentId = '1234';
 
+  const backendStatus = {
+    [experimentId]: {
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+          startDate: '2021-01-01T01:01:01.000Z',
+        },
+      },
+    },
+  };
+
   const experimentSettings = {
     processing: {
       configureEmbedding: {
         clusteringSettings: {
           method: 'methodId',
-        },
-      },
-    },
-    backendStatus: {
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-          startDate: '2021-01-01T01:01:01.000Z',
         },
       },
     },
@@ -68,6 +71,7 @@ describe('loadMarkerGenes action', () => {
         ...initialState,
       },
       experimentSettings,
+      backendStatus,
     });
 
     const order = ['geneA'];
@@ -102,6 +106,7 @@ describe('loadMarkerGenes action', () => {
         ...initialState,
       },
       experimentSettings,
+      backendStatus,
     });
 
     fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));

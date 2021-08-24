@@ -55,7 +55,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedPath = '/experiments/[experimentId]/data-exploration';
 
-  const pipelineStatus = useSelector((state) => state.experimentSettings.backendStatus.status.pipeline);
+  const pipelineStatus = useSelector(
+    (state) => state.backendStatus[experimentId]?.status?.pipeline,
+  );
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);
   const samples = useSelector((state) => state.samples);
@@ -70,7 +72,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   const completedSteps = pipelineStatus?.completedSteps;
 
-  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   const changesOutstanding = Boolean(changedQCFilters.size);
 
@@ -93,7 +97,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   };
 
   useEffect(() => {
-    dispatch(loadProcessingSettings(experimentId));
+    // If processingConfig is not loaded then reload
+    if (Object.keys(processingConfig).length <= 1) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+
     dispatch(loadSamples(experimentId));
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -182,7 +190,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
       key: 'classifier',
       name: getUserFriendlyQCStepName('classifier'),
-      description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA',
+      description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA. Droplets are filtered based on the False Discovery Rate (FDR) value - the red line on the density plot. In the knee plot, the ‘mixed’ population shown in grey contains some cells that are filtered out and some that remain and can be filtered further in the next filter.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -346,7 +354,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         type='primary'
         onClick={() => setRunQCModalVisible(true)}
         style={{ minWidth: '80px' }}
-        size='small'
       >
         {runMessage}
       </Button>
@@ -514,6 +521,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
           <Row align='middle' justify='space-between'>
             <Col>
               <StatusIndicator
+                experimentId={experimentId}
                 allSteps={steps}
                 currentStep={stepIdx}
                 completedSteps={completedSteps}
@@ -583,7 +591,10 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       );
     }
 
-    if (samples.meta.loading || processingConfig.meta.loading) {
+    if (samples.meta.loading
+      || processingConfig.meta.loading
+      || Object.keys(processingConfig).length <= 1
+    ) {
       return (
         <div className='preloadContextSkeleton' style={{ padding: '16px 0px' }}>
           <Skeleton.Input style={{ width: '100%', height: 400 }} active />

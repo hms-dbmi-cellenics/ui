@@ -12,7 +12,7 @@ const loadPaginatedGeneProperties = (
   experimentId, properties, componentUuid, tableState,
 ) => async (dispatch, getState) => {
   const { loading } = getState().genes.properties;
-  const { backendStatus } = getState().experimentSettings;
+  const { status } = getState().backendStatus[experimentId];
 
   if (_.intersection(loading, properties).length > 0) {
     return null;
@@ -44,7 +44,7 @@ const loadPaginatedGeneProperties = (
 
   try {
     const { rows, total } = await fetchWork(
-      experimentId, body, backendStatus.status,
+      experimentId, body, status,
     );
 
     const loadedProperties = {};

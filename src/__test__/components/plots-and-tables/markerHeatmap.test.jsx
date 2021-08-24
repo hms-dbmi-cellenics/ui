@@ -53,14 +53,13 @@ jest.mock('../../../utils/work/fetchWork', () => ({
     }
   }),
 }));
+
+const experimentId = 'randomExperiment';
 const plotUuid = 'markerHeatmapPlotMain';
 
 const defaultStore = {
-  componentConfig: { [plotUuid]: { config: { ...initialPlotConfigStates.markerHeatmap } } },
-  embeddings: {},
-  experimentSettings: {
-    ...initialExperimentState,
-    backendStatus: {
+  backendStatus: {
+    [experimentId]: {
       status: {
         pipeline: {
           startDate: '2020-01-01T00:00:00',
@@ -70,6 +69,11 @@ const defaultStore = {
         gem2s: { status: 'SUCCEEDED' },
       },
     },
+  },
+  componentConfig: { [plotUuid]: { config: { ...initialPlotConfigStates.markerHeatmap } } },
+  embeddings: {},
+  experimentSettings: {
+    ...initialExperimentState,
     processing: {
       configureEmbedding: {
         clusteringSettings: {
@@ -168,7 +172,6 @@ const defaultStore = {
   },
 };
 
-const experimentId = 'randomExperiment';
 let store = null;
 let loadConfigSpy = null;
 let loadMarkersSpy;
