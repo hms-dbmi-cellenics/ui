@@ -504,40 +504,6 @@ const ProjectDetails = ({ width, height }) => {
     setCanLaunchAnalysis(canLaunch);
   };
 
-  const uploadFileBundle = (bundleToUpload) => {
-    if (!uploadDetailsModalDataRef.current) {
-      return;
-    }
-    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
-
-    // when uploading only one file - bundleToUpload doesn't have .name
-    const name = file.name || bundleToUpload.name;
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${name}`;
-
-    const metadata = metadataForBundle(bundleToUpload);
-
-    const newFileName = renameFileIfNeeded(name, bundleToUpload.type);
-
-    compressAndUploadSingleFile(
-      bucketKey, sampleUuid, newFileName,
-      bundleToUpload, dispatch, metadata,
-    );
-
-    setUploadDetailsModalVisible(false);
-  };
-
-  const downloadFile = async () => {
-    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
-
-    const downloadedS3Object = await Storage.get(bucketKey, { download: true });
-
-    const bundleName = file?.bundle.name;
-    const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
-
-    saveAs(downloadedS3Object.Body, fileNameToSaveWith);
-  };
-
   const openAnalysisModal = () => {
     if (canLaunchAnalysis) {
       // Change the line below when multiple experiments in a project is supported
@@ -573,8 +539,6 @@ const ProjectDetails = ({ width, height }) => {
         sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
         uploadDetailsModalDataRef={uploadDetailsModalDataRef}
         visible={uploadDetailsModalVisible}
-        onUpload={uploadFileBundle}
-        onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
       <div id='project-details' width={width} height={height}>
