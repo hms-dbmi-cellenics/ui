@@ -58,6 +58,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const pipelineStatus = useSelector(
     (state) => state.backendStatus[experimentId]?.status?.pipeline,
   );
+
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);
   const samples = useSelector((state) => state.samples);
