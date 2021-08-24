@@ -355,6 +355,7 @@ const ContentWrapper = (props) => {
           {!collapsed && <BigLogo />}
           {collapsed && <SmallLogo />}
           <Menu
+            data-test-id='navigation-menu'
             theme='dark'
             selectedKeys={
               menuLinks

@@ -414,66 +414,73 @@ const generateSpec = (config, plotData) => {
 const generateData = (
   cellSets,
   selectedExpression,
-  groupingHierarchyId,
-  displayId,
+  rootNodeKey,
+  cellSetToDisplayId,
 ) => {
-  /*
+  const shouldBeDisplayed = (
+    (cellId) => (
+      cellSetToDisplayId === 'All'
+      || cellSets.properties[cellSetToDisplayId].cellIds.has(cellId))
+  );
 
-  Format of the generated plotData:
-  {
-    groups: {
-      group_id_1: {
-        name: cellSet.properties[group_id_1].name,
-        color: cellSet.properties[group_id_1].color,
-      },
-      ...
-    },
-    cells: [
-      {
-        group: group_id_1,
-        y: selectedExpression[cellId],
-        x: Math.random() // only if cell has to be displayed
-      },
-      ...
-    ],
-    settings: {
-      groupingName: Name of the category used for grouping
-    }
-  }
-  */
-  const groupIds = cellSets.hierarchy.find(
-    (hierarchy) => hierarchy.key === groupingHierarchyId,
+  // Format of the generated plotData:
+  // {
+  //   groups: {
+  //     group_id_1: {
+  //       name: cellSet.properties[group_id_1].name,
+  //       color: cellSet.properties[group_id_1].color,
+  //     },
+  //     ...
+  //   },
+  //   cells: [
+  //     {
+  //       group: group_id_1,
+  //       y: selectedExpression[cellId],
+  //       x: Math.random() // only if cell has to be displayed
+  //     },
+  //     ...
+  //   ],
+  //   settings: {
+  //     groupingName: Name of the category used for grouping
+  //   }
+  // }
+
+  const cellSetsIds = cellSets.hierarchy.find(
+    (hierarchy) => hierarchy.key === rootNodeKey,
   ).children.map((child) => child.key);
-  const properties = _.pick(cellSets.properties, groupIds);
+
+  const properties = _.pick(cellSets.properties, cellSetsIds);
   const groups = _.mapValues(properties, (prop) => ({ name: prop.name, color: prop.color }));
 
   const cells = [];
-  if (displayId && displayId.includes('/')) {
+  if (cellSetToDisplayId && cellSetToDisplayId.includes('/')) {
     // eslint-disable-next-line prefer-destructuring
-    displayId = displayId.split('/')[1];
+    cellSetToDisplayId = cellSetToDisplayId.split('/')[1];
   }
-  const toDisplay = displayId && displayId !== 'All' ? cellSets.properties[displayId].cellIds : null;
-  groupIds.forEach((groupId) => {
-    properties[groupId].cellIds.forEach((cellId) => {
-      const cell = {
-        group: groupId,
-        y: selectedExpression[cellId],
-      };
-      if (displayId) {
-        if (displayId === 'All' || toDisplay.has(cellId)) {
-          cell.x = Math.random();
+
+  cellSetsIds.forEach((cellSetId) => {
+    const currentCellIds = Array.from(properties[cellSetId].cellIds);
+
+    currentCellIds
+      .filter(shouldBeDisplayed)
+      .forEach((cellId) => {
+        const cell = {
+          group: cellSetId,
+          y: selectedExpression[cellId],
+        };
+
+        cell.x = 0.25 + Math.random() / 2;
+
+        if (cell.y !== null) {
+          cells.push(cell);
         }
-      }
-      if (cell.y !== null) {
-        cells.push(cell);
-      }
-    });
+      });
   });
 
   const plotData = {
     groups,
     cells,
-    settings: { groupingName: cellSets.properties[groupingHierarchyId].name },
+    settings: { groupingName: cellSets.properties[rootNodeKey].name },
   };
   return plotData;
 };
