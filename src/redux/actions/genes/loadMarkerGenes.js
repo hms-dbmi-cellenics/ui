@@ -14,7 +14,8 @@ const loadMarkerGenes = (
   const { backendStatus, experimentSettings } = getState();
   const { processing } = experimentSettings;
   const { status } = backendStatus[experimentId];
-
+  const { hierarchy } = getState().cellSets;
+  const clusters = hierarchy.filter((node) => node.key === selectedCellSets)[0].children;
   const { method } = processing.configureEmbedding.clusteringSettings;
   const body = {
     name: 'MarkerHeatmap',
@@ -24,6 +25,7 @@ const loadMarkerGenes = (
       resolution,
     },
     typeOfSets: selectedCellSets || 'louvain',
+    clusters,
   };
 
   dispatch({
