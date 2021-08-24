@@ -64,6 +64,7 @@ const Header = (props) => {
       />
 
       <PageHeader
+        className='data-test-page-header'
         title={title}
         style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
         breadcrumb={{ routes: buildRoutes(route), itemRender }}

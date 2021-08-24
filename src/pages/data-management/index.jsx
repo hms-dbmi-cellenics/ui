@@ -127,7 +127,7 @@ const DataManagementPage = ({ route }) => {
           style={{ width: '100%' }}
         >
           <Button
-            id='create-new-project-modal'
+            data-test-id='create-new-project-button'
             type='primary'
             block
             onClick={() => setNewProjectModalVisible(true)}

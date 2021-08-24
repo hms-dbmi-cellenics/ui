@@ -55,12 +55,12 @@ const NewProjectModal = (props) => {
 
   return (
     <Modal
-      className='new-project-modal'
+      className='data-test-new-project-modal'
       title='Create a new project'
       visible={visible}
       footer={(
         <Button
-          id='confirm-create-new-project'
+          data-test-id='confirm-create-new-project'
           type='primary'
           key='create'
           block
@@ -114,7 +114,7 @@ const NewProjectModal = (props) => {
               name='requiredMark'
             >
               <Input
-                id='project-name'
+                data-test-id='project-name'
                 onChange={(e) => {
                   setProjectName(e.target.value.trim());
                 }}
@@ -134,7 +134,7 @@ const NewProjectModal = (props) => {
               label='Project description'
             >
               <TextArea
-                id='project-description'
+                data-test-id='project-description'
                 onChange={(e) => { setProjectDescription(e.target.value); }}
                 placeholder='Type description'
                 autoSize={{ minRows: 3, maxRows: 5 }}
