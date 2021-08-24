@@ -10,6 +10,8 @@ import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/act
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
 
+const geneDispersionsKey = 'dispersions';
+
 const ViolinPlot = (props) => {
   const {
     experimentId, config, plotUuid, searchedGene,
@@ -41,13 +43,13 @@ const ViolinPlot = (props) => {
       );
     }
   }, [loadedGene]);
-  const PROPERTIES = ['dispersions'];
+
   const tableState = {
     pagination: {
       current: 1, pageSize: 1, showSizeChanger: true, total: 0,
     },
     geneNamesFilter: null,
-    sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
+    sorter: { field: geneDispersionsKey, columnKey: geneDispersionsKey, order: 'descend' },
   };
   const updatePlotWithChanges = (changes) => {
     dispatch(updatePlotConfig(plotUuid, changes));
@@ -62,7 +64,9 @@ const ViolinPlot = (props) => {
   useEffect(() => {
     // if no saved gene - load the highest dispersion one
     if (config.shownGene === 'notSelected' && !highestDispersionLoading && !highestDispersionGene) {
-      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+      dispatch(
+        loadPaginatedGeneProperties(experimentId, [geneDispersionsKey], plotUuid, tableState),
+      );
     }
   }, [experimentId, config?.shownGene, highestDispersionLoading, highestDispersionGene]);
 
@@ -87,7 +91,9 @@ const ViolinPlot = (props) => {
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
 
-  const clustersAvailable = () => cellSets.hierarchy.find((hierarchy) => hierarchy.key === config.selectedCellSet);
+  const clustersAvailable = () => (
+    cellSets.hierarchy.find((hierarchy) => hierarchy.key === config.selectedCellSet)
+  );
 
   useEffect(() => {
     if (config
@@ -135,7 +141,9 @@ const ViolinPlot = (props) => {
         <PlatformError
           error={highestDispersionError}
           onClick={() => {
-            dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+            dispatch(
+              loadPaginatedGeneProperties(experimentId, [geneDispersionsKey], plotUuid, tableState),
+            );
           }}
         />
       );
