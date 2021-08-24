@@ -12,6 +12,7 @@ jest.mock('../../../../utils/work/fetchWork');
 
 jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
+  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
   seekFromAPI: jest.fn(),
 }));
 

@@ -36,10 +36,6 @@ const HierarchicalTree = (props) => {
     }
   }, []);
 
-  const onExpand = useCallback(() => {
-    setAutoExpandParent(false);
-  }, []);
-
   const onCheck = useCallback((keys) => {
     setCheckedKeys(keys);
     propOnCheck(keys);
@@ -293,7 +289,9 @@ const HierarchicalTree = (props) => {
     <Tree
       checkable
       draggable
-      onExpand={onExpand}
+      onExpand={() => {
+        setAutoExpandParent(false);
+      }}
       autoExpandParent={autoExpandParent}
       onCheck={onCheck}
       treeData={renderedTreeData}

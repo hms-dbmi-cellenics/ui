@@ -137,7 +137,10 @@ jest.mock('../../utils/cache', () => ({
 
 jest.mock('../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  default: jest.fn((experimentId, timeout, body) => mockseekFromAPI(experimentId, timeout, body)),
+  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
+  seekFromAPI: jest.fn(
+    (experimentId, timeout, body) => mockseekFromAPI(experimentId, timeout, body),
+  ),
 }));
 
 describe('tests for fetchWork', () => {

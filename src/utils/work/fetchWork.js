@@ -140,7 +140,7 @@ const fetchWork = async (
 
   const responseData = JSON.parse(response.results[0].body);
 
-  if (response.response.cacheable) {
+  if (response.response?.cacheable) {
     await cache.set(ETag, responseData);
   }
 
