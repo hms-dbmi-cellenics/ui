@@ -25,6 +25,7 @@ const initialExperimentState = generateExperimentSettingsMock([]);
 
 describe('loadEmbedding action', () => {
   const experimentId = '1234';
+
   const experimentSettings = {
     ...initialExperimentState,
     backendStatus: {
