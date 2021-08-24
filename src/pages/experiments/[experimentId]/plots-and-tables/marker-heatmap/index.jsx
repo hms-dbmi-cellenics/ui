@@ -74,7 +74,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [louvainClustersResolution]);
 
   useEffect(() => {
-    if (config && hierarchy?.length) {
+    if (louvainClustersResolution && config && hierarchy?.length) {
       if (selectedClustersAvailable(config.selectedCellSet)) {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
