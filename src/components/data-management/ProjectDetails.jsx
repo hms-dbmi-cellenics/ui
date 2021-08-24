@@ -779,6 +779,7 @@ const ProjectDetails = ({ width, height }) => {
                 </Button>
               </Dropdown>
               <Button
+                data-test-id='launch-analysis-button'
                 type='primary'
                 disabled={
                   projects.ids.length === 0

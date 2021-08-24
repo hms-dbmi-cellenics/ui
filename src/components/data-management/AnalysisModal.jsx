@@ -71,6 +71,7 @@ const NewExperimentModal = (props) => {
                     <Row type='flex' align='middle'>
                       <Col>
                         <Button
+                          data-test-id={`launch-analysis-${experiment.id}`}
                           type='primary'
                           onClick={() => {
                             setIsWorking(true);
