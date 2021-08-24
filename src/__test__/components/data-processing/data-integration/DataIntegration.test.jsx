@@ -37,6 +37,7 @@ jest.mock('next/router', () => ({
 }));
 
 const createStore = (completedSteps) => mockStore({
+  backendStatus: { 1234: { status: { pipeline: { completedSteps } } } },
   cellSets: {
     ...initialCellSetsState,
     properties: {
@@ -82,7 +83,6 @@ const createStore = (completedSteps) => mockStore({
   },
   experimentSettings: {
     ...initialExperimentState,
-    backendStatus: { status: { pipeline: { completedSteps } } },
   },
   componentConfig: {
     dataIntegrationFrequency: {

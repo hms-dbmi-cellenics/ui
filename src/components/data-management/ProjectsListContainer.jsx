@@ -14,7 +14,7 @@ import FileUploadModal from './FileUploadModal';
 import { setActiveProject, updateProject, deleteProject as deleteProjectAction } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
 
-import processUpload from '../../utils/processUpload';
+import { processUpload } from '../../utils/upload/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 
 const ProjectsListContainer = (props) => {
@@ -78,7 +78,7 @@ const ProjectsListContainer = (props) => {
         {
           projects.ids.map((uuid) => (
             <Card
-              className='project-card'
+              data-test-id={`project-card-${projects[uuid].name}`}
               key={uuid}
               type='primary'
               style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}

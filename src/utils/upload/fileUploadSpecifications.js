@@ -1,6 +1,6 @@
 const fileUploadSpecifications = {
   '10X Chromium': {
-    acceptedFiles: [
+    acceptedFiles: new Set([
       'barcodes.tsv',
       'barcodes.tsv.gz',
       'features.tsv',
@@ -9,7 +9,7 @@ const fileUploadSpecifications = {
       'genes.tsv.gz',
       'matrix.mtx',
       'matrix.mtx.gz',
-    ],
+    ]),
     validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
     validExtensionTypes: ['.mtx'],
     inputInfo: [
