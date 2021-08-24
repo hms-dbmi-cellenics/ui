@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Skeleton, Empty, Typography,
 } from 'antd';
@@ -39,6 +39,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   const cellSets = useSelector((state) => state.cellSets);
   const { hierarchy, properties } = cellSets;
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
+  const louvainClustersResolutionRef = useRef(null);
+
   const {
     loading: loadingMarkerGenes,
     error: errorMarkerGenes,
@@ -62,7 +64,9 @@ const MarkerHeatmap = ({ experimentId }) => {
   const selectedClustersAvailable = (node) => hierarchy.filter((cluster) => (
     cluster.key === node))[0]?.children.length;
   useEffect(() => {
-    if (louvainClustersResolution && config && hierarchy.length) {
+    if (louvainClustersResolution && config && hierarchy?.length
+      && louvainClustersResolutionRef.current !== louvainClustersResolution) {
+      louvainClustersResolutionRef.current = louvainClustersResolution;
       if (selectedClustersAvailable(config.selectedCellSet)) {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
