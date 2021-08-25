@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
+
 import {
   Form,
   Select,
@@ -14,7 +16,29 @@ const SelectData = (props) => {
   } = props;
   const { hierarchy, properties } = cellSets;
 
-  const handleChangeGrouping = (value) => {
+  const getDefaultCellSetNotIn = (rootNodeKey) => {
+    const fallBackRootNodesKeys = ['sample', 'louvain'];
+
+    const fallbackRootNodeKey = fallBackRootNodesKeys.filter((val) => val !== rootNodeKey)[0];
+    const fallBackCellSetId = _.find(
+      hierarchy,
+      (rootNode) => rootNode.key === fallbackRootNodeKey,
+    ).children[0].key;
+
+    return `${fallbackRootNodeKey}/${fallBackCellSetId}`;
+  };
+
+  const handleChangeRootNode = (value) => {
+    const rootNodeKey = config.selectedPoints.split('/')[0];
+    if (rootNodeKey === value) {
+      // This is to avoid having an invalid state like
+      // selectedCellSet: 'louvain' and selectedPoints: 'louvain/louvain-0'
+      const fallBackCellSetKey = getDefaultCellSetNotIn(value);
+      onUpdate({ selectedCellSet: value, selectedPoints: fallBackCellSetKey });
+
+      return;
+    }
+
     onUpdate({ selectedCellSet: value });
   };
   const handleChangePoints = (value) => {
@@ -23,12 +47,12 @@ const SelectData = (props) => {
 
   const tree = composeTree(hierarchy, properties);
 
-  const renderChildren = (rootKey, children) => {
+  const renderChildren = (rootNodeKey, children) => {
     if (!children || children.length === 0) { return (<></>); }
 
     const shouldDisable = (key) => key.startsWith(`${config.selectedCellSet}/`);
     return children.map(({ key, name }) => {
-      const uniqueKey = `${rootKey}/${key}`;
+      const uniqueKey = `${rootNodeKey}/${key}`;
       return (
         <Option value={uniqueKey} key={uniqueKey} disabled={shouldDisable(uniqueKey)}>
           {name}
@@ -48,7 +72,7 @@ const SelectData = (props) => {
           defaultValue={config.selectedCellSet}
           style={{ width: 200 }}
           onChange={(value) => {
-            handleChangeGrouping(value);
+            handleChangeRootNode(value);
           }}
         >
           {
@@ -66,7 +90,7 @@ const SelectData = (props) => {
       </div>
       <Form.Item>
         <Select
-          defaultValue={config.selectedPoints}
+          value={config.selectedPoints}
           style={{ width: 200 }}
           onChange={(value) => {
             handleChangePoints(value);
