@@ -10,7 +10,7 @@ import {
   Button, Space, Menu, Dropdown,
 } from 'antd';
 import PropTypes from 'prop-types';
-
+import _ from 'lodash';
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
 
@@ -59,11 +59,11 @@ const HeatmapGroupBySettings = (props) => {
 
   const isInitialRenderRef = useRef(true);
   const [cellSetsOrder, setCellSetsOrder] = useState(getCellSetsOrder());
+  const previousGroupedKeys = () => cellSetsOrder.map((cellSet) => cellSet.key);
 
   useEffect(() => {
     if (isInitialRenderRef.current) {
       isInitialRenderRef.current = false;
-
       return;
     }
 
@@ -77,7 +77,12 @@ const HeatmapGroupBySettings = (props) => {
       }),
     );
   }, [cellSetsOrder]);
-
+  useEffect(() => {
+    if (!_.isEqual(previousGroupedKeys(), groupedTracksKeys)) {
+      const newOrder = getCellSetsOrder();
+      setCellSetsOrder(newOrder);
+    }
+  }, [groupedTracksKeys]);
   const indexOfCellSet = (cellSet) => cellSetsOrder.findIndex((elem) => (elem.key === cellSet.key));
 
   // This is so that a click on + or - buttons doesn't close the menu
@@ -87,11 +92,12 @@ const HeatmapGroupBySettings = (props) => {
     <Menu>
       {
         getCellSets(['cellSets', 'metadataCategorical'])
-          .map((cellSet) => {
+          .map((cellSet, indx) => {
             const positionInCellSetOrder = indexOfCellSet(cellSet);
 
             return (
-              <Menu.Item key={cellSet} size='small'>
+              // eslint-disable-next-line react/no-array-index-key
+              <Menu.Item key={indx} size='small'>
                 <div onClick={stopPropagationEvent} onKeyDown={stopPropagationEvent}>
                   <Button
                     shape='square'
@@ -107,7 +113,6 @@ const HeatmapGroupBySettings = (props) => {
                         // If the cell is not included in the cellSet, we have to add it
                         newCellSetsOrder.push(cellSet);
                       }
-
                       setCellSetsOrder(newCellSetsOrder);
                     }}
                   />
