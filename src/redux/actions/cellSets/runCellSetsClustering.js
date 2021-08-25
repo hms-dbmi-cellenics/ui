@@ -2,8 +2,7 @@ import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from '../../actionTypes/cellSets';
 import sendWork from '../../../utils/sendWork';
-
-const REQUEST_TIMEOUT = 5 * 60;
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
@@ -35,8 +34,10 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
     type: CELL_SETS_CLUSTERING_UPDATING,
   });
 
+  const timeout = getTimeoutForWorkerTask(getState(), 'ClusterCells');
+
   try {
-    await sendWork(experimentId, REQUEST_TIMEOUT, body, status);
+    await sendWork(experimentId, timeout, body, status);
   } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,

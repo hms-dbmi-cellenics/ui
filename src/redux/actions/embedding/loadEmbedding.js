@@ -1,5 +1,6 @@
 import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from '../../actionTypes/embeddings';
 import { fetchCachedWork } from '../../../utils/cacheRequest';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadEmbedding = (
   experimentId,
@@ -43,9 +44,11 @@ const loadEmbedding = (
     config: methodSettings[embeddingType],
   };
 
+  const timeout = getTimeoutForWorkerTask(getState(), 'GetEmbedding', { embeddingType });
+
   try {
     const data = await fetchCachedWork(
-      experimentId, body, status, { timeout: 5 * 60 },
+      experimentId, body, status, { timeout },
     );
     return dispatch({
       type: EMBEDDINGS_LOADED,
