@@ -46,9 +46,9 @@ const HeatmapPlot = (props) => {
   const hoverCoordinates = useRef({});
 
   const cellSets = useSelector((state) => state.cellSets);
-  const {
-    hierarchy, loading: cellSetsLoading,
-  } = cellSets;
+  const cellSetsHierarchy = useSelector((state) => state.cellSets.hierarchy);
+  const cellSetsLoading = useSelector((state) => state.cellSets.loading);
+  const cellSetsHidden = useSelector((state) => state.cellSets.hidden);
 
   const heatmapSettings = useSelector(
     (state) => state.componentConfig[COMPONENT_TYPE]?.config,
@@ -101,7 +101,7 @@ const HeatmapPlot = (props) => {
   }, [selectedGenes, loadingGenes, markerGenesLoading]);
 
   useEffect(() => {
-    if (cellSetsLoading || hierarchy.length === 0) {
+    if (cellSetsLoading || cellSetsHierarchy.length === 0) {
       return;
     }
 
@@ -128,6 +128,7 @@ const HeatmapPlot = (props) => {
     maxCells,
     markerGenesLoading,
     cellSetsLoading,
+    cellSetsHidden,
   ]);
 
   useEffect(() => {
