@@ -1,15 +1,19 @@
+/* eslint-disable import/no-unresolved */
 import React, { useEffect } from 'react';
 import _ from 'lodash';
 import {
   Menu, Tooltip, Dropdown, Button,
 } from 'antd';
+
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { saveAs } from 'file-saver';
+import downloadTypes from 'utils/data-management/downloadTypes';
+import { getFromApiExpectOK } from 'utils/getDataExpectOK';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import endUserMessages from 'utils/endUserMessages';
 import pipelineStatus from '../../utils/pipelineStatusValues';
-import downloadData from '../../utils/data-management/downloadExperimentData';
-import downloadTypes from '../../utils/data-management/downloadTypes';
-import { exportQCParameters, filterQCParameters } from '../../utils/exportQCParameters';
+import { exportQCParameters, filterQCParameters } from '../../utils/data-management/exportQCParameters';
 import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
 
 const DownloadData = (props) => {
@@ -22,6 +26,7 @@ const DownloadData = (props) => {
   const backendStatus = useSelector((state) => state.backendStatus);
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
+  const experimentId = activeProject?.experiments[0];
 
   useEffect(() => {
     if (activeProject?.experiments?.length) {
@@ -29,23 +34,47 @@ const DownloadData = (props) => {
     }
   }, [activeProject]);
 
-  const pipelineHasRun = (experimentId) => (
+  const pipelineHasRun = () => (
     (backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED)
-    && activeProject?.experiments?.length
+    && experimentId
   );
-  const gem2sHasRun = (experimentId) => (
+  const gem2sHasRun = () => (
     (backendStatus[experimentId]?.status?.gem2s?.status === pipelineStatus.SUCCEEDED)
-   && activeProject?.experiments?.length
+   && experimentId
   );
 
   const allSamplesAnalysed = () => {
     // Returns true only if there is at least one sample in the currently active
     // project AND all samples in the project have been analysed.
+    if (!activeProject?.samples?.length) {
+      return false;
+    }
     const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
 
     return steps.length > 0
-      && activeProject?.samples?.length > 0
       && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
+  };
+
+  const downloadExperimentData = async (type) => {
+    try {
+      if (!experimentId) throw new Error('No experimentId specified');
+      if (!Object.values(downloadTypes).includes(type)) throw new Error('Invalid download type');
+
+      const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = signedUrl;
+
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+        link.parentNode.removeChild(link);
+      }, 0);
+    } catch (e) {
+      pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
+    }
   };
 
   return (
@@ -54,15 +83,14 @@ const DownloadData = (props) => {
         <Menu>
           <Menu.Item
             key='download-raw-seurat'
-            disabled={!gem2sHasRun(activeProject?.experiments[0])}
+            disabled={!gem2sHasRun()}
             onClick={() => {
-              const experimentId = activeProject?.experiments[0];
-              downloadData(experimentId, downloadTypes.RAW_SEURAT_OBJECT);
+              downloadExperimentData(downloadTypes.RAW_SEURAT_OBJECT);
             }}
           >
             <Tooltip
               title={
-                gem2sHasRun(activeProject?.experiments[0])
+                gem2sHasRun()
                   ? 'Samples have been merged'
                   : 'Launch analysis to merge samples'
               }
@@ -74,12 +102,11 @@ const DownloadData = (props) => {
           <Menu.Item
             key='download-processed-seurat'
             disabled={
-              !pipelineHasRun(activeProject?.experiments[0])
+              !pipelineHasRun()
             }
             onClick={() => {
               // Change if we have more than one experiment per project
-              const experimentId = activeProject?.experiments[0];
-              downloadData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT);
+              downloadExperimentData(downloadTypes.PROCESSED_SEURAT_OBJECT);
             }}
           >
             <Tooltip

@@ -10,7 +10,7 @@ import {
 
 const { Title, Text, Paragraph } = Typography;
 
-const Header = (props) => {
+const ProjectMenu = (props) => {
   const {
     activeProjectUuid, createMetadataColumn, isAddingMetadata, canLaunchAnalysis,
     setUploadModalVisible, openAnalysisModal,
@@ -24,7 +24,7 @@ const Header = (props) => {
   return (
     <>
       <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Title level={3}>{activeProject.name}</Title>
+        <Title level={3}>{activeProject?.name}</Title>
         <Space>
           <Button
             disabled={projects.ids.length === 0}
@@ -81,7 +81,7 @@ const Header = (props) => {
     </>
   );
 };
-Header.propTypes = {
+ProjectMenu.propTypes = {
   activeProjectUuid: PropTypes.string.isRequired,
   createMetadataColumn: PropTypes.func.isRequired,
   isAddingMetadata: PropTypes.bool.isRequired,
@@ -89,4 +89,4 @@ Header.propTypes = {
   setUploadModalVisible: PropTypes.func.isRequired,
   openAnalysisModal: PropTypes.func.isRequired,
 };
-export default Header;
+export default ProjectMenu;

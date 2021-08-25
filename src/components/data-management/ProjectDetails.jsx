@@ -47,7 +47,7 @@ import fileUploadSpecifications from '../../utils/upload/fileUploadSpecification
 
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
-import Header from './Header';
+import ProjectMenu from './ProjectMenu';
 
 const { Text } = Typography;
 
@@ -65,8 +65,6 @@ const ProjectDetails = ({ width, height }) => {
     getFromUrlExpectOK,
   );
   const experiments = useSelector((state) => state.experiments);
-  const backendStatus = useSelector((state) => state.backendStatus);
-
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -321,9 +319,9 @@ const ProjectDetails = ({ width, height }) => {
       ),
       width: 200,
     };
-
     setTableColumns([...tableColumns, metadataColumn]);
   };
+
   const deleteMetadataColumn = (name) => {
     setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
@@ -544,7 +542,7 @@ const ProjectDetails = ({ width, height }) => {
       />
       <div id='project-details' width={width} height={height}>
         <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
-          <Header
+          <ProjectMenu
             activeProjectUuid={activeProjectUuid}
             createMetadataColumn={createMetadataColumn}
             isAddingMetadata={isAddingMetadata}
