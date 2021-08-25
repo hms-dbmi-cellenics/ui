@@ -111,6 +111,7 @@ const HeatmapPlot = (props) => {
 
   useEffect(() => {
     if (!selectedGenes?.length > 0
+      || cellSetsHierarchy.length === 0
       || _.isEqual(currentHeatmapSettings, heatmapSettings)
     ) {
       return;
@@ -162,13 +163,7 @@ const HeatmapPlot = (props) => {
 
     const { cellId: cellName } = args[1].datum;
 
-    dispatch(
-      updateCellInfo(
-        {
-          cellName,
-        },
-      ),
-    );
+    dispatch(updateCellInfo({ cellName }));
   };
 
   if (markerGenesLoadingError) {
@@ -193,7 +188,11 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (isHeatmapGenesLoading) {
+  if (
+    isHeatmapGenesLoading
+    || cellSetsLoading
+    || cellSetsHierarchy.length === 0
+  ) {
     return (
       <center>
         <Loader experimentId={experimentId} />
