@@ -19,7 +19,7 @@ import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
 
 jest.mock('localforage');
 jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
-jest.mock('../../../../utils/getDataExpectOk');
+jest.mock('../../../../utils/getDataExpectOK');
 
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
 enableFetchMocks();
@@ -256,7 +256,7 @@ describe('HeatmapPlot', () => {
     expect(component.find(Empty).length).toEqual(1);
   });
 
-  it('Shows loader if cell sets is empty', () => {
+  it('Shows Empty if cell sets is empty', () => {
     const store = mockStore({
       ...initialState,
       cellSets: {
@@ -275,7 +275,6 @@ describe('HeatmapPlot', () => {
     );
 
     expect(component.find('VegaHeatmap').length).toEqual(0);
-
     expect(component.find(Empty).length).toEqual(1);
   });
 
