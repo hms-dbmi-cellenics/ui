@@ -52,7 +52,7 @@ const loadDifferentialExpression = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, body, status, { extras: pagination },
+      experimentId, body, status, { timeout: 180, extras: pagination },
     );
 
     let { total } = data;
