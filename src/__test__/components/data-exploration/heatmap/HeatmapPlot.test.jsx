@@ -264,7 +264,7 @@ describe('HeatmapPlot', () => {
         hierarchy: [],
         properties: [],
         loading: false,
-        error: false,
+        error: true,
       },
     });
 
