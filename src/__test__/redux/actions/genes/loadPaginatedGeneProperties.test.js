@@ -12,9 +12,10 @@ import {
 } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/seekFromAPI', () => ({
+jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  default: jest.fn(),
+  seekFromAPI: jest.fn(),
+  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
 }));
 
 const mockStore = configureStore([thunk]);

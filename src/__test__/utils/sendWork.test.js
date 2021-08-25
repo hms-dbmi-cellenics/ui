@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import seekFromAPI from '../../utils/work/seekWorkResponse';
+import { seekFromAPI } from '../../utils/work/seekWorkResponse';
 
 /**
  * jest.mock calls are automatically hoisted to the top of the javascript
@@ -29,6 +29,19 @@ jest.mock('../../utils/socketConnection', () => {
   };
 });
 
+jest.mock('aws-amplify', () => ({
+  configure: jest.fn().mockImplementation(() => ({
+    Storage: {
+      AWSS3: {
+        bucket: 'biomage-originals-test',
+      },
+    },
+  })),
+  Storage: {
+    get: jest.fn().mockImplementation(async () => 'http://clearly-invalid-url'),
+  },
+}));
+
 describe('seekFromAPI unit tests', () => {
   const experimentId = '1234';
   const timeout = 30;
@@ -45,11 +58,10 @@ describe('seekFromAPI unit tests', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResolvedValue(
-      new Response(JSON.stringify({ worker: { started: true, ready: true } })),
+      new Response('Mock S3 cache miss', { status: 404, statusText: 'Not Found' }),
     );
 
     socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
-      console.error('hello, mockOn called!!');
       f({
         results: [
           {
@@ -65,11 +77,11 @@ describe('seekFromAPI unit tests', () => {
 
   it('Sends work to the backend when called and returns valid response.', async () => {
     const response = await seekFromAPI(
-      experimentId, timeout, body,
+      experimentId, body, timeout, 'badbeef',
     );
 
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
-      uuid: 'my-random-uuid',
+      ETag: 'badbeef',
       socketId: '5678',
       experimentId: '1234',
       timeout: '4022-01-01T00:00:30.000Z',
@@ -99,11 +111,11 @@ describe('seekFromAPI unit tests', () => {
       });
     });
 
-    expect(seekFromAPI(experimentId, timeout, body)).rejects.toEqual(new Error('The backend returned an error'));
+    expect(seekFromAPI(experimentId, body, timeout, 'deadbeef')).rejects.toEqual(new Error('The backend returned an error'));
     await flushPromises();
 
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
-      uuid: 'my-random-uuid',
+      ETag: 'deadbeef',
       socketId: '5678',
       experimentId: '1234',
       timeout: '4022-01-01T00:00:30.000Z',
