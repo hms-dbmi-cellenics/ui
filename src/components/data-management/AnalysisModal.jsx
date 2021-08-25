@@ -31,9 +31,6 @@ const NewExperimentModal = (props) => {
   const [numFieldsEditing, setNumFieldsEditing] = useState(0);
   const [isWorking, setIsWorking] = useState(false);
 
-  console.log('== EXPERIMENTS');
-  console.log('== EXPERIMENTS');
-
   useEffect(() => {
     setExperimentsList(
       activeProject?.experiments?.map((experimentId) => experiments[experimentId]) || [],
@@ -72,10 +69,9 @@ const NewExperimentModal = (props) => {
                 <List.Item
                   key={`${experiment.id}`}
                   extra={(
-                    <Row type='flex' align='middle'>
+                    <Row type='flex' align='middle' data-test-class='launch-analysis-item'>
                       <Col>
                         <Button
-                          data-test-id={`launch-analysis-${experiment.id}`}
                           type='primary'
                           onClick={() => {
                             setIsWorking(true);

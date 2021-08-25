@@ -510,12 +510,18 @@ const ProjectDetails = ({ width, height }) => {
       return Object.values(sample.metadata).every((value) => value && value.length > 0);
     };
 
-    const canLaunch = activeProject?.samples?.every((sampleUuid) => {
+    const allExperimentDataForAProjectIsLoaded = (project) => !(project?.experiments.length > 0)
+        || project?.experiments.every((experimentId) => experiments.ids.includes(experimentId));
+
+    let canLaunch = activeProject?.samples?.every((sampleUuid) => {
       const checkedSample = samples[sampleUuid];
 
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });
+
+    canLaunch = canLaunch && allExperimentDataForAProjectIsLoaded(activeProject);
+
     setCanLaunchAnalysis(canLaunch);
   };
 
@@ -558,9 +564,12 @@ const ProjectDetails = ({ width, height }) => {
         ...samples[sampleUuid].metadata,
       };
     });
-    checkLaunchAnalysis();
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
+
+  useEffect(() => {
+    checkLaunchAnalysis();
+  }, [projects, samples, activeProjectUuid, experiments]);
 
   const changeDescription = (description) => {
     dispatch(updateProject(activeProjectUuid, { description }));

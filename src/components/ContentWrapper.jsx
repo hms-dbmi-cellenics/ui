@@ -308,7 +308,6 @@ const ContentWrapper = (props) => {
 
     return (
       <Menu.Item
-        data-test-id={`navigation-menu-${name}`}
         id={path}
         disabled={noExperimentDisable || pipelineStatusDisable}
         key={path}
@@ -355,6 +354,7 @@ const ContentWrapper = (props) => {
           {!collapsed && <BigLogo />}
           {collapsed && <SmallLogo />}
           <Menu
+            data-test-id='navigation-menu'
             theme='dark'
             selectedKeys={
               menuLinks
