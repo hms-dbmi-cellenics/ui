@@ -25,7 +25,7 @@ const ProjectMenu = (props) => {
     dispatch(updateProject(activeProjectUuid, { description }));
   };
 
-  const checkLaunchAnalysis = () => {
+  const canLaunchAnalysis = () => {
     if (activeProject?.samples?.length === 0 || projects.ids.length === 0) return false;
 
     const allSampleFilesUploaded = (sample) => {
@@ -84,7 +84,7 @@ const ProjectMenu = (props) => {
           />
           <Button
             type='primary'
-            disabled={!checkLaunchAnalysis()}
+            disabled={!canLaunchAnalysis()}
             onClick={() => openAnalysisModal()}
           >
             Launch analysis
