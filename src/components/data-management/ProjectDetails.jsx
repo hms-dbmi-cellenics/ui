@@ -41,10 +41,7 @@ import {
 import { processUpload } from '../../utils/upload/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
-
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
-import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
-
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 import ProjectMenu from './ProjectMenu';
@@ -72,7 +69,6 @@ const ProjectDetails = ({ width, height }) => {
   const [tableColumns, setTableColumns] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const [sampleNames, setSampleNames] = useState(new Set());
-  const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
   const metadataNameValidation = [
@@ -105,7 +101,6 @@ const ProjectDetails = ({ width, height }) => {
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
       setTableColumns([...columns, ...metadataColumns]);
-      checkLaunchAnalysis();
     } else {
       setTableColumns([]);
       setSampleNames(new Set());
@@ -471,43 +466,9 @@ const ProjectDetails = ({ width, height }) => {
     },
   ];
 
-  const checkLaunchAnalysis = () => {
-    if (activeProject?.samples?.length === 0) return false;
-
-    const allSampleFilesUploaded = (sample) => {
-      // Check if all files for a given tech has been uploaded
-      const fileNamesArray = Array.from(sample.fileNames);
-
-      if (
-        fileUploadSpecifications[sample.type].requiredFiles.every(
-          (file) => !fileNamesArray.includes(file),
-        )
-      ) { return false; }
-      return fileNamesArray.every((fileName) => {
-        const checkedFile = sample.files[fileName];
-        return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
-      });
-    };
-
-    const allSampleMetadataInserted = (sample) => {
-      if (activeProject?.metadataKeys.length === 0) return true;
-      if (Object.keys(sample.metadata).length !== activeProject.metadataKeys.length) return false;
-      return Object.values(sample.metadata).every((value) => value && value.length > 0);
-    };
-
-    const canLaunch = activeProject?.samples?.every((sampleUuid) => {
-      const checkedSample = samples[sampleUuid];
-      return allSampleFilesUploaded(checkedSample)
-        && allSampleMetadataInserted(checkedSample);
-    });
-    setCanLaunchAnalysis(canLaunch);
-  };
-
   const openAnalysisModal = () => {
-    if (canLaunchAnalysis) {
-      // Change the line below when multiple experiments in a project is supported
-      setAnalysisModalVisible(true);
-    }
+    // Change the line below when multiple experiments in a project is supported
+    setAnalysisModalVisible(true);
   };
 
   const launchAnalysis = (experimentId) => {
@@ -546,7 +507,6 @@ const ProjectDetails = ({ width, height }) => {
             activeProjectUuid={activeProjectUuid}
             createMetadataColumn={createMetadataColumn}
             isAddingMetadata={isAddingMetadata}
-            canLaunchAnalysis={canLaunchAnalysis}
             setUploadModalVisible={setUploadModalVisible}
             openAnalysisModal={openAnalysisModal}
           />

@@ -26,21 +26,24 @@ const DownloadData = (props) => {
   const backendStatus = useSelector((state) => state.backendStatus);
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
+
+  // Change if we have more than one experiment per project
   const experimentId = activeProject?.experiments[0];
 
   useEffect(() => {
-    if (activeProject?.experiments?.length) {
-      dispatch(loadBackendStatus(activeProject?.experiments[0]));
+    if (experimentId) {
+      dispatch(loadBackendStatus(experimentId));
     }
   }, [activeProject]);
 
   const pipelineHasRun = () => (
-    (backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED)
-    && experimentId
+    experimentId
+    && (backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED)
+
   );
   const gem2sHasRun = () => (
-    (backendStatus[experimentId]?.status?.gem2s?.status === pipelineStatus.SUCCEEDED)
-   && experimentId
+    experimentId
+    && (backendStatus[experimentId]?.status?.gem2s?.status === pipelineStatus.SUCCEEDED)
   );
 
   const allSamplesAnalysed = () => {
@@ -52,6 +55,7 @@ const DownloadData = (props) => {
     const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
 
     return steps.length > 0
+      // eslint-disable-next-line no-prototype-builtins
       && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
   };
 
