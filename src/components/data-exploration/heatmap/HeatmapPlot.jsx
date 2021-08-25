@@ -134,7 +134,7 @@ const HeatmapPlot = (props) => {
 
   useEffect(() => {
     if (louvainClustersResolution
-      && !_.isEqual(louvainClustersResolutionRef.current, louvainClustersResolutionRef)
+      && !_.isEqual(louvainClustersResolutionRef.current, louvainClustersResolution)
     ) {
       louvainClustersResolutionRef.current = louvainClustersResolution;
       dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
