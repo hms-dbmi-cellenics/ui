@@ -86,7 +86,6 @@ const ReorderableList = (props) => {
       {rightItem(itemData, i)}
     </div>
   );
-
   return (
     <Space direction='vertical'>
       {reorderableList.map((itemData, i) => (
