@@ -13,14 +13,18 @@ import { MARKER_GENES_LOADING } from '../../../../redux/actionTypes/genes';
 // eslint-disable-next-line import/no-named-as-default
 import HeatmapPlot from '../../../../components/data-exploration/heatmap/HeatmapPlot';
 import VegaHeatmap from '../../../../components/data-exploration/heatmap/VegaHeatmap';
+import { getFromApiExpectOK } from '../../../../utils/getDataExpectOK';
 
 import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
 
 jest.mock('localforage');
 jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
+jest.mock('../../../../utils/getDataExpectOk');
 
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
 enableFetchMocks();
+
+getFromApiExpectOK.mockImplementation(() => ({ worker: { started: true, ready: true } }));
 
 const mockStore = configureStore([thunk]);
 configure({ adapter: new Adapter() });
@@ -250,6 +254,32 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
     expect(component.find(Empty).length).toEqual(1);
+  });
+
+  it('Shows loader if cell sets is empty', () => {
+    const store = mockStore({
+      ...initialState,
+      cellSets: {
+        ...initialState.cellSets,
+        hierarchy: [],
+        properties: [],
+        loading: false,
+        error: false,
+      },
+    });
+
+    component = mount(
+      <Provider store={store}>
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
+      </Provider>,
+    );
+
+    expect(component.find('VegaHeatmap').length).toEqual(0);
+
+    console.log(component.debug());
+
+    // 2 Because the Loader component contains ClipLoader, which contains a Loader
+    expect(component.find('Loader').length).toEqual(2);
   });
 
   it('dispatches loadCellSets action when no cell sets are in the store', () => {
