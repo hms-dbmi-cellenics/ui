@@ -31,9 +31,12 @@ const NewExperimentModal = (props) => {
   const [numFieldsEditing, setNumFieldsEditing] = useState(0);
   const [isWorking, setIsWorking] = useState(false);
 
+  console.log('== EXPERIMENTS');
+  console.log('== EXPERIMENTS');
+
   useEffect(() => {
     setExperimentsList(
-      activeProject?.experiments?.map((experimentId) => experiments[experimentId]),
+      activeProject?.experiments?.map((experimentId) => experiments[experimentId]) || [],
     );
   }, [activeProject, experiments]);
   useEffect(() => {
@@ -64,6 +67,7 @@ const NewExperimentModal = (props) => {
               bordered
               dataSource={experimentsList}
               itemLayout='vertical'
+              loading={experimentsList?.length === 0}
               renderItem={(experiment) => (
                 <List.Item
                   key={`${experiment.id}`}
