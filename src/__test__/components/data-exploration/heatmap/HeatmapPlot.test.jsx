@@ -264,7 +264,7 @@ describe('HeatmapPlot', () => {
         hierarchy: [],
         properties: [],
         loading: false,
-        error: true,
+        error: false,
       },
     });
 
@@ -276,8 +276,7 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('VegaHeatmap').length).toEqual(0);
 
-    // 2 Because the Loader component contains ClipLoader, which contains a Loader
-    expect(component.find('Loader').length).toEqual(2);
+    expect(component.find(Empty).length).toEqual(1);
   });
 
   it('dispatches loadCellSets action when no cell sets are in the store', () => {

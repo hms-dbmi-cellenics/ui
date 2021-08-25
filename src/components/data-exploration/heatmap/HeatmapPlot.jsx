@@ -191,7 +191,6 @@ const HeatmapPlot = (props) => {
   if (
     isHeatmapGenesLoading
     || cellSetsLoading
-    || cellSetsHierarchy.length === 0
   ) {
     return (
       <center>
@@ -200,15 +199,21 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  const signalListeners = {
-    mouseOver: handleMouseOver,
-  };
-
   if (!selectedGenes || selectedGenes.length === 0) {
     return (
       <Empty
         description={(
           <Text>Add some genes to this heatmap to get started.</Text>
+        )}
+      />
+    );
+  }
+
+  if (cellSetsHierarchy.length === 0) {
+    return (
+      <Empty
+        description={(
+          <Text>Configure your embedding in Data Processing to load this plot.</Text>
         )}
       />
     );
@@ -221,6 +226,10 @@ const HeatmapPlot = (props) => {
       </center>
     );
   }
+
+  const signalListeners = {
+    mouseOver: handleMouseOver,
+  };
 
   return (
     <div>
