@@ -5,7 +5,7 @@ import {
 import { fetchCachedWork } from '../../../utils/cacheRequest';
 
 const loadMarkerGenes = (
-  experimentId, resolution, plotUuid, numGenes = 5,
+  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSets = false,
 ) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
@@ -14,7 +14,8 @@ const loadMarkerGenes = (
   const { backendStatus, experimentSettings } = getState();
   const { processing } = experimentSettings;
   const { status } = backendStatus[experimentId];
-
+  const { hierarchy } = getState().cellSets || [];
+  const clusters = hierarchy?.filter((node) => node.key === selectedCellSets)[0]?.children;
   const { method } = processing.configureEmbedding.clusteringSettings;
   const body = {
     name: 'MarkerHeatmap',
@@ -23,6 +24,8 @@ const loadMarkerGenes = (
     config: {
       resolution,
     },
+    typeOfSets: selectedCellSets || 'louvain',
+    clusters,
   };
 
   dispatch({
