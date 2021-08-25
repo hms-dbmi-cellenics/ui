@@ -24,9 +24,11 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
     case 'ListGenes':
     case 'GeneExpression':
     case 'GetMitochondrialContent':
-    case 'GetDoubletScore':
-    default: {
+    case 'GetDoubletScore': {
       return 60;
+    }
+    default: {
+      throw new Error('Task doesn\'t exist');
     }
   }
 };
