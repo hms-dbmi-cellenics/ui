@@ -276,8 +276,6 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('VegaHeatmap').length).toEqual(0);
 
-    console.log(component.debug());
-
     // 2 Because the Loader component contains ClipLoader, which contains a Loader
     expect(component.find('Loader').length).toEqual(2);
   });
