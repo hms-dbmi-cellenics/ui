@@ -34,7 +34,17 @@ const loadMarkerGenes = (
 
   try {
     const data = await fetchCachedWork(experimentId, body, status, { timeout: 5 * 60 });
+
+    console.log('dataDebug');
+    console.log(data);
+
     const { data: markerGeneExpressions, order } = data;
+
+    console.log('markerGeneExpressionsDebug');
+    console.log(markerGeneExpressions);
+
+    console.log('orderDebug');
+    console.log(order);
 
     dispatch({
       type: MARKER_GENES_LOADED,

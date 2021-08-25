@@ -24,7 +24,14 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   const authJWT = await getAuthJWT();
 
   const isOnlyForThisClient = !tasksForAllClients.includes(body.name);
+
+  console.log('isOnlyForThisClientDebug1');
+  console.log(isOnlyForThisClient);
+
   const socketId = isOnlyForThisClient ? io.id : 'broadcast';
+
+  console.log('isOnlyForThisClientDebug2');
+  console.log(isOnlyForThisClient);
 
   const request = {
     uuid: requestUuid,
@@ -43,11 +50,24 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
   // so we don't need to listen for it
   if (!isOnlyForThisClient) { return; }
 
+  console.log('Begun listening for task response for this request');
+  console.log(request);
+
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${requestUuid}`, (res) => {
+      console.log('GotResponse');
+
+      console.log('resDebug');
+      console.log(res);
+
       const { response: { error } } = res;
 
       if (error) {
+        console.log('error');
+
+        console.log('requestErrorDebug');
+        console.log(request);
+
         return reject(new WorkResponseError(error, request));
       }
 
@@ -57,6 +77,11 @@ const sendWork = async (experimentId, timeout, body, requestProps = {}) => {
 
   const timeoutPromise = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
+      console.log('timedout');
+
+      console.log('requestTimeoutDebug');
+      console.log(request);
+
       clearTimeout(id);
       reject(new WorkTimeoutError(timeoutDate, request));
     }, adjustedTimeout * 1000);

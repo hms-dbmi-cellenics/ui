@@ -111,8 +111,18 @@ const fetchCachedWork = async (
     },
   );
 
+  console.log('responseDebug');
+  console.log(response);
+
   const responseData = JSON.parse(response.results[0].body);
+
+  console.log('responseDataDebug');
+  console.log(responseData);
+
   await cache.set(key, responseData);
+
+  console.log('FINISHED SETTING IN CACHE');
+
   return responseData;
 };
 
