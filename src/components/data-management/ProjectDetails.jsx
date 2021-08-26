@@ -1,12 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Typography, Space, Tooltip, Button, Input, Progress,
+  Typography, Space,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  UploadOutlined,
   MenuOutlined,
 } from '@ant-design/icons';
 import { sortableHandle } from 'react-sortable-hoc';
@@ -15,21 +14,19 @@ import useSWR from 'swr';
 import moment from 'moment';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
-import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
-import MetadataPopover from './MetadataPopover';
 import SamplesTable from './SamplesTable';
-import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
+import { UploadCell, EditableFieldCell, SampleCells } from './SamplesTableCells';
+import { TemporalMetadataColumn, InitializedMetadataColumn } from './MetadataColumns';
 
+import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
-  deleteSamples, updateSample,
+  updateSample,
 } from '../../redux/actions/samples';
 import {
   updateProject,
-  createMetadataTrack,
-  updateMetadataTrack,
   deleteMetadataTrack,
 } from '../../redux/actions/projects';
 
@@ -39,9 +36,8 @@ import {
 } from '../../redux/actions/experiments';
 
 import { processUpload } from '../../utils/upload/processUpload';
-import validateInputs, { rules } from '../../utils/validateInputs';
+import validateInputs from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
-import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 import ProjectMenu from './ProjectMenu';
@@ -70,13 +66,6 @@ const ProjectDetails = ({ width, height }) => {
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const [sampleNames, setSampleNames] = useState(new Set());
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
-
-  const metadataNameValidation = [
-    rules.MIN_1_CHAR,
-    rules.ALPHANUM_SPACE,
-    rules.START_WITH_ALPHABET,
-    rules.UNIQUE_NAME_CASE_INSENSITIVE,
-  ];
 
   const validationParams = {
     existingNames: sampleNames,
@@ -135,152 +124,10 @@ const ProjectDetails = ({ width, height }) => {
 
     setSortedSpeciesData(d);
   }, [speciesData]);
-
-  const renderUploadCell = (columnId, tableCellData) => {
-    const {
-      sampleUuid,
-      file,
-    } = tableCellData;
-    const { progress = null, status = null } = file?.upload ?? {};
-    const showDetails = () => {
-      uploadDetailsModalDataRef.current = {
-        sampleUuid,
-        fileCategory: columnId,
-        file,
-      };
-      setUploadDetailsModalVisible(true);
-    };
-
-    if (status === UploadStatus.UPLOADED) {
-      return (
-        <div
-          className='hoverSelectCursor'
-          style={{
-            whiteSpace: 'nowrap',
-            height: '35px',
-            minWidth: '90px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Space
-            onClick={showDetails}
-            onKeyDown={showDetails}
-          >
-            <Text type='success'>{messageForStatus(status)}</Text>
-          </Space>
-        </div>
-      );
-    }
-
-    if (
-      [
-        UploadStatus.UPLOADING,
-        UploadStatus.COMPRESSING,
-      ].includes(status)
-    ) {
-      return (
-        <div style={{
-          whiteSpace: 'nowrap',
-          height: '35px',
-          minWidth: '90px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
-          <Space direction='vertical' size={[1, 1]}>
-            <Text type='warning'>{`${messageForStatus(status)}`}</Text>
-            {progress ? (<Progress percent={progress} size='small' />) : <div />}
-          </Space>
-        </div>
-      );
-    }
-
-    if (status === UploadStatus.UPLOAD_ERROR) {
-      return (
-        <div
-          className='hoverSelectCursor'
-          onClick={showDetails}
-          onKeyDown={showDetails}
-          style={{
-            whiteSpace: 'nowrap',
-            height: '35px',
-            minWidth: '90px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Space>
-            <Text type='danger'>{messageForStatus(status)}</Text>
-          </Space>
-        </div>
-      );
-    }
-    if (
-      [
-        UploadStatus.FILE_NOT_FOUND,
-        UploadStatus.FILE_READ_ABORTED,
-        UploadStatus.FILE_READ_ERROR,
-      ].includes(status)
-    ) {
-      return (
-        <div style={{
-          whiteSpace: 'nowrap',
-          height: '35px',
-          minWidth: '90px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
-          <Space>
-            <Text type='danger'>{messageForStatus(status)}</Text>
-            <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
-              <Button
-                size='large'
-                shape='link'
-                icon={<UploadOutlined />}
-                onClick={showDetails}
-              />
-            </Tooltip>
-          </Space>
-        </div>
-      );
-    }
+  const deleteMetadataColumn = (name) => {
+    setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
+    dispatch(deleteMetadataTrack(name, activeProjectUuid));
   };
-
-  const renderEditableFieldCell = (
-    initialText,
-    cellText,
-    record,
-    dataIndex,
-    rowIdx,
-    onAfterSubmit,
-  ) => (
-    <div key={`cell-${dataIndex}-${rowIdx}`} style={{ whiteSpace: 'nowrap' }}>
-      <Space>
-        <EditableField
-          deleteEnabled={false}
-          value={cellText || initialText}
-          onAfterSubmit={(value) => onAfterSubmit(value, cellText, record, dataIndex, rowIdx)}
-        />
-      </Space>
-    </div>
-  );
-
-  const renderSampleCells = (text, record, idx) => (
-    <Text strong key={`sample-cell-${idx}`}>
-      <EditableField
-        deleteEnabled
-        value={text}
-        onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
-        onDelete={() => dispatch(deleteSamples([record.uuid]))}
-      />
-    </Text>
-  );
 
   const createMetadataColumn = () => {
     setIsAddingMetadata(true);
@@ -290,36 +137,18 @@ const ProjectDetails = ({ width, height }) => {
       key,
       fixed: 'right',
       title: () => (
-        <MetadataPopover
+        <TemporalMetadataColumn
           existingMetadata={activeProject.metadataKeys}
-          onCreate={(name) => {
-            const newMetadataColumn = createInitializedMetadataColumn(name);
-
-            setTableColumns([...tableColumns, newMetadataColumn]);
-            dispatch(createMetadataTrack(name, activeProjectUuid));
-
-            setIsAddingMetadata(false);
-          }}
-          onCancel={() => {
-            deleteMetadataColumn(key);
-            setIsAddingMetadata(false);
-          }}
-          message='Provide new metadata track name'
-          visible
-        >
-          <Space>
-            New Metadata Track
-          </Space>
-        </MetadataPopover>
+          updateTableColumns={(newColumn) => setTableColumns([...tableColumns, newColumn])}
+          activeProjectUuid={activeProjectUuid}
+          setIsAddingMetadata={setIsAddingMetadata}
+          deleteMetadataColumn={() => deleteMetadataColumn(key)}
+          createInitializedMetadataColumn={(name) => createInitializedMetadataColumn(name)}
+        />
       ),
       width: 200,
     };
     setTableColumns([...tableColumns, metadataColumn]);
-  };
-
-  const deleteMetadataColumn = (name) => {
-    setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
-    dispatch(deleteMetadataTrack(name, activeProjectUuid));
   };
 
   const createUpdateObject = (value, metadataKey) => {
@@ -357,45 +186,55 @@ const ProjectDetails = ({ width, height }) => {
     const newMetadataColumn = {
       key,
       title: () => (
-        <Space>
-          <EditableField
-            deleteEnabled
-            onDelete={(e, currentName) => deleteMetadataColumn(currentName)}
-            onAfterSubmit={(newName) => dispatch(
-              updateMetadataTrack(name, newName, activeProjectUuid),
-            )}
-            value={name}
-            validationFunc={
-              (newName) => validateInputs(newName, metadataNameValidation, validationParams).isValid
-            }
-          />
-          <MetadataEditor
-            onReplaceEmpty={(value) => setCells(value, key, 'REPLACE_EMPTY')}
-            onReplaceAll={(value) => setCells(value, key, 'REPLACE_ALL')}
-            onClearAll={() => setCells(DEFAULT_NA, key, 'CLEAR_ALL')}
-            massEdit
-          >
-            <Input />
-          </MetadataEditor>
-        </Space>
+        <InitializedMetadataColumn
+          name={name}
+          validateInputs={
+            (newName, metadataNameValidation) => validateInputs(
+              newName, metadataNameValidation, validationParams,
+            ).isValid
+          }
+          setCells={setCells}
+          deleteMetadataColumn={deleteMetadataColumn}
+          key={key}
+          activeProjectUuid={activeProjectUuid}
+        />
       ),
       width: 200,
       dataIndex: key,
-      render: (cellValue, record, rowIdx) => renderEditableFieldCell(
-        DEFAULT_NA,
-        cellValue,
-        record,
-        key,
-        rowIdx,
-        (newValue) => {
-          dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
-        },
+      render: (cellValue, record, rowIdx) => (
+        <EditableFieldCell
+          initialText={DEFAULT_NA}
+          cellText={cellValue}
+          dataIndex={key}
+          rowIdx={rowIdx}
+          onAfterSubmit={(newValue) => {
+            dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
+          }}
+        />
       ),
     };
     return newMetadataColumn;
   };
 
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+
+  const renderUploadCell = (columnId, tableCellData) => {
+    const {
+      sampleUuid,
+      file,
+    } = tableCellData;
+    const showDetails = () => {
+      uploadDetailsModalDataRef.current = {
+        sampleUuid,
+        fileCategory: columnId,
+        file,
+      };
+      setUploadDetailsModalVisible(true);
+    };
+    return (
+      <UploadCell file={file} showDetails={() => showDetails('barcodes', tableCellData)} />
+    );
+  };
 
   const columns = [
     {
@@ -411,7 +250,7 @@ const ProjectDetails = ({ width, height }) => {
       title: 'Sample',
       dataIndex: 'name',
       fixed: true,
-      render: renderSampleCells,
+      render: (text, record, indx) => <SampleCells cellInfo={{ text, record, indx }} />,
     },
     {
       index: 2,
@@ -505,7 +344,7 @@ const ProjectDetails = ({ width, height }) => {
         <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
           <ProjectMenu
             activeProjectUuid={activeProjectUuid}
-            createMetadataColumn={createMetadataColumn}
+            createMetadataColumn={() => createMetadataColumn()}
             isAddingMetadata={isAddingMetadata}
             setUploadModalVisible={setUploadModalVisible}
             openAnalysisModal={openAnalysisModal}

@@ -55,7 +55,6 @@ const ProjectMenu = (props) => {
     });
     return canLaunch;
   };
-
   return (
     <>
       <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
