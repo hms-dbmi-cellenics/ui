@@ -45,7 +45,7 @@ const loadEmbedding = (
 
   try {
     const data = await fetchCachedWork(
-      experimentId, body, status,
+      experimentId, body, status, { timeout: 5 * 60 },
     );
     return dispatch({
       type: EMBEDDINGS_LOADED,

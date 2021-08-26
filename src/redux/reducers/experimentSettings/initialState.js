@@ -1,18 +1,21 @@
+const metaInitialState = {
+  loading: false,
+  completingStepError: false,
+  loadingSettingsError: false,
+  selectedConfigureEmbeddingPlot: 'cellCluster',
+  changedQCFilters: new Set(),
+};
+
 const initialState = {
   info: {
     experimentId: null,
     experimentName: null,
   },
   processing: {
-    meta: {
-      loading: false,
-      completingStepError: false,
-      loadingSettingsError: false,
-      selectedConfigureEmbeddingPlot: 'cellCluster',
-      changedQCFilters: new Set(),
-    },
+    meta: metaInitialState,
   },
   originalProcessing: {},
 };
 
+export { metaInitialState };
 export default initialState;

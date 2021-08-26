@@ -232,7 +232,7 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(defaultStore);
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
     store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene1', 'gene3', 'gene2'], plotUuid));
-    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(2));
+    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(4));
     expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene1', 'gene2', 'gene3']);
     expect(loadMarkersSpy).toHaveBeenCalledTimes(1);
   });
@@ -241,7 +241,7 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(defaultStore);
     await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
     store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene3'], plotUuid));
-    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(3));
+    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(4));
     expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene3']);
     expect(loadMarkersSpy).toHaveBeenCalledTimes(1);
   });

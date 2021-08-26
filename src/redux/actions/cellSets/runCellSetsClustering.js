@@ -3,7 +3,7 @@ import {
 } from '../../actionTypes/cellSets';
 import sendWork from '../../../utils/sendWork';
 
-const REQUEST_TIMEOUT = 30;
+const REQUEST_TIMEOUT = 5 * 60;
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {

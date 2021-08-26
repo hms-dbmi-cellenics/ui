@@ -63,7 +63,7 @@ const ProjectsListContainer = (props) => {
         {
           projects.ids.map((uuid) => (
             <Card
-              data-test-id={`project-card-${projects[uuid].name}`}
+              data-test-class='project-card'
               key={uuid}
               type='primary'
               style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}
