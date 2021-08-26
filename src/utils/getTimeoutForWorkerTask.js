@@ -12,7 +12,7 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
       if (method === 'umap') return 0.002 * nCells + 60;
       if (method === 'tsne') return 0.02 * nCells + 60;
 
-      break;
+      throw new Error('GetEmbedding method isn\'t specified');
     }
     case 'ClusterCells':
     case 'MarkerHeatmap': {
