@@ -3,10 +3,14 @@ import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { render, screen } from '@testing-library/react';
-
+import * as rtl from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { createStore, applyMiddleware } from 'redux';
+import _ from 'lodash';
+import { fireEvent } from '@testing-library/dom';
+import rootReducer from '../../../redux/reducers/index';
+import * as projectsMetadataCreate from '../../../redux/actions/projects/createMetadataTrack';
 import ProjectDetails from '../../../components/data-management/ProjectDetails';
-
 import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
 import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
@@ -14,7 +18,7 @@ import initialExperimentSettingsState from '../../../redux/reducers/experimentSe
 import UploadStatus from '../../../utils/upload/UploadStatus';
 
 const mockStore = configureStore([thunk]);
-
+const { render, screen } = rtl;
 const width = 600;
 const height = 400;
 
@@ -99,6 +103,11 @@ const withDataState = {
 };
 
 describe('ProjectDetails', () => {
+  let metadataCreated;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    metadataCreated = jest.spyOn(projectsMetadataCreate, 'default');
+  });
   it('Has a title, project ID and description', () => {
     render(
       <Provider store={mockStore(noDataState)}>
@@ -245,5 +254,35 @@ describe('ProjectDetails', () => {
 
     expect(screen.getByText(sample1Name)).toBeDefined();
     expect(screen.getByText(sample2Name)).toBeDefined();
+  });
+
+  it('Creates a metadata column', async () => {
+    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    render(
+      <Provider store={store}>
+        <ProjectDetails width={width} height={height} />
+      </Provider>,
+    );
+    const addMetadata = screen.getByText('Add metadata');
+    userEvent.click(addMetadata);
+    const field = screen.getByRole('textbox');
+    userEvent.type(field, 'myBrandNewMetadata');
+    fireEvent.keyDown(field, { key: 'Enter', code: 'Enter' });
+    await rtl.waitFor(() => expect(metadataCreated).toBeCalledTimes(1));
+  });
+
+  it('Cancels metadata creation', () => {
+    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    render(
+      <Provider store={store}>
+        <ProjectDetails width={width} height={height} />
+      </Provider>,
+    );
+    const addMetadata = screen.getByText('Add metadata');
+    userEvent.click(addMetadata);
+    const field = screen.getByRole('textbox');
+    userEvent.type(field, 'somenewMeta');
+    fireEvent.keyDown(field, { key: 'Escape', code: 'Escape' });
+    expect(store.getState().projects[projectUuid].metadataKeys).toEqual(['metadata-1']);
   });
 });

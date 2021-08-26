@@ -24,7 +24,6 @@ const createMetadataTrack = (
 
   const newProject = _.cloneDeep(project);
   newProject.metadataKeys.push(metadataKey);
-
   try {
     await dispatch(saveProject(projectUuid, newProject));
 

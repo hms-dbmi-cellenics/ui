@@ -25,7 +25,6 @@ const TemporalMetadataColumn = (props) => {
       existingMetadata={existingMetadata}
       onCreate={(name) => {
         const newMetadataColumn = createInitializedMetadataColumn(name);
-
         updateTableColumns(newMetadataColumn);
         dispatch(createMetadataTrack(name, activeProjectUuid));
 
