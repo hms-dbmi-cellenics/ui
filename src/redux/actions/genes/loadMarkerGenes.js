@@ -33,7 +33,7 @@ const loadMarkerGenes = (
   });
 
   try {
-    const data = await fetchCachedWork(experimentId, body, status);
+    const data = await fetchCachedWork(experimentId, body, status, { timeout: 5 * 60 });
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({
