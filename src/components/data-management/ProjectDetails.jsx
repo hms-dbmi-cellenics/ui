@@ -426,6 +426,7 @@ const ProjectDetails = ({ width, height }) => {
       render: () => <DragHandle />,
     },
     {
+      className: 'data-test-class-sample-cell',
       index: 1,
       key: 'sample',
       title: 'Sample',
