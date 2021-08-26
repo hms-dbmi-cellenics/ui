@@ -33,7 +33,7 @@ const NewExperimentModal = (props) => {
 
   useEffect(() => {
     setExperimentsList(
-      activeProject?.experiments?.map((experimentId) => experiments[experimentId]),
+      activeProject?.experiments?.map((experimentId) => experiments[experimentId]) || [],
     );
   }, [activeProject, experiments]);
   useEffect(() => {
@@ -64,11 +64,12 @@ const NewExperimentModal = (props) => {
               bordered
               dataSource={experimentsList}
               itemLayout='vertical'
+              loading={experimentsList?.length === 0}
               renderItem={(experiment) => (
                 <List.Item
                   key={`${experiment.id}`}
                   extra={(
-                    <Row type='flex' align='middle'>
+                    <Row type='flex' align='middle' data-test-class='launch-analysis-item'>
                       <Col>
                         <Button
                           type='primary'
