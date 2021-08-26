@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-
 import {
   Modal,
   Button,
@@ -16,6 +15,8 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
+import { getFromApiExpectOK } from 'utils/getDataExpectOK';
+import fetchApi from '../../utils/fetchAPI';
 import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import { bundleToFile } from '../../utils/upload/processUpload';
@@ -71,9 +72,31 @@ const FileUploadModal = (props) => {
     setFilesList(newArray);
   };
 
+  const downloadPublicDataset = async () => {
+    const { signedUrl } = await getFromApiExpectOK('/v1/downloadPublicDataset');
+    const link = document.createElement('a');
+    link.style.display = 'none';
+    link.href = signedUrl;
+
+    document.body.appendChild(link);
+    link.click();
+
+    setTimeout(() => {
+      URL.revokeObjectURL(link.href);
+      link.parentNode.removeChild(link);
+    }, 0);
+  };
+
   const renderHelpText = () => (
     <>
       <Col span={24} style={{ padding: '1rem' }}>
+        <Paragraph>
+          Don&apos;t have your own dataset?
+          {' '}
+          <a onClick={() => downloadPublicDataset()}>Download</a>
+          {' '}
+          a public dataset to explore the platform
+        </Paragraph>
         <Paragraph>
           For each sample, upload a folder containing the following
           {' '}
