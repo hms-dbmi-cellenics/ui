@@ -3,16 +3,16 @@ import getNumberOfCellsInGrouping from '../redux/getters/getNumberOfCellsInGroup
 const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
   // Get filtered nCells for more accurate timeout//
   // if louvain is not calculated (unlikely) get all nCells
-  const nCells = getNumberOfCellsInGrouping('louvain', state) || getNumberOfCellsInGrouping('sample', state);
+  const nCells = getNumberOfCellsInGrouping('louvain', state) ?? getNumberOfCellsInGrouping('sample', state);
 
   switch (taskName) {
     case 'GetEmbedding': {
-      const { method } = options;
+      const { type } = options;
 
-      if (method === 'umap') return 0.002 * nCells + 60;
-      if (method === 'tsne') return 0.02 * nCells + 60;
+      if (type === 'umap') return 0.002 * nCells + 60;
+      if (type === 'tsne') return 0.02 * nCells + 60;
 
-      throw new Error('GetEmbedding method isn\'t specified');
+      throw new Error('GetEmbedding type isn\'t specified');
     }
     case 'ClusterCells':
     case 'MarkerHeatmap': {

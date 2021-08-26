@@ -44,7 +44,7 @@ const loadEmbedding = (
     config: methodSettings[embeddingType],
   };
 
-  const timeout = getTimeoutForWorkerTask(getState(), 'GetEmbedding', { embeddingType });
+  const timeout = getTimeoutForWorkerTask(getState(), 'GetEmbedding', { type: embeddingType });
 
   try {
     const data = await fetchCachedWork(
