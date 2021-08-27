@@ -26,7 +26,7 @@ const inspectFile = async (file, technology) => {
     return Verdict.INVALID_NAME;
   }
 
-  // if name is valid, inspect first 16 bytes to validate format
+  // if name is valid, inspect first 10 bytes to validate format
   let data = await readFileToBuffer(file.slice(0, 10));
 
   const isGzipped = !data.slice(0, 2).compare(GZIP_SIGNATURE);
@@ -34,7 +34,7 @@ const inspectFile = async (file, technology) => {
   if (isGzipped) {
     // if gzipped, decompress a small chunk to further validate contents
     const gunzip = new Gunzip((chunk) => {
-      data = Buffer.from(chunk.slice(0, 16));
+      data = Buffer.from(chunk.slice(0, 10));
     });
     gunzip.push(await readFileToBuffer(file.slice(0, 128)));
   }
