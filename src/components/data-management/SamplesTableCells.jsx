@@ -145,7 +145,7 @@ EditableFieldCell.propTypes = {
   onAfterSubmit: PropTypes.func.isRequired,
 };
 
-const SampleCells = (props) => {
+const SampleNameCell = (props) => {
   const { cellInfo } = props;
   const { text, record, idx } = cellInfo;
   const dispatch = useDispatch();
@@ -160,7 +160,7 @@ const SampleCells = (props) => {
     </Text>
   );
 };
-SampleCells.propTypes = {
+SampleNameCell.propTypes = {
   cellInfo: PropTypes.object.isRequired,
 };
-export { UploadCell, EditableFieldCell, SampleCells };
+export { UploadCell, EditableFieldCell, SampleNameCell };

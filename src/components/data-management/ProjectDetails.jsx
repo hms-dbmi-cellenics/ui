@@ -18,9 +18,9 @@ import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import SamplesTable from './SamplesTable';
-import { UploadCell, EditableFieldCell, SampleCells } from './SamplesTableCells';
-import { TemporalMetadataColumn, InitializedMetadataColumn } from './MetadataColumns';
-
+import { UploadCell, EditableFieldCell, SampleNameCell } from './SamplesTableCells';
+import MetadataColumn from './MetadataColumn';
+import MetadataPopover from './MetadataPopover';
 import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   updateSample,
@@ -28,6 +28,7 @@ import {
 import {
   updateProject,
   deleteMetadataTrack,
+  createMetadataTrack,
 } from '../../redux/actions/projects';
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
@@ -137,14 +138,27 @@ const ProjectDetails = ({ width, height }) => {
       key,
       fixed: 'right',
       title: () => (
-        <TemporalMetadataColumn
+        <MetadataPopover
           existingMetadata={activeProject.metadataKeys}
-          updateTableColumns={(newColumn) => setTableColumns([...tableColumns, newColumn])}
-          activeProjectUuid={activeProjectUuid}
-          setIsAddingMetadata={setIsAddingMetadata}
-          deleteMetadataColumn={() => deleteMetadataColumn(key)}
-          createInitializedMetadataColumn={(name) => createInitializedMetadataColumn(name)}
-        />
+          onCreate={(name) => {
+            const newMetadataColumn = createInitializedMetadataColumn(name);
+
+            setTableColumns([...tableColumns, newMetadataColumn]);
+            dispatch(createMetadataTrack(name, activeProjectUuid));
+
+            setIsAddingMetadata(false);
+          }}
+          onCancel={() => {
+            deleteMetadataColumn(key);
+            setIsAddingMetadata(false);
+          }}
+          message='Provide new metadata track name'
+          visible
+        >
+          <Space>
+            New Metadata Track
+          </Space>
+        </MetadataPopover>
       ),
       width: 200,
     };
@@ -186,7 +200,7 @@ const ProjectDetails = ({ width, height }) => {
     const newMetadataColumn = {
       key,
       title: () => (
-        <InitializedMetadataColumn
+        <MetadataColumn
           name={name}
           validateInputs={
             (newName, metadataNameValidation) => validateInputs(
@@ -250,7 +264,7 @@ const ProjectDetails = ({ width, height }) => {
       title: 'Sample',
       dataIndex: 'name',
       fixed: true,
-      render: (text, record, indx) => <SampleCells cellInfo={{ text, record, indx }} />,
+      render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
     },
     {
       index: 2,
