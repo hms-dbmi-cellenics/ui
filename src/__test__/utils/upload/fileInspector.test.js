@@ -81,7 +81,7 @@ describe('fileInspector', () => {
 
     readFileToBuffer
       .mockReturnValueOnce(
-        Promise.resolve(Buffer.from('ACGTTACGTGACCTGA')),
+        Promise.resolve(Buffer.from('ACGTTACGTG')),
       )
       .mockReturnValueOnce(
         Promise.resolve(Buffer.from('ENS00123456789-1')),
