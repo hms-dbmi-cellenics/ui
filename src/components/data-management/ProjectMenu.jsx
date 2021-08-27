@@ -18,15 +18,14 @@ const ProjectMenu = (props) => {
     setUploadModalVisible, openAnalysisModal,
   } = props;
   const dispatch = useDispatch();
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
-  const changeDescription = (description) => {
-    dispatch(updateProject(activeProjectUuid, { description }));
-  };
+  const anyProjectsAvailable = projects?.ids?.length;
+  const metadataKeysAvailable = activeProject?.metadataKeys?.length;
 
   const canLaunchAnalysis = () => {
-    if (activeProject?.samples?.length === 0 || projects.ids.length === 0) return false;
+    if (activeProject?.samples?.length === 0 || !anyProjectsAvailable) return false;
 
     const allSampleFilesUploaded = (sample) => {
       // Check if all files for a given tech has been uploaded
@@ -43,8 +42,8 @@ const ProjectMenu = (props) => {
     };
 
     const allSampleMetadataInserted = (sample) => {
-      if (activeProject?.metadataKeys.length === 0) return true;
-      if (Object.keys(sample.metadata).length !== activeProject.metadataKeys.length) return false;
+      if (!metadataKeysAvailable) return true;
+      if (Object.keys(sample.metadata).length !== metadataKeysAvailable) return false;
       return Object.values(sample.metadata).every((value) => value && value.length > 0);
     };
 
@@ -61,14 +60,14 @@ const ProjectMenu = (props) => {
         <Title level={3}>{activeProject?.name}</Title>
         <Space>
           <Button
-            disabled={projects.ids.length === 0}
+            disabled={!anyProjectsAvailable}
             onClick={() => setUploadModalVisible(true)}
           >
             Add samples
           </Button>
           <Button
             disabled={
-              projects.ids.length === 0
+              !anyProjectsAvailable
             || activeProject?.samples?.length === 0
             || isAddingMetadata
             }
@@ -98,7 +97,11 @@ const ProjectMenu = (props) => {
                 <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
                 <Text strong>Description:</Text>
                 <Paragraph
-                  editable={{ onChange: changeDescription }}
+                  editable={{
+                    onChange: (description) => dispatch(
+                      updateProject(activeProjectUuid, { description }),
+                    ),
+                  }}
                 >
                   {activeProject.description}
 

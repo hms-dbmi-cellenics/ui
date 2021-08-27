@@ -14,7 +14,7 @@ import {
 const MetadataColumn = (props) => {
   const dispatch = useDispatch();
   const {
-    name, validateInputs, setCells, deleteMetadataColumn, key, activeProjectUuid,
+    name, validateInput, setCells, deleteMetadataColumn, key, activeProjectUuid,
   } = props;
   const metadataNameValidation = [
     rules.MIN_1_CHAR,
@@ -32,7 +32,7 @@ const MetadataColumn = (props) => {
         )}
         value={name}
         validationFunc={
-          (newName) => validateInputs(newName, metadataNameValidation)
+          (newName) => validateInput(newName, metadataNameValidation)
         }
       />
       <MetadataEditor
@@ -48,7 +48,7 @@ const MetadataColumn = (props) => {
 };
 MetadataColumn.propTypes = {
   name: PropTypes.string.isRequired,
-  validateInputs: PropTypes.func.isRequired,
+  validateInput: PropTypes.func.isRequired,
   setCells: PropTypes.func.isRequired,
   deleteMetadataColumn: PropTypes.func.isRequired,
   key: PropTypes.string.isRequired,

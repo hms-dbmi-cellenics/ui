@@ -31,22 +31,22 @@ const DownloadData = (props) => {
   const experimentId = activeProject?.experiments[0];
 
   useEffect(() => {
-    if (experimentId) {
+    if (experimentId && !backendStatus[experimentId]) {
       dispatch(loadBackendStatus(experimentId));
     }
-  }, [activeProject]);
+  }, [experimentId]);
 
-  const pipelineHasRun = () => (
+  const getQcHasRun = () => (
     experimentId
     && (backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED)
-
   );
-  const gem2sHasRun = () => (
+
+  const getGem2sHasRun = () => (
     experimentId
     && (backendStatus[experimentId]?.status?.gem2s?.status === pipelineStatus.SUCCEEDED)
   );
 
-  const allSamplesAnalysed = () => {
+  const getAllSamplesAnalysed = () => {
     // Returns true only if there is at least one sample in the currently active
     // project AND all samples in the project have been analysed.
     if (!activeProject?.samples?.length) {
@@ -58,6 +58,10 @@ const DownloadData = (props) => {
       // eslint-disable-next-line no-prototype-builtins
       && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
   };
+
+  const gem2sHasRun = getGem2sHasRun();
+  const qcHasRun = getQcHasRun();
+  const allSamplesAnalysed = getAllSamplesAnalysed();
 
   const downloadExperimentData = async (type) => {
     try {
@@ -106,7 +110,7 @@ const DownloadData = (props) => {
           <Menu.Item
             key='download-processed-seurat'
             disabled={
-              !pipelineHasRun()
+              !qcHasRun()
             }
             onClick={() => {
               // Change if we have more than one experiment per project
@@ -115,7 +119,7 @@ const DownloadData = (props) => {
           >
             <Tooltip
               title={
-                pipelineHasRun(activeProject?.experiments[0])
+                qcHasRun()
                   ? 'With Data Processing filters and settings applied'
                   : 'Launch analysis to process data'
               }

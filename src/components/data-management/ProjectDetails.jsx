@@ -202,7 +202,7 @@ const ProjectDetails = ({ width, height }) => {
       title: () => (
         <MetadataColumn
           name={name}
-          validateInputs={
+          validateInput={
             (newName, metadataNameValidation) => validateInputs(
               newName, metadataNameValidation, validationParams,
             ).isValid

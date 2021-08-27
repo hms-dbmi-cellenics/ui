@@ -9,7 +9,7 @@ import { createStore, applyMiddleware } from 'redux';
 import _ from 'lodash';
 import { fireEvent } from '@testing-library/dom';
 import rootReducer from '../../../redux/reducers/index';
-import * as projectsMetadataCreate from '../../../redux/actions/projects/createMetadataTrack';
+import * as createMetadataTrack from '../../../redux/actions/projects/createMetadataTrack';
 import ProjectDetails from '../../../components/data-management/ProjectDetails';
 import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
@@ -18,10 +18,9 @@ import initialExperimentSettingsState from '../../../redux/reducers/experimentSe
 import UploadStatus from '../../../utils/upload/UploadStatus';
 
 const mockStore = configureStore([thunk]);
-const { render, screen } = rtl;
 const width = 600;
 const height = 400;
-
+const { screen, render } = rtl;
 const projectName = 'Project 1';
 const projectUuid = 'project-1-uuid';
 const projectDescription = 'Some description';
@@ -106,7 +105,7 @@ describe('ProjectDetails', () => {
   let metadataCreated;
   beforeEach(() => {
     jest.clearAllMocks();
-    metadataCreated = jest.spyOn(projectsMetadataCreate, 'default');
+    metadataCreated = jest.spyOn(createMetadataTrack, 'default');
   });
   it('Has a title, project ID and description', () => {
     render(
