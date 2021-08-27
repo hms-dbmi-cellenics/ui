@@ -86,7 +86,7 @@ describe('runCellSetsClustering action', () => {
     store.dispatch(runCellSetsClustering(experimentId, 0.5));
 
     expect(seekFromAPI).toHaveBeenCalledTimes(1);
-    expect(seekFromAPI).toHaveBeenCalledWith(experimentId, 30, {
+    expect(seekFromAPI).toHaveBeenCalledWith(experimentId, 300, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',
@@ -121,7 +121,7 @@ describe('runCellSetsClustering action', () => {
     store.dispatch(runCellSetsClustering(experimentId, 0.5));
 
     expect(seekFromAPI).toHaveBeenCalledTimes(1);
-    expect(seekFromAPI).toHaveBeenCalledWith(experimentId, 30, {
+    expect(seekFromAPI).toHaveBeenCalledWith(experimentId, 300, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',

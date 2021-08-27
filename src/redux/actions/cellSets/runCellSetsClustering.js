@@ -3,6 +3,7 @@ import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from '../../actionTypes/cellSets';
 import updateCellSetsClustering from './updateCellSetsClustering';
+const REQUEST_TIMEOUT = 5 * 60;
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
@@ -36,6 +37,7 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
 
   try {
     await fetchWork(experimentId, body, status, {
+      timeout: REQUEST_TIMEOUT,
       eventCallback: (err, res) => {
         if (err) {
           throw err;

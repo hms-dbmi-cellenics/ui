@@ -46,9 +46,9 @@ const HeatmapPlot = (props) => {
   const hoverCoordinates = useRef({});
 
   const cellSets = useSelector((state) => state.cellSets);
-  const {
-    hierarchy, loading: cellSetsLoading,
-  } = cellSets;
+  const cellSetsHierarchy = useSelector((state) => state.cellSets.hierarchy);
+  const cellSetsLoading = useSelector((state) => state.cellSets.loading);
+  const cellSetsHidden = useSelector((state) => state.cellSets.hidden);
 
   const heatmapSettings = useSelector(
     (state) => state.componentConfig[COMPONENT_TYPE]?.config,
@@ -101,7 +101,7 @@ const HeatmapPlot = (props) => {
   }, [selectedGenes, loadingGenes, markerGenesLoading]);
 
   useEffect(() => {
-    if (cellSetsLoading || hierarchy.length === 0) {
+    if (cellSetsLoading || cellSetsHierarchy.length === 0) {
       return;
     }
 
@@ -111,6 +111,7 @@ const HeatmapPlot = (props) => {
 
   useEffect(() => {
     if (!selectedGenes?.length > 0
+      || cellSetsHierarchy.length === 0
       || _.isEqual(currentHeatmapSettings, heatmapSettings)
     ) {
       return;
@@ -128,11 +129,12 @@ const HeatmapPlot = (props) => {
     maxCells,
     markerGenesLoading,
     cellSetsLoading,
+    cellSetsHidden,
   ]);
 
   useEffect(() => {
     if (louvainClustersResolution
-      && !_.isEqual(louvainClustersResolutionRef.current, louvainClustersResolutionRef)
+      && !_.isEqual(louvainClustersResolutionRef.current, louvainClustersResolution)
     ) {
       louvainClustersResolutionRef.current = louvainClustersResolution;
       dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
@@ -161,13 +163,7 @@ const HeatmapPlot = (props) => {
 
     const { cellId: cellName } = args[1].datum;
 
-    dispatch(
-      updateCellInfo(
-        {
-          cellName,
-        },
-      ),
-    );
+    dispatch(updateCellInfo({ cellName }));
   };
 
   if (markerGenesLoadingError) {
@@ -192,7 +188,10 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (isHeatmapGenesLoading) {
+  if (
+    isHeatmapGenesLoading
+    || cellSetsLoading
+  ) {
     return (
       <center>
         <Loader experimentId={experimentId} />
@@ -200,15 +199,21 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  const signalListeners = {
-    mouseOver: handleMouseOver,
-  };
-
   if (!selectedGenes || selectedGenes.length === 0) {
     return (
       <Empty
         description={(
           <Text>Add some genes to this heatmap to get started.</Text>
+        )}
+      />
+    );
+  }
+
+  if (cellSetsHierarchy.length === 0) {
+    return (
+      <Empty
+        description={(
+          <Text>Configure your embedding in Data Processing to load this plot.</Text>
         )}
       />
     );
@@ -221,6 +226,10 @@ const HeatmapPlot = (props) => {
       </center>
     );
   }
+
+  const signalListeners = {
+    mouseOver: handleMouseOver,
+  };
 
   return (
     <div>
