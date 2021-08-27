@@ -65,18 +65,31 @@ const HeatmapMetadataTrackSettings = (props) => {
     setTrackData(getUpdatedTrackData());
   }, [cellSets.hierarchy]);
 
+  const getEnabledTracks = () => trackData.filter((entry) => entry.selected).map((o) => o.key);
+
+  useEffect(() => {
+    if (!_.isEqual(getEnabledTracks(), selectedTracks)) {
+      const newTracks = trackData.map((entry) => {
+        if (!selectedTracks.includes(entry.key)) {
+          return { ...entry, selected: false };
+        }
+        return { ...entry, selected: true };
+      });
+      setTrackData(newTracks);
+    }
+  }, [selectedTracks]);
+
   useEffect(() => {
     // Prevent initial dispatch when object appears
-    if (isInitialRenderRef.current) {
+    if (isInitialRenderRef.current || _.isEqual(getEnabledTracks(), selectedTracks)) {
       return;
     }
-
     if (trackData.length === 0) {
       return;
     }
     dispatch(
       updatePlotConfig(componentType, {
-        selectedTracks: trackData.filter((o) => o.selected).map((o) => o.key),
+        selectedTracks: getEnabledTracks(),
       }),
     );
   }, [trackData]);

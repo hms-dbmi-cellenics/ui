@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Skeleton, Empty, Typography,
 } from 'antd';
@@ -6,6 +6,8 @@ import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import endUserMessages from 'utils/endUserMessages';
 import loadProcessingSettings from '../../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
@@ -37,6 +39,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   const cellSets = useSelector((state) => state.cellSets);
   const { hierarchy, properties } = cellSets;
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
+  const louvainClustersResolutionRef = useRef(null);
+
   const {
     loading: loadingMarkerGenes,
     error: errorMarkerGenes,
@@ -57,11 +61,41 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
   }, []);
 
+  const selectedClustersAvailable = (node) => hierarchy.filter((cluster) => (
+    cluster.key === node))[0]?.children.length;
   useEffect(() => {
-    if (louvainClustersResolution && config) {
-      dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes));
+    if (louvainClustersResolution && config?.numGenes && hierarchy?.length) {
+      louvainClustersResolutionRef.current = louvainClustersResolution;
+      if (selectedClustersAvailable(config.selectedCellSet)) {
+        dispatch(loadMarkerGenes(
+          experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+        ));
+      } else {
+        pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
+      }
     }
-  }, [louvainClustersResolution, hierarchy, config?.numGenes]);
+  }, [config?.selectedCellSet, config?.numGenes, hierarchy]);
+
+  useEffect(() => {
+    if (louvainClustersResolution && louvainClustersResolutionRef.current !== louvainClustersResolution
+      && config && hierarchy?.length) {
+      louvainClustersResolutionRef.current = louvainClustersResolution;
+      dispatch(loadMarkerGenes(
+        experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+      ));
+    }
+  }, [louvainClustersResolution]);
+
+  useEffect(() => {
+    if (!config) {
+      return;
+    }
+    // grouping and metadata tracks should change when data is changed
+    updatePlotWithChanges(
+      { selectedTracks: [config.selectedCellSet], groupedTracks: [config.selectedCellSet] },
+    );
+  }, [config?.selectedCellSet]);
+
   const sortGenes = (newGenes) => {
     const clusters = hierarchy.find((cluster) => cluster.key === config.selectedCellSet).children;
 
@@ -122,8 +156,12 @@ const MarkerHeatmap = ({ experimentId }) => {
         const removedGenes = _.difference(config.selectedGenes, selectedGenes);
         newOrder = _.cloneDeep(config.selectedGenes);
         newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
-      } else {
+      } else if (newGenes.length === 1) {
+        // single gene difference - added manually by user
         newOrder = sortGenes(newGenes);
+      } else {
+        // selected data was changed
+        newOrder = selectedGenes;
       }
       updatePlotWithChanges({ selectedGenes: newOrder });
     }
@@ -199,7 +237,10 @@ const MarkerHeatmap = ({ experimentId }) => {
           error={errorMarkerGenes}
           onClick={
             () => dispatch(
-              loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes),
+              loadMarkerGenes(
+                experimentId, louvainClustersResolution,
+                plotUuid, config.numGenes, config.selectedCellSet,
+              ),
             )
           }
         />
@@ -219,7 +260,9 @@ const MarkerHeatmap = ({ experimentId }) => {
   };
   const onReset = () => {
     onGeneEnter([]);
-    dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, plotUuid, config.numGenes));
+    dispatch(loadMarkerGenes(
+      experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+    ));
   };
 
   const plotStylingControlsConfig = [
