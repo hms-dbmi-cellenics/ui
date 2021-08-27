@@ -91,13 +91,6 @@ const FileUploadModal = (props) => {
     <>
       <Col span={24} style={{ padding: '1rem' }}>
         <Paragraph>
-          Don&apos;t have your own dataset?
-          {' '}
-          <a onClick={() => downloadPublicDataset()}>Download</a>
-          {' '}
-          a public dataset to explore the platform
-        </Paragraph>
-        <Paragraph>
           For each sample, upload a folder containing the following
           {' '}
           <Text strong>{techOptions[selectedTech].inputInfo.length}</Text>
@@ -135,6 +128,12 @@ const FileUploadModal = (props) => {
           <a rel='noreferrer' target='_blank' href={guidanceFileLink}>here</a>
           {' '}
           (opens in new tab).
+        </Paragraph>
+        <Paragraph>
+          Don&apos;t have your own data? You can download an example PBMC dataset
+          {' '}
+          <a onClick={() => downloadPublicDataset()}>here</a>
+          .
         </Paragraph>
       </Col>
     </>
