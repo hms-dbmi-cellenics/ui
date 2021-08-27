@@ -1,5 +1,6 @@
 import getNumberOfCellsInGrouping from '../redux/getters/getNumberOfCellsInGrouping';
 
+// Timeouts calculated in https://docs.google.com/document/d/1vim9t9lWMLW8wALeJvDeYnofQa9tj9zPU3i1SOfMilM/edit
 const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
   // Get filtered nCells for more accurate timeout//
   // if louvain is not calculated (unlikely) get all nCells
@@ -9,6 +10,7 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
     case 'GetEmbedding': {
       const { type } = options;
 
+      // Tsne is slower than tsne, so we give a bigger timeout to tsne
       if (type === 'umap') return 0.002 * nCells + 60;
       if (type === 'tsne') return 0.02 * nCells + 60;
 
