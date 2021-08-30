@@ -9,7 +9,7 @@ import { updateExperiment } from 'redux/actions/experiments';
 import { updateProject } from 'redux/actions/projects';
 import { sortableContainer, sortableElement } from 'react-sortable-hoc';
 import UploadStatus from 'utils/upload/UploadStatus';
-import arrayMoveImmutable from 'array-move';
+import { arrayMoveImmutable } from 'utils/array-move';
 
 const SamplesTable = (props) => {
   const { tableColumns, activeProjectUuid, height } = props;
