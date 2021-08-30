@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
   Menu, Tooltip, Dropdown, Button,
@@ -26,7 +26,9 @@ const DownloadData = (props) => {
   const backendStatus = useSelector((state) => state.backendStatus);
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
-
+  const [qcHasRun, setQcHasRun] = useState(false);
+  const [gem2sHasRun, setGem2sHasRun] = useState(false);
+  const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
   // Change if we have more than one experiment per project
   const experimentId = activeProject?.experiments[0];
 
@@ -36,15 +38,16 @@ const DownloadData = (props) => {
     }
   }, [experimentId]);
 
-  const getQcHasRun = () => (
-    experimentId
-    && (backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED)
-  );
+  useEffect(() => {
+    setQcHasRun(experimentId
+      && (backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED));
+    setGem2sHasRun(experimentId
+      && (backendStatus[experimentId]?.status?.gem2s?.status === pipelineStatus.SUCCEEDED));
+  }, [backendStatus]);
 
-  const getGem2sHasRun = () => (
-    experimentId
-    && (backendStatus[experimentId]?.status?.gem2s?.status === pipelineStatus.SUCCEEDED)
-  );
+  useEffect(() => {
+    setAllSamplesAnalysed(getAllSamplesAnalysed());
+  }, [activeProject]);
 
   const getAllSamplesAnalysed = () => {
     // Returns true only if there is at least one sample in the currently active
@@ -59,14 +62,10 @@ const DownloadData = (props) => {
       && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
   };
 
-  const gem2sHasRun = getGem2sHasRun();
-  const qcHasRun = getQcHasRun();
-  const allSamplesAnalysed = getAllSamplesAnalysed();
-
   const downloadExperimentData = async (type) => {
     try {
       if (!experimentId) throw new Error('No experimentId specified');
-      if (!Object.values(downloadTypes).includes(type)) throw new Error('Invalid download type');
+      if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
       const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
       const link = document.createElement('a');
@@ -91,14 +90,14 @@ const DownloadData = (props) => {
         <Menu>
           <Menu.Item
             key='download-raw-seurat'
-            disabled={!gem2sHasRun()}
+            disabled={!gem2sHasRun}
             onClick={() => {
-              downloadExperimentData(downloadTypes.RAW_SEURAT_OBJECT);
+              downloadExperimentData('raw_seurat_object');
             }}
           >
             <Tooltip
               title={
-                gem2sHasRun()
+                gem2sHasRun
                   ? 'Samples have been merged'
                   : 'Launch analysis to merge samples'
               }
@@ -110,16 +109,16 @@ const DownloadData = (props) => {
           <Menu.Item
             key='download-processed-seurat'
             disabled={
-              !qcHasRun()
+              !qcHasRun
             }
             onClick={() => {
               // Change if we have more than one experiment per project
-              downloadExperimentData(downloadTypes.PROCESSED_SEURAT_OBJECT);
+              downloadExperimentData('processed_seurat_object');
             }}
           >
             <Tooltip
               title={
-                qcHasRun()
+                qcHasRun
                   ? 'With Data Processing filters and settings applied'
                   : 'Launch analysis to process data'
               }
@@ -129,7 +128,7 @@ const DownloadData = (props) => {
             </Tooltip>
           </Menu.Item>
           <Menu.Item
-            disabled={!allSamplesAnalysed()}
+            disabled={!allSamplesAnalysed}
             key='download-processing-settings'
             onClick={() => {
               const config = _.omit(experimentSettings.processing, ['meta']);
@@ -139,7 +138,7 @@ const DownloadData = (props) => {
             }}
           >
             {
-              allSamplesAnalysed()
+              allSamplesAnalysed
                 ? 'Data Processing settings (.txt)'
                 : (
                   <Tooltip title='One or more of your samples has yet to be analysed' placement='left'>

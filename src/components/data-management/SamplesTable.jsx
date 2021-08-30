@@ -7,9 +7,9 @@ import { Table, Row, Col } from 'antd';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { updateExperiment } from 'redux/actions/experiments';
 import { updateProject } from 'redux/actions/projects';
-import arrayMove from 'array-move';
 import { sortableContainer, sortableElement } from 'react-sortable-hoc';
 import UploadStatus from 'utils/upload/UploadStatus';
+import arrayMoveImmutable from 'array-move';
 
 const SamplesTable = (props) => {
   const { tableColumns, activeProjectUuid, height } = props;
@@ -58,7 +58,7 @@ const SamplesTable = (props) => {
       // Has to be changed when we support multiple experiments per project
       const experimentId = activeProject.experiments[0];
 
-      const newData = arrayMove([].concat(tableData), oldIndex, newIndex).filter((el) => !!el);
+      const newData = arrayMoveImmutable(tableData, oldIndex, newIndex).filter((el) => !!el);
       const newSampleOrder = newData.map((sample) => sample.uuid);
 
       dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
