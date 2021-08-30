@@ -81,10 +81,10 @@ describe('fileInspector', () => {
 
     readFileToBuffer
       .mockReturnValueOnce(
-        Promise.resolve(Buffer.from('ACGTTACGTGACCTGA')),
+        Promise.resolve(Buffer.from('ACGTACGTACGT-1')),
       )
       .mockReturnValueOnce(
-        Promise.resolve(Buffer.from('ENS00123456789-1')),
+        Promise.resolve(Buffer.from('ACGTACGTACGT-1\t')),
       );
 
     expect(await inspectFile(file, '10X Chromium'))

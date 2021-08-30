@@ -1,70 +1,54 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Table, Typography, Space, Tooltip, Button, Input, Progress, Row, Col, Menu, Dropdown,
+  Typography, Space,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  UploadOutlined,
   MenuOutlined,
 } from '@ant-design/icons';
-import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
+import { sortableHandle } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import moment from 'moment';
-import _ from 'lodash';
-import arrayMove from 'array-move';
-import { Storage } from 'aws-amplify';
-import { saveAs } from 'file-saver';
-
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
-import EditableField from '../EditableField';
 import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
+import SamplesTable from './SamplesTable';
+import { UploadCell, EditableFieldCell, SampleNameCell } from './SamplesTableCells';
+import MetadataColumn from './MetadataColumn';
 import MetadataPopover from './MetadataPopover';
-
 import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
-
 import {
-  deleteSamples, updateSample,
+  updateSample,
 } from '../../redux/actions/samples';
 import {
   updateProject,
-  createMetadataTrack,
-  updateMetadataTrack,
   deleteMetadataTrack,
+  createMetadataTrack,
 } from '../../redux/actions/projects';
+
+import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 import {
   updateExperiment,
 } from '../../redux/actions/experiments';
 
-import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
-
-import { processUpload, uploadSingleFile } from '../../utils/upload/processUpload';
-import validateInputs, { rules } from '../../utils/validateInputs';
-import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/metadataUtils';
-
-import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
-import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
-
+import { processUpload } from '../../utils/upload/processUpload';
+import validateInputs from '../../utils/validateInputs';
+import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
+import ProjectMenu from './ProjectMenu';
 
-import { exportQCParameters, filterQCParameters } from '../../utils/exportQCParameters';
-import downloadData from '../../utils/downloadExperimentData';
-import downloadTypes from '../../utils/downloadTypes';
-import pipelineStatus from '../../utils/pipelineStatusValues';
-
-const { Title, Text, Paragraph } = Typography;
+const { Text } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
-  const samplesTableElement = useRef(null);
 
   const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
@@ -74,28 +58,15 @@ const ProjectDetails = ({ width, height }) => {
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromUrlExpectOK,
   );
-  const projects = useSelector((state) => state.projects);
-  const experimentSettings = useSelector((state) => state.experimentSettings);
   const experiments = useSelector((state) => state.experiments);
-  const backendStatus = useSelector((state) => state.backendStatus);
-
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
-  const [tableData, setTableData] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const [sampleNames, setSampleNames] = useState(new Set());
-  const [canLaunchAnalysis, setCanLaunchAnalysis] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
-
-  const metadataNameValidation = [
-    rules.MIN_1_CHAR,
-    rules.ALPHANUM_SPACE,
-    rules.START_WITH_ALPHABET,
-    rules.UNIQUE_NAME_CASE_INSENSITIVE,
-  ];
 
   const validationParams = {
     existingNames: sampleNames,
@@ -112,19 +83,16 @@ const ProjectDetails = ({ width, height }) => {
     setUploadModalVisible(false);
   };
 
-  const uploadFile = (newFile) => {
-    if (!uploadDetailsModalDataRef.current) {
-      return;
-    }
-    const { sampleUuid } = uploadDetailsModalDataRef.current;
-    uploadSingleFile(newFile, activeProjectUuid, sampleUuid, dispatch);
-    setUploadDetailsModalVisible(false);
-  };
-
   useEffect(() => {
     if (activeProject && activeProject.samples.length > 0) {
+      // if there are samples - build the table columns
       setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
+      const metadataColumns = activeProject?.metadataKeys.map(
+        (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
+      ) || [];
+      setTableColumns([...columns, ...metadataColumns]);
     } else {
+      setTableColumns([]);
       setSampleNames(new Set());
     }
   }, [samples, activeProject]);
@@ -157,154 +125,14 @@ const ProjectDetails = ({ width, height }) => {
 
     setSortedSpeciesData(d);
   }, [speciesData]);
-
-  const renderUploadCell = (columnId, tableCellData) => {
-    const {
-      sampleUuid,
-      file,
-    } = tableCellData;
-    const { progress = null, status = null } = file?.upload ?? {};
-    const showDetails = () => {
-      uploadDetailsModalDataRef.current = {
-        sampleUuid,
-        fileCategory: columnId,
-        file,
-      };
-      setUploadDetailsModalVisible(true);
-    };
-
-    if (status === UploadStatus.UPLOADED) {
-      return (
-        <div
-          className='hoverSelectCursor'
-          style={{
-            whiteSpace: 'nowrap',
-            height: '35px',
-            minWidth: '90px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Space
-            onClick={showDetails}
-            onKeyDown={showDetails}
-          >
-            <Text type='success'>{messageForStatus(status)}</Text>
-          </Space>
-        </div>
-      );
-    }
-
-    if (
-      [
-        UploadStatus.UPLOADING,
-        UploadStatus.COMPRESSING,
-      ].includes(status)
-    ) {
-      return (
-        <div style={{
-          whiteSpace: 'nowrap',
-          height: '35px',
-          minWidth: '90px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
-          <Space direction='vertical' size={[1, 1]}>
-            <Text type='warning'>{`${messageForStatus(status)}`}</Text>
-            {progress ? (<Progress percent={progress} size='small' />) : <div />}
-          </Space>
-        </div>
-      );
-    }
-
-    if (status === UploadStatus.UPLOAD_ERROR) {
-      return (
-        <div
-          className='hoverSelectCursor'
-          onClick={showDetails}
-          onKeyDown={showDetails}
-          style={{
-            whiteSpace: 'nowrap',
-            height: '35px',
-            minWidth: '90px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Space>
-            <Text type='danger'>{messageForStatus(status)}</Text>
-          </Space>
-        </div>
-      );
-    }
-    if (
-      [
-        UploadStatus.FILE_NOT_FOUND,
-        UploadStatus.FILE_READ_ABORTED,
-        UploadStatus.FILE_READ_ERROR,
-      ].includes(status)
-    ) {
-      return (
-        <div style={{
-          whiteSpace: 'nowrap',
-          height: '35px',
-          minWidth: '90px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
-          <Space>
-            <Text type='danger'>{messageForStatus(status)}</Text>
-            <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
-              <Button
-                size='large'
-                shape='link'
-                icon={<UploadOutlined />}
-                onClick={showDetails}
-              />
-            </Tooltip>
-          </Space>
-        </div>
-      );
-    }
+  const deleteMetadataColumn = (name) => {
+    setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
+    dispatch(deleteMetadataTrack(name, activeProjectUuid));
   };
 
-  const renderEditableFieldCell = (
-    initialText,
-    cellText,
-    record,
-    dataIndex,
-    rowIdx,
-    onAfterSubmit,
-  ) => (
-    <div key={`cell-${dataIndex}-${rowIdx}`} style={{ whiteSpace: 'nowrap' }}>
-      <Space>
-        <EditableField
-          deleteEnabled={false}
-          value={cellText || initialText}
-          onAfterSubmit={(value) => onAfterSubmit(value, cellText, record, dataIndex, rowIdx)}
-        />
-      </Space>
-    </div>
-  );
-
-  const renderSampleCells = (text, record, idx) => (
-    <Text strong key={`sample-cell-${idx}`}>
-      <EditableField
-        deleteEnabled
-        value={text}
-        onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
-        onDelete={() => dispatch(deleteSamples([record.uuid]))}
-      />
-    </Text>
-  );
-
   const createMetadataColumn = () => {
+    setIsAddingMetadata(true);
+
     const key = temporaryMetadataKey(tableColumns);
     const metadataColumn = {
       key,
@@ -334,12 +162,7 @@ const ProjectDetails = ({ width, height }) => {
       ),
       width: 200,
     };
-
     setTableColumns([...tableColumns, metadataColumn]);
-  };
-  const deleteMetadataColumn = (name) => {
-    setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
-    dispatch(deleteMetadataTrack(name, activeProjectUuid));
   };
 
   const createUpdateObject = (value, metadataKey) => {
@@ -377,45 +200,55 @@ const ProjectDetails = ({ width, height }) => {
     const newMetadataColumn = {
       key,
       title: () => (
-        <Space>
-          <EditableField
-            deleteEnabled
-            onDelete={(e, currentName) => deleteMetadataColumn(currentName)}
-            onAfterSubmit={(newName) => dispatch(
-              updateMetadataTrack(name, newName, activeProjectUuid),
-            )}
-            value={name}
-            validationFunc={
-              (newName) => validateInputs(newName, metadataNameValidation, validationParams).isValid
-            }
-          />
-          <MetadataEditor
-            onReplaceEmpty={(value) => setCells(value, key, 'REPLACE_EMPTY')}
-            onReplaceAll={(value) => setCells(value, key, 'REPLACE_ALL')}
-            onClearAll={() => setCells(DEFAULT_NA, key, 'CLEAR_ALL')}
-            massEdit
-          >
-            <Input />
-          </MetadataEditor>
-        </Space>
+        <MetadataColumn
+          name={name}
+          validateInput={
+            (newName, metadataNameValidation) => validateInputs(
+              newName, metadataNameValidation, validationParams,
+            ).isValid
+          }
+          setCells={setCells}
+          deleteMetadataColumn={deleteMetadataColumn}
+          key={key}
+          activeProjectUuid={activeProjectUuid}
+        />
       ),
       width: 200,
       dataIndex: key,
-      render: (cellValue, record, rowIdx) => renderEditableFieldCell(
-        DEFAULT_NA,
-        cellValue,
-        record,
-        key,
-        rowIdx,
-        (newValue) => {
-          dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
-        },
+      render: (cellValue, record, rowIdx) => (
+        <EditableFieldCell
+          initialText={DEFAULT_NA}
+          cellText={cellValue}
+          dataIndex={key}
+          rowIdx={rowIdx}
+          onAfterSubmit={(newValue) => {
+            dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
+          }}
+        />
       ),
     };
     return newMetadataColumn;
   };
 
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+
+  const renderUploadCell = (columnId, tableCellData) => {
+    const {
+      sampleUuid,
+      file,
+    } = tableCellData;
+    const showDetails = () => {
+      uploadDetailsModalDataRef.current = {
+        sampleUuid,
+        fileCategory: columnId,
+        file,
+      };
+      setUploadDetailsModalVisible(true);
+    };
+    return (
+      <UploadCell file={file} showDetails={() => showDetails('barcodes', tableCellData)} />
+    );
+  };
 
   const columns = [
     {
@@ -432,7 +265,7 @@ const ProjectDetails = ({ width, height }) => {
       title: 'Sample',
       dataIndex: 'name',
       fixed: true,
-      render: renderSampleCells,
+      render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
     },
     {
       index: 2,
@@ -487,238 +320,15 @@ const ProjectDetails = ({ width, height }) => {
     },
   ];
 
-  const checkLaunchAnalysis = () => {
-    if (activeProject?.samples?.length === 0) return false;
-
-    const allSampleFilesUploaded = (sample) => {
-      // Check if all files for a given tech has been uploaded
-      const fileNamesArray = Array.from(sample.fileNames);
-
-      if (
-        fileUploadSpecifications[sample.type].requiredFiles.every(
-          (file) => !fileNamesArray.includes(file),
-        )
-      ) { return false; }
-      return fileNamesArray.every((fileName) => {
-        const checkedFile = sample.files[fileName];
-        return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
-      });
-    };
-
-    const allSampleMetadataInserted = (sample) => {
-      if (activeProject?.metadataKeys.length === 0) return true;
-      if (Object.keys(sample.metadata).length !== activeProject.metadataKeys.length) return false;
-      return Object.values(sample.metadata).every((value) => value && value.length > 0);
-    };
-
-    const allExperimentDataForAProjectIsLoaded = (project) => !(project?.experiments.length > 0)
-        || project?.experiments.every((experimentId) => experiments.ids.includes(experimentId));
-
-    let canLaunch = activeProject?.samples?.every((sampleUuid) => {
-      const checkedSample = samples[sampleUuid];
-
-      return allSampleFilesUploaded(checkedSample)
-        && allSampleMetadataInserted(checkedSample);
-    });
-
-    canLaunch = canLaunch && allExperimentDataForAProjectIsLoaded(activeProject);
-
-    setCanLaunchAnalysis(canLaunch);
-  };
-
-  useEffect(() => {
-    if (projects.ids.length === 0
-      || !activeProject
-      || !samples[activeProject.samples[0]]) {
-      setTableData([]);
-      setTableColumns([]);
-      return;
-    }
-
-    // Set table columns
-    const metadataColumns = activeProject?.metadataKeys.map(
-      (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
-    ) || [];
-
-    setTableColumns([...columns, ...metadataColumns]);
-    // Set table data
-
-    const newData = activeProject.samples.map((sampleUuid, idx) => {
-      const sampleFiles = samples[sampleUuid].files;
-
-      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-
-      const barcodesData = { sampleUuid, file: barcodesFile };
-      const genesData = { sampleUuid, file: genesFile };
-      const matrixData = { sampleUuid, file: matrixFile };
-
-      return {
-        key: idx,
-        name: samples[sampleUuid].name,
-        uuid: sampleUuid,
-        barcodes: barcodesData,
-        genes: genesData,
-        matrix: matrixData,
-        species: samples[sampleUuid].species || DEFAULT_NA,
-        ...samples[sampleUuid].metadata,
-      };
-    });
-    setTableData(newData);
-  }, [projects, samples, activeProjectUuid]);
-
-  useEffect(() => {
-    checkLaunchAnalysis();
-  }, [projects, samples, activeProjectUuid, experiments]);
-
-  const changeDescription = (description) => {
-    dispatch(updateProject(activeProjectUuid, { description }));
-  };
-
-  const downloadFile = async () => {
-    const { sampleUuid, file } = uploadDetailsModalDataRef.current;
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
-
-    const downloadedS3Object = await Storage.get(bucketKey, { download: true });
-
-    saveAs(downloadedS3Object.Body, file.name);
-  };
-
   const openAnalysisModal = () => {
-    if (canLaunchAnalysis) {
-      // Change the line below when multiple experiments in a project is supported
-      setAnalysisModalVisible(true);
-    }
+    // Change the line below when multiple experiments in a project is supported
+    setAnalysisModalVisible(true);
   };
 
-  const launchAnalysis = async (experimentId) => {
-    await dispatch(runGem2s(experimentId));
+  const launchAnalysis = (experimentId) => {
+    dispatch(runGem2s(experimentId));
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
-
-  const allSamplesAnalysed = () => {
-    // Returns true only if there is at least one sample in the currently active
-    // project AND all samples in the project have been analysed.
-    const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
-
-    return steps.length > 0
-      && activeProject?.samples?.length > 0
-      && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
-  };
-
-  const onSortEnd = ({ oldIndex, newIndex }) => {
-    if (oldIndex !== newIndex) {
-      // This can be done because there is only one experiment per project
-      // Has to be changed when we support multiple experiments per project
-      const experimentId = activeProject.experiments[0];
-
-      const newData = arrayMove([].concat(tableData), oldIndex, newIndex).filter((el) => !!el);
-      const newSampleOrder = newData.map((sample) => sample.uuid);
-
-      dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
-      dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
-      setTableData(newData);
-    }
-  };
-
-  // eslint-disable-next-line react/prop-types
-  const SortableRow = sortableElement((props) => <tr {...props} className={`${props.className} drag-visible`} />);
-  const SortableTable = sortableContainer((props) => <tbody {...props} />);
-
-  const DragContainer = (props) => (
-    <SortableTable
-      useDragHandle
-      disableAutoscroll
-      helperClass='row-dragging'
-      onSortEnd={onSortEnd}
-      {...props}
-    />
-  );
-
-  const DraggableRow = (props) => {
-    // eslint-disable-next-line react/prop-types
-    const index = tableData.findIndex((x) => x.key === props['data-row-key']);
-    return <SortableRow index={index} {...props} />;
-  };
-
-  const pipelineHasRun = (experimentId) => (
-    backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED
-  );
-
-  const gem2sHasRun = (experimentId) => (
-    backendStatus[experimentId]?.status.gem2s?.status === pipelineStatus.SUCCEEDED
-  );
-
-  const DownloadDataMenu = (
-    <Menu>
-      <Menu.Item
-        key='download-raw-seurat'
-        disabled={activeProject?.experiments?.length
-          && !gem2sHasRun(activeProject?.experiments[0])}
-        onClick={() => {
-          const experimentId = activeProject?.experiments[0];
-          downloadData(experimentId, downloadTypes.RAW_SEURAT_OBJECT);
-        }}
-      >
-        <Tooltip
-          title={
-            activeProject?.experiments?.length
-              && gem2sHasRun(activeProject?.experiments[0])
-              ? 'Samples have been merged'
-              : 'Launch analysis to merge samples'
-          }
-          placement='left'
-        >
-          Raw Seurat object (.rds)
-        </Tooltip>
-      </Menu.Item>
-      <Menu.Item
-        key='download-processed-seurat'
-        disabled={
-          activeProject?.experiments?.length > 0
-          && !pipelineHasRun(activeProject?.experiments[0])
-        }
-        onClick={() => {
-          // Change if we have more than one experiment per project
-          const experimentId = activeProject?.experiments[0];
-          downloadData(experimentId, downloadTypes.PROCESSED_SEURAT_OBJECT);
-        }}
-      >
-        <Tooltip
-          title={
-            activeProject?.experiments?.length > 0
-              && pipelineHasRun(activeProject?.experiments[0])
-              ? 'With Data Processing filters and settings applied'
-              : 'Launch analysis to process data'
-          }
-          placement='left'
-        >
-          Processed Seurat object (.rds)
-        </Tooltip>
-      </Menu.Item>
-      <Menu.Item
-        disabled={!allSamplesAnalysed()}
-        key='download-processing-settings'
-        onClick={() => {
-          const config = _.omit(experimentSettings.processing, ['meta']);
-          const filteredConfig = filterQCParameters(config, activeProject.samples, samples);
-          const blob = exportQCParameters(filteredConfig);
-          saveAs(blob, `${activeProjectUuid.split('-')[0]}_settings.txt`);
-        }}
-      >
-        {
-          allSamplesAnalysed()
-            ? 'Data Processing settings (.txt)'
-            : (
-              <Tooltip title='One or more of your samples has yet to be analysed' placement='left'>
-                Data Processing settings (.txt)
-              </Tooltip>
-            )
-        }
-      </Menu.Item>
-    </Menu>
-  );
 
   return (
     <>
@@ -731,120 +341,34 @@ const ProjectDetails = ({ width, height }) => {
         activeProject={activeProject}
         experiments={experiments}
         visible={analysisModalVisible}
-        onLaunch={async (experimentId) => {
+        onLaunch={(experimentId) => {
           const lastViewed = moment().toISOString();
-          await dispatch(updateExperiment(experimentId, { lastViewed }));
-          await dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+          dispatch(updateExperiment(experimentId, { lastViewed }));
+          dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
           launchAnalysis(experimentId);
-        }}
-        onChange={() => {
-          // Update experiments details
         }}
         onCancel={() => { setAnalysisModalVisible(false); }}
       />
       <UploadDetailsModal
         sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
-        file={uploadDetailsModalDataRef.current?.file}
-        fileCategory={uploadDetailsModalDataRef.current?.fileCategory}
+        uploadDetailsModalDataRef={uploadDetailsModalDataRef}
         visible={uploadDetailsModalVisible}
-        onUpload={uploadFile}
-        onDownload={downloadFile}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
       <div id='project-details' width={width} height={height}>
         <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
-          <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Title level={3}>{activeProject.name}</Title>
-            <Space>
-              <Button
-                disabled={projects.ids.length === 0}
-                onClick={() => setUploadModalVisible(true)}
-              >
-                Add samples
-              </Button>
-              <Button
-                disabled={
-                  projects.ids.length === 0
-                  || activeProject?.samples?.length === 0
-                  || isAddingMetadata
-                }
-                onClick={() => {
-                  setIsAddingMetadata(true);
-                  createMetadataColumn();
-                }}
-              >
-                Add metadata
-              </Button>
-              <Dropdown
-                overlay={DownloadDataMenu}
-                trigger={['click']}
-                placement='bottomRight'
-                disabled={
-                  projects.ids.length === 0
-                  || activeProject?.samples?.length === 0
-                }
-              >
-                <Button>
-                  Download
-                </Button>
-              </Dropdown>
-              <Button
-                data-test-id='launch-analysis-button'
-                type='primary'
-                disabled={
-                  projects.ids.length === 0
-                  || activeProject?.samples?.length === 0
-                  || !canLaunchAnalysis
-                }
-                onClick={() => openAnalysisModal()}
-              >
-                Launch analysis
-              </Button>
-            </Space>
-          </Row>
-
-          <Row>
-            <Col>
-              {
-                activeProjectUuid && (
-                  <Space direction='vertical' size='small'>
-                    <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
-                    <Text strong>Description:</Text>
-                    <Paragraph
-                      editable={{ onChange: changeDescription }}
-                    >
-                      {activeProject.description}
-
-                    </Paragraph>
-                  </Space>
-                )
-              }
-            </Col>
-          </Row>
-
-          <Row>
-            <Col>
-              <Table
-                ref={samplesTableElement}
-                size='small'
-                scroll={{
-                  x: 'max-content',
-                  y: height - 250,
-                }}
-                bordered
-                columns={tableColumns}
-                dataSource={tableData}
-                sticky
-                pagination={false}
-                components={{
-                  body: {
-                    wrapper: DragContainer,
-                    row: DraggableRow,
-                  },
-                }}
-              />
-            </Col>
-          </Row>
+          <ProjectMenu
+            activeProjectUuid={activeProjectUuid}
+            createMetadataColumn={() => createMetadataColumn()}
+            isAddingMetadata={isAddingMetadata}
+            setUploadModalVisible={setUploadModalVisible}
+            openAnalysisModal={openAnalysisModal}
+          />
+          <SamplesTable
+            height={height}
+            activeProjectUuid={activeProjectUuid}
+            tableColumns={tableColumns}
+          />
         </Space>
       </div>
     </>
