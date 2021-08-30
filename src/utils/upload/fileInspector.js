@@ -61,7 +61,7 @@ const inspectFile = async (file, technology) => {
 
   // check barcodes file starts with a 16 digit DNA sequence
   if (file.name.startsWith('barcodes')
-      && data.toString().match(/^[ACGT]+$/)) {
+      && !data.toString().match(/\t/)) {
     return valid;
   }
 
