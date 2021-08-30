@@ -16,6 +16,8 @@ import {
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
+import { Storage } from 'aws-amplify';
+import downloadFromS3 from 'utils/data-management/downloadFromS3';
 import fetchApi from '../../utils/fetchAPI';
 import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
@@ -73,18 +75,9 @@ const FileUploadModal = (props) => {
   };
 
   const downloadPublicDataset = async () => {
-    const { signedUrl } = await getFromApiExpectOK('/v1/downloadPublicDataset');
-    const link = document.createElement('a');
-    link.style.display = 'none';
-    link.href = signedUrl;
-
-    document.body.appendChild(link);
-    link.click();
-
-    setTimeout(() => {
-      URL.revokeObjectURL(link.href);
-      link.parentNode.removeChild(link);
-    }, 0);
+    const list = await Storage.list();
+    const file = await downloadFromS3('pbmc_3k/');
+    console.log('LIST IS ', list, ' file ', file);
   };
 
   const renderHelpText = () => (
