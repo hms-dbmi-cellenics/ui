@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import * as INI from 'ini';
-import { qcSteps } from './qcSteps';
+import { qcSteps } from '../qcSteps';
 
 const exportQCParameters = (config) => {
   const sortedConfig = qcSteps.map((s, i) => [`${i + 1}-${s}`, config[s] ?? {}]).sort();
