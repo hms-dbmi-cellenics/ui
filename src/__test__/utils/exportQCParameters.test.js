@@ -1,7 +1,7 @@
 import {
   exportQCParameters,
   filterQCParameters,
-} from '../../utils/exportQCParameters';
+} from '../../utils/data-management/exportQCParameters';
 import { qcSteps } from '../../utils/qcSteps';
 
 describe('Export of QC parameters', () => {

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -5,39 +6,42 @@ import {
   Modal, Button, Col, Row,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-
+import { useDispatch } from 'react-redux';
+import { uploadSingleFile } from '../../utils/upload/processUpload';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
 import { bundleToFile } from '../../utils/upload/processUpload';
+import downloadSingleFile from '../../utils/data-management/downloadSingleFile';
 
 // we'll need to remove the hard-coded 10x tech type once we start
 // supporting other types and save the chosen tech type in redux
 const SELECTED_TECH = '10X Chromium';
 
 const UploadDetailsModal = (props) => {
+  const dispatch = useDispatch();
   const {
-    sampleName, file, visible, fileCategory, onUpload, onDownload, onCancel,
+    sampleName, visible, onCancel, uploadDetailsModalDataRef, activeProjectUuid,
   } = props;
-
+  const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current || false;
+  const file = uploadDetailsModalDataRef.current?.file || {};
   const {
     upload = {}, bundle = {},
   } = file;
-
   const status = upload?.status;
-
+  const bundleName = bundle?.name;
   const inputFileRef = useRef(null);
   const [replacementFileBundle, setReplacementFileBundle] = useState(null);
 
   useEffect(() => {
     if (replacementFileBundle) {
       bundleToFile(replacementFileBundle, SELECTED_TECH).then((newFile) => {
-        if (newFile.valid) {  // && newFile.name === file.name ?
-          onUpload(newFile);
+        if (newFile.valid) { // && newFile.name === file.name ?
+          uploadFileBundle(newFile);
         } else {
           pushNotificationMessage('error',
             'The selected file name does not match the expected category.', 2);
         }
-      })
+      });
     }
   }, [replacementFileBundle]);
 
@@ -57,13 +61,21 @@ const UploadDetailsModal = (props) => {
     return `${weekDayName}, ${fullDate} at ${fullTime}`;
   };
 
+  const uploadFileBundle = (newFile) => {
+    if (!uploadDetailsModalDataRef.current) {
+      return;
+    }
+    uploadSingleFile(newFile, activeProjectUuid, sampleUuid, dispatch);
+    onCancel();
+  };
+
   const retryButton = () => (
     <Button
       type='primary'
       key='retry'
       block
       onClick={() => {
-        onUpload(bundle);
+        uploadFileBundle(bundle);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -110,7 +122,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        onDownload();
+        downloadSingleFile(activeProjectUuid, sampleUuid, file.name, bundleName);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -190,21 +202,18 @@ const UploadDetailsModal = (props) => {
 };
 
 UploadDetailsModal.propTypes = {
-  fileCategory: PropTypes.string.isRequired,
   sampleName: PropTypes.string,
   file: PropTypes.object,
   visible: PropTypes.bool,
-  onUpload: PropTypes.func,
-  onDownload: PropTypes.func,
   onCancel: PropTypes.func,
+  activeProjectUuid: PropTypes.string.isRequired,
+  uploadDetailsModalDataRef: PropTypes.object.isRequired,
 };
 
 UploadDetailsModal.defaultProps = {
   sampleName: '',
   file: {},
   visible: true,
-  onUpload: () => { },
-  onDownload: () => { },
   onCancel: () => { },
 };
 
