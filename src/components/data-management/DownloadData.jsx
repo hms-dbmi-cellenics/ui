@@ -47,7 +47,7 @@ const DownloadData = (props) => {
 
   useEffect(() => {
     setAllSamplesAnalysed(getAllSamplesAnalysed());
-  }, [activeProject]);
+  }, [activeProject, experimentSettings]);
 
   const getAllSamplesAnalysed = () => {
     // Returns true only if there is at least one sample in the currently active
@@ -56,7 +56,6 @@ const DownloadData = (props) => {
       return false;
     }
     const steps = Object.values(_.omit(experimentSettings?.processing, ['meta']));
-
     return steps.length > 0
       // eslint-disable-next-line no-prototype-builtins
       && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
