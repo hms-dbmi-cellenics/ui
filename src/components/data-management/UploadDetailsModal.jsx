@@ -7,12 +7,11 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { saveAs } from 'file-saver';
-import { Storage } from 'aws-amplify';
 import { uploadSingleFile } from '../../utils/upload/processUpload';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
 import { bundleToFile } from '../../utils/upload/processUpload';
+import downloadSingleFile from '../../utils/data-management/downloadSingleFile';
 
 // we'll need to remove the hard-coded 10x tech type once we start
 // supporting other types and save the chosen tech type in redux
@@ -60,16 +59,6 @@ const UploadDetailsModal = (props) => {
     const fullTime = date.local().format('HH:mm');
 
     return `${weekDayName}, ${fullDate} at ${fullTime}`;
-  };
-
-  const downloadFile = async () => {
-    const bucketKey = `${activeProjectUuid}/${sampleUuid}/${file.name}`;
-
-    const downloadedS3Object = await Storage.get(bucketKey, { download: true });
-
-    const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
-
-    saveAs(downloadedS3Object.Body, fileNameToSaveWith);
   };
 
   const uploadFileBundle = (newFile) => {
@@ -133,7 +122,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        downloadFile();
+        downloadSingleFile(activeProjectUuid, sampleUuid, file.name, bundleName);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
