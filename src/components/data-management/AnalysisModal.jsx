@@ -33,7 +33,9 @@ const NewExperimentModal = (props) => {
   const [isWorking, setIsWorking] = useState(false);
 
   useEffect(() => {
-    const updatedList = activeProject?.experiments?.map((experimentId) => experiments[experimentId])
+    if (!activeProject?.experiments?.length > 0) return;
+
+    const updatedList = activeProject.experiments.map((experimentId) => experiments[experimentId])
       .filter((experiment) => experiment !== undefined);
 
     setExperimentsList(updatedList);
@@ -48,7 +50,7 @@ const NewExperimentModal = (props) => {
   ];
 
   const renderAnalysisList = () => {
-    if (experimentsList.length === 0) {
+    if (!experimentsList?.length > 0) {
       return (
         <Row justify='center'>
           <ClipLoader size={30} color='#8f0b10' />
@@ -62,7 +64,6 @@ const NewExperimentModal = (props) => {
         bordered
         dataSource={experimentsList}
         itemLayout='vertical'
-        loading={experimentsList?.length === 0}
         renderItem={(experiment) => (
           <List.Item
             key={`${experiment.id}`}
