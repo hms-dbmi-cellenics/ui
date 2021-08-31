@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Card, Space, Descriptions,
+  Card, Space, Descriptions, Skeleton,
 } from 'antd';
 import { blue } from '@ant-design/colors';
 import EditableField from '../EditableField';
@@ -18,7 +18,9 @@ const ProjectsListContainer = (props) => {
   const { height } = props;
   const dispatch = useDispatch();
 
+  const loading = useSelector((state) => state.projects.meta.loading);
   const projects = useSelector((state) => state.projects);
+
   const { activeProjectUuid } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
@@ -50,6 +52,10 @@ const ProjectsListContainer = (props) => {
     existingNames: projectNames,
   };
 
+  if (loading) {
+    return <Skeleton />;
+  }
+
   return (
     <>
       <ProjectDeleteModal
@@ -60,76 +66,78 @@ const ProjectsListContainer = (props) => {
       />
 
       <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
-        {
-          projects.ids.map((uuid) => (
-            <Card
-              data-test-class='project-card'
-              key={uuid}
-              type='primary'
-              style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}
+        <Skeleton loading={loading} paragraph={{ rows: 64 }} active>
+          {
+            projects.ids.map((uuid) => (
+              <Card
+                data-test-class='project-card'
+                key={uuid}
+                type='primary'
+                style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}
 
-              onClick={() => {
-                dispatch(setActiveProject(uuid));
-              }}
-            >
-              <Descriptions
-                layout='horizontal'
-                size='small'
-                column={1}
+                onClick={() => {
+                  dispatch(setActiveProject(uuid));
+                }}
               >
-                <Descriptions.Item contentStyle={{ fontWeight: 700, fontSize: 16 }}>
-                  <EditableField
-                    value={projects[uuid].name}
-                    onAfterSubmit={(name) => {
-                      dispatch(updateProject(uuid, { name }));
-                    }}
-                    onDelete={(e) => {
-                      e.stopPropagation();
-                      setDeleteProjectUuid(uuid);
-                      setDeleteModalVisible(true);
-                    }}
-                    validationFunc={
-                      (name) => validateInputs(
-                        name,
-                        validationChecks,
-                        validationParams,
-                      ).isValid
-                    }
-                  />
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Samples'
+                <Descriptions
+                  layout='horizontal'
+                  size='small'
+                  column={1}
                 >
-                  {projects[uuid].samples.length}
+                  <Descriptions.Item contentStyle={{ fontWeight: 700, fontSize: 16 }}>
+                    <EditableField
+                      value={projects[uuid].name}
+                      onAfterSubmit={(name) => {
+                        dispatch(updateProject(uuid, { name }));
+                      }}
+                      onDelete={(e) => {
+                        e.stopPropagation();
+                        setDeleteProjectUuid(uuid);
+                        setDeleteModalVisible(true);
+                      }}
+                      validationFunc={
+                        (name) => validateInputs(
+                          name,
+                          validationChecks,
+                          validationParams,
+                        ).isValid
+                      }
+                    />
+                  </Descriptions.Item>
+                  <Descriptions.Item
+                    labelStyle={{ fontWeight: 'bold' }}
+                    label='Samples'
+                  >
+                    {projects[uuid].samples.length}
 
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Created'
-                >
-                  <PrettyTime isoTime={projects[uuid].createdDate} />
+                  </Descriptions.Item>
+                  <Descriptions.Item
+                    labelStyle={{ fontWeight: 'bold' }}
+                    label='Created'
+                  >
+                    <PrettyTime isoTime={projects[uuid].createdDate} />
 
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Modified'
-                >
-                  <PrettyTime isoTime={projects[uuid].lastModified} />
+                  </Descriptions.Item>
+                  <Descriptions.Item
+                    labelStyle={{ fontWeight: 'bold' }}
+                    label='Modified'
+                  >
+                    <PrettyTime isoTime={projects[uuid].lastModified} />
 
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Last analyzed'
-                >
-                  {projects[uuid].lastAnalyzed ? (
-                    <PrettyTime isoTime={projects[uuid].lastAnalyzed} />
-                  ) : ('never')}
-                </Descriptions.Item>
-              </Descriptions>
-            </Card>
-          ))
-        }
+                  </Descriptions.Item>
+                  <Descriptions.Item
+                    labelStyle={{ fontWeight: 'bold' }}
+                    label='Last analyzed'
+                  >
+                    {projects[uuid].lastAnalyzed ? (
+                      <PrettyTime isoTime={projects[uuid].lastAnalyzed} />
+                    ) : ('never')}
+                  </Descriptions.Item>
+                </Descriptions>
+              </Card>
+            ))
+          }
+        </Skeleton>
       </Space>
     </>
   );
