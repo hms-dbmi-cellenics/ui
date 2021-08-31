@@ -18,7 +18,7 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
     }
     case 'ClusterCells':
     case 'MarkerHeatmap': {
-      return 0.002 * nCells + 60;
+      return 0.003 * nCells + 60;
     }
     case 'DifferentialExpression': {
       return 180;
