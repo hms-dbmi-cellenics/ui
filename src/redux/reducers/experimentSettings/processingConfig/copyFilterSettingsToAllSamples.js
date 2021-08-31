@@ -8,7 +8,7 @@ const copyFilterSettingsToAllSamples = produce((draft, action) => {
   const { step, sourceSampleId, sampleIds } = action.payload;
 
   const sourceSettings = current(draft.processing[step][sourceSampleId]);
-  const samplesToReplace = [...sampleIds].filter((sampleId) => sampleId !== sourceSampleId);
+  const samplesToReplace = sampleIds.filter((sampleId) => sampleId !== sourceSampleId);
 
   samplesToReplace.forEach((sampleIdToReplace) => {
     draft.processing[step][sampleIdToReplace].auto = sourceSettings.auto;
