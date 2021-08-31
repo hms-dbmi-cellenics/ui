@@ -16,8 +16,9 @@ import {
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
+import { ssrGetCurrentEnvironment } from 'utils/environment';
 import { Storage } from 'aws-amplify';
-import downloadFromS3 from 'utils/data-management/downloadFromS3';
+// import downloadFromS3 from 'utils/data-management/downloadFromS3';
 import fetchApi from '../../utils/fetchAPI';
 import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
@@ -75,9 +76,9 @@ const FileUploadModal = (props) => {
   };
 
   const downloadPublicDataset = async () => {
-    const list = await Storage.list();
-    const file = await downloadFromS3('pbmc_3k/');
-    console.log('LIST IS ', list, ' file ', file);
+    const list = await Storage.list('pbmc_3k/', { bucket: `biomage-public-datasets-${ssrGetCurrentEnvironment()}` });
+    const file = await Storage.get('pbmc_3k/', { bucket: `biomage-public-datasets-${ssrGetCurrentEnvironment()}`, download: true });
+    console.log('LIST IS ', list, 'file ', file);
   };
 
   const renderHelpText = () => (

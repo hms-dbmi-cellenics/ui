@@ -7,12 +7,11 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { saveAs } from 'file-saver';
 import { uploadSingleFile } from '../../utils/upload/processUpload';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
 import { bundleToFile } from '../../utils/upload/processUpload';
-import downloadFromS3 from '../../utils/data-management/downloadFromS3';
+import downloadSingleFile from '../../utils/data-management/downloadSingleFile';
 
 // we'll need to remove the hard-coded 10x tech type once we start
 // supporting other types and save the chosen tech type in redux
@@ -122,10 +121,8 @@ const UploadDetailsModal = (props) => {
       type='primary'
       key='retry'
       block
-      onClick={async () => {
-        const downloadedS3Object = await downloadFromS3(`${activeProjectUuid}/${sampleUuid}/${file.name}`);
-        const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
-        saveAs(downloadedS3Object.Body, fileNameToSaveWith);
+      onClick={() => {
+        downloadSingleFile(activeProjectUuid, sampleUuid, file.name, bundleName);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
