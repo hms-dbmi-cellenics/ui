@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -20,11 +20,14 @@ const ProjectMenu = (props) => {
   const dispatch = useDispatch();
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const projects = useSelector((state) => state.projects);
+  const experimentIds = useSelector((state) => state.experiments.ids);
   const samples = useSelector((state) => state.samples);
   const anyProjectsAvailable = projects?.ids?.length;
   const metadataKeysAvailable = activeProject?.metadataKeys?.length;
 
-  const canLaunchAnalysis = () => {
+  const [canLaunch, setCanLaunch] = useState(false);
+
+  const checkLaunchAnalysis = () => {
     if (activeProject?.samples?.length === 0 || !anyProjectsAvailable) return false;
 
     const allSampleFilesUploaded = (sample) => {
@@ -47,13 +50,24 @@ const ProjectMenu = (props) => {
       return Object.values(sample.metadata).every((value) => value && value.length > 0);
     };
 
-    const canLaunch = activeProject?.samples?.every((sampleUuid) => {
+    const allExperimentDataForAProjectIsLoaded = (project) => !(project?.experiments.length > 0)
+        || project?.experiments.every((experimentId) => experimentIds.includes(experimentId));
+
+    let checkCanLaunch = activeProject?.samples?.every((sampleUuid) => {
       const checkedSample = samples[sampleUuid];
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });
-    return canLaunch;
+
+    checkCanLaunch = checkCanLaunch && allExperimentDataForAProjectIsLoaded(activeProject);
+
+    return checkCanLaunch;
   };
+
+  useEffect(() => {
+    setCanLaunch(checkLaunchAnalysis());
+  }, [projects, samples, activeProjectUuid, experimentIds]);
+
   return (
     <>
       <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -81,8 +95,9 @@ const ProjectMenu = (props) => {
             activeProjectUuid={activeProjectUuid}
           />
           <Button
+            data-test-id='launch-analysis-button'
             type='primary'
-            disabled={!canLaunchAnalysis()}
+            disabled={!canLaunch}
             onClick={() => openAnalysisModal()}
           >
             Launch analysis
