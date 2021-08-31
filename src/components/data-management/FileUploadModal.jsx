@@ -76,9 +76,11 @@ const FileUploadModal = (props) => {
   };
 
   const downloadPublicDataset = async () => {
-    const list = await Storage.list('pbmc_3k/', { bucket: `biomage-public-datasets-${ssrGetCurrentEnvironment()}` });
-    const file = await Storage.get('pbmc_3k/', { bucket: `biomage-public-datasets-${ssrGetCurrentEnvironment()}`, download: true });
-    console.log('LIST IS ', list, 'file ', file);
+    await Storage.get('pbmc_3k.zip',
+      {
+        bucket: `biomage-public-datasets-${ssrGetCurrentEnvironment()}`,
+        download: true,
+      });
   };
 
   const renderHelpText = () => (
