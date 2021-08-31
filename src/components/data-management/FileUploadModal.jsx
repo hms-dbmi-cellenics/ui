@@ -29,7 +29,7 @@ const FileUploadModal = (props) => {
   const { visible, onUpload, onCancel } = props;
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
-  const environment = useSelector((state) => state.networkResources.environment);
+  const environment = useSelector((state) => state?.networkResources?.environment);
 
   const [selectedTech, setSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
