@@ -31,7 +31,7 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
   return axios.request({
     method: 'put',
     url: signedUrl,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     data: loadedFileData,
     onUploadProgress: (progress) => {
       const percentProgress = Math.round((progress.loaded / progress.total) * 100);
