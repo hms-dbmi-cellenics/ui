@@ -4,7 +4,7 @@ import React, {
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Collapse, InputNumber, Form, Select, Typography, Tooltip, Button, Alert,
+  Collapse, InputNumber, Form, Select, Typography, Tooltip, Alert,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -401,7 +401,6 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onConfigChange: PropTypes.func.isRequired,
-  onPipelineRun: PropTypes.func.isRequired,
 };
 
 export default CalculationConfig;

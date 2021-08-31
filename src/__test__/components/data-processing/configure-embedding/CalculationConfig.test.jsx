@@ -1,7 +1,6 @@
 import React from 'react';
-import _ from 'lodash';
 import {
-  Select, Form, Alert, Button,
+  Select, Form,
 } from 'antd';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -120,32 +119,6 @@ describe('Data Processing CalculationConfig', () => {
     expect(form.length).toBeGreaterThan(0);
   });
 
-  it('A changed setting should show an alert', () => {
-    const changedStepStoreState = _.cloneDeep(storeState);
-    changedStepStoreState.experimentSettings.processing.meta.changedQCFilters = new Set(['configureEmbedding']);
-    const store = mockStore(changedStepStoreState);
-
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig
-          experimentId='1234'
-          width={50}
-          height={50}
-          onPipelineRun={mockOnPipelineRun}
-          onConfigChange={mockOnConfigChange}
-        />
-      </Provider>,
-    );
-
-    // The alert should show up.
-    const alert = component.find(Alert);
-    expect(alert.length).toEqual(1);
-
-    // The button should be enabled.
-    const button = component.find(Button);
-    expect(button.at(0).getElement().props.disabled).toEqual(false);
-  });
-
   it('a changed setting should trigger an onConfigChange callback', () => {
     const store = mockStore(storeState);
 
@@ -155,16 +128,10 @@ describe('Data Processing CalculationConfig', () => {
           experimentId='1234'
           width={50}
           height={50}
-          onPipelineRun={mockOnPipelineRun}
           onConfigChange={mockOnConfigChange}
         />
       </Provider>,
     );
-
-    // The Apply button should be disabled.
-    const button = component.find(Button);
-
-    expect(button.at(0).getElement().props.disabled).toEqual(true);
 
     // Switching the embedding type...
     act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
@@ -172,65 +139,5 @@ describe('Data Processing CalculationConfig', () => {
     component.update();
 
     expect(mockOnConfigChange).toHaveBeenCalledTimes(1);
-  });
-
-  it('clicking on button triggers save action and reloading of plot data', async () => {
-    const changedStepStoreState = _.cloneDeep(storeState);
-    changedStepStoreState.experimentSettings.processing.meta.changedQCFilters = new Set(['configureEmbedding']);
-    const store = mockStore(changedStepStoreState);
-
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig
-          experimentId='1234'
-          width={50}
-          height={50}
-          onPipelineRun={mockOnPipelineRun}
-          onConfigChange={mockOnConfigChange}
-        />
-      </Provider>,
-    );
-
-    // Clicking the Apply button.
-    const button = component.find(Button);
-
-    button.simulate('click', {});
-
-    // Should trigger onPipelineRun
-    expect(mockOnPipelineRun).toHaveBeenCalledTimes(1);
-  });
-
-  it('Clicking run with other filters changed triggers the pipeline', async () => {
-    const store = mockStore({
-      ...storeState,
-      experimentSettings: {
-        ...storeState.experimentSettings,
-        processing: {
-          ...storeState.experimentSettings.processing,
-          meta: {
-            changedQCFilters: new Set(['filter1', 'awesomeFilter']),
-          },
-        },
-      },
-    });
-
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig
-          experimentId='1234'
-          width={50}
-          height={50}
-          onPipelineRun={mockOnPipelineRun}
-          onConfigChange={mockOnConfigChange}
-        />
-      </Provider>,
-    );
-
-    act(() => { component.find(Select).at(0).getElement().props.onChange('tsne'); });
-    component.update();
-
-    const runButton = component.find(Button);
-    runButton.simulate('click');
-    expect(mockOnPipelineRun).toBeCalledTimes(1);
   });
 });
