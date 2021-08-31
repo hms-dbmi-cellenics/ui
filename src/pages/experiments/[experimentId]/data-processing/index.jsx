@@ -329,7 +329,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <ConfigureEmbedding
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun()}
           onConfigChange={() => onConfigChange(key)}
         />
       ),
@@ -395,10 +394,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = () => {
+    setRunQCModalVisible(false);
     dispatch(runPipeline(experimentId));
   };
 
-  const renderTitle = () => (
+  const renderRunPipelineModalTitle = () => (
     <>
       <Row justify='space-between'>
         <Col style={{ paddingBottom: '8px' }}>
@@ -569,7 +569,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     </>
   );
 
-  const renderContent = () => {
+  const renderRunPipelineModalContent = () => {
     const { render, key } = steps[stepIdx];
 
     if (pipelineRunning && !isStepComplete(key)) {
@@ -656,9 +656,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <p>This will take several minutes. Your navigation within Cellscope will be restricted during this time. Do you want to start?</p>
       </Modal>
       <Card
-        title={renderTitle()}
+        title={renderRunPipelineModalTitle()}
       >
-        {renderContent()}
+        {renderRunPipelineModalContent()}
       </Card>
     </div>
   );

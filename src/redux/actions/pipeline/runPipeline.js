@@ -12,9 +12,7 @@ import {
 } from '../../actionTypes/backendStatus';
 
 import { saveProcessingSettings } from '../experimentSettings';
-
 import { loadBackendStatus } from '../backendStatus';
-
 import { loadEmbedding } from '../embedding';
 
 const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {

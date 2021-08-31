@@ -13,7 +13,6 @@ import PreloadContent from '../../PreloadContent';
 import { updateFilterSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
 
 import { runCellSetsClustering } from '../../../redux/actions/cellSets';
-import { loadMarkerGenes } from '../../../redux/actions/genes';
 
 import SliderWithInput from '../../SliderWithInput';
 
@@ -33,7 +32,7 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
   + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
-  const { experimentId, onPipelineRun, onConfigChange } = props;
+  const { experimentId, onConfigChange } = props;
   const FILTER_UUID = 'configureEmbedding';
   const dispatch = useDispatch();
 
@@ -310,20 +309,6 @@ const CalculationConfig = (props) => {
           </Form.Item>
           {embeddingMethod === 'umap' && renderUMAPSettings()}
           {embeddingMethod === 'tsne' && renderTSNESettings()}
-
-          <Form.Item>
-            <Tooltip title={!changedQCFilters.size ? 'No outstanding changes' : ''}>
-              <Button
-                type='primary'
-                htmlType='submit'
-                disabled={!changedQCFilters.size}
-                onClick={() => onPipelineRun()}
-                size='medium'
-              >
-                Run
-              </Button>
-            </Tooltip>
-          </Form.Item>
         </Form>
       </Panel>
       <Panel header='Clustering settings' key='clustering-settings'>
