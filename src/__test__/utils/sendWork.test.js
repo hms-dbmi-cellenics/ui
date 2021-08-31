@@ -14,7 +14,9 @@ enableFetchMocks();
 uuidv4.mockImplementation(() => 'my-random-uuid');
 
 jest.mock('uuid');
+
 jest.mock('moment', () => () => jest.requireActual('moment')('4022-01-01T00:00:00.000Z'));
+
 jest.mock('../../utils/socketConnection', () => {
   const mockEmit = jest.fn();
   const mockOn = jest.fn();
@@ -57,19 +59,25 @@ describe('seekFromAPI unit tests', () => {
   beforeEach(() => {
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResolvedValue(
-      new Response('Mock S3 cache miss', { status: 404, statusText: 'Not Found' }),
+
+    fetchMock.mockResolvedValueOnce(
+      {
+        ok: true,
+        json: () => ({
+          results: [
+            {
+              body: JSON.stringify({
+                hello: 'world',
+              }),
+            },
+          ],
+          response: { error: false },
+        }),
+      },
     );
 
     socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
       f({
-        results: [
-          {
-            body: JSON.stringify({
-              hello: 'world',
-            }),
-          },
-        ],
         response: { error: false },
       });
     });
@@ -100,18 +108,11 @@ describe('seekFromAPI unit tests', () => {
 
     socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
       f({
-        results: [
-          {
-            body: JSON.stringify({
-              hello: 'world 2',
-            }),
-          },
-        ],
         response: { error: 'The backend returned an error' },
       });
     });
 
-    expect(seekFromAPI(experimentId, body, timeout, 'deadbeef')).rejects.toEqual(new Error('The backend returned an error'));
+    expect(seekFromAPI(experimentId, body, timeout, 'facefeed')).rejects.toEqual(new Error('The backend returned an error'));
     await flushPromises();
 
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
