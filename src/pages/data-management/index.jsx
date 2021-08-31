@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -15,7 +16,6 @@ import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
 import LoadingModal from '../../components/LoadingModal';
-
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
 
