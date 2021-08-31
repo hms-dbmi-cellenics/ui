@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
@@ -19,16 +19,14 @@ const ContinuousEmbeddingPlot = (props) => {
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
-    (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
+    (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
-
-  const embeddingMethod = useRef(embeddingSettings?.method || 'umap');
 
   const {
     data: embeddingData,
     loading: embeddingLoading,
     error: embeddingError,
-  } = useSelector((state) => state.embeddings[embeddingMethod.current]) || {};
+  } = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
 
   const cellSets = useSelector((state) => state.cellSets);
   const [plotSpec, setPlotSpec] = useState({});
@@ -45,10 +43,10 @@ const ContinuousEmbeddingPlot = (props) => {
       dispatch(loadProcessingSettings(experimentId));
     }
 
-    if (!embeddingData && embeddingMethod.current) {
-      dispatch(loadEmbedding(experimentId, embeddingMethod.current));
+    if (!embeddingData && embeddingSettings?.method) {
+      dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
     }
-  }, [experimentId, embeddingMethod.current]);
+  }, [experimentId, embeddingSettings?.method]);
 
   useEffect(() => {
     if (!embeddingLoading

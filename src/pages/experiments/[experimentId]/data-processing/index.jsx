@@ -398,7 +398,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     dispatch(runPipeline(experimentId));
   };
 
-  const renderRunPipelineModalTitle = () => (
+  const renderTitle = () => (
     <>
       <Row justify='space-between'>
         <Col style={{ paddingBottom: '8px' }}>
@@ -569,7 +569,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     </>
   );
 
-  const renderRunPipelineModalContent = () => {
+  const renderContent = () => {
     const { render, key } = steps[stepIdx];
 
     if (pipelineRunning && !isStepComplete(key)) {
@@ -656,9 +656,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <p>This will take several minutes. Your navigation within Cellscope will be restricted during this time. Do you want to start?</p>
       </Modal>
       <Card
-        title={renderRunPipelineModalTitle()}
+        title={renderTitle()}
       >
-        {renderRunPipelineModalContent()}
+        {renderContent()}
       </Card>
     </div>
   );

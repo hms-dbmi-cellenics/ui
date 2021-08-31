@@ -123,12 +123,17 @@ const generateProcessingConfigMock = (sampleIds) => ({
   },
 });
 
-const generateExperimentSettingsMock = (sampleIds) => ({
-  ...initialState,
-  processing: {
+const generateExperimentSettingsMock = (sampleIds) => {
+  const mockedProcessingConfig = {
     ...initialState.processing,
     ...generateProcessingConfigMock(sampleIds),
-  },
-});
+  };
+
+  return {
+    ...initialState,
+    processing: mockedProcessingConfig,
+    originalProcessing: mockedProcessingConfig,
+  };
+};
 
 export default generateExperimentSettingsMock;
