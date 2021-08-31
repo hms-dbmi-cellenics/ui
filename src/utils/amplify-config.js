@@ -2,7 +2,6 @@ import Environment, { ssrGetCurrentEnvironment } from './environment';
 
 const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
   const currentEnvironment = ssrGetCurrentEnvironment();
-  console.log('ENVIRONMENT IN AMPLIFY CONF IS ', ssrGetCurrentEnvironment());
   const bucketName = `biomage-originals-${currentEnvironment}`;
 
   const storageConfig = {
