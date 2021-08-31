@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { metadataNameToKey } from '../../../utils/metadataUtils';
+import { metadataNameToKey } from '../../../utils/data-management/metadataUtils';
 import {
   PROJECTS_METADATA_DELETE,
 } from '../../actionTypes/projects';

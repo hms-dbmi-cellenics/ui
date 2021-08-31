@@ -10,23 +10,18 @@ import EditableField from '../EditableField';
 // eslint-disable-next-line import/no-extraneous-dependencies
 
 import ProjectDeleteModal from './ProjectDeleteModal';
-import FileUploadModal from './FileUploadModal';
 import { setActiveProject, updateProject, deleteProject as deleteProjectAction } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
-
-import { processUpload } from '../../utils/upload/processUpload';
 import validateInputs, { rules } from '../../utils/validateInputs';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
   const dispatch = useDispatch();
 
-  const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
   const { activeProjectUuid } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
-  const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [projectNames, setProjectNames] = useState(new Set());
 
   useEffect(() => {
@@ -37,11 +32,6 @@ const ProjectsListContainer = (props) => {
     backgroundColor: blue[0],
     cursor: 'pointer',
     border: `2px solid ${blue.primary}`,
-  };
-
-  const uploadFiles = (filesList, sampleType) => {
-    processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
-    setUploadModalVisible(false);
   };
 
   const deleteProject = () => {
@@ -62,11 +52,6 @@ const ProjectsListContainer = (props) => {
 
   return (
     <>
-      <FileUploadModal
-        visible={uploadModalVisible}
-        onCancel={() => { setUploadModalVisible(false); }}
-        onUpload={uploadFiles}
-      />
       <ProjectDeleteModal
         visible={deleteModalVisible}
         onCancel={() => { setDeleteModalVisible(false); }}
@@ -78,7 +63,7 @@ const ProjectsListContainer = (props) => {
         {
           projects.ids.map((uuid) => (
             <Card
-              data-test-id={`project-card-${projects[uuid].name}`}
+              data-test-class='project-card'
               key={uuid}
               type='primary'
               style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}

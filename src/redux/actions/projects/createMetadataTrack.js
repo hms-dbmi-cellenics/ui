@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { metadataNameToKey } from '../../../utils/metadataUtils';
+import { metadataNameToKey } from '../../../utils/data-management/metadataUtils';
 import {
   PROJECTS_METADATA_CREATE,
 } from '../../actionTypes/projects';
@@ -24,7 +24,6 @@ const createMetadataTrack = (
 
   const newProject = _.cloneDeep(project);
   newProject.metadataKeys.push(metadataKey);
-
   try {
     await dispatch(saveProject(projectUuid, newProject));
 

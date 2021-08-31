@@ -377,10 +377,7 @@ const CalculationConfig = (props) => {
               Resolution&nbsp;
               <Tooltip overlay={(
                 <span>
-                  Resolution is a parameter for the Louvain community detection algorithm that affects the size of the recovered clusters.
-                  Smaller resolutions recover smaller, and therefore more clusters,
-                  and conversely, larger values recover fewer clusters containing more data points.
-                  Default: 0.8
+                  Resolution is a parameter for the Louvain community detection algorithm that alters the number of the recovered clusters. Smaller resolution recovers fewer clusters while larger resolution recovers more clusters. The default is 0.8.
                 </span>
               )}
               >
