@@ -2,7 +2,9 @@ import { fetchWork } from '../../../utils/work/fetchWork';
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from '../../actionTypes/cellSets';
+
 import updateCellSetsClustering from './updateCellSetsClustering';
+
 const REQUEST_TIMEOUT = 5 * 60;
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {

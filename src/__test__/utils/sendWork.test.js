@@ -77,11 +77,11 @@ describe('seekFromAPI unit tests', () => {
 
   it('Sends work to the backend when called and returns valid response.', async () => {
     const response = await seekFromAPI(
-      experimentId, body, timeout, 'badbeef',
+      experimentId, body, timeout, 'facefeed',
     );
 
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
-      ETag: 'badbeef',
+      ETag: 'facefeed',
       socketId: '5678',
       experimentId: '1234',
       timeout: '4022-01-01T00:00:30.000Z',
@@ -115,7 +115,7 @@ describe('seekFromAPI unit tests', () => {
     await flushPromises();
 
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
-      ETag: 'deadbeef',
+      ETag: 'facefeed',
       socketId: '5678',
       experimentId: '1234',
       timeout: '4022-01-01T00:00:30.000Z',
