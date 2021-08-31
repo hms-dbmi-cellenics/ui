@@ -222,6 +222,17 @@ describe('ProjectDetails', () => {
     expect(metadataButton).toBeDisabled();
   });
 
+  it('Download dropdown is disabled if there are no samples', () => {
+    const store = createStore(rootReducer, _.cloneDeep(noDataState), applyMiddleware(thunk));
+    render(
+      <Provider store={store}>
+        <ProjectDetails width={width} height={height} />
+      </Provider>,
+    );
+    const downloadDropdown = screen.getByText('Download').closest('button');
+    expect(downloadDropdown).toBeDisabled();
+  });
+
   it('Launch analysis button is enabled if there is data and all metadata for all samples are uplaoded', () => {
     render(
       <Provider store={mockStore(withDataState)}>

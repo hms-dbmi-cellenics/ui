@@ -82,7 +82,7 @@ const DownloadData = (props) => {
       pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
   };
-
+  console.log('ALL SAMPLES ANALYZED IS ', allSamplesAnalysed);
   return (
     <Dropdown
       overlay={() => (
