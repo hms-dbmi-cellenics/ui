@@ -17,6 +17,7 @@ import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-des
 import Dropzone from 'react-dropzone';
 import { Storage } from 'aws-amplify';
 import { saveAs } from 'file-saver';
+import { ssrGetCurrentEnvironment } from 'utils/environment';
 import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import { bundleToFile } from '../../utils/upload/processUpload';
@@ -73,9 +74,10 @@ const FileUploadModal = (props) => {
   };
 
   const downloadPublicDataset = async () => {
+    const environment = ssrGetCurrentEnvironment();
     const s3Object = await Storage.get('pbmc_3k.zip',
       {
-        bucket: 'biomage-public-datasets-production',
+        bucket: `biomage-public-datasets-${environment}`,
         download: true,
       });
     saveAs(s3Object.Body, 'pbmc_3k.zip');
