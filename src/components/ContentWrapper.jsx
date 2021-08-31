@@ -90,7 +90,10 @@ const ContentWrapper = (props) => {
       const io = await connectionPromise;
       const cb = experimentUpdatesHandler(dispatch);
 
+      // Unload all previous socket.io hooks that may have been created for a different
+      // experiment.
       io.off();
+
       io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
     })();
   }, [experimentId]);
