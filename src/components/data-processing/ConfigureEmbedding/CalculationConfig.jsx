@@ -207,7 +207,20 @@ const CalculationConfig = (props) => {
       <Form.Item>
         <Text strong>Settings for t-SNE:</Text>
       </Form.Item>
-      <Form.Item label='Perplexity'>
+      <Form.Item label={(
+        <span>
+          Perplexity &nbsp;
+          <Tooltip title='Determines how to much emphasis should be on local or global aspects of your data.
+          The parameter is, in a sense, a guess about the number of close neighbors each cell has.
+          In most implementations, perplexity defaults to 30. This focuses the attention of t-SNE on preserving the
+          distances to its 30 nearest neighbors and puts virtually no weight on preserving distances to the remaining points.
+          The perplexity value has a complex effect on the resulting pictures.'
+          >
+            <QuestionCircleOutlined />
+          </Tooltip>
+        </span>
+      )}
+      >
         <InputNumber
           value={tsneSettings.perplexity}
           min={5}
@@ -216,16 +229,19 @@ const CalculationConfig = (props) => {
           onPressEnter={(e) => e.preventDefault()}
           onBlur={(e) => setPerplexity(e.target.value)}
         />
-        <Tooltip title='Determines how to much emphasis should be on local or global aspects of your data.
-          The parameter is, in a sense, a guess about the number of close neighbors each cell has.
-          In most implementations, perplexity defaults to 30. This focuses the attention of t-SNE on preserving the
-          distances to its 30 nearest neighbors and puts virtually no weight on preserving distances to the remaining points.
-          The perplexity value has a complex effect on the resulting pictures.'
-        >
-          <QuestionCircleOutlined />
-        </Tooltip>
       </Form.Item>
-      <Form.Item label='Learning rate'>
+      <Form.Item
+        label={(
+          <span>
+            Learning Rate &nbsp;
+            <Tooltip title='If the learning rate is too high, the data may look like a "ball" with any point approximately equidistant from its nearest neighbours.
+          If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'
+            >
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </span>
+        )}
+      >
         <InputNumber
           value={tsneSettings.learningRate}
           min={10}
@@ -236,11 +252,6 @@ const CalculationConfig = (props) => {
           onPressEnter={(e) => e.preventDefault()}
           onBlur={(e) => setLearningRate(e.target.value)}
         />
-        <Tooltip title='If the learning rate is too high, the data may look like a "ball" with any point approximately equidistant from its nearest neighbours.
-          If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'
-        >
-          <QuestionCircleOutlined />
-        </Tooltip>
       </Form.Item>
     </>
   );
