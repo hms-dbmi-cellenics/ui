@@ -3,8 +3,6 @@ import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from '../../actionTypes/cellSets';
 
-import updateCellSetsClustering from './updateCellSetsClustering';
-
 const REQUEST_TIMEOUT = 5 * 60;
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
@@ -40,17 +38,23 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   try {
     await fetchWork(experimentId, body, status, {
       timeout: REQUEST_TIMEOUT,
-      eventCallback: (err, res) => {
-        if (err) {
-          throw err;
-        }
+      // This code is unused right now as we do not currently
+      // support autoamtic updates of clustering information
+      // based on another users' input. This is left here
+      // purely as a demonstration for how `eventCallback` may
+      // be used.
 
-        const louvainSets = JSON.parse(res.results[0].body);
-        const newCellSets = [
-          louvainSets,
-        ];
-        dispatch(updateCellSetsClustering(experimentId, newCellSets));
-      },
+      // eventCallback: (err, res) => {
+      //   if (err) {
+      //     throw err;
+      //   }
+
+      //   const louvainSets = JSON.parse(res.results[0].body);
+      //   const newCellSets = [
+      //     louvainSets,
+      //   ];
+      //   dispatch(updateCellSetsClustering(experimentId, newCellSets));
+      // },
     });
   } catch (e) {
     dispatch({
