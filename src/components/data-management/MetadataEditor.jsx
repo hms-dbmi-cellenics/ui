@@ -57,7 +57,10 @@ const MetadataEditor = (props) => {
   return (
     <Tooltip title='Fill'>
       <Popover title='Fill metadata' content={getContent()} trigger='click'>
-        <Button size='small' shape='circle' icon={<FormatPainterOutlined />} {...restOfProps} />
+        <Button size='small' shape='circle'
+                icon={<FormatPainterOutlined />}
+                data-test-id='fill-species'
+                {...restOfProps} />
       </Popover>
     </Tooltip>
   );

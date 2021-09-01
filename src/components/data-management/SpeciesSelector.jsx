@@ -21,6 +21,7 @@ const SpeciesSelector = (props) => {
       dropdownMatchSelectWidth={400}
       showSearch
       placeholder='Search for common or scientific name...'
+      data-test-class='species-select'
       filterOption={(input, option) => option.searchQuery.includes(input.toLowerCase())}
       dropdownRender={(menu) => (
         <div>
