@@ -57,6 +57,7 @@ const ProjectDetails = ({ width, height }) => {
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromUrlExpectOK,
+    { revalidateOnFocus: false, },
   );
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
