@@ -92,11 +92,10 @@ const SamplesTable = (props) => {
     return <SortableRow index={index} {...otherProps} />;
   };
   const downloadPublicDataset = async () => {
-    const s3Object = await Storage.get('pbmc_3k.zip',
+    const s3Object = await Storage.get('PBMC_3k.zip',
       {
         bucket: `biomage-public-datasets-${environment}`,
-        contentDisposition: 'attachment; filename: "pbmc_3k.zip"',
-        contentType: 'multipart/form-data; boundary=something',
+        contentType: 'multipart/form-data',
       });
     downloadFromUrl(s3Object);
   };
