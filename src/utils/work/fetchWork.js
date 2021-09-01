@@ -55,7 +55,6 @@ const fetchGeneExpressionWork = async (
 
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag);
-  console.warn('The response from S3 is', response);
 
   if (!response) {
     response = await seekFromAPI(
@@ -115,7 +114,6 @@ const fetchWork = async (
 
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag);
-  console.warn('The response from S3 is', response);
 
   // If response cannot be fetched, go to the worker.
   if (!response) {
