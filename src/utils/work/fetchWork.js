@@ -141,8 +141,6 @@ const fetchWork = async (
     await cache.set(ETag, responseData);
   }
 
-  console.log('finally', responseData);
-
   return responseData;
 };
 
