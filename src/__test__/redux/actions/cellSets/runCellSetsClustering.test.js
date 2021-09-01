@@ -15,6 +15,11 @@ jest.mock('../../../../utils/sendWork', () => ({
   default: jest.fn(),
 }));
 
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
+
 const startDate = '2021-01-01T00:00:00';
 
 describe('runCellSetsClustering action', () => {
@@ -85,7 +90,7 @@ describe('runCellSetsClustering action', () => {
     store.dispatch(runCellSetsClustering(experimentId, 0.5));
 
     expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith(experimentId, 300, {
+    expect(sendWork).toHaveBeenCalledWith(experimentId, 60, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',
@@ -106,7 +111,7 @@ describe('runCellSetsClustering action', () => {
     done();
   });
 
-  it('Dispatches error action when sendWord fails', async () => {
+  it('Dispatches error action when sendWork fails', async () => {
     const store = mockStore({
       cellSets: { ...initialState, loading: false },
       experimentSettings: experimentSettingsStore,
@@ -120,7 +125,7 @@ describe('runCellSetsClustering action', () => {
     store.dispatch(runCellSetsClustering(experimentId, 0.5));
 
     expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith(experimentId, 300, {
+    expect(sendWork).toHaveBeenCalledWith(experimentId, 60, {
       name: 'ClusterCells',
       cellSetName: 'Louvain clusters',
       type: 'louvain',

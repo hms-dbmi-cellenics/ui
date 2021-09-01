@@ -13,6 +13,11 @@ import sendWork from '../../../../utils/sendWork';
 
 jest.mock('localforage');
 
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
+
 jest.mock('../../../../utils/sendWork', () => ({
   __esModule: true, // this property makes it work
   default: jest.fn(),

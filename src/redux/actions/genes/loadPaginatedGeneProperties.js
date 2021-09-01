@@ -7,6 +7,7 @@ import {
 } from '../../actionTypes/genes';
 
 import { fetchCachedWork } from '../../../utils/cacheRequest';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadPaginatedGeneProperties = (
   experimentId, properties, componentUuid, tableState,
@@ -42,9 +43,11 @@ const loadPaginatedGeneProperties = (
     body.geneNamesFilter = tableState.geneNamesFilter;
   }
 
+  const timeout = getTimeoutForWorkerTask(getState(), 'ListGenes');
+
   try {
     const { rows, total } = await fetchCachedWork(
-      experimentId, body, status,
+      experimentId, body, status, { timeout },
     );
 
     const loadedProperties = {};

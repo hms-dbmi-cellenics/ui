@@ -18,6 +18,7 @@ const generateProcessingConfigMock = (sampleIds) => ({
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
+      enabled: true,
       filterSettings: {
         minCellSize: 10800,
         binStep: 200,
@@ -28,6 +29,7 @@ const generateProcessingConfigMock = (sampleIds) => ({
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
+      enabled: true,
       filterSettings: {
         method: 'absolute_threshold',
         methodSettings: {
@@ -43,6 +45,7 @@ const generateProcessingConfigMock = (sampleIds) => ({
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
+      enabled: true,
       filterSettings: {
         FDR: 0.1,
       },
@@ -52,6 +55,7 @@ const generateProcessingConfigMock = (sampleIds) => ({
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
+      enabled: true,
       filterSettings: {
         regressionType: 'gam',
         regressionTypeSettings: {
@@ -66,6 +70,7 @@ const generateProcessingConfigMock = (sampleIds) => ({
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
+      enabled: true,
       filterSettings: {
         probabilityThreshold: 0.2,
         binStep: 0.05,
