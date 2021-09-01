@@ -50,7 +50,7 @@ const fetchGeneExpressionWork = async (
 
   const missingGenesBody = { ...body, genes: missingGenes };
   const ETag = createObjectHash({
-    experimentId, missingGenesBody, qcPipelineStartDate, extras, lol: 'tgv 23f23f23222222gv11111fsdfwegwegwe',
+    experimentId, missingGenesBody, qcPipelineStartDate, extras,
   });
 
   // Then, we may be able to find this in S3.
@@ -104,7 +104,7 @@ const fetchWork = async (
   }
 
   const ETag = createObjectHash({
-    experimentId, body, qcPipelineStartDate, extras, lol: '4234r32f2f32322111112222f',
+    experimentId, body, qcPipelineStartDate, extras,
   });
 
   // First, let's try to fetch this information from the local cache.
