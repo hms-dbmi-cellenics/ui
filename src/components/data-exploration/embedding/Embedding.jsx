@@ -47,7 +47,7 @@ const Embedding = (props) => {
   const selectedCellIds = new Set();
 
   const embeddingSettings = useSelector(
-    (state) => state.experimentSettings?.processing?.configureEmbedding?.embeddingSettings,
+    (state) => state.experimentSettings?.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
   const embeddingType = embeddingSettings?.method;
 
