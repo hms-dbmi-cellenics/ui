@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Row, Typography, Space, Button, Col,
 } from 'antd';
+import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 import {
   updateProject,
 } from '../../redux/actions/projects'; import DownloadData from './DownloadData';
@@ -44,7 +45,7 @@ const ProjectMenu = (props) => {
     const allSampleMetadataInserted = (sample) => {
       if (!metadataKeysAvailable) return true;
       if (Object.keys(sample.metadata).length !== metadataKeysAvailable) return false;
-      return Object.values(sample.metadata).every((value) => value && value.length > 0);
+      return Object.values(sample.metadata).every((value) => value.length > 0 && value !== DEFAULT_NA);
     };
 
     const canLaunch = activeProject?.samples?.every((sampleUuid) => {
