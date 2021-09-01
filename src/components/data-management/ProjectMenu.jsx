@@ -86,7 +86,7 @@ const ProjectMenu = (props) => {
             title={
               activeProject?.samples.length > 0
               && !canLaunchAnalysis()
-              && `Ensure all metadata are inserted (no ${DEFAULT_NA}) and all samples are uploaded`
+              && `Ensure all samples are uploaded and all metadata are inserted (no ${DEFAULT_NA})`
             }
           >
             <Button
