@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Typography, Space, Button, Col,
+  Row, Typography, Space, Button, Col, Tooltip,
 } from 'antd';
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 import {
@@ -81,14 +81,21 @@ const ProjectMenu = (props) => {
           <DownloadData
             activeProjectUuid={activeProjectUuid}
           />
-          <Button
-            data-test-id='launch-analysis-button'
-            type='primary'
-            disabled={!canLaunchAnalysis()}
-            onClick={() => openAnalysisModal()}
+          <Tooltip
+            title={
+              !canLaunchAnalysis()
+              && `Ensure all metadata are inserted (no ${DEFAULT_NA}) and all samples are uploaded`
+            }
           >
-            Launch analysis
-          </Button>
+            <Button
+              data-test-id='launch-analysis-button'
+              type='primary'
+              disabled={!canLaunchAnalysis()}
+              onClick={() => openAnalysisModal()}
+            >
+              Launch analysis
+            </Button>
+          </Tooltip>
         </Space>
       </Row>
       <Row>
