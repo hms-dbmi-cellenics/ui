@@ -66,7 +66,7 @@ Object {
 }
 `;
 
-exports[`experimentSettingsReducer Changing filter status updates sample filter settings as well 1`] = `
+exports[`experimentSettingsReducer Changing filter enabled property updates sample filter enabled property as well 1`] = `
 Object {
   "info": Object {
     "experimentId": null,
