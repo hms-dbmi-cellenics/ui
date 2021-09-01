@@ -240,8 +240,7 @@ describe('ProjectDetails', () => {
         <ProjectDetails width={width} height={height} />
       </Provider>,
     );
-
-    expect(screen.getByText('No Data')).toBeDefined();
+    expect(screen.getByText('Start uploading your samples using the “Add samples” button.', { exact: false })).toBeDefined();
   });
 
   it('Shows all the samples that are uploaded', () => {
