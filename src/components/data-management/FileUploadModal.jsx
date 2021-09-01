@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -16,7 +17,7 @@ import {
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 import { Storage } from 'aws-amplify';
-import { saveAs } from 'file-saver';
+import clickLink from 'utils/data-management/clickLink';
 import { useSelector } from 'react-redux';
 import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
@@ -78,9 +79,10 @@ const FileUploadModal = (props) => {
     const s3Object = await Storage.get('pbmc_3k.zip',
       {
         bucket: `biomage-public-datasets-${environment}`,
-        download: true,
+        contentDisposition: 'attachment; filename: "pbmc_3k.zip"',
+        contentType: 'multipart/form-data; boundary=something',
       });
-    saveAs(s3Object.Body, 'pbmc_3k.zip');
+    clickLink(s3Object);
   };
 
   const renderHelpText = () => (
