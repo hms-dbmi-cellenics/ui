@@ -117,7 +117,6 @@ const fetchWork = async (
 
   // If response cannot be fetched, go to the worker.
   if (!response) {
-    console.warn('no response in s3 for', body, 'sending to worker');
     response = await seekFromAPI(
       experimentId,
       body,
