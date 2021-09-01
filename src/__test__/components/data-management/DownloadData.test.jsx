@@ -1,7 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as rtl from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -22,9 +21,7 @@ const projectName = 'Project 1';
 const projectUuid = 'project-1-uuid';
 const projectDescription = 'Some description';
 const experimentId = 'my-experiment-🧬';
-const sample1Name = 'Sample 1';
 const sample1Uuid = 'sample-1';
-const sample2Name = 'Sample 2';
 const sample2Uuid = 'sample-2';
 
 const noDataState = {
@@ -73,8 +70,16 @@ const withDataState = {
           status: 'SUCCEEDED',
         },
         gem2s: {
-          status: 'SUCCEEDEDD',
+          status: 'SUCCEEDED',
         },
+      },
+    },
+  },
+  experimentSettings: {
+    processing: {
+      cellSizeDistribution: {
+        [sample1Uuid]: {},
+        [sample2Uuid]: {},
       },
     },
   },
@@ -120,18 +125,20 @@ describe('Download data menu', () => {
       ...withDataState,
       backendStatus: {
         [experimentId]: {
-          ...withDataState.backendStatus[experimentId],
-          gem2s: {
-            status: 'DEFINETELY NOT SUCCEEDED',
+          status: {
+            ...withDataState.backendStatus[experimentId].status,
+            gem2s: {
+              status: 'DEFINETELY NOT SUCCEEDED',
+            },
           },
         },
       },
     };
     await renderDownloadData(state);
     const options = await getManuItems();
-    expect(options[0]).toHaveAttribute('aria-disabled');
-    expect(options[1]).toHaveAttribute('aria-disabled=false');
-    expect(options[2]).toHaveAttribute('aria-disabled=false');
+    expect(options[0]).toHaveAttribute('aria-disabled', 'true');
+    expect(options[1]).toHaveAttribute('aria-disabled', 'false');
+    expect(options[2]).toHaveAttribute('aria-disabled', 'false');
   });
 
   it('Processed Seurat object option is disabled if qc has not ran', async () => {
@@ -139,19 +146,38 @@ describe('Download data menu', () => {
       ...withDataState,
       backendStatus: {
         [experimentId]: {
-          ...withDataState.backendStatus[experimentId],
-          pipeline: {
-            status: 'DEFINETELY NOT SUCCEEDED',
+          status: {
+            ...withDataState.backendStatus[experimentId].status,
+            pipeline: {
+              status: 'DEFINETELY NOT SUCCEEDED',
+            },
           },
         },
       },
     };
     await renderDownloadData(state);
     const options = await getManuItems();
-    expect(options[1]).toHaveAttribute('aria-disabled');
-    expect(options[0]).toHaveAttribute('aria-disabled');
-    expect(options[2]).toHaveAttribute('aria-disabled=false');
+    expect(options[0]).toHaveAttribute('aria-disabled', 'false');
+    expect(options[1]).toHaveAttribute('aria-disabled', 'true');
+    expect(options[2]).toHaveAttribute('aria-disabled', 'false');
   });
 
-  // it('Data procesing option is disabled ');
+  it('Data procesing settings option is disabled if a step misses a sample', async () => {
+    const state = {
+      ...withDataState,
+      experimentSettings: {
+        processing: {
+          cellSizeDistribution: {
+            [sample1Uuid]: {},
+          },
+        },
+      },
+    };
+
+    await renderDownloadData(state);
+    const options = await getManuItems();
+    expect(options[0]).toHaveAttribute('aria-disabled', 'false');
+    expect(options[1]).toHaveAttribute('aria-disabled', 'false');
+    expect(options[2]).toHaveAttribute('aria-disabled', 'true');
+  });
 });
