@@ -301,6 +301,7 @@ const ProjectDetails = ({ width, height }) => {
             massEdit
           >
             <SpeciesSelector
+              testID='fill-species-select'
               data={sortedSpeciesData}
             />
           </MetadataEditor>

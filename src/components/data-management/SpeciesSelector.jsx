@@ -7,7 +7,7 @@ import {
 const { Text } = Typography;
 
 const SpeciesSelector = (props) => {
-  const { data, value, onChange } = props;
+  const { data, value, onChange, testID } = props;
 
   if (!data || data.length === 0) {
     return <Skeleton.Input style={{ width: 300 }} size='small' />;
@@ -22,6 +22,7 @@ const SpeciesSelector = (props) => {
       showSearch
       placeholder='Search for common or scientific name...'
       data-test-class='species-select'
+      data-test-id={testID}
       filterOption={(input, option) => option.searchQuery.includes(input.toLowerCase())}
       dropdownRender={(menu) => (
         <div>
