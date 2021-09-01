@@ -18,6 +18,11 @@ import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../
 
 jest.mock('localforage');
 
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
+
 jest.mock('../../../../utils/cacheRequest', () => ({
   fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [{
@@ -165,6 +170,7 @@ describe('GeneListTool', () => {
         selectFields: ['gene_names', 'dispersions'],
       },
       backendStatus[experimentId].status,
+      { timeout: 60 },
     );
 
     expect(store.getActions()[0]).toMatchSnapshot();

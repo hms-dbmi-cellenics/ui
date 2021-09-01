@@ -16,6 +16,12 @@ import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from '../../../../redux/actionTyp
 import Loader from '../../../../components/Loader';
 
 jest.mock('localforage');
+
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
+
 jest.mock('../../../../utils/cacheRequest', () => ({
   __esModule: true, // this property makes it work
   fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
@@ -229,6 +235,7 @@ describe('DiffExprResults', () => {
             limit: 4, offset: 0, orderBy: 'gene_names', orderDirection: 'ASC', responseKey: 0,
           },
         },
+        timeout: 60,
       },
     );
 
