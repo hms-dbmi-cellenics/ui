@@ -35,7 +35,8 @@ const NewExperimentModal = (props) => {
   useEffect(() => {
     if (!activeProject?.experiments?.length > 0) return;
 
-    const updatedList = activeProject.experiments.map((experimentId) => experiments[experimentId])
+    const updatedList = activeProject.experiments
+      .map((experimentId) => experiments[experimentId])
       .filter((experiment) => experiment !== undefined);
 
     setExperimentsList(updatedList);
@@ -105,11 +106,11 @@ const NewExperimentModal = (props) => {
                 />
               </strong>
               <EditableField
-                onAfterSubmit={async (description) => {
+                onAfterSubmit={(description) => {
                   dispatch(
                     updateExperiment(experiment.id, { description: description.trim() }),
                   );
-                  await dispatch(saveExperiment(experiment.id));
+                  dispatch(saveExperiment(experiment.id));
                 }}
                 value={experiment.description}
                 deleteEnabled={false}
