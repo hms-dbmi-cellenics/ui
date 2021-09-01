@@ -127,7 +127,7 @@ describe('experimentSettingsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Changing filter status updates sample filter settings as well', () => {
+  it('Changing filter enabled property updates sample filter enabled property as well', () => {
     const newState = experimentSettingsReducer(initialExperimentState,
       {
         type: EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED,
