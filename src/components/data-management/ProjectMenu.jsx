@@ -55,6 +55,7 @@ const ProjectMenu = (props) => {
     });
     return canLaunch;
   };
+
   return (
     <>
       <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -83,7 +84,8 @@ const ProjectMenu = (props) => {
           />
           <Tooltip
             title={
-              !canLaunchAnalysis()
+              activeProject?.samples.length > 0
+              && !canLaunchAnalysis()
               && `Ensure all metadata are inserted (no ${DEFAULT_NA}) and all samples are uploaded`
             }
           >
