@@ -12,7 +12,7 @@ import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from './fileInspector';
 
 const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileName, metadata) => {
-  const baseUrl = `/v1/projects/${projectUuid}/samples/${sampleUuid}/${fileName}/uploadLink`;
+  const baseUrl = `/v1/projects/${projectUuid}/samples/${sampleUuid}/${fileName}/uploadUrl`;
 
   const urlParams = new URLSearchParams(metadata);
   const urlParamsStr = Object.keys(metadata).length ? `?${urlParams}` : '';
