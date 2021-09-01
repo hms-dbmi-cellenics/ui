@@ -16,9 +16,6 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
-import { Storage } from 'aws-amplify';
-import clickLink from 'utils/data-management/clickLink';
-import { useSelector } from 'react-redux';
 import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import { bundleToFile } from '../../utils/upload/processUpload';
@@ -30,7 +27,6 @@ const FileUploadModal = (props) => {
   const { visible, onUpload, onCancel } = props;
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
-  const environment = useSelector((state) => state?.networkResources?.environment);
 
   const [selectedTech, setSelectedTech] = useState('10X Chromium');
   const [canUpload, setCanUpload] = useState(false);
@@ -75,16 +71,6 @@ const FileUploadModal = (props) => {
     setFilesList(newArray);
   };
 
-  const downloadPublicDataset = async () => {
-    const s3Object = await Storage.get('pbmc_3k.zip',
-      {
-        bucket: `biomage-public-datasets-${environment}`,
-        contentDisposition: 'attachment; filename: "pbmc_3k.zip"',
-        contentType: 'multipart/form-data; boundary=something',
-      });
-    clickLink(s3Object);
-  };
-
   const renderHelpText = () => (
     <>
       <Col span={24} style={{ padding: '1rem' }}>
@@ -126,12 +112,6 @@ const FileUploadModal = (props) => {
           <a rel='noreferrer' target='_blank' href={guidanceFileLink}>here</a>
           {' '}
           (opens in new tab).
-        </Paragraph>
-        <Paragraph>
-          Don&apos;t have your own data? You can download an example PBMC dataset
-          {' '}
-          <a onClick={() => downloadPublicDataset()}>here</a>
-          .
         </Paragraph>
       </Col>
     </>

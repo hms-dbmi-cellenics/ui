@@ -3,13 +3,19 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Table, Row, Col } from 'antd';
+import {
+  Table, Row, Col, Typography,
+} from 'antd';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { updateExperiment } from 'redux/actions/experiments';
 import { updateProject } from 'redux/actions/projects';
 import { sortableContainer, sortableElement } from 'react-sortable-hoc';
+import { Storage } from 'aws-amplify';
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+
+const { Paragraph } = Typography;
 
 const SamplesTable = (props) => {
   const { tableColumns, activeProjectUuid, height } = props;
@@ -18,6 +24,7 @@ const SamplesTable = (props) => {
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+  const environment = useSelector((state) => state?.networkResources?.environment);
 
   useEffect(() => {
     if (!activeProject || !samples[activeProject.samples[0]]) {
@@ -84,7 +91,26 @@ const SamplesTable = (props) => {
     const index = tableData.findIndex((x) => x.key === otherProps['data-row-key']);
     return <SortableRow index={index} {...otherProps} />;
   };
+  const downloadPublicDataset = async () => {
+    const s3Object = await Storage.get('pbmc_3k.zip',
+      {
+        bucket: `biomage-public-datasets-${environment}`,
+        contentDisposition: 'attachment; filename: "pbmc_3k.zip"',
+        contentType: 'multipart/form-data; boundary=something',
+      });
+    downloadFromUrl(s3Object);
+  };
 
+  const noDataText = (
+    <Paragraph>
+      Start uploading your samples using the “Add samples” button.
+      <br />
+      Don&apos;t have data? Download an example PBMC dataset
+      {' '}
+      <a onClick={() => downloadPublicDataset()}>here</a>
+      .
+    </Paragraph>
+  );
   return (
     <Row>
       <Col>
@@ -99,6 +125,7 @@ const SamplesTable = (props) => {
           dataSource={tableData}
           sticky
           pagination={false}
+          locale={{ emptyText: noDataText }}
           components={{
             body: {
               wrapper: DragContainer,

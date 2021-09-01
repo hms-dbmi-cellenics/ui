@@ -1,4 +1,4 @@
-const clickLink = (url) => {
+const downloadFromUrl = (url) => {
   const link = document.createElement('a');
   link.style.display = 'none';
   link.href = url;
@@ -11,4 +11,4 @@ const clickLink = (url) => {
     link.parentNode.removeChild(link);
   }, 0);
 };
-export default clickLink;
+export default downloadFromUrl;
