@@ -116,7 +116,6 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
                   experimentId={experimentId}
                   config={config}
                   plotUuid={plotUuid}
-                  plotData={[]}
                 />
               </Panel>
             </Collapse>

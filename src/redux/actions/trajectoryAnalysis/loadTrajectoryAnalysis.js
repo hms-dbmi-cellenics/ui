@@ -25,9 +25,6 @@ const loadTrajectoryAnalysis = (experimentId, rootNode) => async (dispatch, getS
   try {
     const data = await fetchCachedWork(experimentId, body, status);
 
-    console.log('== DATA');
-    console.log(data);
-
     dispatch({
       type: TRAJECTORY_ANALYSIS_LOADED,
       payload: {
@@ -35,9 +32,6 @@ const loadTrajectoryAnalysis = (experimentId, rootNode) => async (dispatch, getS
       },
     });
   } catch (e) {
-    console.log('== ERROR');
-    console.log(e);
-
     dispatch({
       type: TRAJECTORY_ANALYSIS_ERROR,
       payload: {

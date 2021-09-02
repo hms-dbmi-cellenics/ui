@@ -13,14 +13,22 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 const TrajectoryAnalysisPlot = (props) => {
   const {
     experimentId, config, plotUuid,
-    plotData,
-    actions, reloadPlotData,
+    actions,
   } = props;
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
   );
+
+  const {
+    pseudotime: plotData,
+    loading: trajectoryLoading,
+    error: trajectoryError,
+  } = useSelector(
+    (state) => state.trajectoryAnalysis,
+  );
+
   const {
     data: embeddingData,
     loading: embeddingLoading,
@@ -51,16 +59,18 @@ const TrajectoryAnalysisPlot = (props) => {
     if (!embeddingLoading
       && !embeddingError
       && config
-      && plotData?.length > 0
+      && trajectoryLoading
+      && !trajectoryError
       && !cellSets.loading
       && !cellSets.error
+      && plotData?.length > 0
       && embeddingData?.length) {
       setPlotSpec(
         generateSpec(
           config,
           generateData(
             cellSets,
-            config.selectedSample,
+            config.rootNode,
             plotData,
             embeddingData,
           ),
@@ -70,18 +80,7 @@ const TrajectoryAnalysisPlot = (props) => {
   }, [config, plotData, embeddingData, cellSets, embeddingLoading]);
 
   const render = () => {
-    if (embeddingError) {
-      return (
-        <PlatformError
-          error={embeddingError}
-          onClick={() => {
-            reloadPlotData();
-          }}
-        />
-      );
-    }
-
-    if (embeddingLoading || !plotComponent) {
+    if (embeddingLoading || trajectoryLoading || !plotComponent) {
       return (
         <center>
           {fastLoad()}
@@ -104,26 +103,17 @@ const TrajectoryAnalysisPlot = (props) => {
 };
 
 TrajectoryAnalysisPlot.defaultProps = {
-  plotData: null,
   actions: true,
 };
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
-  plotData: PropTypes.array,
   plotUuid: PropTypes.string.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
   ]),
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.bool.isRequired,
-  reloadPlotData: PropTypes.func,
-};
-
-TrajectoryAnalysisPlot.defaultProps = {
-  reloadPlotData: () => { },
 };
 
 export default TrajectoryAnalysisPlot;

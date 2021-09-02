@@ -8,7 +8,7 @@ const generateSpec = (config, plotData) => {
         fill: 'color',
         type: 'gradient',
         orient: config.legend.position,
-        title: config.shownGene,
+        title: 'Pseudotime',
         gradientLength: 100,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
@@ -145,63 +145,20 @@ const generateSpec = (config, plotData) => {
   };
 };
 
-const filterCells = (cellSets, selectedSample, embeddingData) => {
-  let newCellSets = [];
-
-  const cellSetHierarchyKeys = cellSets.hierarchy.map((value) => value.key);
-
-  // Filter by cellSet
-  if (cellSetHierarchyKeys.includes(selectedSample)) {
-    newCellSets = cellSets.hierarchy.find(
-      (rootNode) => rootNode.key === selectedSample,
-    )?.children || [];
-
-    // Build up the data source based on the properties. Note that the child nodes
-    // in the hierarchy are /objects/ with a `key` property, hence the destructuring
-    // in the function.
-    newCellSets = newCellSets.flatMap(({ key }) => {
-      const cells = Array.from(cellSets.properties[key].cellIds);
-
-      return cells.map((cellId) => ({
-        cellId,
-      }));
-    });
-
-    // Filter by sample
-  } else {
-    newCellSets = embeddingData.map((_, cellId) => ({
-      cellId,
-    }));
-
-    if (selectedSample !== 'All') {
-      const cellIds = Array.from(cellSets.properties[selectedSample].cellIds);
-      newCellSets = newCellSets.filter((val) => cellIds.includes(val.cellId));
-    }
-  }
-
-  return newCellSets;
-};
-
 const generateData = (
   cellSets,
-  selectedSample,
+  rootNode,
   plotData,
   embeddingData,
 ) => {
-  const newCellSets = filterCells(cellSets, selectedSample, embeddingData);
-
-  const cells = newCellSets
-    .filter((d) => d.cellId < embeddingData.length)
-    .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
-    .map((data) => {
-      const { cellId } = data;
-
-      return {
-        x: embeddingData[cellId][0],
-        y: embeddingData[cellId][1],
-        pseudotime: plotData[cellId].pseudotime,
-      };
-    });
+  const cells = cellSets.properties[rootNode]
+    .filter((cellId) => cellId < embeddingData.length)
+    .filter((cellId) => embeddingData[cellId]) // filter out cells removed in data processing
+    .map((cellId) => ({
+      x: embeddingData[cellId][0],
+      y: embeddingData[cellId][1],
+      pseudotime: plotData[cellId],
+    }));
 
   return cells;
 };
