@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -9,13 +9,14 @@ import {
 } from '../../redux/actions/projects'; import DownloadData from './DownloadData';
 import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 import UploadStatus from '../../utils/upload/UploadStatus';
+import FileUploadModal from './FileUploadModal';
+import { processUpload } from '../../utils/upload/processUpload';
 
 const { Title, Text, Paragraph } = Typography;
 
 const ProjectMenu = (props) => {
   const {
-    activeProjectUuid, createMetadataColumn, isAddingMetadata,
-    setUploadModalVisible, openAnalysisModal,
+    activeProjectUuid, createMetadataColumn, isAddingMetadata, openAnalysisModal,
   } = props;
   const dispatch = useDispatch();
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
@@ -23,6 +24,7 @@ const ProjectMenu = (props) => {
   const samples = useSelector((state) => state.samples);
   const anyProjectsAvailable = projects?.ids?.length;
   const metadataKeysAvailable = activeProject?.metadataKeys?.length;
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   const canLaunchAnalysis = () => {
     if (activeProject?.samples?.length === 0 || !anyProjectsAvailable) return false;
@@ -54,6 +56,12 @@ const ProjectMenu = (props) => {
     });
     return canLaunch;
   };
+
+  const uploadFiles = (filesList, sampleType) => {
+    processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
+    setUploadModalVisible(false);
+  };
+
   return (
     <>
       <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -68,8 +76,8 @@ const ProjectMenu = (props) => {
           <Button
             disabled={
               !anyProjectsAvailable
-            || activeProject?.samples?.length === 0
-            || isAddingMetadata
+              || activeProject?.samples?.length === 0
+              || isAddingMetadata
             }
             onClick={() => {
               createMetadataColumn();
@@ -90,6 +98,11 @@ const ProjectMenu = (props) => {
           </Button>
         </Space>
       </Row>
+      <FileUploadModal
+        visible={uploadModalVisible}
+        onCancel={() => setUploadModalVisible(false)}
+        onUpload={uploadFiles}
+      />
       <Row>
         <Col>
           {
@@ -119,7 +132,6 @@ ProjectMenu.propTypes = {
   activeProjectUuid: PropTypes.string.isRequired,
   createMetadataColumn: PropTypes.func.isRequired,
   isAddingMetadata: PropTypes.bool.isRequired,
-  setUploadModalVisible: PropTypes.func.isRequired,
   openAnalysisModal: PropTypes.func.isRequired,
 };
 export default ProjectMenu;

@@ -14,7 +14,7 @@ import useSWR from 'swr';
 import moment from 'moment';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
-import FileUploadModal from './FileUploadModal';
+// import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import SamplesTable from './SamplesTable';
@@ -36,7 +36,7 @@ import {
   updateExperiment,
 } from '../../redux/actions/experiments';
 
-import { processUpload } from '../../utils/upload/processUpload';
+// import { processUpload } from '../../utils/upload/processUpload';
 import validateInputs from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
 import '../../utils/css/data-management.css';
@@ -46,7 +46,6 @@ import ProjectMenu from './ProjectMenu';
 const { Text } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
-  const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
 
@@ -77,11 +76,6 @@ const ProjectDetails = ({ width, height }) => {
     'REPLACE_ALL',
     'CLEAR_ALL',
   ];
-
-  const uploadFiles = (filesList, sampleType) => {
-    processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
-    setUploadModalVisible(false);
-  };
 
   useEffect(() => {
     if (activeProject && activeProject.samples.length > 0) {
@@ -332,11 +326,6 @@ const ProjectDetails = ({ width, height }) => {
 
   return (
     <>
-      <FileUploadModal
-        visible={uploadModalVisible}
-        onCancel={() => setUploadModalVisible(false)}
-        onUpload={uploadFiles}
-      />
       <AnalysisModal
         activeProject={activeProject}
         experiments={experiments}
@@ -361,7 +350,6 @@ const ProjectDetails = ({ width, height }) => {
             activeProjectUuid={activeProjectUuid}
             createMetadataColumn={() => createMetadataColumn()}
             isAddingMetadata={isAddingMetadata}
-            setUploadModalVisible={setUploadModalVisible}
             openAnalysisModal={openAnalysisModal}
           />
           <SamplesTable

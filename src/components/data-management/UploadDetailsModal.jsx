@@ -7,10 +7,9 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { uploadSingleFile } from '../../utils/upload/processUpload';
+import { uploadSingleFile, bundleToFile } from '../../utils/upload/processUpload';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
-import { bundleToFile } from '../../utils/upload/processUpload';
 import downloadSingleFile from '../../utils/data-management/downloadSingleFile';
 
 // we'll need to remove the hard-coded 10x tech type once we start
