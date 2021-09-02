@@ -17,8 +17,6 @@ const loadGeneExpression = (
     return null;
   }
 
-  const { status } = getState().backendStatus[experimentId];
-
   const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
 
   // Dispatch loading state.
@@ -62,6 +60,8 @@ const loadGeneExpression = (
   };
 
   try {
+    const { status } = getState().backendStatus[experimentId];
+
     const data = await fetchWork(
       experimentId, body, status,
     );

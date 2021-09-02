@@ -98,8 +98,8 @@ const CellSetsTool = (props) => {
     }
   }, [notifications]);
 
-  const [cellSetTreeData, setCellSetTreeData] = useState();
-  const [metadataTreeData, setMetadataTreeData] = useState();
+  const [cellSetTreeData, setCellSetTreeData] = useState(null);
+  const [metadataTreeData, setMetadataTreeData] = useState(null);
 
   useEffect(() => {
     setCellSetTreeData(composeTree(hierarchy, properties, 'cellSets'));
@@ -115,11 +115,11 @@ const CellSetsTool = (props) => {
     const numSelectedUnfiltered = new Set([...selectedCells]
       .filter((cellIndex) => !filteredCells.current.has(cellIndex)));
     setNumSelected(numSelectedUnfiltered.size);
-  }, [activeTab, allSelected]);
+  }, [activeTab, allSelected, properties]);
 
   const onNodeUpdate = useCallback((key, data) => {
     dispatch(updateCellSetProperty(experimentId, key, data));
-  }, []);
+  }, [experimentId]);
 
   const onNodeDelete = useCallback((key) => {
     dispatch(deleteCellSet(experimentId, key));
@@ -149,6 +149,7 @@ const CellSetsTool = (props) => {
             onCreate={(name, color) => {
               dispatch(createCellSet(experimentId, name, color, union(selected, properties)));
             }}
+            ariaLabel='Union of selected'
             helpTitle='Create new cell set by combining selected sets'
           />
           <CellSetOperation
@@ -158,6 +159,7 @@ const CellSetsTool = (props) => {
                 createCellSet(experimentId, name, color, intersection(selected, properties)),
               );
             }}
+            ariaLabel='Intersection of selected'
             helpTitle='Create new cell set from intersection of selected sets'
           />
           <CellSetOperation
@@ -165,6 +167,7 @@ const CellSetsTool = (props) => {
             onCreate={(name, color) => {
               dispatch(createCellSet(experimentId, name, color, complement(selected, properties)));
             }}
+            ariaLabel='Complement of selected'
             helpTitle='Create new cell set from the complement of the selected sets'
           />
           <Text type='primary' id='selectedCellSets'>
@@ -228,8 +231,10 @@ const CellSetsTool = (props) => {
     );
   };
 
-  if (loading) return <Skeleton active />;
-  if (!cellSetTreeData || !metadataTreeData) return <Skeleton active />;
+  // console.warn(loading, cellSetTreeData, metadataTreeData, allSelected);
+
+  if (loading) return <Skeleton active={false} title={false} />;
+  if (!cellSetTreeData || !metadataTreeData) return <Skeleton active title={false} avatar />;
 
   if (error) {
     return (

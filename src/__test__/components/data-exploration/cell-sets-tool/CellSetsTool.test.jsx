@@ -1,21 +1,26 @@
 import React from 'react';
-import { Tabs } from 'antd';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+
+import {
+  render, screen, fireEvent,
+} from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
+
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
-import {
-  DeleteOutlined,
-} from '@ant-design/icons';
-import CellSetsTool, { generateFilteredCellIndices } from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
-import CellSetOperation from '../../../../components/data-exploration/cell-sets-tool/CellSetOperation';
-import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-const { TabPane } = Tabs;
+import CellSetsTool, { generateFilteredCellIndices } from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 
 jest.mock('localforage');
+
+jest.mock('../../../../utils/socketConnection', () => ({
+  __esModule: true,
+  default: new Promise((resolve) => {
+    resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
+  }),
+}));
 
 const mockStore = configureStore([thunk]);
 
@@ -96,10 +101,11 @@ describe('CellSetsTool', () => {
         },
       ],
       hidden: new Set(),
-      selected: []
+      selected: [],
     },
     genes: {
       expression: {
+        loading: [],
         data: {
           Lyz2: {
             rawExpression: {
@@ -114,61 +120,67 @@ describe('CellSetsTool', () => {
         data: {
           Lyz2: {},
         },
-      }
+      },
     },
   };
 
-  configure({ adapter: new Adapter() });
-
   beforeAll(async () => {
+    enableFetchMocks();
     await preloadAll();
   });
 
-  it('renders correctly', () => {
-    const store = mockStore(storeState);
+  beforeEach(() => {
+    const response = new Response(JSON.stringify({ one: 'one' }));
 
-    const component = mount(
-      <Provider store={store}>
-        <CellSetsTool
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-    waitForComponentToPaint(component);
-    const tabs = component.find(Tabs);
-
-    // There should be one tab container.
-    expect(tabs.length).toEqual(1);
-
-    // It should have two panes.
-    expect(tabs.find(TabPane).length).toEqual(2);
-
-    // There should be one delete button for the scratchpad cluster.
-    expect(component.find(DeleteOutlined).length).toEqual(1);
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResolvedValueOnce(response);
   });
 
-  it('cell set operations should not render when no cell sets are selected', () => {
-    const store = mockStore(storeState);
+  it('renders correctly', async () => {
+    await act(async () => {
+      render(
+        <Provider store={mockStore(storeState)}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
 
-    const component = mount(
-      <Provider store={store}>
-        <CellSetsTool
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-    waitForComponentToPaint(component);
-    const operations = component.find(CellSetOperation);
+    // There should be a tab for cell sets
+    await screen.getByText(/Cell sets/i);
+
+    // There should be a tab for metadata
+    await screen.getByText(/Metadata/i);
+
+    // There should be a delete button for the scratchpad cluster.
+    const deleteButtons = await screen.getAllByLabelText(/Delete/i);
+    expect(deleteButtons.length).toEqual(2);
+  });
+
+  it('cell set operations should not render when no cell sets are selected', async () => {
+    await act(async () => {
+      render(
+        <Provider store={mockStore(storeState)}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
+
+    const cellSetOperations = await screen.queryByLabelText(/of selected$/i);
 
     // There should be no operations rendered
-    expect(operations.length).toEqual(0);
+    expect(cellSetOperations).toEqual(null);
   });
 
-  it('cell set operations should render when cell sets are selected', () => {
+  it('cell set operations should render when cell sets are selected', async () => {
     const store = mockStore(
       {
         ...storeState,
@@ -179,150 +191,167 @@ describe('CellSetsTool', () => {
       },
     );
 
-    const component = mount(
-      <Provider store={store}>
-        <CellSetsTool
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-    waitForComponentToPaint(component);
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
 
-    const operations = component.find(CellSetOperation);
+    const cellSetOperations = await screen.getAllByLabelText(/of selected$/i);
 
-    // There should be three operations rendered (union, intersection, complement)
-    expect(operations.length).toEqual(3);
+    // There should be three operations rendered.
+    expect(cellSetOperations.length).toEqual(3);
   });
 
-  it('cell set operations should work appropriately for unions', () => {
+  it('cell set operations should work appropriately for unions', async () => {
     const store = mockStore(
       {
         ...storeState,
         cellSets: {
           ...storeState.cellSets,
-          selected: {
-            ...storeState.cellSets.selected, cellSets: ['cluster-a', 'cluster-b', 'cluster-c'],
-          },
+          selected: { ...storeState.cellSets.selected, cellSets: ['cluster-a', 'cluster-b', 'cluster-c'] },
         },
       },
     );
 
-    const component = mount(
-      <Provider store={store}>
-        <CellSetsTool
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-    waitForComponentToPaint(component);
-
-    component.find('CellSetOperation').forEach((node) => {
-      const { helpTitle, onCreate } = node.props();
-
-      if (helpTitle.includes('combining')) {
-        // found the union operation, now execute the callback
-        onCreate('union cluster', '#ff00ff');
-        expect(store.getActions().length).toEqual(2);
-
-        // Should create the appropriate union set.
-        const createAction = store.getActions()[1];
-        expect(createAction.payload.cellIds).toEqual(new Set([1, 2, 3, 4, 5]));
-      }
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
     });
 
-    // We should have found the union operation.
-    expect.hasAssertions();
+    const unionOperation = await screen.getByLabelText(/Union of selected$/i);
+    await fireEvent(
+      unionOperation,
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+    const saveButton = await screen.getByLabelText(/Save/i);
+    await fireEvent(
+      saveButton,
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+    // Should create the appropriate union set.
+    const lastAction = store.getActions().length - 1;
+    const createAction = store.getActions()[lastAction];
+    expect(createAction.payload.cellIds).toEqual(new Set([1, 2, 3, 4, 5]));
   });
 
-  it('cell set operations should work appropriately for intersections', () => {
+  it('cell set operations should work appropriately for intersections', async () => {
     const store = mockStore(
       {
         ...storeState,
         cellSets: {
           ...storeState.cellSets,
-          selected: {
-            ...storeState.cellSets.selected, cellSets: ['cluster-a', 'cluster-b', 'cluster-c'],
-          },
+          selected: { ...storeState.cellSets.selected, cellSets: ['cluster-a', 'cluster-b', 'cluster-c'] },
         },
       },
     );
 
-    const component = mount(
-      <Provider store={store}>
-        <CellSetsTool
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-    waitForComponentToPaint(component);
-
-    component.find('CellSetOperation').forEach((node) => {
-      const { helpTitle, onCreate } = node.props();
-
-      if (helpTitle.includes('intersection')) {
-        // found the union operation, now execute the callback
-        onCreate('intersection cluster', '#ff00ff');
-        expect(store.getActions().length).toEqual(2);
-
-        // Should create the appropriate intersection set.
-        const createAction = store.getActions()[1];
-        expect(createAction.payload.cellIds).toEqual(new Set([2]));
-      }
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
     });
 
-    // We should have found the union operation.
-    expect.hasAssertions();
+    const unionOperation = await screen.getByLabelText(/Intersection of selected$/i);
+    await fireEvent(
+      unionOperation,
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+    const saveButton = await screen.getByLabelText(/Save/i);
+    await fireEvent(
+      saveButton,
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+    // Should create the appropriate union set.
+    const lastAction = store.getActions().length - 1;
+    const createAction = store.getActions()[lastAction];
+    expect(createAction.payload.cellIds).toEqual(new Set([2]));
   });
 
-  it('cell set operations should work appropriately for complement', () => {
+  it('cell set operations should work appropriately for complement', async () => {
     const store = mockStore(
       {
         ...storeState,
         cellSets: {
           ...storeState.cellSets,
-          selected: {
-            ...storeState.cellSets.selected, cellSets: ['scratchpad-a', 'cluster-c'],
-          },
+          selected: { ...storeState.cellSets.selected, cellSets: ['scratchpad-a', 'cluster-c'] },
         },
       },
     );
 
-    const component = mount(
-      <Provider store={store}>
-        <CellSetsTool
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-    waitForComponentToPaint(component);
-
-    component.find('CellSetOperation').forEach((node) => {
-      const { helpTitle, onCreate } = node.props();
-
-      if (helpTitle.includes('complement')) {
-        // found the union operation, now execute the callback
-        onCreate('complement cluster', '#ff00ff');
-        expect(store.getActions().length).toEqual(2);
-
-        // Should create the appropriate intersection set.
-        const createAction = store.getActions()[1];
-        expect(createAction.payload.cellIds).toEqual(new Set([1, 4]));
-      }
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
     });
 
-    // We should have found the union operation.
-    expect.hasAssertions();
+    const unionOperation = await screen.getByLabelText(/Complement of selected$/i);
+    await fireEvent(
+      unionOperation,
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+    const saveButton = await screen.getByLabelText(/Save/i);
+
+    await fireEvent(
+      saveButton,
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+    // Should create the appropriate union set.
+    const lastAction = store.getActions().length - 1;
+    const createAction = store.getActions()[lastAction];
+    expect(createAction.payload.cellIds).toEqual(new Set([1, 4]));
   });
 
-  it('selected cell sets show selected in both tabs', () => {
+  it('selected cell sets show selected in both tabs', async () => {
     const store = mockStore(
       {
         ...storeState,
@@ -335,45 +364,89 @@ describe('CellSetsTool', () => {
         },
       },
     );
-    const component = mount(
-      <Provider store={store}>
-        <CellSetsTool
-          experimentId='asd'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-    waitForComponentToPaint(component);
-    const tabs = component.find(Tabs);
-    const text = component.find('#selectedCellSets').first();
-    expect(text.text()).toEqual('3 cells selected');
-    tabs.props().onChange('metadataCategorical');
-    expect(text.text()).toEqual('4 cells selected');
-    tabs.props().onChange('cellSets');
-    expect(text.text()).toEqual('3 cells selected');
+
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
+
+    await screen.getByText(/3 cells selected/i);
+
+    const metadataTabButton = await screen.getByText(/Metadata/i);
+
+    await act(async () => {
+      await fireEvent(
+        metadataTabButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    await screen.getByText(/4 cells selected/i);
+
+    const cellSetTabButton = await screen.getByText(/Cell sets/i);
+
+    await act(async () => {
+      await fireEvent(
+        cellSetTabButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    await screen.getByText(/3 cells selected/i);
   });
 
-  it('Scratchpad cluster deletion works ', () => {
+  it('Scratchpad cluster deletion works ', async () => {
     const store = mockStore(storeState);
-    const component = mount(
-      <Provider store={store}>
-        <CellSetsTool
-          experimentId='asd'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-    waitForComponentToPaint(component);
-    const deleteButton = component.find(DeleteOutlined);
-    expect(deleteButton.length).toEqual(1);
-    expect(store.getActions().length).toEqual(0);
-    deleteButton.simulate('click');
-    expect(store.getActions().length).toEqual(2);
+
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
+
+    // There should be a delete button for the scratchpad cluster.
+    const deleteButtons = await screen.getAllByLabelText(/Delete/i);
+    expect(deleteButtons.length).toEqual(2);
+
+    // Clicking on one of the buttons...
+    await act(async () => {
+      await fireEvent(
+        deleteButtons[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    // ... should trigger a delete
+    const deleteActionCount = store.getActions().filter(
+      (action) => action.type.includes('delete'),
+    ).length;
+
+    expect(deleteActionCount).toEqual(1);
   });
 
-  it('shows an accurate cell count when all cell sets selected', () => {
+  it('shows an accurate cell count when all cell sets selected', async () => {
     const store = mockStore(
       {
         ...storeState,
@@ -387,27 +460,51 @@ describe('CellSetsTool', () => {
       },
     );
 
-    const component = mount(
-      <Provider store={store}>
-        <CellSetsTool
-          experimentId='asd'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
-    waitForComponentToPaint(component);
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
 
-    const tabs = component.find(Tabs);
-    const text = component.find('#selectedCellSets').first();
-    expect(text.text()).toEqual('5 cells selected');
+    await screen.getByText(/5 cells selected/i);
 
-    tabs.props().onChange('metadataCategorical');
-    expect(text.text()).toEqual('5 cells selected');
-  })
+    const metadataTabButton = await screen.getByText(/Metadata/i);
+
+    await act(async () => {
+      await fireEvent(
+        metadataTabButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    await screen.getByText(/5 cells selected/i);
+
+    const cellSetTabButton = await screen.getByText(/Cell sets/i);
+
+    await act(async () => {
+      await fireEvent(
+        cellSetTabButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    await screen.getByText(/5 cells selected/i);
+  });
 
   it('calculates filtered cell indices correctly', () => {
     expect(generateFilteredCellIndices(storeState.genes.expression.data))
-      .toEqual(new Set([0]))
-  })
+      .toEqual(new Set([0]));
+  });
 });

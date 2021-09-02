@@ -8,7 +8,6 @@ import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 jest.mock('localforage');
-jest.mock('../../../../utils/work/fetchWork');
 
 jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
@@ -64,6 +63,7 @@ describe('runCellSetsClustering action', () => {
       cellSets: {
         ...initialState,
         loading: false,
+        error: false,
         hierarchy: [{ children: [], key: 'scratchpad' }],
         properties: {
           scratchpad: {
@@ -83,16 +83,20 @@ describe('runCellSetsClustering action', () => {
 
     seekFromAPI.mockImplementation(() => Promise.resolve());
 
-    store.dispatch(runCellSetsClustering(experimentId, 0.5));
+    await store.dispatch(runCellSetsClustering(experimentId, 0.5));
+    await flushPromises();
 
     expect(seekFromAPI).toHaveBeenCalledTimes(1);
-    expect(seekFromAPI).toHaveBeenCalledWith(experimentId, 300, {
-      name: 'ClusterCells',
-      cellSetName: 'Louvain clusters',
-      type: 'louvain',
-      cellSetKey: 'louvain',
-      config: { resolution: 0.5 },
-    }, backendStatus[experimentId].status);
+    expect(seekFromAPI).toHaveBeenCalledWith(
+      experimentId,
+      {
+        cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
+      },
+      300,
+      '4d66c6ab734a1ce9acc2204fe3601732', // pragma: allowlist secret
+      expect.any(Function),
+      { PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate },
+    );
 
     await flushPromises();
 
@@ -107,9 +111,9 @@ describe('runCellSetsClustering action', () => {
     done();
   });
 
-  it('Dispatches error action when sendWord fails', async () => {
+  it('Dispatches error action when seekFromAPI fails', async () => {
     const store = mockStore({
-      cellSets: { ...initialState, loading: false },
+      cellSets: { ...initialState, loading: false, error: false },
       experimentSettings: experimentSettingsStore,
       backendStatus,
     });
@@ -118,16 +122,20 @@ describe('runCellSetsClustering action', () => {
 
     const flushPromises = () => new Promise(setImmediate);
 
-    store.dispatch(runCellSetsClustering(experimentId, 0.5));
+    await store.dispatch(runCellSetsClustering(experimentId, 0.5));
+    await flushPromises();
 
     expect(seekFromAPI).toHaveBeenCalledTimes(1);
-    expect(seekFromAPI).toHaveBeenCalledWith(experimentId, 300, {
-      name: 'ClusterCells',
-      cellSetName: 'Louvain clusters',
-      type: 'louvain',
-      cellSetKey: 'louvain',
-      config: { resolution: 0.5 },
-    }, backendStatus[experimentId].status);
+    expect(seekFromAPI).toHaveBeenCalledWith(
+      experimentId,
+      {
+        cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
+      },
+      300,
+      '4d66c6ab734a1ce9acc2204fe3601732', // pragma: allowlist secret
+      expect.any(Function),
+      { PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate },
+    );
 
     await flushPromises();
 

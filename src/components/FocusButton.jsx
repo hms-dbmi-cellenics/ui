@@ -33,6 +33,7 @@ const FocusButton = (props) => {
     <Tooltip placement='right' title={`${(focused) ? 'Hide color on' : 'Show color on'} embedding`} destroyTooltipOnHide>
       <Button
         type='dashed'
+        aria-label='Show on embedding'
         style={{ background: 'none' }}
         size='small'
         onClick={onClick}
