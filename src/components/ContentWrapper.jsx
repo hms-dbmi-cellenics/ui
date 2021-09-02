@@ -19,15 +19,13 @@ import {
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
-import { discardChangedQCFilters } from '../redux/actions/experimentSettings';
+import { navigateFromProcessingTo } from '../redux/actions/experimentSettings';
 import { loadBackendStatus } from '../redux/actions/backendStatus';
-import { runPipeline } from '../redux/actions/pipeline';
 
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 
 import PreloadContent from './PreloadContent';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
-import GuardedLink from './GuardedLink';
 
 import ChangesNotAppliedModal from './ChangesNotAppliedModal';
 
@@ -69,15 +67,13 @@ const ContentWrapper = (props) => {
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
-  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
+  const { changedQCFilters } = useSelector((state) => state.experimentSettings.processing.meta);
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
-
-  const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
 
   const setUpConnection = async () => {
     const io = await connectionPromise;
@@ -247,11 +243,10 @@ const ContentWrapper = (props) => {
 
   const transitionToModule = (path) => {
     if (changedQCFilters.size) {
-      setChangesNotAppliedModalPath(path);
-      return;
+      dispatch(navigateFromProcessingTo(path));
+    } else {
+      router.push(path);
     }
-
-    return true;
   };
 
   const renderContent = () => {
@@ -314,38 +309,16 @@ const ContentWrapper = (props) => {
         disabled={noExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
+        onClick={() => transitionToModule(realPath)}
       >
-        <GuardedLink
-          href={realPath}
-          onClick={() => transitionToModule(realPath)}
-        >
-          {name}
-        </GuardedLink>
+        {name}
       </Menu.Item>
     );
   };
 
-  const onRunQC = () => {
-    dispatch(runPipeline(experimentId));
-    setChangesNotAppliedModalPath(null);
-  };
-
-  const onDiscardQC = () => {
-    router.push(changesNotAppliedModalPath);
-    setChangesNotAppliedModalPath(null);
-
-    dispatch(discardChangedQCFilters());
-  };
-
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <ChangesNotAppliedModal
-        steps={changedQCFilters}
-        visible={changesNotAppliedModalPath !== null}
-        onRun={onRunQC}
-        onDiscard={onDiscardQC}
-        onCancel={() => setChangesNotAppliedModalPath(null)}
-      />
+      <ChangesNotAppliedModal experimentId={experimentId} />
 
       <Sider
         width={210}
