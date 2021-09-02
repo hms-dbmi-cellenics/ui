@@ -11,6 +11,7 @@ import SearchMenu from '../../../../components/SearchMenu';
 import heatmap from '../../../../../public/static/media/heatmap.png';
 import embeddingContinuous from '../../../../../public/static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../public/static/media/embeddingCategorical.png';
+import trajectoryAnalysis from '../../../../../public/static/media/trajectoryAnalysis.png';
 import violin from '../../../../../public/static/media/violin.png';
 import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
@@ -47,49 +48,37 @@ CardItem.propTypes = {
 };
 
 const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
-  let lastUpdatedVolcano = useSelector(
+  const lastUpdatedVolcano = useSelector(
     (state) => state.componentConfig.volcanoPlotMain?.lastUpdated,
-  );
-  let lastUpdatedContinuous = useSelector(
-    (state) => state.componentConfig.embeddingContinuousMain?.lastUpdated,
-  );
-  let lastUpdatedCategorical = useSelector(
-    (state) => state.componentConfig.embeddingCategoricalMain?.lastUpdated,
-  );
-  let lastUpdatedHeatmap = useSelector(
-    (state) => state.componentConfig.heatmapPlotMain?.lastUpdated,
-  );
-  let lastUpdatedFrequency = useSelector(
-    (state) => state.componentConfig.frequencyPlotMain?.lastUpdated,
-  );
-  let lastUpdatedViolin = useSelector(
-    (state) => state.componentConfig.violinPlotMain?.lastUpdated,
-  );
-  let lastUpdatedMarkerHeatmap = useSelector(
-    (state) => state.componentConfig.markerHeatmapPlotMain?.lastUpdated,
-  );
+  ) || 'never';
 
-  if (!lastUpdatedVolcano) {
-    lastUpdatedVolcano = 'never';
-  }
-  if (!lastUpdatedContinuous) {
-    lastUpdatedContinuous = 'never';
-  }
-  if (!lastUpdatedCategorical) {
-    lastUpdatedCategorical = 'never';
-  }
-  if (!lastUpdatedHeatmap) {
-    lastUpdatedHeatmap = 'never';
-  }
-  if (!lastUpdatedFrequency) {
-    lastUpdatedFrequency = 'never';
-  }
-  if (!lastUpdatedViolin) {
-    lastUpdatedViolin = 'never';
-  }
-  if (!lastUpdatedMarkerHeatmap) {
-    lastUpdatedMarkerHeatmap = 'never';
-  }
+  const lastUpdatedContinuous = useSelector(
+    (state) => state.componentConfig.embeddingContinuousMain?.lastUpdated,
+  ) || 'never';
+
+  const lastUpdatedCategorical = useSelector(
+    (state) => state.componentConfig.embeddingCategoricalMain?.lastUpdated,
+  ) || 'never';
+
+  const lastUpdatedHeatmap = useSelector(
+    (state) => state.componentConfig.heatmapPlotMain?.lastUpdated,
+  ) || 'never';
+
+  const lastUpdatedFrequency = useSelector(
+    (state) => state.componentConfig.frequencyPlotMain?.lastUpdated,
+  ) || 'never';
+
+  const lastUpdatedViolin = useSelector(
+    (state) => state.componentConfig.violinPlotMain?.lastUpdated,
+  ) || 'never';
+
+  const lastUpdatedMarkerHeatmap = useSelector(
+    (state) => state.componentConfig.markerHeatmapPlotMain?.lastUpdated,
+  ) || 'never';
+
+  const lastUpdatedTrajectoryAnalysis = useSelector(
+    (state) => state.componentConfig.trajectoryAnalysisPlotMain?.lastUpdated,
+  ) || 'never';
 
   const plots = [
     {
@@ -105,6 +94,13 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       key: 'embedding-categorical-key',
       link: 'embedding-categorical',
       description: `Last updated: ${lastUpdatedCategorical}`,
+    },
+    {
+      name: 'Trajectory Analysis',
+      image: trajectoryAnalysis,
+      key: 'trajectory-analysis-key',
+      link: 'trajectory-analysis',
+      description: `Last updated: ${lastUpdatedTrajectoryAnalysis}`,
     },
     {
       name: 'Custom Heatmap',
