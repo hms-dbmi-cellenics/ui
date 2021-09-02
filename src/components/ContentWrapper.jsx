@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -27,6 +27,7 @@ import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing
 
 import PreloadContent from './PreloadContent';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
+import GuardedLink from './GuardedLink';
 
 import ChangesNotAppliedModal from './ChangesNotAppliedModal';
 
@@ -247,9 +248,10 @@ const ContentWrapper = (props) => {
   const transitionToModule = (path) => {
     if (changedQCFilters.size) {
       setChangesNotAppliedModalPath(path);
-    } else {
-      router.push(path);
+      return;
     }
+
+    return true;
   };
 
   const renderContent = () => {
@@ -312,10 +314,13 @@ const ContentWrapper = (props) => {
         disabled={noExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
-        onClick={() => { transitionToModule(realPath); }}
-        onKeyPress={() => { transitionToModule(realPath); }}
       >
-        <a>{name}</a>
+        <GuardedLink
+          href={realPath}
+          onClick={() => transitionToModule(realPath)}
+        >
+          {name}
+        </GuardedLink>
       </Menu.Item>
     );
   };
