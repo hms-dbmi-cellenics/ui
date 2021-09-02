@@ -95,7 +95,7 @@ const trajectoryAnalysisInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  selectedSample: 'All',
+  rootNode: 'louvain-0',
 };
 
 // PLOTS & TABLES - Heatmap

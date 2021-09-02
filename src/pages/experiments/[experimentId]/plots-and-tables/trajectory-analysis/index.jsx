@@ -7,7 +7,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import PlotStyling from 'components/plots/styling/PlotStyling';
-import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
+import SelectCluster from 'components/plots/styling/trajectory-analysis/SelectCluster';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -79,7 +79,7 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
     <>
       <Panel header='Select Data' key='15'>
         {config && !cellSets.loading && !cellSets.error ? (
-          <SelectData
+          <SelectCluster
             config={config}
             onUpdate={updatePlotWithChanges}
             cellSets={cellSets}
