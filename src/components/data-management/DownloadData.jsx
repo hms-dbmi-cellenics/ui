@@ -6,7 +6,6 @@ import {
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
 import { saveAs } from 'file-saver';
 import downloadTypes from 'utils/data-management/downloadTypes';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
@@ -17,11 +16,9 @@ import pipelineStatus from '../../utils/pipelineStatusValues';
 import { exportQCParameters, filterQCParameters } from '../../utils/data-management/exportQCParameters';
 import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
 
-const DownloadData = (props) => {
-  const {
-    activeProjectUuid,
-  } = props;
+const DownloadData = () => {
   const dispatch = useDispatch();
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const experimentSettings = useSelector((state) => state.experimentSettings);
   const backendStatus = useSelector((state) => state.backendStatus);
@@ -143,7 +140,7 @@ const DownloadData = (props) => {
       placement='bottomRight'
       disabled={
         projects.ids.length === 0
-            || activeProject?.samples?.length === 0
+        || activeProject?.samples?.length === 0
       }
     >
       <Button>
@@ -154,7 +151,4 @@ const DownloadData = (props) => {
   );
 };
 
-DownloadData.propTypes = {
-  activeProjectUuid: PropTypes.string.isRequired,
-};
 export default React.memo(DownloadData);

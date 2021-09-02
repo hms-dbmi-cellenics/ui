@@ -6,25 +6,30 @@ import {
 } from 'antd';
 import {
   updateProject,
-} from '../../redux/actions/projects'; import DownloadData from './DownloadData';
+} from '../../redux/actions/projects';
+import DownloadData from './DownloadData';
 import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 import UploadStatus from '../../utils/upload/UploadStatus';
 import FileUploadModal from './FileUploadModal';
+import AnalysisModal from './AnalysisModal';
 import { processUpload } from '../../utils/upload/processUpload';
 
 const { Title, Text, Paragraph } = Typography;
 
 const ProjectMenu = (props) => {
   const {
-    activeProjectUuid, createMetadataColumn, isAddingMetadata, openAnalysisModal,
+    createMetadataColumn, isAddingMetadata,
   } = props;
   const dispatch = useDispatch();
+
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
   const anyProjectsAvailable = projects?.ids?.length;
   const metadataKeysAvailable = activeProject?.metadataKeys?.length;
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
   const canLaunchAnalysis = () => {
     if (activeProject?.samples?.length === 0 || !anyProjectsAvailable) return false;
@@ -85,14 +90,12 @@ const ProjectMenu = (props) => {
           >
             Add metadata
           </Button>
-          <DownloadData
-            activeProjectUuid={activeProjectUuid}
-          />
+          <DownloadData />
           <Button
             data-test-id='launch-analysis-button'
             type='primary'
             disabled={!canLaunchAnalysis()}
-            onClick={() => openAnalysisModal()}
+            onClick={() => setAnalysisModalVisible(true)}
           >
             Launch analysis
           </Button>
@@ -103,35 +106,36 @@ const ProjectMenu = (props) => {
         onCancel={() => setUploadModalVisible(false)}
         onUpload={uploadFiles}
       />
+      <AnalysisModal
+        visible={analysisModalVisible}
+        onLaunch={() => { setAnalysisModalVisible(false); }}
+        onCancel={() => { setAnalysisModalVisible(false); }}
+      />
       <Row>
-        <Col>
-          {
-            activeProjectUuid && (
-              <Space direction='vertical' size='small'>
-                <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
-                <Text strong>Description:</Text>
-                <Paragraph
-                  editable={{
-                    onChange: (description) => dispatch(
-                      updateProject(activeProjectUuid, { description }),
-                    ),
-                  }}
-                >
-                  {activeProject.description}
+        {activeProjectUuid ? (
+          <Col>
+            <Space direction='vertical' size='small'>
+              <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
+              <Text strong>Description:</Text>
+              <Paragraph
+                editable={{
+                  onChange: (description) => dispatch(
+                    updateProject(activeProjectUuid, { description }),
+                  ),
+                }}
+              >
+                {activeProject.description}
 
-                </Paragraph>
-              </Space>
-            )
-          }
-        </Col>
+              </Paragraph>
+            </Space>
+          </Col>
+        ) : (<></>)}
       </Row>
     </>
   );
 };
 ProjectMenu.propTypes = {
-  activeProjectUuid: PropTypes.string.isRequired,
   createMetadataColumn: PropTypes.func.isRequired,
   isAddingMetadata: PropTypes.bool.isRequired,
-  openAnalysisModal: PropTypes.func.isRequired,
 };
 export default ProjectMenu;

@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Typography, Space,
 } from 'antd';
-import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   MenuOutlined,
@@ -11,11 +10,10 @@ import {
 import { sortableHandle } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
-import moment from 'moment';
+// import moment from 'moment';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
-// import FileUploadModal from './FileUploadModal';
-import AnalysisModal from './AnalysisModal';
+// import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import SamplesTable from './SamplesTable';
 import { UploadCell, EditableFieldCell, SampleNameCell } from './SamplesTableCells';
@@ -26,21 +24,16 @@ import {
   updateSample,
 } from '../../redux/actions/samples';
 import {
-  updateProject,
   deleteMetadataTrack,
   createMetadataTrack,
 } from '../../redux/actions/projects';
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
-import {
-  updateExperiment,
-} from '../../redux/actions/experiments';
 
 // import { processUpload } from '../../utils/upload/processUpload';
 import validateInputs from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
 import '../../utils/css/data-management.css';
-import runGem2s from '../../redux/actions/pipeline/runGem2s';
 import ProjectMenu from './ProjectMenu';
 
 const { Text } = Typography;
@@ -51,13 +44,10 @@ const ProjectDetails = ({ width, height }) => {
 
   const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
-  const router = useRouter();
-  const analysisPath = '/experiments/[experimentId]/data-processing';
   const { data: speciesData } = useSWR(
     'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
     getFromUrlExpectOK,
   );
-  const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -65,7 +55,6 @@ const ProjectDetails = ({ width, height }) => {
   const [tableColumns, setTableColumns] = useState([]);
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const [sampleNames, setSampleNames] = useState(new Set());
-  const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
   const validationParams = {
     existingNames: sampleNames,
@@ -314,30 +303,8 @@ const ProjectDetails = ({ width, height }) => {
     },
   ];
 
-  const openAnalysisModal = () => {
-    // Change the line below when multiple experiments in a project is supported
-    setAnalysisModalVisible(true);
-  };
-
-  const launchAnalysis = (experimentId) => {
-    dispatch(runGem2s(experimentId));
-    router.push(analysisPath.replace('[experimentId]', experimentId));
-  };
-
   return (
     <>
-      <AnalysisModal
-        activeProject={activeProject}
-        experiments={experiments}
-        visible={analysisModalVisible}
-        onLaunch={(experimentId) => {
-          const lastViewed = moment().toISOString();
-          dispatch(updateExperiment(experimentId, { lastViewed }));
-          dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
-          launchAnalysis(experimentId);
-        }}
-        onCancel={() => { setAnalysisModalVisible(false); }}
-      />
       <UploadDetailsModal
         sampleName={samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name}
         uploadDetailsModalDataRef={uploadDetailsModalDataRef}
@@ -347,10 +314,8 @@ const ProjectDetails = ({ width, height }) => {
       <div id='project-details' width={width} height={height}>
         <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
           <ProjectMenu
-            activeProjectUuid={activeProjectUuid}
             createMetadataColumn={() => createMetadataColumn()}
             isAddingMetadata={isAddingMetadata}
-            openAnalysisModal={openAnalysisModal}
           />
           <SamplesTable
             height={height}
