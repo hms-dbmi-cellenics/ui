@@ -19,8 +19,9 @@ const ContinuousEmbeddingPlot = (props) => {
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
-    (state) => state.experimentSettings.processing?.configureEmbedding?.embeddingSettings,
+    (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
+
   const {
     data: embeddingData,
     loading: embeddingLoading,
@@ -43,7 +44,7 @@ const ContinuousEmbeddingPlot = (props) => {
     }
 
     if (!embeddingData && embeddingSettings?.method) {
-      dispatch(loadEmbedding(experimentId, embeddingSettings.method));
+      dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
     }
   }, [experimentId, embeddingSettings?.method]);
 
