@@ -47,6 +47,8 @@ const ProjectsListContainer = (props) => {
     setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
   }, [projects.ids]);
 
+  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProjectUuid);
+
   const deleteProject = () => {
     dispatch(deleteProjectAction(deleteProjectUuid));
     setDeleteModalVisible(false);
@@ -72,6 +74,7 @@ const ProjectsListContainer = (props) => {
             .map(([_, project]) => (
               <ProjectCard
                 key={project.uuid}
+                isActive={project.uuid === activeProjectUuid}
                 project={project}
                 onClick={() => {
                   dispatch(setActiveProject(project.uuid));

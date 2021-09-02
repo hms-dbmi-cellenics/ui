@@ -15,7 +15,7 @@ const activeProjectStyle = {
 
 const ProjectCard = (props) => {
   const {
-    project, isActiveProject, onClick, onSubmit, onDelete, validationFn,
+    project, isActive, onClick, onSubmit, onDelete, validationFn,
   } = props;
 
   const { uuid } = project;
@@ -25,7 +25,7 @@ const ProjectCard = (props) => {
       data-test-class='project-card'
       key={uuid}
       type='primary'
-      style={isActiveProject ? activeProjectStyle : { cursor: 'pointer' }}
+      style={isActive ? activeProjectStyle : { cursor: 'pointer' }}
       onClick={onClick}
     >
       <Descriptions
@@ -77,7 +77,7 @@ const ProjectCard = (props) => {
 
 ProjectCard.propTypes = {
   project: PropTypes.object.isRequired,
-  isActiveProject: PropTypes.bool,
+  isActive: PropTypes.bool,
   onClick: PropTypes.func,
   onSubmit: PropTypes.func,
   onDelete: PropTypes.func,
@@ -85,7 +85,7 @@ ProjectCard.propTypes = {
 };
 
 ProjectCard.defaultProps = {
-  isActiveProject: false,
+  isActive: false,
   onClick: () => {},
   onSubmit: () => {},
   onDelete: () => {},
