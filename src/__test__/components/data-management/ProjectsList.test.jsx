@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
-import ProjectsListContainer from '../../../components/data-management/ProjectsListContainer';
+import ProjectsList from '../../../components/data-management/ProjectsList';
 import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 
 jest.mock('localforage');
@@ -46,7 +46,7 @@ const filledStore = mockStore({
   },
 });
 
-describe('ProjectsListContainer', () => {
+describe('ProjectsList', () => {
   beforeAll(async () => {
     await preloadAll();
   });
@@ -54,7 +54,7 @@ describe('ProjectsListContainer', () => {
   it('renders without options', () => {
     const component = mount(
       <Provider store={initialStore}>
-        <ProjectsListContainer />
+        <ProjectsList />
       </Provider>,
     );
 
@@ -64,7 +64,7 @@ describe('ProjectsListContainer', () => {
   it('contains required components', () => {
     const component = mount(
       <Provider store={initialStore}>
-        <ProjectsListContainer />
+        <ProjectsList />
       </Provider>,
     );
 
@@ -77,7 +77,7 @@ describe('ProjectsListContainer', () => {
 
     const component = mount(
       <Provider store={initialStore}>
-        <ProjectsListContainer />
+        <ProjectsList />
       </Provider>,
     );
 
@@ -90,7 +90,7 @@ describe('ProjectsListContainer', () => {
 
     const component = mount(
       <Provider store={filledStore}>
-        <ProjectsListContainer />
+        <ProjectsList />
       </Provider>,
     );
 

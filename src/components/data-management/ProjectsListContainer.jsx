@@ -1,146 +1,165 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect, useCallback } from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
-import {
-  Card, Space, Descriptions,
-} from 'antd';
-import { blue } from '@ant-design/colors';
-import EditableField from '../EditableField';
+import { useDispatch, useSelector } from 'react-redux';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { Space, Button, Input } from 'antd';
 
-import ProjectDeleteModal from './ProjectDeleteModal';
-import { setActiveProject, updateProject, deleteProject as deleteProjectAction } from '../../redux/actions/projects';
-import PrettyTime from '../PrettyTime';
-import validateInputs, { rules } from '../../utils/validateInputs';
+import { validate } from 'uuid';
+
+import { createProject, loadProjects } from '../../redux/actions/projects';
+import { loadExperiments } from '../../redux/actions/experiments';
+import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
+import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
+
+import NewProjectModal from './NewProjectModal';
+import LoadingModal from '../LoadingModal';
+import ProjectsList from './ProjectsList';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
+
   const dispatch = useDispatch();
 
-  const projects = useSelector((state) => state.projects);
-  const { activeProjectUuid } = projects.meta;
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
-  const [projectNames, setProjectNames] = useState(new Set());
+  const [filterParam, setFilterParam] = useState('');
+
+  const debouncedSetFilterParam = useCallback(
+    _.debounce((value) => {
+      setFilterParam(new RegExp(value, 'ig'));
+    }, 400),
+    [],
+  );
+
+  const projectsList = useSelector(((state) => state.projects));
+
+  const {
+    saving: projectSaving,
+  } = projectsList.meta;
+
+  const {
+    saving: sampleSaving,
+  } = useSelector((state) => state.samples.meta);
+
+  const {
+    activeProjectUuid,
+    loading: projectsLoading,
+  } = useSelector((state) => state.projects.meta);
+
+  const experiments = useSelector((state) => state.experiments);
+  const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
+  const [justLoggedIn, setJustLoggedIn] = useState(true);
+  const activeProject = projectsList[activeProjectUuid];
+
+  const existingExperiments = activeProject?.experiments
+    .map((experimentId) => experiments[experimentId]);
+
+  const experimentIds = new Set(experiments.ids);
+  const experimentsAreLoaded = activeProject?.experiments
+    .every((experimentId) => experimentIds.has(experimentId));
+  const isUuid = (uuid) => {
+    const substrings = uuid.split('-');
+
+    // If UUID is prefixed with sandbox_id, remove prefix
+    const projectUuid = substrings.length > 5 ? substrings.slice(-5).join('-') : uuid;
+
+    return validate(projectUuid);
+  };
+
+  // const experimentsAreLoaded = (project, experiments) => {}
+  useEffect(() => {
+    if (projectsList.ids.length === 0) dispatch(loadProjects());
+  }, []);
+
+  const updateRunStatus = async (experimentId) => {
+    dispatch(loadBackendStatus(experimentId));
+  };
 
   useEffect(() => {
-    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
-  }, [projects.ids]);
+    // old experiments don't have a project so the activeProjectUuid will actually be an experiment
+    // ID so the experiments load will fail this should be addressed by migrating experiments.
+    // However, for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
+    // and we should not try to load the experiments with it
 
-  const activeProjectStyle = {
-    backgroundColor: blue[0],
-    cursor: 'pointer',
-    border: `2px solid ${blue.primary}`,
-  };
+    if (
+      !activeProjectUuid
+      || !isUuid(activeProjectUuid)
+      || !projectsList[activeProjectUuid]?.experiments
+      || !projectsList[activeProjectUuid]?.experiments[0]
+    ) return;
 
-  const deleteProject = () => {
-    dispatch(deleteProjectAction(deleteProjectUuid));
-    setDeleteModalVisible(false);
-  };
+    // Right now we have one experiment per project, so we can just load the experiment
+    // This has to be changed when we have more than one experiment
+    const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
 
-  const validationChecks = [
-    rules.MIN_8_CHARS,
-    rules.MIN_2_SEQUENTIAL_CHARS,
-    rules.ALPHANUM_DASH_SPACE,
-    rules.UNIQUE_NAME_CASE_INSENSITIVE,
-  ];
+    dispatch(loadProcessingSettings(activeExperimentId));
 
-  const validationParams = {
-    existingNames: projectNames,
+    if (!experimentsAreLoaded) {
+      dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
+    }
+
+    if (experiments[activeExperimentId]) updateRunStatus(activeExperimentId);
+  }, [activeProjectUuid]);
+
+  useEffect(() => {
+    // only open the modal the first time a user logs in if there are no projects
+    if (justLoggedIn === false || projectsLoading === true) {
+      return;
+    }
+
+    setJustLoggedIn(false);
+
+    if (projectsList.ids.length === 0) {
+      setNewProjectModalVisible(true);
+    }
+  }, [projectsList, projectsLoading]);
+
+  const unnamedExperimentName = 'Unnamed Analysis';
+
+  const createNewProject = (newProjectName, newProjectDescription) => {
+    const numUnnamedExperiments = !existingExperiments?.[0] ? 0
+      : existingExperiments.filter((experiment) => experiment.name.match(`${unnamedExperimentName} `)).length;
+    const newExperimentName = `${unnamedExperimentName} ${numUnnamedExperiments + 1}`;
+
+    dispatch(createProject(newProjectName, newProjectDescription, newExperimentName));
+    setNewProjectModalVisible(false);
   };
 
   return (
     <>
-      <ProjectDeleteModal
-        visible={deleteModalVisible}
-        onCancel={() => { setDeleteModalVisible(false); }}
-        onDelete={deleteProject}
-        projectName={projects[deleteProjectUuid]?.name}
+      <LoadingModal
+        visible={Boolean(projectSaving || sampleSaving)}
+        message={projectSaving ?? sampleSaving ?? ''}
       />
-
-      <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
-        {
-          projects.ids.map((uuid) => (
-            <Card
-              data-test-class='project-card'
-              key={uuid}
-              type='primary'
-              style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}
-
-              onClick={() => {
-                dispatch(setActiveProject(uuid));
-              }}
-            >
-              <Descriptions
-                layout='horizontal'
-                size='small'
-                column={1}
-              >
-                <Descriptions.Item contentStyle={{ fontWeight: 700, fontSize: 16 }}>
-                  <EditableField
-                    value={projects[uuid].name}
-                    onAfterSubmit={(name) => {
-                      dispatch(updateProject(uuid, { name }));
-                    }}
-                    onDelete={(e) => {
-                      e.stopPropagation();
-                      setDeleteProjectUuid(uuid);
-                      setDeleteModalVisible(true);
-                    }}
-                    validationFunc={
-                      (name) => validateInputs(
-                        name,
-                        validationChecks,
-                        validationParams,
-                      ).isValid
-                    }
-                  />
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Samples'
-                >
-                  {projects[uuid].samples.length}
-
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Created'
-                >
-                  <PrettyTime isoTime={projects[uuid].createdDate} />
-
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Modified'
-                >
-                  <PrettyTime isoTime={projects[uuid].lastModified} />
-
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Last analyzed'
-                >
-                  {projects[uuid].lastAnalyzed ? (
-                    <PrettyTime isoTime={projects[uuid].lastAnalyzed} />
-                  ) : ('never')}
-                </Descriptions.Item>
-              </Descriptions>
-            </Card>
-          ))
-        }
+      <NewProjectModal
+        visible={newProjectModalVisible}
+        firstTimeFlow={projectsList.ids.length === 0}
+        onCancel={() => { setNewProjectModalVisible(false); }}
+        onCreate={createNewProject}
+        projects={projectsList}
+      />
+      <Space
+        direction='vertical'
+        style={{ width: '100%' }}
+      >
+        <Button
+          data-test-id='create-new-project-button'
+          type='primary'
+          block
+          onClick={() => setNewProjectModalVisible(true)}
+        >
+          Create New Project
+        </Button>
+        <Input placeholder='Filter by project name, project ID or analysis ID' onChange={(e) => debouncedSetFilterParam(e.target.value)} />
+        <Space direction='vertical' style={{ width: '100%', overflowY: 'auto' }}>
+          <ProjectsList height={height} filter={filterParam} />
+        </Space>
       </Space>
     </>
   );
 };
 
 ProjectsListContainer.propTypes = {
-  height: PropTypes.number,
-};
-
-ProjectsListContainer.defaultProps = {
-  height: 800,
+  height: PropTypes.number.isRequired,
 };
 
 export default ProjectsListContainer;
