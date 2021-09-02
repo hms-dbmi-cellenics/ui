@@ -9,7 +9,6 @@ import {
 } from '@ant-design/icons';
 import { sortableHandle } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
-import useSWR from 'swr';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
 import UploadDetailsModal from './UploadDetailsModal';
@@ -17,7 +16,6 @@ import SamplesTable from './SamplesTable';
 import { UploadCell, EditableFieldCell, SampleNameCell } from './SamplesTableCells';
 import MetadataColumn from './MetadataColumn';
 import MetadataPopover from './MetadataPopover';
-import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 import {
   updateSample,
 } from '../../redux/actions/samples';
@@ -41,16 +39,12 @@ const ProjectDetails = ({ width, height }) => {
 
   const [isAddingMetadata, setIsAddingMetadata] = useState(false);
   const dispatch = useDispatch();
-  const { data: speciesData } = useSWR(
-    'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
-    getFromUrlExpectOK,
-  );
   const samples = useSelector((state) => state.samples);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
   const [tableColumns, setTableColumns] = useState([]);
-  const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
+  // const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
   const [sampleNames, setSampleNames] = useState(new Set());
 
   const validationParams = {
@@ -77,34 +71,6 @@ const ProjectDetails = ({ width, height }) => {
     }
   }, [samples, activeProject]);
 
-  useEffect(() => {
-    if (!speciesData) {
-      return;
-    }
-
-    const commonSpecies = ['hsapiens', 'mmusculus', 'drerio', 'ggallus'];
-
-    const d = [...speciesData].sort((a, b) => {
-      const indexOfA = commonSpecies.indexOf(a.id);
-      const indexOfB = commonSpecies.indexOf(b.id);
-
-      if (indexOfA > -1 && indexOfB > -1) {
-        return indexOfA - indexOfB;
-      }
-
-      if (indexOfA > -1) {
-        return -1;
-      }
-
-      if (indexOfB > -1) {
-        return 1;
-      }
-
-      return a.scientific_name.localeCompare(b.scientific_name);
-    });
-
-    setSortedSpeciesData(d);
-  }, [speciesData]);
   const deleteMetadataColumn = (name) => {
     setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
@@ -210,64 +176,64 @@ const ProjectDetails = ({ width, height }) => {
     return newMetadataColumn;
   };
 
-  const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+  // const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
-  const renderUploadCell = (columnId, tableCellData) => {
-    const {
-      sampleUuid,
-      file,
-    } = tableCellData;
-    const showDetails = () => {
-      uploadDetailsModalDataRef.current = {
-        sampleUuid,
-        fileCategory: columnId,
-        file,
-      };
-      setUploadDetailsModalVisible(true);
-    };
-    return (
-      <UploadCell file={file} showDetails={() => showDetails('barcodes', tableCellData)} />
-    );
-  };
+  // const renderUploadCell = (columnId, tableCellData) => {
+  //   const {
+  //     sampleUuid,
+  //     file,
+  //   } = tableCellData;
+  //   const showDetails = () => {
+  //     uploadDetailsModalDataRef.current = {
+  //       sampleUuid,
+  //       fileCategory: columnId,
+  //       file,
+  //     };
+  //     setUploadDetailsModalVisible(true);
+  //   };
+  //   return (
+  //     <UploadCell file={file} showDetails={() => showDetails('barcodes', tableCellData)} />
+  //   );
+  // };
 
   const columns = [
-    {
-      index: 0,
-      key: 'sort',
-      dataIndex: 'sort',
-      width: 30,
-      render: () => <DragHandle />,
-    },
-    {
-      className: 'data-test-class-sample-cell',
-      index: 1,
-      key: 'sample',
-      title: 'Sample',
-      dataIndex: 'name',
-      fixed: true,
-      render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
-    },
-    {
-      index: 2,
-      key: 'barcodes',
-      title: 'barcodes.tsv',
-      dataIndex: 'barcodes',
-      render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
-    },
-    {
-      index: 3,
-      key: 'genes',
-      title: 'genes.tsv',
-      dataIndex: 'genes',
-      render: (tableCellData) => renderUploadCell('genes', tableCellData),
-    },
-    {
-      index: 4,
-      key: 'matrix',
-      title: 'matrix.mtx',
-      dataIndex: 'matrix',
-      render: (tableCellData) => renderUploadCell('matrix', tableCellData),
-    },
+    // {
+    //   index: 0,
+    //   key: 'sort',
+    //   dataIndex: 'sort',
+    //   width: 30,
+    //   render: () => <DragHandle />,
+    // },
+    // {
+    //   className: 'data-test-class-sample-cell',
+    //   index: 1,
+    //   key: 'sample',
+    //   title: 'Sample',
+    //   dataIndex: 'name',
+    //   fixed: true,
+    //   render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
+    // },
+    // {
+    //   index: 2,
+    //   key: 'barcodes',
+    //   title: 'barcodes.tsv',
+    //   dataIndex: 'barcodes',
+    //   render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
+    // },
+    // {
+    //   index: 3,
+    //   key: 'genes',
+    //   title: 'genes.tsv',
+    //   dataIndex: 'genes',
+    //   render: (tableCellData) => renderUploadCell('genes', tableCellData),
+    // },
+    // {
+    //   index: 4,
+    //   key: 'matrix',
+    //   title: 'matrix.mtx',
+    //   dataIndex: 'matrix',
+    //   render: (tableCellData) => renderUploadCell('matrix', tableCellData),
+    // },
     {
       index: 5,
       key: 'species',
@@ -280,16 +246,13 @@ const ProjectDetails = ({ width, height }) => {
             onClearAll={() => setCells(null, 'species', 'CLEAR_ALL')}
             massEdit
           >
-            <SpeciesSelector
-              data={sortedSpeciesData}
-            />
+            <SpeciesSelector />
           </MetadataEditor>
         </Space>
       ),
       dataIndex: 'species',
       render: (organismId, record) => (
         <SpeciesSelector
-          data={sortedSpeciesData}
           value={organismId}
           onChange={(value) => {
             dispatch(updateSample(record.uuid, { species: value }));
@@ -316,7 +279,6 @@ const ProjectDetails = ({ width, height }) => {
           />
           <SamplesTable
             height={height}
-            activeProjectUuid={activeProjectUuid}
             tableColumns={tableColumns}
           />
         </Space>

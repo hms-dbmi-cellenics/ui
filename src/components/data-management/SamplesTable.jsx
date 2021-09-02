@@ -6,25 +6,93 @@ import PropTypes from 'prop-types';
 import {
   Table, Row, Col, Typography,
 } from 'antd';
+import {
+  MenuOutlined,
+} from '@ant-design/icons';
+import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
+
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { updateExperiment } from 'redux/actions/experiments';
 import { updateProject } from 'redux/actions/projects';
-import { sortableContainer, sortableElement } from 'react-sortable-hoc';
+
 import { Storage } from 'aws-amplify';
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import { UploadCell, SampleNameCell } from './SamplesTableCells';
 
 const { Paragraph } = Typography;
 
 const SamplesTable = (props) => {
-  const { tableColumns, activeProjectUuid, height } = props;
+  const { height, tableColumns } = props;
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
   const environment = useSelector((state) => state?.networkResources?.environment);
+
+  const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+
+  const renderUploadCell = (columnId, tableCellData) => {
+    const {
+      sampleUuid,
+      file,
+    } = tableCellData;
+    const showDetails = () => {
+      console.warn('implement showing file details');
+      // uploadDetailsModalDataRef.current = {
+      //   sampleUuid,
+      //   fileCategory: columnId,
+      //   file,
+      // };
+      // setUploadDetailsModalVisible(true);
+    };
+    return (
+      <UploadCell file={file} showDetails={() => showDetails('barcodes', tableCellData)} />
+    );
+  };
+
+  // const tableColumns = [
+  //   {
+  //     index: 0,
+  //     key: 'sort',
+  //     dataIndex: 'sort',
+  //     width: 30,
+  //     render: () => <DragHandle />,
+  //   },
+  //   {
+  //     className: 'data-test-class-sample-cell',
+  //     index: 1,
+  //     key: 'sample',
+  //     title: 'Sample',
+  //     dataIndex: 'name',
+  //     fixed: true,
+  //     render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
+  //   },
+  //   {
+  //     index: 2,
+  //     key: 'barcodes',
+  //     title: 'barcodes.tsv',
+  //     dataIndex: 'barcodes',
+  //     render: (tableCellData) => renderUploadCell('barcodes', tableCellData),
+  //   },
+  //   {
+  //     index: 3,
+  //     key: 'genes',
+  //     title: 'genes.tsv',
+  //     dataIndex: 'genes',
+  //     render: (tableCellData) => renderUploadCell('genes', tableCellData),
+  //   },
+  //   {
+  //     index: 4,
+  //     key: 'matrix',
+  //     title: 'matrix.mtx',
+  //     dataIndex: 'matrix',
+  //     render: (tableCellData) => renderUploadCell('matrix', tableCellData),
+  //   },
+  // ];
 
   useEffect(() => {
     if (!activeProject || !samples[activeProject.samples[0]]) {
@@ -139,7 +207,6 @@ const SamplesTable = (props) => {
 
 SamplesTable.propTypes = {
   height: PropTypes.number.isRequired,
-  activeProjectUuid: PropTypes.string.isRequired,
   tableColumns: PropTypes.array.isRequired,
 };
 

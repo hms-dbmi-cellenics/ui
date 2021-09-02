@@ -1,15 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import useSWR from 'swr';
+
 import {
   Select, Typography, Space, Divider, Skeleton,
 } from 'antd';
+import { getFromUrlExpectOK } from '../../utils/getDataExpectOK';
 
 const { Text } = Typography;
 
 const SpeciesSelector = (props) => {
-  const { data, value, onChange } = props;
+  const { value, onChange } = props;
 
-  if (!data || data.length === 0) {
+  const { data: speciesData } = useSWR(
+    'https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/',
+    getFromUrlExpectOK,
+  );
+  const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
+
+  useEffect(() => {
+    if (!speciesData) {
+      return;
+    }
+
+    const commonSpecies = ['hsapiens', 'mmusculus', 'drerio', 'ggallus'];
+
+    const d = [...speciesData].sort((a, b) => {
+      const indexOfA = commonSpecies.indexOf(a.id);
+      const indexOfB = commonSpecies.indexOf(b.id);
+
+      if (indexOfA > -1 && indexOfB > -1) {
+        return indexOfA - indexOfB;
+      }
+
+      if (indexOfA > -1) {
+        return -1;
+      }
+
+      if (indexOfB > -1) {
+        return 1;
+      }
+
+      return a.scientific_name.localeCompare(b.scientific_name);
+    });
+
+    setSortedSpeciesData(d);
+  }, [speciesData]);
+
+  if (!sortedSpeciesData || sortedSpeciesData.length === 0) {
     return <Skeleton.Input style={{ width: 300 }} size='small' />;
   }
 
@@ -48,10 +86,10 @@ const SpeciesSelector = (props) => {
         </div>
       )}
       options={
-        data.map((organism) => ({
+        sortedSpeciesData.map((organism) => ({
           value: organism.id,
-          displayName: organism.display_name,
-          scientificName: organism.scientific_name,
+          // displayName: organism.display_name,
+          // scientificName: organism.scientific_name,
           searchQuery: `${organism.display_name} ${organism.scientific_name}`.toLowerCase(),
           label: (
             <Space direction='vertical'>
@@ -68,7 +106,6 @@ const SpeciesSelector = (props) => {
 };
 
 SpeciesSelector.propTypes = {
-  data: PropTypes.array.isRequired,
   value: PropTypes.string,
   onChange: PropTypes.func,
 };
