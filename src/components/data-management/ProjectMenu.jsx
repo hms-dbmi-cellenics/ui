@@ -78,7 +78,7 @@ const ProjectMenu = (props) => {
           >
             Add samples
           </Button>
-          <Button
+          {/* <Button
             disabled={
               !anyProjectsAvailable
               || activeProject?.samples?.length === 0
@@ -89,7 +89,7 @@ const ProjectMenu = (props) => {
             }}
           >
             Add metadata
-          </Button>
+          </Button> */}
           <DownloadData />
           <Button
             data-test-id='launch-analysis-button'
