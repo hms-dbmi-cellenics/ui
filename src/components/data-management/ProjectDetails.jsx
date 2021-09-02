@@ -10,10 +10,8 @@ import {
 import { sortableHandle } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
-// import moment from 'moment';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataEditor from './MetadataEditor';
-// import AnalysisModal from './AnalysisModal';
 import UploadDetailsModal from './UploadDetailsModal';
 import SamplesTable from './SamplesTable';
 import { UploadCell, EditableFieldCell, SampleNameCell } from './SamplesTableCells';
@@ -30,7 +28,6 @@ import {
 
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
-// import { processUpload } from '../../utils/upload/processUpload';
 import validateInputs from '../../utils/validateInputs';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
 import '../../utils/css/data-management.css';

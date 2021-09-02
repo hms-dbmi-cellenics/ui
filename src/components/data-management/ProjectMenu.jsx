@@ -103,8 +103,8 @@ const ProjectMenu = (props) => {
       </Row>
       <FileUploadModal
         visible={uploadModalVisible}
-        onCancel={() => setUploadModalVisible(false)}
         onUpload={uploadFiles}
+        onCancel={() => setUploadModalVisible(false)}
       />
       <AnalysisModal
         visible={analysisModalVisible}

@@ -14,7 +14,7 @@ import { ClipLoader } from 'react-spinners';
 import moment from 'moment';
 import { useRouter } from 'next/router';
 import EditableField from '../EditableField';
-import { updateExperiment, saveExperiment } from '../../redux/actions/experiments';
+import { updateExperiment } from '../../redux/actions/experiments';
 import {
   updateProject,
 } from '../../redux/actions/projects';
@@ -39,7 +39,6 @@ const AnalysisModal = (props) => {
 
   const [experimentsList, setExperimentsList] = useState([]);
   const [numFieldsEditing, setNumFieldsEditing] = useState(0);
-  const [isWorking, setIsWorking] = useState(false);
 
   useEffect(() => {
     if (!activeProject?.experiments?.length > 0) return;
@@ -50,13 +49,9 @@ const AnalysisModal = (props) => {
 
     setExperimentsList(updatedList);
   }, [activeProject, experiments]);
-  useEffect(() => {
-    setIsWorking(!visible);
-  }, [visible]);
 
   const onLaunchAnalysis = (experimentId) => {
     console.log('Launching this analysis');
-    setIsWorking(true);
     onLaunch(experimentId);
 
     const analysisPath = '/experiments/[experimentId]/data-processing';
@@ -94,7 +89,7 @@ const AnalysisModal = (props) => {
                     onClick={() => {
                       onLaunchAnalysis(experiment.id);
                     }}
-                    disabled={numFieldsEditing > 0 || isWorking}
+                    disabled={numFieldsEditing > 0}
                   >
                     Launch
                   </Button>
@@ -106,7 +101,9 @@ const AnalysisModal = (props) => {
               <strong>
                 <EditableField
                   onAfterSubmit={async (name) => {
-                    dispatch(updateExperiment(experiment.id, { name: name.trim() }));
+                    dispatch(
+                      updateExperiment(experiment.id, { name: name.trim() }),
+                    );
                   }}
                   value={experiment.name}
                   deleteEnabled={false}
@@ -120,7 +117,6 @@ const AnalysisModal = (props) => {
                   dispatch(
                     updateExperiment(experiment.id, { description: description.trim() }),
                   );
-                  dispatch(saveExperiment(experiment.id));
                 }}
                 value={experiment.description}
                 deleteEnabled={false}
