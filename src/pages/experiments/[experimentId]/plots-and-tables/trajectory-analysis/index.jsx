@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Row, Col, Space, Collapse, Skeleton,
 } from 'antd';
@@ -19,8 +19,8 @@ import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 const { Panel } = Collapse;
 
 const route = {
-  path: 'embedding-continuous',
-  breadcrumbName: 'Continuous Embedding',
+  path: 'trajectory-analysis',
+  breadcrumbName: 'Trajectory Analysis',
 };
 
 // TODO: when we want to enable users to create their custom plots,
@@ -43,10 +43,6 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
   };
 
   const plotStylingControlsConfig = [
-    {
-      panelTitle: 'Expression Values',
-      controls: ['expressionValuesCapping'],
-    },
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -110,9 +106,9 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
                   experimentId={experimentId}
                   config={config}
                   plotUuid={plotUuid}
-                  plotData={}
-                  loading={}
-                  error={}
+                  plotData={[]}
+                  loading={false}
+                  error={false}
                 />
               </Panel>
             </Collapse>

@@ -71,6 +71,33 @@ const embeddingContinuousInitialConfig = {
   selectedSample: 'All',
 };
 
+// PLOTS & TABLES - Continuous Embedding
+const trajectoryAnalysisInitialConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'UMAP 1',
+    yAxisText: 'UMAP 2',
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  labels: labelBaseState,
+  selectedSample: 'All',
+};
+
 // PLOTS & TABLES - Heatmap
 const heatmapInitialConfig = {
   spec: '1.0.0',
@@ -696,6 +723,7 @@ const initialPlotConfigStates = {
   doubletScoreHistogram,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
+  trajectoryAnalysis: trajectoryAnalysisInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,

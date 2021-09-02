@@ -5,7 +5,7 @@ import { Vega } from 'react-vega';
 import { fastLoad } from '../Loader';
 
 import PlatformError from '../PlatformError';
-import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingContinuousSpec';
+import { generateSpec, generateData } from '../../utils/plotSpecs/generateTrajectoryAnalysisSpec';
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadEmbedding } from '../../redux/actions/embedding';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
@@ -13,7 +13,7 @@ import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 const TrajectoryAnalysisPlot = (props) => {
   const {
     experimentId, config, plotUuid,
-    plotData, truncatedPlotData,
+    plotData,
     actions, loading, error, reloadPlotData,
   } = props;
   const dispatch = useDispatch();
@@ -61,7 +61,7 @@ const TrajectoryAnalysisPlot = (props) => {
           generateData(
             cellSets,
             config.selectedSample,
-            config.truncatedValues ? truncatedPlotData : plotData,
+            plotData,
             embeddingData,
           ),
         ),
@@ -112,7 +112,6 @@ TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotData: PropTypes.array,
-  truncatedPlotData: PropTypes.array,
   plotUuid: PropTypes.string.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
@@ -125,7 +124,6 @@ TrajectoryAnalysisPlot.propTypes = {
 
 TrajectoryAnalysisPlot.defaultProps = {
   reloadPlotData: () => { },
-  truncatedPlotData: null,
 };
 
 export default TrajectoryAnalysisPlot;
