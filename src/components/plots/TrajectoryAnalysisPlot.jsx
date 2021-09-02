@@ -14,7 +14,7 @@ const TrajectoryAnalysisPlot = (props) => {
   const {
     experimentId, config, plotUuid,
     plotData,
-    actions, loading, error, reloadPlotData,
+    actions, reloadPlotData,
   } = props;
   const dispatch = useDispatch();
 
@@ -70,10 +70,10 @@ const TrajectoryAnalysisPlot = (props) => {
   }, [config, plotData, embeddingData, cellSets, embeddingLoading]);
 
   const render = () => {
-    if (error) {
+    if (embeddingError) {
       return (
         <PlatformError
-          error={error}
+          error={embeddingError}
           onClick={() => {
             reloadPlotData();
           }}
@@ -81,7 +81,7 @@ const TrajectoryAnalysisPlot = (props) => {
       );
     }
 
-    if (loading || embeddingLoading || !plotComponent) {
+    if (embeddingLoading || !plotComponent) {
       return (
         <center>
           {fastLoad()}

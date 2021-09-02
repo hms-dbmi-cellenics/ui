@@ -14,6 +14,7 @@ import projectsReducer from './projects';
 import sampleReducer from './samples';
 import networkResourcesReducer from './networkResources';
 import backendStatusReducer from './backendStatus';
+import trajectoryAnalysisReducer from './trajectoryAnalysis';
 
 export default combineReducers({
   cellInfo: cellInfoReducer,
@@ -30,4 +31,5 @@ export default combineReducers({
   projects: projectsReducer,
   samples: sampleReducer,
   networkResources: networkResourcesReducer,
+  trajectoryAnalysis: trajectoryAnalysisReducer,
 });

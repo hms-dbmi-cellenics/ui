@@ -13,8 +13,10 @@ import {
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
+import { loadTrajectoryAnalysis } from 'redux/actions/trajectoryAnalysis';
 import Header from 'components/plots/Header';
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 
 const { Panel } = Collapse;
 
@@ -31,11 +33,19 @@ const plotType = 'trajectoryAnalysis';
 const TrajectoryAnalysisIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const cellSets = useSelector((state) => state?.cellSets);
+  const cellSets = useSelector((state) => state.cellSets);
+
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    dispatch(loadCellSets(experimentId));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (cellSets.hierarchy.length === 0) dispatch(loadCellSets(experimentId));
+    dispatch(loadProcessingSettings(experimentId));
   }, []);
+
+  useEffect(() => {
+    if (config?.rootNode && !cellSets.loading && !cellSets.error) {
+      dispatch(loadTrajectoryAnalysis(experimentId, config.rootNode));
+    }
+  }, [config]);
 
   // updateField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updateField) => {
@@ -107,8 +117,6 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
                   config={config}
                   plotUuid={plotUuid}
                   plotData={[]}
-                  loading={false}
-                  error={false}
                 />
               </Panel>
             </Collapse>
@@ -121,6 +129,7 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
+              defaultActiveKey={15}
             />
           </Space>
         </Col>
