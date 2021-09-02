@@ -147,41 +147,6 @@ const SamplesTable = (props) => {
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
   };
 
-  const createMetadataColumn = () => {
-    setIsAddingMetadata(true);
-
-    const key = temporaryMetadataKey(tableColumns);
-    const metadataColumn = {
-      key,
-      fixed: 'right',
-      title: () => (
-        <MetadataPopover
-          existingMetadata={activeProject.metadataKeys}
-          onCreate={(name) => {
-            const newMetadataColumn = createInitializedMetadataColumn(name);
-
-            setTableColumns([...tableColumns, newMetadataColumn]);
-            dispatch(createMetadataTrack(name, activeProjectUuid));
-
-            setIsAddingMetadata(false);
-          }}
-          onCancel={() => {
-            deleteMetadataColumn(key);
-            setIsAddingMetadata(false);
-          }}
-          message='Provide new metadata track name'
-          visible
-        >
-          <Space>
-            New Metadata Track
-          </Space>
-        </MetadataPopover>
-      ),
-      width: 200,
-    };
-    setTableColumns([...tableColumns, metadataColumn]);
-  };
-
   const createInitializedMetadataColumn = (name) => {
     const key = metadataNameToKey(name);
 
@@ -216,6 +181,46 @@ const SamplesTable = (props) => {
       ),
     };
     return newMetadataColumn;
+  };
+
+  const onMetadataCreate = (name) => {
+    console.log('**** onCreate', name);
+    const newMetadataColumn = createInitializedMetadataColumn(name);
+
+    setTableColumns([...tableColumns, newMetadataColumn]);
+    dispatch(createMetadataTrack(name, activeProjectUuid));
+
+    setIsAddingMetadata(false);
+  };
+
+  const createMetadataColumn = () => {
+    setIsAddingMetadata(true);
+
+    const key = temporaryMetadataKey(tableColumns);
+    const metadataCreateColumn = {
+      key,
+      fixed: 'right',
+      title: () => (
+        <MetadataPopover
+          existingMetadata={activeProject.metadataKeys}
+          onCreate={(name) => {
+            onMetadataCreate(name);
+          }}
+          onCancel={() => {
+            deleteMetadataColumn(key);
+            setIsAddingMetadata(false);
+          }}
+          message='Provide new metadata track name'
+          visible
+        >
+          <Space>
+            New Metadata Track
+          </Space>
+        </MetadataPopover>
+      ),
+      width: 200,
+    };
+    setTableColumns([...tableColumns, metadataCreateColumn]);
   };
 
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -369,7 +374,7 @@ const SamplesTable = (props) => {
         disabled={
           !anyProjectsAvailable
           || activeProject?.samples?.length === 0
-          || isAddingMetadata
+          // || isAddingMetadata
         }
         onClick={() => {
           createMetadataColumn();
@@ -406,7 +411,6 @@ const SamplesTable = (props) => {
 
 SamplesTable.propTypes = {
   height: PropTypes.number.isRequired,
-  // tableColumns: PropTypes.array.isRequired,
 };
 
 export default React.memo(SamplesTable);
