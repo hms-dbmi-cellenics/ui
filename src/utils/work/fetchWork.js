@@ -59,11 +59,10 @@ const fetchGeneExpressionWork = async (
   if (!response) {
     response = await seekFromAPI(
       experimentId,
-      body,
+      missingGenesBody,
       timeout,
       ETag,
       null,
-      missingGenesBody,
       {
         ETagPipelineRun: qcPipelineStartDate,
         ...extras,

@@ -113,7 +113,7 @@ const mockGet = jest.fn((x) => {
 const mockSet = jest.fn();
 const mockRemove = jest.fn();
 
-const mockseekFromAPI = jest.fn((experimentId, timeout, body) => {
+const mockseekFromAPI = jest.fn((experimentId, body) => {
   const wantedGenes = body.genes;
   const returnedBody = {};
   wantedGenes.forEach((gene) => {
@@ -139,7 +139,7 @@ jest.mock('../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
   seekFromAPI: jest.fn(
-    (experimentId, timeout, body) => mockseekFromAPI(experimentId, timeout, body),
+    (experimentId, body, timeout) => mockseekFromAPI(experimentId, body, timeout),
   ),
 }));
 
@@ -164,11 +164,11 @@ describe('tests for fetchWork', () => {
       },
       { timeout: 10 },
     );
-    expect(res).toEqual({ D: fakeData.D });
-    expect(mockseekFromAPI).toHaveBeenCalledWith(experimentId, 10, { name: 'GeneExpression', genes: ['D'] });
+    expect(mockseekFromAPI).toHaveBeenCalledWith(experimentId, { name: 'GeneExpression', genes: ['D'] }, 10);
     expect(mockGet).toHaveBeenCalledTimes(4);
     expect(mockSet).toHaveBeenCalledTimes(1);
     expect(mockSet).toHaveBeenCalledWith(fakeCacheKeyMappings.D, fakeData.D);
+    expect(res).toEqual({ D: fakeData.D });
   });
 });
 
