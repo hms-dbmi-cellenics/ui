@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
   Space, Col, Row, Typography, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
-import SamplesTableOld from './SamplesTableOld';
+import SamplesTable from './SamplesTable';
 import ProjectMenu from './ProjectMenu';
 import {
   updateProject,
@@ -19,10 +19,7 @@ const ProjectDetails = ({ width, height }) => {
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-
-  const [creatingMetadataColumn, setCreatingMetadataColumn] = useState(false);
-
-  console.log('***** ', creatingMetadataColumn);
+  const samplesTableRef = useRef();
 
   return (
     <div id='project-details' width={width} height={height}>
@@ -30,7 +27,7 @@ const ProjectDetails = ({ width, height }) => {
         <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Title level={3}>{activeProject?.name}</Title>
           <Space>
-            <Button onClick={() => setCreatingMetadataColumn(true)}>Fake add metadata</Button>
+            <Button onClick={() => samplesTableRef.current.createMetadataColumn()}>Add metadata</Button>
             <ProjectMenu />
           </Space>
         </Row>
@@ -56,10 +53,10 @@ const ProjectDetails = ({ width, height }) => {
           {' '}
 
         </Row>
-        <SamplesTableOld
+        <SamplesTable
           height={height}
-          creatingMetadataColumn={creatingMetadataColumn}
-          setCreatingMetadataColumn={setCreatingMetadataColumn}
+          ref={samplesTableRef}
+
         />
       </Space>
     </div>
