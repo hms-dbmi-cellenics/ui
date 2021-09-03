@@ -20,6 +20,8 @@ const ProjectDetails = ({ width, height }) => {
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const samplesTableRef = useRef();
+  const projects = useSelector((state) => state.projects);
+  const anyProjectsAvailable = projects?.ids?.length;
 
   return (
     <div id='project-details' width={width} height={height}>
@@ -27,7 +29,16 @@ const ProjectDetails = ({ width, height }) => {
         <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Title level={3}>{activeProject?.name}</Title>
           <Space>
-            <Button onClick={() => samplesTableRef.current.createMetadataColumn()}>Add metadata</Button>
+            <Button
+              disabled={
+                !anyProjectsAvailable
+                || activeProject?.samples?.length === 0
+              }
+              onClick={() => samplesTableRef.current.createMetadataColumn()}
+            >
+              Add metadata
+
+            </Button>
             <ProjectMenu />
           </Space>
         </Row>
