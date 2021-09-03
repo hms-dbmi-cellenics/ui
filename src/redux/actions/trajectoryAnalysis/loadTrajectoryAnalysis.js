@@ -10,7 +10,9 @@ const loadTrajectoryAnalysis = (experimentId, rootNode) => async (dispatch, getS
 
   if (loading) return;
 
-  const { cellIds } = getState().cellSets.properties[rootNode];
+  const cellSetKey = rootNode.split('/')[1];
+
+  const { cellIds } = getState().cellSets.properties[cellSetKey];
   const { status } = getState().backendStatus[experimentId];
 
   dispatch({

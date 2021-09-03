@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 import { fastLoad } from '../Loader';
 
-import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateTrajectoryAnalysisSpec';
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadEmbedding } from '../../redux/actions/embedding';
@@ -59,11 +58,10 @@ const TrajectoryAnalysisPlot = (props) => {
     if (!embeddingLoading
       && !embeddingError
       && config
-      && trajectoryLoading
+      && !trajectoryLoading
       && !trajectoryError
       && !cellSets.loading
       && !cellSets.error
-      && plotData?.length > 0
       && embeddingData?.length) {
       setPlotSpec(
         generateSpec(
@@ -71,7 +69,7 @@ const TrajectoryAnalysisPlot = (props) => {
           generateData(
             cellSets,
             config.rootNode,
-            plotData,
+            plotData['1'],
             embeddingData,
           ),
         ),

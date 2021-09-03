@@ -37,7 +37,7 @@ const SelectCluster = (props) => {
           Select the cellset to use as root node
         </span>
         <Select
-          defaultValue={config.rootNode || `${parents[0].value}-0`}
+          defaultValue={config.rootNode || `${parents[0].value}/${parents[0].value}-0`}
           style={{ width: 200 }}
           onChange={(value) => {
             handleChange(value);
@@ -46,7 +46,7 @@ const SelectCluster = (props) => {
           {parents.map((parent) => (
             <OptGroup label={properties[parent.value].name}>
               {getMetadataOptions(parent.value).map((option) => (
-                <Option value={option.key}>{properties[option.key].name}</Option>
+                <Option value={`${parent.value}/${option.key}`}>{properties[option.key].name}</Option>
               ))}
             </OptGroup>
           ))}

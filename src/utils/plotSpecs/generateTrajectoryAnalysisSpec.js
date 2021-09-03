@@ -40,7 +40,7 @@ const generateSpec = (config, plotData) => {
     scales: [
       {
         name: 'x',
-        type: 'point',
+        type: 'linear',
         round: true,
         nice: true,
         domain: { data: 'plotData', field: 'x' },
@@ -151,16 +151,25 @@ const generateData = (
   plotData,
   embeddingData,
 ) => {
-  const cells = cellSets.properties[rootNode]
-    .filter((cellId) => cellId < embeddingData.length)
-    .filter((cellId) => embeddingData[cellId]) // filter out cells removed in data processing
+  const parentNode = rootNode.split('/')[0];
+
+  const cellSetKeys = cellSets.hierarchy.find(({ key }) => key === parentNode)
+    .children.map(({ key }) => key);
+
+  const cells = cellSetKeys.reduce(
+    (cellSet, clusterKey) => cellSet.concat(Array.from(cellSets.properties[clusterKey].cellIds)),
+    [],
+  );
+
+  const data = cells
+    .filter((cellId) => embeddingData[cellId] !== null)
     .map((cellId) => ({
       x: embeddingData[cellId][0],
       y: embeddingData[cellId][1],
       pseudotime: plotData[cellId],
     }));
 
-  return cells;
+  return data;
 };
 
 export {
