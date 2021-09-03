@@ -2,13 +2,16 @@
 const generateSpec = (config, plotData) => {
   let legend = [];
 
+  console.log('== DATA');
+  console.log(plotData);
+
   if (config.legend.enabled) {
     legend = [
       {
         fill: 'color',
         type: 'gradient',
         orient: config.legend.position,
-        title: 'Pseudotime',
+        title: 'pseudotime',
         gradientLength: 100,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
@@ -33,8 +36,12 @@ const generateSpec = (config, plotData) => {
     padding: 5,
     data: [
       {
-        name: 'plotData',
-        values: plotData,
+        name: 'pseudotime',
+        values: plotData.pseudotime,
+      },
+      {
+        name: 'graph',
+        values: plotData.graph,
       },
     ],
     scales: [
@@ -43,7 +50,7 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         round: true,
         nice: true,
-        domain: { data: 'plotData', field: 'x' },
+        domain: { data: 'pseudotime', field: 'x' },
         range: 'width',
       },
       {
@@ -51,7 +58,7 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         round: true,
         nice: true,
-        domain: { data: 'plotData', field: 'y' },
+        domain: { data: 'pseudotime', field: 'y' },
         range: 'height',
       },
       {
@@ -62,7 +69,7 @@ const generateSpec = (config, plotData) => {
             ? (config.colour.toggleInvert === '#FFFFFF' ? 'plasma' : 'darkgreen')
             : config.colour.gradient,
         },
-        domain: { data: 'plotData', field: 'pseudotime' },
+        domain: { data: 'pseudotime', field: 'value' },
         reverse: config.colour.reverseCbar,
       },
     ],
@@ -111,7 +118,7 @@ const generateSpec = (config, plotData) => {
       {
         type: 'symbol',
         shape: 'circle',
-        from: { data: 'plotData' },
+        from: { data: 'pseudotime' },
         encode: {
           enter: {
             xc: { scale: 'x', field: 'x' },
@@ -119,18 +126,29 @@ const generateSpec = (config, plotData) => {
             size: { value: config.marker.size },
             stroke: {
               scale: 'color',
-              field: 'pseudotime',
+              field: 'value',
             },
             fill: {
               scale: 'color',
-              field: 'pseudotime',
+              field: 'value',
             },
             shape: { value: config.marker.shape },
             fillOpacity: { value: config.marker.opacity / 10 },
           },
         },
       },
-
+      {
+        type: 'line',
+        from: { data: 'graph' },
+        encode: {
+          enter: {
+            x: { scale: 'x', field: 'x1' },
+            x2: { scale: 'x', field: 'x2' },
+            y: { scale: 'y', field: 'y1' },
+            y2: { scale: 'y', field: 'y2' },
+          },
+        },
+      },
     ],
     legends: legend,
     title:
@@ -161,15 +179,22 @@ const generateData = (
     [],
   );
 
-  const data = cells
+  const pseudotime = cells
     .filter((cellId) => embeddingData[cellId] !== null)
     .map((cellId) => ({
       x: embeddingData[cellId][0],
       y: embeddingData[cellId][1],
-      pseudotime: plotData[cellId],
+      value: plotData.pseudotime['1'][cellId],
     }));
 
-  return data;
+  // Object inside the graph data has to be copied because it is not extensible
+  // https://github.com/vega/vega/issues/2125
+  const graph = plotData.graph.map((o) => ({ ...o }));
+
+  return {
+    pseudotime,
+    graph,
+  };
 };
 
 export {

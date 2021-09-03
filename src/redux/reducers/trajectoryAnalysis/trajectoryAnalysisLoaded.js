@@ -8,7 +8,7 @@ const trajectoryAnalysisLoaded = produce((draft, action) => {
 
   draft.loading = false;
   draft.error = false;
-  draft.pseudotime = data;
+  draft.plotData = data;
 }, initialState);
 
 export default trajectoryAnalysisLoaded;

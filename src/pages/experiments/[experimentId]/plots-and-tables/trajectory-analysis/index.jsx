@@ -45,7 +45,7 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
     if (config?.rootNode && !cellSets.loading && !cellSets.error) {
       dispatch(loadTrajectoryAnalysis(experimentId, config.rootNode));
     }
-  }, [config]);
+  }, [config, cellSets]);
 
   // updateField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updateField) => {

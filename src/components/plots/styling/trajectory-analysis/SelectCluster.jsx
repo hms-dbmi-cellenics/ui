@@ -44,9 +44,9 @@ const SelectCluster = (props) => {
           }}
         >
           {parents.map((parent) => (
-            <OptGroup label={properties[parent.value].name}>
+            <OptGroup key={parent.value} label={properties[parent.value].name}>
               {getMetadataOptions(parent.value).map((option) => (
-                <Option value={`${parent.value}/${option.key}`}>{properties[option.key].name}</Option>
+                <Option key={option.key} value={`${parent.value}/${option.key}`}>{properties[option.key].name}</Option>
               ))}
             </OptGroup>
           ))}

@@ -21,7 +21,7 @@ const TrajectoryAnalysisPlot = (props) => {
   );
 
   const {
-    pseudotime: plotData,
+    plotData,
     loading: trajectoryLoading,
     error: trajectoryError,
   } = useSelector(
@@ -62,6 +62,8 @@ const TrajectoryAnalysisPlot = (props) => {
       && !trajectoryError
       && !cellSets.loading
       && !cellSets.error
+      && plotData.pseudotime?.['1'].length > 0
+      && plotData.graph?.length > 0
       && embeddingData?.length) {
       setPlotSpec(
         generateSpec(
@@ -69,7 +71,7 @@ const TrajectoryAnalysisPlot = (props) => {
           generateData(
             cellSets,
             config.rootNode,
-            plotData['1'],
+            plotData,
             embeddingData,
           ),
         ),

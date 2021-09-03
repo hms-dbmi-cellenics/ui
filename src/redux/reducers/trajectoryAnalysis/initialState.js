@@ -1,7 +1,7 @@
 const initialState = {
   loading: false,
   error: false,
-  pseudotime: [],
+  plotData: {},
 };
 
 export default initialState;

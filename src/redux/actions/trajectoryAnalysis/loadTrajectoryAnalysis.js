@@ -14,6 +14,7 @@ const loadTrajectoryAnalysis = (experimentId, rootNode) => async (dispatch, getS
 
   const { cellIds } = getState().cellSets.properties[cellSetKey];
   const { status } = getState().backendStatus[experimentId];
+  const { method } = getState().experimentSettings.processing.configureEmbedding.embeddingSettings;
 
   dispatch({
     type: TRAJECTORY_ANALYSIS_LOADING,
@@ -21,6 +22,7 @@ const loadTrajectoryAnalysis = (experimentId, rootNode) => async (dispatch, getS
 
   const body = {
     name: 'TrajectoryAnalysis',
+    method,
     cellIds: Array.from(cellIds),
   };
 
