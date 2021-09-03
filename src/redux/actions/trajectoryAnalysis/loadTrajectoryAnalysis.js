@@ -8,7 +8,7 @@ import {
 const loadTrajectoryAnalysis = (experimentId, rootNode) => async (dispatch, getState) => {
   const { loading } = getState().trajectoryAnalysis;
 
-  if (loading) return;
+  if (loading || !rootNode) return;
 
   const cellSetKey = rootNode.split('/')[1];
 

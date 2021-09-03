@@ -70,7 +70,7 @@ const TrajectoryAnalysisPlot = (props) => {
           config,
           generateData(
             cellSets,
-            config.rootNode,
+            config,
             plotData,
             embeddingData,
           ),

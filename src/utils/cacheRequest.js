@@ -98,8 +98,8 @@ const fetchCachedWork = async (
     experimentId, body, qcPipelineStartDate, extras,
   });
 
-  // const data = await cache.get(key);
-  // if (data) return data;
+  const data = await cache.get(key);
+  if (data) return data;
 
   const response = await sendWork(
     experimentId,

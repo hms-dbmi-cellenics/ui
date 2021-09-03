@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Skeleton,
 } from 'antd';
@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import SelectCluster from 'components/plots/styling/trajectory-analysis/SelectCluster';
+import ToggleTrajectory from 'components/plots/styling/trajectory-analysis/ToggleTrajectory';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -34,6 +35,7 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector((state) => state.cellSets);
+  const currentCluster = useRef(null);
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -42,10 +44,12 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
   }, []);
 
   useEffect(() => {
-    if (config?.rootNode && !cellSets.loading && !cellSets.error) {
+    if (currentCluster.current !== config.rootNode && !cellSets.loading && !cellSets.error) {
       dispatch(loadTrajectoryAnalysis(experimentId, config.rootNode));
     }
-  }, [config, cellSets]);
+
+    currentCluster.current = config?.rootNode;
+  }, [config.rootNode, cellSets]);
 
   // updateField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updateField) => {
@@ -95,7 +99,12 @@ const TrajectoryAnalysisIndex = ({ experimentId }) => {
             cellSets={cellSets}
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
-
+      </Panel>
+      <Panel header='Trajectory Graph' key='16'>
+        <ToggleTrajectory
+          config={config}
+          onUpdate={updatePlotWithChanges}
+        />
       </Panel>
     </>
   );

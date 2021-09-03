@@ -2,9 +2,6 @@
 const generateSpec = (config, plotData) => {
   let legend = [];
 
-  console.log('== DATA');
-  console.log(plotData);
-
   if (config.legend.enabled) {
     legend = [
       {
@@ -165,11 +162,11 @@ const generateSpec = (config, plotData) => {
 
 const generateData = (
   cellSets,
-  rootNode,
+  config,
   plotData,
   embeddingData,
 ) => {
-  const parentNode = rootNode.split('/')[0];
+  const parentNode = config.rootNode.split('/')[0];
 
   const cellSetKeys = cellSets.hierarchy.find(({ key }) => key === parentNode)
     .children.map(({ key }) => key);
@@ -189,7 +186,7 @@ const generateData = (
 
   // Object inside the graph data has to be copied because it is not extensible
   // https://github.com/vega/vega/issues/2125
-  const graph = plotData.graph.map((o) => ({ ...o }));
+  const graph = config.showTrajectory ? plotData.graph.map((o) => ({ ...o })) : [];
 
   return {
     pseudotime,
