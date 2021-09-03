@@ -10,7 +10,6 @@ import {
   Col,
   List,
 } from 'antd';
-import { ClipLoader } from 'react-spinners';
 import moment from 'moment';
 import { useRouter } from 'next/router';
 import EditableField from '../EditableField';
@@ -37,23 +36,21 @@ const AnalysisModal = (props) => {
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
 
-  const [experimentsList, setExperimentsList] = useState([]);
+  const getExperimentsList = () => activeProject.experiments
+    .map((experimentId) => experiments[experimentId])
+    .filter((experiment) => experiment !== undefined);
+
+  const [experimentsList, setExperimentsList] = useState(getExperimentsList());
   const [numFieldsEditing, setNumFieldsEditing] = useState(0);
 
   useEffect(() => {
-    if (!activeProject?.experiments?.length > 0) return;
-
-    const updatedList = activeProject.experiments
-      .map((experimentId) => experiments[experimentId])
-      .filter((experiment) => experiment !== undefined);
-
+    const updatedList = getExperimentsList();
     setExperimentsList(updatedList);
   }, [activeProject, experiments]);
 
   const onLaunchAnalysis = (experimentId) => {
-    console.log('Launching this analysis');
+    console.log('I WAS CALLED ');
     onLaunch(experimentId);
-
     const analysisPath = '/experiments/[experimentId]/data-processing';
     const lastViewed = moment().toISOString();
     dispatch(updateExperiment(experimentId, { lastViewed }));
@@ -63,73 +60,63 @@ const AnalysisModal = (props) => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
-  const renderAnalysisList = () => {
-    if (!experimentsList?.length > 0) {
-      return (
-        <Row justify='center'>
-          <ClipLoader size={30} color='#8f0b10' />
-        </Row>
-      );
-    }
-
-    return (
-      <List
-        size='small'
-        bordered
-        dataSource={experimentsList}
-        itemLayout='vertical'
-        renderItem={(experiment) => (
-          <List.Item
-            key={`${experiment.id}`}
-            extra={(
-              <Row type='flex' align='middle' data-test-class='launch-analysis-item'>
-                <Col>
-                  <Button
-                    type='primary'
-                    onClick={() => {
-                      onLaunchAnalysis(experiment.id);
-                    }}
-                    disabled={numFieldsEditing > 0}
-                  >
-                    Launch
-                  </Button>
-                </Col>
-              </Row>
-            )}
-          >
-            <Space direction='vertical' size='small'>
-              <strong>
-                <EditableField
-                  onAfterSubmit={async (name) => {
-                    dispatch(
-                      updateExperiment(experiment.id, { name: name.trim() }),
-                    );
+  const renderAnalysisList = () => (
+    <List
+      size='small'
+      bordered
+      dataSource={experimentsList}
+      itemLayout='vertical'
+      renderItem={(experiment) => (
+        <List.Item
+          key={`${experiment.id}`}
+          extra={(
+            <Row type='flex' align='middle' data-test-class='launch-analysis-item'>
+              <Col>
+                <Button
+                  type='primary'
+                  onClick={() => {
+                    onLaunchAnalysis(experiment.id);
                   }}
-                  value={experiment.name}
-                  deleteEnabled={false}
-                  onEditing={(editing) => {
-                    setNumFieldsEditing(Math.max(0, numFieldsEditing + (editing || -1)));
-                  }}
-                />
-              </strong>
+                  disabled={numFieldsEditing > 0}
+                >
+                  Launch
+                </Button>
+              </Col>
+            </Row>
+          )}
+        >
+          <Space direction='vertical' size='small'>
+            <strong>
               <EditableField
-                onAfterSubmit={(description) => {
+                onAfterSubmit={async (name) => {
                   dispatch(
-                    updateExperiment(experiment.id, { description: description.trim() }),
+                    updateExperiment(experiment.id, { name: name.trim() }),
                   );
                 }}
-                value={experiment.description}
+                value={experiment.name}
                 deleteEnabled={false}
                 onEditing={(editing) => {
                   setNumFieldsEditing(Math.max(0, numFieldsEditing + (editing || -1)));
                 }}
               />
-            </Space>
-          </List.Item>
-        )}
-      />
-    );
-  };
+            </strong>
+            <EditableField
+              onAfterSubmit={(description) => {
+                dispatch(
+                  updateExperiment(experiment.id, { description: description.trim() }),
+                );
+              }}
+              value={experiment.description}
+              deleteEnabled={false}
+              onEditing={(editing) => {
+                setNumFieldsEditing(Math.max(0, numFieldsEditing + (editing || -1)));
+              }}
+            />
+          </Space>
+        </List.Item>
+      )}
+    />
+  );
 
   return (
     <Modal

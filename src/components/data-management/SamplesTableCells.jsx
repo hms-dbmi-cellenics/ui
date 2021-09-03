@@ -37,8 +37,6 @@ const UploadCell = (props) => {
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const uploadDetailsModalDataRef = useRef(null);
 
-  console.log('status ', status);
-
   const showDetails = () => {
     uploadDetailsModalDataRef.current = {
       sampleUuid,

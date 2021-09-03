@@ -22,6 +22,8 @@ const MetadataColumnTitle = (props) => {
     existingNames: sampleNames,
   };
 
+  console.log('MA KEY ', key);
+
   return (
     <MetadataTitle
       name={name}

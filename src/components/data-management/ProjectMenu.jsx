@@ -58,6 +58,7 @@ const ProjectMenu = () => {
     setUploadModalVisible(false);
   };
 
+  console.log('******* ANALYSIS MODAL ', analysisModalVisible);
   return (
     <>
       <Space>
@@ -67,18 +68,6 @@ const ProjectMenu = () => {
         >
           Add samples
         </Button>
-        {/* <Button
-            disabled={
-              !anyProjectsAvailable
-              || activeProject?.samples?.length === 0
-              || isAddingMetadata
-            }
-            onClick={() => {
-              createMetadataColumn();
-            }}
-          >
-            Add metadata
-          </Button> */}
         <DownloadData />
         <Button
           data-test-id='launch-analysis-button'
@@ -89,16 +78,18 @@ const ProjectMenu = () => {
           Launch analysis
         </Button>
       </Space>
-      <FileUploadModal
-        visible={uploadModalVisible}
-        onUpload={uploadFiles}
-        onCancel={() => setUploadModalVisible(false)}
-      />
-      <AnalysisModal
-        visible={analysisModalVisible}
-        onLaunch={() => { setAnalysisModalVisible(false); }}
-        onCancel={() => { setAnalysisModalVisible(false); }}
-      />
+      {uploadModalVisible ? (
+        <FileUploadModal
+          onUpload={uploadFiles}
+          onCancel={() => setUploadModalVisible(false)}
+        />
+      ) : <></>}
+      {analysisModalVisible ? (
+        <AnalysisModal
+          onLaunch={() => { setAnalysisModalVisible(false); }}
+          onCancel={() => { setAnalysisModalVisible(false); }}
+        />
+      ) : <></>}
     </>
   );
 };
