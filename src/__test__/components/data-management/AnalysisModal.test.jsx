@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
 import configureMockStore from 'redux-mock-store';
+import { ClipLoader } from 'react-spinners';
 import EditableField from '../../../components/EditableField';
 import AnalysisModal from '../../../components/data-management/AnalysisModal';
 
@@ -18,10 +19,10 @@ const initialState = {
     meta: {
       activeProject: 'mock-project',
     },
-  },
-  'mock-project': {
-    name: 'Mock project',
-    experiments: ['mock-experiment'],
+    'mock-project': {
+      name: 'Mock project',
+      experiments: ['mock-experiment'],
+    },
   },
   experiments: {
     ids: ['mock-experiment'],
@@ -36,7 +37,7 @@ const eventStub = {
   stopPropagation: () => { },
 };
 
-const activeProject = initialState['mock-project'];
+const activeProject = initialState.projects['mock-project'];
 const { experiments } = initialState;
 
 describe('AnalysisModal', () => {
@@ -89,7 +90,32 @@ describe('AnalysisModal', () => {
     expect(component.find(EditableField).first().text()).toEqual(newProjectName);
   });
 
-  it('Invalid experiment name', () => {
+  it('Shows a loader if experiment data is not available', () => {
+    const emptyExperiments = {
+      experiments: {
+        ids: [],
+      },
+    };
+
+    const noExperimentState = {
+      ...initialState,
+      ...emptyExperiments,
+    };
+
+    const component = mount(
+      <Provider store={mockStore(noExperimentState)}>
+        <AnalysisModal activeProject={activeProject} experiments={emptyExperiments} />
+      </Provider>,
+    );
+
+    // It doesn't show a list
+    expect(component.find(List).length).toEqual(0);
+
+    // It shows a loader
+    expect(component.find(ClipLoader).length).toEqual(1);
+  });
+
+  it('Invalid experiment name shows warning text', () => {
     const invalidProjectName = '';
 
     const component = mount(

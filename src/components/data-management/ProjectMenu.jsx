@@ -81,6 +81,7 @@ const ProjectMenu = (props) => {
             activeProjectUuid={activeProjectUuid}
           />
           <Button
+            data-test-id='launch-analysis-button'
             type='primary'
             disabled={!canLaunchAnalysis()}
             onClick={() => openAnalysisModal()}

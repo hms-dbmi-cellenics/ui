@@ -329,7 +329,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <ConfigureEmbedding
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun()}
           onConfigChange={() => onConfigChange(key)}
         />
       ),
@@ -395,6 +394,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = () => {
+    setRunQCModalVisible(false);
     dispatch(runPipeline(experimentId));
   };
 
