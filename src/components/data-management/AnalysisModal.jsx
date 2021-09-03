@@ -49,7 +49,6 @@ const AnalysisModal = (props) => {
   }, [activeProject, experiments]);
 
   const onLaunchAnalysis = (experimentId) => {
-    console.log('I WAS CALLED ');
     onLaunch(experimentId);
     const analysisPath = '/experiments/[experimentId]/data-processing';
     const lastViewed = moment().toISOString();

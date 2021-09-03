@@ -54,6 +54,9 @@ const onLaunchSpy = jest.fn(() => console.log('I am a spy'));
 const onCancelSpy = jest.fn();
 
 describe('AnalysisModal', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it('renders correctly when there are experiments', () => {
     const component = mount(
       <Provider store={mockStore(initialState)}>
@@ -160,12 +163,10 @@ describe('AnalysisModal', () => {
       </Provider>,
     );
 
-    const modal = component.find(Modal);
-    debugger;
     component.find(Modal).props().onCancel();
     component.update();
 
-    // expect(onLaunchSpy).toBeCalledTimes(0);
+    expect(onLaunchSpy).toBeCalledTimes(0);
     expect(onCancelSpy).toBeCalledTimes(1);
   });
 });

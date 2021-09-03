@@ -58,7 +58,6 @@ const ProjectMenu = () => {
     setUploadModalVisible(false);
   };
 
-  console.log('******* ANALYSIS MODAL ', analysisModalVisible);
   return (
     <>
       <Space>
