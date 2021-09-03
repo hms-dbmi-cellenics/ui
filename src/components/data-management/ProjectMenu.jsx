@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import hash from 'object-hash';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Row, Typography, Space, Button, Col, Tooltip,
 } from 'antd';
+import pipelineStatus from '../../utils/pipelineStatusValues';
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 import {
   updateProject,
@@ -24,6 +26,9 @@ const ProjectMenu = (props) => {
   const samples = useSelector((state) => state.samples);
   const anyProjectsAvailable = projects?.ids?.length;
   const metadataKeysAvailable = activeProject?.metadataKeys?.length;
+  const [willGem2sRerun, setWillGem2sRerun] = useState(false);
+  const gem2sStatus = useSelector((state) => state.backendStatus?.status?.pipeline?.gem2s.status);
+  const initialProjectState = useRef({});
 
   const canLaunchAnalysis = () => {
     if (activeProject?.samples?.length === 0 || !anyProjectsAvailable) return false;
@@ -55,6 +60,47 @@ const ProjectMenu = (props) => {
     });
     return canLaunch;
   };
+
+  const getProjectHash = (project) => {
+    const samplesToHash = project.samples.map((sampleUuid) => ({
+      name: samples[sampleUuid].name,
+      metadata: samples[sampleUuid].metadata,
+    }));
+
+    return hash.MD5(samplesToHash);
+  };
+
+  // Initialize hash for each project
+  useEffect(() => {
+    if (!activeProjectUuid) return;
+
+    if (!initialProjectState.current[activeProjectUuid]) {
+      initialProjectState.current[activeProjectUuid] = getProjectHash(activeProject);
+    }
+
+    const gem2sReruns = gem2sStatus === pipelineStatus.SUCCEEDED
+      || initialProjectState.current[activeProjectUuid] === getProjectHash(activeProject);
+
+    console.log('== TEST');
+    console.log(initialProjectState.current[activeProjectUuid]);
+    console.log(gem2sReruns);
+    console.log(getProjectHash(activeProject));
+
+    if (gem2sReruns) setWillGem2sRerun(true);
+  }, [gem2sStatus, activeProjectUuid, samples]);
+
+  const reingestIndicator = (rerun) => (
+    <div style={{
+      width: '0.75rem',
+      height: '0.75rem',
+      marginLeft: '0.6rem',
+      display: 'inline-block',
+      borderRadius: '50%',
+      verticalAlign: 'middle',
+      backgroundColor: rerun ? 'palegreen' : 'lightcoral',
+    }}
+    />
+  );
 
   return (
     <>
@@ -96,6 +142,7 @@ const ProjectMenu = (props) => {
               onClick={() => openAnalysisModal()}
             >
               Launch analysis
+              {reingestIndicator(willGem2sRerun)}
             </Button>
           </Tooltip>
         </Space>
