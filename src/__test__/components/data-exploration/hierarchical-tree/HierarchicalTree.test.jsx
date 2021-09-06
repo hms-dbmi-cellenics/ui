@@ -171,7 +171,7 @@ describe('HierarchicalTree', () => {
       children: [],
     };
 
-    let treeData = [
+    const treeData = [
       firstParent,
       secondParent,
     ];
@@ -196,15 +196,9 @@ describe('HierarchicalTree', () => {
       <HierarchicalTree treeData={treeData} experimentId={experimentId} onHierarchyUpdate={mockOnHierarchyUpdate} />,
     );
     waitForComponentToPaint(component);
-    let tree = component.find('HierarchicalTree Tree');
+    const tree = component.find('HierarchicalTree Tree');
     tree.getElement().props.onDrop(dropInfo);
     component.update();
-
-    expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(0);
-
-    tree = component.find('HierarchicalTree Tree').getElement();
-    treeData = tree.props.treeData;
-    expect(treeData.length).toEqual(2);
 
     expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(0);
   });
