@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -19,9 +19,8 @@ import {
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
-import { discardChangedQCFilters } from '../redux/actions/experimentSettings';
+import { navigateFromProcessingTo } from '../redux/actions/experimentSettings';
 import { loadBackendStatus } from '../redux/actions/backendStatus';
-import { runPipeline } from '../redux/actions/pipeline';
 
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 
@@ -68,15 +67,13 @@ const ContentWrapper = (props) => {
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
-  const changedQCFilters = useSelector((state) => state.experimentSettings.processing.meta.changedQCFilters);
+  const { changedQCFilters } = useSelector((state) => state.experimentSettings.processing.meta);
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
-
-  const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
 
   const setUpConnection = async () => {
     const io = await connectionPromise;
@@ -246,7 +243,7 @@ const ContentWrapper = (props) => {
 
   const transitionToModule = (path) => {
     if (changedQCFilters.size) {
-      setChangesNotAppliedModalPath(path);
+      dispatch(navigateFromProcessingTo(path));
     } else {
       router.push(path);
     }
@@ -312,35 +309,16 @@ const ContentWrapper = (props) => {
         disabled={noExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
-        onClick={() => { transitionToModule(realPath); }}
-        onKeyPress={() => { transitionToModule(realPath); }}
+        onClick={() => transitionToModule(realPath)}
       >
-        <a>{name}</a>
+        {name}
       </Menu.Item>
     );
   };
 
-  const onRunQC = () => {
-    dispatch(runPipeline(experimentId));
-    setChangesNotAppliedModalPath(null);
-  };
-
-  const onDiscardQC = () => {
-    router.push(changesNotAppliedModalPath);
-    setChangesNotAppliedModalPath(null);
-
-    dispatch(discardChangedQCFilters());
-  };
-
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <ChangesNotAppliedModal
-        steps={changedQCFilters}
-        visible={changesNotAppliedModalPath !== null}
-        onRun={onRunQC}
-        onDiscard={onDiscardQC}
-        onCancel={() => setChangesNotAppliedModalPath(null)}
-      />
+      <ChangesNotAppliedModal experimentId={experimentId} />
 
       <Sider
         width={210}

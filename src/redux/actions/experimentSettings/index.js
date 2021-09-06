@@ -8,8 +8,8 @@ import updateFilterSettings from './processingConfig/updateFilterSettings';
 import addChangedQCFilter from './processingConfig/addChangedQCFilter';
 import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
 import updateProcessingSettingsFromQC from './processingConfig/updateProcessingSettingsFromQC';
-
 import updateExperimentInfo from './updateExperimentInfo';
+import navigateFromProcessingTo from './navigateFromProcessingTo';
 
 export {
   loadProcessingSettings,
@@ -23,4 +23,5 @@ export {
   discardChangedQCFilters,
   updateFilterSettings,
   updateProcessingSettingsFromQC,
+  navigateFromProcessingTo,
 };
