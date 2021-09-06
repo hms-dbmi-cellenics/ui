@@ -42,15 +42,26 @@ describe('runCellSetsClustering action', () => {
     jest.clearAllMocks();
   });
 
-  it('Does not dispatch on loading state', async () => {
+  it('Does not dispatch on loading state if clustering is already recomputing', async () => {
     const store = mockStore({
-      cellSets: { loading: true, error: false },
+      cellSets: { loading: true, error: false, updatingClustering: true },
       experimentSettings: experimentSettingsStore,
       backendStatus,
     });
 
     store.dispatch(runCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
+  });
+
+  it('Does dispatch on loading state if clustering is not recomputing', async () => {
+    const store = mockStore({
+      cellSets: { loading: true, error: false, updatingClustering: false },
+      experimentSettings: experimentSettingsStore,
+      backendStatus,
+    });
+
+    store.dispatch(runCellSetsClustering(experimentId));
+    expect(store.getActions().length).toBeGreaterThan(0);
   });
 
   it('Does not dispatch on error state', async () => {

@@ -2,13 +2,16 @@ import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATED,
 } from '../../actionTypes/cellSets';
 
-const updateCellSetsClustering = (experimentId, newCellSets) => async (dispatch) => {
+import loadCellSets from './loadCellSets';
+
+const updateCellSetsClustering = (experimentId) => async (dispatch) => {
   try {
+    dispatch(loadCellSets(experimentId));
+
     dispatch({
       type: CELL_SETS_CLUSTERING_UPDATED,
       payload: {
         experimentId,
-        data: newCellSets,
       },
     });
   } catch (e) {

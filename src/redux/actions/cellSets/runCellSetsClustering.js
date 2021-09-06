@@ -2,12 +2,12 @@ import { fetchWork } from '../../../utils/work/fetchWork';
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from '../../actionTypes/cellSets';
-import updateCellSetsClustering from './updateCellSetsClustering';
+import updateCellSetsClustering from './loadCellSets';
 import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
-    error, updatingClustering,
+    error, updatingClustering, loading,
   } = getState().cellSets;
 
   const { experimentSettings } = getState();
@@ -17,7 +17,7 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   const { processing } = experimentSettings;
   const { method } = processing.configureEmbedding.clusteringSettings;
 
-  if (updatingClustering || error) {
+  if ((loading && updatingClustering) || error) {
     return null;
   }
 
@@ -40,16 +40,12 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   try {
     await fetchWork(experimentId, body, status, {
       timeout,
-      eventCallback: (err, res) => {
+      eventCallback: (err) => {
         if (err) {
           throw err;
         }
 
-        const louvainSets = JSON.parse(res.results[0].body);
-        const newCellSets = [
-          louvainSets,
-        ];
-        dispatch(updateCellSetsClustering(experimentId, newCellSets));
+        dispatch(updateCellSetsClustering(experimentId));
       },
     });
   } catch (e) {

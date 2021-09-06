@@ -1,118 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`cellMeta Updates empty state with new data 1`] = `
+exports[`cellSetsClusteringUpdated Sets loading and error indicators appropriately 1`] = `
 Object {
   "error": false,
   "hidden": Set {},
-  "hierarchy": Array [
-    Object {
-      "children": Array [
-        Object {
-          "key": "louvain-0",
-        },
-        Object {
-          "key": "louvain-1",
-        },
-      ],
-      "key": "louvain",
-    },
-  ],
+  "hierarchy": Array [],
   "loading": false,
-  "properties": Object {
-    "louvain": Object {
-      "cellIds": Set {},
-      "color": undefined,
-      "name": "Louvain clusters",
-      "rootNode": true,
-      "type": "cellSets",
-    },
-    "louvain-0": Object {
-      "cellIds": Set {
-        0,
-        1,
-        2,
-      },
-      "color": "",
-      "name": "Cluster 0",
-      "rootNode": false,
-      "type": "cellSets",
-    },
-    "louvain-1": Object {
-      "cellIds": Set {
-        3,
-        4,
-        6,
-      },
-      "color": "",
-      "name": "Cluster 1",
-      "rootNode": false,
-      "type": "cellSets",
-    },
-  },
-  "selected": Array [],
-  "updatingClustering": false,
-}
-`;
-
-exports[`cellMeta Updates state with new data without removing preexisting state 1`] = `
-Object {
-  "error": false,
-  "hidden": Set {},
-  "hierarchy": Array [
-    Object {
-      "children": Array [
-        Object {
-          "key": "louvain-0",
-        },
-        Object {
-          "key": "louvain-1",
-        },
-      ],
-      "key": "louvain",
-    },
-    Object {
-      "children": Array [],
-      "key": "scratchpad",
-    },
-  ],
-  "loading": false,
-  "properties": Object {
-    "louvain": Object {
-      "cellIds": Set {},
-      "color": undefined,
-      "name": "Louvain clusters",
-      "rootNode": true,
-      "type": "cellSets",
-    },
-    "louvain-0": Object {
-      "cellIds": Set {
-        0,
-        1,
-        2,
-      },
-      "color": "",
-      "name": "Cluster 0",
-      "rootNode": false,
-      "type": "cellSets",
-    },
-    "louvain-1": Object {
-      "cellIds": Set {
-        3,
-        4,
-        6,
-      },
-      "color": "",
-      "name": "Cluster 1",
-      "rootNode": false,
-      "type": "cellSets",
-    },
-    "scratchpad": Object {
-      "cellIds": Set {},
-      "name": "Scratchpad",
-      "rootNode": true,
-      "type": "cellSets",
-    },
-  },
+  "properties": Object {},
   "selected": Array [],
   "updatingClustering": false,
 }
