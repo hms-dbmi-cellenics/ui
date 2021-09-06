@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { seekFromAPI } from '../../utils/work/seekWorkResponse';
+import { seekFromAPI } from '../../../utils/work/seekWorkResponse';
 
 /**
  * jest.mock calls are automatically hoisted to the top of the javascript
@@ -8,7 +8,7 @@ import { seekFromAPI } from '../../utils/work/seekWorkResponse';
  * from jest.mock will be accessible under `socketConnectionMocks`, even
  * if they do not appear in the original file.
  */
-import * as socketConnectionMocks from '../../utils/socketConnection';
+import * as socketConnectionMocks from '../../../utils/socketConnection';
 
 enableFetchMocks();
 uuidv4.mockImplementation(() => 'my-random-uuid');
@@ -17,7 +17,7 @@ jest.mock('uuid');
 
 jest.mock('moment', () => () => jest.requireActual('moment')('4022-01-01T00:00:00.000Z'));
 
-jest.mock('../../utils/socketConnection', () => {
+jest.mock('../../../utils/socketConnection', () => {
   const mockEmit = jest.fn();
   const mockOn = jest.fn();
 

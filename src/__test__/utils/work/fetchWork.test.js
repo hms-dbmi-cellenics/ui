@@ -1,5 +1,5 @@
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { /* cacheFetch, */ fetchWork } from '../../utils/work/fetchWork';
+import { fetchWork } from '../../../utils/work/fetchWork';
 
 enableFetchMocks();
 
@@ -129,13 +129,13 @@ const mockseekFromAPI = jest.fn((experimentId, body) => {
   };
 });
 
-jest.mock('../../utils/cache', () => ({
+jest.mock('../../../utils/cache', () => ({
   get: jest.fn((x) => mockGet(x)),
   set: jest.fn((key, val) => mockSet(key, val)),
   _remove: jest.fn((key) => mockRemove(key)),
 }));
 
-jest.mock('../../utils/work/seekWorkResponse', () => ({
+jest.mock('../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
   seekFromAPI: jest.fn(
