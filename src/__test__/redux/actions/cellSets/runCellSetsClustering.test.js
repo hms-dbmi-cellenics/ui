@@ -103,7 +103,6 @@ describe('runCellSetsClustering action', () => {
       { PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate },
     );
 
-
     await flushPromises();
 
     const loadingAction = store.getActions()[0];
