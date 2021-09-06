@@ -3,6 +3,7 @@ import {
 } from '../../actionTypes/differentialExpression';
 
 import { fetchWork } from '../../../utils/work/fetchWork';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 
@@ -50,9 +51,11 @@ const loadDifferentialExpression = (
     pagination = { pagination };
   }
 
+  const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
+
   try {
     const data = await fetchWork(
-      experimentId, body, status, { extras: pagination },
+      experimentId, body, status, { timeout, extras: pagination },
     );
 
     let { total } = data;

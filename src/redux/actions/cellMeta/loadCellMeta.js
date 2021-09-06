@@ -5,6 +5,7 @@ import {
 } from '../../actionTypes/cellMeta';
 
 import { fetchWork } from '../../../utils/work/fetchWork';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadCellMeta = (
   experimentId, metaName,
@@ -33,9 +34,11 @@ const loadCellMeta = (
     name: plotWorkName[metaName],
   };
 
+  const timeout = getTimeoutForWorkerTask(getState(), plotWorkName[metaName]);
+
   try {
     const data = await fetchWork(
-      experimentId, body, status,
+      experimentId, body, status, { timeout },
     );
     dispatch({
       type: CELL_META_LOADED,

@@ -48,7 +48,7 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on success 
           "c",
         ],
       },
-      180,
+      60,
       "3fa2b8bb5219ea113e5ed47bc3c856ba",
       null,
       Object {

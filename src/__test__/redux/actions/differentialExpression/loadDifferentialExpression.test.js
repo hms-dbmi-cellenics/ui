@@ -12,6 +12,11 @@ import {
 jest.mock('localforage');
 jest.mock('../../../../utils/work/fetchWork');
 
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
+
 const mockStore = configureStore([thunk]);
 
 describe('loadDifferentialExpression action', () => {
@@ -77,6 +82,7 @@ describe('loadDifferentialExpression action', () => {
             limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
           },
         },
+        timeout: 60,
       });
     expect(loadingAction).toMatchSnapshot();
 
@@ -144,6 +150,7 @@ describe('loadDifferentialExpression action', () => {
             limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
           },
         },
+        timeout: 60,
       });
 
     const loadedAction = store.getActions()[1];

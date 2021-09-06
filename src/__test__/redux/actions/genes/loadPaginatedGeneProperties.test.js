@@ -18,6 +18,11 @@ jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
 }));
 
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
+
 const mockStore = configureStore([thunk]);
 
 describe('loadPaginatedGeneProperties action', () => {

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
   Row, Col, Card, Skeleton,
@@ -39,7 +39,7 @@ import { qcSteps, getUserFriendlyQCStepName } from '../../../../utils/qcSteps';
 
 import {
   loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
-  addChangedQCFilter, discardChangedQCFilters,
+  addChangedQCFilter, discardChangedQCFilters, navigateFromProcessingTo,
 } from '../../../../redux/actions/experimentSettings';
 
 import { loadSamples } from '../../../../redux/actions/samples';
@@ -52,8 +52,12 @@ const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  const completedPath = '/experiments/[experimentId]/data-exploration';
+  const completedPath = useMemo(() => {
+    const pathAfterQC = '/experiments/[experimentId]/data-exploration';
+    return pathAfterQC.replace('[experimentId]', experimentId);
+  }, [experimentId]);
 
   const pipelineStatus = useSelector(
     (state) => state.backendStatus[experimentId]?.status?.pipeline,
@@ -332,7 +336,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         <ConfigureEmbedding
           experimentId={expId}
           key={key}
-          onPipelineRun={() => onPipelineRun()}
           onConfigChange={() => onConfigChange(key)}
         />
       ),
@@ -361,6 +364,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       </Button>
     </Tooltip>
   );
+
+  const transitionToModule = (path) => {
+    if (changedQCFilters.size) {
+      dispatch(navigateFromProcessingTo(path));
+    } else {
+      router.push(path);
+    }
+  };
 
   const renderRunOrDiscardButtons = () => {
     if (pipelineHadErrors) {
@@ -398,6 +409,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = () => {
+    setRunQCModalVisible(false);
     dispatch(runPipeline(experimentId));
   };
 
@@ -553,16 +565,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   </Tooltip>
                 )
                   : (
-                    <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
-                      <Tooltip title='Finish QC'>
-                        <Button
-                          type='primary'
-                          disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
-                          icon={<CheckOutlined />}
-                          size='small'
-                        />
-                      </Tooltip>
-                    </Link>
+                    <Tooltip title='Finish QC'>
+                      <Button
+                        type='primary'
+                        disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                        icon={<CheckOutlined />}
+                        size='small'
+                        onClick={() => transitionToModule(completedPath)}
+                      />
+                    </Tooltip>
                   )}
               </Space>
             </Col>

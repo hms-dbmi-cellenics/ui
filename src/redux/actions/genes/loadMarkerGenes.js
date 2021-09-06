@@ -3,6 +3,7 @@ import {
 } from '../../actionTypes/genes';
 
 import { fetchWork } from '../../../utils/work/fetchWork';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5, selectedCellSets = false,
@@ -33,7 +34,8 @@ const loadMarkerGenes = (
   });
 
   try {
-    const data = await fetchWork(experimentId, body, status, { timeout: 5 * 60 });
+    const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
+    const data = await fetchWork(experimentId, body, status, { timeout });
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({

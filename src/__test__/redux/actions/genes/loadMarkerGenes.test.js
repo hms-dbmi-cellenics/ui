@@ -8,6 +8,11 @@ import { fetchWork } from '../../../../utils/work/fetchWork';
 jest.mock('localforage');
 jest.mock('../../../../utils/work/fetchWork');
 
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
+
 const mockStore = configureStore([thunk]);
 
 describe('loadMarkerGenes action', () => {

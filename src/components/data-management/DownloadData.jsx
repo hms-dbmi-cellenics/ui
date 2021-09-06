@@ -12,6 +12,7 @@ import downloadTypes from 'utils/data-management/downloadTypes';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import pipelineStatus from '../../utils/pipelineStatusValues';
 import { exportQCParameters, filterQCParameters } from '../../utils/data-management/exportQCParameters';
 import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
@@ -67,17 +68,7 @@ const DownloadData = (props) => {
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
       const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
-      const link = document.createElement('a');
-      link.style.display = 'none';
-      link.href = signedUrl;
-
-      document.body.appendChild(link);
-      link.click();
-
-      setTimeout(() => {
-        URL.revokeObjectURL(link.href);
-        link.parentNode.removeChild(link);
-      }, 0);
+      downloadFromUrl(signedUrl);
     } catch (e) {
       pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }

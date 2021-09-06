@@ -15,6 +15,11 @@ jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   seekFromAPI: jest.fn(),
 }));
 
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
+
 const startDate = '2021-01-01T00:00:00';
 
 describe('runCellSetsClustering action', () => {
@@ -92,11 +97,12 @@ describe('runCellSetsClustering action', () => {
       {
         cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
       },
-      300,
+      60,
       '4d66c6ab734a1ce9acc2204fe3601732', // pragma: allowlist secret
       expect.any(Function),
       { PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate },
     );
+
 
     await flushPromises();
 
@@ -131,7 +137,7 @@ describe('runCellSetsClustering action', () => {
       {
         cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
       },
-      300,
+      60,
       '4d66c6ab734a1ce9acc2204fe3601732', // pragma: allowlist secret
       expect.any(Function),
       { PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate },
