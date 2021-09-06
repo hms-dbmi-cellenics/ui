@@ -7,7 +7,7 @@ import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
-    loading, error,
+    error, updatingClustering,
   } = getState().cellSets;
 
   const { experimentSettings } = getState();
@@ -17,7 +17,7 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   const { processing } = experimentSettings;
   const { method } = processing.configureEmbedding.clusteringSettings;
 
-  if (loading || error) {
+  if (updatingClustering || error) {
     return null;
   }
 
