@@ -9,7 +9,7 @@ const loadCellSets = (experimentId) => async (dispatch, getState) => {
   const {
     loading, error, updatingClustering,
   } = getState().cellSets;
-  if (loading || error || updatingClustering) {
+  if ((!loading && !error) || updatingClustering) {
     return null;
   }
 
