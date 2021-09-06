@@ -12,6 +12,7 @@ const updateCellSetsClustering = (experimentId) => async (dispatch) => {
         experimentId,
       },
     });
+
     dispatch(loadCellSets(experimentId));
   } catch (e) {
     dispatch({

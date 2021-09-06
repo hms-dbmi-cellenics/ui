@@ -2,7 +2,6 @@
 
 const cellSetsClusteringUpdated = (state) => ({
   ...state,
-  loading: false,
   updatingClustering: false,
 });
 
