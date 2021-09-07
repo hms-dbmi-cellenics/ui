@@ -26,7 +26,7 @@ const ProjectMenu = (props) => {
   const samples = useSelector((state) => state.samples);
   const anyProjectsAvailable = projects?.ids?.length;
   const metadataKeysAvailable = activeProject?.metadataKeys?.length;
-  const [willGem2sRerun, setWillGem2sRerun] = useState(false);
+  const [willGem2sRerun, setWillGem2sRerun] = useState({ rerun: true, reasons: [] });
   const backendStatus = useSelector((state) => state.backendStatus);
   const initialProjectState = useRef({});
 
@@ -78,13 +78,21 @@ const ProjectMenu = (props) => {
       initialProjectState.current[activeProjectUuid] = getProjectHash(activeProject);
     }
 
+    const reasons = [];
+
     const experimentId = activeProject.experiments[0];
     const gem2sStatus = backendStatus[experimentId]?.status.gem2s?.status;
 
-    const gem2sReruns = gem2sStatus !== pipelineStatus.SUCCEEDED
-      || initialProjectState.current[activeProjectUuid] !== getProjectHash(activeProject);
+    const gem2sNotSuccessful = ![pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING].includes(gem2sStatus);
+    const ProjectHashNotEqual = initialProjectState.current[activeProjectUuid] !== getProjectHash(activeProject);
 
-    setWillGem2sRerun(gem2sReruns);
+    if (gem2sNotSuccessful) reasons.push('data has not been processed sucessfully');
+    if (ProjectHashNotEqual) reasons.push('the project has been modified');
+
+    setWillGem2sRerun({
+      rerun: gem2sNotSuccessful || ProjectHashNotEqual,
+      reasons,
+    });
   }, [backendStatus, activeProjectUuid, samples]);
 
   const reingestIndicator = (rerun) => (
@@ -105,8 +113,8 @@ const ProjectMenu = (props) => {
       return `Ensure all samples are uploaded and all metadata are inserted (no ${DEFAULT_NA})`;
     }
 
-    if (willGem2sRerun) {
-      return 'The data for this has to be processed. This might take a while.';
+    if (willGem2sRerun.rerun) {
+      return `The data for this has to be processed because ${willGem2sRerun.reasons.join(' and ')}.This might take a while.`;
     }
   };
 
@@ -146,7 +154,7 @@ const ProjectMenu = (props) => {
               onClick={() => openAnalysisModal()}
             >
               Launch analysis
-              {reingestIndicator(willGem2sRerun)}
+              {reingestIndicator(willGem2sRerun.rerun)}
             </Button>
           </Tooltip>
         </Space>
