@@ -1,29 +1,39 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Modal, Typography, Space, Button,
 } from 'antd';
+import { useRouter } from 'next/router';
+import { discardChangedQCFilters, navigateFromProcessingTo } from '../redux/actions/experimentSettings';
+import { runPipeline } from '../redux/actions/pipeline';
 
 import { getUserFriendlyQCStepName } from '../utils/qcSteps';
 
 const { Text } = Typography;
 
 const ChangesNotAppliedModal = (props) => {
-  const {
-    steps, visible, onRun, onDiscard, onCancel,
-  } = props;
+  const { experimentId } = props;
+
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const { changedQCFilters, navigationPath } = useSelector((state) => state.experimentSettings.processing.meta);
 
   return (
     <Modal
-      visible={visible}
+      visible={navigationPath}
       title='Changes not applied'
-      onCancel={onCancel}
+      onCancel={() => dispatch(navigateFromProcessingTo(''))}
       footer={(
         <Space size='large' style={{ display: 'flex', justifyContent: 'center' }}>
           <Button
             type='primary'
             key='run'
-            onClick={onRun}
+            onClick={() => {
+              dispatch(runPipeline(experimentId));
+              dispatch(navigateFromProcessingTo(''));
+            }}
             style={{ width: '100px' }}
           >
             Run
@@ -31,7 +41,11 @@ const ChangesNotAppliedModal = (props) => {
           <Button
             type='primary'
             key='discard'
-            onClick={onDiscard}
+            onClick={() => {
+              router.push(navigationPath);
+              dispatch(navigateFromProcessingTo(''));
+              dispatch(discardChangedQCFilters());
+            }}
             style={{ width: '100px' }}
           >
             Discard
@@ -42,11 +56,11 @@ const ChangesNotAppliedModal = (props) => {
       <center>
         <Space direction='vertical'>
           Your changes to the settings of these filters are not yet applied:
-          {steps && (
+          {changedQCFilters.size && (
           <>
             <br />
             <ul style={{ margin: '0 auto', display: 'table' }}>
-              {Array.from(steps).map((step) => (
+              {Array.from(changedQCFilters).map((step) => (
                 <li>
                   <b style={{ float: 'left' }}>
                     {getUserFriendlyQCStepName(step)}
@@ -70,17 +84,7 @@ const ChangesNotAppliedModal = (props) => {
 };
 
 ChangesNotAppliedModal.propTypes = {
-  steps: PropTypes.any,
-  visible: PropTypes.bool,
-  onRun: PropTypes.func.isRequired,
-  onDiscard: PropTypes.func.isRequired,
-  onCancel: PropTypes.func,
-};
-
-ChangesNotAppliedModal.defaultProps = {
-  steps: null,
-  visible: false,
-  onCancel: null,
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default ChangesNotAppliedModal;
