@@ -36,16 +36,13 @@ const ProjectsListContainer = (props) => {
 
   const {
     saving: projectSaving,
+    activeProjectUuid,
+    loading: projectsLoading,
   } = projectsList.meta;
 
   const {
     saving: sampleSaving,
   } = useSelector((state) => state.samples.meta);
-
-  const {
-    activeProjectUuid,
-    loading: projectsLoading,
-  } = useSelector((state) => state.projects.meta);
 
   const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
@@ -151,7 +148,7 @@ const ProjectsListContainer = (props) => {
         >
           Create New Project
         </Button>
-        <Tooltip title='Insert project name, project ID or analysis ID here to filter the list'>
+        <Tooltip title='To search, insert project name, project ID or analysis ID here' placement='right'>
           <Input placeholder='Filter by project name, project ID or analysis ID' onChange={(e) => debouncedSetFilterParam(e.target.value)} />
         </Tooltip>
         <Space direction='vertical' style={{ width: '100%', overflowY: 'auto' }}>

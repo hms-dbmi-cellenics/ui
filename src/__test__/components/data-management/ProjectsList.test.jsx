@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
-import { Button, Input } from 'antd';
 import ProjectsList from '../../../components/data-management/ProjectsList';
 import ProjectCard from '../../../components/data-management/ProjectCard';
 import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
