@@ -17,57 +17,46 @@ const { Title, Text, Paragraph } = Typography;
 const ProjectDetails = ({ width, height }) => {
   const dispatch = useDispatch();
 
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+
   const samplesTableRef = useRef();
-  const projects = useSelector((state) => state.projects);
-  const anyProjectsAvailable = projects?.ids?.length;
 
   return (
     <div id='project-details' width={width} height={height}>
       <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
         <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Title level={3}>{activeProject?.name}</Title>
+          <Title level={3}>{activeProject.name}</Title>
           <Space>
             <Button
-              disabled={
-                !anyProjectsAvailable
-                || activeProject?.samples?.length === 0
-              }
+              disabled={activeProject.samples?.length === 0}
               onClick={() => samplesTableRef.current.createMetadataColumn()}
             >
               Add metadata
-
             </Button>
             <ProjectMenu />
           </Space>
         </Row>
         <Row>
-          {activeProjectUuid ? (
-            <Col>
-              <Space direction='vertical' size='small'>
-                <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
-                <Text strong>Description:</Text>
-                <Paragraph
-                  editable={{
-                    onChange: (description) => dispatch(
-                      updateProject(activeProjectUuid, { description }),
-                    ),
-                  }}
-                >
-                  {activeProject.description}
-
-                </Paragraph>
-              </Space>
-            </Col>
-          ) : (<></>)}
-          {' '}
-
+          <Col>
+            <Space direction='vertical' size='small'>
+              <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
+              <Text strong>Description:</Text>
+              <Paragraph
+                editable={{
+                  onChange: (description) => dispatch(
+                    updateProject(activeProjectUuid, { description }),
+                  ),
+                }}
+              >
+                {activeProject.description}
+              </Paragraph>
+            </Space>
+          </Col>
         </Row>
         <SamplesTable
           height={height}
           ref={samplesTableRef}
-
         />
       </Space>
     </div>

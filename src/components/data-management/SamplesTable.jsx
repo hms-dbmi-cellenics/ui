@@ -3,10 +3,11 @@
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle,
 } from 'react';
+
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Table, Row, Col, Typography, Space, Button,
+  Table, Row, Col, Typography, Space, Button, Empty,
 } from 'antd';
 import {
   MenuOutlined,
@@ -47,6 +48,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
+
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
   const environment = useSelector((state) => state?.networkResources?.environment);
@@ -117,10 +119,10 @@ const SamplesTable = forwardRef((props, ref) => {
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
 
   useEffect(() => {
-    if (activeProject && activeProject.samples.length > 0) {
+    if (activeProject.samples.length > 0) {
       // if there are samples - build the table columns
       setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
-      const metadataColumns = activeProject?.metadataKeys.map(
+      const metadataColumns = activeProject.metadataKeys.map(
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
       setTableColumns([...initialTableColumns, ...metadataColumns]);
@@ -238,7 +240,7 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    if (!activeProject || !samples[activeProject.samples[0]]) {
+    if (!samples[activeProject.samples[0]]) {
       setTableData([]);
       return;
     }
@@ -279,20 +281,30 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   const noDataText = (
-    <Paragraph>
-      Start uploading your samples using the “Add samples” button.
-      <br />
-      Don&apos;t have data? Download an example PBMC dataset
-      {' '}
-      <Button
-        type='link'
-        onClick={() => downloadPublicDataset()}
-      >
-        {' '}
-        here
-      </Button>
-      .
-    </Paragraph>
+    <Empty
+      imageStyle={{
+        height: 60,
+      }}
+      description={(
+        <>
+          <Text>
+            Start uploading your samples by clicking on Add samples.
+            <br />
+            Don&apos;t have data? Download our
+          </Text>
+          <Button
+            type='link'
+            size='small'
+            onClick={() => downloadPublicDataset()}
+          >
+            example PBMC data set
+          </Button>
+          <Text>
+            .
+          </Text>
+        </>
+      )}
+    />
   );
 
   const onSortEnd = ({ oldIndex, newIndex }) => {

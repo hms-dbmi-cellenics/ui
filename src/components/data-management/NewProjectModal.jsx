@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Modal, Button, Input, Space, Typography, Form,
 } from 'antd';
 import { ClipLoader } from 'react-spinners';
+import { createProject } from '../../redux/actions/projects';
+
 import validateInputs, { rules } from '../../utils/validateInputs';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
 const NewProjectModal = (props) => {
+  const dispatch = useDispatch();
+
   const {
     visible,
     onCreate,
@@ -38,6 +42,7 @@ const NewProjectModal = (props) => {
   useEffect(() => {
     setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
   }, [projects.ids]);
+
   useEffect(() => {
     setIsValidName(validateInputs(projectName, validationChecks, validationParams).isValid);
   }, [projectName, projectNames]);
@@ -50,6 +55,8 @@ const NewProjectModal = (props) => {
   const submit = () => {
     const newProject = projectName;
     setProjectName('');
+
+    dispatch(createProject(newProject, projectDescription, 'Unnamed Analysis 1'));
     onCreate(newProject, projectDescription);
   };
 
