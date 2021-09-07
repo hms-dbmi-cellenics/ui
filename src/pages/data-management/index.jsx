@@ -7,7 +7,6 @@ import { Button, Space, Empty } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
-import { validate } from 'uuid';
 import { loadProjects } from '../../redux/actions/projects';
 import { loadExperiments } from '../../redux/actions/experiments';
 

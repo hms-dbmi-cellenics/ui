@@ -41,6 +41,10 @@ describe('ProjectMenu', () => {
 
   it('Renders only add samples enabled when empty project', () => {
     const myStore = {
+      backendStatus: {},
+      experiments: {
+        ids: ['1234'],
+      },
       projects: {
         ...initialState,
         'biomage-project-1': {
@@ -51,6 +55,9 @@ describe('ProjectMenu', () => {
           name: 'Biomage project 1',
           samples: [],
           uuid: 'biomage-project-1',
+        },
+        meta: {
+          activeProjectUuid: 'biomage-project-1',
         },
         ids: ['biomage-project-1'],
       },
@@ -63,7 +70,6 @@ describe('ProjectMenu', () => {
       </Provider>,
     );
     const buttons = component.find(Button);
-    debugger;
     // Add samples button
     expect(buttons.at(0).props().disabled).toEqual(false);
     // Download button

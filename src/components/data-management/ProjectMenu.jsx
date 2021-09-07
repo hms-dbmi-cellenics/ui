@@ -13,7 +13,7 @@ import { processUpload } from '../../utils/upload/processUpload';
 const ProjectMenu = () => {
   const dispatch = useDispatch();
 
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
