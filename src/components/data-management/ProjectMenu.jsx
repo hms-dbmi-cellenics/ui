@@ -27,7 +27,7 @@ const ProjectMenu = (props) => {
   const anyProjectsAvailable = projects?.ids?.length;
   const metadataKeysAvailable = activeProject?.metadataKeys?.length;
   const [willGem2sRerun, setWillGem2sRerun] = useState(false);
-  const gem2sStatus = useSelector((state) => state.backendStatus?.status?.pipeline?.gem2s.status);
+  const backendStatus = useSelector((state) => state.backendStatus);
   const initialProjectState = useRef({});
 
   const canLaunchAnalysis = () => {
@@ -78,16 +78,14 @@ const ProjectMenu = (props) => {
       initialProjectState.current[activeProjectUuid] = getProjectHash(activeProject);
     }
 
-    const gem2sReruns = gem2sStatus === pipelineStatus.SUCCEEDED
-      || initialProjectState.current[activeProjectUuid] === getProjectHash(activeProject);
+    const experimentId = activeProject.experiments[0];
+    const gem2sStatus = backendStatus[experimentId]?.status.gem2s?.status;
 
-    console.log('== TEST');
-    console.log(initialProjectState.current[activeProjectUuid]);
-    console.log(gem2sReruns);
-    console.log(getProjectHash(activeProject));
+    const gem2sReruns = gem2sStatus !== pipelineStatus.SUCCEEDED
+      || initialProjectState.current[activeProjectUuid] !== getProjectHash(activeProject);
 
-    if (gem2sReruns) setWillGem2sRerun(true);
-  }, [gem2sStatus, activeProjectUuid, samples]);
+    setWillGem2sRerun(gem2sReruns);
+  }, [backendStatus, activeProjectUuid, samples]);
 
   const reingestIndicator = (rerun) => (
     <div style={{
@@ -97,10 +95,20 @@ const ProjectMenu = (props) => {
       display: 'inline-block',
       borderRadius: '50%',
       verticalAlign: 'middle',
-      backgroundColor: rerun ? 'palegreen' : 'lightcoral',
+      backgroundColor: rerun ? 'tomato' : 'lightgreen',
     }}
     />
   );
+
+  const launchTooltipMessage = () => {
+    if (activeProject?.samples.length > 0 && !canLaunchAnalysis()) {
+      return `Ensure all samples are uploaded and all metadata are inserted (no ${DEFAULT_NA})`;
+    }
+
+    if (willGem2sRerun) {
+      return 'The data for this has to be processed. This might take a while.';
+    }
+  };
 
   return (
     <>
@@ -129,11 +137,7 @@ const ProjectMenu = (props) => {
             activeProjectUuid={activeProjectUuid}
           />
           <Tooltip
-            title={
-              activeProject?.samples.length > 0
-              && !canLaunchAnalysis()
-              && `Ensure all samples are uploaded and all metadata are inserted (no ${DEFAULT_NA})`
-            }
+            title={launchTooltipMessage()}
           >
             <Button
               data-test-id='launch-analysis-button'

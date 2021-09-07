@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { createStore, applyMiddleware } from 'redux';
 import _ from 'lodash';
 import { fireEvent } from '@testing-library/dom';
+import PipelineStatus from 'utils/pipelineStatusValues';
 import rootReducer from '../../../redux/reducers/index';
 import * as createMetadataTrack from '../../../redux/actions/projects/createMetadataTrack';
 import ProjectDetails from '../../../components/data-management/ProjectDetails';
@@ -15,6 +16,7 @@ import initialProjectState, { projectTemplate } from '../../../redux/reducers/pr
 import initialSamplesState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
 import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
+import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
 import UploadStatus from '../../../utils/upload/UploadStatus';
 
 const mockStore = configureStore([thunk]);
@@ -28,6 +30,7 @@ const sample1Name = 'Sample 1';
 const sample1Uuid = 'sample-1';
 const sample2Name = 'Sample 2';
 const sample2Uuid = 'sample-2';
+const experiment1id = 'experiment-1';
 
 const noDataState = {
   projects: {
@@ -40,6 +43,7 @@ const noDataState = {
     ids: [projectUuid],
     [projectUuid]: {
       ...projectTemplate,
+      experiments: [experiment1id],
       uuid: projectUuid,
       name: projectName,
       description: projectDescription,
@@ -47,13 +51,19 @@ const noDataState = {
   },
   experiments: {
     ...initialExperimentsState,
-    ids: ['experiment-1'],
+    ids: [experiment1id],
   },
   experimentSettings: {
     ...initialExperimentSettingsState,
   },
   samples: {
     ...initialSamplesState,
+  },
+  backendStatus: {
+    [experiment1id]: {
+      ...initialExperimentBackendStatus,
+      status: PipelineStatus.SUCCEEDED,
+    },
   },
 };
 
