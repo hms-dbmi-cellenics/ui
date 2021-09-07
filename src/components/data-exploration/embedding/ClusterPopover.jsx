@@ -6,7 +6,7 @@ import colorProvider from '../../../utils/colorProvider';
 
 const ClusterPopover = (props) => {
   const {
-    popoverPosition, onCreate, onCancel, message, validationFunc, children, ...restOfProps
+    popoverPosition, onCreate, onCancel, message, children, ...restOfProps
   } = props;
 
   const getContent = () => (
@@ -20,7 +20,6 @@ const ClusterPopover = (props) => {
       deleteEnabled={false}
       value='New Cluster'
       defaultEditing
-      validationFunc={validationFunc}
     />
   );
 
@@ -59,7 +58,6 @@ ClusterPopover.defaultProps = {
   popoverPosition: null,
   message: 'Add cell set',
   children: null,
-  validationFunc: () => { },
 };
 
 ClusterPopover.propTypes = {
@@ -68,7 +66,6 @@ ClusterPopover.propTypes = {
   popoverPosition: PropTypes.object,
   children: PropTypes.object,
   message: PropTypes.string,
-  validationFunc: PropTypes.func,
 };
 
 export default ClusterPopover;
