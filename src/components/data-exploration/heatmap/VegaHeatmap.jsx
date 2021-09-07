@@ -44,6 +44,7 @@ const VegaHeatmap = (props) => {
       values: data[datum.name],
     })),
   };
+
   return (
     <Element
       className='element'
