@@ -30,38 +30,48 @@ describe('ProjectMenu', () => {
         <ProjectMenu />
       </Provider>,
     );
-    expect(component.find(Button).at(0).props().disabled).toEqual(true);
-    expect(component.find(Button).at(1).props().disabled).toEqual(true);
+    const buttons = component.find(Button);
+    expect(buttons.length).toEqual(3);
+    expect(buttons.at(0).props().disabled).toEqual(true);
+    expect(buttons.at(1).props().disabled).toEqual(true);
+    expect(buttons.at(2).props().disabled).toEqual(true);
     expect(component.find(FileUploadModal).length).toEqual(0);
     expect(component.find(AnalysisModal).length).toEqual(0);
   });
 
-  // it('Renders only add samples enabled when empty project', () => {
-  //   const myStore = {
+  it('Renders only add samples enabled when empty project', () => {
+    const myStore = {
+      projects: {
+        ...initialState,
+        'biomage-project-1': {
+          createdDate: 'yesterday',
+          description: '',
+          experiments: ['1234'],
+          metadataKeys: [],
+          name: 'Biomage project 1',
+          samples: [],
+          uuid: 'biomage-project-1',
+        },
+        ids: ['biomage-project-1'],
+      },
+    };
+    const storeWithProject = mockStore(myStore);
 
-  //     projects: {
-  //       ...initialState,
-  //       'biomage-project-1': {
-  //         createdDate: 'yesterday',
-  //         description: '',
-  //         experiments: ['1234'],
-  //         metadataKeys: [],
-  //         name: 'Biomage project 1',
-  //         samples: [],
-  //         uuid: 'biomage-project-1',
-  //       },
-  //       ids: ['biomage-project-1'],
-  //     },
-  //   };
+    const component = mount(
+      <Provider store={storeWithProject}>
+        <ProjectMenu />
+      </Provider>,
+    );
+    const buttons = component.find(Button);
+    debugger;
+    // Add samples button
+    expect(buttons.at(0).props().disabled).toEqual(false);
+    // Download button
+    expect(buttons.at(1).props().disabled).toEqual(true);
+    // Launch analysis button
+    expect(buttons.at(1).props().disabled).toEqual(true);
 
-  //   const component = mount(
-  //     <Provider store={myStore}>
-  //       <ProjectMenu />
-  //     </Provider>,
-  //   );
-  //   expect(component.find(Button).at(0).props().disabled).toEqual(false);
-  //   expect(component.find(Button).at(1).props().disabled).toEqual(true);
-  //   expect(component.find(FileUploadModal).length).toEqual(0);
-  //   expect(component.find(AnalysisModal).length).toEqual(0);
-  // });
+    expect(component.find(FileUploadModal).length).toEqual(0);
+    expect(component.find(AnalysisModal).length).toEqual(0);
+  });
 });
