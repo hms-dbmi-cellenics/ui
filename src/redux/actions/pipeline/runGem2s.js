@@ -16,8 +16,6 @@ import loadBackendStatus from '../backendStatus/loadBackendStatus';
 const runGem2s = (experimentId) => async (dispatch, getState) => {
   const { experiments } = getState();
 
-  const projectId = experiments[experimentId].projectUuid;
-
   dispatch({
     type: BACKEND_STATUS_LOADING,
     payload: {
@@ -46,6 +44,8 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
     });
 
     dispatch(loadBackendStatus(experimentId));
+
+    const projectId = experiments[experimentId].projectUuid;
 
     dispatch({
       type: EXPERIMENT_SETTINGS_INFO_UPDATE,

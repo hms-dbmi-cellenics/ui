@@ -327,7 +327,7 @@ const ProjectDetails = ({ width, height }) => {
 
   const launchAnalysis = (experimentId) => {
     dispatch(runGem2s(experimentId));
-    router.push(analysisPath.replace('[experimentId]', experimentId));
+    window.location.href = analysisPath.replace('[experimentId]', experimentId);
   };
 
   return (
