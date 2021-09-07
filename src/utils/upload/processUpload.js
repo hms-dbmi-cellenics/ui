@@ -32,6 +32,9 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
     method: 'put',
     url: signedUrl,
     data: loadedFileData,
+    headers: {
+      'Content-Type': 'text/plain',
+    },
     onUploadProgress: (progress) => {
       const percentProgress = Math.round((progress.loaded / progress.total) * 100);
 
