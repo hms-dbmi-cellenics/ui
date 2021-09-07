@@ -234,6 +234,17 @@ describe('ProjectDetails', () => {
     expect(metadataButton).not.toBeDisabled();
   });
 
+  it('Shows all the samples that are uploaded', () => {
+    render(
+      <Provider store={mockStore(withDataState)}>
+        <ProjectDetails width={width} height={height} />
+      </Provider>,
+    );
+
+    expect(screen.getByText(sample1Name)).toBeDefined();
+    expect(screen.getByText(sample2Name)).toBeDefined();
+  });
+
   it('Creates a metadata column', async () => {
     const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
     render(
