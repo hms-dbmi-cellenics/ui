@@ -3,7 +3,9 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Space, Button, Input } from 'antd';
+import {
+  Space, Button, Input, Tooltip,
+} from 'antd';
 
 import { validate } from 'uuid';
 
@@ -149,7 +151,9 @@ const ProjectsListContainer = (props) => {
         >
           Create New Project
         </Button>
-        <Input placeholder='Filter by project name, project ID or analysis ID' onChange={(e) => debouncedSetFilterParam(e.target.value)} />
+        <Tooltip title='Insert project name, project ID or analysis ID here to filter the list'>
+          <Input placeholder='Filter by project name, project ID or analysis ID' onChange={(e) => debouncedSetFilterParam(e.target.value)} />
+        </Tooltip>
         <Space direction='vertical' style={{ width: '100%', overflowY: 'auto' }}>
           <ProjectsList height={height} filter={filterParam} />
         </Space>

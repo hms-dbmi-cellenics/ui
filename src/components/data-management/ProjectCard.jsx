@@ -4,6 +4,7 @@ import {
   Card, Descriptions,
 } from 'antd';
 import { blue } from '@ant-design/colors';
+import { useSelector } from 'react-redux';
 import EditableField from '../EditableField';
 import PrettyTime from '../PrettyTime';
 
@@ -15,10 +16,10 @@ const activeProjectStyle = {
 
 const ProjectCard = (props) => {
   const {
-    project, isActive, onClick, onSubmit, onDelete, validationFn,
+    uuid, isActive, onClick, onSubmit, onDelete, validationFn,
   } = props;
 
-  const { uuid } = project;
+  const project = useSelector((state) => state.projects[uuid]);
 
   return (
     <Card
@@ -76,7 +77,7 @@ const ProjectCard = (props) => {
 };
 
 ProjectCard.propTypes = {
-  project: PropTypes.object.isRequired,
+  uuid: PropTypes.string.isRequired,
   isActive: PropTypes.bool,
   onClick: PropTypes.func,
   onSubmit: PropTypes.func,
@@ -90,7 +91,6 @@ ProjectCard.defaultProps = {
   onSubmit: () => {},
   onDelete: () => {},
   validationFn: () => {},
-
 };
 
 export default ProjectCard;

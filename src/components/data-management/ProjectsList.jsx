@@ -54,9 +54,9 @@ const ProjectsListContainer = (props) => {
     setDeleteModalVisible(false);
   };
 
-  const matches = (searchObj, filterRegex) => searchObj.projectUuid.match(filterRegex)
-      || searchObj.projectName.match(filterRegex)
-      || searchObj.experiments.some((experimentId) => experimentId.match(filterRegex));
+  const matcher = (searchObj, filterRegex) => searchObj.projectName.match(filterRegex)
+      || searchObj.experiments.some((experimentId) => experimentId.match(filterRegex))
+      || searchObj.projectUuid.match(filterRegex);
 
   return (
     <>
@@ -70,12 +70,12 @@ const ProjectsListContainer = (props) => {
       <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
         {
           searchable
-            .filter(([searchObj]) => matches(searchObj, filter))
+            .filter(([searchObj]) => matcher(searchObj, filter))
             .map(([_, project]) => (
               <ProjectCard
                 key={project.uuid}
                 isActive={project.uuid === activeProjectUuid}
-                project={project}
+                uuid={project.uuid}
                 onClick={() => {
                   dispatch(setActiveProject(project.uuid));
                 }}
