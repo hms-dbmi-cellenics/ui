@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Card, Space, Descriptions,
+  Card, Space, Descriptions, Skeleton,
 } from 'antd';
 import { blue } from '@ant-design/colors';
 import EditableField from '../EditableField';
@@ -18,7 +18,9 @@ const ProjectsListContainer = (props) => {
   const { height } = props;
   const dispatch = useDispatch();
 
+  const loading = useSelector((state) => state.projects.meta.loading);
   const projects = useSelector((state) => state.projects);
+
   const { activeProjectUuid } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
@@ -49,6 +51,10 @@ const ProjectsListContainer = (props) => {
   const validationParams = {
     existingNames: projectNames,
   };
+
+  if (loading) {
+    return Array(5).fill(<Skeleton active />);
+  }
 
   return (
     <>

@@ -1,5 +1,5 @@
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { /* cacheFetch, */ fetchCachedWork } from '../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
 
 enableFetchMocks();
 
@@ -113,7 +113,7 @@ const mockGet = jest.fn((x) => {
 const mockSet = jest.fn();
 const mockRemove = jest.fn();
 
-const mockSendWork = jest.fn((experimentId, timeout, body) => {
+const mockseekFromAPI = jest.fn((experimentId, body) => {
   const wantedGenes = body.genes;
   const returnedBody = {};
   wantedGenes.forEach((gene) => {
@@ -129,25 +129,28 @@ const mockSendWork = jest.fn((experimentId, timeout, body) => {
   };
 });
 
-jest.mock('../../utils/cache', () => ({
+jest.mock('../../../utils/cache', () => ({
   get: jest.fn((x) => mockGet(x)),
   set: jest.fn((key, val) => mockSet(key, val)),
   _remove: jest.fn((key) => mockRemove(key)),
 }));
 
-jest.mock('../../utils/sendWork', () => ({
+jest.mock('../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  default: jest.fn((experimentId, timeout, body) => mockSendWork(experimentId, timeout, body)),
+  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
+  seekFromAPI: jest.fn(
+    (experimentId, body, timeout) => mockseekFromAPI(experimentId, body, timeout),
+  ),
 }));
 
-describe('tests for fetchCachedWork', () => {
+describe('tests for fetchWork', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('test fetchCachedWork with GeneExpression task', async () => {
+  it('test fetchWork with GeneExpression task', async () => {
     const experimentId = '1234';
-    const res = await fetchCachedWork(
+    const res = await fetchWork(
       experimentId,
       {
         name: 'GeneExpression',
@@ -161,11 +164,11 @@ describe('tests for fetchCachedWork', () => {
       },
       { timeout: 10 },
     );
-    expect(res).toEqual({ D: fakeData.D });
-    expect(mockSendWork).toHaveBeenCalledWith(experimentId, 10, { name: 'GeneExpression', genes: ['D'] });
+    expect(mockseekFromAPI).toHaveBeenCalledWith(experimentId, { name: 'GeneExpression', genes: ['D'] }, 10);
     expect(mockGet).toHaveBeenCalledTimes(4);
     expect(mockSet).toHaveBeenCalledTimes(1);
     expect(mockSet).toHaveBeenCalledWith(fakeCacheKeyMappings.D, fakeData.D);
+    expect(res).toEqual({ D: fakeData.D });
   });
 });
 
