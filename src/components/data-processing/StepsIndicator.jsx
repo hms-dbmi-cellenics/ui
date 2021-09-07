@@ -9,11 +9,6 @@ const StepsIndicator = (props) => {
     completed: '#009930', // blue
   };
 
-  const testClasses = {
-    notCompleted: 'qc-step-not-completed',
-    completed: 'qc-step-completed',
-  };
-
   return (
     <div
       role='progressbar'
@@ -23,15 +18,15 @@ const StepsIndicator = (props) => {
     >
       {allSteps.map((step, index) => {
         let color = colors.completed;
-        let testClass = testClasses.completed;
+        let dataTestClass = 'qc-step-completed';
         if (index === currentStep) {
           color = colors.currentStep;
         } else if (index > completedSteps - 1) {
           color = colors.notCompleted;
-          testClass = testClasses.notCompleted;
+          dataTestClass = 'qc-step-not-completed';
         }
         return (
-          <svg width='18' height='10' data-test-class={testClass}>
+          <svg width='18' height='10' data-test-class={dataTestClass}>
             <rect width='16' height='8' style={{ fill: color }} />
           </svg>
         );
