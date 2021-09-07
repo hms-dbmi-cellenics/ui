@@ -3,10 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import { Button, Space, Empty } from 'antd';
+import {
+  Button, Space, Empty, Typography,
+} from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
+import { ClipLoader } from 'react-spinners';
 import { loadProjects } from '../../redux/actions/projects';
 import { loadExperiments } from '../../redux/actions/experiments';
 
@@ -14,9 +17,10 @@ import Header from '../../components/Header';
 import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
-import LoadingModal from '../../components/LoadingModal';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
+
+const { Text } = Typography;
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
@@ -151,7 +155,17 @@ const DataManagementPage = ({ route }) => {
         title='Data Management'
       />
       {projectSaving || sampleSaving ? (
-        <LoadingModal />
+        <center>
+          <Space direction='vertical'>
+            <ClipLoader
+              size={50}
+              color='#8f0b10'
+            />
+            <Text>
+              Loading...
+            </Text>
+          </Space>
+        </center>
       ) : (<></>)}
       <NewProjectModal
         visible={newProjectModalVisible}
