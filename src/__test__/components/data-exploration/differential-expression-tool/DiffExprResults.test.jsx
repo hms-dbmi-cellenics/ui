@@ -10,7 +10,7 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 
 import DiffExprResults from '../../../../components/data-exploration/differential-expression-tool/DiffExprResults';
-import { fetchCachedWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from '../../../../redux/actionTypes/differentialExpression';
 
 import Loader from '../../../../components/Loader';
@@ -22,9 +22,9 @@ jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
   default: () => 60,
 }));
 
-jest.mock('../../../../utils/cacheRequest', () => ({
+jest.mock('../../../../utils/work/fetchWork', () => ({
   __esModule: true, // this property makes it work
-  fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
+  fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [
       {
         p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, logFC: -1.4274754343649423, gene_names: 'A',
@@ -219,7 +219,7 @@ describe('DiffExprResults', () => {
     // // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(store, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
-    expect(fetchCachedWork).toHaveBeenCalledWith(
+    expect(fetchWork).toHaveBeenCalledWith(
       '1234',
       {
         cellSet: 'cluster-a',

@@ -3,10 +3,10 @@ import thunk from 'redux-thunk';
 import loadMarkerGenes from '../../../../redux/actions/genes/loadMarkerGenes';
 import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from '../../../../redux/actionTypes/genes';
 import initialState from '../../../../redux/reducers/genes/initialState';
-import { fetchCachedWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/cacheRequest');
+jest.mock('../../../../utils/work/fetchWork');
 
 jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
@@ -90,7 +90,7 @@ describe('loadMarkerGenes action', () => {
 
     const mockResult = { order, data };
 
-    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHeatmap'));
 
@@ -114,7 +114,7 @@ describe('loadMarkerGenes action', () => {
       backendStatus,
     });
 
-    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     await store.dispatch(loadMarkerGenes(experimentId, 10));
 

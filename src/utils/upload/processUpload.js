@@ -1,15 +1,26 @@
 /* eslint-disable no-param-reassign */
-import { Storage } from 'aws-amplify';
 import _ from 'lodash';
-import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
+
+import axios from 'axios';
+
 import { createSample, updateSampleFile } from '../../redux/actions/samples';
+
+import fetchAPI from '../fetchAPI';
+
 import UploadStatus from './UploadStatus';
+import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from './fileInspector';
 
-const putInS3 = async (bucketKey, loadedFileData, dispatch, sampleUuid, fileName, metadata) => (
-  Storage.put(
-    bucketKey,
-    loadedFileData,
+const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileName, metadata) => {
+  const baseUrl = `/v1/projects/${projectUuid}/samples/${sampleUuid}/${fileName}/uploadUrl`;
+
+  const urlParams = new URLSearchParams(metadata);
+  const urlParamsStr = Object.keys(metadata).length ? `?${urlParams}` : '';
+
+  const url = `${baseUrl}${urlParamsStr}`;
+
+  const signedUrlResponse = await fetchAPI(
+    url,
     {
       metadata,
       progressCallback(progress) {
@@ -22,9 +33,28 @@ const putInS3 = async (bucketKey, loadedFileData, dispatch, sampleUuid, fileName
           },
         }));
       },
+      method: 'GET',
     },
-  )
-);
+  );
+
+  const signedUrl = await signedUrlResponse.json();
+
+  return axios.request({
+    method: 'put',
+    url: signedUrl,
+    data: loadedFileData,
+    onUploadProgress: (progress) => {
+      const percentProgress = Math.round((progress.loaded / progress.total) * 100);
+
+      dispatch(updateSampleFile(sampleUuid, fileName, {
+        upload: {
+          status: UploadStatus.UPLOADING,
+          progress: percentProgress ?? 0,
+        },
+      }));
+    },
+  });
+};
 
 const metadataForBundle = (bundle) => {
   const metadata = {};
@@ -39,7 +69,7 @@ const metadataForBundle = (bundle) => {
 };
 
 const compressAndUploadSingleFile = async (
-  bucketKey, sampleUuid, fileName, file,
+  projectUuid, sampleUuid, fileName, file,
   dispatch, metadata = {},
 ) => {
   let loadedFile = null;
@@ -71,7 +101,7 @@ const compressAndUploadSingleFile = async (
 
   try {
     const uploadPromise = putInS3(
-      bucketKey, loadedFile, dispatch,
+      projectUuid, loadedFile, dispatch,
       sampleUuid, fileName, metadata,
     );
     console.log('Calling from compressAndUploadSingleFile try 2');
@@ -88,7 +118,8 @@ const compressAndUploadSingleFile = async (
 
     await uploadPromise;
   } catch (e) {
-    console.log('Calling from compressAndUploadSingleFile error 2');
+    console.log('eDebug');
+    console.log(e);
     dispatch(
       updateSampleFile(
         sampleUuid,
@@ -132,9 +163,9 @@ const uploadSingleFile = (newFile, activeProjectUuid, sampleUuid, dispatch) => {
 
   const newFileName = renameFileIfNeeded(newFile.bundle.name, newFile.bundle.type);
 
-  const bucketKey = `${activeProjectUuid}/${sampleUuid}/${newFileName}`;
-
-  compressAndUploadSingleFile(bucketKey, sampleUuid, newFileName, newFile, dispatch, metadata);
+  compressAndUploadSingleFile(
+    activeProjectUuid, sampleUuid, newFileName, newFile, dispatch, metadata,
+  );
 
   return [newFileName, { ...newFile, name: newFileName }];
 };

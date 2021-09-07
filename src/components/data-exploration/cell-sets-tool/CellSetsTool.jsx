@@ -1,9 +1,13 @@
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { Alert, Button, Empty, Skeleton, Space, Tabs, Typography } from 'antd';
+import {
+  Alert, Button, Empty, Skeleton, Space, Tabs, Typography,
+} from 'antd';
 
 import { BlockOutlined, MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
 
@@ -37,9 +41,8 @@ const generateFilteredCellIndices = (geneExpressions) => {
   const expressionValues = arbitraryGeneExpression?.rawExpression.expression ?? [];
   return new Set(_.filter(
     _.range(expressionValues.length),
-    (i) => expressionValues[i] === null
-    )
-  );
+    (i) => expressionValues[i] === null,
+  ));
 };
 
 const CellSetsTool = (props) => {
@@ -47,13 +50,17 @@ const CellSetsTool = (props) => {
 
   const dispatch = useDispatch();
 
-  const cellSets = useSelector((state) => state.cellSets);
+  const loading = useSelector((state) => state.cellSets.loading);
+  const error = useSelector((state) => state.cellSets.error);
+  const hierarchy = useSelector((state) => state.cellSets.hierarchy);
+  const properties = useSelector((state) => state.cellSets.properties);
+  const hidden = useSelector((state) => state.cellSets.hidden);
+  const allSelected = useSelector((state) => state.cellSets.selected);
   const notifications = useSelector((state) => state.notifications);
 
   const genes = useSelector(
     (state) => state.genes,
   );
-
   const filteredCells = useRef(new Set());
 
   const [activeTab, setActiveTab] = useState('cellSets');
@@ -69,11 +76,8 @@ const CellSetsTool = (props) => {
     if (Object.is(gene, undefined)) return;
 
     dispatch(loadGeneExpression(experimentId, [gene], 'CellSetsTool'));
-  }, [genes.properties.data])
+  }, [genes.properties.data]);
 
-  const {
-    loading, error, properties, hierarchy, selected: allSelected, hidden,
-  } = cellSets;
   const FOCUS_TYPE = 'cellSets';
 
   useEffect(() => {
@@ -94,45 +98,49 @@ const CellSetsTool = (props) => {
     }
   }, [notifications]);
 
-  const onNodeUpdate = (key, data) => {
+  const [cellSetTreeData, setCellSetTreeData] = useState(null);
+  const [metadataTreeData, setMetadataTreeData] = useState(null);
+
+  useEffect(() => {
+    setCellSetTreeData(composeTree(hierarchy, properties, 'cellSets'));
+    setMetadataTreeData(composeTree(hierarchy, properties, 'metadataCategorical'));
+  }, [hierarchy, properties]);
+
+  const [numSelected, setNumSelected] = useState(0);
+
+  useEffect(() => {
+    const selected = allSelected[activeTab];
+    const selectedCells = union(selected, properties);
+
+    const numSelectedUnfiltered = new Set([...selectedCells]
+      .filter((cellIndex) => !filteredCells.current.has(cellIndex)));
+    setNumSelected(numSelectedUnfiltered.size);
+  }, [activeTab, allSelected, properties]);
+
+  const onNodeUpdate = useCallback((key, data) => {
     dispatch(updateCellSetProperty(experimentId, key, data));
-  };
+  }, [experimentId]);
 
-  const onNodeDelete = (key) => {
+  const onNodeDelete = useCallback((key) => {
     dispatch(deleteCellSet(experimentId, key));
-  };
+  }, [experimentId]);
 
-  const onHierarchyUpdate = (newHierarchy) => {
+  const onHierarchyUpdate = useCallback((newHierarchy) => {
     dispatch(updateCellSetHierarchy(experimentId, newHierarchy));
-  };
+  }, [experimentId]);
 
-  const onCheck = (keys) => {
+  const onCheck = useCallback((keys) => {
     dispatch(updateCellSetSelected(experimentId, keys, activeTab));
-  };
+  }, [experimentId, activeTab]);
 
   /**
    * Renders the content inside the tool. Can be a skeleton during loading
    * or a hierarchical tree listing all cell sets.
    */
   const renderContent = () => {
-    if (loading) return <Skeleton active />;
-
-    if (error) {
-      return (
-        <PlatformError
-          error={error}
-          onClick={() => dispatch(loadCellSets(experimentId))}
-        />
-      );
-    }
-    const selected = allSelected[activeTab];
-    const selectedCells = union(selected, properties);
-
-    const numSelectedUnfiltered = new Set([...selectedCells]
-      .filter((cellIndex) => !filteredCells.current.has(cellIndex)));
-    const numSelected = numSelectedUnfiltered.size;
-
     let operations = null;
+    const selected = allSelected[activeTab];
+
     if (numSelected) {
       operations = (
         <Space>
@@ -141,6 +149,7 @@ const CellSetsTool = (props) => {
             onCreate={(name, color) => {
               dispatch(createCellSet(experimentId, name, color, union(selected, properties)));
             }}
+            ariaLabel='Union of selected'
             helpTitle='Create new cell set by combining selected sets'
           />
           <CellSetOperation
@@ -150,6 +159,7 @@ const CellSetsTool = (props) => {
                 createCellSet(experimentId, name, color, intersection(selected, properties)),
               );
             }}
+            ariaLabel='Intersection of selected'
             helpTitle='Create new cell set from intersection of selected sets'
           />
           <CellSetOperation
@@ -157,6 +167,7 @@ const CellSetsTool = (props) => {
             onCreate={(name, color) => {
               dispatch(createCellSet(experimentId, name, color, complement(selected, properties)));
             }}
+            ariaLabel='Complement of selected'
             helpTitle='Create new cell set from the complement of the selected sets'
           />
           <Text type='primary' id='selectedCellSets'>
@@ -167,19 +178,8 @@ const CellSetsTool = (props) => {
       );
     }
 
-    const cellSetTreeData = composeTree(hierarchy, properties, 'cellSets');
-    const metadataTreeData = composeTree(hierarchy, properties, 'metadataCategorical');
-
     return (
       <>
-        {hidden.size > 0 ? (
-          <Alert
-            message={`${hidden.size} cell set${hidden.size > 1 ? 's are' : ' is'} currently hidden.`}
-            type='warning'
-            action={<Button type='link' size='small' onClick={() => dispatch(unhideAllCellSets(experimentId))}>Unhide all</Button>}
-          />
-        ) : (<></>)}
-
         <Tabs
           size='small'
           activeKey={activeTab}
@@ -197,7 +197,7 @@ const CellSetsTool = (props) => {
               onHierarchyUpdate={onHierarchyUpdate}
               defaultExpandAll
               showHideButton
-              defaultCheckedKeys={selected}
+              checkedKeys={selected}
             />
           </TabPane>
           <TabPane tab='Metadata' key='metadataCategorical'>
@@ -212,7 +212,7 @@ const CellSetsTool = (props) => {
                 onHierarchyUpdate={onHierarchyUpdate}
                 defaultExpandAll
                 showHideButton
-                defaultCheckedKeys={selected}
+                checkedKeys={selected}
               />
             )
               : (
@@ -231,6 +231,20 @@ const CellSetsTool = (props) => {
     );
   };
 
+  // console.warn(loading, cellSetTreeData, metadataTreeData, allSelected);
+
+  if (loading) return <Skeleton active={false} title={false} />;
+  if (!cellSetTreeData || !metadataTreeData) return <Skeleton active title={false} avatar />;
+
+  if (error) {
+    return (
+      <PlatformError
+        error={error}
+        onClick={() => dispatch(loadCellSets(experimentId))}
+      />
+    );
+  }
+
   return (
     <Element
       className='element'
@@ -245,6 +259,13 @@ const CellSetsTool = (props) => {
       }}
     >
       <Space direction='vertical' style={{ width: '100%' }}>
+        {hidden.size > 0 ? (
+          <Alert
+            message={`${hidden.size} cell set${hidden.size > 1 ? 's are' : ' is'} currently hidden.`}
+            type='warning'
+            action={<Button type='link' size='small' onClick={() => dispatch(unhideAllCellSets(experimentId))}>Unhide all</Button>}
+          />
+        ) : (<></>)}
         {renderContent()}
       </Space>
     </Element>

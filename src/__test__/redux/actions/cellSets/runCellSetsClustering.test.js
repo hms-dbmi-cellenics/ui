@@ -3,16 +3,16 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import runCellSetsClustering from '../../../../redux/actions/cellSets/runCellSetsClustering';
 import initialState from '../../../../redux/reducers/cellSets/initialState';
-import sendWork from '../../../../utils/sendWork';
+import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 jest.mock('localforage');
-jest.mock('../../../../utils/cacheRequest');
 
-jest.mock('../../../../utils/sendWork', () => ({
+jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  default: jest.fn(),
+  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
+  seekFromAPI: jest.fn(),
 }));
 
 jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
@@ -42,15 +42,26 @@ describe('runCellSetsClustering action', () => {
     jest.clearAllMocks();
   });
 
-  it('Does not dispatch on loading state', async () => {
+  it('Does not dispatch on loading state if clustering is already recomputing', async () => {
     const store = mockStore({
-      cellSets: { loading: true, error: false },
+      cellSets: { loading: true, error: false, updatingClustering: true },
       experimentSettings: experimentSettingsStore,
       backendStatus,
     });
 
     store.dispatch(runCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
+  });
+
+  it('Does dispatch on loading state if clustering is not recomputing', async () => {
+    const store = mockStore({
+      cellSets: { loading: true, error: false, updatingClustering: false },
+      experimentSettings: experimentSettingsStore,
+      backendStatus,
+    });
+
+    store.dispatch(runCellSetsClustering(experimentId));
+    expect(store.getActions().length).toBeGreaterThan(0);
   });
 
   it('Does not dispatch on error state', async () => {
@@ -68,6 +79,7 @@ describe('runCellSetsClustering action', () => {
       cellSets: {
         ...initialState,
         loading: false,
+        error: false,
         hierarchy: [{ children: [], key: 'scratchpad' }],
         properties: {
           scratchpad: {
@@ -85,18 +97,22 @@ describe('runCellSetsClustering action', () => {
 
     const flushPromises = () => new Promise(setImmediate);
 
-    sendWork.mockImplementation(() => Promise.resolve());
+    seekFromAPI.mockImplementation(() => Promise.resolve());
 
-    store.dispatch(runCellSetsClustering(experimentId, 0.5));
+    await store.dispatch(runCellSetsClustering(experimentId, 0.5));
+    await flushPromises();
 
-    expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith(experimentId, 60, {
-      name: 'ClusterCells',
-      cellSetName: 'Louvain clusters',
-      type: 'louvain',
-      cellSetKey: 'louvain',
-      config: { resolution: 0.5 },
-    }, backendStatus[experimentId].status);
+    expect(seekFromAPI).toHaveBeenCalledTimes(1);
+    expect(seekFromAPI).toHaveBeenCalledWith(
+      experimentId,
+      {
+        cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
+      },
+      60,
+      '4d66c6ab734a1ce9acc2204fe3601732', // pragma: allowlist secret
+      expect.any(Function),
+      { PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate },
+    );
 
     await flushPromises();
 
@@ -111,27 +127,31 @@ describe('runCellSetsClustering action', () => {
     done();
   });
 
-  it('Dispatches error action when sendWork fails', async () => {
+  it('Dispatches error action when seekFromAPI fails', async () => {
     const store = mockStore({
-      cellSets: { ...initialState, loading: false },
+      cellSets: { ...initialState, loading: false, error: false },
       experimentSettings: experimentSettingsStore,
       backendStatus,
     });
 
-    sendWork.mockImplementation(() => Promise.reject());
+    seekFromAPI.mockImplementation(() => Promise.reject());
 
     const flushPromises = () => new Promise(setImmediate);
 
-    store.dispatch(runCellSetsClustering(experimentId, 0.5));
+    await store.dispatch(runCellSetsClustering(experimentId, 0.5));
+    await flushPromises();
 
-    expect(sendWork).toHaveBeenCalledTimes(1);
-    expect(sendWork).toHaveBeenCalledWith(experimentId, 60, {
-      name: 'ClusterCells',
-      cellSetName: 'Louvain clusters',
-      type: 'louvain',
-      cellSetKey: 'louvain',
-      config: { resolution: 0.5 },
-    }, backendStatus[experimentId].status);
+    expect(seekFromAPI).toHaveBeenCalledTimes(1);
+    expect(seekFromAPI).toHaveBeenCalledWith(
+      experimentId,
+      {
+        cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
+      },
+      60,
+      '4d66c6ab734a1ce9acc2204fe3601732', // pragma: allowlist secret
+      expect.any(Function),
+      { PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate },
+    );
 
     await flushPromises();
 

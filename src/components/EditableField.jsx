@@ -99,11 +99,11 @@ const EditableField = (props) => {
           />
 
           <Tooltip placement='top' title='Save' mouseLeaveDelay={0} ref={saveButton}>
-            <Button size='small' shape='circle' icon={<CheckOutlined />} onClick={(e) => { saveButton.current.onMouseLeave(); onSubmit(e); }} />
+            <Button aria-label='Save' size='small' shape='circle' icon={<CheckOutlined />} onClick={(e) => { saveButton.current.onMouseLeave(); onSubmit(e); }} />
           </Tooltip>
 
           <Tooltip placement='top' title='Cancel' mouseLeaveDelay={0}>
-            <Button size='small' shape='circle' icon={<CloseOutlined />} onClick={onCancel} />
+            <Button aria-label='Cancel' size='small' shape='circle' icon={<CloseOutlined />} onClick={onCancel} />
           </Tooltip>
 
         </>
@@ -117,7 +117,7 @@ const EditableField = (props) => {
           showEdit
             ? (
               <Tooltip placement='top' title='Edit' mouseLeaveDelay={0} ref={editButton}>
-                <Button size='small' shape='circle' icon={<EditOutlined />} onClick={(e) => { editButton.current.onMouseLeave(); toggleEditing(e); }} />
+                <Button aria-label='Edit' size='small' shape='circle' icon={<EditOutlined />} onClick={(e) => { editButton.current.onMouseLeave(); toggleEditing(e); }} />
               </Tooltip>
             ) : <></>
         }
@@ -134,7 +134,7 @@ const EditableField = (props) => {
             deleteEnabled
               ? (
                 <Tooltip placement='top' title='Delete' mouseLeaveDelay={0}>
-                  <Button size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
+                  <Button aria-label='Delete' size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
                 </Tooltip>
               ) : <></>
           }
