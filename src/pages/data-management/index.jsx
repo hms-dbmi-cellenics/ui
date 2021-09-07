@@ -150,11 +150,9 @@ const DataManagementPage = ({ route }) => {
         route={route}
         title='Data Management'
       />
-      <LoadingModal
-        visible={Boolean(projectSaving || sampleSaving)}
-        message={projectSaving ?? sampleSaving ?? ''}
-      />
-
+      {projectSaving || sampleSaving ? (
+        <LoadingModal />
+      ) : (<></>)}
       <NewProjectModal
         visible={newProjectModalVisible}
         firstTimeFlow={projectsList.ids.length === 0}

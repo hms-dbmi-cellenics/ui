@@ -13,14 +13,13 @@ import {
   MenuOutlined,
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
-
-import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { updateExperiment } from 'redux/actions/experiments';
 import { updateProject } from 'redux/actions/projects';
 import { Storage } from 'aws-amplify';
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import {
   updateSample,
 } from '../../redux/actions/samples';
@@ -39,7 +38,7 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../.
 
 import '../../utils/css/data-management.css';
 
-const { Paragraph, Text } = Typography;
+const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const { height } = props;
@@ -155,7 +154,6 @@ const SamplesTable = forwardRef((props, ref) => {
       dataIndex: key,
       render: (cellValue, record, rowIdx) => (
         <EditableFieldCell
-          initialText={DEFAULT_NA}
           cellText={cellValue}
           dataIndex={key}
           rowIdx={rowIdx}
@@ -341,31 +339,29 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   return (
-    <>
-      <Row>
-        <Col>
-          <Table
-            size='small'
-            scroll={{
-              x: 'max-content',
-              y: height - 250,
-            }}
-            bordered
-            columns={tableColumns}
-            dataSource={tableData}
-            sticky
-            pagination={false}
-            locale={{ emptyText: noDataText }}
-            components={{
-              body: {
-                wrapper: DragContainer,
-                row: DraggableRow,
-              },
-            }}
-          />
-        </Col>
-      </Row>
-    </>
+    <Row>
+      <Col>
+        <Table
+          size='small'
+          scroll={{
+            x: 'max-content',
+            y: height - 250,
+          }}
+          bordered
+          columns={tableColumns}
+          dataSource={tableData}
+          sticky
+          pagination={false}
+          locale={{ emptyText: noDataText }}
+          components={{
+            body: {
+              wrapper: DragContainer,
+              row: DraggableRow,
+            },
+          }}
+        />
+      </Col>
+    </Row>
   );
 });
 

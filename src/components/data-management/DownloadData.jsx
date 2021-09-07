@@ -18,7 +18,7 @@ import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
 
 const DownloadData = () => {
   const dispatch = useDispatch();
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const experimentSettings = useSelector((state) => state.experimentSettings);
   const backendStatus = useSelector((state) => state.backendStatus);
@@ -140,7 +140,7 @@ const DownloadData = () => {
       placement='bottomRight'
       disabled={
         projects.ids.length === 0
-        || activeProject?.samples?.length === 0
+        || activeProject.samples.length === 0
       }
     >
       <Button>

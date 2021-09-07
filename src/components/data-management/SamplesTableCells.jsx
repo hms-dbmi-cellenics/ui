@@ -134,7 +134,7 @@ UploadCell.propTypes = {
 
 const EditableFieldCell = (props) => {
   const {
-    initialText, cellText,
+    cellText,
     dataIndex, rowIdx, onAfterSubmit,
   } = props;
   return (
@@ -142,16 +142,20 @@ const EditableFieldCell = (props) => {
       <Space>
         <EditableField
           deleteEnabled={false}
-          value={cellText || initialText}
+          value={cellText}
           onAfterSubmit={(value) => onAfterSubmit(value)}
         />
       </Space>
     </div>
   );
 };
+
+EditableFieldCell.defaultProps = {
+  cellText: 'N.A',
+};
+
 EditableFieldCell.propTypes = {
-  initialText: PropTypes.string.isRequired,
-  cellText: PropTypes.string.isRequired,
+  cellText: PropTypes.string,
   dataIndex: PropTypes.string.isRequired,
   rowIdx: PropTypes.number.isRequired,
   onAfterSubmit: PropTypes.func.isRequired,

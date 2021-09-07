@@ -207,16 +207,13 @@ const UploadDetailsModal = (props) => {
 };
 
 UploadDetailsModal.propTypes = {
-  sampleName: PropTypes.string,
   file: PropTypes.object,
   visible: PropTypes.bool,
   onCancel: PropTypes.func,
-  activeProjectUuid: PropTypes.string.isRequired,
   uploadDetailsModalDataRef: PropTypes.object.isRequired,
 };
 
 UploadDetailsModal.defaultProps = {
-  sampleName: '',
   file: {},
   visible: true,
   onCancel: () => { },
