@@ -14,8 +14,27 @@ configure({ adapter: new Adapter() });
 
 const mockStore = configureStore([thunk]);
 
-const noDataState = {
-  projects: { ...initialState },
+const emptyProjectstore = {
+  backendStatus: {},
+  experiments: {
+    ids: ['1234'],
+  },
+  projects: {
+    ...initialState,
+    'biomage-project-1': {
+      createdDate: 'yesterday',
+      description: '',
+      experiments: ['1234'],
+      metadataKeys: [],
+      name: 'Biomage project 1',
+      samples: [],
+      uuid: 'biomage-project-1',
+    },
+    meta: {
+      activeProjectUuid: 'biomage-project-1',
+    },
+    ids: ['biomage-project-1'],
+  },
 };
 
 describe('ProjectMenu', () => {
@@ -23,49 +42,11 @@ describe('ProjectMenu', () => {
     jest.clearAllMocks();
   });
 
-  it('Renders all buttons disabled and nothing else when there is nothing in store', () => {
-    const emptyStore = mockStore(noDataState);
-    const component = mount(
-      <Provider store={emptyStore}>
-        <ProjectMenu />
-      </Provider>,
-    );
-    const buttons = component.find(Button);
-    expect(buttons.length).toEqual(3);
-    expect(buttons.at(0).props().disabled).toEqual(true);
-    expect(buttons.at(1).props().disabled).toEqual(true);
-    expect(buttons.at(2).props().disabled).toEqual(true);
-    expect(component.find(FileUploadModal).length).toEqual(0);
-    expect(component.find(AnalysisModal).length).toEqual(0);
-  });
-
-  it('Renders only add samples enabled when empty project', () => {
-    const myStore = {
-      backendStatus: {},
-      experiments: {
-        ids: ['1234'],
-      },
-      projects: {
-        ...initialState,
-        'biomage-project-1': {
-          createdDate: 'yesterday',
-          description: '',
-          experiments: ['1234'],
-          metadataKeys: [],
-          name: 'Biomage project 1',
-          samples: [],
-          uuid: 'biomage-project-1',
-        },
-        meta: {
-          activeProjectUuid: 'biomage-project-1',
-        },
-        ids: ['biomage-project-1'],
-      },
-    };
-    const storeWithProject = mockStore(myStore);
+  it('Only add samples enabled when empty project', () => {
+    const myStore = mockStore(emptyProjectstore);
 
     const component = mount(
-      <Provider store={storeWithProject}>
+      <Provider store={myStore}>
         <ProjectMenu />
       </Provider>,
     );

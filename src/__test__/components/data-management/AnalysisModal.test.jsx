@@ -50,7 +50,7 @@ const eventStub = {
 
 const { experiments } = initialState;
 
-const onLaunchSpy = jest.fn(() => console.log('I am a spy'));
+const onLaunchSpy = jest.fn();
 const onCancelSpy = jest.fn();
 
 describe('AnalysisModal', () => {
