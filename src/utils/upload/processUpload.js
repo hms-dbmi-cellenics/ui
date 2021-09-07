@@ -25,7 +25,6 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
       metadata,
       progressCallback(progress) {
         const percentProgress = Math.round((progress.loaded / progress.total) * 100);
-        console.log('Calling from putInS3');
         dispatch(updateSampleFile(sampleUuid, fileName, {
           upload: {
             status: UploadStatus.UPLOADING,
@@ -75,19 +74,15 @@ const compressAndUploadSingleFile = async (
   let loadedFile = null;
 
   try {
-    loadedFile = await loadAndCompressIfNecessary(file, () => {
-      console.log('Calling from compressAndUploadSingleFile try 1');
-      return dispatch(
-        updateSampleFile(
-          sampleUuid,
-          fileName,
-          { upload: { status: UploadStatus.COMPRESSING } },
-        ),
-      );
-    });
+    loadedFile = await loadAndCompressIfNecessary(file, () => dispatch(
+      updateSampleFile(
+        sampleUuid,
+        fileName,
+        { upload: { status: UploadStatus.COMPRESSING } },
+      ),
+    ));
   } catch (e) {
     const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
-    console.log('Calling from compressAndUploadSingleFile error');
     dispatch(
       updateSampleFile(
         sampleUuid,
@@ -104,7 +99,6 @@ const compressAndUploadSingleFile = async (
       projectUuid, loadedFile, dispatch,
       sampleUuid, fileName, metadata,
     );
-    console.log('Calling from compressAndUploadSingleFile try 2');
     dispatch(
       updateSampleFile(
         sampleUuid,
@@ -131,7 +125,6 @@ const compressAndUploadSingleFile = async (
     return;
   }
 
-  console.log('Calling again because why not');
   dispatch(
     updateSampleFile(
       sampleUuid,
@@ -176,7 +169,6 @@ const compressAndUpload = (sample, activeProjectUuid, dispatch) => Object.fromEn
 );
 
 const processUpload = async (filesList, sampleType, samples, activeProjectUuid, dispatch) => {
-  console.log('MADE IT !!!!!!');
   const samplesMap = filesList.reduce((acc, file) => {
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
@@ -212,7 +204,6 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
 
     Object.values(sample.files).forEach((file) => {
-      console.log('Calling from processUpload');
       // Create files
       dispatch(updateSampleFile(sample.uuid, file.name, {
         ...file,
