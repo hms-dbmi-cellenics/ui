@@ -31,6 +31,7 @@ import ChangesNotAppliedModal from './ChangesNotAppliedModal';
 
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
+import integrationTestIds from '../utils/integrationTestIds';
 
 import { initialExperimentBackendStatus } from '../redux/reducers/backendStatus/initialState';
 
@@ -70,7 +71,6 @@ const ContentWrapper = (props) => {
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
-
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
@@ -339,7 +339,7 @@ const ContentWrapper = (props) => {
           {!collapsed && <BigLogo />}
           {collapsed && <SmallLogo />}
           <Menu
-            data-test-id='navigation-menu'
+            data-test-id={integrationTestIds.id.NAVIGATION_MENU}
             theme='dark'
             selectedKeys={
               menuLinks

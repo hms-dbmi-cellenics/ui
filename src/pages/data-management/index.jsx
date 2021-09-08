@@ -18,6 +18,7 @@ import ProjectDetails from '../../components/data-management/ProjectDetails';
 import LoadingModal from '../../components/LoadingModal';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
+import integrationTestIds from '../../utils/integrationTestIds';
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
@@ -127,7 +128,7 @@ const DataManagementPage = ({ route }) => {
           style={{ width: '100%' }}
         >
           <Button
-            data-test-id='create-new-project-button'
+            data-test-id={integrationTestIds.id.CREATE_NEW_PROJECT_BUTTON}
             type='primary'
             block
             onClick={() => setNewProjectModalVisible(true)}
