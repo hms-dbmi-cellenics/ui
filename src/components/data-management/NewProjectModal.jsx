@@ -6,6 +6,7 @@ import {
 } from 'antd';
 import { ClipLoader } from 'react-spinners';
 import validateInputs, { rules } from '../../utils/validateInputs';
+import integrationTestIds from '../../utils/integrationTestIds';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -55,12 +56,12 @@ const NewProjectModal = (props) => {
 
   return (
     <Modal
-      className='data-test-new-project-modal'
+      className={integrationTestIds.class.NEW_PROJECT_MODAL}
       title='Create a new project'
       visible={visible}
       footer={(
         <Button
-          data-test-id='confirm-create-new-project'
+          data-test-id={integrationTestIds.id.CONFIRM_CREATE_NEW_PROJECT}
           type='primary'
           key='create'
           block
@@ -114,7 +115,7 @@ const NewProjectModal = (props) => {
               name='requiredMark'
             >
               <Input
-                data-test-id='project-name'
+                data-test-id={integrationTestIds.id.PROJECT_NAME}
                 onChange={(e) => {
                   setProjectName(e.target.value.trim());
                 }}
@@ -134,7 +135,7 @@ const NewProjectModal = (props) => {
               label='Project description'
             >
               <TextArea
-                data-test-id='project-description'
+                data-test-id={integrationTestIds.id.PROJECT_DESCRIPTION}
                 onChange={(e) => { setProjectDescription(e.target.value); }}
                 placeholder='Type description'
                 autoSize={{ minRows: 3, maxRows: 5 }}
