@@ -19,7 +19,7 @@ const StepsIndicator = (props) => {
     >
       {allSteps.map((step, index) => {
         let color = colors.completed;
-        let dataTestClass = dataTestClass = integrationTestIds.class.QC_STEP_COMPLETED;
+        let dataTestClass = integrationTestIds.class.QC_STEP_COMPLETED;
         if (index === currentStep) {
           color = colors.currentStep;
         } else if (index > completedSteps - 1) {
