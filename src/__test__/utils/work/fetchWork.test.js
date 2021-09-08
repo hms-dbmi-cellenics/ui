@@ -156,12 +156,21 @@ describe('tests for fetchWork', () => {
         name: 'GeneExpression',
         genes: ['A', 'B', 'C', 'D'],
       },
-      {
-        pipeline: {
-          status: 'SUCCEEDED',
-          startDate: '2021-01-01T01:01:01.000Z',
+      () => ({
+        networkResources: {
+          environment: 'testing',
         },
-      },
+        backendStatus: {
+          [experimentId]: {
+            status: {
+              pipeline: {
+                status: 'SUCCEEDED',
+                startDate: '2021-01-01T01:01:01.000Z',
+              },
+            },
+          },
+        },
+      }),
       { timeout: 10 },
     );
     expect(mockseekFromAPI).toHaveBeenCalledWith(experimentId, { name: 'GeneExpression', genes: ['D'] }, 10);

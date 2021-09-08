@@ -91,7 +91,7 @@ const fetchWork = async (
   optionals = {},
 ) => {
   const { extras = undefined, timeout = 180, eventCallback = null } = optionals;
-  const { backendStatus } = getState().backendStatus[experimentId];
+  const backendStatus = getState().backendStatus[experimentId].status;
   const { environment } = getState().networkResources;
 
   if (!isBrowser) {
@@ -105,7 +105,7 @@ const fetchWork = async (
 
   let cacheUniquenessKey = null;
 
-  if (environment !== Environment.PRODUCTION && localStorage.getValue('disableCache') === true) {
+  if (environment !== Environment.PRODUCTION && localStorage.disableCache === true) {
     cacheUniquenessKey = Math.random();
   }
 
