@@ -18,7 +18,7 @@ import SpeciesSelector from './SpeciesSelector';
 
 const { Text } = Typography;
 
-const PrettyCell = styled.div`
+const UploadCellStyle = styled.div`
   whiteSpace: 'nowrap';
   height: '35px';
   minWidth: '90px';
@@ -49,7 +49,7 @@ const UploadCell = (props) => {
   const render = () => {
     if (status === UploadStatus.UPLOADED) {
       return (
-        <PrettyCell
+        <UploadCellStyle
           className='hoverSelectCursor'
         >
           <Space
@@ -58,7 +58,7 @@ const UploadCell = (props) => {
           >
             <Text type='success'>{messageForStatus(status)}</Text>
           </Space>
-        </PrettyCell>
+        </UploadCellStyle>
       );
     }
 
@@ -69,18 +69,18 @@ const UploadCell = (props) => {
       ].includes(status)
     ) {
       return (
-        <PrettyCell>
+        <UploadCellStyle>
           <Space direction='vertical' size={[1, 1]}>
             <Text type='warning'>{`${messageForStatus(status)}`}</Text>
             {progress ? (<Progress percent={progress} size='small' />) : <div />}
           </Space>
-        </PrettyCell>
+        </UploadCellStyle>
       );
     }
 
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
-        <PrettyCell
+        <UploadCellStyle
           className='hoverSelectCursor'
           onClick={showDetails}
           onKeyDown={showDetails}
@@ -88,7 +88,7 @@ const UploadCell = (props) => {
           <Space>
             <Text type='danger'>{messageForStatus(status)}</Text>
           </Space>
-        </PrettyCell>
+        </UploadCellStyle>
       );
     }
     if (
@@ -99,7 +99,7 @@ const UploadCell = (props) => {
       ].includes(status)
     ) {
       return (
-        <PrettyCell>
+        <UploadCellStyle>
           <Space>
             <Text type='danger'>{messageForStatus(status)}</Text>
             <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
@@ -111,7 +111,7 @@ const UploadCell = (props) => {
               />
             </Tooltip>
           </Space>
-        </PrettyCell>
+        </UploadCellStyle>
       );
     }
   };
