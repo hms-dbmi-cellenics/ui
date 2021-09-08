@@ -35,6 +35,7 @@ import MetadataEditor from './MetadataEditor';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataPopover from './MetadataPopover';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
+import integrationTestIds from '../../utils/integrationTestIds';
 
 import '../../utils/css/data-management.css';
 
@@ -64,7 +65,7 @@ const SamplesTable = forwardRef((props, ref) => {
       render: () => <DragHandle />,
     },
     {
-      className: 'data-test-class-sample-cell',
+      className: `${integrationTestIds.class.SAMPLE_CELL}`,
       index: 1,
       key: 'sample',
       title: 'Sample',

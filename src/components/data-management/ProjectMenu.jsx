@@ -9,6 +9,7 @@ import UploadStatus from '../../utils/upload/UploadStatus';
 import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import { processUpload } from '../../utils/upload/processUpload';
+import integrationTestIds from '../../utils/integrationTestIds';
 
 const ProjectMenu = () => {
   const dispatch = useDispatch();
@@ -69,7 +70,7 @@ const ProjectMenu = () => {
         </Button>
         <DownloadData />
         <Button
-          data-test-id='launch-analysis-button'
+          data-test-id={integrationTestIds.id.LAUNCH_ANALYSIS_BUTTON}
           type='primary'
           disabled={!canLaunchAnalysis()}
           onClick={() => setAnalysisModalVisible(true)}
