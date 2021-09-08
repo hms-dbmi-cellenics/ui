@@ -25,7 +25,6 @@ const { Title } = Typography;
 
 const AnalysisModal = (props) => {
   const {
-    visible,
     onLaunch,
     onCancel,
   } = props;
@@ -121,7 +120,7 @@ const AnalysisModal = (props) => {
   return (
     <Modal
       title=''
-      visible={visible}
+      visible
       onCancel={onCancel}
       width='50%'
       footer={null}
@@ -142,13 +141,11 @@ const AnalysisModal = (props) => {
 };
 
 AnalysisModal.propTypes = {
-  visible: PropTypes.bool,
   onCancel: PropTypes.func,
   onLaunch: PropTypes.func,
 };
 
 AnalysisModal.defaultProps = {
-  visible: true,
   onCancel: null,
   onLaunch: null,
 };
