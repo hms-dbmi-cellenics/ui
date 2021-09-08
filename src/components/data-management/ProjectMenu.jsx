@@ -60,6 +60,7 @@ const ProjectMenu = (props) => {
         <Title level={3}>{activeProject?.name}</Title>
         <Space>
           <Button
+            data-test-id='add-samples-button'
             disabled={!anyProjectsAvailable}
             onClick={() => setUploadModalVisible(true)}
           >
@@ -68,8 +69,8 @@ const ProjectMenu = (props) => {
           <Button
             disabled={
               !anyProjectsAvailable
-            || activeProject?.samples?.length === 0
-            || isAddingMetadata
+              || activeProject?.samples?.length === 0
+              || isAddingMetadata
             }
             onClick={() => {
               createMetadataColumn();
