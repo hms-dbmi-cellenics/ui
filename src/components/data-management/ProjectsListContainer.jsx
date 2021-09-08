@@ -13,6 +13,7 @@ import ProjectDeleteModal from './ProjectDeleteModal';
 import { setActiveProject, updateProject, deleteProject as deleteProjectAction } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
 import validateInputs, { rules } from '../../utils/validateInputs';
+import integrationTestIds from '../../utils/integrationTestIds';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
@@ -69,7 +70,7 @@ const ProjectsListContainer = (props) => {
         {
           projects.ids.map((uuid) => (
             <Card
-              data-test-class='project-card'
+              data-test-class={integrationTestIds.class.PROJECT_CARD}
               key={uuid}
               type='primary'
               style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}
