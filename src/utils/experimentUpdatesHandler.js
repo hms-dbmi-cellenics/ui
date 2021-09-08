@@ -2,6 +2,8 @@ import { updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux
 import { updateBackendStatus } from '../redux/actions/backendStatus';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
+import { updateCellSetsClustering } from '../redux/actions/cellSets';
+
 const updateTypes = {
   QC: 'qc',
   GEM2S: 'gem2s',
@@ -18,7 +20,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 
   switch (update.type) {
     case updateTypes.QC: {
-      return onQCUpdate(update, dispatch);
+      return onQCUpdate(update, dispatch, experimentId);
     }
     case updateTypes.GEM2S: {
       return onGEM2SUpdate(update, dispatch, experimentId);
@@ -29,7 +31,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
   }
 };
 
-const onQCUpdate = (update, dispatch) => {
+const onQCUpdate = (update, dispatch, experimentId) => {
   const { input, output } = update;
 
   const processingConfigUpdate = output.config;
@@ -45,6 +47,10 @@ const onQCUpdate = (update, dispatch) => {
     Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
       dispatch(updatePlotData(plotUuid, plotData));
     });
+  }
+
+  if (input.taskName === 'configureEmbedding') {
+    dispatch(updateCellSetsClustering(experimentId));
   }
 };
 
