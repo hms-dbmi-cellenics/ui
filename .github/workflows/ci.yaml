@@ -326,6 +326,19 @@ jobs:
           status: FAILED
           color: danger
 
+  integration-test:
+    name: Integration testing
+    runs-on: ubuntu-20.04
+    needs: deploy
+    steps:
+      - name: Invoke workflow in another repo with inputs
+        uses: aurelien-baudet/workflow-dispatch@v2
+        with:
+          workflow: Run end-to-end tests
+          repo: biomage-ltd/testing
+          token: ${{ secrets.PERSONAL_TOKEN }}
+          inputs: '{ "environment": "staging" }'
+
   ready-to-merge:
     name: Ready for merging
     runs-on: ubuntu-20.04

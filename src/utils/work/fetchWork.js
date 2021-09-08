@@ -2,7 +2,7 @@
 import hash from 'object-hash';
 import cache from '../cache';
 import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
-import { isBrowser } from '../environment';
+import Environment, { isBrowser } from '../environment';
 import { calculateZScore } from '../postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
@@ -87,10 +87,12 @@ const fetchGeneExpressionWork = async (
 const fetchWork = async (
   experimentId,
   body,
-  backendStatus,
+  getState,
   optionals = {},
 ) => {
   const { extras = undefined, timeout = 180, eventCallback = null } = optionals;
+  const { backendStatus } = getState().backendStatus[experimentId];
+  const { environment } = getState().networkResources;
 
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
@@ -101,8 +103,14 @@ const fetchWork = async (
     return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, extras);
   }
 
+  let cacheUniquenessKey = null;
+
+  if (environment !== Environment.PRODUCTION && localStorage.getValue('disableCache') === true) {
+    cacheUniquenessKey = Math.random();
+  }
+
   const ETag = createObjectHash({
-    experimentId, body, qcPipelineStartDate, extras,
+    experimentId, body, qcPipelineStartDate, extras, cacheUniquenessKey,
   });
 
   // First, let's try to fetch this information from the local cache.

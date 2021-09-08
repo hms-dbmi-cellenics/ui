@@ -64,10 +64,8 @@ const loadGeneExpression = (
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
   try {
-    const { status } = getState().backendStatus[experimentId];
-
     const data = await fetchWork(
-      experimentId, body, status, { timeout },
+      experimentId, body, getState, { timeout },
     );
     if (data[genesToFetch[0]]?.error) {
       pushNotificationMessage('error', data[genesToFetch[0]].message);
