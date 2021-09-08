@@ -22,6 +22,7 @@ const StepsIndicator = (props) => {
         let dataTestClass = integrationTestIds.class.QC_STEP_COMPLETED;
         if (index === currentStep) {
           color = colors.currentStep;
+          dataTestClass = integrationTestIds.class.QC_STEP_ERROR;
         } else if (index > completedSteps - 1) {
           color = colors.notCompleted;
           dataTestClass = integrationTestIds.class.QC_STEP_NOT_COMPLETED;

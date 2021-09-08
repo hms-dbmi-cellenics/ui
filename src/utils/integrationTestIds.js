@@ -17,6 +17,7 @@ const dataTestClass = {
   SAMPLE_CELL: 'data-test-sample-cell',
   PROJECT_CARD: 'data-test-project-card',
   QC_STEP_COMPLETED: 'data-test-qc-step-completed',
+  QC_STEP_ERROR: 'data-test-qc-step-error',
   QC_STEP_NOT_COMPLETED: 'data-test-qc-step-not-completed',
 };
 
