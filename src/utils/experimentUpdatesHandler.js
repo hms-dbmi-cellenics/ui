@@ -2,7 +2,7 @@ import { updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux
 import { updateBackendStatus } from '../redux/actions/backendStatus';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
-import { updateCellSetsClustering } from '../redux/actions/cellSets';
+import { loadCellSets } from '../redux/actions/cellSets';
 
 const updateTypes = {
   QC: 'qc',
@@ -49,8 +49,9 @@ const onQCUpdate = (update, dispatch, experimentId) => {
     });
   }
 
-  if (input.taskName === 'configureEmbedding') {
-    dispatch(updateCellSetsClustering(experimentId));
+  // If the pipeline finished we have a new clustering, so fetch it
+  if (update.status.pipeline.status === 'SUCCEEDED') {
+    dispatch(loadCellSets(experimentId));
   }
 };
 
