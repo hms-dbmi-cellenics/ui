@@ -5,7 +5,7 @@ import loadCellMeta from '../../../../redux/actions/cellMeta';
 import initialState from '../../../../redux/reducers/cellMeta/initialState';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/cacheRequest');
+jest.mock('../../../../utils/work/fetchWork');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

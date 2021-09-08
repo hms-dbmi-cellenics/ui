@@ -2,6 +2,7 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
+    "eslint.run": "onSave",
     "[javascriptreact]": {
         "editor.tabSize": 2,
         "editor.insertSpaces": true,

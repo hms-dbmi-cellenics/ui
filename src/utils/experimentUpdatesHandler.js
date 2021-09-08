@@ -2,12 +2,9 @@ import { updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux
 import { updateBackendStatus } from '../redux/actions/backendStatus';
 import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
 
-import { updateCellSetsClustering } from '../redux/actions/cellSets';
-
 const updateTypes = {
   QC: 'qc',
   GEM2S: 'gem2s',
-  WORKER_DATA_UPDATE: 'workerDataUpdate',
 };
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
@@ -26,10 +23,6 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
     case updateTypes.GEM2S: {
       return onGEM2SUpdate(update, dispatch, experimentId);
     }
-    case updateTypes.WORKER_DATA_UPDATE: {
-      return onWorkerUpdate(experimentId, update, dispatch);
-    }
-
     default: {
       console.log(`Error, unrecognized message type ${update.type}`);
     }
@@ -59,19 +52,6 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
   const processingConfig = update?.item?.processingConfig;
   if (processingConfig) {
     dispatch(loadedProcessingConfig(experimentId, processingConfig, true));
-  }
-};
-
-const onWorkerUpdate = (experimentId, update, dispatch) => {
-  const reqName = update.response.request.body.name;
-
-  if (reqName === 'ClusterCells') {
-    const louvainSets = JSON.parse(update.response.results[0].body);
-    const newCellSets = [
-      louvainSets,
-    ];
-
-    dispatch(updateCellSetsClustering(experimentId, newCellSets));
   }
 };
 

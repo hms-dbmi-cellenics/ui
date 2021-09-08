@@ -35,7 +35,6 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on success 
   "calls": Array [
     Array [
       "1234",
-      60,
       Object {
         "limit": 20,
         "name": "ListGenes",
@@ -49,6 +48,9 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on success 
           "c",
         ],
       },
+      60,
+      "3fa2b8bb5219ea113e5ed47bc3c856ba",
+      null,
       Object {
         "PipelineRunETag": "2021-01-01T01:01:01.000Z",
       },

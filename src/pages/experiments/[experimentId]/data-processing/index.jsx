@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import Link from 'next/link';
 import {
   Select, Space, Button, Typography, Alert,
   Row, Col, Card, Skeleton,
@@ -39,7 +39,7 @@ import { qcSteps, getUserFriendlyQCStepName } from '../../../../utils/qcSteps';
 
 import {
   loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
-  addChangedQCFilter, discardChangedQCFilters,
+  addChangedQCFilter, discardChangedQCFilters, navigateFromProcessingTo,
 } from '../../../../redux/actions/experimentSettings';
 
 import { loadSamples } from '../../../../redux/actions/samples';
@@ -52,8 +52,12 @@ const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  const completedPath = '/experiments/[experimentId]/data-exploration';
+  const completedPath = useMemo(() => {
+    const pathAfterQC = '/experiments/[experimentId]/data-exploration';
+    return pathAfterQC.replace('[experimentId]', experimentId);
+  }, [experimentId]);
 
   const pipelineStatus = useSelector(
     (state) => state.backendStatus[experimentId]?.status?.pipeline,
@@ -161,14 +165,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
     const lowerCaseStepName = stepName.toLowerCase();
 
-    const stepAppearances = _.filter(completedSteps, (stepPipelineName) => stepPipelineName.toLowerCase().includes(lowerCaseStepName));
+    const stepAppearances = _.filter(
+      completedSteps,
+      (stepPipelineName) => stepPipelineName.toLowerCase().includes(lowerCaseStepName),
+    );
 
     return stepAppearances.length > 0;
   };
 
-  const onConfigChange = (key) => {
+  const onConfigChange = useCallback((key) => {
     dispatch(addChangedQCFilter(key));
-  };
+  });
 
   const prefixSampleName = (name) => {
     // eslint-disable-next-line no-param-reassign
@@ -282,12 +289,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
       description:
-  <span>
-    Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see
-    {' '}
-    <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' target='_blank'>scDblFinder thresholding</a>
-    .
-  </span>,
+        <span>
+          Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see
+          {' '}
+          <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' target='_blank'>scDblFinder thresholding</a>
+          .
+        </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -357,6 +364,14 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       </Button>
     </Tooltip>
   );
+
+  const transitionToModule = (path) => {
+    if (changedQCFilters.size) {
+      dispatch(navigateFromProcessingTo(path));
+    } else {
+      router.push(path);
+    }
+  };
 
   const renderRunOrDiscardButtons = () => {
     if (pipelineHadErrors) {
@@ -550,16 +565,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                   </Tooltip>
                 )
                   : (
-                    <Link as={completedPath.replace('[experimentId]', experimentId)} href={completedPath} passHref>
-                      <Tooltip title='Finish QC'>
-                        <Button
-                          type='primary'
-                          disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
-                          icon={<CheckOutlined />}
-                          size='small'
-                        />
-                      </Tooltip>
-                    </Link>
+                    <Tooltip title='Finish QC'>
+                      <Button
+                        type='primary'
+                        disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                        icon={<CheckOutlined />}
+                        size='small'
+                        onClick={() => transitionToModule(completedPath)}
+                      />
+                    </Tooltip>
                   )}
               </Space>
             </Col>
