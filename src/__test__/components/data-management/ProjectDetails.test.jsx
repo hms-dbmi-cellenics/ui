@@ -245,16 +245,6 @@ describe('ProjectDetails', () => {
     expect(metadataButton).not.toBeDisabled();
   });
 
-  it('Shows empty data if there is no data', () => {
-    render(
-      <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
-
-    expect(screen.getByText('No Data')).toBeDefined();
-  });
-
   it('Shows all the samples that are uploaded', () => {
     render(
       <Provider store={mockStore(withDataState)}>

@@ -2,7 +2,7 @@ import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from '../../actionTypes/genes';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
 import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadMarkerGenes = (
@@ -35,8 +35,7 @@ const loadMarkerGenes = (
 
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
-
-    const data = await fetchCachedWork(experimentId, body, status, { timeout });
+    const data = await fetchWork(experimentId, body, status, { timeout });
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({

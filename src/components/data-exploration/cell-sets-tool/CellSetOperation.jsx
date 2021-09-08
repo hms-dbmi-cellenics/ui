@@ -9,7 +9,7 @@ import ClusterPopover from '../embedding/ClusterPopover';
 
 const CellSetOperation = (props) => {
   const {
-    icon, helpTitle, onCreate, onCancel,
+    icon, helpTitle, onCreate, onCancel, ariaLabel,
   } = props;
 
   // Setting up `key` forces us to re-render the component when the user creates
@@ -33,7 +33,7 @@ const CellSetOperation = (props) => {
 
     >
       <Tooltip title={helpTitle} trigger='click hover'>
-        <Button type='dashed' icon={icon} size='small' />
+        <Button aria-label={ariaLabel} type='dashed' icon={icon} size='small' />
       </Tooltip>
     </ClusterPopover>
   );
@@ -46,6 +46,7 @@ CellSetOperation.defaultProps = {
 
 CellSetOperation.propTypes = {
   icon: PropTypes.object.isRequired,
+  ariaLabel: PropTypes.string.isRequired,
   helpTitle: PropTypes.string.isRequired,
   onCreate: PropTypes.func,
   onCancel: PropTypes.func,

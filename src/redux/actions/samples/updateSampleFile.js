@@ -16,8 +16,6 @@ const updateSampleFile = (
 ) => async (dispatch, getState) => {
   const updatedAt = moment().toISOString();
   const sample = getState().samples[sampleUuid];
-  // we'll need to remove the hard-coded 10x tech type once we start
-  // supporting other types and save the chosen tech type in redux
   const { UPLOADED, UPLOAD_ERROR } = UploadStatus;
   try {
     // Save sample only if upload is successful or error

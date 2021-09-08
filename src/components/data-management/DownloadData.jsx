@@ -6,21 +6,19 @@ import {
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
 import { saveAs } from 'file-saver';
 import downloadTypes from 'utils/data-management/downloadTypes';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import pipelineStatus from '../../utils/pipelineStatusValues';
 import { exportQCParameters, filterQCParameters } from '../../utils/data-management/exportQCParameters';
 import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
 
-const DownloadData = (props) => {
-  const {
-    activeProjectUuid,
-  } = props;
+const DownloadData = () => {
   const dispatch = useDispatch();
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const experimentSettings = useSelector((state) => state.experimentSettings);
   const backendStatus = useSelector((state) => state.backendStatus);
@@ -66,17 +64,7 @@ const DownloadData = (props) => {
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
       const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
-      const link = document.createElement('a');
-      link.style.display = 'none';
-      link.href = signedUrl;
-
-      document.body.appendChild(link);
-      link.click();
-
-      setTimeout(() => {
-        URL.revokeObjectURL(link.href);
-        link.parentNode.removeChild(link);
-      }, 0);
+      downloadFromUrl(signedUrl);
     } catch (e) {
       pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
@@ -150,7 +138,7 @@ const DownloadData = (props) => {
       placement='bottomRight'
       disabled={
         projects.ids.length === 0
-            || activeProject?.samples?.length === 0
+        || activeProject.samples.length === 0
       }
     >
       <Button>
@@ -161,7 +149,4 @@ const DownloadData = (props) => {
   );
 };
 
-DownloadData.propTypes = {
-  activeProjectUuid: PropTypes.string.isRequired,
-};
 export default React.memo(DownloadData);
