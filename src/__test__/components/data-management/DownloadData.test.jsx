@@ -100,7 +100,7 @@ describe('Download data menu', () => {
     );
   };
 
-  const getManuItems = async () => {
+  const getMenuItems = async () => {
     const menu = await screen.getByText('Download');
     expect(menu).not.toBeDisabled();
     act(() => userEvent.click(menu));
@@ -110,14 +110,14 @@ describe('Download data menu', () => {
 
   it('should render the download data menu', async () => {
     await renderDownloadData(withDataState);
-    const options = await getManuItems();
+    const options = await getMenuItems();
     expect(options).toHaveLength(3);
     expect(options[0]).toHaveTextContent('Raw Seurat object (.rds)');
     expect(options[1]).toHaveTextContent('Processed Seurat object (.rds)');
     expect(options[2]).toHaveTextContent('Data Processing settings (.txt)');
-    expect(options[0]).not.toBeDisabled();
-    expect(options[1]).not.toBeDisabled();
-    expect(options[2]).not.toBeDisabled();
+    expect(options[0]).toHaveAttribute('aria-disabled', 'false');
+    expect(options[1]).toHaveAttribute('aria-disabled', 'false');
+    expect(options[2]).toHaveAttribute('aria-disabled', 'false');
   });
 
   it('Raw seurat object option is disabled if gem2s has not ran', async () => {
@@ -135,7 +135,7 @@ describe('Download data menu', () => {
       },
     };
     await renderDownloadData(state);
-    const options = await getManuItems();
+    const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'true');
     expect(options[1]).toHaveAttribute('aria-disabled', 'false');
     expect(options[2]).toHaveAttribute('aria-disabled', 'false');
@@ -156,7 +156,7 @@ describe('Download data menu', () => {
       },
     };
     await renderDownloadData(state);
-    const options = await getManuItems();
+    const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
     expect(options[1]).toHaveAttribute('aria-disabled', 'true');
     expect(options[2]).toHaveAttribute('aria-disabled', 'false');
@@ -175,7 +175,7 @@ describe('Download data menu', () => {
     };
 
     await renderDownloadData(state);
-    const options = await getManuItems();
+    const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
     expect(options[1]).toHaveAttribute('aria-disabled', 'false');
     expect(options[2]).toHaveAttribute('aria-disabled', 'true');

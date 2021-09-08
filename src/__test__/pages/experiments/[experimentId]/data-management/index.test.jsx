@@ -1,16 +1,16 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import * as rtl from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
 import { createStore, applyMiddleware } from 'redux';
 import * as createProject from 'redux/actions/projects/createProject';
 import _ from 'lodash';
+import preloadAll from 'jest-next-dynamic';
+
 import DataManagementPage from 'pages/data-management/index';
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialProjectState from 'redux/reducers/projects/initialState';
 import initialSamplesState from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
@@ -39,10 +39,9 @@ const noDataState = {
 describe('Data-management index test', () => {
   let store;
   let createProjectSpy;
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
-    // fetchMock.resetMocks();
-    // fetchMock.doMock();
+    await preloadAll();
     createProjectSpy = jest.spyOn(createProject, 'default');
   });
 
