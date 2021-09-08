@@ -34,7 +34,7 @@ const AnalysisModal = (props) => {
   const router = useRouter();
 
   const experiments = useSelector((state) => state.experiments);
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
 
   const getExperimentsList = () => activeProject.experiments
