@@ -14,21 +14,19 @@ const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
 const NewProjectModal = (props) => {
-  const dispatch = useDispatch();
-
   const {
-    visible,
     onCreate,
     onCancel,
-    firstTimeFlow,
-    projects,
   } = props;
 
+  const dispatch = useDispatch();
   const [projectNames, setProjectNames] = useState(new Set());
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isValidName, setIsValidName] = useState(false);
+  const projects = useSelector(((state) => state.projects));
 
+  const firstTimeFlow = projects.ids.length === 0;
   const validationChecks = [
     rules.MIN_8_CHARS,
     rules.MIN_2_SEQUENTIAL_CHARS,
@@ -65,7 +63,7 @@ const NewProjectModal = (props) => {
     <Modal
       className={integrationTestIds.class.NEW_PROJECT_MODAL}
       title='Create a new project'
-      visible={visible}
+      visible
       footer={(
         <Button
           data-test-id={integrationTestIds.id.CONFIRM_CREATE_NEW_PROJECT}
@@ -181,19 +179,8 @@ const NewProjectModal = (props) => {
 };
 
 NewProjectModal.propTypes = {
-  visible: PropTypes.bool,
-  onCreate: PropTypes.func,
-  onCancel: PropTypes.func,
-  firstTimeFlow: PropTypes.bool,
-  projects: PropTypes.object,
-};
-
-NewProjectModal.defaultProps = {
-  visible: true,
-  onCreate: () => null,
-  onCancel: () => null,
-  firstTimeFlow: false,
-  projects: { ids: [] },
+  onCreate: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default NewProjectModal;
