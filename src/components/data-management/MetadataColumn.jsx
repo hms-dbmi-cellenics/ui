@@ -16,7 +16,6 @@ const MetadataColumnTitle = (props) => {
   const {
     name, sampleNames, activeProjectUuid, deleteMetadataColumn, setCells,
   } = props;
-  const key = metadataNameToKey(name);
 
   const validationParams = {
     existingNames: sampleNames,
@@ -32,7 +31,6 @@ const MetadataColumnTitle = (props) => {
       }
       setCells={setCells}
       deleteMetadataColumn={deleteMetadataColumn}
-      key={key}
       activeProjectUuid={activeProjectUuid}
     />
   );
@@ -49,8 +47,10 @@ MetadataColumnTitle.propTypes = {
 const MetadataTitle = (props) => {
   const dispatch = useDispatch();
   const {
-    name, validateInput, setCells, deleteMetadataColumn, key, activeProjectUuid,
+    name, validateInput, setCells, deleteMetadataColumn, activeProjectUuid,
   } = props;
+  const metaKey = metadataNameToKey(name);
+
   const metadataNameValidation = [
     rules.MIN_1_CHAR,
     rules.ALPHANUM_SPACE,
@@ -71,9 +71,9 @@ const MetadataTitle = (props) => {
         }
       />
       <MetadataEditor
-        onReplaceEmpty={(value) => setCells(value, key, 'REPLACE_EMPTY')}
-        onReplaceAll={(value) => setCells(value, key, 'REPLACE_ALL')}
-        onClearAll={() => setCells(DEFAULT_NA, key, 'CLEAR_ALL')}
+        onReplaceEmpty={(value) => setCells(value, metaKey, 'REPLACE_EMPTY')}
+        onReplaceAll={(value) => setCells(value, metaKey, 'REPLACE_ALL')}
+        onClearAll={() => setCells(DEFAULT_NA, metaKey, 'CLEAR_ALL')}
         massEdit
       >
         <Input />
@@ -86,7 +86,6 @@ MetadataTitle.propTypes = {
   validateInput: PropTypes.func.isRequired,
   setCells: PropTypes.func.isRequired,
   deleteMetadataColumn: PropTypes.func.isRequired,
-  key: PropTypes.string.isRequired,
   activeProjectUuid: PropTypes.string.isRequired,
 };
 export default MetadataColumnTitle;

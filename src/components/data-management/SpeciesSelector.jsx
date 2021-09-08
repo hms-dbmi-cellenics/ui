@@ -88,9 +88,7 @@ const SpeciesSelector = (props) => {
       options={
         sortedSpeciesData.map((organism) => ({
           value: organism.id,
-          // displayName: organism.display_name,
-          // scientificName: organism.scientific_name,
-          searchQuery: `${organism.display_name} ${organism.scientific_name}`.toLowerCase(),
+          searchquery: `${organism.display_name} ${organism.scientific_name}`.toLowerCase(),
           label: (
             <Space direction='vertical'>
               <Text type='primary'>{organism.display_name}</Text>
