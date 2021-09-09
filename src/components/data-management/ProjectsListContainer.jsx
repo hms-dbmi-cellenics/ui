@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Card, Space, Descriptions,
+  Card, Space, Descriptions, Skeleton,
 } from 'antd';
 import { blue } from '@ant-design/colors';
 import EditableField from '../EditableField';
@@ -13,12 +13,15 @@ import ProjectDeleteModal from './ProjectDeleteModal';
 import { setActiveProject, updateProject, deleteProject as deleteProjectAction } from '../../redux/actions/projects';
 import PrettyTime from '../PrettyTime';
 import validateInputs, { rules } from '../../utils/validateInputs';
+import integrationTestIds from '../../utils/integrationTestIds';
 
 const ProjectsListContainer = (props) => {
   const { height } = props;
   const dispatch = useDispatch();
 
+  const loading = useSelector((state) => state.projects.meta.loading);
   const projects = useSelector((state) => state.projects);
+
   const { activeProjectUuid } = projects.meta;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
@@ -50,6 +53,10 @@ const ProjectsListContainer = (props) => {
     existingNames: projectNames,
   };
 
+  if (loading) {
+    return Array(5).fill(<Skeleton active />);
+  }
+
   return (
     <>
       <ProjectDeleteModal
@@ -63,7 +70,7 @@ const ProjectsListContainer = (props) => {
         {
           projects.ids.map((uuid) => (
             <Card
-              data-test-class='project-card'
+              data-test-class={integrationTestIds.class.PROJECT_CARD}
               key={uuid}
               type='primary'
               style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}

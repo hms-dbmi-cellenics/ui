@@ -31,6 +31,7 @@ import ChangesNotAppliedModal from './ChangesNotAppliedModal';
 
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
+import integrationTestIds from '../utils/integrationTestIds';
 
 import { initialExperimentBackendStatus } from '../redux/reducers/backendStatus/initialState';
 
@@ -67,19 +68,16 @@ const ContentWrapper = (props) => {
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
-  const { changedQCFilters } = useSelector((state) => state.experimentSettings.processing.meta);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
-
-  const setUpConnection = async () => {
-    const io = await connectionPromise;
-    const cb = experimentUpdatesHandler(dispatch);
-    io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
-  };
+  const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
 
   useEffect(() => {
     if (!experimentId) {
@@ -88,7 +86,16 @@ const ContentWrapper = (props) => {
 
     dispatch(loadBackendStatus(experimentId));
 
-    setUpConnection();
+    (async () => {
+      const io = await connectionPromise;
+      const cb = experimentUpdatesHandler(dispatch);
+
+      // Unload all previous socket.io hooks that may have been created for a different
+      // experiment.
+      io.off();
+
+      io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
+    })();
   }, [experimentId]);
 
   useEffect(() => {
@@ -332,7 +339,7 @@ const ContentWrapper = (props) => {
           {!collapsed && <BigLogo />}
           {collapsed && <SmallLogo />}
           <Menu
-            data-test-id='navigation-menu'
+            data-test-id={integrationTestIds.id.NAVIGATION_MENU}
             theme='dark'
             selectedKeys={
               menuLinks

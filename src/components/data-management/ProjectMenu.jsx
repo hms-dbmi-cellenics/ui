@@ -1,65 +1,76 @@
-import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
-import hash from 'object-hash';
+import React, {
+  useState, useEffect, useRef, useCallback,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import hash from 'object-hash';
 import {
-  Row, Typography, Space, Button, Col, Tooltip,
+  Space, Button, Tooltip, Popconfirm,
 } from 'antd';
 import pipelineStatus from '../../utils/pipelineStatusValues';
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
-import {
-  updateProject,
-} from '../../redux/actions/projects'; import DownloadData from './DownloadData';
+import DownloadData from './DownloadData';
 import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 import UploadStatus from '../../utils/upload/UploadStatus';
+import FileUploadModal from './FileUploadModal';
+import AnalysisModal from './AnalysisModal';
+import { processUpload } from '../../utils/upload/processUpload';
+import integrationTestIds from '../../utils/integrationTestIds';
 
-const { Title, Text, Paragraph } = Typography;
-
-const ProjectMenu = (props) => {
-  const {
-    activeProjectUuid, createMetadataColumn, isAddingMetadata,
-    setUploadModalVisible, openAnalysisModal,
-  } = props;
+const ProjectMenu = () => {
   const dispatch = useDispatch();
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-  const projects = useSelector((state) => state.projects);
-  const samples = useSelector((state) => state.samples);
-  const anyProjectsAvailable = projects?.ids?.length;
-  const metadataKeysAvailable = activeProject?.metadataKeys?.length;
-  const [willGem2sRerun, setWillGem2sRerun] = useState({ rerun: true, reasons: [] });
-  const backendStatus = useSelector((state) => state.backendStatus);
-  const initialProjectState = useRef({});
 
-  const canLaunchAnalysis = () => {
-    if (activeProject?.samples?.length === 0 || !anyProjectsAvailable) return false;
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  const samples = useSelector((state) => state.samples);
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
+  const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, reasons: [] });
+  const backendStatus = useSelector((state) => state.backendStatus);
+  const initialProjectHash = useRef({});
+
+  const canLaunchAnalysis = useCallback(() => {
+    if (activeProject.samples.length === 0) return false;
+
+    const metadataKeysAvailable = activeProject.metadataKeys.length;
 
     const allSampleFilesUploaded = (sample) => {
       // Check if all files for a given tech has been uploaded
-      const fileNamesArray = Array.from(sample.fileNames);
+      const { fileNames } = sample;
       if (
         fileUploadSpecifications[sample.type].requiredFiles.every(
-          (file) => !fileNamesArray.includes(file),
+          (file) => !fileNames.includes(file),
         )
       ) { return false; }
-      return fileNamesArray.every((fileName) => {
+
+      let allUploaded = true;
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const fileName of fileNames) {
         const checkedFile = sample.files[fileName];
-        return checkedFile.valid && checkedFile.upload.status === UploadStatus.UPLOADED;
-      });
+        allUploaded = allUploaded
+        && checkedFile.valid
+        && checkedFile.upload.status === UploadStatus.UPLOADED;
+
+        if (!allUploaded) break;
+      }
+
+      return allUploaded;
     };
 
     const allSampleMetadataInserted = (sample) => {
       if (!metadataKeysAvailable) return true;
       if (Object.keys(sample.metadata).length !== metadataKeysAvailable) return false;
-      return Object.values(sample.metadata).every((value) => value.length > 0 && value !== DEFAULT_NA);
+      return Object.values(sample.metadata)
+        .every((value) => value.length > 0 && value !== DEFAULT_NA);
     };
 
-    const canLaunch = activeProject?.samples?.every((sampleUuid) => {
+    const canLaunch = activeProject.samples.every((sampleUuid) => {
       const checkedSample = samples[sampleUuid];
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });
     return canLaunch;
-  };
+  }, [samples, activeProject.samples, activeProject.metadataKeys]);
 
   const getProjectHash = (project) => {
     const samplesToHash = project.samples.map((sampleUuid) => ({
@@ -72,10 +83,8 @@ const ProjectMenu = (props) => {
 
   // Initialize hash for each project
   useEffect(() => {
-    if (!activeProjectUuid) return;
-
-    if (!initialProjectState.current[activeProjectUuid]) {
-      initialProjectState.current[activeProjectUuid] = getProjectHash(activeProject);
+    if (!initialProjectHash.current[activeProjectUuid]) {
+      initialProjectHash.current[activeProjectUuid] = getProjectHash(activeProject);
     }
 
     const reasons = [];
@@ -83,112 +92,102 @@ const ProjectMenu = (props) => {
     const experimentId = activeProject.experiments[0];
     const gem2sStatus = backendStatus[experimentId]?.status.gem2s?.status;
 
-    const gem2sNotSuccessful = ![pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING].includes(gem2sStatus);
-    const ProjectHashNotEqual = initialProjectState.current[activeProjectUuid] !== getProjectHash(activeProject);
+    const gem2sSuccessful = [
+      pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
+    ].includes(gem2sStatus);
 
-    if (gem2sNotSuccessful) reasons.push('data has not been processed sucessfully');
-    if (ProjectHashNotEqual) reasons.push('the project has been modified');
+    const projectHashEqual = initialProjectHash
+      .current[activeProjectUuid] === getProjectHash(activeProject);
 
-    setWillGem2sRerun({
-      rerun: gem2sNotSuccessful || ProjectHashNotEqual,
+    if (!gem2sSuccessful) reasons.push('data has not been processed sucessfully');
+    if (!projectHashEqual) reasons.push('the project has been modified');
+
+    setGem2sRerunStatus({
+      rerun: !gem2sSuccessful || !projectHashEqual,
       reasons,
     });
-  }, [backendStatus, activeProjectUuid, samples]);
+  }, [backendStatus, activeProjectUuid, samples, activeProject]);
 
-  const reingestIndicator = (rerun) => (
-    <div style={{
-      width: '0.75rem',
-      height: '0.75rem',
-      marginLeft: '0.6rem',
-      display: 'inline-block',
-      borderRadius: '50%',
-      verticalAlign: 'middle',
-      backgroundColor: rerun ? 'tomato' : 'lightgreen',
-    }}
-    />
-  );
+  const renderTooltipButton = useCallback(() => {
+    const LaunchButton = (props) => {
+      const { onClick } = props;
 
-  const launchTooltipMessage = () => {
-    if (activeProject?.samples.length > 0 && !canLaunchAnalysis()) {
-      return `Ensure all samples are uploaded and all metadata are inserted (no ${DEFAULT_NA})`;
+      return (
+        <Button
+          data-test-id={integrationTestIds.id.LAUNCH_ANALYSIS_BUTTON}
+          type='primary'
+          disabled={!canLaunchAnalysis()}
+          onClick={onClick}
+        >
+          {
+            gem2sRerunStatus.rerun
+              ? 'Process project'
+              : 'Go to Data Processing'
+          }
+        </Button>
+      );
+    };
+
+    if (activeProject.samples.length > 0 && !canLaunchAnalysis()) {
+      return (
+        <Tooltip
+          title={`Ensure all samples are uploaded and all metadata are inserted (no ${DEFAULT_NA})`}
+        >
+          <LaunchButton onClick={() => setAnalysisModalVisible(true)} />
+        </Tooltip>
+      );
     }
 
-    if (willGem2sRerun.rerun) {
-      return `The data for this has to be processed because ${willGem2sRerun.reasons.join(' and ')}.This might take a while.`;
+    // Popconfirm
+    if (gem2sRerunStatus.rerun) {
+      return (
+        <Popconfirm
+          title={`This project has to be processed because ${gem2sRerunStatus.reasons.join(' and ')}. \
+            This might take a while.\
+            Do you want to continue?`}
+          onConfirm={() => setAnalysisModalVisible(true)}
+          okText='Yes'
+          cancelText='No'
+          placement='bottom'
+          overlayStyle={{ maxWidth: '250px' }}
+        >
+          <LaunchButton />
+        </Popconfirm>
+      );
     }
+
+    return <LaunchButton onClick={() => setAnalysisModalVisible(true)} />;
+  }, [activeProject.samples, gem2sRerunStatus]);
+
+  const uploadFiles = (filesList, sampleType) => {
+    processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
+    setUploadModalVisible(false);
   };
 
   return (
     <>
-      <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Title level={3}>{activeProject?.name}</Title>
-        <Space>
-          <Button
-            disabled={!anyProjectsAvailable}
-            onClick={() => setUploadModalVisible(true)}
-          >
-            Add samples
-          </Button>
-          <Button
-            disabled={
-              !anyProjectsAvailable
-            || activeProject?.samples?.length === 0
-            || isAddingMetadata
-            }
-            onClick={() => {
-              createMetadataColumn();
-            }}
-          >
-            Add metadata
-          </Button>
-          <DownloadData
-            activeProjectUuid={activeProjectUuid}
-          />
-          <Tooltip
-            title={launchTooltipMessage()}
-          >
-            <Button
-              data-test-id='launch-analysis-button'
-              type='primary'
-              disabled={!canLaunchAnalysis()}
-              onClick={() => openAnalysisModal()}
-            >
-              Launch analysis
-              {reingestIndicator(willGem2sRerun.rerun)}
-            </Button>
-          </Tooltip>
-        </Space>
-      </Row>
-      <Row>
-        <Col>
-          {
-            activeProjectUuid && (
-              <Space direction='vertical' size='small'>
-                <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
-                <Text strong>Description:</Text>
-                <Paragraph
-                  editable={{
-                    onChange: (description) => dispatch(
-                      updateProject(activeProjectUuid, { description }),
-                    ),
-                  }}
-                >
-                  {activeProject.description}
-
-                </Paragraph>
-              </Space>
-            )
-          }
-        </Col>
-      </Row>
+      <Space>
+        <Button
+          onClick={() => setUploadModalVisible(true)}
+        >
+          Add samples
+        </Button>
+        <DownloadData />
+        {renderTooltipButton()}
+      </Space>
+      {uploadModalVisible ? (
+        <FileUploadModal
+          onUpload={uploadFiles}
+          onCancel={() => setUploadModalVisible(false)}
+        />
+      ) : <></>}
+      {analysisModalVisible ? (
+        <AnalysisModal
+          onLaunch={() => { setAnalysisModalVisible(false); }}
+          onCancel={() => { setAnalysisModalVisible(false); }}
+        />
+      ) : <></>}
     </>
   );
-};
-ProjectMenu.propTypes = {
-  activeProjectUuid: PropTypes.string.isRequired,
-  createMetadataColumn: PropTypes.func.isRequired,
-  isAddingMetadata: PropTypes.bool.isRequired,
-  setUploadModalVisible: PropTypes.func.isRequired,
-  openAnalysisModal: PropTypes.func.isRequired,
 };
 export default ProjectMenu;

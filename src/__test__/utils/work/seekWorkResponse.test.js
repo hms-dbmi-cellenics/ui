@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import sendWork from '../../utils/sendWork';
+import { seekFromAPI } from '../../../utils/work/seekWorkResponse';
 
 /**
  * jest.mock calls are automatically hoisted to the top of the javascript
@@ -8,14 +8,16 @@ import sendWork from '../../utils/sendWork';
  * from jest.mock will be accessible under `socketConnectionMocks`, even
  * if they do not appear in the original file.
  */
-import * as socketConnectionMocks from '../../utils/socketConnection';
+import * as socketConnectionMocks from '../../../utils/socketConnection';
 
 enableFetchMocks();
 uuidv4.mockImplementation(() => 'my-random-uuid');
 
 jest.mock('uuid');
+
 jest.mock('moment', () => () => jest.requireActual('moment')('4022-01-01T00:00:00.000Z'));
-jest.mock('../../utils/socketConnection', () => {
+
+jest.mock('../../../utils/socketConnection', () => {
   const mockEmit = jest.fn();
   const mockOn = jest.fn();
 
@@ -29,7 +31,20 @@ jest.mock('../../utils/socketConnection', () => {
   };
 });
 
-describe('sendWork unit tests', () => {
+jest.mock('aws-amplify', () => ({
+  configure: jest.fn().mockImplementation(() => ({
+    Storage: {
+      AWSS3: {
+        bucket: 'biomage-originals-test',
+      },
+    },
+  })),
+  Storage: {
+    get: jest.fn().mockImplementation(async () => 'http://clearly-invalid-url'),
+  },
+}));
+
+describe('seekFromAPI unit tests', () => {
   const experimentId = '1234';
   const timeout = 30;
   const body = {
@@ -44,32 +59,37 @@ describe('sendWork unit tests', () => {
   beforeEach(() => {
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResolvedValue(
-      new Response(JSON.stringify({ worker: { started: true, ready: true } })),
+
+    fetchMock.mockResolvedValueOnce(
+      {
+        ok: true,
+        json: () => ({
+          results: [
+            {
+              body: JSON.stringify({
+                hello: 'world',
+              }),
+            },
+          ],
+          response: { error: false },
+        }),
+      },
     );
 
     socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
-      console.error('hello, mockOn called!!');
       f({
-        results: [
-          {
-            body: JSON.stringify({
-              hello: 'world',
-            }),
-          },
-        ],
         response: { error: false },
       });
     });
   });
 
   it('Sends work to the backend when called and returns valid response.', async () => {
-    const response = await sendWork(
-      experimentId, timeout, body,
+    const response = await seekFromAPI(
+      experimentId, body, timeout, 'facefeed',
     );
 
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
-      uuid: 'my-random-uuid',
+      ETag: 'facefeed',
       socketId: '5678',
       experimentId: '1234',
       timeout: '4022-01-01T00:00:30.000Z',
@@ -88,22 +108,15 @@ describe('sendWork unit tests', () => {
 
     socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
       f({
-        results: [
-          {
-            body: JSON.stringify({
-              hello: 'world 2',
-            }),
-          },
-        ],
         response: { error: 'The backend returned an error' },
       });
     });
 
-    expect(sendWork(experimentId, timeout, body)).rejects.toEqual(new Error('The backend returned an error'));
+    expect(seekFromAPI(experimentId, body, timeout, 'facefeed')).rejects.toEqual(new Error('The backend returned an error'));
     await flushPromises();
 
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
-      uuid: 'my-random-uuid',
+      ETag: 'facefeed',
       socketId: '5678',
       experimentId: '1234',
       timeout: '4022-01-01T00:00:30.000Z',
