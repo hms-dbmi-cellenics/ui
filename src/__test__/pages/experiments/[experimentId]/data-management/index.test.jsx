@@ -51,10 +51,10 @@ describe('Data-management index test', () => {
     );
   };
 
-  // it('Opens create new project modal if no projects', async () => {
-  //   renderDataManagement(noDataState);
-  //   await rtl.waitFor(() => expect(screen.getByText('Create a new project')).toBeInTheDocument());
-  // });
+  it('Opens create new project modal if no projects', () => {
+    renderDataManagement(noDataState);
+    expect(screen.getByText('Create a new project')).toBeInTheDocument();
+  });
 
   // it('Has Project Details and Details tiles', () => {
   //   renderDataManagement(noDataState);
