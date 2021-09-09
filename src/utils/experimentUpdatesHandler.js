@@ -51,7 +51,7 @@ const onQCUpdate = (update, dispatch, experimentId) => {
 
   // If the pipeline finished we have a new clustering, so fetch it
   if (update.status.pipeline.status === 'SUCCEEDED') {
-    dispatch(loadCellSets(experimentId));
+    dispatch(loadCellSets(experimentId, true));
   }
 };
 
