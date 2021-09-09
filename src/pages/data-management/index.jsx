@@ -84,10 +84,6 @@ const DataManagementPage = ({ route }) => {
     }
   }, [projectsList, projectsLoading]);
 
-  const createNewProject = () => {
-    setNewProjectModalVisible(false);
-  };
-
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
 
@@ -168,13 +164,12 @@ const DataManagementPage = ({ route }) => {
           </Space>
         </center>
       ) : (<></>)}
-      <NewProjectModal
-        visible={newProjectModalVisible}
-        firstTimeFlow={projectsList.ids.length === 0}
-        onCancel={() => { setNewProjectModalVisible(false); }}
-        onCreate={createNewProject}
-        projects={projectsList}
-      />
+      {newProjectModalVisible ? (
+        <NewProjectModal
+          onCancel={() => { setNewProjectModalVisible(false); }}
+          onCreate={() => { setNewProjectModalVisible(false); }}
+        />
+      ) : (<></>)}
       <div style={{ height: '100%', width: '100%', margin: 0 }}>
         <Mosaic
           renderTile={(id, path) => (
