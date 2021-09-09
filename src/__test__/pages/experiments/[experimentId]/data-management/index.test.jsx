@@ -41,7 +41,6 @@ describe('Data-management index test', () => {
   let createProjectSpy;
   beforeEach(async () => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
-    await preloadAll();
     createProjectSpy = jest.spyOn(createProject, 'default');
   });
 
@@ -53,17 +52,6 @@ describe('Data-management index test', () => {
       </Provider>,
     );
   };
-
-  it('Has Project Details and Details tiles', () => {
-    renderDataManagement(noDataState);
-    expect(screen.getByTitle('Project Details')).toBeInTheDocument();
-    expect(screen.getByTitle('Projects')).toBeInTheDocument();
-  });
-
-  it('Opens create new project modal if no projects', async () => {
-    renderDataManagement(noDataState);
-    await rtl.waitFor(() => expect(screen.getByText('Create a new project')).toBeInTheDocument());
-  });
 
   it('Creates a new project', async () => {
     renderDataManagement(noDataState);
@@ -77,6 +65,17 @@ describe('Data-management index test', () => {
     const createProjectButton = screen.getByText('Create Project');
     userEvent.click(createProjectButton);
     expect(createProjectSpy).toBeCalled();
+  });
+
+  it('Has Project Details and Details tiles', () => {
+    renderDataManagement(noDataState);
+    expect(screen.getByTitle('Project Details')).toBeInTheDocument();
+    expect(screen.getByTitle('Projects')).toBeInTheDocument();
+  });
+
+  it('Opens create new project modal if no projects', async () => {
+    renderDataManagement(noDataState);
+    await rtl.waitFor(() => expect(screen.getByText('Create a new project')).toBeInTheDocument());
   });
 
   it('Shows loading screen if we are saving projects', () => {
