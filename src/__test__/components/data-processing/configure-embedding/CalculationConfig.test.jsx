@@ -38,8 +38,8 @@ describe('Data Processing CalculationConfig', () => {
     },
   };
 
-  const mockOnConfigChange = jest.fn(() => {});
-  const mockOnPipelineRun = jest.fn(() => {});
+  const mockOnConfigChange = jest.fn(() => { });
+  const mockOnPipelineRun = jest.fn(() => { });
 
   configure({ adapter: new Adapter() });
 
@@ -62,8 +62,6 @@ describe('Data Processing CalculationConfig', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    mockOnConfigChange.mockClear();
-    mockOnPipelineRun.mockClear();
   });
 
   it('renders correctly when nothing is loaded', () => {
