@@ -2,21 +2,19 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import * as rtl from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createStore, applyMiddleware } from 'redux';
 import preloadAll from 'jest-next-dynamic';
 
-import _ from 'lodash';
 import { act } from 'react-dom/test-utils';
-import rootReducer from '../../../redux/reducers/index';
+import configureMockStore from 'redux-mock-store';
 import DownloadData from '../../../components/data-management/DownloadData';
 import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 import initialSamplesState from '../../../redux/reducers/samples/initialState';
 import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
 
-const { screen, render } = rtl;
+const mockStore = configureMockStore([thunk]);
 const projectName = 'Project 1';
 const projectUuid = 'project-1-uuid';
 const projectDescription = 'Some description';
@@ -92,7 +90,7 @@ describe('Download data menu', () => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
   });
   const renderDownloadData = (state) => {
-    const store = createStore(rootReducer, _.cloneDeep(state), applyMiddleware(thunk));
+    const store = mockStore(state);
     render(
       <Provider store={store}>
         <DownloadData activeProjectUuid={projectUuid} />
