@@ -14,7 +14,7 @@ import { ClipLoader } from 'react-spinners';
 import EditableField from '../EditableField';
 import { updateExperiment, saveExperiment } from '../../redux/actions/experiments';
 import validateInputs, { rules } from '../../utils/validateInputs';
-import integrationTestIds from '../../utils/integrationTestIds';
+import integrationtestConstants from '../../utils/integrationTestConstants';
 
 const { Title } = Typography;
 
@@ -70,7 +70,7 @@ const NewExperimentModal = (props) => {
           <List.Item
             key={`${experiment.id}`}
             extra={(
-              <Row type='flex' align='middle' data-test-class={integrationTestIds.class.LAUNCH_ANALYSIS_ITEM}>
+              <Row type='flex' align='middle' data-test-class={integrationtestConstants.classes.LAUNCH_ANALYSIS_ITEM}>
                 <Col>
                   <Button
                     type='primary'
