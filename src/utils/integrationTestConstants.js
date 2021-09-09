@@ -1,6 +1,6 @@
 // File containing data-test id and class values for use in Cypress tests.
 
-const dataTestId = {
+const ids = {
   NAVIGATION_MENU: 'navigation-menu',
   CONFIRM_CREATE_NEW_PROJECT: 'confirm-create-new-project',
   CREATE_NEW_PROJECT_BUTTON: 'create-new-project-button',
@@ -10,7 +10,7 @@ const dataTestId = {
   QC_STATUS_TEXT: 'qc-status-text',
 };
 
-const dataTestClass = {
+const classes = {
   PAGE_HEADER: 'data-test-page-header',
   LAUNCH_ANALYSIS_ITEM: 'data-test-launch-analysis-item',
   NEW_PROJECT_MODAL: 'data-test-new-project-modal',
@@ -22,6 +22,6 @@ const dataTestClass = {
 };
 
 export default {
-  id: dataTestId,
-  class: dataTestClass,
+  ids,
+  classes,
 };

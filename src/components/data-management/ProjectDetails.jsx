@@ -42,7 +42,7 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../.
 import '../../utils/css/data-management.css';
 import runGem2s from '../../redux/actions/pipeline/runGem2s';
 import ProjectMenu from './ProjectMenu';
-import integrationTestIds from '../../utils/integrationTestIds';
+import integrationtestConstants from '../../utils/integrationTestConstants';
 
 const { Text } = Typography;
 
@@ -260,7 +260,7 @@ const ProjectDetails = ({ width, height }) => {
       render: () => <DragHandle />,
     },
     {
-      className: `${integrationTestIds.class.SAMPLE_CELL}`,
+      className: `${integrationtestConstants.classes.SAMPLE_CELL}`,
       index: 1,
       key: 'sample',
       title: 'Sample',

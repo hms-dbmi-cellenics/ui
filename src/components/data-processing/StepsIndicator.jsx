@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import integrationTestIds from '../../utils/integrationTestIds';
+import integrationtestConstants from '../../utils/integrationTestConstants';
 
 const StepsIndicator = (props) => {
   const { allSteps, completedSteps, currentStep } = props;
@@ -19,12 +19,12 @@ const StepsIndicator = (props) => {
     >
       {allSteps.map((step, index) => {
         let color = colors.completed;
-        let dataTestClass = integrationTestIds.class.QC_STEP_COMPLETED;
+        let dataTestClass = integrationtestConstants.classes.QC_STEP_COMPLETED;
         if (index === currentStep) {
           color = colors.currentStep;
         } else if (index > completedSteps - 1) {
           color = colors.notCompleted;
-          dataTestClass = integrationTestIds.class.QC_STEP_NOT_COMPLETED;
+          dataTestClass = integrationtestConstants.classes.QC_STEP_NOT_COMPLETED;
         }
         return (
           <svg width='18' height='10' data-test-class={dataTestClass}>
