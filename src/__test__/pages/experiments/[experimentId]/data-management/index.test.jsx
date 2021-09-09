@@ -7,8 +7,6 @@ import userEvent from '@testing-library/user-event';
 import { createStore, applyMiddleware } from 'redux';
 import * as createProject from 'redux/actions/projects/createProject';
 import _ from 'lodash';
-import preloadAll from 'jest-next-dynamic';
-
 import DataManagementPage from 'pages/data-management/index';
 import initialProjectState from 'redux/reducers/projects/initialState';
 import initialSamplesState from 'redux/reducers/samples/initialState';
@@ -53,6 +51,17 @@ describe('Data-management index test', () => {
     );
   };
 
+  it('Opens create new project modal if no projects', async () => {
+    renderDataManagement(noDataState);
+    await rtl.waitFor(() => expect(screen.getByText('Create a new project')).toBeInTheDocument());
+  });
+
+  it('Has Project Details and Details tiles', () => {
+    renderDataManagement(noDataState);
+    expect(screen.getByTitle('Project Details')).toBeInTheDocument();
+    expect(screen.getByTitle('Projects')).toBeInTheDocument();
+  });
+
   it('Creates a new project', async () => {
     renderDataManagement(noDataState);
     await rtl.waitFor(() => expect(screen.getByText('Create a new project')).toBeInTheDocument());
@@ -65,17 +74,6 @@ describe('Data-management index test', () => {
     const createProjectButton = screen.getByText('Create Project');
     userEvent.click(createProjectButton);
     expect(createProjectSpy).toBeCalled();
-  });
-
-  it('Has Project Details and Details tiles', () => {
-    renderDataManagement(noDataState);
-    expect(screen.getByTitle('Project Details')).toBeInTheDocument();
-    expect(screen.getByTitle('Projects')).toBeInTheDocument();
-  });
-
-  it('Opens create new project modal if no projects', async () => {
-    renderDataManagement(noDataState);
-    await rtl.waitFor(() => expect(screen.getByText('Create a new project')).toBeInTheDocument());
   });
 
   it('Shows loading screen if we are saving projects', () => {
