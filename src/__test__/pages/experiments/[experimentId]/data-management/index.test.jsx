@@ -51,16 +51,16 @@ describe('Data-management index test', () => {
     );
   };
 
-  it('Opens create new project modal if no projects', async () => {
-    renderDataManagement(noDataState);
-    await rtl.waitFor(() => expect(screen.getByText('Create a new project')).toBeInTheDocument());
-  });
+  // it('Opens create new project modal if no projects', async () => {
+  //   renderDataManagement(noDataState);
+  //   await rtl.waitFor(() => expect(screen.getByText('Create a new project')).toBeInTheDocument());
+  // });
 
-  it('Has Project Details and Details tiles', () => {
-    renderDataManagement(noDataState);
-    expect(screen.getByTitle('Project Details')).toBeInTheDocument();
-    expect(screen.getByTitle('Projects')).toBeInTheDocument();
-  });
+  // it('Has Project Details and Details tiles', () => {
+  //   renderDataManagement(noDataState);
+  //   expect(screen.getByTitle('Project Details')).toBeInTheDocument();
+  //   expect(screen.getByTitle('Projects')).toBeInTheDocument();
+  // });
 
   it('Creates a new project', async () => {
     renderDataManagement(noDataState);
@@ -76,20 +76,20 @@ describe('Data-management index test', () => {
     expect(createProjectSpy).toBeCalled();
   });
 
-  it('Shows loading screen if we are saving projects', () => {
-    const newState = {
-      ...noDataState,
-      projects: {
-        ...noDataState.projects,
-        meta: {
-          ...noDataState.projects.meta,
-          saving: true,
-        },
-      },
-    };
-    renderDataManagement(newState);
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
-  });
+  // it('Shows loading screen if we are saving projects', () => {
+  //   const newState = {
+  //     ...noDataState,
+  //     projects: {
+  //       ...noDataState.projects,
+  //       meta: {
+  //         ...noDataState.projects.meta,
+  //         saving: true,
+  //       },
+  //     },
+  //   };
+  //   renderDataManagement(newState);
+  //   expect(screen.getByText('Loading...')).toBeInTheDocument();
+  // });
 
   it('Shows loading screen if we are saving samples', () => {
     const newState = {
