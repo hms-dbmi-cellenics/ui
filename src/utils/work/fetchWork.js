@@ -34,6 +34,7 @@ const fetchGeneExpressionWork = async (
   timeout,
   body,
   backendStatus,
+  environment,
   extras,
 ) => {
   // Get only genes that are not already found in local storage.
@@ -49,8 +50,14 @@ const fetchGeneExpressionWork = async (
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
   const missingGenesBody = { ...body, genes: missingGenes };
+
+  let cacheUniquenessKey = null;
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
+    cacheUniquenessKey = Math.random();
+  }
+
   const ETag = createObjectHash({
-    experimentId, missingGenesBody, qcPipelineStartDate, extras,
+    experimentId, missingGenesBody, qcPipelineStartDate, extras, cacheUniquenessKey,
   });
 
   // Then, we may be able to find this in S3.
@@ -100,12 +107,11 @@ const fetchWork = async (
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
-    return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, extras);
+    return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, environment, extras);
   }
 
   let cacheUniquenessKey = null;
-
-  if (environment !== Environment.PRODUCTION && localStorage.disableCache === true) {
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
     cacheUniquenessKey = Math.random();
   }
 
