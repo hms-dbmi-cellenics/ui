@@ -22,16 +22,6 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
   const signedUrlResponse = await fetchAPI(
     url,
     {
-      metadata,
-      progressCallback(progress) {
-        const percentProgress = Math.round((progress.loaded / progress.total) * 100);
-        dispatch(updateSampleFile(sampleUuid, fileName, {
-          upload: {
-            status: UploadStatus.UPLOADING,
-            progress: percentProgress ?? 0,
-          },
-        }));
-      },
       method: 'GET',
     },
   );
@@ -77,15 +67,18 @@ const compressAndUploadSingleFile = async (
   let loadedFile = null;
 
   try {
-    loadedFile = await loadAndCompressIfNecessary(file, () => dispatch(
-      updateSampleFile(
-        sampleUuid,
-        fileName,
-        { upload: { status: UploadStatus.COMPRESSING } },
-      ),
+    loadedFile = await loadAndCompressIfNecessary(file, () => (
+      dispatch(
+        updateSampleFile(
+          sampleUuid,
+          fileName,
+          { upload: { status: UploadStatus.COMPRESSING } },
+        ),
+      )
     ));
   } catch (e) {
     const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+
     dispatch(
       updateSampleFile(
         sampleUuid,
@@ -102,6 +95,7 @@ const compressAndUploadSingleFile = async (
       projectUuid, loadedFile, dispatch,
       sampleUuid, fileName, metadata,
     );
+
     dispatch(
       updateSampleFile(
         sampleUuid,
