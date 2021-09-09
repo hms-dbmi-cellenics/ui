@@ -1,8 +1,9 @@
 import React, {
-  useState, useEffect, useRef, useCallback,
+  useState, useEffect, useCallback, useMemo,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import hash from 'object-hash';
+import sha1 from 'crypto-js/sha1';
+import Hex from 'crypto-js/enc-hex';
 import {
   Space, Button, Tooltip, Popconfirm,
 } from 'antd';
@@ -20,13 +21,13 @@ const ProjectMenu = () => {
   const dispatch = useDispatch();
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
+  const experiments = useSelector((state) => state.experiments);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const samples = useSelector((state) => state.samples);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, reasons: [] });
   const backendStatus = useSelector((state) => state.backendStatus);
-  const initialProjectHash = useRef({});
 
   const canLaunchAnalysis = useCallback(() => {
     if (activeProject.samples.length === 0) return false;
@@ -72,32 +73,54 @@ const ProjectMenu = () => {
     return canLaunch;
   }, [samples, activeProject.samples, activeProject.metadataKeys]);
 
-  const getProjectHash = (project) => {
-    const samplesToHash = project.samples.map((sampleUuid) => ({
-      name: samples[sampleUuid].name,
-      metadata: samples[sampleUuid].metadata,
-    }));
-
-    return hash.MD5(samplesToHash);
-  };
-
   // Initialize hash for each project
   useEffect(() => {
-    if (!initialProjectHash.current[activeProjectUuid]) {
-      initialProjectHash.current[activeProjectUuid] = getProjectHash(activeProject);
-    }
+    const experimentId = activeProject.experiments[0];
+
+    if (!experiments[experimentId]?.sampleIds.length > 0) return;
+
+    const generateGem2sHashParams = (project) => {
+      const experiment = experiments[experimentId];
+      const experimentSamples = project.samples.map((sampleUuid) => samples[sampleUuid]);
+
+      const samplesEntries = Object.entries(experimentSamples);
+
+      // Different sample order should not change the hash.
+      const orderInvariantSampleIds = [...experiment.sampleIds].sort();
+
+      const hashParams = {
+        organism: experiment.meta.organism,
+        input: { type: experiment.meta.type },
+        sampleIds: orderInvariantSampleIds,
+        sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId].name),
+      };
+
+      if (project.metadataKeys.length) {
+        hashParams.metadata = project.metadataKeys.reduce((acc, key) => {
+        // Make sure the key does not contain '-' as it will cause failure in GEM2S
+          const sanitizedKey = key.replace(/-+/g, '_');
+
+          acc[sanitizedKey] = samplesEntries.map(
+            ([, sample]) => sample.metadata[key] || DEFAULT_NA,
+          );
+          return acc;
+        }, {});
+      }
+
+      return Hex.stringify(sha1(JSON.stringify(hashParams)));
+    };
 
     const reasons = [];
 
-    const experimentId = activeProject.experiments[0];
     const gem2sStatus = backendStatus[experimentId]?.status.gem2s?.status;
 
     const gem2sSuccessful = [
       pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
     ].includes(gem2sStatus);
 
-    const projectHashEqual = initialProjectHash
-      .current[activeProjectUuid] === getProjectHash(activeProject);
+    const paramsHash = backendStatus[experimentId]?.status.gem2s?.paramsHash;
+
+    const projectHashEqual = paramsHash && paramsHash === generateGem2sHashParams(activeProject);
 
     if (!gem2sSuccessful) reasons.push('data has not been processed sucessfully');
     if (!projectHashEqual) reasons.push('the project has been modified');
