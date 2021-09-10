@@ -169,7 +169,7 @@ describe('GeneListTool', () => {
         orderDirection: 'ASC',
         selectFields: ['gene_names', 'dispersions'],
       },
-      backendStatus[experimentId].status,
+      store.getState,
       { timeout: 60 },
     );
 

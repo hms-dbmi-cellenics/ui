@@ -19,6 +19,7 @@ const mockStore = configureMockStore([thunk]);
 
 const initialState = {
   projects: {
+    ids: [],
     meta: {
       loading: true,
       saving: false,
@@ -27,11 +28,28 @@ const initialState = {
   },
 };
 
+const storeWithProjects = {
+  projects: {
+    ids: ['123'],
+    meta: {
+      loading: true,
+      saving: false,
+      error: false,
+    },
+    123: {
+      name: 'my awesome project',
+    },
+  },
+};
+
+const onCreate = jest.fn();
+const onCancel = jest.fn();
+
 describe('NewProjectModal', () => {
   it('renders without options', () => {
     const component = mount(
       <Provider store={mockStore(initialState)}>
-        <NewProjectModal />
+        <NewProjectModal onCancel={onCancel} onCreate={onCreate} />
       </Provider>,
     );
     expect(component.exists()).toEqual(true);
@@ -40,7 +58,7 @@ describe('NewProjectModal', () => {
   it('contains required components for first time flow', () => {
     const component = mount(
       <Provider store={mockStore(initialState)}>
-        <NewProjectModal firstTimeFlow />
+        <NewProjectModal onCancel={onCancel} onCreate={onCreate} />
       </Provider>,
     );
 
@@ -59,8 +77,8 @@ describe('NewProjectModal', () => {
 
   it('contains required components for later flows', () => {
     const component = mount(
-      <Provider store={mockStore(initialState)}>
-        <NewProjectModal firstTimeFlow={false} />
+      <Provider store={mockStore(storeWithProjects)}>
+        <NewProjectModal onCancel={onCancel} onCreate={onCreate} />
       </Provider>,
     );
 
@@ -85,12 +103,16 @@ describe('NewProjectModal', () => {
           ...initialState.projects.meta,
           saving: true,
         },
+        ids: ['123'],
+        123: {
+          name: 'my awesome project',
+        },
       },
     };
 
     const component = mount(
       <Provider store={mockStore(savingState)}>
-        <NewProjectModal />
+        <NewProjectModal onCancel={onCancel} onCreate={onCreate} />
       </Provider>,
     );
 
@@ -113,6 +135,10 @@ describe('NewProjectModal', () => {
         meta: {
           ...initialState.projects.meta,
           error: errMsg,
+        },
+        ids: ['123'],
+        123: {
+          name: 'my awesome project',
         },
       },
     };

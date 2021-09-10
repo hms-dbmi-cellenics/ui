@@ -26,7 +26,7 @@ const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
 const FileUploadModal = (props) => {
-  const { visible, onUpload, onCancel } = props;
+  const { onUpload, onCancel } = props;
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
@@ -122,7 +122,7 @@ const FileUploadModal = (props) => {
   return (
     <Modal
       title=''
-      visible={visible}
+      visible
       onCancel={onCancel}
       width='50%'
       footer={(
@@ -229,13 +229,11 @@ const FileUploadModal = (props) => {
 };
 
 FileUploadModal.propTypes = {
-  visible: PropTypes.bool,
   onUpload: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
 FileUploadModal.defaultProps = {
-  visible: true,
   onUpload: null,
   onCancel: null,
 };
