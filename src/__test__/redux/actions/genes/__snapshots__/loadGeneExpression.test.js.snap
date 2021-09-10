@@ -114,12 +114,7 @@ exports[`loadGeneExpression action Does not send work for already loaded express
         ],
         "name": "GeneExpression",
       },
-      Object {
-        "pipeline": Object {
-          "startDate": "2021-01-01T01:01:01.000Z",
-          "status": "SUCCEEDED",
-        },
-      },
+      [Function],
       Object {
         "timeout": 60,
       },
@@ -146,12 +141,7 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
         ],
         "name": "GeneExpression",
       },
-      Object {
-        "pipeline": Object {
-          "startDate": "2021-01-01T01:01:01.000Z",
-          "status": "SUCCEEDED",
-        },
-      },
+      [Function],
       Object {
         "timeout": 60,
       },
@@ -166,12 +156,7 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
         ],
         "name": "GeneExpression",
       },
-      Object {
-        "pipeline": Object {
-          "startDate": "2021-01-01T01:01:01.000Z",
-          "status": "SUCCEEDED",
-        },
-      },
+      [Function],
       Object {
         "timeout": 60,
       },

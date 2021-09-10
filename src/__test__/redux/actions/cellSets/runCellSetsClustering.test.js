@@ -47,6 +47,9 @@ describe('runCellSetsClustering action', () => {
       cellSets: { loading: true, error: false, updatingClustering: true },
       experimentSettings: experimentSettingsStore,
       backendStatus,
+      networkResources: {
+        environment: 'testing',
+      },
     });
 
     store.dispatch(runCellSetsClustering(experimentId));
@@ -58,6 +61,9 @@ describe('runCellSetsClustering action', () => {
       cellSets: { loading: true, error: false, updatingClustering: false },
       experimentSettings: experimentSettingsStore,
       backendStatus,
+      networkResources: {
+        environment: 'testing',
+      },
     });
 
     store.dispatch(runCellSetsClustering(experimentId));
@@ -69,6 +75,9 @@ describe('runCellSetsClustering action', () => {
       cellSets: { loading: false, error: true },
       experimentSettings: experimentSettingsStore,
       backendStatus,
+      networkResources: {
+        environment: 'testing',
+      },
     });
     store.dispatch(runCellSetsClustering(experimentId));
     expect(store.getActions().length).toEqual(0);
@@ -93,6 +102,9 @@ describe('runCellSetsClustering action', () => {
       },
       experimentSettings: experimentSettingsStore,
       backendStatus,
+      networkResources: {
+        environment: 'testing',
+      },
     });
 
     const flushPromises = () => new Promise(setImmediate);
@@ -109,7 +121,7 @@ describe('runCellSetsClustering action', () => {
         cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
       },
       60,
-      '4d66c6ab734a1ce9acc2204fe3601732', // pragma: allowlist secret
+      'df391c411c86c58b43aefaefe54f0f52', // pragma: allowlist secret
       expect.any(Function),
       { PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate },
     );
@@ -132,6 +144,9 @@ describe('runCellSetsClustering action', () => {
       cellSets: { ...initialState, loading: false, error: false },
       experimentSettings: experimentSettingsStore,
       backendStatus,
+      networkResources: {
+        environment: 'testing',
+      },
     });
 
     seekFromAPI.mockImplementation(() => Promise.reject());
@@ -148,7 +163,7 @@ describe('runCellSetsClustering action', () => {
         cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
       },
       60,
-      '4d66c6ab734a1ce9acc2204fe3601732', // pragma: allowlist secret
+      'df391c411c86c58b43aefaefe54f0f52', // pragma: allowlist secret
       expect.any(Function),
       { PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate },
     );

@@ -156,7 +156,7 @@ describe('ComponentActions', () => {
         name: 'GeneExpression',
         genes: ['A', 'B', 'C'],
       },
-      backendStatus[experimentId].status,
+      store.getState,
       { timeout: 60 },
     );
 
