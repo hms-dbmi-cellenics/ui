@@ -18,7 +18,6 @@ import initialExperimentsState from '../../../redux/reducers/experiments/initial
 import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
 import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
 import UploadStatus from '../../../utils/upload/UploadStatus';
-import generateGem2sParamsHash from '../../../utils/data-management/generateGem2sParamsHash';
 
 const mockStore = configureStore([thunk]);
 const width = 600;
@@ -307,7 +306,7 @@ describe('ProjectDetails', () => {
     expect(store.getState().projects[projectUuid].metadataKeys).toEqual(['metadata-1']);
   });
 
-  it('Shows Go to Data Processing if the has is the same', () => {
+  it('Shows Go to Data Processing if there are no changes to the project (same hash)', () => {
     jest.mock('../../../utils/data-management/generateGem2sParamsHash', () => jest.fn().mockReturnValue('old-params-hash'));
 
     render(
@@ -319,7 +318,7 @@ describe('ProjectDetails', () => {
     expect(screen.findByText('Go to Data Processing')).toBeDefined();
   });
 
-  it('Shows Process project if the hash is different', () => {
+  it('Shows Process project if there are changes to the project (different hash)', () => {
     jest.mock('../../../utils/data-management/generateGem2sParamsHash', () => jest.fn().mockReturnValue('new-params-hash'));
 
     render(
