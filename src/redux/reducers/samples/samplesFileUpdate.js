@@ -20,10 +20,7 @@ const samplesFileUpdate = (state, action) => {
 
   newFile.lastModified = lastModified;
 
-  const { fileNames: existingFileNames } = state[sampleUuid];
-  const newFileNames = !existingFileNames.includes(fileName)
-    ? [...existingFileNames, fileName]
-    : existingFileNames;
+  const newFileNames = [...new Set(state[sampleUuid].fileNames, fileName)];
 
   return {
     ...state,

@@ -1,14 +1,16 @@
+/* eslint-disable no-unused-vars */
 import sha1 from 'crypto-js/sha1';
 import Hex from 'crypto-js/enc-hex';
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
 const generateGem2sParamsHash = (project, samples, experiment) => {
-  const experimentSamples = project.samples.map((sampleUuid) => samples[sampleUuid]);
+  const projectSamples = Object.entries(samples)
+    .filter(([key, _]) => project.samples.includes(key));
 
-  const samplesEntries = Object.entries(experimentSamples);
+  const existingSampleIds = projectSamples.map(([_, sample]) => sample.uuid);
 
   // Different sample order should not change the hash.
-  const orderInvariantSampleIds = [...experiment.sampleIds].sort();
+  const orderInvariantSampleIds = [...existingSampleIds].sort();
 
   const hashParams = {
     organism: experiment.meta.organism,
@@ -22,7 +24,7 @@ const generateGem2sParamsHash = (project, samples, experiment) => {
       // Make sure the key does not contain '-' as it will cause failure in GEM2S
       const sanitizedKey = key.replace(/-+/g, '_');
 
-      acc[sanitizedKey] = samplesEntries.map(
+      acc[sanitizedKey] = projectSamples.map(
         ([, sample]) => sample.metadata[key] || DEFAULT_NA,
       );
       return acc;
