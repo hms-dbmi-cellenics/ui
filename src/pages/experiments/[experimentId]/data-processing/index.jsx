@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState, useEffect, useMemo, useCallback,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
@@ -147,12 +149,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [sampleKeys]);
 
   useEffect(() => {
-    const applicableFilters = Object.entries(disableStepsOnCondition).filter(([key, value]) => value.includes(steps[stepIdx].key));
+    const filters = Object.values(disableStepsOnCondition)
+      .filter((value) => value.includes(steps[stepIdx].key));
 
     // Get the first value because return of Object.entries is [filterName,[steps]]
-    setApplicableFilters(applicableFilters.map((filter) => filter[0]));
+    setApplicableFilters(filters.map((filter) => filter[0]));
     setStepDisabledByCondition(
-      applicableFilters.length > 0
+      filters.length > 0
       && !processingConfig[steps[stepIdx].key]?.enabled,
     );
   }, [stepIdx]);
@@ -185,7 +188,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   useEffect(() => {
     if (sampleKeys && sampleKeys.length > 0 && Object.keys(samples).filter((key) => key !== 'meta').length > 0) {
-      const list = sampleKeys?.map((sampleId) => ({ key: sampleId, headerName: prefixSampleName(samples[sampleId].name), params: { key: sampleId } }));
+      const list = sampleKeys?.map((sampleId) => ({
+        key: sampleId,
+        headerName: prefixSampleName(samples[sampleId].name),
+        params: { key: sampleId },
+      }));
       setInputsList(list);
     }
   }, [samples, sampleKeys]);
@@ -289,12 +296,18 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
       description:
-        <span>
-          Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see
-          {' '}
-          <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' target='_blank'>scDblFinder thresholding</a>
-          .
-        </span>,
+  <span>
+    Droplets may contain more than one cell.
+    In such cases, it is not possible to distinguish which reads came from which cell.
+    Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
+    “Cells” with a high probability of being a doublet should be excluded.
+    The probability of being a doublet is calculated using ‘scDblFinder’.
+    For each sample, the default threshold tries to minimize both the deviation in the
+    expected number of doublets and the error of a trained classifier. For more details see
+    {' '}
+    <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
+    .
+  </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -513,7 +526,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                       disabled={stepDisabledByCondition}
                       data-testid='enableFilterButton'
                       onClick={() => {
-                        dispatch(setQCStepEnabled(steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled));
+                        dispatch(setQCStepEnabled(
+                          steps[stepIdx].key, !processingConfig[steps[stepIdx].key]?.enabled,
+                        ));
                         dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
                       }}
                     >
@@ -558,7 +573,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                         const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
                         changeStepId(newStepIdx);
                       }}
-                      disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                      disabled={steps[stepIdx + 1]
+                        && pipelineNotFinished
+                        && !isStepComplete(steps[stepIdx + 1].key)}
                       icon={<RightOutlined />}
                       size='small'
                     />
@@ -568,7 +585,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                     <Tooltip title='Finish QC'>
                       <Button
                         type='primary'
-                        disabled={steps[stepIdx + 1] && pipelineNotFinished && !isStepComplete(steps[stepIdx + 1].key)}
+                        disabled={steps[stepIdx + 1]
+                          && pipelineNotFinished
+                          && !isStepComplete(steps[stepIdx + 1].key)}
                         icon={<CheckOutlined />}
                         size='small'
                         onClick={() => transitionToModule(completedPath)}
@@ -618,7 +637,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     if (samples.meta.error || processingConfig.meta.loadingSettingsError) {
       return (
         <PlatformError
-          error={samples.meta.error.toString() || processingConfig.meta.loadingSettingsError.toString()}
+          error={samples.meta.error.toString()
+            || processingConfig.meta.loadingSettingsError.toString()}
           onClick={() => { dispatch(loadSamples(experimentId)); }}
         />
       );
@@ -667,7 +687,11 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         onOk={() => onPipelineRun()}
         okText='Start'
       >
-        <p>This will take several minutes. Your navigation within Cellscope will be restricted during this time. Do you want to start?</p>
+        <p>
+          This will take several minutes.
+          Your navigation within Cellscope will be restricted during this time.
+          Do you want to start?
+        </p>
       </Modal>
       <Card
         title={renderTitle()}

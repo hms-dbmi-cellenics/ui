@@ -31,6 +31,7 @@ const ChangesNotAppliedModal = (props) => {
             type='primary'
             key='run'
             onClick={() => {
+              if (!experimentId) return;
               dispatch(runPipeline(experimentId));
               dispatch(navigateFromProcessingTo(''));
             }}
@@ -84,7 +85,11 @@ const ChangesNotAppliedModal = (props) => {
 };
 
 ChangesNotAppliedModal.propTypes = {
-  experimentId: PropTypes.string.isRequired,
+  experimentId: PropTypes.string,
+};
+
+ChangesNotAppliedModal.defaultProps = {
+  experimentId: null,
 };
 
 export default ChangesNotAppliedModal;
