@@ -6,16 +6,11 @@ import {
 import DownloadData from './DownloadData';
 import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 import UploadStatus from '../../utils/upload/UploadStatus';
-<<<<<<< HEAD
-import integrationTestConstants from '../../utils/integrationTestConstants';
 
-const { Title, Text, Paragraph } = Typography;
-=======
 import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import { processUpload } from '../../utils/upload/processUpload';
 import integrationTestConstants from '../../utils/integrationTestConstants';
->>>>>>> master
 
 const ProjectMenu = () => {
   const dispatch = useDispatch();
