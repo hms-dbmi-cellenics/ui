@@ -168,9 +168,8 @@ const SampleNameCell = (props) => {
   const { text, record, idx } = cellInfo;
   const dispatch = useDispatch();
   return (
-    <Text strong key={`sample-cell-${idx}`}>
+    <Text className={integrationTestConstants.classes.SAMPLE_NAME_CELL} strong key={`sample-cell-${idx}`}>
       <EditableField
-        data-test-class={integrationTestConstants.classes.SAMPLE_CELL_NAME_TEXT}
         deleteEnabled
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}

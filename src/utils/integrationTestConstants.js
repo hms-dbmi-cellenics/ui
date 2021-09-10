@@ -13,7 +13,6 @@ const ids = {
   FILE_UPLOAD_DROPZONE: 'file-upload-dropzone',
   FILE_UPLOAD_INPUT: 'file-upload-input',
   ADD_SAMPLES_BUTTON: 'add-samples-button',
-  SAMPLE_NAME_CELL: 'sample-name-cell',
 };
 
 const classes = {
@@ -27,7 +26,7 @@ const classes = {
   QC_STEP_NOT_COMPLETED: 'data-test-qc-step-not-completed',
 
   DELETE_EDITABLE_FIELD_BUTTON: 'data-test-delete-editable-field-button',
-  SAMPLE_CELL_NAME_TEXT: 'data-test-sample-cell-name-text',
+  SAMPLE_NAME_CELL: 'data-test-sample-name-cell',
 };
 
 export default {
