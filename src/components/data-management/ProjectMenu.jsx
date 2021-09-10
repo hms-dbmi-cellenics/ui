@@ -87,7 +87,11 @@ const ProjectMenu = () => {
     ].includes(gem2sStatus);
 
     const existingParamsHash = backendStatus[experimentId]?.status.gem2s?.paramsHash;
-    const newParamsHash = generateGem2sParamsHash(activeProject, samples, experiments[experimentId]);
+    const newParamsHash = generateGem2sParamsHash(
+      activeProject,
+      samples,
+      experiments[experimentId],
+    );
 
     const projectHashEqual = existingParamsHash && existingParamsHash === newParamsHash;
 
