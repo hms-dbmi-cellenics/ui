@@ -29,6 +29,7 @@ import ChangesNotAppliedModal from './ChangesNotAppliedModal';
 
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
+import integrationTestConstants from '../utils/integrationTestConstants';
 
 import { initialExperimentBackendStatus } from '../redux/reducers/backendStatus/initialState';
 
@@ -314,7 +315,7 @@ const ContentWrapper = (props) => {
           {!collapsed && <BigLogo />}
           {collapsed && <SmallLogo />}
           <Menu
-            data-test-id='navigation-menu'
+            data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
             theme='dark'
             selectedKeys={
               menuLinks

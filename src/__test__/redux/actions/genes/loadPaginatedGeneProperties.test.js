@@ -65,6 +65,9 @@ describe('loadPaginatedGeneProperties action', () => {
         ...initialState,
       },
       backendStatus,
+      networkResources: {
+        environment: 'testing',
+      },
     });
 
     seekFromAPI.mockImplementation(() => {
@@ -109,17 +112,17 @@ describe('loadPaginatedGeneProperties action', () => {
       loadPaginatedGeneProperties(experimentId, properties, componentUuid, tableState),
     );
 
-    expect(seekFromAPI).toMatchSnapshot();
-
     expect(store.getActions().length).toEqual(2);
 
     const loadingAction = store.getActions()[0];
-    expect(loadingAction.type).toEqual(GENES_PROPERTIES_LOADING);
     expect(loadingAction).toMatchSnapshot();
+    expect(loadingAction.type).toEqual(GENES_PROPERTIES_LOADING);
 
     const loadedAction = store.getActions()[1];
-    expect(loadedAction.type).toEqual(GENES_PROPERTIES_LOADED_PAGINATED);
     expect(loadedAction).toMatchSnapshot();
+    expect(loadedAction.type).toEqual(GENES_PROPERTIES_LOADED_PAGINATED);
+
+    expect(seekFromAPI).toMatchSnapshot();
   });
 
   it('Dispatches appropriately on error condition', async () => {
@@ -129,6 +132,9 @@ describe('loadPaginatedGeneProperties action', () => {
         ...initialState,
       },
       backendStatus,
+      networkResources: {
+        environment: 'testing',
+      },
     });
 
     seekFromAPI.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));

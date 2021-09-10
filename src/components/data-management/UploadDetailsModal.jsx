@@ -1,5 +1,6 @@
 /* eslint-disable import/no-duplicates */
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {
@@ -7,10 +8,10 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { uploadSingleFile } from '../../utils/upload/processUpload';
+import { uploadSingleFile, bundleToFile } from '../../utils/upload/processUpload';
+
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
-import { bundleToFile } from '../../utils/upload/processUpload';
 import downloadSingleFile from '../../utils/data-management/downloadSingleFile';
 
 // we'll need to remove the hard-coded 10x tech type once we start
@@ -20,7 +21,7 @@ const SELECTED_TECH = '10X Chromium';
 const UploadDetailsModal = (props) => {
   const dispatch = useDispatch();
   const {
-    sampleName, visible, onCancel, uploadDetailsModalDataRef, activeProjectUuid,
+    visible, onCancel, uploadDetailsModalDataRef,
   } = props;
   const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current || false;
   const file = uploadDetailsModalDataRef.current?.file || {};
@@ -31,6 +32,10 @@ const UploadDetailsModal = (props) => {
   const bundleName = bundle?.name;
   const inputFileRef = useRef(null);
   const [replacementFileBundle, setReplacementFileBundle] = useState(null);
+
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
+  const samples = useSelector((state) => state.samples);
+  const sampleName = samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name;
 
   useEffect(() => {
     if (replacementFileBundle) {
@@ -202,16 +207,13 @@ const UploadDetailsModal = (props) => {
 };
 
 UploadDetailsModal.propTypes = {
-  sampleName: PropTypes.string,
   file: PropTypes.object,
   visible: PropTypes.bool,
   onCancel: PropTypes.func,
-  activeProjectUuid: PropTypes.string.isRequired,
   uploadDetailsModalDataRef: PropTypes.object.isRequired,
 };
 
 UploadDetailsModal.defaultProps = {
-  sampleName: '',
   file: {},
   visible: true,
   onCancel: () => { },

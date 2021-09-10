@@ -112,6 +112,7 @@
     "redux-mock-store-await-actions": "^2.1.0",
     "redux-thunk": "^2.3.0",
     "socket.io-client": "^2.3.0",
+    "styled-components": "^5.3.1",
     "swr": "^0.3.2",
     "terser-webpack-plugin": "^1.1.0",
     "thread-loader": "^2.1.3",
