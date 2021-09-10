@@ -56,7 +56,7 @@ const AnalysisModal = (props) => {
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
 
     dispatch(runGem2s(experimentId));
-    router.push(analysisPath.replace('[experimentId]', experimentId));
+    window.location.href = analysisPath.replace('[experimentId]', experimentId);
   };
 
   const renderAnalysisList = () => (
