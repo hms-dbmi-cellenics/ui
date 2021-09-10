@@ -51,6 +51,8 @@ const fetchGeneExpressionWork = async (
 
   const missingGenesBody = { ...body, genes: missingGenes };
 
+  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
+  // past results.
   let cacheUniquenessKey = null;
   if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
     cacheUniquenessKey = Math.random();
@@ -110,6 +112,8 @@ const fetchWork = async (
     return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, environment, extras);
   }
 
+  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
+  // past results.
   let cacheUniquenessKey = null;
   if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
     cacheUniquenessKey = Math.random();
