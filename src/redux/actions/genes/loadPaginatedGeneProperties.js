@@ -6,7 +6,7 @@ import {
   GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
 } from '../../actionTypes/genes';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
 import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadPaginatedGeneProperties = (
@@ -46,7 +46,7 @@ const loadPaginatedGeneProperties = (
   const timeout = getTimeoutForWorkerTask(getState(), 'ListGenes');
 
   try {
-    const { rows, total } = await fetchCachedWork(
+    const { rows, total } = await fetchWork(
       experimentId, body, status, { timeout },
     );
 

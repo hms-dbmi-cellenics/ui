@@ -60,13 +60,14 @@ const ProjectsListContainer = (props) => {
 
   return (
     <>
-      <ProjectDeleteModal
-        visible={deleteModalVisible}
-        onCancel={() => { setDeleteModalVisible(false); }}
-        onDelete={deleteProject}
-        projectName={projects[deleteProjectUuid]?.name}
-      />
-
+      {deleteModalVisible && (
+        <ProjectDeleteModal
+          visible={deleteModalVisible}
+          onCancel={() => { setDeleteModalVisible(false); }}
+          onDelete={deleteProject}
+          projectName={projects[deleteProjectUuid]?.name}
+        />
+      )}
       <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
         {
           searchable

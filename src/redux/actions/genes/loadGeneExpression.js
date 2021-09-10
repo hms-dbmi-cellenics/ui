@@ -4,7 +4,7 @@ import {
 } from '../../actionTypes/genes';
 
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
 import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadGeneExpression = (
@@ -18,8 +18,6 @@ const loadGeneExpression = (
   if (loading.length > 0) {
     return null;
   }
-
-  const { status } = getState().backendStatus[experimentId];
 
   const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
 
@@ -66,7 +64,9 @@ const loadGeneExpression = (
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
   try {
-    const data = await fetchCachedWork(
+    const { status } = getState().backendStatus[experimentId];
+
+    const data = await fetchWork(
       experimentId, body, status, { timeout },
     );
     if (data[genesToFetch[0]]?.error) {

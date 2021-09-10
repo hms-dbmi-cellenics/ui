@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
@@ -165,14 +165,17 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
     const lowerCaseStepName = stepName.toLowerCase();
 
-    const stepAppearances = _.filter(completedSteps, (stepPipelineName) => stepPipelineName.toLowerCase().includes(lowerCaseStepName));
+    const stepAppearances = _.filter(
+      completedSteps,
+      (stepPipelineName) => stepPipelineName.toLowerCase().includes(lowerCaseStepName),
+    );
 
     return stepAppearances.length > 0;
   };
 
-  const onConfigChange = (key) => {
+  const onConfigChange = useCallback((key) => {
     dispatch(addChangedQCFilter(key));
-  };
+  });
 
   const prefixSampleName = (name) => {
     // eslint-disable-next-line no-param-reassign
@@ -286,12 +289,12 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
       description:
-  <span>
-    Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see
-    {' '}
-    <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' target='_blank'>scDblFinder thresholding</a>
-    .
-  </span>,
+        <span>
+          Droplets may contain more than one cell. In such cases, it is not possible to distinguish which reads came from which cell. Such “cells” cause problems in the downstream analysis as they appear as an intermediate type. “Cells” with a high probability of being a doublet should be excluded. The probability of being a doublet is calculated using ‘scDblFinder’. For each sample, the default threshold tries to minimize both the deviation in the expected number of doublets and the error of a trained classifier. For more details see
+          {' '}
+          <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' target='_blank'>scDblFinder thresholding</a>
+          .
+        </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer

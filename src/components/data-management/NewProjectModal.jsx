@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Modal, Button, Input, Space, Typography, Form,
 } from 'antd';
 import { ClipLoader } from 'react-spinners';
+import { createProject } from '../../redux/actions/projects';
+
 import validateInputs, { rules } from '../../utils/validateInputs';
+import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
 const NewProjectModal = (props) => {
   const {
-    visible,
     onCreate,
     onCancel,
-    firstTimeFlow,
-    projects,
   } = props;
 
+  const dispatch = useDispatch();
   const [projectNames, setProjectNames] = useState(new Set());
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isValidName, setIsValidName] = useState(false);
+  const projects = useSelector(((state) => state.projects));
 
+  const firstTimeFlow = projects.ids.length === 0;
   const validationChecks = [
     rules.MIN_8_CHARS,
     rules.MIN_2_SEQUENTIAL_CHARS,
@@ -38,6 +41,7 @@ const NewProjectModal = (props) => {
   useEffect(() => {
     setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
   }, [projects.ids]);
+
   useEffect(() => {
     setIsValidName(validateInputs(projectName, validationChecks, validationParams).isValid);
   }, [projectName, projectNames]);
@@ -50,17 +54,19 @@ const NewProjectModal = (props) => {
   const submit = () => {
     const newProject = projectName;
     setProjectName('');
+
+    dispatch(createProject(newProject, projectDescription, 'Unnamed Analysis 1'));
     onCreate(newProject, projectDescription);
   };
 
   return (
     <Modal
-      className='data-test-new-project-modal'
+      className={integrationTestConstants.classes.NEW_PROJECT_MODAL}
       title='Create a new project'
-      visible={visible}
+      visible
       footer={(
         <Button
-          data-test-id='confirm-create-new-project'
+          data-test-id={integrationTestConstants.ids.CONFIRM_CREATE_NEW_PROJECT}
           type='primary'
           key='create'
           block
@@ -114,7 +120,7 @@ const NewProjectModal = (props) => {
               name='requiredMark'
             >
               <Input
-                data-test-id='project-name'
+                data-test-id={integrationTestConstants.ids.PROJECT_NAME}
                 onChange={(e) => {
                   setProjectName(e.target.value.trim());
                 }}
@@ -134,7 +140,7 @@ const NewProjectModal = (props) => {
               label='Project description'
             >
               <TextArea
-                data-test-id='project-description'
+                data-test-id={integrationTestConstants.ids.PROJECT_DESCRIPTION}
                 onChange={(e) => { setProjectDescription(e.target.value); }}
                 placeholder='Type description'
                 autoSize={{ minRows: 3, maxRows: 5 }}
@@ -173,19 +179,8 @@ const NewProjectModal = (props) => {
 };
 
 NewProjectModal.propTypes = {
-  visible: PropTypes.bool,
-  onCreate: PropTypes.func,
-  onCancel: PropTypes.func,
-  firstTimeFlow: PropTypes.bool,
-  projects: PropTypes.object,
-};
-
-NewProjectModal.defaultProps = {
-  visible: true,
-  onCreate: () => null,
-  onCancel: () => null,
-  firstTimeFlow: false,
-  projects: { ids: [] },
+  onCreate: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default NewProjectModal;
