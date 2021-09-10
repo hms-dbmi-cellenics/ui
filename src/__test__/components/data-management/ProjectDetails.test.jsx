@@ -144,7 +144,7 @@ describe('ProjectDetails', () => {
     expect(screen.getByText('Add samples')).toBeDefined();
     expect(screen.getByText('Add metadata')).toBeDefined();
     expect(screen.getByText('Download')).toBeDefined();
-    expect(screen.getByText('Launch analysis')).toBeDefined();
+    expect(screen.getByText('Process project')).toBeDefined();
   });
 
   it('Add metadata button is disabled if there is no data', () => {
@@ -171,19 +171,19 @@ describe('ProjectDetails', () => {
     expect(metadataButton).not.toBeDisabled();
   });
 
-  it('Launch analysis button is disabled if there is no data', () => {
+  it('Process project button is disabled if there is no data', () => {
     render(
       <Provider store={mockStore(noDataState)}>
         <ProjectDetails width={width} height={height} />
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Launch analysis').closest('button');
+    const metadataButton = screen.getByText('Process project').closest('button');
 
     expect(metadataButton).toBeDisabled();
   });
 
-  it('Launch analysis button is disabled if not all data are uploaded', () => {
+  it('Process project button is disabled if not all data are uploaded', () => {
     const notAllDataUploaded = {
       ...withDataState,
       samples: {
@@ -204,12 +204,12 @@ describe('ProjectDetails', () => {
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Launch analysis').closest('button');
+    const metadataButton = screen.getByText('Process project').closest('button');
 
     expect(metadataButton).toBeDisabled();
   });
 
-  it('Launch analysis button is disabled if not all sample metadata are inserted', () => {
+  it('Process project button is disabled if not all sample metadata are inserted', () => {
     const notAllMetadataInserted = {
       ...withDataState,
       samples: {
@@ -227,19 +227,19 @@ describe('ProjectDetails', () => {
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Launch analysis').closest('button');
+    const metadataButton = screen.getByText('Process project').closest('button');
 
     expect(metadataButton).toBeDisabled();
   });
 
-  it('Launch analysis button is enabled if there is data and all metadata for all samples are uplaoded', () => {
+  it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', () => {
     render(
       <Provider store={mockStore(withDataState)}>
         <ProjectDetails width={width} height={height} />
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Launch analysis').closest('button');
+    const metadataButton = screen.getByText('Process project').closest('button');
 
     expect(metadataButton).not.toBeDisabled();
   });
