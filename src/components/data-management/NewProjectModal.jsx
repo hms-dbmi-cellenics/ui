@@ -8,7 +8,7 @@ import { ClipLoader } from 'react-spinners';
 import { createProject } from '../../redux/actions/projects';
 
 import validateInputs, { rules } from '../../utils/validateInputs';
-import integrationTestIds from '../../utils/integrationTestIds';
+import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -61,12 +61,12 @@ const NewProjectModal = (props) => {
 
   return (
     <Modal
-      className={integrationTestIds.class.NEW_PROJECT_MODAL}
+      className={integrationTestConstants.classes.NEW_PROJECT_MODAL}
       title='Create a new project'
       visible
       footer={(
         <Button
-          data-test-id={integrationTestIds.id.CONFIRM_CREATE_NEW_PROJECT}
+          data-test-id={integrationTestConstants.ids.CONFIRM_CREATE_NEW_PROJECT}
           type='primary'
           key='create'
           block
@@ -120,7 +120,7 @@ const NewProjectModal = (props) => {
               name='requiredMark'
             >
               <Input
-                data-test-id={integrationTestIds.id.PROJECT_NAME}
+                data-test-id={integrationTestConstants.ids.PROJECT_NAME}
                 onChange={(e) => {
                   setProjectName(e.target.value.trim());
                 }}
@@ -140,7 +140,7 @@ const NewProjectModal = (props) => {
               label='Project description'
             >
               <TextArea
-                data-test-id={integrationTestIds.id.PROJECT_DESCRIPTION}
+                data-test-id={integrationTestConstants.ids.PROJECT_DESCRIPTION}
                 onChange={(e) => { setProjectDescription(e.target.value); }}
                 placeholder='Type description'
                 autoSize={{ minRows: 3, maxRows: 5 }}
