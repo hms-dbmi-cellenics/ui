@@ -13,8 +13,8 @@ import UploadStatus from '../../utils/upload/UploadStatus';
 import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import { processUpload } from '../../utils/upload/processUpload';
-import integrationTestIds from '../../utils/integrationTestIds';
 import generateGem2sHashParams from '../../utils/data-management/generateGem2sHashParams';
+import integrationTestConstants from '../../utils/integrationTestConstants
 
 const ProjectMenu = () => {
   const dispatch = useDispatch();
@@ -107,7 +107,7 @@ const ProjectMenu = () => {
 
       return (
         <Button
-          data-test-id={integrationTestIds.id.LAUNCH_ANALYSIS_BUTTON}
+          data-test-id={integrationTestConstants.ids.LAUNCH_ANALYSIS_BUTTON}
           type='primary'
           disabled={!canLaunchAnalysis()}
           onClick={onClick}
