@@ -75,7 +75,7 @@ describe('loadDifferentialExpression action', () => {
         name: 'DifferentialExpression',
         experimentId: '1234',
       },
-      backendStatus[experimentId].status,
+      store.getState,
       {
         extras: {
           pagination: {
@@ -143,7 +143,7 @@ describe('loadDifferentialExpression action', () => {
         name: 'DifferentialExpression',
         experimentId: '1234',
       },
-      backendStatus[experimentId].status,
+      store.getState,
       {
         extras: {
           pagination: {

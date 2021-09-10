@@ -2,7 +2,7 @@
 import hash from 'object-hash';
 import cache from '../cache';
 import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
-import { isBrowser } from '../environment';
+import Environment, { isBrowser } from '../environment';
 import { calculateZScore } from '../postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
@@ -34,6 +34,7 @@ const fetchGeneExpressionWork = async (
   timeout,
   body,
   backendStatus,
+  environment,
   extras,
 ) => {
   // Get only genes that are not already found in local storage.
@@ -49,8 +50,16 @@ const fetchGeneExpressionWork = async (
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
   const missingGenesBody = { ...body, genes: missingGenes };
+
+  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
+  // past results.
+  let cacheUniquenessKey = null;
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
+    cacheUniquenessKey = Math.random();
+  }
+
   const ETag = createObjectHash({
-    experimentId, missingGenesBody, qcPipelineStartDate, extras,
+    experimentId, missingGenesBody, qcPipelineStartDate, extras, cacheUniquenessKey,
   });
 
   // Then, we may be able to find this in S3.
@@ -87,10 +96,12 @@ const fetchGeneExpressionWork = async (
 const fetchWork = async (
   experimentId,
   body,
-  backendStatus,
+  getState,
   optionals = {},
 ) => {
   const { extras = undefined, timeout = 180, eventCallback = null } = optionals;
+  const backendStatus = getState().backendStatus[experimentId].status;
+  const { environment } = getState().networkResources;
 
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
@@ -98,11 +109,18 @@ const fetchWork = async (
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
-    return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, extras);
+    return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, environment, extras);
+  }
+
+  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
+  // past results.
+  let cacheUniquenessKey = null;
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
+    cacheUniquenessKey = Math.random();
   }
 
   const ETag = createObjectHash({
-    experimentId, body, qcPipelineStartDate, extras,
+    experimentId, body, qcPipelineStartDate, extras, cacheUniquenessKey,
   });
 
   // First, let's try to fetch this information from the local cache.

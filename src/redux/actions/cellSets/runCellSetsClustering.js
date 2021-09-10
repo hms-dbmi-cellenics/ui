@@ -11,9 +11,6 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   } = getState().cellSets;
 
   const { experimentSettings } = getState();
-
-  const { status } = getState().backendStatus[experimentId];
-
   const { processing } = experimentSettings;
   const { method } = processing.configureEmbedding.clusteringSettings;
 
@@ -38,7 +35,7 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   const timeout = getTimeoutForWorkerTask(getState(), 'ClusterCells');
 
   try {
-    await fetchWork(experimentId, body, status, {
+    await fetchWork(experimentId, body, getState, {
       timeout,
       eventCallback: (err) => {
         if (err) {
