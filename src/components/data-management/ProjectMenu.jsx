@@ -14,7 +14,7 @@ import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import { processUpload } from '../../utils/upload/processUpload';
 import generateGem2sHashParams from '../../utils/data-management/generateGem2sHashParams';
-import integrationTestConstants from '../../utils/integrationTestConstants
+import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const ProjectMenu = () => {
   const dispatch = useDispatch();
