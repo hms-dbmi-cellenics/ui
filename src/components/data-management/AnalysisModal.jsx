@@ -19,7 +19,7 @@ import {
 } from '../../redux/actions/projects';
 
 import { runGem2s } from '../../redux/actions/pipeline';
-import integrationTestIds from '../../utils/integrationTestIds';
+import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Title } = Typography;
 
@@ -69,7 +69,7 @@ const AnalysisModal = (props) => {
         <List.Item
           key={`${experiment.id}`}
           extra={(
-            <Row type='flex' align='middle' data-test-class={integrationTestIds.class.LAUNCH_ANALYSIS_ITEM}>
+            <Row type='flex' align='middle' data-test-class={integrationTestConstants.classes.LAUNCH_ANALYSIS_ITEM}>
               <Col>
                 <Button
                   type='primary'

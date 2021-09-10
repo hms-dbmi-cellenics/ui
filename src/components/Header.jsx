@@ -9,7 +9,7 @@ import UserButton from './UserButton';
 import FeedbackButton from './FeedbackButton';
 import ReferralButton from './ReferralButton';
 import itemRender from '../utils/renderBreadcrumbLinks';
-import integrationTestIds from '../utils/integrationTestIds';
+import integrationTestConstants from '../utils/integrationTestConstants';
 
 const Header = (props) => {
   const {
@@ -65,7 +65,7 @@ const Header = (props) => {
       />
 
       <PageHeader
-        className={integrationTestIds.class.PAGE_HEADER}
+        className={integrationTestConstants.classes.PAGE_HEADER}
         title={title}
         style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
         breadcrumb={{ routes: buildRoutes(route), itemRender }}
