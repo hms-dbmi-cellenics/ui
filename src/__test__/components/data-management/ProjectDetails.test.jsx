@@ -8,7 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { createStore, applyMiddleware } from 'redux';
 import _ from 'lodash';
 import { fireEvent } from '@testing-library/dom';
-import PipelineStatus from 'utils/pipelineStatusValues';
+import PipelineStatus from '../../../utils/pipelineStatusValues';
 import rootReducer from '../../../redux/reducers/index';
 import * as createMetadataTrack from '../../../redux/actions/projects/createMetadataTrack';
 import ProjectDetails from '../../../components/data-management/ProjectDetails';
@@ -18,6 +18,7 @@ import initialExperimentsState from '../../../redux/reducers/experiments/initial
 import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
 import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
 import UploadStatus from '../../../utils/upload/UploadStatus';
+import generateGem2sParamsHash from '../../../utils/data-management/generateGem2sParamsHash';
 
 const mockStore = configureStore([thunk]);
 const width = 600;
@@ -62,7 +63,14 @@ const noDataState = {
   backendStatus: {
     [experiment1id]: {
       ...initialExperimentBackendStatus,
-      status: PipelineStatus.SUCCEEDED,
+      status: {
+        gem2s: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+        pipeline: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+      },
     },
   },
 };
@@ -106,6 +114,20 @@ const withDataState = {
         'features.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADED } },
         'barcodes.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADED } },
         'matrix.mtx.gz': { valid: true, upload: { status: UploadStatus.UPLOADED } },
+      },
+    },
+  },
+  backendStatus: {
+    [experiment1id]: {
+      ...initialExperimentBackendStatus,
+      status: {
+        gem2s: {
+          paramsHash: 'old-params-hash',
+          status: PipelineStatus.SUCCEEDED,
+        },
+        pipeline: {
+          status: PipelineStatus.SUCCEEDED,
+        },
       },
     },
   },
@@ -283,5 +305,29 @@ describe('ProjectDetails', () => {
     userEvent.type(field, 'somenewMeta');
     fireEvent.keyDown(field, { key: 'Escape', code: 'Escape' });
     expect(store.getState().projects[projectUuid].metadataKeys).toEqual(['metadata-1']);
+  });
+
+  it('Shows Go to Data Processing if the has is the same', () => {
+    jest.mock('../../../utils/data-management/generateGem2sParamsHash', () => jest.fn().mockReturnValue('old-params-hash'));
+
+    render(
+      <Provider store={mockStore(withDataState)}>
+        <ProjectDetails width={width} height={height} />
+      </Provider>,
+    );
+
+    expect(screen.findByText('Go to Data Processing')).toBeDefined();
+  });
+
+  it('Shows Process project if the hash is different', () => {
+    jest.mock('../../../utils/data-management/generateGem2sParamsHash', () => jest.fn().mockReturnValue('new-params-hash'));
+
+    render(
+      <Provider store={mockStore(withDataState)}>
+        <ProjectDetails width={width} height={height} />
+      </Provider>,
+    );
+
+    expect(screen.findByText('Process project')).toBeDefined();
   });
 });

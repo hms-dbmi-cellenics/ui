@@ -13,7 +13,7 @@ import UploadStatus from '../../utils/upload/UploadStatus';
 import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import { processUpload } from '../../utils/upload/processUpload';
-import generateGem2sHashParams from '../../utils/data-management/generateGem2sHashParams';
+import generateGem2sParamsHash from '../../utils/data-management/generateGem2sParamsHash';
 import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const ProjectMenu = () => {
@@ -87,7 +87,7 @@ const ProjectMenu = () => {
     ].includes(gem2sStatus);
 
     const existingParamsHash = backendStatus[experimentId]?.status.gem2s?.paramsHash;
-    const newParamsHash = generateGem2sHashParams(activeProject, samples, experiments[experimentId]);
+    const newParamsHash = generateGem2sParamsHash(activeProject, samples, experiments[experimentId]);
 
     const projectHashEqual = existingParamsHash && existingParamsHash === newParamsHash;
 
