@@ -9,17 +9,16 @@ const { Text, Paragraph } = Typography;
 
 const ProjectDeleteModal = (props) => {
   const {
-    visible, onDelete, onCancel, projectName,
+    onDelete, onCancel, projectName,
   } = props;
 
   const [inputProjectName, setInputProjectName] = useState('');
   const [isValid, setIsValid] = useState(false);
-
   return (
     <Modal
       className={integrationTestIds.class.DELETE_PROJECT_MODAL}
       title='Confirm delete'
-      visible={visible}
+      visible
       footer={(
         <Space>
           <Button
@@ -101,7 +100,6 @@ const ProjectDeleteModal = (props) => {
 };
 
 ProjectDeleteModal.propTypes = {
-  visible: PropTypes.bool,
   onDelete: PropTypes.func,
   onCancel: PropTypes.func,
   projectName: PropTypes.string,
@@ -110,7 +108,6 @@ ProjectDeleteModal.propTypes = {
 ProjectDeleteModal.defaultProps = {
   onDelete: () => null,
   onCancel: () => null,
-  visible: false,
   projectName: null,
 };
 

@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import * as rtl from '@testing-library/react';
+import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createStore, applyMiddleware } from 'redux';
 import _ from 'lodash';
@@ -20,7 +20,6 @@ import UploadStatus from '../../../utils/upload/UploadStatus';
 const mockStore = configureStore([thunk]);
 const width = 600;
 const height = 400;
-const { screen, render } = rtl;
 const projectName = 'Project 1';
 const projectUuid = 'project-1-uuid';
 const projectDescription = 'Some description';
@@ -268,7 +267,7 @@ describe('ProjectDetails', () => {
     const field = screen.getByRole('textbox');
     userEvent.type(field, 'myBrandNewMetadata');
     fireEvent.keyDown(field, { key: 'Enter', code: 'Enter' });
-    await rtl.waitFor(() => expect(metadataCreated).toBeCalledTimes(1));
+    await waitFor(() => expect(metadataCreated).toBeCalledTimes(1));
   });
 
   it('Cancels metadata creation', () => {
