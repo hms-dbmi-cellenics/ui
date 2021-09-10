@@ -52,9 +52,6 @@ describe('fileInspector', () => {
       )
       .mockReturnValueOnce(
         Promise.resolve(Buffer.from('"lnc_inter_chr1_')),
-      )
-      .mockReturnValueOnce(
-        Promise.resolve(Buffer.from('%%MatrixMarket')),
       );
 
     expect(await inspectFile(file, '10X Chromium'))
@@ -68,9 +65,6 @@ describe('fileInspector', () => {
 
     expect(await inspectFile(file, '10X Chromium'))
       .toEqual(Verdict.VALID_UNZIPPED);
-
-    expect(await inspectFile(file, '10X Chromium'))
-      .toEqual(Verdict.INVALID_FORMAT);
   });
 
   it('Detects a barcodes file properly', async () => {

@@ -12,9 +12,12 @@ const loadProjects = () => async (dispatch) => {
       type: PROJECTS_LOADING,
     });
     const response = await fetchAPI(url);
-    const data = await response.json();
+    let data = await response.json();
 
     throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROJECTS);
+
+    // filter out "projects" that are actually old experiments without a project
+    data = data.filter((project) => project.name !== project.uuid);
 
     await Promise.all(data
       .filter((entry) => entry.samples.length)

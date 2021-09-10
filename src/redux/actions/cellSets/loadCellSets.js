@@ -5,11 +5,11 @@ import {
   CELL_SETS_LOADED, CELL_SETS_LOADING, CELL_SETS_ERROR,
 } from '../../actionTypes/cellSets';
 
-const loadCellSets = (experimentId) => async (dispatch, getState) => {
+const loadCellSets = (experimentId, forceReload = false) => async (dispatch, getState) => {
   const {
     loading, error, updatingClustering,
   } = getState().cellSets;
-  if ((!loading && !error) || updatingClustering) {
+  if (!forceReload && ((!loading && !error) || updatingClustering)) {
     return null;
   }
 
