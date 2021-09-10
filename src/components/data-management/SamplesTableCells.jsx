@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import integrationTestConstants from '../../utils/integrationTestConstants';
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
@@ -152,6 +153,7 @@ const SampleNameCell = (props) => {
   return (
     <Text strong key={`sample-cell-${idx}`}>
       <EditableField
+        data-test-class={integrationTestConstants.classes.SAMPLE_CELL_NAME_TEXT}
         deleteEnabled
         value={text}
         onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}

@@ -8,6 +8,12 @@ const ids = {
   PROJECT_DESCRIPTION: 'project-description',
   LAUNCH_ANALYSIS_BUTTON: 'launch-analysis-button',
   QC_STATUS_TEXT: 'qc-status-text',
+
+  FILE_UPLOAD_BUTTON: 'file-upload-button',
+  FILE_UPLOAD_DROPZONE: 'file-upload-dropzone',
+  FILE_UPLOAD_INPUT: 'file-upload-input',
+  ADD_SAMPLES_BUTTON: 'add-samples-button',
+  SAMPLE_NAME_CELL: 'sample-name-cell',
 };
 
 const classes = {
@@ -19,6 +25,9 @@ const classes = {
   PROJECT_CARD: 'data-test-project-card',
   QC_STEP_COMPLETED: 'data-test-qc-step-completed',
   QC_STEP_NOT_COMPLETED: 'data-test-qc-step-not-completed',
+
+  DELETE_EDITABLE_FIELD_BUTTON: 'data-test-delete-editable-field-button',
+  SAMPLE_CELL_NAME_TEXT: 'data-test-sample-cell-name-text',
 };
 
 export default {

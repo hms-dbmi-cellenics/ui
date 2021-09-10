@@ -9,7 +9,7 @@ import {
 } from '../../redux/actions/projects'; import DownloadData from './DownloadData';
 import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 import UploadStatus from '../../utils/upload/UploadStatus';
-import integrationtestConstants from '../../utils/integrationTestConstants';
+import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -61,7 +61,7 @@ const ProjectMenu = (props) => {
         <Title level={3}>{activeProject?.name}</Title>
         <Space>
           <Button
-            data-test-id='add-samples-button'
+            data-test-id={integrationTestConstants.ids.ADD_SAMPLES_BUTTON}
             disabled={!anyProjectsAvailable}
             onClick={() => setUploadModalVisible(true)}
           >
@@ -83,7 +83,7 @@ const ProjectMenu = (props) => {
             activeProjectUuid={activeProjectUuid}
           />
           <Button
-            data-test-id={integrationtestConstants.ids.LAUNCH_ANALYSIS_BUTTON}
+            data-test-id={integrationTestConstants.ids.LAUNCH_ANALYSIS_BUTTON}
             type='primary'
             disabled={!canLaunchAnalysis()}
             onClick={() => openAnalysisModal()}

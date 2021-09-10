@@ -20,6 +20,8 @@ import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import { bundleToFile } from '../../utils/upload/processUpload';
 
+import integrationTestConstants from '../../utils/integrationTestConstants';
+
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
@@ -125,6 +127,7 @@ const FileUploadModal = (props) => {
       width='50%'
       footer={(
         <Button
+          data-test-id={integrationTestConstants.ids.FILE_UPLOAD_BUTTON}
           type='primary'
           key='create'
           block
@@ -165,8 +168,13 @@ const FileUploadModal = (props) => {
         <Col span={24}>
           <Dropzone onDrop={onDrop} multiple>
             {({ getRootProps, getInputProps }) => (
-              <div data-test-id='file-upload-dropzone' style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
-                <input {...getInputProps()} webkitdirectory='' />
+              <div
+                data-test-id={integrationTestConstants.ids.FILE_UPLOAD_DROPZONE}
+                style={{ border: '1px solid #ccc', padding: '2rem 0' }}
+                {...getRootProps({ className: 'dropzone' })}
+                id='dropzone'
+              >
+                <input data-test-id={integrationTestConstants.ids.FILE_UPLOAD_INPUT} {...getInputProps()} webkitdirectory='' />
                 <Empty description='Drag and drop folders here or click to browse.' image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             )}
