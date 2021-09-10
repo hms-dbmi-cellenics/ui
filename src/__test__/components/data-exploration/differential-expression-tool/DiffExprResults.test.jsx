@@ -228,7 +228,7 @@ describe('DiffExprResults', () => {
         experimentId: '1234',
         name: 'DifferentialExpression',
       },
-      backendStatus[experimentId].status,
+      store.getState,
       {
         extras: {
           pagination: {
