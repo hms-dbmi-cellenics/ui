@@ -1,3 +1,4 @@
+import { BACKEND_STATUS_DELETED } from '../../actionTypes/backendStatus';
 import fetchAPI from '../../../utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
@@ -9,7 +10,6 @@ import {
   PROJECTS_SAVING,
   PROJECTS_SAVED,
 } from '../../actionTypes/projects';
-
 import {
   SAMPLES_DELETE,
 } from '../../actionTypes/samples';
@@ -71,6 +71,10 @@ const deleteProject = (
       },
     });
 
+    dispatch({
+      type: BACKEND_STATUS_DELETED,
+      payload: { experimentIds: projects[projectUuid].experiments },
+    });
     dispatch({
       type: PROJECTS_DELETE,
       payload: { projectUuid },
