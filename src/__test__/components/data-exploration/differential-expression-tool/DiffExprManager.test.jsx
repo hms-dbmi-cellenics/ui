@@ -10,6 +10,8 @@ import DiffExprManager from '../../../../components/data-exploration/differentia
 import DiffExprCompute from '../../../../components/data-exploration/differential-expression-tool/DiffExprCompute';
 import DiffExprResults from '../../../../components/data-exploration/differential-expression-tool/DiffExprResults';
 import initialState from '../../../../redux/reducers/differentialExpression/initialState';
+import genesInitialState from '../../../../redux/reducers/genes/initialState';
+import cellSetsInitialState from '../../../../redux/reducers/cellSets/initialState';
 
 jest.mock('localforage');
 jest.mock('../../../../utils/environment', () => ({
@@ -22,10 +24,12 @@ const mockStore = configureMockStore([thunk]);
 const emptyState = {
   differentialExpression: { ...initialState },
   cellSets: {
+    ...cellSetsInitialState,
     hierarchy: [],
     properties: {},
   },
   genes: {
+    ...genesInitialState,
     focused: undefined,
   },
 };
