@@ -48,7 +48,7 @@ const ComponentActions = (props) => {
     </Menu>
   );
 
-  if (selectedGenes.length === 0) {
+  if (!selectedGenes?.length > 0) {
     return (<></>);
   }
 

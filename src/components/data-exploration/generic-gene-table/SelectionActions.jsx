@@ -72,7 +72,7 @@ const SelectionActions = (props) => {
   };
   return (
     <Space style={{ float: 'left' }}>
-      {selectedGenes.length !== 0 ? (
+      {selectedGenes && selectedGenes.length > 0 ? (
         <>
           <Text type='secondary'>
             {`${selectedGenes.length} gene${selectedGenes.length === 1 ? '' : 's'} selected`}
