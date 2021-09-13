@@ -77,7 +77,6 @@ const ContentWrapper = (props) => {
   // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
-  const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
 
   useEffect(() => {
     if (!experimentId) {
