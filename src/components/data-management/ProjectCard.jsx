@@ -8,6 +8,8 @@ import { useSelector } from 'react-redux';
 import EditableField from '../EditableField';
 import PrettyTime from '../PrettyTime';
 
+const { Item } = Descriptions;
+
 const activeProjectStyle = {
   backgroundColor: blue[0],
   cursor: 'pointer',
@@ -34,43 +36,43 @@ const ProjectCard = (props) => {
         size='small'
         column={1}
       >
-        <Descriptions.Item contentStyle={{ fontWeight: 700, fontSize: 16 }}>
+        <Item contentStyle={{ fontWeight: 700, fontSize: 16 }}>
           <EditableField
             value={project.name}
             onAfterSubmit={onSubmit}
             onDelete={onDelete}
             validationFunc={validationFn}
           />
-        </Descriptions.Item>
-        <Descriptions.Item
+        </Item>
+        <Item
           labelStyle={{ fontWeight: 'bold' }}
           label='Samples'
         >
           {project.samples.length}
 
-        </Descriptions.Item>
-        <Descriptions.Item
+        </Item>
+        <Item
           labelStyle={{ fontWeight: 'bold' }}
           label='Created'
         >
           <PrettyTime isoTime={project.createdDate} />
 
-        </Descriptions.Item>
-        <Descriptions.Item
+        </Item>
+        <Item
           labelStyle={{ fontWeight: 'bold' }}
           label='Modified'
         >
           <PrettyTime isoTime={project.lastModified} />
 
-        </Descriptions.Item>
-        <Descriptions.Item
+        </Item>
+        <Item
           labelStyle={{ fontWeight: 'bold' }}
           label='Last analyzed'
         >
           {project.lastAnalyzed ? (
             <PrettyTime isoTime={project.lastAnalyzed} />
           ) : ('never')}
-        </Descriptions.Item>
+        </Item>
       </Descriptions>
     </Card>
   );

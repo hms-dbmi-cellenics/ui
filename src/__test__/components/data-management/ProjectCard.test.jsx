@@ -4,20 +4,29 @@ import '@testing-library/jest-dom';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
+import moment from 'moment';
 import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 import ProjectCard from '../../../components/data-management/ProjectCard';
 
 const projectUuid = '12345';
 const projectName = 'Test Project';
+const samplesIdsArray = new Array(13).fill(null).map((_, i) => (`sample-${i}`));
+const createdDate = '2021-09-01T00:00:00.000Z';
+const lastAnalyzed = '2021-09-02T00:00:00.000Z';
+const lastModified = '2021-09-03T00:00:00.000Z';
 
 const projectState = {
   projects: {
     ...initialState,
-    ids: [],
+    experiments: [],
     [projectUuid]: {
       ...projectTemplate,
       name: projectName,
       uuid: projectUuid,
+      samples: samplesIdsArray,
+      createdDate,
+      lastAnalyzed,
+      lastModified,
     },
   },
 };
@@ -32,6 +41,19 @@ describe('ProjectCard', () => {
       </Provider>,
     );
 
+    // Project name is shown
     expect(screen.getByText(new RegExp(projectName, 'i'))).toBeInTheDocument();
+
+    // Number of samples is shown
+    expect(screen.getByText(samplesIdsArray.length)).toBeInTheDocument();
+
+    // Created date is shown
+    expect(screen.getByText(moment(createdDate).fromNow())).toBeInTheDocument();
+
+    // Last analyized is shown
+    expect(screen.getByText(moment(lastAnalyzed).fromNow())).toBeInTheDocument();
+
+    // Last modified is shown
+    expect(screen.getByText(moment(lastModified).fromNow())).toBeInTheDocument();
   });
 });
