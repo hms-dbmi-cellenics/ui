@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import vegaEmbed, { vega } from 'vega-embed';
 import hash from 'object-hash';
+import webglRenderer from 'vega-webgl-renderer';
 
 const VegaEmbed = (props) => {
   const {
