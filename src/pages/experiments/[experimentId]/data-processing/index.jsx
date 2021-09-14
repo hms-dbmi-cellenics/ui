@@ -2,7 +2,6 @@ import React, {
   useState, useEffect, useMemo, useCallback,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import {
   Select, Space, Button, Typography, Alert,
@@ -22,6 +21,7 @@ import {
 import _ from 'lodash';
 
 import Header from '../../../../components/Header';
+import { useAppRouter } from '../../../../utils/RouteContext';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
@@ -41,7 +41,7 @@ import { qcSteps, getUserFriendlyQCStepName } from '../../../../utils/qcSteps';
 
 import {
   loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
-  addChangedQCFilter, discardChangedQCFilters, navigateFromProcessingTo,
+  addChangedQCFilter, discardChangedQCFilters,
 } from '../../../../redux/actions/experimentSettings';
 
 import { loadSamples } from '../../../../redux/actions/samples';
@@ -54,7 +54,7 @@ const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
+  const { navigateTo } = useAppRouter();
 
   const completedPath = useMemo(() => {
     const pathAfterQC = '/experiments/[experimentId]/data-exploration';
@@ -378,14 +378,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     </Tooltip>
   );
 
-  const transitionToModule = (path) => {
-    if (changedQCFilters.size) {
-      dispatch(navigateFromProcessingTo(path));
-    } else {
-      router.push(path);
-    }
-  };
-
   const renderRunOrDiscardButtons = () => {
     if (pipelineHadErrors) {
       return renderRunButton('Run Data Processing');
@@ -590,7 +582,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                           && !isStepComplete(steps[stepIdx + 1].key)}
                         icon={<CheckOutlined />}
                         size='small'
-                        onClick={() => transitionToModule(completedPath)}
+                        onClick={() => navigateTo(completedPath)}
                       />
                     </Tooltip>
                   )}

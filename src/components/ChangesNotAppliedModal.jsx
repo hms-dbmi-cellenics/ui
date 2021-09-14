@@ -13,7 +13,7 @@ import { getUserFriendlyQCStepName } from '../utils/qcSteps';
 const { Text } = Typography;
 
 const ChangesNotAppliedModal = (props) => {
-  const { experimentId } = props;
+  const { experimentId, onClick, onCancel } = props;
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -24,17 +24,13 @@ const ChangesNotAppliedModal = (props) => {
     <Modal
       visible={navigationPath}
       title='Changes not applied'
-      onCancel={() => dispatch(navigateFromProcessingTo(''))}
+      onCancel={onCancel}
       footer={(
         <Space size='large' style={{ display: 'flex', justifyContent: 'center' }}>
           <Button
             type='primary'
             key='run'
-            onClick={() => {
-              if (!experimentId) return;
-              dispatch(runPipeline(experimentId));
-              dispatch(navigateFromProcessingTo(''));
-            }}
+            onClick={onClick}
             style={{ width: '100px' }}
           >
             Run
