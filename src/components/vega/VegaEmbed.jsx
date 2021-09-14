@@ -1,15 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
-import vegaEmbed, { vega } from 'vega-embed';
+import vegaEmbed from 'vega-embed';
 import hash from 'object-hash';
 import webglRenderer from 'vega-webgl-renderer';
 
 const VegaEmbed = (props) => {
   const {
-    spec, signalListeners = {}, ...options
+    width, height, spec, signalListeners = {}, ...options
   } = props;
 
   const {
-    width, height, data, ...restOfSpec
+    data, ...restOfSpec
   } = spec;
 
   const containerRef = useRef(null);
@@ -44,20 +44,23 @@ const VegaEmbed = (props) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (!initialViewCreated) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (!initialViewCreated) {
+      return;
+    }
 
-  //   console.log('width and height changed', width, height);
+    if (!width || !height) {
+      return;
+    }
 
-  //   const { view } = vegaEmbedRef.current;
+    console.log('width and height changed', width, height);
 
-  //   view.width(width).height(height).runAsync();
-  // }, [width, height, initialViewCreated]);
+    const { view } = vegaEmbedRef.current;
+    view.width(width).height(height).runAsync();
+  }, [width, height, initialViewCreated]);
 
   useEffect(() => {
-    const nextHash = hash.MD5(restOfSpec);
+    const nextHash = hash.sha1(restOfSpec);
 
     if (nextHash === restOfSpecHash.current) {
       return;
