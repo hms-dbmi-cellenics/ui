@@ -5,11 +5,17 @@ import webglRenderer from 'vega-webgl-renderer';
 
 const VegaEmbed = (props) => {
   const {
-    width, height, spec, signalListeners = {}, ...options
+    spec, signalListeners = {}, ...options
   } = props;
+
+  const {
+    width, height, data, ...restOfSpec
+  } = spec;
 
   const containerRef = useRef(null);
   const vegaEmbedRef = useRef(null);
+
+  const restOfSpecHash = useRef(null);
 
   const [initialViewCreated, setInitialViewCreated] = useState(false);
 
@@ -38,32 +44,36 @@ const VegaEmbed = (props) => {
     }
   };
 
+  // useEffect(() => {
+  //   if (!initialViewCreated) {
+  //     return;
+  //   }
+
+  //   console.log('width and height changed', width, height);
+
+  //   const { view } = vegaEmbedRef.current;
+
+  //   view.width(width).height(height).runAsync();
+  // }, [width, height, initialViewCreated]);
+
   useEffect(() => {
-    if (!initialViewCreated) {
+    const nextHash = hash.MD5(restOfSpec);
+
+    if (nextHash === restOfSpecHash.current) {
       return;
     }
 
-    if (!width || !height) {
-      return;
-    }
-
-    console.log('width and/or height changed');
-
-    const { view } = vegaEmbedRef.current;
-
-    view.width(width).height(height).runAsync();
-  }, [width, height, initialViewCreated]);
-
-  useEffect(() => {
     if (!initialViewCreated) {
       vegaEmbedRef.current?.finalize();
     }
 
     console.log('spec changed');
+
     createView();
+    restOfSpecHash.current = nextHash;
 
     return () => vegaEmbedRef.current?.finalize();
-  }, [spec]);
+  }, [restOfSpec]);
 
   // useEffect(() => {
   //   if (!initialViewCreated) {
