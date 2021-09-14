@@ -11,7 +11,6 @@ import {
 } from '../../../../redux/actionTypes/experimentSettings';
 
 import {
-  BACKEND_STATUS_LOADING,
   BACKEND_STATUS_ERROR,
 } from '../../../../redux/actionTypes/backendStatus';
 
@@ -66,11 +65,10 @@ describe('runGem2s action', () => {
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
     expect(loadBackendStatus).toHaveBeenCalled();
 
-    expect(actions[2].type).toEqual(EXPERIMENT_SETTINGS_INFO_UPDATE);
+    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_INFO_UPDATE);
     expect(actions).toMatchSnapshot();
   });
 
@@ -83,9 +81,8 @@ describe('runGem2s action', () => {
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
     expect(loadBackendStatus).not.toHaveBeenCalled();
-    expect(actions[1].type).toEqual(BACKEND_STATUS_ERROR);
+    expect(actions[0].type).toEqual(BACKEND_STATUS_ERROR);
 
     expect(actions).toMatchSnapshot();
   });

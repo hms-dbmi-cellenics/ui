@@ -3,12 +3,6 @@
 exports[`runGem2s action Dispatches events properly 1`] = `
 Array [
   Object {
-    "payload": Object {
-      "experimentId": "experiment-id",
-    },
-    "type": "backendStatus/backendStatusLoading",
-  },
-  Object {
     "payload": Object {},
     "type": "experimentSettings/startPipeline",
   },
@@ -29,12 +23,6 @@ Array [
 
 exports[`runGem2s action Dispatches status error if loading fails 1`] = `
 Array [
-  Object {
-    "payload": Object {
-      "experimentId": "experiment-id",
-    },
-    "type": "backendStatus/backendStatusLoading",
-  },
   Object {
     "payload": Object {
       "error": "Could not start gem2s.",
