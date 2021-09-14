@@ -15,7 +15,7 @@ import {
   BuildOutlined,
   FolderOpenOutlined,
 } from '@ant-design/icons';
-
+import { runGem2s } from 'redux/actions/pipeline';
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
@@ -51,7 +51,7 @@ const ContentWrapper = (props) => {
 
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
-
+  const { RUNNING, NOT_CREATED, SUCCEEDED } = pipelineStatus;
   const {
     loading: backendLoading,
     error: backendError,
@@ -60,11 +60,11 @@ const ContentWrapper = (props) => {
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus.pipeline?.status;
-  const pipelineRunning = pipelineStatusKey === 'RUNNING';
+  const pipelineRunning = pipelineStatusKey === RUNNING;
   const pipelineRunningError = backendErrors.includes(pipelineStatusKey);
 
   const gem2sStatusKey = backendStatus.gem2s?.status;
-  const gem2sRunning = gem2sStatusKey === 'RUNNING';
+  const gem2sRunning = gem2sStatusKey === RUNNING;
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
@@ -82,7 +82,6 @@ const ContentWrapper = (props) => {
     if (!experimentId) {
       return;
     }
-
     dispatch(loadBackendStatus(experimentId));
 
     (async () => {
@@ -260,6 +259,9 @@ const ContentWrapper = (props) => {
       if (
         backendLoading || !backendStatusRequested) {
         return <PreloadContent />;
+      }
+      if (![RUNNING, SUCCEEDED].includes(gem2sStatusKey) || NOT_CREATED === gem2sStatusKey) {
+        dispatch(runGem2s(experimentId));
       }
 
       if (backendError) {

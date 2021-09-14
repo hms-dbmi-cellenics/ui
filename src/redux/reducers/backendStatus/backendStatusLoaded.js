@@ -12,7 +12,6 @@ const backendStatusLoaded = produce((draft, action) => {
     gem2s: status.gem2s ?? previousStatus?.gem2s,
     worker: status.worker ?? previousStatus?.worker,
   };
-  console.log('NEW STATUS IS ', newStatus.gem2s);
 
   draft[experimentId] = {
     status: newStatus,

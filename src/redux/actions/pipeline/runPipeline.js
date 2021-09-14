@@ -46,7 +46,6 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
 
     return;
   }
-
   dispatch({
     type: BACKEND_STATUS_LOADING,
     payload: {

@@ -12,14 +12,11 @@ import {
 } from 'antd';
 import moment from 'moment';
 import { useRouter } from 'next/router';
-import { loadBackendStatus } from 'redux/actions/backendStatus';
 import EditableField from '../EditableField';
 import { updateExperiment } from '../../redux/actions/experiments';
 import {
   updateProject,
 } from '../../redux/actions/projects';
-
-import { runGem2s } from '../../redux/actions/pipeline';
 import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Title } = Typography;
@@ -37,9 +34,7 @@ const AnalysisModal = (props) => {
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const experimentId = activeProject.experiments[0];
-  const { loading: backendStatusLoading } = useSelector((state) => state.backendStatus[experimentId]);
 
-  const [shouldTriggerGem2S, setShouldTriggerGem2S] = useState(false);
   const getExperimentsList = () => activeProject.experiments
     .map((id) => experiments[id])
     .filter((experiment) => experiment !== undefined);
@@ -52,21 +47,12 @@ const AnalysisModal = (props) => {
     setExperimentsList(updatedList);
   }, [activeProject, experiments]);
 
-  useEffect(() => {
-    if (shouldTriggerGem2S && !backendStatusLoading) {
-      dispatch(runGem2s(experimentId));
-      setShouldTriggerGem2S(false);
-    }
-  }, [shouldTriggerGem2S, backendStatusLoading]);
-
   const onLaunchAnalysis = () => {
     onLaunch(experimentId);
-    const analysisPath = '/experiments/[experimentId]/data-processing';
     const lastViewed = moment().toISOString();
     dispatch(updateExperiment(experimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
-    dispatch(loadBackendStatus(experimentId));
-    setShouldTriggerGem2S(true);
+    const analysisPath = '/experiments/[experimentId]/data-processing';
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
