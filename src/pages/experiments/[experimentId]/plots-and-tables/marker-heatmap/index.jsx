@@ -316,7 +316,7 @@ const MarkerHeatmap = ({ experimentId }) => {
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
                 <center>
-                  {renderPlot() }
+                  {renderPlot()}
                 </center>
               </Panel>
             </Collapse>

@@ -119,10 +119,13 @@ const HeatmapPlot = (props) => {
 
     currentHeatmapSettings.current = heatmapSettings;
 
+    console.log('population starting');
     const data = populateHeatmapData(
       cellSets, heatmapSettings, expressionData, selectedGenes, true,
     );
+
     setVegaDataWithDebounce(data);
+    console.log('population ended');
   }, [
     selectedGenes,
     heatmapSettings,

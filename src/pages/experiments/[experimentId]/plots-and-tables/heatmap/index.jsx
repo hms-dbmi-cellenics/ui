@@ -5,7 +5,6 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
-import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
@@ -17,6 +16,7 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
 import HeatmapControls from 'components/plots/styling/heatmap/HeatmapControls';
+import Vega from '../../../../../components/vega/Vega';
 
 const { Text } = Typography;
 const { Panel } = Collapse;

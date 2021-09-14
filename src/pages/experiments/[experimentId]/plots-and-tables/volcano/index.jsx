@@ -13,7 +13,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import { CSVLink } from 'react-csv';
 import { useSelector, useDispatch } from 'react-redux';
-import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 import PlotStyling from 'components/plots/styling/PlotStyling';
@@ -27,6 +26,7 @@ import {
 import PlatformError from 'components/PlatformError';
 import { setComparisonGroup } from 'redux/actions/differentialExpression';
 import Loader from 'components/Loader';
+import Vega from '../../../../../components/vega/Vega';
 
 const { Text } = Typography;
 const { Panel } = Collapse;

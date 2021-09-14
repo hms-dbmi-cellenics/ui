@@ -1,0 +1,135 @@
+import React, { useRef, useEffect, useState } from 'react';
+import vegaEmbed, { vega } from 'vega-embed';
+import hash from 'object-hash';
+
+const VegaEmbed = (props) => {
+  const {
+    spec, signalListeners = {}, ...options
+  } = props;
+
+  const {
+    width, height, data, ...restOfSpec
+  } = spec;
+
+  const containerRef = useRef(null);
+  const vegaEmbedRef = useRef(null);
+
+  const restOfSpecHash = useRef(null);
+
+  const [initialViewCreated, setInitialViewCreated] = useState(false);
+
+  const createView = async () => {
+    if (!containerRef.current) {
+      return;
+    }
+
+    try {
+      console.log('creating embed');
+      const result = await vegaEmbed(
+        containerRef.current, spec, options,
+      );
+      console.log('created embed');
+
+      if (result) {
+        vegaEmbedRef.current = result;
+        console.log('running');
+        const res2 = await result.view.runAsync();
+        console.log('run', res2);
+        setInitialViewCreated(true);
+        console.log('initial view created');
+      }
+    } catch (e) {
+      errorHandler(e);
+    }
+  };
+
+  useEffect(() => {
+    if (!initialViewCreated) {
+      return;
+    }
+
+    console.log('width and height changed', width, height);
+
+    const { view } = vegaEmbedRef.current;
+
+    view.width(width).height(height).run();
+  }, [width, height, initialViewCreated]);
+
+  useEffect(() => {
+    const nextHash = hash.MD5(restOfSpec);
+
+    if (nextHash === restOfSpecHash.current) {
+      return;
+    }
+
+    if (!initialViewCreated) {
+      vegaEmbedRef.current?.finalize();
+    }
+
+    console.log('spec changed');
+
+    createView();
+    restOfSpecHash.current = nextHash;
+
+    return () => vegaEmbedRef.current?.finalize();
+  }, [restOfSpec]);
+
+  // useEffect(() => {
+  //   if (!initialViewCreated) {
+  //     return;
+  //   }
+
+  //   const { view } = vegaEmbedRef.current;
+  //   const nextHash = hash.MD5(data);
+
+  //   if (nextHash === dataHash.current) {
+  //     return;
+  //   }
+
+  //   console.log('data changed');
+
+  //   _.each(data, (val, key) => {
+  //     console.log(key, val);
+
+  //     view.change(
+  //       key,
+  //       vega
+  //         .changeset()
+  //         .remove(() => true)
+  //         .insert(val),
+  //     );
+  //   });
+  // }, [data, initialViewCreated]);
+
+  useEffect(() => {
+    if (!initialViewCreated) {
+      return;
+    }
+
+    const { view } = vegaEmbedRef.current;
+    const signalNames = Object.keys(signalListeners);
+
+    if (signalNames.length === 0) {
+      return;
+    }
+
+    signalNames.forEach((signalName) => {
+      view.addSignalListener(signalName, signalListeners[signalName]);
+    });
+
+    return () => {
+      signalNames.forEach((signalName) => {
+        view.removeSignalListener(signalName, signalListeners[signalName]);
+      });
+    };
+  }, [signalListeners, initialViewCreated]);
+
+  const errorHandler = (error) => {
+    // eslint-disable-next-line no-console
+    console.warn(error);
+  };
+
+  return <div ref={containerRef} />;
+};
+
+export default VegaEmbed;

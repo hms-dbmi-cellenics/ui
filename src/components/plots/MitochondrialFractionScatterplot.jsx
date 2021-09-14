@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Vega } from 'react-vega';
+import Vega from '../vega/Vega';
 
 import EmptyPlot from './helpers/EmptyPlot';
 import generateSpec from '../../utils/plotSpecs/generateMitochondrialFractionScatterplot';
@@ -34,7 +34,7 @@ const MitochondrialFractionScatterplot = (props) => {
 
   return (
     <>
-      { render()}
+      {render()}
     </>
   );
 };

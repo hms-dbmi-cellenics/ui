@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
+import Vega from '../vega/Vega';
 
 import loadCellSets from '../../redux/actions/cellSets/loadCellSets';
 

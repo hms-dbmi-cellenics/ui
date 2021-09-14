@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Vega } from 'react-vega';
+import Vega from '../vega/Vega';
 import { fastLoad } from '../Loader';
 
 import PlatformError from '../PlatformError';

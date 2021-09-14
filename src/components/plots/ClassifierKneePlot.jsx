@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Vega } from 'react-vega';
+import Vega from '../vega/Vega';
 
 import EmptyPlot from './helpers/EmptyPlot';
 import generateSpec from '../../utils/plotSpecs/generateClassifierKneePlot';
@@ -10,7 +10,7 @@ const ClassifierKneePlot = (props) => {
     config, expConfig, plotData, actions,
   } = props;
 
-  const [plotSpec, setPlotSpec] = useState(config);
+  const [plotSpec, setPlotSpec] = useState();
 
   useEffect(() => {
     if (config && plotData) {
@@ -18,7 +18,7 @@ const ClassifierKneePlot = (props) => {
     }
   }, [config, expConfig, plotData]);
 
-  if (!plotData.length) {
+  if (!plotData.length || !plotSpec) {
     return (
       <EmptyPlot mini={config.miniPlot} />
     );
