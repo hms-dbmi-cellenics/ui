@@ -11,7 +11,6 @@ const loadCellMeta = (
   experimentId, metaName,
 ) => async (dispatch, getState) => {
   const { loading, error } = getState().cellMeta[metaName];
-  const { status } = getState().backendStatus[experimentId];
 
   if (!loading && !error) {
     return null;
@@ -38,7 +37,7 @@ const loadCellMeta = (
 
   try {
     const data = await fetchWork(
-      experimentId, body, status, { timeout },
+      experimentId, body, getState, { timeout },
     );
     dispatch({
       type: CELL_META_LOADED,

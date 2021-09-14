@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Modal, Button, Input, Space, Typography, Form, Alert,
 } from 'antd';
-import integrationTestIds from '../../utils/integrationTestIds';
+import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Text, Paragraph } = Typography;
 
@@ -16,7 +16,7 @@ const ProjectDeleteModal = (props) => {
   const [isValid, setIsValid] = useState(false);
   return (
     <Modal
-      className={integrationTestIds.class.DELETE_PROJECT_MODAL}
+      className={integrationTestConstants.classes.DELETE_PROJECT_MODAL}
       title='Confirm delete'
       visible
       footer={(
