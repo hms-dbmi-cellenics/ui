@@ -28,13 +28,38 @@ const AppRouteProvider = (props) => {
   // Handle changes here
   const handleRouteChange = (previousRoute, nextRoute) => {
     // If there are unconfirmed changes, show modal
-    if (changedQCFilters.size && previousRoute === 'data-processing') {
+    if (changedQCFilters.size && previousRoute.match('/data-processing')) {
       setDestinationRoute(nextRoute);
       setShowChangesNotAppliedModal(true);
+      return;
+    }
+
+    router.push(nextRoute);
+  };
+
+  const renderRouteIntercepts = () => {
+    if (showChangesNotAppliedModal) {
+      return (
+        <ChangesNotAppliedModal
+          experimentId={experimentId}
+          onRunPipeline={() => {
+            if (!experimentId) return;
+            dispatch(runPipeline(experimentId));
+            router.push(destinationRoute);
+          }}
+          onDiscardChanges={() => {
+            dispatch(discardChangedQCFilters());
+            setShowChangesNotAppliedModal(false);
+          }}
+          onCloseModal={() => {
+            setShowChangesNotAppliedModal(false);
+          }}
+        />
+      );
     }
   };
 
-  const navigateTo = (nextRoute) => handleRouteChange(router.path, nextRoute);
+  const navigateTo = (nextRoute) => handleRouteChange(router.pathname, nextRoute);
 
   const contextObject = {
     navigateTo,
@@ -42,6 +67,7 @@ const AppRouteProvider = (props) => {
 
   return (
     <AppRouterContext.Provider value={contextObject}>
+      {renderRouteIntercepts()}
       {showChangesNotAppliedModal && (
         <ChangesNotAppliedModal
           experimentId={experimentId}
@@ -52,6 +78,10 @@ const AppRouteProvider = (props) => {
           }}
           onDiscardChanges={() => {
             dispatch(discardChangedQCFilters());
+            setShowChangesNotAppliedModal(false);
+          }}
+          onCloseModal={() => {
+            setShowChangesNotAppliedModal(false);
           }}
         />
       )}

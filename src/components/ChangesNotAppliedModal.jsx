@@ -1,36 +1,34 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Modal, Typography, Space, Button,
 } from 'antd';
-import { useRouter } from 'next/router';
-import { discardChangedQCFilters, navigateFromProcessingTo } from '../redux/actions/experimentSettings';
-import { runPipeline } from '../redux/actions/pipeline';
 
 import { getUserFriendlyQCStepName } from '../utils/qcSteps';
 
 const { Text } = Typography;
 
 const ChangesNotAppliedModal = (props) => {
-  const { experimentId, onClick, onCancel } = props;
+  const {
+    onRunPipeline, onDiscardChanges, onCloseModal,
+  } = props;
 
-  const router = useRouter();
-  const dispatch = useDispatch();
-
-  const { changedQCFilters, navigationPath } = useSelector((state) => state.experimentSettings.processing.meta);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   return (
     <Modal
-      visible={navigationPath}
       title='Changes not applied'
-      onCancel={onCancel}
+      onCancel={() => onCloseModal()}
+      visible
       footer={(
         <Space size='large' style={{ display: 'flex', justifyContent: 'center' }}>
           <Button
             type='primary'
             key='run'
-            onClick={onClick}
+            onClick={() => onRunPipeline()}
             style={{ width: '100px' }}
           >
             Run
@@ -38,11 +36,7 @@ const ChangesNotAppliedModal = (props) => {
           <Button
             type='primary'
             key='discard'
-            onClick={() => {
-              router.push(navigationPath);
-              dispatch(navigateFromProcessingTo(''));
-              dispatch(discardChangedQCFilters());
-            }}
+            onClick={() => onDiscardChanges()}
             style={{ width: '100px' }}
           >
             Discard
@@ -76,16 +70,19 @@ const ChangesNotAppliedModal = (props) => {
         </Space>
       </center>
     </Modal>
-
   );
 };
 
 ChangesNotAppliedModal.propTypes = {
-  experimentId: PropTypes.string,
+  onRunPipeline: PropTypes.func,
+  onDiscardChanges: PropTypes.func,
+  onCloseModal: PropTypes.func,
 };
 
 ChangesNotAppliedModal.defaultProps = {
-  experimentId: null,
+  onRunPipeline: null,
+  onDiscardChanges: null,
+  onCloseModal: null,
 };
 
 export default ChangesNotAppliedModal;
