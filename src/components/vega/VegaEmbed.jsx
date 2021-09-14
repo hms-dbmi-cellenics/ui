@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import vegaEmbed, { vega } from 'vega-embed';
+import asd from 'vega-webgl-renderer';
+
 import hash from 'object-hash';
 
 const VegaEmbed = (props) => {
@@ -33,7 +35,7 @@ const VegaEmbed = (props) => {
       if (result) {
         vegaEmbedRef.current = result;
         console.log('running');
-        const res2 = await result.view.runAsync();
+        const res2 = await result.view.renderer('webgl').runAsync();
         console.log('run', res2);
         setInitialViewCreated(true);
         console.log('initial view created');

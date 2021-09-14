@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Element } from 'react-scroll';
-import { Vega } from 'react-vega';
+// import { Vega } from 'react-vega';
+import Vega from '../../vega/Vega';
 
 import './Heatmap.module.css';
 
