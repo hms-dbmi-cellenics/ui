@@ -4,7 +4,6 @@ const metaInitialState = {
   loadingSettingsError: false,
   selectedConfigureEmbeddingPlot: 'cellCluster',
   changedQCFilters: new Set(),
-  navigationPath: '',
 };
 
 const initialState = {

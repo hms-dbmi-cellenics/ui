@@ -38,6 +38,10 @@ jest.mock('aws-amplify', () => ({
   },
 }));
 
+jest.mock('../../utils/RouteContext', () => ({
+  useAppRouter: jest.fn().mockReturnValue(() => {}),
+}));
+
 configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);

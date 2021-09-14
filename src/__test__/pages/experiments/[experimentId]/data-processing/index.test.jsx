@@ -20,6 +20,10 @@ configure({ adapter: new Adapter() });
 
 jest.mock('localforage');
 
+jest.mock('../../../../../utils/RouteContext', () => ({
+  useAppRouter: jest.fn().mockReturnValue(() => {}),
+}));
+
 const mockStore = configureMockStore([thunk]);
 
 const sampleIds = ['sample-1', 'sample-2'];
