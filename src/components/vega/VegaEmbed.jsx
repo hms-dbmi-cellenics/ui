@@ -33,7 +33,7 @@ const VegaEmbed = (props) => {
       if (result) {
         vegaEmbedRef.current = result;
         console.log('running');
-        const res2 = await result.view.runAsync();
+        const res2 = await result.view.renderer('webgl').runAsync();
         console.log('run', res2);
         setInitialViewCreated(true);
         console.log('initial view created');
@@ -52,7 +52,7 @@ const VegaEmbed = (props) => {
 
     const { view } = vegaEmbedRef.current;
 
-    view.width(width).height(height).run();
+    view.width(width).height(height).renderer('webgl').runAsync();
   }, [width, height, initialViewCreated]);
 
   useEffect(() => {
