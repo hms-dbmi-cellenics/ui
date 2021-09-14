@@ -44,17 +44,17 @@ const VegaEmbed = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (!initialViewCreated) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!initialViewCreated) {
+  //     return;
+  //   }
 
-    console.log('width and height changed', width, height);
+  //   console.log('width and height changed', width, height);
 
-    const { view } = vegaEmbedRef.current;
+  //   const { view } = vegaEmbedRef.current;
 
-    view.width(width).height(height).runAsync();
-  }, [width, height, initialViewCreated]);
+  //   view.width(width).height(height).runAsync();
+  // }, [width, height, initialViewCreated]);
 
   useEffect(() => {
     const nextHash = hash.MD5(restOfSpec);
