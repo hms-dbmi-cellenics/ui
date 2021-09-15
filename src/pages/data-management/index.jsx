@@ -51,7 +51,7 @@ const DataManagementPage = ({ route }) => {
     if (projectsList.ids.length === 0) dispatch(loadProjects());
   }, []);
 
-  const updateRunStatus = async (experimentId) => {
+  const updateRunStatus = (experimentId) => {
     dispatch(loadBackendStatus(experimentId));
   };
 
