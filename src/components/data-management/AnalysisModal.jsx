@@ -11,8 +11,9 @@ import {
   List,
 } from 'antd';
 import moment from 'moment';
-import { useRouter } from 'next/router';
 import EditableField from '../EditableField';
+import { runGem2s } from '../../redux/actions/pipeline';
+
 import { updateExperiment } from '../../redux/actions/experiments';
 import {
   updateProject,
@@ -20,7 +21,6 @@ import {
 import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Title } = Typography;
-
 const AnalysisModal = (props) => {
   const {
     onLaunch,
@@ -28,13 +28,11 @@ const AnalysisModal = (props) => {
   } = props;
 
   const dispatch = useDispatch();
-  const router = useRouter();
 
   const experiments = useSelector((state) => state.experiments);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const experimentId = activeProject.experiments[0];
-
   const getExperimentsList = () => activeProject.experiments
     .map((id) => experiments[id])
     .filter((experiment) => experiment !== undefined);
@@ -47,13 +45,15 @@ const AnalysisModal = (props) => {
     setExperimentsList(updatedList);
   }, [activeProject, experiments]);
 
-  const onLaunchAnalysis = () => {
+  const onLaunchAnalysis = async () => {
     onLaunch(experimentId);
     const lastViewed = moment().toISOString();
     dispatch(updateExperiment(experimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
     const analysisPath = '/experiments/[experimentId]/data-processing';
-    router.push(analysisPath.replace('[experimentId]', experimentId));
+    window.location.href = await analysisPath.replace('[experimentId]', experimentId);
+
+    dispatch(runGem2s(experimentId));
   };
 
   const renderAnalysisList = () => (

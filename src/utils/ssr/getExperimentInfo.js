@@ -1,6 +1,8 @@
 import updateExperimentInfo from '../../redux/actions/experimentSettings/updateExperimentInfo';
 import { getFromApiExpectOK } from '../getDataExpectOK';
 
+import { loadBackendStatus } from '../../redux/actions/backendStatus';
+
 const getExperimentInfo = async (context, store, Auth) => {
   const { req, query } = context;
   const { experimentId } = query;
@@ -19,6 +21,8 @@ const getExperimentInfo = async (context, store, Auth) => {
     {}, { uiUrl: url, jwt });
 
   store.dispatch(updateExperimentInfo(experimentData));
+  await store.dispatch(loadBackendStatus(experimentId, url));
+
   return {};
 };
 

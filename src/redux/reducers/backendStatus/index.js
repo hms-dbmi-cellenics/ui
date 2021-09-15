@@ -1,3 +1,5 @@
+import { HYDRATE } from 'next-redux-wrapper';
+import _ from 'lodash';
 import initialState from './initialState';
 
 import {
@@ -25,6 +27,15 @@ const backendStatusReducer = (state = initialState, action) => {
     }
     case BACKEND_STATUS_DELETED: {
       return backendStatusDeleted(state, action);
+    }
+    case HYDRATE: {
+      const { backendStatus } = action.payload;
+
+      if (backendStatus) {
+        return _.merge(state, backendStatus);
+      }
+
+      return state;
     }
     default: {
       return state;

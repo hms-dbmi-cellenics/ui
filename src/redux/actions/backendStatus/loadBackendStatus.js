@@ -7,7 +7,7 @@ import {
   BACKEND_STATUS_ERROR,
 } from '../../actionTypes/backendStatus';
 
-const loadBackendStatus = (experimentId) => async (dispatch) => {
+const loadBackendStatus = (experimentId, uiUrl) => async (dispatch) => {
   dispatch({
     type: BACKEND_STATUS_LOADING,
     payload: {
@@ -17,7 +17,9 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
 
   const url = `/v1/experiments/${experimentId}/backendStatus`;
   try {
-    const response = await fetchAPI(url);
+    const response = await fetchAPI(url, {}, {
+      uiUrl,
+    });
     const status = await response.json();
 
     throwIfRequestFailed(response, status, endUserMessages.ERROR_FETCHING_STATUS);

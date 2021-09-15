@@ -46,6 +46,14 @@ const GEM2SLoadingScreen = (props) => {
       image: '/undraw_Dev_focus_re_6iwt.svg',
       alt: 'A woman working in front of a computer.',
     },
+    needsRerun: {
+      status: 'needsRerun',
+      showProgress: true,
+      title: '',
+      subTitle: '',
+      image: '/undraw_Dev_focus_re_6iwt.svg',
+      alt: 'A woman working in front of a computer.',
+    },
     error: {
       status: 'error',
       title: 'We\'ve had an issue while launching your analysis.',

@@ -15,16 +15,13 @@ import {
   BuildOutlined,
   FolderOpenOutlined,
 } from '@ant-design/icons';
-import { runGem2s } from 'redux/actions/pipeline';
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
 import { navigateFromProcessingTo } from '../redux/actions/experimentSettings';
-import { loadBackendStatus } from '../redux/actions/backendStatus';
 
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 
-import PreloadContent from './PreloadContent';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 
 import ChangesNotAppliedModal from './ChangesNotAppliedModal';
@@ -51,12 +48,12 @@ const ContentWrapper = (props) => {
 
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
-  const { RUNNING, NOT_CREATED, SUCCEEDED } = pipelineStatus;
+  const { RUNNING } = pipelineStatus;
   const {
-    loading: backendLoading,
     error: backendError,
     status: backendStatus,
   } = useSelector((state) => state.backendStatus[experimentId] ?? initialExperimentBackendStatus);
+
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus.pipeline?.status;
@@ -72,17 +69,10 @@ const ContentWrapper = (props) => {
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
 
-  // This is used to prevent a race condition where the page would start loading immediately
-  // when the backend status was previously loaded. In that case, `backendLoading` is `false`
-  // and would be set to true only in the `loadBackendStatus` action, the time between the
-  // two events would allow pages to load.
-  const [backendStatusRequested, setBackendStatusRequested] = useState(false);
-
   useEffect(() => {
     if (!experimentId) {
       return;
     }
-    dispatch(loadBackendStatus(experimentId));
 
     (async () => {
       const io = await connectionPromise;
@@ -95,14 +85,6 @@ const ContentWrapper = (props) => {
       io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
     })();
   }, [experimentId]);
-
-  useEffect(() => {
-    if (backendStatusRequested) {
-      return;
-    }
-
-    setBackendStatusRequested(true);
-  }, [backendLoading]);
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
@@ -256,14 +238,6 @@ const ContentWrapper = (props) => {
 
   const renderContent = () => {
     if (experimentId) {
-      if (
-        backendLoading || !backendStatusRequested) {
-        return <PreloadContent />;
-      }
-      if (![RUNNING, SUCCEEDED].includes(gem2sStatusKey) || NOT_CREATED === gem2sStatusKey) {
-        dispatch(runGem2s(experimentId));
-      }
-
       if (backendError) {
         return <Error errorText='Could not get backend settings.' />;
       }
@@ -273,11 +247,11 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
-        return <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedGem2sSteps} />;
+        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
       if (gem2sStatusKey === pipelineStatus.NOT_CREATED) {
-        return <GEM2SLoadingScreen gem2sStatus='toBeRun' />;
+        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='toBeRun' />;
       }
 
       if (pipelineRunningError && !route.includes('data-processing')) {

@@ -11,7 +11,7 @@ import {
 } from '../../../../redux/actionTypes/experimentSettings';
 
 import {
-  BACKEND_STATUS_ERROR,
+  BACKEND_STATUS_ERROR, BACKEND_STATUS_LOADING,
 } from '../../../../redux/actionTypes/backendStatus';
 
 import { runGem2s } from '../../../../redux/actions/pipeline';
@@ -26,6 +26,15 @@ const experimentId = 'experiment-id';
 const projectId = 'project-id';
 
 const initialState = {
+  backendStatus: {
+    [experimentId]: {
+      status: {
+        gem2s: {
+          status: 'NOT_CREATED',
+        },
+      },
+    },
+  },
   experiments: {
     ...initialExperimentsState,
     [experimentId]: {
@@ -65,10 +74,11 @@ describe('runGem2s action', () => {
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
+    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
     expect(loadBackendStatus).toHaveBeenCalled();
+    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
 
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_INFO_UPDATE);
+    expect(actions[2].type).toEqual(EXPERIMENT_SETTINGS_INFO_UPDATE);
     expect(actions).toMatchSnapshot();
   });
 
@@ -82,7 +92,8 @@ describe('runGem2s action', () => {
     const actions = store.getActions();
 
     expect(loadBackendStatus).not.toHaveBeenCalled();
-    expect(actions[0].type).toEqual(BACKEND_STATUS_ERROR);
+    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
+    expect(actions[1].type).toEqual(BACKEND_STATUS_ERROR);
 
     expect(actions).toMatchSnapshot();
   });
