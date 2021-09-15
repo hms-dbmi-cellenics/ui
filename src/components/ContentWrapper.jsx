@@ -16,6 +16,8 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 
+import { getBackendStatus } from '../redux/selectors/backendStatus';
+
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
@@ -56,7 +58,8 @@ const ContentWrapper = (props) => {
     loading: backendLoading,
     error: backendError,
     status: backendStatus,
-  } = useSelector((state) => state.backendStatus[experimentId] ?? initialExperimentBackendStatus);
+  } = useSelector(getBackendStatus(experimentId));
+
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus.pipeline?.status;
