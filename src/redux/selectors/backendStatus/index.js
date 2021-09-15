@@ -1,8 +1,4 @@
-import { initialExperimentBackendStatus } from '../../reducers/backendStatus/initialState';
-
-const getBackendStatus = (experimentId) => (state) => (
-  state.backendStatus[experimentId] ?? initialExperimentBackendStatus
-);
+import getBackendStatus from './getBackendStatus';
 
 // eslint-disable-next-line import/prefer-default-export
 export { getBackendStatus };

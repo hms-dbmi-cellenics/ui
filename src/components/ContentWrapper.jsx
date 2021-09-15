@@ -16,7 +16,9 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 
-import { getBackendStatus } from '../redux/selectors/backendStatus';
+// disabled because false positive
+// eslint-disable-next-line import/named
+import { getBackendStatus } from '../redux/selectors';
 
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
@@ -34,8 +36,6 @@ import ChangesNotAppliedModal from './ChangesNotAppliedModal';
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
 import integrationTestConstants from '../utils/integrationTestConstants';
-
-import { initialExperimentBackendStatus } from '../redux/reducers/backendStatus/initialState';
 
 const { Sider, Footer } = Layout;
 

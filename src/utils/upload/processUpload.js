@@ -109,8 +109,6 @@ const compressAndUploadSingleFile = async (
 
     await uploadPromise;
   } catch (e) {
-    console.log('eDebug');
-    console.log(e);
     dispatch(
       updateSampleFile(
         sampleUuid,
