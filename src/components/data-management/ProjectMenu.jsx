@@ -16,12 +16,13 @@ const ProjectMenu = () => {
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-  const projects = useSelector((state) => state.projects);
+  const anyProjectsAvailable = useSelector((state) => state.projects?.ids?.length);
   const samples = useSelector((state) => state.samples);
-  const anyProjectsAvailable = projects?.ids?.length;
-  const metadataKeysAvailable = activeProject?.metadataKeys?.length;
+
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
+
+  const metadataKeysAvailable = activeProject?.metadataKeys?.length;
 
   const canLaunchAnalysis = () => {
     if (activeProject?.samples?.length === 0 || !anyProjectsAvailable) return false;

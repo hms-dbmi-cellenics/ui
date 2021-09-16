@@ -8,7 +8,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
 
-import { getBackendStatus } from 'redux/selectors/backendStatus';
+import { getBackendStatus } from 'redux/selectors';
 
 import downloadTypes from 'utils/data-management/downloadTypes';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
@@ -28,7 +28,9 @@ const DownloadData = () => {
   // Change if we have more than one experiment per project
   const experimentId = activeProject?.experiments[0];
 
-  const { status: backendStatuses, loading: backendLoading } = useSelector(getBackendStatus(experimentId));
+  const {
+    status: backendStatuses, loading: backendLoading,
+  } = useSelector(getBackendStatus(experimentId));
 
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
