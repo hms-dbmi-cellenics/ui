@@ -1,5 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import hash from 'object-hash';
+
+// disabled because false positive
+// eslint-disable-next-line import/named
+import { getBackendStatus } from '../../redux/selectors';
+
 import cache from '../cache';
 import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
 import Environment, { isBrowser } from '../environment';
@@ -100,7 +105,8 @@ const fetchWork = async (
   optionals = {},
 ) => {
   const { extras = undefined, timeout = 180, eventCallback = null } = optionals;
-  const backendStatus = getState().backendStatus[experimentId].status;
+  const backendStatus = getBackendStatus(experimentId)(getState()).status;
+
   const { environment } = getState().networkResources;
 
   if (!isBrowser) {
