@@ -23,16 +23,18 @@ import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
 const DownloadData = () => {
   const dispatch = useDispatch();
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const experimentSettings = useSelector((state) => state.experimentSettings);
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  // Change if we have more than one experiment per project
+  const experimentId = activeProject?.experiments[0];
+
   const { status: backendStatuses, loading: backendLoading } = useSelector(getBackendStatus(experimentId));
+
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
   const [qcHasRun, setQcHasRun] = useState(false);
   const [gem2sHasRun, setGem2sHasRun] = useState(false);
   const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
-  // Change if we have more than one experiment per project
-  const experimentId = activeProject?.experiments[0];
 
   useEffect(() => {
     if (experimentId && !backendLoading && !backendStatuses) {
