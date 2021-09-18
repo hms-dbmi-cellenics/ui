@@ -64,7 +64,7 @@ const CellSizeDistribution = (props) => {
     debounceSave(plots[selectedPlot].plotUuid);
   };
 
-  const plots = {
+  const [plots] = useState({
     kneePlot: {
       title: 'Knee Plot',
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
@@ -92,7 +92,7 @@ const CellSizeDistribution = (props) => {
         />
       ),
     },
-  };
+  });
 
   const selectedConfig = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
