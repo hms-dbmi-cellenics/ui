@@ -58,6 +58,8 @@ const MiniPlot = (props) => {
     return plotFn(getMiniaturizedConfig(config), plotData || [], actions);
   };
 
+  console.log('rendering miniplot', props);
+
   return (
     renderPlot()
   );
