@@ -8,71 +8,69 @@ import {
 } from '../../actionTypes/experimentSettings';
 
 import {
-  BACKEND_STATUS_ERROR, BACKEND_STATUS_LOADING,
+  BACKEND_STATUS_ERROR, BACKEND_STATUS_LOADED,
 } from '../../actionTypes/backendStatus';
-import loadBackendStatus from '../backendStatus/loadBackendStatus';
-
-const { RUNNING, NOT_CREATED, SUCCEEDED } = pipelineStatus;
 
 const runGem2s = (experimentId) => async (dispatch, getState) => {
   const { experiments, backendStatus } = getState();
 
+  const runningStatus = {
+    ...backendStatus[experimentId].status,
+    gem2s: {
+      status: pipelineStatus.RUNNING,
+      completedSteps: [],
+    },
+  };
   dispatch({
-    type: BACKEND_STATUS_LOADING,
+    type: BACKEND_STATUS_LOADED,
     payload: {
       experimentId,
+      status: runningStatus,
     },
   });
-
   const url = `/v1/experiments/${experimentId}/gem2s`;
-  // checking if we need to run gem2s
-  const { status } = backendStatus[experimentId]?.status?.gem2s;
-  if (![RUNNING, SUCCEEDED].includes(status) || status === 'NEEDS_RERUN' || status === NOT_CREATED) {
-    try {
-      const response = await fetchAPI(
-        url,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+  try {
+    const response = await fetchAPI(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
-      const json = await response.json();
-      throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
+      },
+    );
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
 
-      dispatch({
-        type: EXPERIMENT_SETTINGS_PIPELINE_START,
-        payload: {},
-      });
+    dispatch({
+      type: EXPERIMENT_SETTINGS_PIPELINE_START,
+      payload: {},
+    });
 
-      dispatch(loadBackendStatus(experimentId));
+    const projectId = experiments[experimentId].projectUuid;
 
-      const projectId = experiments[experimentId].projectUuid;
-
-      dispatch({
-        type: EXPERIMENT_SETTINGS_INFO_UPDATE,
-        payload: {
-          experimentId,
-          experimentName: experiments[experimentId].name,
-          projectId,
-          sampleIds: experiments[experimentId].sampleIds,
-        },
-      });
-    } catch (e) {
-      let { message } = e;
-      if (!isServerError(e)) {
-        console.error(`fetch ${url} error ${message}`);
-        message = endUserMessages.CONNECTION_ERROR;
-      }
-      dispatch({
-        type: BACKEND_STATUS_ERROR,
-        payload: {
-          error: 'Could not start gem2s.',
-          errorType: message,
-        },
-      });
+    dispatch({
+      type: EXPERIMENT_SETTINGS_INFO_UPDATE,
+      payload: {
+        experimentId,
+        experimentName: experiments[experimentId].name,
+        projectId,
+        sampleIds: experiments[experimentId].sampleIds,
+      },
+    });
+  } catch (e) {
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
     }
+    dispatch({
+      type: BACKEND_STATUS_ERROR,
+      payload: {
+        error: 'Could not start gem2s.',
+        errorType: message,
+      },
+    });
   }
 };
 

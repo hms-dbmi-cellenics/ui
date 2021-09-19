@@ -12,7 +12,6 @@ import {
 } from 'antd';
 import moment from 'moment';
 import EditableField from '../EditableField';
-import { runGem2s } from '../../redux/actions/pipeline';
 
 import { updateExperiment } from '../../redux/actions/experiments';
 import {
@@ -52,8 +51,6 @@ const AnalysisModal = (props) => {
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
     const analysisPath = '/experiments/[experimentId]/data-processing';
     window.location.href = await analysisPath.replace('[experimentId]', experimentId);
-
-    dispatch(runGem2s(experimentId));
   };
 
   const renderAnalysisList = () => (

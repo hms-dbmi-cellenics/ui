@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from 'react';
 
@@ -15,6 +16,7 @@ import {
   BuildOutlined,
   FolderOpenOutlined,
 } from '@ant-design/icons';
+import { runGem2s } from 'redux/actions/pipeline';
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
@@ -48,7 +50,7 @@ const ContentWrapper = (props) => {
 
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
-  const { RUNNING } = pipelineStatus;
+  const { RUNNING, SUCCEEDED, NEEDS_RERUN } = pipelineStatus;
   const {
     error: backendError,
     status: backendStatus,
@@ -84,6 +86,11 @@ const ContentWrapper = (props) => {
 
       io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
     })();
+    if ((![RUNNING, SUCCEEDED].includes(gem2sStatusKey)
+      || !completedGem2sSteps.length
+      || gem2sStatusKey === NEEDS_RERUN) && gem2sStatusKey) {
+      dispatch(runGem2s(experimentId));
+    }
   }, [experimentId]);
 
   useEffect(() => {
@@ -265,7 +272,6 @@ const ContentWrapper = (props) => {
       if (process.env.NODE_ENV === 'development') {
         return children;
       }
-
       if (pipelineStatusKey === pipelineStatus.NOT_CREATED && !route.includes('data-processing')) {
         return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='toBeRun' />;
       }

@@ -5,8 +5,14 @@ Array [
   Object {
     "payload": Object {
       "experimentId": "experiment-id",
+      "status": Object {
+        "gem2s": Object {
+          "completedSteps": Array [],
+          "status": "RUNNING",
+        },
+      },
     },
-    "type": "backendStatus/backendStatusLoading",
+    "type": "backendStatus/backendStatusLoaded",
   },
   Object {
     "payload": Object {},
@@ -32,8 +38,14 @@ Array [
   Object {
     "payload": Object {
       "experimentId": "experiment-id",
+      "status": Object {
+        "gem2s": Object {
+          "completedSteps": Array [],
+          "status": "RUNNING",
+        },
+      },
     },
-    "type": "backendStatus/backendStatusLoading",
+    "type": "backendStatus/backendStatusLoaded",
   },
   Object {
     "payload": Object {
