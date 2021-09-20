@@ -16,7 +16,7 @@ const ProjectsListContainer = (props) => {
 
   const debouncedSetFilterParam = useCallback(
     _.debounce((value) => {
-      setFilterParam(new RegExp(value, 'ig'));
+      setFilterParam(new RegExp(value, 'i'));
     }, 400),
     [],
   );
