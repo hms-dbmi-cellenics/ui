@@ -261,7 +261,7 @@ jobs:
 
       - id: disable-admin-enforcement
         name: Temporarily disable admin enforcement
-        uses: benjefferies/branch-protection-bot@master
+        uses: benjefferies/branch-protection-bot@1.0.7
         with:
           access_token: ${{ secrets.API_TOKEN_GITHUB }}
           owner: biomage-ltd
@@ -306,7 +306,7 @@ jobs:
 
       - id: enable-admin-enforcement
         name: Re-enable admin enforcement
-        uses: benjefferies/branch-protection-bot@master
+        uses: benjefferies/branch-protection-bot@1.0.7
         if: always()
         with:
           access_token: ${{ secrets.API_TOKEN_GITHUB }}
