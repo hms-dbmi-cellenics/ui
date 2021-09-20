@@ -1,18 +1,18 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  SAMPLES_CREATE,
+  SAMPLES_CREATE, SAMPLES_SAVED,
 } from '../../actionTypes/samples';
-import {
-  PROJECTS_UPDATE,
-} from '../../actionTypes/projects';
+
 import {
   DEFAULT_NA,
 } from '../../reducers/projects/initialState';
-import saveSamples from './saveSamples';
-import { saveProject } from '../projects';
+
+import fetchAPI from '../../../utils/fetchAPI';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+
+import { throwIfRequestFailed } from '../../../utils/fetchErrors';
 
 import { sampleTemplate } from '../../reducers/samples/initialState';
 import updateExperiment from '../experiments/updateExperiment';
@@ -43,29 +43,39 @@ const createSample = (
       .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
   };
 
-  const newProject = {
-    uuid: projectUuid,
-    ...project || {},
-    samples: project?.samples.includes(newSampleUuid) ? project.samples
-      : [...project?.samples || [], newSampleUuid],
-  };
-
   try {
-    dispatch(saveSamples(projectUuid, newSample));
-    dispatch(saveProject(projectUuid, newProject));
+    const url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
+
+    const response = await fetchAPI(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newSample),
+      },
+    );
+
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+
+    dispatch({
+      type: SAMPLES_SAVED,
+    });
 
     dispatch({
       type: SAMPLES_CREATE,
       payload: { sample: newSample },
     });
 
-    dispatch({
-      type: PROJECTS_UPDATE,
-      payload: {
-        projectUuid,
-        project: newProject,
-      },
-    });
+    // dispatch({
+    //   type: PROJECTS_UPDATE,
+    //   payload: {
+    //     projectUuid,
+    //     project: newProject,
+    //   },
+    // });
 
     dispatch(
       updateExperiment(

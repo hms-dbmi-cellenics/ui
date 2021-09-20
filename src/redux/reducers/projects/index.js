@@ -12,6 +12,7 @@ import {
   PROJECTS_LOADED,
   PROJECTS_LOADING,
 } from '../../actionTypes/projects';
+
 import initialState from './initialState';
 import projectsCreate from './projectsCreate';
 import projectsUpdate from './projectsUpdate';
@@ -25,6 +26,12 @@ import projectsMetadataUpdate from './projectsMetadataUpdate';
 import projectsMetadataDelete from './projectsMetadataDelete';
 import projectsLoaded from './projectsLoaded';
 import projectsLoading from './projectsLoading';
+
+import {
+  SAMPLES_CREATE,
+} from '../../actionTypes/samples';
+
+import samplesCreate from './samplesCreate';
 
 const projectsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -73,8 +80,13 @@ const projectsReducer = (state = initialState, action) => {
     }
 
     case PROJECTS_LOADING: {
-      return projectsLoading(state);
+      return projectsLoading(state, action);
     }
+
+    case SAMPLES_CREATE: {
+      return samplesCreate(state, action);
+    }
+
     default: {
       return state;
     }
