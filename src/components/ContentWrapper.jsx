@@ -77,7 +77,6 @@ const ContentWrapper = (props) => {
   // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
-  const [changesNotAppliedModalPath, setChangesNotAppliedModalPath] = useState(null);
 
   useEffect(() => {
     if (!experimentId) {
@@ -328,6 +327,9 @@ const ContentWrapper = (props) => {
       <ChangesNotAppliedModal experimentId={experimentId} />
 
       <Sider
+        style={{
+          overflow: 'auto', height: '100vh', position: 'fixed', left: 0,
+        }}
         width={210}
         theme='dark'
         mode='inline'
@@ -411,7 +413,11 @@ const ContentWrapper = (props) => {
         </div>
 
       </Sider>
-      <Layout>
+      <Layout
+        style={{
+          'margin-left': '210px',
+        }}
+      >
         {renderContent()}
       </Layout>
     </Layout>

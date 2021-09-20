@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState, useEffect, useMemo, useCallback,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
@@ -651,7 +653,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   return (
     <div style={{
-      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', height: '100vh',
+      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', 'min-height': '100vh',
     }}
     >
       <Header
