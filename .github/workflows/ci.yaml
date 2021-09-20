@@ -263,7 +263,7 @@ jobs:
         name: Temporarily disable admin enforcement
         uses: benjefferies/branch-protection-bot@master
         with:
-          access-token: ${{ secrets.API_TOKEN_GITHUB }}
+          access_token: ${{ secrets.API_TOKEN_GITHUB }}
           owner: biomage-ltd
           repo: iac
           enforce_admins: false
@@ -309,7 +309,7 @@ jobs:
         uses: benjefferies/branch-protection-bot@master
         if: always()
         with:
-          access-token: ${{ secrets.API_TOKEN_GITHUB }}
+          access_token: ${{ secrets.API_TOKEN_GITHUB }}
           owner: biomage-ltd
           repo: iac
           enforce_admins: true
