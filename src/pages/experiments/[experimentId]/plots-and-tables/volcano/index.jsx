@@ -57,19 +57,19 @@ const VolcanoPlot = ({ experimentId }) => {
 
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }, []);
-
-  useEffect(() => {
-    // Sync plot and settings with last used config
     setComparisonGroup({
       ...plotCellSets,
       type: plotComparisonType,
     });
-
-    // Show plot using last shown data
-    if (data.length === 0) return;
-    setDataPointStatus();
   }, []);
+
+  useEffect(() => {
+    if (!config || !data.length) return;
+    setDataPointStatus();
+    const generatedSpec = generateSpec(config, plotData);
+    setSpec(generatedSpec);
+  }, [config, data]);
+
   const plotStylingControlsConfig = [
     {
       panelTitle: 'Main Schema',
@@ -123,18 +123,6 @@ const VolcanoPlot = ({ experimentId }) => {
       controls: ['legend'],
     },
   ];
-
-  useEffect(() => {
-    if (!config) return;
-    setDataPointStatus();
-    const generatedSpec = generateSpec(config, plotData);
-    setSpec(generatedSpec);
-  }, [config]);
-
-  useEffect(() => {
-    if (data.length === 0) return;
-    setDataPointStatus();
-  }, [data]);
 
   useEffect(() => {
     if (plotData.length === 0) return;
