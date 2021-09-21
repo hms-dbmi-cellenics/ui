@@ -12,7 +12,7 @@ const ProjectsListContainer = (props) => {
   const { height } = props;
 
   const loading = useSelector((state) => state.projects.meta.loading);
-  const [filterParam, setFilterParam] = useState('');
+  const [filterParam, setFilterParam] = useState(new RegExp('.*', 'i'));
 
   const debouncedSetFilterParam = useCallback(
     _.debounce((value) => {
@@ -22,7 +22,7 @@ const ProjectsListContainer = (props) => {
   );
 
   if (loading) {
-    return Array(5).fill(<Skeleton role='progressbar' active />);
+    return [...Array(5)].map((_, idx) => <Skeleton key={`skeleton-${idx}`} role='progressbar' active />);
   }
 
   return (

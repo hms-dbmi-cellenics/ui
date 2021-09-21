@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -37,7 +38,7 @@ describe('ProjectCard', () => {
   it('Displays correctly', () => {
     render(
       <Provider store={mockStore(projectState)}>
-        <ProjectCard uuid={projectUuid} />
+        <ProjectCard projectUuid={projectUuid} />
       </Provider>,
     );
 
@@ -55,5 +56,20 @@ describe('ProjectCard', () => {
 
     // Last modified is shown
     expect(screen.getByText(moment(lastModified).fromNow())).toBeInTheDocument();
+  });
+
+  it('Displays the delete project modal when delete project is clicked', async () => {
+    render(
+      <Provider store={mockStore(projectState)}>
+        <ProjectCard projectUuid={projectUuid} />
+      </Provider>,
+    );
+
+    // Click delete project button
+    userEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+    // Modal is shown
+    const modal = await screen.findByText('Confirm delete');
+    expect(modal).toBeInTheDocument();
   });
 });

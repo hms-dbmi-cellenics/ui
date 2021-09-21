@@ -61,6 +61,7 @@ const ProjectCard = (props) => {
     <>
       {deleteModalVisible && (
         <ProjectDeleteModal
+          key={`${project.uuid}-name`}
           projectUuid={project.uuid}
           onCancel={() => { setDeleteModalVisible(false); }}
           onDelete={() => { setDeleteModalVisible(false); }}
