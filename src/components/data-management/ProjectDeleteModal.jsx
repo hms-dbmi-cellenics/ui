@@ -19,7 +19,6 @@ const ProjectDeleteModal = (props) => {
 
   const [inputProjectName, setInputProjectName] = useState('');
   const [isValid, setIsValid] = useState(false);
-
   return (
     <Modal
       className={integrationTestConstants.classes.DELETE_PROJECT_MODAL}
