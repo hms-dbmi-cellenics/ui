@@ -75,8 +75,6 @@ const DiffExprResults = (props) => {
     }
   }, [data, properties]);
 
-  const isTableLoading = () => data.length === 0 || loading;
-
   const onUpdate = (newState, reason) => {
     // We handle `loading` and `loaded` in the HOC, no need to react to these.
     if (reason === geneTableUpdateReason.loaded || reason === geneTableUpdateReason.loading) {
@@ -183,7 +181,7 @@ const DiffExprResults = (props) => {
         }}
         onUpdate={onUpdate}
         columns={columns}
-        loading={isTableLoading()}
+        loading={loading}
         onExportCSV={() => { setExportAlert(true); }}
         error={error}
         width={width}

@@ -12,9 +12,8 @@ const loadMarkerGenes = (
   // eslint-disable-next-line eqeqeq
   if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
 
-  const { backendStatus, experimentSettings } = getState();
+  const { experimentSettings } = getState();
   const { processing } = experimentSettings;
-  const { status } = backendStatus[experimentId];
   const { hierarchy } = getState().cellSets || [];
   const clusters = hierarchy?.filter((node) => node.key === selectedCellSets)[0]?.children;
   const { method } = processing.configureEmbedding.clusteringSettings;
@@ -35,7 +34,7 @@ const loadMarkerGenes = (
 
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
-    const data = await fetchWork(experimentId, body, status, { timeout });
+    const data = await fetchWork(experimentId, body, getState, { timeout });
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({

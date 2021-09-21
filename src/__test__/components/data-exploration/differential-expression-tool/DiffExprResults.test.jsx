@@ -9,6 +9,7 @@ import thunk from 'redux-thunk';
 
 import waitForActions from 'redux-mock-store-await-actions';
 
+import { Empty } from 'antd';
 import DiffExprResults from '../../../../components/data-exploration/differential-expression-tool/DiffExprResults';
 import { fetchWork } from '../../../../utils/work/fetchWork';
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from '../../../../redux/actionTypes/differentialExpression';
@@ -60,7 +61,7 @@ const backendStatus = {
   },
 };
 
-const store = mockStore({
+const resultState = {
   genes: {
     selected: [],
   },
@@ -154,7 +155,24 @@ const store = mockStore({
     },
   },
   backendStatus,
-});
+};
+
+const noResultState = {
+  ...resultState,
+  differentialExpression: {
+    ...resultState.differentialExpression,
+    properties: {
+      ...resultState.differentialExpression.properties,
+      data: [],
+      loading: false,
+      error: false,
+      total: 0,
+    },
+  },
+};
+
+const withResultStore = mockStore(resultState);
+const noResultStore = mockStore(noResultState);
 
 describe('DiffExprResults', () => {
   beforeAll(async () => {
@@ -164,7 +182,7 @@ describe('DiffExprResults', () => {
   configure({ adapter: new Adapter() });
   it('renders correctly', () => {
     const component = mount(
-      <Provider store={store}>
+      <Provider store={withResultStore}>
         <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
@@ -205,7 +223,7 @@ describe('DiffExprResults', () => {
     };
 
     const component = mount(
-      <Provider store={store}>
+      <Provider store={withResultStore}>
         <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
@@ -217,7 +235,7 @@ describe('DiffExprResults', () => {
     });
 
     // // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(store, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+    await waitForActions(withResultStore, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
     expect(fetchWork).toHaveBeenCalledWith(
       '1234',
@@ -228,7 +246,7 @@ describe('DiffExprResults', () => {
         experimentId: '1234',
         name: 'DifferentialExpression',
       },
-      backendStatus[experimentId].status,
+      withResultStore.getState,
       {
         extras: {
           pagination: {
@@ -239,14 +257,14 @@ describe('DiffExprResults', () => {
       },
     );
 
-    expect(store.getActions()[0]).toMatchSnapshot();
-    expect(store.getActions()[1]).toMatchSnapshot();
+    expect(withResultStore.getActions()[0]).toMatchSnapshot();
+    expect(withResultStore.getActions()[1]).toMatchSnapshot();
   });
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
     // Redefine store from `beforeEach`.
     const component = mount(
-      <Provider store={store}>
+      <Provider store={withResultStore}>
         <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
@@ -255,7 +273,7 @@ describe('DiffExprResults', () => {
 
     table.getElement().props.data.forEach((row) => {
       const lookupComponent = mount(
-        <Provider store={store}>
+        <Provider store={withResultStore}>
           {row.lookup}
         </Provider>,
       );
@@ -271,9 +289,10 @@ describe('DiffExprResults', () => {
       lookupComponent.unmount();
     });
   });
+
   it('Show comparison settings button works.', () => {
     const component = mount(
-      <Provider store={store}>
+      <Provider store={withResultStore}>
         <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
       </Provider>,
     );
@@ -288,5 +307,24 @@ describe('DiffExprResults', () => {
     button.simulate('click');
     expect(button.childAt(0).text()).toEqual('Show settings');
     expect(!div);
+  });
+
+  it("Doesn't show loading indicator if there is no data returned", () => {
+    const component = mount(
+      <Provider store={noResultStore}>
+        <DiffExprResults
+          experimentId={experimentId}
+        />
+      </Provider>,
+    );
+
+    const spin = component.find('Table').find(Loader);
+    const empty = component.find('Table').find(Empty);
+
+    // There should be no loader
+    expect(spin.length).toEqual(0);
+
+    // Expect table to contain Empty component
+    expect(empty.length).toEqual(1);
   });
 });

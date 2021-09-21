@@ -128,6 +128,9 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         backendStatus,
+        networkResources: {
+          environment: 'testing',
+        },
         embeddings: {},
         experimentSettings,
       },
@@ -167,6 +170,9 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         backendStatus,
+        networkResources: {
+          environment: 'testing',
+        },
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, error: true, loading: false } },
         experimentSettings,
@@ -191,6 +197,9 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         backendStatus,
+        networkResources: {
+          environment: 'testing',
+        },
         embeddings: {},
         experimentSettings,
       },
@@ -216,6 +225,9 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         backendStatus,
+        networkResources: {
+          environment: 'testing',
+        },
         embeddings: {},
         experimentSettings: {
           ...experimentSettings,
@@ -239,6 +251,9 @@ describe('loadEmbedding action', () => {
             ...backendStatus['1234'],
             status: {},
           },
+        },
+        networkResources: {
+          environment: 'testing',
         },
         embeddings: {},
         experimentSettings: {
@@ -273,6 +288,9 @@ describe('loadEmbedding action', () => {
 
     const store = mockStore(
       {
+        networkResources: {
+          environment: 'testing',
+        },
         backendStatus,
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, error: false, loading: false } },
