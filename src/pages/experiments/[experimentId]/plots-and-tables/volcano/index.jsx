@@ -65,10 +65,14 @@ const VolcanoPlot = ({ experimentId }) => {
 
   useEffect(() => {
     if (!config || !data.length) return;
-    setDataPointStatus();
+    setPlotData(calculateDataPointStatus());
+  }, [config, data]);
+
+  useEffect(() => {
+    if (plotData.length === 0) return;
     const generatedSpec = generateSpec(config, plotData);
     setSpec(generatedSpec);
-  }, [config, data]);
+  }, [plotData]);
 
   const plotStylingControlsConfig = [
     {
@@ -124,13 +128,7 @@ const VolcanoPlot = ({ experimentId }) => {
     },
   ];
 
-  useEffect(() => {
-    if (plotData.length === 0) return;
-    const generatedSpec = generateSpec(config, plotData);
-    setSpec(generatedSpec);
-  }, [plotData]);
-
-  const setDataPointStatus = () => {
+  const calculateDataPointStatus = () => {
     const dataPoints = _.cloneDeep(data);
     dataPoints
       .filter((datum) => {
@@ -188,7 +186,7 @@ const VolcanoPlot = ({ experimentId }) => {
 
         return datum;
       });
-    setPlotData(dataPoints);
+    return dataPoints;
   };
 
   // obj is a subset of what default config has and contains only the things we want change
