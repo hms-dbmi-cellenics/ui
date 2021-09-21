@@ -54,9 +54,11 @@ const VolcanoPlot = ({ experimentId }) => {
     spec: null,
     maxNegativeLogpValue: null,
   });
-
+  console.log('CONFIG IS ', config);
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!config) {
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    }
     setComparisonGroup({
       ...plotCellSets,
       type: plotComparisonType,
