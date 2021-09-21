@@ -66,7 +66,6 @@ const DownloadData = () => {
       // eslint-disable-next-line no-prototype-builtins
       && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
   };
-
   const downloadExperimentData = async (type) => {
     try {
       if (!experimentId) throw new Error('No experimentId specified');
@@ -78,7 +77,6 @@ const DownloadData = () => {
       pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
   };
-
   return (
     <Dropdown
       overlay={() => (
