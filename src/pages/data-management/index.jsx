@@ -19,7 +19,6 @@ import ProjectsListContainer from '../../components/data-management/ProjectsList
 import ProjectDetails from '../../components/data-management/ProjectDetails';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
-import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Text } = Typography;
 
@@ -95,17 +94,7 @@ const DataManagementPage = ({ route }) => {
           direction='vertical'
           style={{ width: '100%' }}
         >
-          <Button
-            data-test-id={integrationTestConstants.ids.CREATE_NEW_PROJECT_BUTTON}
-            type='primary'
-            block
-            onClick={() => setNewProjectModalVisible(true)}
-          >
-            Create New Project
-          </Button>
-          <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
-            <ProjectsListContainer height={height} />
-          </Space>
+          <ProjectsListContainer height={height} onCreateNewProject={() => setNewProjectModalVisible(true)} />
         </Space>
       ),
     },

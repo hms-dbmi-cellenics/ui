@@ -31,6 +31,8 @@ const activeProjectStyle = {
   border: `2px solid ${blue.primary}`,
 };
 
+const itemTextStyle = { fontWeight: 'bold' };
+
 const ProjectCard = (props) => {
   const { projectUuid } = props;
 
@@ -96,28 +98,28 @@ const ProjectCard = (props) => {
             />
           </Item>
           <Item
-            labelStyle={{ fontWeight: 'bold' }}
+            labelStyle={itemTextStyle}
             label='Samples'
           >
             {project.samples.length}
 
           </Item>
           <Item
-            labelStyle={{ fontWeight: 'bold' }}
+            labelStyle={itemTextStyle}
             label='Created'
           >
             <PrettyTime isoTime={project.createdDate} />
 
           </Item>
           <Item
-            labelStyle={{ fontWeight: 'bold' }}
+            labelStyle={itemTextStyle}
             label='Modified'
           >
             <PrettyTime isoTime={project.lastModified} />
 
           </Item>
           <Item
-            labelStyle={{ fontWeight: 'bold' }}
+            labelStyle={itemTextStyle}
             label='Last analyzed'
           >
             {project.lastAnalyzed ? (
