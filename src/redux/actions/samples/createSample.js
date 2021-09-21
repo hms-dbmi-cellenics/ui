@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  SAMPLES_CREATE, SAMPLES_SAVED,
+  SAMPLES_CREATE,
 } from '../../actionTypes/samples';
 
 import {
@@ -61,21 +61,9 @@ const createSample = (
     throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
-      type: SAMPLES_SAVED,
-    });
-
-    dispatch({
       type: SAMPLES_CREATE,
       payload: { sample: newSample },
     });
-
-    // dispatch({
-    //   type: PROJECTS_UPDATE,
-    //   payload: {
-    //     projectUuid,
-    //     project: newProject,
-    //   },
-    // });
 
     dispatch(
       updateExperiment(
