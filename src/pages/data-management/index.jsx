@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import {
@@ -15,7 +15,6 @@ import { loadProjects } from '../../redux/actions/projects';
 import { loadExperiments } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
-
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
