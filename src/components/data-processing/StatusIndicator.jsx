@@ -15,8 +15,6 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons';
 
-// disabled because false positive
-// eslint-disable-next-line import/named
 import { getBackendStatus } from '../../redux/selectors';
 
 import PrettyTime from '../PrettyTime';

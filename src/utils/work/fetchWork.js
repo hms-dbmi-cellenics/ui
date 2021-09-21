@@ -1,8 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import hash from 'object-hash';
 
-// disabled because false positive
-// eslint-disable-next-line import/named
 import { getBackendStatus } from '../../redux/selectors';
 
 import cache from '../cache';

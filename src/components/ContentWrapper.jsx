@@ -16,8 +16,8 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 
-// disabled because false positive
-// eslint-disable-next-line import/named
+// import { getBackendStatus } from '../redux/selectors';
+
 import { getBackendStatus } from '../redux/selectors';
 
 import connectionPromise from '../utils/socketConnection';

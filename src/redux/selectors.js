@@ -1,18 +1,12 @@
-// Based on https://cmichel.io/redux-selectors-structure
+/* eslint-disable import/prefer-default-export */
 
-/**
- * Accumulates all the different selectors
- */
-import * as backendStatusSelectors from './selectors/backendStatus';
+// Accumulates all the different selectors
 
-const selectors = {};
+import * as backendSelectors from './selectors/backendStatus';
 
-Object.keys(backendStatusSelectors).forEach(
-  (funcName) => {
-    selectors[funcName] = (...params) => (state) => (
-      backendStatusSelectors[funcName](...params)(state.backendStatus)
-    );
-  },
-);
+const getBackendStatus = (...params) => (state) => (
+  backendSelectors.getBackendStatus(...params)(state.backendStatus));
 
-module.exports = selectors;
+export {
+  getBackendStatus,
+};
