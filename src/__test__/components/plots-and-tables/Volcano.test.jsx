@@ -1,14 +1,11 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import '@testing-library/jest-dom';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
-import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
-import genes from '../../../redux/reducers/genes/initialState';
 import VolcanoPlot from '../../../pages/experiments/[experimentId]/plots-and-tables/volcano/index';
 import {
   initialPlotConfigStates,
@@ -29,6 +26,14 @@ const dataState = {
           },
           {
             key: 'louvain-1',
+          },
+        ],
+      },
+      {
+        key: 'sample',
+        children: [
+          {
+            key: 'b7b8f6ab-88ee-4cb3-9a96-b926ef9afa5c',
           },
         ],
       }],
@@ -53,9 +58,17 @@ const dataState = {
         rootNode: false,
         type: 'cellSets',
       },
+      sample: {
+        name: 'Samples',
+        cellIds: 'Set()',
+        rootNode: true,
+        type: 'metadataCategorical',
+      },
     },
   },
-  componentConfig: { [plotUuid]: { config: initialPlotConfigStates.volcano, plotType: 'volcano' } },
+  componentConfig: {
+    [plotUuid]: { config: initialPlotConfigStates.volcano, plotType: 'volcano' },
+  },
   differentialExpression: {
     comparison: {
       group: {
@@ -74,14 +87,24 @@ const dataState = {
     },
     properties: {
       loading: false,
+      data: [],
+      error: false,
+      comparisonType: 'within',
+      cellSets: {
+        cellSet: 'louvain/louvain-0',
+        compareWith: 'louvain/rest',
+        basis: 'sample/b7b8f6ab-88ee-4cb3-9a96-b926ef9afa5c',
+      },
     },
   },
 };
 
 describe('volcano plot tests', () => {
-  beforeEach(() => {
-    jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    await preloadAll();
   });
+
   const renderVolcano = (state) => {
     store = mockStore(state);
     render(
@@ -99,8 +122,7 @@ describe('volcano plot tests', () => {
     expect(screen.getByRole('list')).toHaveClass('ant-skeleton-paragraph');
   });
 
-  it('renders empty when there is no data', () => {
-    console.log('LOOK AT THIS ', initialPlotConfigStates.volcano);
+  it('renders empty initially and doesnt crash if data is available', () => {
     renderVolcano(dataState);
     expect(screen.getByText('Create a comparison to get started.')).toBeDefined();
   });
