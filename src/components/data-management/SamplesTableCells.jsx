@@ -168,7 +168,7 @@ const SampleNameCell = (props) => {
   const { text, record, idx } = cellInfo;
   const dispatch = useDispatch();
   return (
-    <Text className={integrationTestConstants.classes.SAMPLE_NAME_CELL} strong key={`sample-cell-${idx}`}>
+    <Text className={integrationTestConstants.classes.SAMPLES_TABLE_NAME_CELL} strong key={`sample-cell-${idx}`}>
       <EditableField
         deleteEnabled
         value={text}

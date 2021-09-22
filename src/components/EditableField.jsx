@@ -137,7 +137,7 @@ const EditableField = (props) => {
               ? (
                 <Tooltip placement='top' title='Delete' mouseLeaveDelay={0}>
                   <Button
-                    data-test-class={integrationTestConstants.classes.DELETE_EDITABLE_FIELD_BUTTON}
+                    data-test-class={integrationTestConstants.classes.EDITABLE_FIELD_DELETE_BUTTON}
                     aria-label='Delete'
                     size='small'
                     shape='circle'
