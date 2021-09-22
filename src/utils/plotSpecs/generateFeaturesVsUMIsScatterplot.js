@@ -1,9 +1,9 @@
 import { stdev } from '../mathFormulas';
 
-const generateSpec = (config, plotData) => {
-  const sd = stdev(plotData.map((p) => p.log_genes));
-  const lowerCutoff = Math.min(...plotData.map((p) => p.lower_cutoff)) - sd;
-  const upperCutoff = Math.max(...plotData.map((p) => p.upper_cutoff)) + sd;
+const generateSpec = (config, { pointsData, linesData }) => {
+  const sd = stdev(pointsData.map((p) => p.log_genes));
+  const lowerCutoff = Math.min(...linesData.map((p) => p.lower_cutoff)) - sd;
+  const upperCutoff = Math.max(...linesData.map((p) => p.upper_cutoff)) + sd;
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -14,8 +14,8 @@ const generateSpec = (config, plotData) => {
 
     data: [
       {
-        name: 'plotData',
-        values: plotData,
+        name: 'pointsData',
+        values: pointsData,
         transform: [
           {
             type: 'filter',
@@ -27,6 +27,10 @@ const generateSpec = (config, plotData) => {
           },
         ],
       },
+      {
+        name: 'linesData',
+        values: linesData,
+      },
     ],
 
     scales: [
@@ -35,7 +39,7 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         round: true,
         zero: false,
-        domain: { data: 'plotData', field: 'log_molecules' },
+        domain: { data: 'pointsData', field: 'log_molecules' },
         range: 'width',
       },
       {
@@ -90,7 +94,7 @@ const generateSpec = (config, plotData) => {
       {
         name: 'marks',
         type: 'symbol',
-        from: { data: 'plotData' },
+        from: { data: 'pointsData' },
         encode: {
           update: {
             x: { scale: 'x', field: 'log_molecules' },
@@ -103,13 +107,12 @@ const generateSpec = (config, plotData) => {
         },
       },
       {
-        type: 'rule',
+        type: 'line',
+        from: { data: 'linesData' },
         encode: {
           update: {
-            x: { scale: 'x', value: plotData[0].log_molecules },
-            y: { scale: 'y', value: plotData[0].lower_cutoff },
-            x2: { scale: 'x', value: plotData[plotData.length - 1].log_molecules },
-            y2: { scale: 'y', value: plotData[plotData.length - 1].lower_cutoff },
+            x: { scale: 'x', field: 'log_molecules' },
+            y: { scale: 'y', field: 'lower_cutoff' },
             strokeWidth: { value: 2 },
             strokeDash: { value: [8, 4] },
             stroke: { value: 'red' },
@@ -117,13 +120,12 @@ const generateSpec = (config, plotData) => {
         },
       },
       {
-        type: 'rule',
+        type: 'line',
+        from: { data: 'linesData' },
         encode: {
           update: {
-            x: { scale: 'x', value: plotData[0].log_molecules },
-            y: { scale: 'y', value: plotData[0].upper_cutoff },
-            x2: { scale: 'x', value: plotData[plotData.length - 1].log_molecules },
-            y2: { scale: 'y', value: plotData[plotData.length - 1].upper_cutoff },
+            x: { scale: 'x', field: 'log_molecules' },
+            y: { scale: 'y', field: 'upper_cutoff' },
             strokeWidth: { value: 2 },
             strokeDash: { value: [8, 4] },
             stroke: { value: 'red' },
@@ -132,14 +134,14 @@ const generateSpec = (config, plotData) => {
       },
     ],
     title:
-  {
-    text: config.title.text,
-    color: config.colour.masterColour,
-    anchor: config.title.anchor,
-    font: config.fontStyle.font,
-    dx: config.title.dx,
-    fontSize: config.title.fontSize,
-  },
+    {
+      text: config.title.text,
+      color: config.colour.masterColour,
+      anchor: config.title.anchor,
+      font: config.fontStyle.font,
+      dx: config.title.dx,
+      fontSize: config.title.fontSize,
+    },
   };
 };
 

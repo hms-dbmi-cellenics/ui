@@ -13,13 +13,13 @@ const FeaturesVsUMIsScatterplot = (props) => {
   const [plotSpec, setPlotSpec] = useState(config);
 
   useEffect(() => {
-    if (config && plotData?.length) {
+    if (config && plotData?.pointsData?.length) {
       setPlotSpec(generateSpec(config, plotData));
     }
   }, [config, plotData]);
 
   const render = () => {
-    if (!plotData?.length) {
+    if (!plotData?.pointsData?.length) {
       return (
         <EmptyPlot mini={config.miniPlot} />
       );
@@ -41,7 +41,7 @@ const FeaturesVsUMIsScatterplot = (props) => {
 
 FeaturesVsUMIsScatterplot.propTypes = {
   config: PropTypes.object.isRequired,
-  plotData: PropTypes.array,
+  plotData: PropTypes.object,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
