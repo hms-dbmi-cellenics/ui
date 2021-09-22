@@ -206,7 +206,7 @@ const DataIntegration = (props) => {
 
   const completedSteps = useSelector(
     getBackendStatus(experimentId),
-  )?.status.pipeline?.completedSteps;
+  ).status?.pipeline?.completedSteps;
 
   const configureEmbeddingFinished = useRef(null);
   useEffect(() => {

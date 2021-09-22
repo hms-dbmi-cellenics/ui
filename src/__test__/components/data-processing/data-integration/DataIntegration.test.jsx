@@ -169,4 +169,34 @@ describe('DataIntegration', () => {
     expect(dataIntegration.find('CategoricalEmbeddingPlot')).toHaveLength(0);
     expect(dataIntegration.find('FrequencyPlot')).toHaveLength(0);
   });
+
+  it('doesnt crash if backend status is null', () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+    const store = mockedStore;
+
+    const component = mount(
+      <Provider store={store}>
+        <DataIntegration
+          experimentId='1234'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
+
+    const dataIntegration = component.find(DataIntegration).at(0);
+    const calculationConfig = dataIntegration.find(CalculationConfig);
+
+    // There is a config element
+    expect(calculationConfig.length).toEqual(1);
+
+    // Only elbow plot is shown
+    expect(dataIntegration.find('ElbowPlot')).toHaveLength(1);
+    expect(dataIntegration.find('CategoricalEmbeddingPlot')).toHaveLength(0);
+    expect(dataIntegration.find('FrequencyPlot')).toHaveLength(0);
+  });
 });
