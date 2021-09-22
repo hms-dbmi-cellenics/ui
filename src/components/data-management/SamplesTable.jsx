@@ -58,6 +58,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const initialTableColumns = [
     {
+      fixed: 'left',
       index: 0,
       key: 'sort',
       dataIndex: 'sort',

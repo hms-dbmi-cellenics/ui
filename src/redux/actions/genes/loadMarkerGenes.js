@@ -6,26 +6,16 @@ import { fetchWork } from '../../../utils/work/fetchWork';
 import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadMarkerGenes = (
-  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSets = false,
+  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
 ) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
   if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
 
-  const { experimentSettings } = getState();
-  const { processing } = experimentSettings;
-  const { hierarchy } = getState().cellSets || [];
-  const clusters = hierarchy?.filter((node) => node.key === selectedCellSets)[0]?.children;
-  const { method } = processing.configureEmbedding.clusteringSettings;
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    type: method,
-    config: {
-      resolution,
-    },
-    typeOfSets: selectedCellSets || 'louvain',
-    clusters,
+    cellSetKey: selectedCellSet,
   };
 
   dispatch({

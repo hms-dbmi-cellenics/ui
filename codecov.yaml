@@ -10,9 +10,8 @@ coverage:
     project:                   # measuring the overall project coverage
       default:                 
         target: auto
-        # adjust accordingly based on how flaky your tests are
-        # this allows a 5% drop from the previous base commit coverage
-        threshold: 5%
+        # don't allow new commits to decrease coverage
+        threshold: 0%
 
     patch:                    # measuring the coverage of new changes
       default:
