@@ -86,7 +86,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const changesOutstanding = Boolean(changedQCFilters.size);
 
   const [stepIdx, setStepIdx] = useState(0);
-  const [applicableFilters, setApplicableFilters] = useState([]);
+  const [appliedFilters, setAppliedFilters] = useState([]);
   const [preFilteredSamples, setPreFilteredSamples] = useState([]);
   const [stepDisabledByCondition, setStepDisabledByCondition] = useState(false);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
@@ -149,13 +149,13 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   }, [sampleKeys]);
 
   useEffect(() => {
-    const filters = Object.values(disableStepsOnCondition)
+    const applicableFilters = Object.values(disableStepsOnCondition)
       .filter((value) => value.includes(steps[stepIdx].key));
 
     // Get the first value because return of Object.entries is [filterName,[steps]]
-    setApplicableFilters(filters.map((filter) => filter[0]));
+    setAppliedFilters(applicableFilters.map((filter) => filter[0]));
     setStepDisabledByCondition(
-      filters.length > 0
+      applicableFilters.length > 0
       && !processingConfig[steps[stepIdx].key]?.enabled,
     );
   }, [stepIdx]);
@@ -639,7 +639,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     return (
       <Space direction='vertical' style={{ width: '100%' }}>
         {processingConfig[steps[stepIdx].key]?.enabled === false && stepDisabledByCondition
-          && applicableFilters.map((filter) => (
+          && appliedFilters.map((filter) => (
             <Alert
               message={disabledConditionMessage[filter]}
               type='info'

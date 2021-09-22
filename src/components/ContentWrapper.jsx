@@ -68,10 +68,6 @@ const ContentWrapper = (props) => {
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
 
-  // const changedQCFilters = useSelector(
-  //   (state) => state.experimentSettings.processing.meta.changedQCFilters,
-  // );
-
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadBackendStatus` action, the time between the
@@ -316,7 +312,6 @@ const ContentWrapper = (props) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      {/* <ChangesNotAppliedModal experimentId={experimentId} /> */}
 
       <Sider
         width={210}

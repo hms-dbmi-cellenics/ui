@@ -55,7 +55,7 @@ const ProjectsListContainer = (props) => {
 
   if (loading) {
     // eslint-disable-next-line react/no-array-index-key
-    return Array(5).map((_, idx) => <Skeleton key={`load-${idx}`} active />);
+    return Array(5).map((_, idx) => <Skeleton key={`loader-${idx}`} active />);
   }
 
   return (
