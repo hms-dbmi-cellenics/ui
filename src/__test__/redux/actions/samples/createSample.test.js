@@ -1,20 +1,21 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import createSample from '../../../../redux/actions/samples/createSample';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 import initialExperimentState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
-import { saveProject } from '../../../../redux/actions/projects';
-import { saveSamples } from '../../../../redux/actions/samples';
 
 import { SAMPLES_CREATE } from '../../../../redux/actionTypes/samples';
-import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
 
-jest.mock('../../../../redux/actions/projects/saveProject');
-saveProject.mockImplementation(() => async () => { });
+import updateExperiment from '../../../../redux/actions/experiments/updateExperiment';
 
-jest.mock('../../../../redux/actions/samples/saveSamples');
-saveSamples.mockImplementation(() => async () => { });
+jest.mock('../../../../redux/actions/experiments/updateExperiment');
+updateExperiment.mockImplementation(() => async () => { });
+
+jest.mock('localforage');
+
+enableFetchMocks();
 
 const mockStore = configureStore([thunk]);
 
@@ -60,31 +61,37 @@ describe('createSample action', () => {
     },
   };
 
-  it('Dispatches event correctly', async () => {
-    const store = mockStore(initialState);
-    await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
+  beforeEach(() => {
+    const response = new Response(JSON.stringify({}));
 
-    // Create sample
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResolvedValueOnce(response);
+  });
+
+  it('Runs correctly', async () => {
+    const store = mockStore(initialState);
+
+    await store.dispatch(createSample(mockProjectUuid, mockSample.name, mockType));
+
+    // Dispatches create sample action
     const action1 = store.getActions()[0];
     expect(action1.type).toEqual(SAMPLES_CREATE);
 
-    // Update project.samples
-    const action2 = store.getActions()[1];
-    expect(action2.type).toEqual(PROJECTS_UPDATE);
-  });
+    // Fetch call is made
+    const fetchMockFirstCall = fetchMock.mock.calls[0];
 
-  it('Dispatches call to save sample', async () => {
-    const store = mockStore(initialState);
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v1/projects/${mockProjectUuid}/${mockProject.experiments[0]}/samples`);
 
-    await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
+    const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
 
-    expect(saveSamples).toHaveBeenCalled();
-  });
+    expect(fetchMethod).toEqual('POST');
+    expect(JSON.parse(fetchBody)).toEqual(expect.objectContaining({
+      name: mockSample.name,
+      projectUuid: mockProjectUuid,
+    }));
 
-  it('Dispatches call to save project', async () => {
-    const store = mockStore(initialState);
-    await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
-
-    expect(saveProject).toHaveBeenCalled();
+    // Calls update experiment on success of fetch
+    expect(updateExperiment).toHaveBeenCalled();
   });
 });

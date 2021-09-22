@@ -63,6 +63,7 @@ const createProject = (
       );
 
       const json = await response.json();
+
       throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
       dispatch({
