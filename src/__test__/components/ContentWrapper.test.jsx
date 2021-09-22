@@ -105,7 +105,7 @@ describe('ContentWrapper', () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,
       error: false,
-      status: {},
+      status: null,
     }));
 
     // eslint-disable-next-line require-await

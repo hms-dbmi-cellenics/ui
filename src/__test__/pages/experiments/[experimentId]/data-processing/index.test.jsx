@@ -182,4 +182,38 @@ describe('DataProcessingPage', () => {
     // Run filter button doesn't show up on the first
     expect(page.find('#runFilterButton').filter('Button').length).toEqual(0);
   });
+
+  it('disables steps that are not finished if the pipeline is still running', async () => {
+    const experimentId = 'experimentId';
+
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { status: 'RUNNING', completedSteps: [] } },
+    }));
+
+    const store = getStore(
+      experimentId,
+      {
+        samples: {
+          'sample-1': {
+            preFiltered: true,
+          },
+        },
+      },
+    );
+
+    const page = mount(
+      <Provider store={store}>
+        <DataProcessingPage experimentId={experimentId} experimentData={experimentData} route='route'>
+          <></>
+        </DataProcessingPage>
+      </Provider>,
+    );
+
+    // Run filter button doesn't show up on the first
+    page.find('Option').forEach((option) => {
+      expect(option).toBeDisabled();
+    });
+  });
 });
