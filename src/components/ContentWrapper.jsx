@@ -16,8 +16,6 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 
-// import { getBackendStatus } from '../redux/selectors';
-
 import { getBackendStatus } from '../redux/selectors';
 
 import connectionPromise from '../utils/socketConnection';
@@ -325,7 +323,7 @@ const ContentWrapper = (props) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      {experimentId ? <ChangesNotAppliedModal experimentId={experimentId} /> : <></> }
+      {experimentId ? <ChangesNotAppliedModal experimentId={experimentId} /> : <></>}
 
       <Sider
         width={210}
