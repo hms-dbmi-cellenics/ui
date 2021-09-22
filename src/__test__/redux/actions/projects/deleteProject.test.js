@@ -11,7 +11,6 @@ import {
   PROJECTS_DELETE, PROJECTS_SAVED, PROJECTS_SAVING, PROJECTS_SET_ACTIVE,
 } from '../../../../redux/actionTypes/projects';
 import { EXPERIMENTS_DELETED } from '../../../../redux/actionTypes/experiments';
-import { BACKEND_STATUS_DELETED } from '../../../../redux/actionTypes/backendStatus';
 
 jest.mock('../../../../redux/actions/projects/saveProject', () => { });
 
@@ -109,12 +108,11 @@ describe('deleteProject action', () => {
     // Delete sample
     expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
-    expect(actions[3].type).toEqual(BACKEND_STATUS_DELETED);
     // Delete project
-    expect(actions[4].type).toEqual(PROJECTS_DELETE);
+    expect(actions[3].type).toEqual(PROJECTS_DELETE);
 
     // Resolve loading state
-    expect(actions[5].type).toEqual(PROJECTS_SAVED);
+    expect(actions[4].type).toEqual(PROJECTS_SAVED);
   });
 
   it('Dispatches event correctly for multiple samples', async () => {
@@ -131,14 +129,12 @@ describe('deleteProject action', () => {
     // Delete sample
     expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
-    expect(actions[3].type).toEqual(BACKEND_STATUS_DELETED);
-
     // Delete project
 
-    expect(actions[4].type).toEqual(PROJECTS_DELETE);
+    expect(actions[3].type).toEqual(PROJECTS_DELETE);
 
     // Resolve loading state
-    expect(actions[5].type).toEqual(PROJECTS_SAVED);
+    expect(actions[4].type).toEqual(PROJECTS_SAVED);
   });
 
   it('Switches to activeProjectUuid to another project if multiple project exists', async () => {
@@ -158,13 +154,11 @@ describe('deleteProject action', () => {
     // Delete sample
     expect(actions[3].type).toEqual(SAMPLES_DELETE);
 
-    expect(actions[4].type).toEqual(BACKEND_STATUS_DELETED);
-
     // Delete project
-    expect(actions[5].type).toEqual(PROJECTS_DELETE);
+    expect(actions[4].type).toEqual(PROJECTS_DELETE);
 
     // Resolve loading state
-    expect(actions[6].type).toEqual(PROJECTS_SAVED);
+    expect(actions[5].type).toEqual(PROJECTS_SAVED);
   });
 
   it('Dispatches fetch correctly.', async () => {

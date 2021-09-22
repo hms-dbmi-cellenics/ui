@@ -6,13 +6,12 @@ import {
   BACKEND_STATUS_LOADING,
   BACKEND_STATUS_LOADED,
   BACKEND_STATUS_ERROR,
-  BACKEND_STATUS_DELETED,
 } from '../../actionTypes/backendStatus';
-
+import { EXPERIMENTS_DELETED } from '../../actionTypes/experiments';
 import backendStatusLoading from './backendStatusLoading';
 import backendStatusLoaded from './backendStatusLoaded';
 import backendStatusError from './backendStatusError';
-import backendStatusDeleted from './backendStatusDeleted';
+import experimentsDelete from './experimentsDelete';
 
 const backendStatusReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -25,8 +24,8 @@ const backendStatusReducer = (state = initialState, action) => {
     case BACKEND_STATUS_ERROR: {
       return backendStatusError(state, action);
     }
-    case BACKEND_STATUS_DELETED: {
-      return backendStatusDeleted(state, action);
+    case EXPERIMENTS_DELETED: {
+      return experimentsDelete(state, action);
     }
     case HYDRATE: {
       const { backendStatus } = action.payload;
