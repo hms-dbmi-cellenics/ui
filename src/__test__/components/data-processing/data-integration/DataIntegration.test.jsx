@@ -40,7 +40,7 @@ jest.mock('next/router', () => ({
   })),
 }));
 
-const createStore = () => mockStore({
+const mockedStore = mockStore({
   cellSets: {
     ...initialCellSetsState,
     properties: {
@@ -117,7 +117,7 @@ describe('DataIntegration', () => {
       status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
     }));
 
-    const store = createStore();
+    const store = mockedStore;
 
     const component = mount(
       <Provider store={store}>
@@ -146,8 +146,7 @@ describe('DataIntegration', () => {
       error: false,
       status: { pipeline: { completedSteps: [] } },
     }));
-
-    const store = createStore();
+    const store = mockedStore;
 
     const component = mount(
       <Provider store={store}>
