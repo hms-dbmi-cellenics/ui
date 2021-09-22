@@ -20,7 +20,10 @@ const samplesFileUpdate = (state, action) => {
 
   newFile.lastModified = lastModified;
 
-  const newFileNames = Array.from(new Set([...state[sampleUuid].fileNames, fileName]));
+  const newFileNames = _.cloneDeep(state[sampleUuid].fileNames);
+  if (!newFileNames.includes(fileName)) {
+    newFileNames.push(fileName);
+  }
 
   return {
     ...state,
