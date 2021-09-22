@@ -6,7 +6,7 @@ import { fetchWork } from '../../../utils/work/fetchWork';
 import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadMarkerGenes = (
-  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSets,
+  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSets = 'louvain',
 ) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
@@ -15,7 +15,7 @@ const loadMarkerGenes = (
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    cellSetKey: selectedCellSets || 'louvain',
+    cellSetKey: selectedCellSets,
   };
 
   dispatch({
