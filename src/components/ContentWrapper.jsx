@@ -325,7 +325,7 @@ const ContentWrapper = (props) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <ChangesNotAppliedModal experimentId={experimentId} />
+      {experimentId ? <ChangesNotAppliedModal experimentId={experimentId} /> : <></> }
 
       <Sider
         width={210}

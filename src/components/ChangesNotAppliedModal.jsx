@@ -18,9 +18,10 @@ const ChangesNotAppliedModal = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const { changedQCFilters, navigationPath } = useSelector(
-    (state) => state.experimentSettings.processing.meta,
-  );
+  const {
+    changedQCFilters,
+    navigationPath,
+  } = useSelector((state) => state.experimentSettings.processing.meta);
 
   return (
     <Modal
