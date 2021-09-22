@@ -44,7 +44,8 @@ const VolcanoPlot = ({ experimentId }) => {
   const comparisonCreated = useRef(false);
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const {
-    loading, data, error, cellSets: plotCellSets, comparisonType: plotComparisonType,
+    loading, data: expressionData, error,
+    cellSets: plotCellSets, comparisonType: plotComparisonType,
   } = useSelector(
     (state) => state.differentialExpression.properties,
   );
@@ -65,9 +66,9 @@ const VolcanoPlot = ({ experimentId }) => {
   }, []);
 
   useEffect(() => {
-    if (!config || !data.length) return;
-    setPlotData(calculateVolcanoDataPoints(config, data));
-  }, [config, data]);
+    if (!config || !expressionData.length) return;
+    setPlotData(calculateVolcanoDataPoints(config, expressionData));
+  }, [config, expressionData]);
 
   useEffect(() => {
     if (plotData.length === 0) return;
@@ -158,7 +159,7 @@ const VolcanoPlot = ({ experimentId }) => {
     const disabled = plotData.length === 0 || loading || _.isEmpty(spec.spec) || error;
 
     return (
-      <CSVLink data={data} filename={fileName}>
+      <CSVLink data={expressionData} filename={fileName}>
         <Button
           disabled={disabled}
           onClick={(e) => e.stopPropagation()}

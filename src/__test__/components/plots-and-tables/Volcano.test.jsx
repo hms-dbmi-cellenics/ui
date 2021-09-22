@@ -31,7 +31,7 @@ const dataState = {
         key: 'sample',
         children: [
           {
-            key: 'b7b8f6ab-88ee-4cb3-9a96-b926ef9afa5c',
+            key: 'someSample',
           },
         ],
       }],
@@ -78,7 +78,7 @@ const dataState = {
         within: {
           cellSet: 'louvain/louvain-0',
           compareWith: 'louvain/rest',
-          basis: 'sample/4c762ba2-cc69-4fe5-a6b8-31ba993de86a',
+          basis: 'sample/someSample',
         },
       },
       type: 'within',
