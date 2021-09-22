@@ -1,100 +1,59 @@
 import React from 'react';
-import { Card } from 'antd';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount, configure } from 'enzyme';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
+import Adapter from 'enzyme-adapter-react-16';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { Skeleton } from 'antd';
 import ProjectsListContainer from '../../../components/data-management/ProjectsListContainer';
-import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
+
+configure({ adapter: new Adapter() });
 
 jest.mock('localforage');
-configure({ adapter: new Adapter() });
 const mockStore = configureMockStore([thunk]);
 
-const project1 = {
-  ...projectTemplate,
-  name: 'project 1',
-  uuid: '12345',
-  createdDate: '01-01-2021',
-  lastModified: '01-01-2021',
-};
-
-const project2 = {
-  ...project1,
-  name: 'project 2',
-  uuid: '67890',
-};
-
-const initialStore = mockStore({
+const loadingState = {
   projects: {
-    ...initialState,
-  },
-});
-
-const filledStore = mockStore({
-  projects: {
-    ...initialState,
-    ids: [project1.uuid, project2.uuid],
     meta: {
-      activeProjectUuid: project1.uuid,
+      loading: true,
     },
-    [project1.uuid]: project1,
-    [project2.uuid]: project2,
   },
-});
+};
 
-describe('ProjectsListContainer', () => {
+const loadedState = {
+  projects: {
+    ids: [],
+    meta: {
+      loading: false,
+    },
+  },
+};
+
+describe('ProjectsList', () => {
   beforeAll(async () => {
     await preloadAll();
   });
 
-  it('renders without options', () => {
+  it('Contains loaders when loading', () => {
     const component = mount(
-      <Provider store={initialStore}>
+      <Provider store={mockStore(loadingState)}>
         <ProjectsListContainer />
       </Provider>,
     );
 
-    expect(component.exists()).toEqual(true);
+    expect(component.find(Skeleton).length).toBeGreaterThan(0);
   });
 
-  it('contains required components', () => {
-    const component = mount(
-      <Provider store={initialStore}>
+  it('Contains the input box when not loading', () => {
+    render(
+      <Provider store={mockStore(loadedState)}>
         <ProjectsListContainer />
       </Provider>,
     );
 
-    // a button by default
-    expect(component.find(Card).length).toEqual(0);
-  });
-
-  it('has no project if there is no project', () => {
-    const projects = initialStore.getState().projects.ids;
-
-    const component = mount(
-      <Provider store={initialStore}>
-        <ProjectsListContainer />
-      </Provider>,
-    );
-
-    // expect the number of projects to be the same as the one in the list
-    expect(component.find(Card).length).toEqual(projects.length);
-  });
-
-  it('contains components if there are projects', () => {
-    const projects = filledStore.getState().projects.ids;
-
-    const component = mount(
-      <Provider store={filledStore}>
-        <ProjectsListContainer />
-      </Provider>,
-    );
-
-    // expect the number of projects to be the same as the one in the list
-    expect(component.find(Card).length).toEqual(projects.length);
+    expect(screen.getByPlaceholderText(/Filter by project name/i)).toBeDefined();
   });
 });
