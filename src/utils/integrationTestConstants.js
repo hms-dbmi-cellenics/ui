@@ -20,6 +20,7 @@ const classes = {
   LAUNCH_ANALYSIS_ITEM: 'data-test-launch-analysis-item',
   NEW_PROJECT_MODAL: 'data-test-new-project-modal',
   DELETE_PROJECT_MODAL: 'data-test-delete-project-modal',
+  DELETE_PROJECT_MODAL_INPUT: 'data-test-delete-project-input',
   SAMPLE_CELL: 'data-test-sample-cell',
   PROJECT_CARD: 'data-test-project-card',
   QC_STEP_COMPLETED: 'data-test-qc-step-completed',
