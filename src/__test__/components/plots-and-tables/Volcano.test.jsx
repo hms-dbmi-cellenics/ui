@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import '@testing-library/jest-dom';
 import thunk from 'redux-thunk';
-import _ from 'lodash';
 import VolcanoPlot from '../../../pages/experiments/[experimentId]/plots-and-tables/volcano/index';
 import {
   initialPlotConfigStates,
@@ -13,7 +12,6 @@ import {
 
 const mockStore = configureMockStore([thunk]);
 const experimentId = 'insaneExperiment';
-let store;
 const plotUuid = 'volcanoPlotMain';
 const dataState = {
   cellSets: {
@@ -93,7 +91,7 @@ const dataState = {
       cellSets: {
         cellSet: 'louvain/louvain-0',
         compareWith: 'louvain/rest',
-        basis: 'sample/b7b8f6ab-88ee-4cb3-9a96-b926ef9afa5c',
+        basis: 'sample/someSample',
       },
     },
   },
@@ -106,7 +104,7 @@ describe('volcano plot tests', () => {
   });
 
   const renderVolcano = (state) => {
-    store = mockStore(state);
+    const store = mockStore(state);
     render(
       <Provider store={store}>
         <VolcanoPlot experimentid={experimentId} />
@@ -115,7 +113,7 @@ describe('volcano plot tests', () => {
   };
   it('renders skeleton when there is no config', () => {
     const state = {
-      ..._.cloneDeep(dataState),
+      ...dataState,
       componentConfig: { [plotUuid]: { config: null } },
     };
     renderVolcano(state);
