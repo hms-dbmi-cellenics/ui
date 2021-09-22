@@ -67,14 +67,11 @@ const VolcanoPlot = ({ experimentId }) => {
 
   useEffect(() => {
     if (!config || !expressionData.length) return;
-    setPlotData(calculateVolcanoDataPoints(config, expressionData));
-  }, [config, expressionData]);
-
-  useEffect(() => {
-    if (plotData.length === 0) return;
-    const generatedSpec = generateSpec(config, plotData);
+    const newPoints = calculateVolcanoDataPoints(config, expressionData);
+    setPlotData(newPoints);
+    const generatedSpec = generateSpec(config, newPoints);
     setSpec(generatedSpec);
-  }, [plotData]);
+  }, [config, expressionData]);
 
   const plotStylingControlsConfig = [
     {
