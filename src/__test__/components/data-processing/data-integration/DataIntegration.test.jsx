@@ -16,6 +16,10 @@ import { initialPlotConfigStates } from '../../../../redux/reducers/componentCon
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
+import { getBackendStatus } from '../../../../redux/selectors';
+
+jest.mock('../../../../redux/selectors');
+
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
 const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;
@@ -36,8 +40,7 @@ jest.mock('next/router', () => ({
   })),
 }));
 
-const createStore = (completedSteps) => mockStore({
-  backendStatus: { 1234: { status: { pipeline: { completedSteps } } } },
+const createStore = () => mockStore({
   cellSets: {
     ...initialCellSetsState,
     properties: {
@@ -108,7 +111,13 @@ describe('DataIntegration', () => {
   configure({ adapter: new Adapter() });
 
   it('renders correctly', () => {
-    const store = createStore(['ConfigureEmbedding']);
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
+    }));
+
+    const store = createStore();
 
     const component = mount(
       <Provider store={store}>
@@ -132,7 +141,13 @@ describe('DataIntegration', () => {
   });
 
   it('doesnt show plots that depend on configure embedding if it hasnt finished running yet', () => {
-    const store = createStore([]);
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { completedSteps: [] } },
+    }));
+
+    const store = createStore();
 
     const component = mount(
       <Provider store={store}>
