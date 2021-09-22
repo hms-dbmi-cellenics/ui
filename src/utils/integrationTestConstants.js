@@ -26,7 +26,7 @@ const classes = {
   QC_STEP_NOT_COMPLETED: 'data-test-qc-step-not-completed',
 
   DELETE_EDITABLE_FIELD_BUTTON: 'data-test-delete-editable-field-button',
-  SAMPLE_NAME_CELL: 'data-test-sample-name-cell',
+  SAMPLE_NAME_CELL: 'data-test-samples-in-table-name',
 };
 
 export default {
