@@ -15,7 +15,7 @@ const ProjectsListContainer = (props) => {
   const [filterParam, setFilterParam] = useState(new RegExp('.*', 'i'));
 
   return (
-    <Space direction='vertical' style={{ width: '100%' }}>
+    <Space direction='vertical' style={{ padding: '10px', width: '100%' }}>
       <Button
         data-test-id={integrationTestConstants.ids.CREATE_NEW_PROJECT_BUTTON}
         type='primary'

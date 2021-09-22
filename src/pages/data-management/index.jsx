@@ -94,7 +94,10 @@ const DataManagementPage = ({ route }) => {
           direction='vertical'
           style={{ width: '100%' }}
         >
-          <ProjectsListContainer height={height} onCreateNewProject={() => setNewProjectModalVisible(true)} />
+          <ProjectsListContainer
+            height={height}
+            onCreateNewProject={() => setNewProjectModalVisible(true)}
+          />
         </Space>
       ),
     },
@@ -124,12 +127,8 @@ const DataManagementPage = ({ route }) => {
   };
 
   const renderWindow = (tile, width, height) => {
-    if (tile) {
-      return (
-        <div style={{ padding: '10px' }}>
-          {height && width ? tile(width, height) : <></>}
-        </div>
-      );
+    if (tile && height && width) {
+      return tile(width, height);
     }
     return <></>;
   };

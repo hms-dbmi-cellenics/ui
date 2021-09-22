@@ -5,14 +5,8 @@ import { Space, Skeleton } from 'antd';
 
 import ProjectCard from './ProjectCard';
 
-// header height: 30 px
-// Padding top : 10 px
-// Crete new project button : 32
-// Gap : 8 px
-// Filter project input : 32 px
-// Gap : 8 px
-// Padding botton : 10 px
-// Total : 130 px
+// This makes sure that all the projects can be viewed properly inside the list
+// TODO : This has to be done properly in CSS
 const windowMargin = 130; // px
 
 const ProjectsList = (props) => {
@@ -25,28 +19,26 @@ const ProjectsList = (props) => {
   }
 
   return (
-    <>
-      <Space direction='vertical' style={{ height: height - windowMargin, overflowY: 'auto' }}>
-        {
-          projects.ids.map((projectUuid) => {
-            const project = projects[projectUuid];
+    <Space direction='vertical' style={{ height: height - windowMargin, overflowY: 'auto' }}>
+      {
+        projects.ids.map((projectUuid) => {
+          const project = projects[projectUuid];
 
-            const matchFilter = project.name.match(filter)
+          const matchFilter = project.name.match(filter)
               || project.experiments.some((experimentId) => experimentId.match(filter))
               || projectUuid.match(filter);
 
-            if (!matchFilter) return <></>;
+          if (!matchFilter) return <></>;
 
-            return (
-              <ProjectCard
-                key={project.uuid}
-                projectUuid={project.uuid}
-              />
-            );
-          })
-        }
-      </Space>
-    </>
+          return (
+            <ProjectCard
+              key={project.uuid}
+              projectUuid={project.uuid}
+            />
+          );
+        })
+      }
+    </Space>
   );
 };
 
