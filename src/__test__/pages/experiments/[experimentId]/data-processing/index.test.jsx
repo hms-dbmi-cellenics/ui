@@ -16,9 +16,12 @@ import initialCellSetsState from '../../../../../redux/reducers/cellSets/initial
 
 import { BACKEND_STATUS_LOADING } from '../../../../../redux/actionTypes/backendStatus';
 
+import { getBackendStatus } from '../../../../../redux/selectors';
+
 configure({ adapter: new Adapter() });
 
 jest.mock('localforage');
+jest.mock('../../../../../redux/selectors');
 
 const mockStore = configureMockStore([thunk]);
 
@@ -28,24 +31,6 @@ const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
 const getStore = (experimentId, settings = {}) => {
   const initialState = {
-    backendStatus: {
-      [experimentId]: {
-        loading: false,
-        error: false,
-        status: {
-          pipeline: {
-            status: 'SUCCEEDED',
-            completedSteps: [
-              'CellSizeDistributionFilter',
-              'MitochondrialContentFilter',
-              'ClassifierFilter',
-              'NumGenesVsNumUmisFilter',
-              'DoubletScoresFilter',
-            ],
-          },
-        },
-      },
-    },
     notifications: {},
     experimentSettings: {
       ...initialExperimentState,
@@ -89,6 +74,25 @@ const getStore = (experimentId, settings = {}) => {
 
 describe('DataProcessingPage', () => {
   const experimentData = {};
+
+  beforeEach(() => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+          completedSteps: [
+            'CellSizeDistributionFilter',
+            'MitochondrialContentFilter',
+            'ClassifierFilter',
+            'NumGenesVsNumUmisFilter',
+            'DoubletScoresFilter',
+          ],
+        },
+      },
+    }));
+  });
 
   it('renders correctly', () => {
     const experimentId = 'experimentId';
