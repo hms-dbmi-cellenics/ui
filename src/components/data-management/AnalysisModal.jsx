@@ -27,6 +27,7 @@ const AnalysisModal = (props) => {
   const {
     onLaunch,
     onCancel,
+    gem2sHash,
   } = props;
 
   const dispatch = useDispatch();
@@ -55,7 +56,7 @@ const AnalysisModal = (props) => {
     dispatch(updateExperiment(experimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
 
-    dispatch(runGem2s(experimentId));
+    dispatch(runGem2s(experimentId, gem2sHash));
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
@@ -143,6 +144,7 @@ const AnalysisModal = (props) => {
 AnalysisModal.propTypes = {
   onCancel: PropTypes.func,
   onLaunch: PropTypes.func,
+  gem2sHash: PropTypes.string.isRequired,
 };
 
 AnalysisModal.defaultProps = {

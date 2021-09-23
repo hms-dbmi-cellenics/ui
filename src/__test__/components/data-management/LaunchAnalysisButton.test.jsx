@@ -3,15 +3,9 @@ import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { screen, render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { createStore, applyMiddleware } from 'redux';
-import _ from 'lodash';
-import { fireEvent } from '@testing-library/dom';
+import { screen, render } from '@testing-library/react';
 import PipelineStatus from '../../../utils/pipelineStatusValues';
-import rootReducer from '../../../redux/reducers/index';
-import * as createMetadataTrack from '../../../redux/actions/projects/createMetadataTrack';
-import ProjectDetails from '../../../components/data-management/ProjectDetails';
+import LaunchAnalysisButton from '../../../components/data-management/LaunchAnalysisButton';
 import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
 import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
@@ -20,8 +14,6 @@ import { initialExperimentBackendStatus } from '../../../redux/reducers/backendS
 import UploadStatus from '../../../utils/upload/UploadStatus';
 
 const mockStore = configureStore([thunk]);
-const width = 600;
-const height = 400;
 const projectName = 'Project 1';
 const projectUuid = 'project-1-uuid';
 const projectDescription = 'Some description';
@@ -131,115 +123,101 @@ const withDataState = {
   },
 };
 
-describe('ProjectDetails', () => {
-  let metadataCreated;
-  beforeEach(() => {
-    jest.clearAllMocks();
-    metadataCreated = jest.spyOn(createMetadataTrack, 'default');
-  });
-  it('Has a title, project ID and description', () => {
+describe('LaunchAnalysisButton', () => {
+  it('Process project button is disabled if not all sample metadata are inserted', () => {
+    const notAllMetadataInserted = {
+      ...withDataState,
+      samples: {
+        ...withDataState.samples,
+        [sample1Uuid]: {
+          ...withDataState.samples[sample1Uuid],
+          metadata: [''],
+        },
+      },
+    };
+
     render(
-      <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
+      <Provider store={mockStore(notAllMetadataInserted)}>
+        <LaunchAnalysisButton />
       </Provider>,
     );
 
-    // Project name
-    expect(screen.getByText(projectName)).toBeDefined();
+    const button = screen.getByText('Process project').closest('button');
 
-    // Project uuid
-    expect(screen.queryByText(projectUuid)).toBeDefined();
-
-    // Description
-    expect(screen.queryByText(projectDescription)).toBeDefined();
+    expect(button).toBeDisabled();
   });
 
-  it('Has 4 buttons', () => {
+  it('Launch analysis button is disabled if there is no data', () => {
     render(
       <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
+        <LaunchAnalysisButton />
       </Provider>,
     );
 
-    expect(screen.getByText('Add samples')).toBeDefined();
-    expect(screen.getByText('Add metadata')).toBeDefined();
-    expect(screen.getByText('Download')).toBeDefined();
-    expect(screen.getByText('Process project')).toBeDefined();
+    const button = screen.getByText('Process project').closest('button');
+
+    expect(button).toBeDisabled();
   });
 
-  it('Add metadata button is disabled if there is no data', () => {
+  it('Launch analysis button is disabled if not all data are uploaded', () => {
+    const notAllDataUploaded = {
+      ...withDataState,
+      samples: {
+        ...withDataState.samples,
+        [sample1Uuid]: {
+          ...withDataState.samples[sample1Uuid],
+          files: {
+            ...withDataState.samples[sample1Uuid].files,
+            'features.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADING } },
+          },
+        },
+      },
+    };
+
     render(
-      <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
+      <Provider store={mockStore(notAllDataUploaded)}>
+        <LaunchAnalysisButton />
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Add metadata').closest('button');
+    const button = screen.getByText('Process project').closest('button');
 
-    expect(metadataButton).toBeDisabled();
+    expect(button).toBeDisabled();
   });
 
-  it('Add metadata button is enabled if there is data', () => {
+  it('Launch analysis button is enabled if there is data and all metadata for all samples are uplaoded', () => {
     render(
       <Provider store={mockStore(withDataState)}>
-        <ProjectDetails width={width} height={height} />
+        <LaunchAnalysisButton />
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Add metadata').closest('button');
+    const button = screen.getByText('Process project').closest('button');
 
-    expect(metadataButton).not.toBeDisabled();
+    expect(button).not.toBeDisabled();
   });
 
-  it('Download dropdown is disabled if there are no samples', () => {
-    const store = createStore(rootReducer, _.cloneDeep(noDataState), applyMiddleware(thunk));
-    render(
-      <Provider store={store}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
-    const downloadDropdown = screen.getByText('Download').closest('button');
-    expect(downloadDropdown).toBeDisabled();
-  });
+  it('Shows Go to Data Processing if there are no changes to the project (same hash)', () => {
+    jest.mock('../../../utils/data-management/generateGem2sParamsHash', () => jest.fn().mockReturnValue('old-params-hash'));
 
-  it('Shows all the samples that are uploaded', () => {
     render(
       <Provider store={mockStore(withDataState)}>
-        <ProjectDetails width={width} height={height} />
+        <LaunchAnalysisButton />
       </Provider>,
     );
 
-    expect(screen.getByText(sample1Name)).toBeDefined();
-    expect(screen.getByText(sample2Name)).toBeDefined();
+    expect(screen.findByText('Go to Data Processing')).toBeDefined();
   });
 
-  it('Creates a metadata column', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
-    render(
-      <Provider store={store}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
-    const addMetadata = screen.getByText('Add metadata');
-    userEvent.click(addMetadata);
-    const field = screen.getByRole('textbox');
-    userEvent.type(field, 'myBrandNewMetadata');
-    fireEvent.keyDown(field, { key: 'Enter', code: 'Enter' });
-    await waitFor(() => expect(metadataCreated).toBeCalledTimes(1));
-  });
+  it('Shows Process project if there are changes to the project (different hash)', () => {
+    jest.mock('../../../utils/data-management/generateGem2sParamsHash', () => jest.fn().mockReturnValue('new-params-hash'));
 
-  it('Cancels metadata creation', () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
     render(
-      <Provider store={store}>
-        <ProjectDetails width={width} height={height} />
+      <Provider store={mockStore(withDataState)}>
+        <LaunchAnalysisButton />
       </Provider>,
     );
-    const addMetadata = screen.getByText('Add metadata');
-    userEvent.click(addMetadata);
-    const field = screen.getByRole('textbox');
-    userEvent.type(field, 'somenewMeta');
-    fireEvent.keyDown(field, { key: 'Escape', code: 'Escape' });
-    expect(store.getState().projects[projectUuid].metadataKeys).toEqual(['metadata-1']);
+
+    expect(screen.findByText('Process project')).toBeDefined();
   });
 });

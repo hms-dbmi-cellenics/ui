@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialExperimentsState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
 import initialProjectsState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
+import initialBackendState from '../../../../redux/reducers/backendStatus';
 import loadBackendStatus from '../../../../redux/actions/backendStatus/loadBackendStatus';
 
 import {
@@ -25,6 +26,7 @@ jest.mock('../../../../redux/actions/backendStatus/loadBackendStatus',
 
 const experimentId = 'experiment-id';
 const projectId = 'project-id';
+const oldGem2sHash = 'old-gem2s-hash';
 
 const initialState = {
   experiments: {
@@ -35,6 +37,16 @@ const initialState = {
       id: experimentId,
       projectUuid: projectId,
       sampleIds: ['sample-1', 'sample-2'],
+    },
+  },
+  backendStatus: {
+    [experimentId]: {
+      ...initialBackendState,
+      status: {
+        gem2s: {
+          paramsHash: oldGem2sHash,
+        },
+      },
     },
   },
   projects: {
@@ -88,5 +100,50 @@ describe('runGem2s action', () => {
     expect(actions[1].type).toEqual(BACKEND_STATUS_ERROR);
 
     expect(actions).toMatchSnapshot();
+  });
+
+  it('Should run GEM2S if hash is not defined', async () => {
+    fetchMock.resetMocks();
+
+    const store = mockStore(initialState);
+    await store.dispatch(runGem2s(experimentId));
+
+    const requestBody = fetchMock.mock.calls[0][1].body;
+
+    const { shouldRun } = JSON.parse(requestBody);
+
+    expect(shouldRun).toEqual(true);
+  });
+
+  it('Should rerun GEM2S if passed in hash is different from old hash', async () => {
+    fetchMock.resetMocks();
+
+    const store = mockStore(initialState);
+    await store.dispatch(runGem2s(experimentId, 'new-different-hash'));
+
+    const requestBody = fetchMock.mock.calls[0][1].body;
+
+    const expectedBody = JSON.stringify({
+      shouldRun: true,
+      gem2sHash: 'new-different-hash',
+    });
+
+    expect(requestBody).toEqual(expectedBody);
+  });
+
+  it('Should not run GEM2S if calculated hash is the same as old hash', async () => {
+    fetchMock.resetMocks();
+
+    const store = mockStore(initialState);
+    await store.dispatch(runGem2s(experimentId, oldGem2sHash));
+
+    const requestBody = fetchMock.mock.calls[0][1].body;
+
+    const expectedBody = JSON.stringify({
+      shouldRun: false,
+      gem2sHash: oldGem2sHash,
+    });
+
+    expect(requestBody).toEqual(expectedBody);
   });
 });

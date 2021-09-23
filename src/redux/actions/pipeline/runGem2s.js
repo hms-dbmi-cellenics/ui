@@ -13,8 +13,9 @@ import {
 
 import loadBackendStatus from '../backendStatus/loadBackendStatus';
 
-const runGem2s = (experimentId) => async (dispatch, getState) => {
-  const { experiments } = getState();
+const runGem2s = (experimentId, gem2sHash = 'hash-not-defined') => async (dispatch, getState) => {
+  const { experiments, backendStatus } = getState();
+  const oldGem2sParams = backendStatus[experimentId]?.status.gem2s?.paramsHash || null;
 
   const projectId = experiments[experimentId].projectUuid;
 
@@ -34,6 +35,10 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          shouldRun: gem2sHash !== oldGem2sParams,
+          gem2sHash,
+        }),
       },
     );
 

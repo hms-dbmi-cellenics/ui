@@ -36,7 +36,7 @@ const LaunchAnalysisButton = () => {
   const { activeProjectUuid } = projects.meta;
   const activeProject = projects[activeProjectUuid];
 
-  const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, reasons: [] });
+  const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, hash: null, reasons: [] });
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
   useEffect(() => {
@@ -66,6 +66,7 @@ const LaunchAnalysisButton = () => {
 
     setGem2sRerunStatus({
       rerun: !gem2sSuccessful || !projectHashEqual,
+      hash: newParamsHash,
       reasons,
     });
   }, [backendStatus, activeProjectUuid, samples, activeProject]);
@@ -115,7 +116,9 @@ const LaunchAnalysisButton = () => {
   }, [samples, activeProject.samples, activeProject.metadataKeys]);
 
   const renderLaunchButton = () => {
-    if (activeProject.samples.length > 0 && !canLaunchAnalysis()) {
+    const buttonText = gem2sRerunStatus.status ? 'Go to Data Processing' : 'Process project';
+
+    if (!canLaunchAnalysis()) {
       return (
         <Tooltip
           title={`Ensure all samples are uploaded and all metadata are inserted (no ${DEFAULT_NA})`}
@@ -123,7 +126,7 @@ const LaunchAnalysisButton = () => {
           {/* disabled button inside tooltip causes tooltip to not function */}
           {/* https://github.com/react-component/tooltip/issues/18#issuecomment-140078802 */}
           <span>
-            <LaunchButtonTemplate text='Go to Data Processing' disabled onClick={() => setAnalysisModalVisible(true)} />
+            <LaunchButtonTemplate text={buttonText} disabled onClick={() => setAnalysisModalVisible(true)} />
           </span>
         </Tooltip>
       );
@@ -142,12 +145,12 @@ const LaunchAnalysisButton = () => {
           placement='bottom'
           overlayStyle={{ maxWidth: '250px' }}
         >
-          <LaunchButtonTemplate text='Process project' />
+          <LaunchButtonTemplate text={buttonText} />
         </Popconfirm>
       );
     }
 
-    return <LaunchButtonTemplate text='Go to Data Processing' onClick={() => setAnalysisModalVisible(true)} />;
+    return <LaunchButtonTemplate text={buttonText} onClick={() => setAnalysisModalVisible(true)} />;
   };
 
   return (
@@ -155,6 +158,7 @@ const LaunchAnalysisButton = () => {
       {renderLaunchButton()}
       {analysisModalVisible ? (
         <AnalysisModal
+          gem2sHash={gem2sRerunStatus.hash}
           onLaunch={() => { setAnalysisModalVisible(false); }}
           onCancel={() => { setAnalysisModalVisible(false); }}
         />
