@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import EmptyPlot from './helpers/EmptyPlot';
+import migrateFeaturesVsUMIsPlotData from './helpers/migrateFeaturesVsUMIsPlotData';
 import generateSpec from '../../utils/plotSpecs/generateFeaturesVsUMIsScatterplot';
 
 const FeaturesVsUMIsScatterplot = (props) => {
@@ -10,16 +11,19 @@ const FeaturesVsUMIsScatterplot = (props) => {
     config, plotData, actions,
   } = props;
 
+  // can remove if we formally migrate
+  const newPlotData = migrateFeaturesVsUMIsPlotData(plotData);
+
   const [plotSpec, setPlotSpec] = useState(config);
 
   useEffect(() => {
-    if (config && plotData?.pointsData?.length) {
-      setPlotSpec(generateSpec(config, plotData));
+    if (config && newPlotData?.pointsData?.length) {
+      setPlotSpec(generateSpec(config, newPlotData));
     }
   }, [config, plotData]);
 
   const render = () => {
-    if (!plotData?.pointsData?.length) {
+    if (!newPlotData?.pointsData?.length) {
       return (
         <EmptyPlot mini={config.miniPlot} />
       );
@@ -41,7 +45,10 @@ const FeaturesVsUMIsScatterplot = (props) => {
 
 FeaturesVsUMIsScatterplot.propTypes = {
   config: PropTypes.object.isRequired,
-  plotData: PropTypes.object,
+  plotData: PropTypes.oneOfType([
+    PropTypes.array,
+    PropTypes.object,
+  ]),
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
