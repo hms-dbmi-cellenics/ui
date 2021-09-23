@@ -33,7 +33,7 @@ Object {
   "1234": Object {
     "error": false,
     "loading": true,
-    "status": Object {},
+    "status": null,
   },
 }
 `;
