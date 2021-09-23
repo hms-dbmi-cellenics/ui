@@ -14,6 +14,11 @@ import initialSamplesState from '../../../redux/reducers/samples/initialState';
 import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
 
+import { getBackendStatus } from '../../../redux/selectors';
+import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
+
+jest.mock('../../../redux/selectors');
+
 const mockStore = configureMockStore([thunk]);
 const projectName = 'Project 1';
 const projectUuid = 'project-1-uuid';
@@ -61,18 +66,6 @@ const withDataState = {
       experiments: [experimentId],
     },
   },
-  backendStatus: {
-    [experimentId]: {
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-        },
-        gem2s: {
-          status: 'SUCCEEDED',
-        },
-      },
-    },
-  },
   experimentSettings: {
     processing: {
       cellSizeDistribution: {
@@ -86,9 +79,11 @@ describe('Download data menu', () => {
   beforeAll(async () => {
     await preloadAll();
   });
+
   beforeEach(() => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
   });
+
   const renderDownloadData = (state) => {
     const store = mockStore(state);
     render(
@@ -107,6 +102,17 @@ describe('Download data menu', () => {
   };
 
   it('should render the download data menu', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+        },
+        gem2s: {
+          status: 'SUCCEEDED',
+        },
+      },
+    }));
+
     await renderDownloadData(withDataState);
     const options = await getMenuItems();
     expect(options).toHaveLength(3);
@@ -119,19 +125,18 @@ describe('Download data menu', () => {
   });
 
   it('Raw seurat object option is disabled if gem2s has not ran', async () => {
-    const state = {
-      ...withDataState,
-      backendStatus: {
-        [experimentId]: {
-          status: {
-            ...withDataState.backendStatus[experimentId].status,
-            gem2s: {
-              status: 'DEFINETELY NOT SUCCEEDED',
-            },
-          },
+    getBackendStatus.mockImplementation(() => () => ({
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+        },
+        gem2s: {
+          status: 'DEFINETELY NOT SUCCEEDED',
         },
       },
-    };
+    }));
+
+    const state = { ...withDataState };
     await renderDownloadData(state);
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'true');
@@ -140,19 +145,19 @@ describe('Download data menu', () => {
   });
 
   it('Processed Seurat object option is disabled if qc has not ran', async () => {
-    const state = {
-      ...withDataState,
-      backendStatus: {
-        [experimentId]: {
-          status: {
-            ...withDataState.backendStatus[experimentId].status,
-            pipeline: {
-              status: 'DEFINETELY NOT SUCCEEDED',
-            },
-          },
+    getBackendStatus.mockImplementation(() => () => ({
+      status: {
+        pipeline: {
+          status: 'DEFINETELY NOT SUCCEEDED',
+        },
+        gem2s: {
+          status: 'SUCCEEDED',
         },
       },
-    };
+    }));
+
+    const state = { ...withDataState };
+
     await renderDownloadData(state);
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
@@ -161,6 +166,17 @@ describe('Download data menu', () => {
   });
 
   it('Data procesing settings option is disabled if a step misses a sample', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+        },
+        gem2s: {
+          status: 'SUCCEEDED',
+        },
+      },
+    }));
+
     const state = {
       ...withDataState,
       experimentSettings: {
