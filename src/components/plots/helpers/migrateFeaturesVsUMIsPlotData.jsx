@@ -1,5 +1,5 @@
 const migrateFeaturesVsUMIsPlotData = (plotData) => {
-  if (!Array.isArray(plotData) || plotData === null) return plotData;
+  if (!Array.isArray(plotData) || typeof plotData === 'undefined') return plotData;
 
   // is an array and not null (aka its old plotData)
   const pointsData = plotData;
