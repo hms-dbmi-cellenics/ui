@@ -248,9 +248,9 @@ const SamplesTable = forwardRef((props, ref) => {
     const newData = activeProject.samples.map((sampleUuid, idx) => {
       const sampleFiles = samples[sampleUuid].files;
 
-      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.UPLOADING } };
+      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.UPLOADING } };
+      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.UPLOADING } };
 
       const barcodesData = { sampleUuid, file: barcodesFile };
       const genesData = { sampleUuid, file: genesFile };
