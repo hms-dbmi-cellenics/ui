@@ -1,10 +1,7 @@
 const migrateFeaturesVsUMIsPlotData = (plotData) => {
-  if (!Array.isArray(plotData) || typeof plotData === 'undefined') return plotData;
+  if (!Array.isArray(plotData) || !plotData.length) return plotData;
 
-  // make sure not empty
-  if (!plotData.length) return { pointsData, linesData: [] };
-
-  // is an array and not null (aka its old plotData)
+  // is an array and not empty (aka its old plotData)
   const pointsData = plotData;
 
   // mock up linesData by grabbing first and last points
