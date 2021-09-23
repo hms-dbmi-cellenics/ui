@@ -16,6 +16,8 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 
+import { getBackendStatus } from '../redux/selectors';
+
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
@@ -32,8 +34,6 @@ import ChangesNotAppliedModal from './ChangesNotAppliedModal';
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
 import integrationTestConstants from '../utils/integrationTestConstants';
-
-import { initialExperimentBackendStatus } from '../redux/reducers/backendStatus/initialState';
 
 const { Sider, Footer } = Layout;
 
@@ -56,17 +56,18 @@ const ContentWrapper = (props) => {
     loading: backendLoading,
     error: backendError,
     status: backendStatus,
-  } = useSelector((state) => state.backendStatus[experimentId] ?? initialExperimentBackendStatus);
+  } = useSelector(getBackendStatus(experimentId));
+
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
-  const pipelineStatusKey = backendStatus.pipeline?.status;
+  const pipelineStatusKey = backendStatus?.pipeline?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
   const pipelineRunningError = backendErrors.includes(pipelineStatusKey);
 
-  const gem2sStatusKey = backendStatus.gem2s?.status;
+  const gem2sStatusKey = backendStatus?.gem2s?.status;
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
-  const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
+  const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
 
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
@@ -79,11 +80,9 @@ const ContentWrapper = (props) => {
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
 
   useEffect(() => {
-    if (!experimentId) {
-      return;
-    }
+    if (!experimentId) return;
 
-    dispatch(loadBackendStatus(experimentId));
+    if (!backendLoading) dispatch(loadBackendStatus(experimentId));
 
     (async () => {
       const io = await connectionPromise;
@@ -324,7 +323,7 @@ const ContentWrapper = (props) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      {experimentId ? <ChangesNotAppliedModal experimentId={experimentId} /> : <></> }
+      {experimentId ? <ChangesNotAppliedModal experimentId={experimentId} /> : <></>}
 
       <Sider
         width={210}

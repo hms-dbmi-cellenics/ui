@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState, useEffect, useMemo, useCallback,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
@@ -19,6 +21,7 @@ import {
 
 import _ from 'lodash';
 
+import { getBackendStatus } from 'redux/selectors';
 import Header from '../../../../components/Header';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
@@ -59,9 +62,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     return pathAfterQC.replace('[experimentId]', experimentId);
   }, [experimentId]);
 
-  const pipelineStatus = useSelector(
-    (state) => state.backendStatus[experimentId]?.status?.pipeline,
-  );
+  const pipelineStatus = useSelector(getBackendStatus(experimentId))?.status?.pipeline;
 
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);

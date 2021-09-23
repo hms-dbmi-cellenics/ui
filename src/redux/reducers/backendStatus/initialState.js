@@ -1,8 +1,7 @@
 const initialExperimentBackendStatus = {
   loading: false,
   error: false,
-  status: {
-  },
+  status: null,
 };
 
 const initialState = {};
