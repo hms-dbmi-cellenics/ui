@@ -46,7 +46,7 @@ describe('backendStatusReducer.test.js', () => {
 
     initialBackendPipelineStatus[experimentId] = initialExperimentBackendStatus;
 
-    initialBackendPipelineStatus[experimentId].status.pipeline = { status: 'NotCreated' };
+    initialBackendPipelineStatus[experimentId].status = { pipeline: { status: 'NotCreated' } };
 
     const newState = backendStatusReducer(initialBackendPipelineStatus,
       {
