@@ -8,6 +8,8 @@ import {
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import integrationTestConstants from '../../utils/integrationTestConstants';
+
 import {
   deleteSamples, updateSample,
 } from '../../redux/actions/samples';
@@ -166,7 +168,7 @@ const SampleNameCell = (props) => {
   const { text, record, idx } = cellInfo;
   const dispatch = useDispatch();
   return (
-    <Text strong key={`sample-cell-${idx}`}>
+    <Text className={integrationTestConstants.classes.SAMPLES_TABLE_NAME_CELL} strong key={`sample-cell-${idx}`}>
       <EditableField
         deleteEnabled
         value={text}
