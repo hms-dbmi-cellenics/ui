@@ -13,9 +13,8 @@ import {
 
 import loadBackendStatus from '../backendStatus/loadBackendStatus';
 
-const runGem2s = (experimentId, gem2sHash = 'hash-not-defined') => async (dispatch, getState) => {
-  const { experiments, backendStatus } = getState();
-  const oldGem2sParams = backendStatus[experimentId]?.status.gem2s?.paramsHash || null;
+const runGem2s = (experimentId, paramsHash) => async (dispatch, getState) => {
+  const { experiments } = getState();
 
   dispatch({
     type: BACKEND_STATUS_LOADING,
@@ -33,10 +32,7 @@ const runGem2s = (experimentId, gem2sHash = 'hash-not-defined') => async (dispat
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          shouldRun: gem2sHash !== oldGem2sParams,
-          gem2sHash,
-        }),
+        body: JSON.stringify({ paramsHash }),
       },
     );
 

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Space, Button,
 } from 'antd';
-import DownloadData from './DownloadData';
+import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
 import { processUpload } from '../../utils/upload/processUpload';
@@ -27,7 +27,7 @@ const ProjectMenu = () => {
         >
           Add samples
         </Button>
-        <DownloadData />
+        <DownloadDataButton />
         <LaunchAnalysisButton />
       </Space>
       {uploadModalVisible ? (

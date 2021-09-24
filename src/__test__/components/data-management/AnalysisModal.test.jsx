@@ -9,7 +9,7 @@ import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
 import configureMockStore from 'redux-mock-store';
 import EditableField from '../../../components/EditableField';
-import AnalysisModal from '../../../components/data-management/AnalysisModal';
+import LaunchAnalysisModal from '../../../components/data-management/LaunchAnalysisModal';
 
 configure({ adapter: new Adapter() });
 
@@ -60,7 +60,7 @@ describe('AnalysisModal', () => {
   it('renders correctly when there are experiments', () => {
     const component = mount(
       <Provider store={mockStore(initialState)}>
-        <AnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
+        <LaunchAnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
       </Provider>,
     );
     expect(component.exists()).toEqual(true);
@@ -79,7 +79,7 @@ describe('AnalysisModal', () => {
 
     const component = mount(
       <Provider store={mockStore(initialState)}>
-        <AnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
+        <LaunchAnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
       </Provider>,
     );
 
@@ -109,7 +109,7 @@ describe('AnalysisModal', () => {
   it('Launch button is disabled if there is a field still editing', () => {
     const component = mount(
       <Provider store={mockStore(initialState)}>
-        <AnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
+        <LaunchAnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
       </Provider>,
     );
 
@@ -138,7 +138,7 @@ describe('AnalysisModal', () => {
   it('Launches analysis when launch button is pressed', () => {
     const component = mount(
       <Provider store={mockStore(initialState)}>
-        <AnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
+        <LaunchAnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
       </Provider>,
     );
 
@@ -159,7 +159,7 @@ describe('AnalysisModal', () => {
   it('Doesnt launch analysis when analysis modal is closed', () => {
     const component = mount(
       <Provider store={mockStore(initialState)}>
-        <AnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
+        <LaunchAnalysisModal onLaunch={onLaunchSpy} onCancel={onCancelSpy} />
       </Provider>,
     );
 

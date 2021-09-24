@@ -81,7 +81,6 @@ const ContentWrapper = (props) => {
 
   useEffect(() => {
     if (!experimentId) return;
-
     if (!backendLoading) dispatch(loadBackendStatus(experimentId));
 
     (async () => {

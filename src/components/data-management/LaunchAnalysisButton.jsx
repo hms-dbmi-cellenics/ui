@@ -1,15 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Tooltip, Popconfirm } from 'antd';
+import { useRouter } from 'next/router';
+import moment from 'moment';
+import {
+  updateProject,
+} from '../../redux/actions/projects';
 
 import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 import UploadStatus from '../../utils/upload/UploadStatus';
 import pipelineStatus from '../../utils/pipelineStatusValues';
 import integrationTestConstants from '../../utils/integrationTestConstants';
 import generateGem2sParamsHash from '../../utils/data-management/generateGem2sParamsHash';
+import { runGem2s } from '../../redux/actions/pipeline';
+import { updateExperiment } from '../../redux/actions/experiments';
 
-import AnalysisModal from './AnalysisModal';
-import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
+import LaunchAnalysisModal from './LaunchAnalysisModal';
 
 const LaunchButtonTemplate = (props) => {
   // eslint-disable-next-line react/prop-types
@@ -28,6 +34,9 @@ const LaunchButtonTemplate = (props) => {
 };
 
 const LaunchAnalysisButton = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const backendStatus = useSelector((state) => state.backendStatus);
@@ -39,35 +48,54 @@ const LaunchAnalysisButton = () => {
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, hash: null, reasons: [] });
   const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
+  const launchAnalysis = (experimentId) => {
+    const analysisPath = '/experiments/[experimentId]/data-processing';
+    const lastViewed = moment().toISOString();
+
+    dispatch(updateExperiment(experimentId, { lastViewed }));
+    dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+
+    if (gem2sRerunStatus.rerun) {
+      alert('rerunning gem2s');
+      dispatch(runGem2s(experimentId, gem2sRerunStatus.hash));
+    }
+
+    router.push(analysisPath.replace('[experimentId]', experimentId));
+  };
+
   useEffect(() => {
     const experimentId = activeProject.experiments[0];
 
-    if (!experiments[experimentId]?.sampleIds.length > 0) return;
+    const gem2sBackendStatus = backendStatus[experimentId]?.status?.gem2s;
 
-    const reasons = [];
+    if (
+      !gem2sBackendStatus
+      || !experiments[experimentId]?.sampleIds.length > 0
+    ) return;
 
-    const gem2sStatus = backendStatus[experimentId]?.status.gem2s?.status;
+    const rerunReasons = [];
+
+    const { status: gem2sStatus, paramsHash: existingParamsHash } = gem2sBackendStatus;
 
     const gem2sSuccessful = [
       pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
     ].includes(gem2sStatus);
 
-    const existingParamsHash = backendStatus[experimentId]?.status.gem2s?.paramsHash;
     const newParamsHash = generateGem2sParamsHash(
       activeProject,
       samples,
       experiments[experimentId],
     );
 
-    const projectHashEqual = existingParamsHash && existingParamsHash === newParamsHash;
+    const projectHashEqual = existingParamsHash === newParamsHash;
 
-    if (!gem2sSuccessful) reasons.push('data has not been processed sucessfully');
-    if (!projectHashEqual) reasons.push('it has been modified');
+    if (!gem2sSuccessful) rerunReasons.push('data has not been processed sucessfully');
+    if (!projectHashEqual) rerunReasons.push('the project samples/metadata have been modified');
 
     setGem2sRerunStatus({
       rerun: !gem2sSuccessful || !projectHashEqual,
       hash: newParamsHash,
-      reasons,
+      reasons: rerunReasons,
     });
   }, [backendStatus, activeProjectUuid, samples, activeProject]);
 
@@ -104,7 +132,7 @@ const LaunchAnalysisButton = () => {
       if (!metadataKeysAvailable) return true;
       if (Object.keys(sample.metadata).length !== metadataKeysAvailable) return false;
       return Object.values(sample.metadata)
-        .every((value) => value.length > 0 && value !== DEFAULT_NA);
+        .every((value) => value.length > 0);
     };
 
     const canLaunch = activeProject.samples.every((sampleUuid) => {
@@ -116,12 +144,12 @@ const LaunchAnalysisButton = () => {
   }, [samples, activeProject.samples, activeProject.metadataKeys]);
 
   const renderLaunchButton = () => {
-    const buttonText = gem2sRerunStatus.status ? 'Go to Data Processing' : 'Process project';
+    const buttonText = !gem2sRerunStatus.rerun ? 'Go to Data Processing' : 'Process project';
 
     if (!canLaunchAnalysis()) {
       return (
         <Tooltip
-          title={`Ensure all samples are uploaded and all metadata are inserted (no ${DEFAULT_NA})`}
+          title='Ensure all samples are uploaded and all metadata are inserted'
         >
           {/* disabled button inside tooltip causes tooltip to not function */}
           {/* https://github.com/react-component/tooltip/issues/18#issuecomment-140078802 */}
@@ -137,7 +165,7 @@ const LaunchAnalysisButton = () => {
       return (
         <Popconfirm
           title={`This project has to be processed because ${gem2sRerunStatus.reasons.join(' and ')}. \
-            This might take a while.\
+            This will take several minutes.\
             Do you want to continue?`}
           onConfirm={() => setAnalysisModalVisible(true)}
           okText='Yes'
@@ -157,10 +185,12 @@ const LaunchAnalysisButton = () => {
     <>
       {renderLaunchButton()}
       {analysisModalVisible ? (
-        <AnalysisModal
-          gem2sHash={gem2sRerunStatus.hash}
-          onLaunch={() => { setAnalysisModalVisible(false); }}
-          onCancel={() => { setAnalysisModalVisible(false); }}
+        <LaunchAnalysisModal
+          onLaunch={(experimentId) => {
+            setAnalysisModalVisible(false);
+            launchAnalysis(experimentId);
+          }}
+          onCancel={() => setAnalysisModalVisible(false)}
         />
       ) : <></>}
     </>

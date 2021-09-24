@@ -20,7 +20,7 @@ import pipelineStatus from '../../utils/pipelineStatusValues';
 import { exportQCParameters, filterQCParameters } from '../../utils/data-management/exportQCParameters';
 import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
 
-const DownloadData = () => {
+const DownloadDataButton = () => {
   const dispatch = useDispatch();
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const experimentSettings = useSelector((state) => state.experimentSettings);
@@ -157,4 +157,4 @@ const DownloadData = () => {
   );
 };
 
-export default React.memo(DownloadData);
+export default React.memo(DownloadDataButton);

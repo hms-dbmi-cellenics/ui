@@ -10,28 +10,21 @@ import {
   Col,
   List,
 } from 'antd';
-import moment from 'moment';
-import { useRouter } from 'next/router';
 import EditableField from '../EditableField';
-import { updateExperiment } from '../../redux/actions/experiments';
-import {
-  updateProject,
-} from '../../redux/actions/projects';
 
-import { runGem2s } from '../../redux/actions/pipeline';
+import { updateExperiment } from '../../redux/actions/experiments';
+
 import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Title } = Typography;
 
-const AnalysisModal = (props) => {
+const LaunchAnalysisModal = (props) => {
   const {
     onLaunch,
     onCancel,
-    gem2sHash,
   } = props;
 
   const dispatch = useDispatch();
-  const router = useRouter();
 
   const experiments = useSelector((state) => state.experiments);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
@@ -49,17 +42,6 @@ const AnalysisModal = (props) => {
     setExperimentsList(updatedList);
   }, [activeProject, experiments]);
 
-  const onLaunchAnalysis = (experimentId) => {
-    onLaunch(experimentId);
-    const analysisPath = '/experiments/[experimentId]/data-processing';
-    const lastViewed = moment().toISOString();
-    dispatch(updateExperiment(experimentId, { lastViewed }));
-    dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
-
-    dispatch(runGem2s(experimentId, gem2sHash));
-    router.push(analysisPath.replace('[experimentId]', experimentId));
-  };
-
   const renderAnalysisList = () => (
     <List
       size='small'
@@ -75,7 +57,7 @@ const AnalysisModal = (props) => {
                 <Button
                   type='primary'
                   onClick={() => {
-                    onLaunchAnalysis(experiment.id);
+                    onLaunch(experiment.id);
                   }}
                   disabled={numFieldsEditing > 0}
                 >
@@ -141,15 +123,14 @@ const AnalysisModal = (props) => {
   );
 };
 
-AnalysisModal.propTypes = {
+LaunchAnalysisModal.propTypes = {
   onCancel: PropTypes.func,
   onLaunch: PropTypes.func,
-  gem2sHash: PropTypes.string.isRequired,
 };
 
-AnalysisModal.defaultProps = {
+LaunchAnalysisModal.defaultProps = {
   onCancel: null,
   onLaunch: null,
 };
 
-export default AnalysisModal;
+export default LaunchAnalysisModal;
