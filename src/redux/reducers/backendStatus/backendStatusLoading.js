@@ -9,7 +9,7 @@ const backendStatusLoading = produce((draft, action) => {
   draft[experimentId] = {
     loading: true,
     error: false,
-    status: {},
+    status: null,
   };
 }, initialState);
 
