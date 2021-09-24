@@ -17,8 +17,6 @@ const runGem2s = (experimentId, gem2sHash = 'hash-not-defined') => async (dispat
   const { experiments, backendStatus } = getState();
   const oldGem2sParams = backendStatus[experimentId]?.status.gem2s?.paramsHash || null;
 
-  const projectId = experiments[experimentId].projectUuid;
-
   dispatch({
     type: BACKEND_STATUS_LOADING,
     payload: {
@@ -57,7 +55,6 @@ const runGem2s = (experimentId, gem2sHash = 'hash-not-defined') => async (dispat
       payload: {
         experimentId,
         experimentName: experiments[experimentId].name,
-        projectId,
         sampleIds: experiments[experimentId].sampleIds,
       },
     });

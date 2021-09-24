@@ -8,6 +8,8 @@ import {
   EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined,
 } from '@ant-design/icons';
 
+import integrationTestConstants from '../utils/integrationTestConstants';
+
 const { Text } = Typography;
 
 const EditableField = (props) => {
@@ -134,7 +136,14 @@ const EditableField = (props) => {
             deleteEnabled
               ? (
                 <Tooltip placement='top' title='Delete' mouseLeaveDelay={0}>
-                  <Button aria-label='Delete' size='small' shape='circle' icon={<DeleteOutlined />} onClick={deleteEditableField} />
+                  <Button
+                    data-test-class={integrationTestConstants.classes.EDITABLE_FIELD_DELETE_BUTTON}
+                    aria-label='Delete'
+                    size='small'
+                    shape='circle'
+                    icon={<DeleteOutlined />}
+                    onClick={deleteEditableField}
+                  />
                 </Tooltip>
               ) : <></>
           }

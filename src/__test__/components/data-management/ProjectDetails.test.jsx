@@ -32,6 +32,9 @@ const sample2Uuid = 'sample-2';
 const experiment1id = 'experiment-1';
 
 const noDataState = {
+  backendStatus: {
+    'experiment-1': initialExperimentBackendStatus,
+  },
   projects: {
     ...initialProjectState,
     meta: {

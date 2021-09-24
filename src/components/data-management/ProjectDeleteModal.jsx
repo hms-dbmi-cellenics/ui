@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal, Button, Input, Space, Typography, Form, Alert,
 } from 'antd';
 import integrationTestConstants from '../../utils/integrationTestConstants';
+import deleteProject from '../../redux/actions/projects/deleteProject';
 
 const { Text, Paragraph } = Typography;
 
 const ProjectDeleteModal = (props) => {
   const {
-    onDelete, onCancel, projectName,
+    projectUuid, onCancel, onDelete,
   } = props;
+
+  const dispatch = useDispatch();
+  const projectName = useSelector((state) => state.projects[projectUuid].name);
 
   const [inputProjectName, setInputProjectName] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -25,8 +30,7 @@ const ProjectDeleteModal = (props) => {
             type='secondary'
             key='cancel'
             onClick={() => {
-              onCancel(inputProjectName);
-              setInputProjectName('');
+              onCancel();
               setIsValid(false);
             }}
           >
@@ -38,9 +42,8 @@ const ProjectDeleteModal = (props) => {
             key='create'
             disabled={!isValid}
             onClick={() => {
+              dispatch(deleteProject(projectUuid));
               onDelete();
-              setInputProjectName('');
-              setIsValid(false);
             }}
           >
             Permanently delete project
@@ -82,6 +85,7 @@ const ProjectDeleteModal = (props) => {
               label='Type in the name of the project to confirm:'
             >
               <Input
+                data-test-id={integrationTestConstants.classes.DELETE_PROJECT_MODAL_INPUT}
                 onChange={(e) => {
                   setIsValid(projectName === e.target.value);
                   setInputProjectName(e.target.value);
@@ -100,15 +104,14 @@ const ProjectDeleteModal = (props) => {
 };
 
 ProjectDeleteModal.propTypes = {
-  onDelete: PropTypes.func,
+  projectUuid: PropTypes.string.isRequired,
   onCancel: PropTypes.func,
-  projectName: PropTypes.string,
+  onDelete: PropTypes.func,
 };
 
 ProjectDeleteModal.defaultProps = {
-  onDelete: () => null,
   onCancel: () => null,
-  projectName: null,
+  onDelete: () => null,
 };
 
 export default ProjectDeleteModal;

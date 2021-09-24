@@ -18,7 +18,10 @@ const ChangesNotAppliedModal = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const { changedQCFilters, navigationPath } = useSelector((state) => state.experimentSettings.processing.meta);
+  const {
+    changedQCFilters,
+    navigationPath,
+  } = useSelector((state) => state.experimentSettings.processing.meta);
 
   return (
     <Modal
@@ -58,20 +61,20 @@ const ChangesNotAppliedModal = (props) => {
         <Space direction='vertical'>
           Your changes to the settings of these filters are not yet applied:
           {changedQCFilters.size && (
-          <>
-            <br />
-            <ul style={{ margin: '0 auto', display: 'table' }}>
-              {Array.from(changedQCFilters).map((step) => (
-                <li>
-                  <b style={{ float: 'left' }}>
-                    {getUserFriendlyQCStepName(step)}
-                  </b>
-                </li>
-              ))}
-            </ul>
+            <>
+              <br />
+              <ul style={{ margin: '0 auto', display: 'table' }}>
+                {Array.from(changedQCFilters).map((step) => (
+                  <li>
+                    <b style={{ float: 'left' }}>
+                      {getUserFriendlyQCStepName(step)}
+                    </b>
+                  </li>
+                ))}
+              </ul>
 
-            <br />
-          </>
+              <br />
+            </>
           )}
           <Text>
             Would you like to rerun data processing with

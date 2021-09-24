@@ -16,6 +16,10 @@ import { initialPlotConfigStates } from '../../../../redux/reducers/componentCon
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
+import { getBackendStatus } from '../../../../redux/selectors';
+
+jest.mock('../../../../redux/selectors');
+
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
 const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;
@@ -36,8 +40,7 @@ jest.mock('next/router', () => ({
   })),
 }));
 
-const createStore = (completedSteps) => mockStore({
-  backendStatus: { 1234: { status: { pipeline: { completedSteps } } } },
+const mockedStore = mockStore({
   cellSets: {
     ...initialCellSetsState,
     properties: {
@@ -108,7 +111,13 @@ describe('DataIntegration', () => {
   configure({ adapter: new Adapter() });
 
   it('renders correctly', () => {
-    const store = createStore(['ConfigureEmbedding']);
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
+    }));
+
+    const store = mockedStore;
 
     const component = mount(
       <Provider store={store}>
@@ -132,7 +141,42 @@ describe('DataIntegration', () => {
   });
 
   it('doesnt show plots that depend on configure embedding if it hasnt finished running yet', () => {
-    const store = createStore([]);
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { completedSteps: [] } },
+    }));
+    const store = mockedStore;
+
+    const component = mount(
+      <Provider store={store}>
+        <DataIntegration
+          experimentId='1234'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
+
+    const dataIntegration = component.find(DataIntegration).at(0);
+    const calculationConfig = dataIntegration.find(CalculationConfig);
+
+    // There is a config element
+    expect(calculationConfig.length).toEqual(1);
+
+    // Only elbow plot is shown
+    expect(dataIntegration.find('ElbowPlot')).toHaveLength(1);
+    expect(dataIntegration.find('CategoricalEmbeddingPlot')).toHaveLength(0);
+    expect(dataIntegration.find('FrequencyPlot')).toHaveLength(0);
+  });
+
+  it('doesnt crash if backend status is null', () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+    const store = mockedStore;
 
     const component = mount(
       <Provider store={store}>

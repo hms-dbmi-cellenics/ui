@@ -1,4 +1,4 @@
-import getNumberOfCellsInGrouping from '../redux/getters/getNumberOfCellsInGrouping';
+import getNumberOfCellsInGrouping from '../redux/selectors/getNumberOfCellsInGrouping';
 
 // Timeouts calculated in https://docs.google.com/document/d/1vim9t9lWMLW8wALeJvDeYnofQa9tj9zPU3i1SOfMilM/edit
 const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
