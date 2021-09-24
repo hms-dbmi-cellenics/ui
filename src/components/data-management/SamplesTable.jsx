@@ -247,7 +247,12 @@ const SamplesTable = forwardRef((props, ref) => {
 
     // Set table data
     const newData = activeProject.samples.map((sampleUuid, idx) => {
-      const sampleFiles = samples[sampleUuid].files;
+      // upload problems sometimes lead to partial updates and incosistent states
+      // in this situation it's possible that the sampleUuid does not exist
+      // this a temporary fix so that the whole UI doesn't crash preventing the
+      // user from removing the dataset or uploading another one.
+      // this situation should be included into the SamplesTable.jsx tests
+      const sampleFiles = samples[sampleUuid]?.files || {};
 
       const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
       const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
