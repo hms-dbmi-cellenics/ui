@@ -13,6 +13,7 @@ import {
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import endUserMessages from '../../../utils/endUserMessages';
 import saveProject from './saveProject';
+import saveSamples from '../samples/saveSamples';
 
 const createMetadataTrack = (
   name, projectUuid,
@@ -48,6 +49,16 @@ const createMetadataTrack = (
         },
       },
     })));
+
+    const { samples: updatedSamples } = getState();
+
+    const samplesWithMetadata = _.clone(updatedSamples);
+    delete samplesWithMetadata.meta;
+
+    // Temporary fix because right now we send the whole samples object
+    // to the API to update samples. Once we can update with PATCH
+    // action, this has to be redone
+    dispatch(saveSamples(projectUuid, samplesWithMetadata, false, false));
   } catch (e) {
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }

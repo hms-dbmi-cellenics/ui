@@ -56,23 +56,13 @@ const LaunchAnalysisButton = () => {
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
 
     if (gem2sRerunStatus.rerun) {
-      alert('rerunning gem2s');
       dispatch(runGem2s(experimentId, gem2sRerunStatus.hash));
     }
 
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
-  useEffect(() => {
-    const experimentId = activeProject.experiments[0];
-
-    const gem2sBackendStatus = backendStatus[experimentId]?.status?.gem2s;
-
-    if (
-      !gem2sBackendStatus
-      || !experiments[experimentId]?.sampleIds.length > 0
-    ) return;
-
+  const calculateGem2sRerunStatus = (experimentId, gem2sBackendStatus) => {
     const rerunReasons = [];
 
     const { status: gem2sStatus, paramsHash: existingParamsHash } = gem2sBackendStatus;
@@ -92,11 +82,26 @@ const LaunchAnalysisButton = () => {
     if (!gem2sSuccessful) rerunReasons.push('data has not been processed sucessfully');
     if (!projectHashEqual) rerunReasons.push('the project samples/metadata have been modified');
 
-    setGem2sRerunStatus({
+    return ({
       rerun: !gem2sSuccessful || !projectHashEqual,
       hash: newParamsHash,
       reasons: rerunReasons,
     });
+  };
+
+  useEffect(() => {
+    const experimentId = activeProject.experiments[0];
+
+    const gem2sBackendStatus = backendStatus[experimentId]?.status?.gem2s;
+
+    if (
+      !gem2sBackendStatus
+      || !experiments[experimentId]?.sampleIds.length > 0
+    ) return;
+
+    const gem2sStatus = calculateGem2sRerunStatus(experimentId, backendStatus);
+
+    setGem2sRerunStatus(gem2sStatus);
   }, [backendStatus, activeProjectUuid, samples, activeProject]);
 
   const canLaunchAnalysis = useCallback(() => {
