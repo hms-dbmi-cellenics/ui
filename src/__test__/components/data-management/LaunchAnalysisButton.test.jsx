@@ -1,19 +1,46 @@
 import React from 'react';
 import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { screen, render } from '@testing-library/react';
+import {
+  screen, render, waitFor, fireEvent,
+} from '@testing-library/react';
+import { runGem2s } from '../../../redux/actions/pipeline';
+
 import PipelineStatus from '../../../utils/pipelineStatusValues';
 import LaunchAnalysisButton from '../../../components/data-management/LaunchAnalysisButton';
 import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
-import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
-import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
+import initialExperimentsState, { experimentTemplate } from '../../../redux/reducers/experiments/initialState';
 import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
-import UploadStatus from '../../../utils/upload/UploadStatus';
 
-const mockStore = configureStore([thunk]);
+import updateExperimentInfo from '../../../redux/actions/experimentSettings/updateExperimentInfo';
+import updateExperiment from '../../../redux/actions/experiments/updateExperiment';
+import updateProject from '../../../redux/actions/projects/updateProject';
+
+import UploadStatus from '../../../utils/upload/UploadStatus';
+import generateGem2sParamsHash from '../../../utils/data-management/generateGem2sParamsHash';
+
+jest.mock('localforage');
+jest.mock('../../../utils/data-management/generateGem2sParamsHash');
+jest.mock('../../../redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
+jest.mock('../../../redux/actions/experiments/updateExperiment', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT' }));
+jest.mock('../../../redux/actions/projects/updateProject', () => jest.fn().mockReturnValue({ type: 'UPDATE_PROJECT' }));
+jest.mock('../../../redux/actions/pipeline', () => ({
+  runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
+}));
+
+jest.mock('next/router', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
+}));
+
+const mockStore = configureMockStore([thunk]);
+jest.mock('localforage');
+
 const projectName = 'Project 1';
 const projectUuid = 'project-1-uuid';
 const projectDescription = 'Some description';
@@ -44,9 +71,6 @@ const noDataState = {
     ...initialExperimentsState,
     ids: [experiment1id],
   },
-  experimentSettings: {
-    ...initialExperimentSettingsState,
-  },
   samples: {
     ...initialSamplesState,
   },
@@ -75,6 +99,14 @@ const withDataState = {
       metadataKeys: ['metadata-1'],
     },
   },
+  experiments: {
+    ...noDataState.experiments,
+    [experiment1id]: {
+      ...experimentTemplate,
+      ...noDataState.experiments[experiment1id],
+      sampleIds: [sample1Uuid, sample2Uuid],
+    },
+  },
   samples: {
     ...noDataState.samples,
     [sample1Uuid]: {
@@ -91,7 +123,6 @@ const withDataState = {
         'matrix.mtx.gz': { valid: true, upload: { status: UploadStatus.UPLOADED } },
       },
     },
-
     [sample2Uuid]: {
       ...sampleTemplate,
       name: sample2Name,
@@ -124,6 +155,11 @@ const withDataState = {
 };
 
 describe('LaunchAnalysisButton', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.doMock();
+  });
+
   it('Process project button is disabled if not all sample metadata are inserted', () => {
     const notAllMetadataInserted = {
       ...withDataState,
@@ -197,8 +233,8 @@ describe('LaunchAnalysisButton', () => {
     expect(button).not.toBeDisabled();
   });
 
-  it('Shows Go to Data Processing if there are no changes to the project (same hash)', () => {
-    jest.mock('../../../utils/data-management/generateGem2sParamsHash', () => jest.fn().mockReturnValue('old-params-hash'));
+  it('Shows Go to Data Processing if there are no changes to the project (same hash)', async () => {
+    generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
 
     render(
       <Provider store={mockStore(withDataState)}>
@@ -206,11 +242,13 @@ describe('LaunchAnalysisButton', () => {
       </Provider>,
     );
 
-    expect(screen.findByText('Go to Data Processing')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText('Go to Data Processing')).toBeDefined();
+    });
   });
 
-  it('Shows Process project if there are changes to the project (different hash)', () => {
-    jest.mock('../../../utils/data-management/generateGem2sParamsHash', () => jest.fn().mockReturnValue('new-params-hash'));
+  it('Shows Process project if there are changes to the project (different hash)', async () => {
+    generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
 
     render(
       <Provider store={mockStore(withDataState)}>
@@ -218,6 +256,64 @@ describe('LaunchAnalysisButton', () => {
       </Provider>,
     );
 
-    expect(screen.findByText('Process project')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText('Process project')).toBeDefined();
+    });
+  });
+
+  it('Dispatches request for GEM2S if there are changes to the project', async () => {
+    generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
+    render(
+      <Provider store={mockStore(withDataState)}>
+        <LaunchAnalysisButton />
+      </Provider>,
+    );
+
+    userEvent.click(screen.getByText('Process project'));
+
+    await waitFor(() => screen.getByText('Yes'));
+
+    // fireEvent is used here instead of user event
+    // because fireEvent does not check for pointer-events: none
+    // whiich is checked by userEvents disables interaction with the button
+    // See https://github.com/ant-design/ant-design/issues/31105
+    fireEvent.click(screen.getByText('Yes'));
+
+    expect(runGem2s).toHaveBeenCalled();
+  });
+
+  it('Does not dispatch request for GEM2S if there are no changes to the project', async () => {
+    generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
+
+    render(
+      <Provider store={mockStore(withDataState)}>
+        <LaunchAnalysisButton />
+      </Provider>,
+    );
+
+    userEvent.click(screen.getByText('Go to Data Processing'));
+    expect(runGem2s).not.toHaveBeenCalled();
+  });
+
+  it('Should dispatch the correct actions', () => {
+    generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
+
+    render(
+      <Provider store={mockStore(withDataState)}>
+        <LaunchAnalysisButton />
+      </Provider>,
+    );
+
+    userEvent.click(screen.getByText('Go to Data Processing'));
+    expect(runGem2s).not.toHaveBeenCalled();
+
+    // Updates experiments
+    expect(updateProject).toHaveBeenCalled();
+
+    // Updates project
+    expect(updateExperiment).toHaveBeenCalled();
+
+    // Updates experiment info
+    expect(updateExperimentInfo).toHaveBeenCalled();
   });
 });

@@ -6,6 +6,7 @@ import {
 import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
+import integrationTestConstants from '../../utils/integrationTestConstants';
 import { processUpload } from '../../utils/upload/processUpload';
 
 const ProjectMenu = () => {
@@ -23,6 +24,7 @@ const ProjectMenu = () => {
     <>
       <Space>
         <Button
+          data-test-id={integrationTestConstants.ids.ADD_SAMPLES_BUTTON}
           onClick={() => setUploadModalVisible(true)}
         >
           Add samples

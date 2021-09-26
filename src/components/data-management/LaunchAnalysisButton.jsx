@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Button, Tooltip, Popconfirm } from 'antd';
 import { useRouter } from 'next/router';
 import moment from 'moment';
+import { updateExperimentInfo } from '../../redux/actions/experimentSettings';
 import {
   updateProject,
 } from '../../redux/actions/projects';
@@ -14,8 +15,6 @@ import integrationTestConstants from '../../utils/integrationTestConstants';
 import generateGem2sParamsHash from '../../utils/data-management/generateGem2sParamsHash';
 import { runGem2s } from '../../redux/actions/pipeline';
 import { updateExperiment } from '../../redux/actions/experiments';
-
-import LaunchAnalysisModal from './LaunchAnalysisModal';
 
 const LaunchButtonTemplate = (props) => {
   // eslint-disable-next-line react/prop-types
@@ -46,30 +45,29 @@ const LaunchAnalysisButton = () => {
   const activeProject = projects[activeProjectUuid];
 
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, hash: null, reasons: [] });
-  const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
 
-  const launchAnalysis = (experimentId) => {
-    const analysisPath = '/experiments/[experimentId]/data-processing';
+  const launchAnalysis = () => {
+    const activeExperimentId = activeProject.experiments[0];
+
     const lastViewed = moment().toISOString();
-
-    dispatch(updateExperiment(experimentId, { lastViewed }));
+    dispatch(updateExperiment(activeExperimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+    dispatch(updateExperimentInfo({
+      experimentId: activeExperimentId,
+      experimentName: experiments[activeExperimentId].name,
+      sampleIds: experiments[activeExperimentId].sampleIds,
+    }));
 
     if (gem2sRerunStatus.rerun) {
-      dispatch(runGem2s(experimentId, gem2sRerunStatus.hash));
+      dispatch(runGem2s(activeExperimentId, gem2sRerunStatus.hash));
     }
 
-    router.push(analysisPath.replace('[experimentId]', experimentId));
+    const analysisPath = '/experiments/[experimentId]/data-processing';
+    router.push(analysisPath.replace('[experimentId]', activeExperimentId));
   };
 
   const calculateGem2sRerunStatus = (experimentId, gem2sBackendStatus) => {
-    const rerunReasons = [];
-
     const { status: gem2sStatus, paramsHash: existingParamsHash } = gem2sBackendStatus;
-
-    const gem2sSuccessful = [
-      pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
-    ].includes(gem2sStatus);
 
     const newParamsHash = generateGem2sParamsHash(
       activeProject,
@@ -79,6 +77,11 @@ const LaunchAnalysisButton = () => {
 
     const projectHashEqual = existingParamsHash === newParamsHash;
 
+    const gem2sSuccessful = [
+      pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
+    ].includes(gem2sStatus);
+
+    const rerunReasons = [];
     if (!gem2sSuccessful) rerunReasons.push('data has not been processed sucessfully');
     if (!projectHashEqual) rerunReasons.push('the project samples/metadata have been modified');
 
@@ -99,7 +102,7 @@ const LaunchAnalysisButton = () => {
       || !experiments[experimentId]?.sampleIds.length > 0
     ) return;
 
-    const gem2sStatus = calculateGem2sRerunStatus(experimentId, backendStatus);
+    const gem2sStatus = calculateGem2sRerunStatus(experimentId, gem2sBackendStatus);
 
     setGem2sRerunStatus(gem2sStatus);
   }, [backendStatus, activeProjectUuid, samples, activeProject]);
@@ -159,7 +162,7 @@ const LaunchAnalysisButton = () => {
           {/* disabled button inside tooltip causes tooltip to not function */}
           {/* https://github.com/react-component/tooltip/issues/18#issuecomment-140078802 */}
           <span>
-            <LaunchButtonTemplate text={buttonText} disabled onClick={() => setAnalysisModalVisible(true)} />
+            <LaunchButtonTemplate text={buttonText} disabled />
           </span>
         </Tooltip>
       );
@@ -172,7 +175,7 @@ const LaunchAnalysisButton = () => {
           title={`This project has to be processed because ${gem2sRerunStatus.reasons.join(' and ')}. \
             This will take several minutes.\
             Do you want to continue?`}
-          onConfirm={() => setAnalysisModalVisible(true)}
+          onConfirm={() => launchAnalysis()}
           okText='Yes'
           cancelText='No'
           placement='bottom'
@@ -183,23 +186,10 @@ const LaunchAnalysisButton = () => {
       );
     }
 
-    return <LaunchButtonTemplate text={buttonText} onClick={() => setAnalysisModalVisible(true)} />;
+    return <LaunchButtonTemplate text={buttonText} onClick={() => launchAnalysis()} />;
   };
 
-  return (
-    <>
-      {renderLaunchButton()}
-      {analysisModalVisible ? (
-        <LaunchAnalysisModal
-          onLaunch={(experimentId) => {
-            setAnalysisModalVisible(false);
-            launchAnalysis(experimentId);
-          }}
-          onCancel={() => setAnalysisModalVisible(false)}
-        />
-      ) : <></>}
-    </>
-  );
+  return renderLaunchButton();
 };
 
 export default LaunchAnalysisButton;

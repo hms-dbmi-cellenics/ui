@@ -7,7 +7,6 @@ import initialBackendState from '../../../../redux/reducers/backendStatus';
 
 import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
-  EXPERIMENT_SETTINGS_INFO_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
 
 import {
@@ -73,7 +72,6 @@ describe('runGem2s action', () => {
     expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
     expect(loadBackendStatus).toHaveBeenCalled();
 
-    expect(actions[2].type).toEqual(EXPERIMENT_SETTINGS_INFO_UPDATE);
     expect(actions).toMatchSnapshot();
   });
 
