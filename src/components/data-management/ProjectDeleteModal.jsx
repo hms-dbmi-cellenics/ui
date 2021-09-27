@@ -85,6 +85,7 @@ const ProjectDeleteModal = (props) => {
               label='Type in the name of the project to confirm:'
             >
               <Input
+                data-test-id={integrationTestConstants.classes.DELETE_PROJECT_MODAL_INPUT}
                 onChange={(e) => {
                   setIsValid(projectName === e.target.value);
                   setInputProjectName(e.target.value);

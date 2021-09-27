@@ -12,6 +12,8 @@ import validateInputs, { rules } from '../../utils/validateInputs';
 import ProjectDeleteModal from './ProjectDeleteModal';
 import { setActiveProject, updateProject } from '../../redux/actions/projects';
 
+import integrationTestConstants from '../../utils/integrationTestConstants';
+
 const { Item } = Descriptions;
 
 const validationChecks = [
@@ -70,7 +72,7 @@ const ProjectCard = (props) => {
         />
       )}
       <Card
-        data-test-class='project-card'
+        data-test-class={integrationTestConstants.classes.PROJECT_CARD}
         key={projectUuid}
         type='primary'
         style={projectUuid === activeProjectUuid ? activeProjectStyle : inactiveProjectStyle}

@@ -6,6 +6,7 @@ import {
 import DownloadData from './DownloadData';
 import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
 import UploadStatus from '../../utils/upload/UploadStatus';
+
 import FileUploadModal from './FileUploadModal';
 import AnalysisModal from './AnalysisModal';
 import { processUpload } from '../../utils/upload/processUpload';
@@ -63,6 +64,7 @@ const ProjectMenu = () => {
     <>
       <Space>
         <Button
+          data-test-id={integrationTestConstants.ids.ADD_SAMPLES_BUTTON}
           disabled={!anyProjectsAvailable}
           onClick={() => setUploadModalVisible(true)}
         >
