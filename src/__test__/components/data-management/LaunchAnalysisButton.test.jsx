@@ -295,7 +295,7 @@ describe('LaunchAnalysisButton', () => {
     expect(runGem2s).not.toHaveBeenCalled();
   });
 
-  it('Should dispatch the correct actions', () => {
+  it('Clicking launch analysis should dispatch the correct actions', () => {
     generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
 
     render(

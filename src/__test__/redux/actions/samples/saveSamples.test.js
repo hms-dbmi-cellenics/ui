@@ -130,7 +130,7 @@ describe('saveSamples action', () => {
     );
   });
 
-  it('Correctly update samples if function is told not to add new samples', async () => {
+  it('correctly update existing samples in database', async () => {
     const store = mockStore(initialState);
 
     const newSamplesObject = {
