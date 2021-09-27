@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
 import EmptyPlot from './helpers/EmptyPlot';
-import migrateFeaturesVsUMIsPlotData from './helpers/migrateFeaturesVsUMIsPlotData';
+import transformOldFeaturesVsUMIsPlotData from './helpers/transformOldFeaturesVsUMIsPlotData';
 import generateSpec from '../../utils/plotSpecs/generateFeaturesVsUMIsScatterplot';
 
 const FeaturesVsUMIsScatterplot = (props) => {
@@ -12,7 +12,9 @@ const FeaturesVsUMIsScatterplot = (props) => {
   } = props;
 
   // can remove if we formally migrate
-  const newPlotData = migrateFeaturesVsUMIsPlotData(plotData);
+  const newPlotData = (!Array.isArray(plotData) || !plotData.length)
+    ? plotData
+    : transformOldFeaturesVsUMIsPlotData(plotData);
 
   const [plotSpec, setPlotSpec] = useState(config);
 

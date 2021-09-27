@@ -1,6 +1,8 @@
 import { stdev } from '../mathFormulas';
 
-const generateSpec = (config, { pointsData, linesData }) => {
+const generateSpec = (config, plotData) => {
+  const { pointsData, linesData } = plotData;
+
   const sd = stdev(pointsData.map((p) => p.log_genes));
   const lowerCutoff = Math.min(...linesData.map((p) => p.lower_cutoff)) - sd;
   const upperCutoff = Math.max(...linesData.map((p) => p.upper_cutoff)) + sd;
@@ -112,7 +114,7 @@ const generateSpec = (config, { pointsData, linesData }) => {
         encode: {
           update: {
             x: { scale: 'x', field: 'log_molecules' },
-            y: { scale: 'y', field: 'lower_cutoff' },
+            y: { scale: 'y', field: 'upper_cutoff' },
             strokeWidth: { value: 2 },
             strokeDash: { value: [8, 4] },
             stroke: { value: 'red' },
@@ -125,7 +127,7 @@ const generateSpec = (config, { pointsData, linesData }) => {
         encode: {
           update: {
             x: { scale: 'x', field: 'log_molecules' },
-            y: { scale: 'y', field: 'upper_cutoff' },
+            y: { scale: 'y', field: 'lower_cutoff' },
             strokeWidth: { value: 2 },
             strokeDash: { value: [8, 4] },
             stroke: { value: 'red' },
