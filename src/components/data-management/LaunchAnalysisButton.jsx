@@ -43,30 +43,29 @@ const LaunchAnalysisButton = () => {
   const projects = useSelector((state) => state.projects);
   const { activeProjectUuid } = projects.meta;
   const activeProject = projects[activeProjectUuid];
+  const experimentId = activeProject.experiments[0];
 
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, hash: null, reasons: [] });
 
   const launchAnalysis = () => {
-    const activeExperimentId = activeProject.experiments[0];
-
     const lastViewed = moment().toISOString();
-    dispatch(updateExperiment(activeExperimentId, { lastViewed }));
+    dispatch(updateExperiment(experimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
     dispatch(updateExperimentInfo({
-      experimentId: activeExperimentId,
-      experimentName: experiments[activeExperimentId].name,
-      sampleIds: experiments[activeExperimentId].sampleIds,
+      experimentId,
+      experimentName: experiments[experimentId].name,
+      sampleIds: experiments[experimentId].sampleIds,
     }));
 
     if (gem2sRerunStatus.rerun) {
-      dispatch(runGem2s(activeExperimentId, gem2sRerunStatus.hash));
+      dispatch(runGem2s(experimentId, gem2sRerunStatus.hash));
     }
 
     const analysisPath = '/experiments/[experimentId]/data-processing';
-    router.push(analysisPath.replace('[experimentId]', activeExperimentId));
+    router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
-  const calculateGem2sRerunStatus = (experimentId, gem2sBackendStatus) => {
+  const calculateGem2sRerunStatus = (gem2sBackendStatus) => {
     const { status: gem2sStatus, paramsHash: existingParamsHash } = gem2sBackendStatus;
 
     const newParamsHash = generateGem2sParamsHash(
@@ -93,14 +92,12 @@ const LaunchAnalysisButton = () => {
   };
 
   useEffect(() => {
-    const experimentId = activeProject.experiments[0];
-
     // The value of backend status is null for new projects that have never run
     const gem2sBackendStatus = backendStatus[experimentId]?.status?.gem2s;
 
     if (
       !gem2sBackendStatus
-      || !experiments[experimentId]?.sampleIds.length > 0
+      || !experiments[experimentId]?.sampleIds?.length > 0
     ) return;
 
     const gem2sStatus = calculateGem2sRerunStatus(experimentId, gem2sBackendStatus);
