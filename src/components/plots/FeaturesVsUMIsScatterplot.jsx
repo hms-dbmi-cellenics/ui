@@ -12,9 +12,11 @@ const FeaturesVsUMIsScatterplot = (props) => {
   } = props;
 
   // we can remove this if we migrate old plotData to the new schema
-  const newPlotData = (!Array.isArray(plotData) || !plotData.length)
-    ? plotData
-    : transformOldFeaturesVsUMIsPlotData(plotData);
+  const needTransformPlotData = Array.isArray(plotData) && plotData.length;
+
+  const newPlotData = needTransformPlotData
+    ? transformOldFeaturesVsUMIsPlotData(plotData)
+    : plotData;
 
   const [plotSpec, setPlotSpec] = useState(config);
 
