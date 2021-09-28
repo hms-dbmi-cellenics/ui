@@ -30,6 +30,7 @@ import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
 
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
+import { getCellSets } from '../../../redux/selectors';
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
@@ -55,10 +56,11 @@ const Embedding = (props) => {
 
   const focusData = useSelector((state) => state.cellInfo.focus);
   const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
-
-  const cellSetProperties = useSelector((state) => state.cellSets.properties);
-  const cellSetHierarchy = useSelector((state) => state.cellSets.hierarchy);
-  const cellSetHidden = useSelector((state) => state.cellSets.hidden);
+  const {
+    properties: cellSetProperties,
+    hierarchy: cellSetHierarchy,
+    hidden: cellSetHidden,
+  } = useSelector(getCellSets());
 
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
