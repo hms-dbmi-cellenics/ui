@@ -11,7 +11,7 @@ const FeaturesVsUMIsScatterplot = (props) => {
     config, plotData, actions,
   } = props;
 
-  // can remove if we formally migrate
+  // we can remove this if we migrate old plotData to the new schema
   const newPlotData = (!Array.isArray(plotData) || !plotData.length)
     ? plotData
     : transformOldFeaturesVsUMIsPlotData(plotData);
