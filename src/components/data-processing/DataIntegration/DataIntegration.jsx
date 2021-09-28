@@ -9,6 +9,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 
+import { getBackendStatus } from 'redux/selectors';
 import CalculationConfig from './CalculationConfig';
 import PlotStyling from '../../plots/styling/PlotStyling';
 
@@ -204,8 +205,8 @@ const DataIntegration = (props) => {
   const selectedConfig = plotConfigs[plots[selectedPlot].plotUuid];
 
   const completedSteps = useSelector(
-    (state) => state.backendStatus[experimentId].status.pipeline?.completedSteps,
-  );
+    getBackendStatus(experimentId),
+  ).status?.pipeline?.completedSteps;
 
   const configureEmbeddingFinished = useRef(null);
   useEffect(() => {

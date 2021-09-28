@@ -126,4 +126,26 @@ describe('loadMarkerGenes action', () => {
     expect(loadedAction.type).toEqual(MARKER_GENES_ERROR);
     expect(loadedAction).toMatchSnapshot();
   });
+
+  it('Defaults to louvain cluster if selected cell set is not provided', async () => {
+    const store = mockStore({
+      genes: {
+        ...initialState,
+      },
+      experimentSettings,
+      backendStatus,
+    });
+
+    const defaultCellSetKey = 'louvain';
+
+    const workRequestBody = { cellSetKey: defaultCellSetKey, nGenes: 5, name: 'MarkerHeatmap' };
+
+    await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHearmap', 5));
+
+    expect(fetchWork).toHaveBeenCalled();
+
+    const functionArgs = fetchWork.mock.calls[0];
+
+    expect(functionArgs[1]).toEqual(workRequestBody);
+  });
 });

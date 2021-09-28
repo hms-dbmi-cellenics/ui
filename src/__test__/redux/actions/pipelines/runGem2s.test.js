@@ -2,7 +2,6 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialExperimentsState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
-import initialProjectsState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 import loadBackendStatus from '../../../../redux/actions/backendStatus/loadBackendStatus';
 
 import {
@@ -35,14 +34,6 @@ const initialState = {
       id: experimentId,
       projectUuid: projectId,
       sampleIds: ['sample-1', 'sample-2'],
-    },
-  },
-  projects: {
-    ...initialProjectsState,
-    [projectId]: {
-      ...projectTemplate,
-      name: 'Mock project',
-      samples: ['sample-1', 'sample-2'],
     },
   },
 };
@@ -88,5 +79,12 @@ describe('runGem2s action', () => {
     expect(actions[1].type).toEqual(BACKEND_STATUS_ERROR);
 
     expect(actions).toMatchSnapshot();
+  });
+
+  it('Dispatches properly without project data', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(runGem2s(experimentId));
+
+    expect(fetchMock).toHaveBeenCalled();
   });
 });
