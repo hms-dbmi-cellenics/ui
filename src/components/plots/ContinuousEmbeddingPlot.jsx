@@ -9,6 +9,7 @@ import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbedd
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadEmbedding } from '../../redux/actions/embedding';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
+import { getCellSets } from '../../redux/selectors';
 
 const ContinuousEmbeddingPlot = (props) => {
   const {
@@ -28,7 +29,8 @@ const ContinuousEmbeddingPlot = (props) => {
     error: embeddingError,
   } = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
 
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
+
   const [plotSpec, setPlotSpec] = useState({});
   const plotComponent = useSelector(
     (state) => state.componentConfig[plotUuid],

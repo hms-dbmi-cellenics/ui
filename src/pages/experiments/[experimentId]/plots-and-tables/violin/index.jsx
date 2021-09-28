@@ -22,6 +22,7 @@ import {
 import { loadCellSets } from 'redux/actions/cellSets';
 import Header from 'components/plots/Header';
 import ViolinPlot from 'components/plots/ViolinPlot';
+import { getCellSets } from 'redux/selectors';
 
 const { Panel } = Collapse;
 
@@ -38,7 +39,7 @@ const plotType = 'violin';
 const ViolinIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
   const [searchedGene, setSearchedGene] = useState(config?.shownGene);
 
   useEffect(() => {

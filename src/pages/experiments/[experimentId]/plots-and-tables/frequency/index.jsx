@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import Link from 'next/link';
@@ -12,6 +13,7 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import { getCellSets } from 'redux/selectors';
 import SelectCellSets from '../../../../../components/plots/styling/frequency/SelectCellSets';
 import Header from '../../../../../components/plots/Header';
 
@@ -24,7 +26,6 @@ import PlatformError from '../../../../../components/PlatformError';
 import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
 
 import FrequencyPlot from '../../../../../components/plots/FrequencyPlot';
-
 import Loader from '../../../../../components/Loader';
 
 const { Panel } = Collapse;
@@ -38,7 +39,7 @@ const route = {
 const frequencyPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
 
   const {
     loading, error, hierarchy, properties,

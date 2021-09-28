@@ -16,9 +16,10 @@ import { initialPlotConfigStates } from '../../../../redux/reducers/componentCon
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 
-import { getBackendStatus } from '../../../../redux/selectors';
+import { getBackendStatus, getCellSets } from '../../../../redux/selectors';
 
 jest.mock('../../../../redux/selectors');
+configure({ adapter: new Adapter() });
 
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
@@ -41,34 +42,6 @@ jest.mock('next/router', () => ({
 }));
 
 const mockedStore = mockStore({
-  cellSets: {
-    ...initialCellSetsState,
-    properties: {
-      test: {
-        name: 'Test',
-        cellIds: new Set(),
-      },
-      'test-1': {
-        name: 'Test-1',
-        cellIds: new Set([1, 2, 3]),
-      },
-      'test-2': {
-        name: 'Test-1',
-        cellIds: new Set([4, 5, 6]),
-      },
-    },
-    hierarchy: [
-      {
-        key: 'test',
-        children: [
-          { key: 'test-1' },
-          { key: 'test-2' },
-        ],
-      },
-    ],
-    loading: false,
-    error: false,
-  },
   embeddings: {
     ...initialEmbeddingState,
     umap: {
@@ -107,8 +80,37 @@ describe('DataIntegration', () => {
   beforeAll(async () => {
     await preloadAll();
   });
-
-  configure({ adapter: new Adapter() });
+  beforeEach(() => {
+    console.log('BEFOREEACH');
+    getCellSets.mockImplementation(() => () => ({
+      ...initialCellSetsState,
+      properties: {
+        test: {
+          name: 'Test',
+          cellIds: new Set(),
+        },
+        'test-1': {
+          name: 'Test-1',
+          cellIds: new Set([1, 2, 3]),
+        },
+        'test-2': {
+          name: 'Test-1',
+          cellIds: new Set([4, 5, 6]),
+        },
+      },
+      hierarchy: [
+        {
+          key: 'test',
+          children: [
+            { key: 'test-1' },
+            { key: 'test-2' },
+          ],
+        },
+      ],
+      loading: false,
+      error: false,
+    }));
+  });
 
   it('renders correctly', () => {
     getBackendStatus.mockImplementation(() => () => ({
@@ -118,7 +120,7 @@ describe('DataIntegration', () => {
     }));
 
     const store = mockedStore;
-
+    console.log('1');
     const component = mount(
       <Provider store={store}>
         <DataIntegration
@@ -126,6 +128,8 @@ describe('DataIntegration', () => {
           onPipelineRun={jest.fn()}
         />
       </Provider>,
+      console.log('2'),
+
     );
 
     const dataIntegration = component.find(DataIntegration).at(0);

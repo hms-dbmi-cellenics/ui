@@ -12,18 +12,19 @@ import {
 
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
+import { getCellSets } from '../../../redux/selectors';
 
 const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
 
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
   const selectedTracks = useSelector(
     (state) => state.componentConfig[componentType].config.selectedTracks,
   );
 
-  const getCellSets = (category) => {
+  const getCellSetsHierarchy = (category) => {
     if (!cellSets || cellSets.loading) {
       return [];
     }
@@ -37,7 +38,7 @@ const HeatmapMetadataTrackSettings = (props) => {
     );
   };
 
-  const getTrackData = () => getCellSets(
+  const getTrackData = () => getCellSetsHierarchy(
     ['cellSets', 'metadataCategorical'],
   ).map(
     (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),

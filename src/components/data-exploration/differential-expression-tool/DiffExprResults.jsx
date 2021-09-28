@@ -13,6 +13,7 @@ import _ from 'lodash';
 import GeneTable from '../generic-gene-table/GeneTable';
 import { geneTableUpdateReason } from '../../../utils/geneTable/geneTableUpdateReason';
 import loadDifferentialExpression from '../../../redux/actions/differentialExpression/loadDifferentialExpression';
+import { getCellSets } from '../../../redux/selectors';
 
 const { Text } = Typography;
 
@@ -28,9 +29,7 @@ const DiffExprResults = (props) => {
   const error = useSelector((state) => state.differentialExpression.properties.error);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
-
-  const properties = useSelector((state) => state.cellSets.properties);
-
+  const { properties } = useSelector(getCellSets());
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
   const [settingsListed, setSettingsListed] = useState(false);

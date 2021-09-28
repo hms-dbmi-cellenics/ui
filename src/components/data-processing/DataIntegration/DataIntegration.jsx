@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, {
   useState, useEffect, useRef, useCallback,
 } from 'react';
@@ -9,7 +10,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 
-import { getBackendStatus } from 'redux/selectors';
+import { getBackendStatus, getCellSets } from 'redux/selectors';
 import CalculationConfig from './CalculationConfig';
 import PlotStyling from '../../plots/styling/PlotStyling';
 
@@ -34,8 +35,8 @@ const DataIntegration = (props) => {
   } = props;
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
-  const cellSets = useSelector((state) => state.cellSets);
-
+  console.log('BEFORE USESELECTOR');
+  const cellSets = useSelector(getCellSets());
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
 
