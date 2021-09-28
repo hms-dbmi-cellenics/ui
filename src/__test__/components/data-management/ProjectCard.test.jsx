@@ -49,13 +49,13 @@ describe('ProjectCard', () => {
     expect(screen.getByText(samplesIdsArray.length)).toBeInTheDocument();
 
     // Created date is shown
-    expect(screen.getByText(moment(createdDate).fromNow())).toBeInTheDocument();
+    expect(screen.getAllByText(moment(createdDate).fromNow())[0]).toBeInTheDocument();
 
     // Last analyized is shown
-    expect(screen.getByText(moment(lastAnalyzed).fromNow())).toBeInTheDocument();
+    expect(screen.getAllByText(moment(lastAnalyzed).fromNow())[0]).toBeInTheDocument();
 
     // Last modified is shown
-    expect(screen.getByText(moment(lastModified).fromNow())).toBeInTheDocument();
+    expect(screen.getAllByText(moment(lastModified).fromNow())[0]).toBeInTheDocument();
   });
 
   it('Displays the delete project modal when delete project is clicked', async () => {
