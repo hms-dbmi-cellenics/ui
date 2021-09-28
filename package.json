@@ -65,6 +65,7 @@
     "babel-plugin-lodash": "^3.3.4",
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
+    "crypto-js": "^3.3.0",
     "cssnano": "^4.1.10",
     "dotenv": "^8.2.0",
     "es6-promise": "^4.2.5",

@@ -52,11 +52,10 @@ const NewProjectModal = (props) => {
   } = useSelector((state) => state.projects.meta);
 
   const submit = () => {
-    const newProject = projectName;
     setProjectName('');
 
-    dispatch(createProject(newProject, projectDescription, 'Unnamed Analysis 1'));
-    onCreate(newProject, projectDescription);
+    dispatch(createProject(projectName, projectDescription, projectName));
+    onCreate(projectName, projectDescription);
   };
 
   return (

@@ -41,8 +41,8 @@ const GEM2SLoadingScreen = (props) => {
     running: {
       status: 'running',
       showProgress: true,
-      title: '',
-      subTitle: '',
+      title: ' ',
+      subTitle: ' ',
       image: '/undraw_Dev_focus_re_6iwt.svg',
       alt: 'A woman working in front of a computer.',
     },
