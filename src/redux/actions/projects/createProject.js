@@ -11,8 +11,6 @@ import {
   PROJECTS_SAVING,
 } from '../../actionTypes/projects';
 
-// import saveProject from './saveProject';
-
 import { projectTemplate } from '../../reducers/projects/initialState';
 import createExperiment from '../experiments/createExperiment';
 import endUserMessages from '../../../utils/endUserMessages';
