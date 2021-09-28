@@ -1,154 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import {
-  Card, Space, Descriptions, Skeleton,
+  Space, Button,
 } from 'antd';
-import { blue } from '@ant-design/colors';
-import EditableField from '../EditableField';
+import PropTypes from 'prop-types';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
+import ProjectSearchBox from './ProjectSearchBox';
+import ProjectsList from './ProjectsList';
 
-import ProjectDeleteModal from './ProjectDeleteModal';
-import { setActiveProject, updateProject, deleteProject as deleteProjectAction } from '../../redux/actions/projects';
-import PrettyTime from '../PrettyTime';
-import validateInputs, { rules } from '../../utils/validateInputs';
 import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const ProjectsListContainer = (props) => {
-  const { height } = props;
-  const dispatch = useDispatch();
+  const { height, onCreateNewProject } = props;
 
-  const loading = useSelector((state) => state.projects.meta.loading);
-  const projects = useSelector((state) => state.projects);
-
-  const { activeProjectUuid } = projects.meta;
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [deleteProjectUuid, setDeleteProjectUuid] = useState(false);
-  const [projectNames, setProjectNames] = useState(new Set());
-
-  useEffect(() => {
-    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
-  }, [projects.ids]);
-
-  const activeProjectStyle = {
-    backgroundColor: blue[0],
-    cursor: 'pointer',
-    border: `2px solid ${blue.primary}`,
-  };
-
-  const deleteProject = () => {
-    dispatch(deleteProjectAction(deleteProjectUuid));
-    setDeleteModalVisible(false);
-  };
-
-  const validationChecks = [
-    rules.MIN_8_CHARS,
-    rules.MIN_2_SEQUENTIAL_CHARS,
-    rules.ALPHANUM_DASH_SPACE,
-    rules.UNIQUE_NAME_CASE_INSENSITIVE,
-  ];
-
-  const validationParams = {
-    existingNames: projectNames,
-  };
-
-  if (loading) {
-    // eslint-disable-next-line react/no-array-index-key
-    return Array(5).map((_, idx) => <Skeleton key={`loader-${idx}`} active />);
-  }
+  const [filterParam, setFilterParam] = useState(new RegExp('.*', 'i'));
 
   return (
-    <>
-      {deleteModalVisible && (
-        <ProjectDeleteModal
-          onCancel={() => { setDeleteModalVisible(false); }}
-          onDelete={deleteProject}
-          projectName={projects[deleteProjectUuid]?.name}
-        />
-      )}
-      <Space direction='vertical' style={{ width: '100%', height: height - 90 }}>
-        {
-          projects.ids.map((uuid) => (
-            <Card
-              data-test-class={integrationTestConstants.classes.PROJECT_CARD}
-              key={uuid}
-              type='primary'
-              style={activeProjectUuid === uuid ? activeProjectStyle : { cursor: 'pointer' }}
-
-              onClick={() => {
-                dispatch(setActiveProject(uuid));
-              }}
-            >
-              <Descriptions
-                layout='horizontal'
-                size='small'
-                column={1}
-              >
-                <Descriptions.Item contentStyle={{ fontWeight: 700, fontSize: 16 }}>
-                  <EditableField
-                    value={projects[uuid].name}
-                    onAfterSubmit={(name) => {
-                      dispatch(updateProject(uuid, { name }));
-                    }}
-                    onDelete={(e) => {
-                      e.stopPropagation();
-                      setDeleteProjectUuid(uuid);
-                      setDeleteModalVisible(true);
-                    }}
-                    validationFunc={
-                      (name) => validateInputs(
-                        name,
-                        validationChecks,
-                        validationParams,
-                      ).isValid
-                    }
-                  />
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Samples'
-                >
-                  {projects[uuid].samples.length}
-
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Created'
-                >
-                  <PrettyTime isoTime={projects[uuid].createdDate} />
-
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Modified'
-                >
-                  <PrettyTime isoTime={projects[uuid].lastModified} />
-
-                </Descriptions.Item>
-                <Descriptions.Item
-                  labelStyle={{ fontWeight: 'bold' }}
-                  label='Last analyzed'
-                >
-                  {projects[uuid].lastAnalyzed ? (
-                    <PrettyTime isoTime={projects[uuid].lastAnalyzed} />
-                  ) : ('never')}
-                </Descriptions.Item>
-              </Descriptions>
-            </Card>
-          ))
-        }
-      </Space>
-    </>
+    <Space direction='vertical' style={{ padding: '10px', width: '100%' }}>
+      <Button
+        data-test-id={integrationTestConstants.ids.CREATE_NEW_PROJECT_BUTTON}
+        type='primary'
+        block
+        onClick={() => onCreateNewProject()}
+      >
+        Create New Project
+      </Button>
+      <ProjectSearchBox onChange={(searchRegex) => setFilterParam(searchRegex)} />
+      <ProjectsList height={height} filter={filterParam} />
+    </Space>
   );
 };
 
 ProjectsListContainer.propTypes = {
-  height: PropTypes.number,
-};
-
-ProjectsListContainer.defaultProps = {
-  height: 800,
+  height: PropTypes.number.isRequired,
+  onCreateNewProject: PropTypes.func.isRequired,
 };
 
 export default ProjectsListContainer;

@@ -7,11 +7,15 @@ import {
 
 import { useSelector, useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
+
+import { getBackendStatus } from 'redux/selectors';
+
 import downloadTypes from 'utils/data-management/downloadTypes';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+
 import pipelineStatus from '../../utils/pipelineStatusValues';
 import { exportQCParameters, filterQCParameters } from '../../utils/data-management/exportQCParameters';
 import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
@@ -19,29 +23,33 @@ import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
 const DownloadData = () => {
   const dispatch = useDispatch();
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const experimentSettings = useSelector((state) => state.experimentSettings);
-  const backendStatus = useSelector((state) => state.backendStatus);
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  // Change if we have more than one experiment per project
+  const experimentId = activeProject?.experiments[0];
+
+  const {
+    status: backendStatuses, loading: backendLoading,
+  } = useSelector(getBackendStatus(experimentId));
+
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
   const [qcHasRun, setQcHasRun] = useState(false);
   const [gem2sHasRun, setGem2sHasRun] = useState(false);
   const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
-  // Change if we have more than one experiment per project
-  const experimentId = activeProject?.experiments[0];
 
   useEffect(() => {
-    if (experimentId && !backendStatus[experimentId]) {
+    if (experimentId && !backendLoading && !backendStatuses) {
       dispatch(loadBackendStatus(experimentId));
     }
   }, [experimentId]);
 
   useEffect(() => {
     setQcHasRun(experimentId
-      && (backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED));
+      && (backendStatuses?.pipeline?.status === pipelineStatus.SUCCEEDED));
     setGem2sHasRun(experimentId
-      && (backendStatus[experimentId]?.status?.gem2s?.status === pipelineStatus.SUCCEEDED));
-  }, [backendStatus]);
+      && (backendStatuses?.gem2s?.status === pipelineStatus.SUCCEEDED));
+  }, [backendStatuses]);
 
   useEffect(() => {
     setAllSamplesAnalysed(getAllSamplesAnalysed());

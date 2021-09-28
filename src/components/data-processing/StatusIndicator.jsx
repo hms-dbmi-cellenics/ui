@@ -15,6 +15,8 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons';
 
+import { getBackendStatus } from '../../redux/selectors';
+
 import PrettyTime from '../PrettyTime';
 import StepsIndicator from './StepsIndicator';
 import pipelineStatus from '../../utils/pipelineStatusValues';
@@ -29,7 +31,7 @@ const StatusIndicator = (props) => {
 
   const {
     status: { pipeline },
-  } = useSelector((state) => state.backendStatus[experimentId]);
+  } = useSelector(getBackendStatus(experimentId));
 
   const {
     startDate, stopDate, status, error,

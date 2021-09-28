@@ -26,6 +26,7 @@ const state = {
   },
 };
 const deleteProjectSpy = jest.fn();
+const cancelProjectSpy = jest.fn();
 
 describe('Delete Project Modal tests', () => {
   beforeEach(() => {
@@ -36,12 +37,14 @@ describe('Delete Project Modal tests', () => {
     render(
       <Provider store={store}>
         <ProjectDeleteModal
-          projectName={projectName}
+          projectUuid={projectId}
           onDelete={deleteProjectSpy}
+          onCancel={cancelProjectSpy}
         />
       </Provider>,
     );
   };
+
   it('has cancel and ok button', async () => {
     renderProjectDeleteModal();
     expect(screen.getByText('Keep project')).toBeInTheDocument();
@@ -66,5 +69,17 @@ describe('Delete Project Modal tests', () => {
     fireEvent.change(nameField, { target: { value: projectName } });
     fireEvent.click(screen.getByText('Permanently delete project').parentElement);
     await waitFor(() => expect(deleteProjectSpy).toHaveBeenCalled());
+  });
+
+  it('Calls cancel when delete is cancelled', async () => {
+    renderProjectDeleteModal();
+    fireEvent.click(screen.getByText('Keep project'));
+    await waitFor(() => expect(cancelProjectSpy).toHaveBeenCalled());
+  });
+
+  it('Calls cancel when closed', async () => {
+    renderProjectDeleteModal();
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    await waitFor(() => expect(cancelProjectSpy).toHaveBeenCalled());
   });
 });

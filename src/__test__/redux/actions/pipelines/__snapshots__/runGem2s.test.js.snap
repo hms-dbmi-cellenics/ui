@@ -16,7 +16,6 @@ Array [
     "payload": Object {
       "experimentId": "experiment-id",
       "experimentName": "Mock experiment",
-      "projectId": "project-id",
       "sampleIds": Array [
         "sample-1",
         "sample-2",

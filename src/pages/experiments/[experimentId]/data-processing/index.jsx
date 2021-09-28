@@ -20,6 +20,7 @@ import {
 
 import _ from 'lodash';
 
+import { getBackendStatus } from 'redux/selectors';
 import Header from '../../../../components/Header';
 import { useAppRouter } from '../../../../utils/RouteContext';
 
@@ -61,9 +62,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     return pathAfterQC.replace('[experimentId]', experimentId);
   }, [experimentId]);
 
-  const pipelineStatus = useSelector(
-    (state) => state.backendStatus[experimentId]?.status?.pipeline,
-  );
+  const pipelineStatus = useSelector(getBackendStatus(experimentId))?.status?.pipeline;
 
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);

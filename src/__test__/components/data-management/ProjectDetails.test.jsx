@@ -17,6 +17,8 @@ import initialExperimentsState from '../../../redux/reducers/experiments/initial
 import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
 import UploadStatus from '../../../utils/upload/UploadStatus';
 
+import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
+
 const mockStore = configureStore([thunk]);
 const width = 600;
 const height = 400;
@@ -29,6 +31,9 @@ const sample2Name = 'Sample 2';
 const sample2Uuid = 'sample-2';
 
 const noDataState = {
+  backendStatus: {
+    'experiment-1': initialExperimentBackendStatus,
+  },
   projects: {
     ...initialProjectState,
     meta: {

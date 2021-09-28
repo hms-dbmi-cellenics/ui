@@ -6,7 +6,12 @@ import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import { Menu } from 'antd';
 import { Auth } from 'aws-amplify';
+
+import { getBackendStatus } from '../../redux/selectors';
+
 import ContentWrapper from '../../components/ContentWrapper';
+
+jest.mock('../../redux/selectors');
 
 const { Item } = Menu;
 
@@ -46,14 +51,6 @@ configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({
-  backendStatus: {
-    [experimentId]: {
-      loading: false,
-      error: false,
-      status: {},
-    },
-  },
-
   notifications: {},
   experimentSettings: {
     processing: {
@@ -71,6 +68,12 @@ const store = mockStore({
 
 describe('ContentWrapper', () => {
   it('renders correctly', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: {},
+    }));
+
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
@@ -79,6 +82,7 @@ describe('ContentWrapper', () => {
         </ContentWrapper>
       </Provider>,
     );
+
     await wrapper.update();
 
     const sider = wrapper.find('Sider');
@@ -102,6 +106,12 @@ describe('ContentWrapper', () => {
   });
 
   it('links are disabled if there is no experimentId', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
@@ -110,6 +120,7 @@ describe('ContentWrapper', () => {
         </ContentWrapper>
       </Provider>,
     );
+
     await wrapper.update();
 
     const sider = wrapper.find('Sider');
@@ -137,19 +148,18 @@ describe('ContentWrapper', () => {
   });
 
   it('View changes if there is a pipeline run underway', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { status: 'RUNNING' } },
+    }));
+
     const info = {
       experimentId,
       experimentName: 'test experiment',
     };
 
     const testStore = mockStore({
-      backendStatus: {
-        [experimentId]: {
-          loading: false,
-          error: false,
-          status: { pipeline: { status: 'RUNNING' } },
-        },
-      },
       notifications: {},
       experimentSettings: {
         processing: {
@@ -191,6 +201,14 @@ describe('ContentWrapper', () => {
   });
 
   it('Redirects to login if the user is unauthenticated', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      [experimentId]: {
+        loading: false,
+        error: false,
+        status: {},
+      },
+    }));
+
     Auth.currentAuthenticatedUser
       .mockImplementationOnce(
         async () => { throw new Error('user not signed in'); },
