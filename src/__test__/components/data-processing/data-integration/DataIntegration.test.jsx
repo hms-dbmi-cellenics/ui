@@ -81,8 +81,7 @@ describe('DataIntegration', () => {
     await preloadAll();
   });
   beforeEach(() => {
-    console.log('BEFOREEACH');
-    getCellSets.mockImplementation(() => () => ({
+    getCellSets.mockReturnValue(() => ({
       ...initialCellSetsState,
       properties: {
         test: {
@@ -113,14 +112,13 @@ describe('DataIntegration', () => {
   });
 
   it('renders correctly', () => {
-    getBackendStatus.mockImplementation(() => () => ({
+    getBackendStatus.mockReturnValue(() => ({
       loading: false,
       error: false,
       status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
     }));
 
     const store = mockedStore;
-    console.log('1');
     const component = mount(
       <Provider store={store}>
         <DataIntegration
@@ -128,8 +126,6 @@ describe('DataIntegration', () => {
           onPipelineRun={jest.fn()}
         />
       </Provider>,
-      console.log('2'),
-
     );
 
     const dataIntegration = component.find(DataIntegration).at(0);
@@ -145,7 +141,7 @@ describe('DataIntegration', () => {
   });
 
   it('doesnt show plots that depend on configure embedding if it hasnt finished running yet', () => {
-    getBackendStatus.mockImplementation(() => () => ({
+    getBackendStatus.mockReturnValue(() => ({
       loading: false,
       error: false,
       status: { pipeline: { completedSteps: [] } },
@@ -175,7 +171,7 @@ describe('DataIntegration', () => {
   });
 
   it('doesnt crash if backend status is null', () => {
-    getBackendStatus.mockImplementation(() => () => ({
+    getBackendStatus.mockReturnValue(() => ({
       loading: false,
       error: false,
       status: null,

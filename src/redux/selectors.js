@@ -8,10 +8,8 @@ import * as cellSetsSelectors from './selectors/cellSets';
 const getBackendStatus = (...params) => (state) => (
   backendSelectors.getBackendStatus(...params)(state.backendStatus));
 
-const getCellSets = (...params) => (state) => {
-  console.log('inside selector');
-  return cellSetsSelectors.getCellSets(...params)(state.cellSets);
-};
+const getCellSets = (...params) => (state) => (
+  cellSetsSelectors.getCellSets(...params)(state.cellSets));
 
 export {
   getBackendStatus,
