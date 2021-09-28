@@ -117,6 +117,7 @@ const compressAndUploadSingleFile = async (
 
     console.log('uploadErrorResponseData');
     console.log(e.response?.data);
+
     dispatch(
       updateSampleFile(
         sampleUuid,
@@ -200,16 +201,10 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     };
   }, {});
 
-  const samplesEntries = Object.entries(samplesMap);
+  Object.entries(samplesMap).forEach(async ([name, sample]) => {
+    // Create sample if not exists
+    sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));
 
-  await Promise.all(
-    samplesEntries.map(async ([name, sample]) => {
-      // Create sample if not exists
-      sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));
-    }),
-  );
-
-  samplesEntries.forEach(([name, sample]) => {
     sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
 
     Object.values(sample.files).forEach((file) => {
