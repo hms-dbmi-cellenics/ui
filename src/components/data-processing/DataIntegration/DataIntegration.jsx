@@ -35,7 +35,6 @@ const DataIntegration = (props) => {
   } = props;
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
-  console.log('BEFORE USESELECTOR');
   const cellSets = useSelector(getCellSets());
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
