@@ -70,6 +70,9 @@ const noDataState = {
   experiments: {
     ...initialExperimentsState,
     ids: [experiment1id],
+    [experiment1id]: {
+      ...experimentTemplate,
+    },
   },
   samples: {
     ...initialSamplesState,

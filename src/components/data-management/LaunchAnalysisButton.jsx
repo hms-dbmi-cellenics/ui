@@ -100,7 +100,7 @@ const LaunchAnalysisButton = () => {
       || !experiments[experimentId]?.sampleIds?.length > 0
     ) return;
 
-    const gem2sStatus = calculateGem2sRerunStatus(experimentId, gem2sBackendStatus);
+    const gem2sStatus = calculateGem2sRerunStatus(gem2sBackendStatus);
 
     setGem2sRerunStatus(gem2sStatus);
   }, [backendStatus, activeProjectUuid, samples, activeProject]);
