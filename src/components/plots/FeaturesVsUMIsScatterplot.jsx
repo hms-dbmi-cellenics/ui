@@ -26,24 +26,16 @@ const FeaturesVsUMIsScatterplot = (props) => {
     }
   }, [config, plotData]);
 
-  const render = () => {
-    if (!newPlotData?.pointsData?.length) {
-      return (
-        <EmptyPlot mini={config.miniPlot} />
-      );
-    }
-
+  if (!newPlotData?.pointsData?.length) {
     return (
-      <center data-testid='vega-container'>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
-      </center>
+      <EmptyPlot mini={config.miniPlot} />
     );
-  };
+  }
 
   return (
-    <>
-      { render()}
-    </>
+    <center data-testid='vega-container'>
+      <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+    </center>
   );
 };
 
