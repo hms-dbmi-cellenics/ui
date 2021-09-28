@@ -52,7 +52,7 @@ FeaturesVsUMIsScatterplot.propTypes = {
 };
 
 FeaturesVsUMIsScatterplot.defaultProps = {
-  plotData: null,
+  plotData: [],
   actions: true,
 };
 
