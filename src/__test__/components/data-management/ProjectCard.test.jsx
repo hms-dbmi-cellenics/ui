@@ -12,9 +12,9 @@ import ProjectCard from '../../../components/data-management/ProjectCard';
 const projectUuid = '12345';
 const projectName = 'Test Project';
 const samplesIdsArray = new Array(13).fill(null).map((_, i) => (`sample-${i}`));
-const createdDate = '2021-09-01T00:00:00.000Z';
-const lastAnalyzed = '2021-09-02T00:00:00.000Z';
-const lastModified = '2021-09-03T00:00:00.000Z';
+const createdDate = moment().subtract(30, 'days').format();
+const lastAnalyzed = moment().subtract(6, 'hours').format();
+const lastModified = moment().subtract(30, 'minutes').format();
 
 const projectState = {
   projects: {
