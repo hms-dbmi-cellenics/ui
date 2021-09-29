@@ -1,65 +1,58 @@
 import React, { useContext, useState } from 'react';
 import propTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
 
-import ChangesNotAppliedModal from '../components/ChangesNotAppliedModal';
-
-import { discardChangedQCFilters } from '../redux/actions/experimentSettings';
-import { runPipeline } from '../redux/actions/pipeline';
+import DataProcessingIntercept from '../components/data-processing/DataProcessingIntercept';
 
 const AppRouterContext = React.createContext(null);
-
-const defaultRoute = 'data-management';
 
 const AppRouteProvider = (props) => {
   const { children, experimentId } = props;
   const router = useRouter();
 
-  // Check logic
-  const [destinationRoute, setDestinationRoute] = useState(defaultRoute);
-  const dispatch = useDispatch();
-  const [showChangesNotAppliedModal, setShowChangesNotAppliedModal] = useState(false);
+  const [displayIntercept, setDisplayIntercept] = useState(true);
+  const [renderIntercept, setRenderIntercept] = useState(null);
 
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
 
-  // Handle changes here
-  const handleRouteChange = (previousRoute, nextRoute) => {
-    // If there are unconfirmed changes, show modal
-    if (changedQCFilters.size && previousRoute.match('/data-processing')) {
-      setDestinationRoute(nextRoute);
-      setShowChangesNotAppliedModal(true);
+  const cancelNavigation = () => {};
+
+  const continueNavigation = (nextRoute, refreshPage) => {
+    if (refreshPage) window.location.href = nextRoute;
+    router.push(nextRoute);
+  };
+
+  const availableIntercepts = {
+    DATA_PROCESSING: (nextRoute, refreshPage) => (
+      <DataProcessingIntercept
+        experimentId={experimentId}
+        onContinueNavigation={() => continueNavigation(nextRoute, refreshPage)}
+        onCancelNavigation={() => cancelNavigation()}
+        onDismissIntercept={() => setDisplayIntercept(false)}
+      />
+    ),
+  };
+
+  const handleRouteChange = (previousRoute, nextRoute, refreshPage = false) => {
+    if (previousRoute.match('/data-processing') && changedQCFilters.size > 0) {
+      setDisplayIntercept(true);
+      setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, refreshPage));
       return;
     }
+
+    // Hard navigate, cusing the page to refresh and fetch data from server
+    if (refreshPage) window.location.href = nextRoute;
 
     router.push(nextRoute);
   };
 
-  const renderRouteIntercepts = () => {
-    if (showChangesNotAppliedModal) {
-      return (
-        <ChangesNotAppliedModal
-          experimentId={experimentId}
-          onRunPipeline={() => {
-            if (!experimentId) return;
-            dispatch(runPipeline(experimentId));
-            router.push(destinationRoute);
-          }}
-          onDiscardChanges={() => {
-            dispatch(discardChangedQCFilters());
-            setShowChangesNotAppliedModal(false);
-          }}
-          onCloseModal={() => {
-            setShowChangesNotAppliedModal(false);
-          }}
-        />
-      );
-    }
-  };
-
-  const navigateTo = (nextRoute) => handleRouteChange(router.pathname, nextRoute);
+  const navigateTo = (
+    nextRoute,
+    refreshPage,
+  ) => handleRouteChange(router.pathname, nextRoute, refreshPage);
 
   const contextObject = {
     navigateTo,
@@ -67,24 +60,8 @@ const AppRouteProvider = (props) => {
 
   return (
     <AppRouterContext.Provider value={contextObject}>
-      {renderRouteIntercepts()}
-      {showChangesNotAppliedModal && (
-        <ChangesNotAppliedModal
-          experimentId={experimentId}
-          onRunPipeline={() => {
-            if (!experimentId) return;
-            dispatch(runPipeline(experimentId));
-            router.push(destinationRoute);
-          }}
-          onDiscardChanges={() => {
-            dispatch(discardChangedQCFilters());
-            setShowChangesNotAppliedModal(false);
-          }}
-          onCloseModal={() => {
-            setShowChangesNotAppliedModal(false);
-          }}
-        />
-      )}
+      {displayIntercept ? renderIntercept : <></>}
+      {/* {renderRouteIntercepts()} */}
       {children}
     </AppRouterContext.Provider>
   );
