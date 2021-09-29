@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
 import React, { useState, useEffect } from 'react';
 import {

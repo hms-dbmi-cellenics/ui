@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
@@ -8,17 +7,17 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
 
-import { getBackendStatus } from 'redux/selectors';
-
 import downloadTypes from 'utils/data-management/downloadTypes';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import pipelineStatus from 'utils/pipelineStatusValues';
+import { exportQCParameters, filterQCParameters } from 'utils/data-management/exportQCParameters';
 
-import pipelineStatus from '../../utils/pipelineStatusValues';
-import { exportQCParameters, filterQCParameters } from '../../utils/data-management/exportQCParameters';
-import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
+import { loadBackendStatus } from 'redux/actions/backendStatus/index';
+
+import { getBackendStatus } from 'redux/selectors';
 
 const DownloadData = () => {
   const dispatch = useDispatch();
