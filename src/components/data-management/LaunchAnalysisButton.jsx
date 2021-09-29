@@ -45,7 +45,7 @@ const LaunchAnalysisButton = () => {
   const activeProject = projects[activeProjectUuid];
   const experimentId = activeProject.experiments[0];
 
-  const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, hash: null, reasons: [] });
+  const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, paramsHash: null, reasons: [] });
 
   const launchAnalysis = () => {
     const lastViewed = moment().toISOString();
@@ -55,10 +55,11 @@ const LaunchAnalysisButton = () => {
       experimentId,
       experimentName: experiments[experimentId].name,
       sampleIds: experiments[experimentId].sampleIds,
+      paramsHash: gem2sRerunStatus.paramsHash,
     }));
 
     if (gem2sRerunStatus.rerun) {
-      dispatch(runGem2s(experimentId, gem2sRerunStatus.hash));
+      dispatch(runGem2s(experimentId, gem2sRerunStatus.paramsHash));
     }
 
     const analysisPath = '/experiments/[experimentId]/data-processing';
@@ -86,7 +87,7 @@ const LaunchAnalysisButton = () => {
 
     return ({
       rerun: !gem2sSuccessful || !projectHashEqual,
-      hash: newParamsHash,
+      paramsHash: newParamsHash,
       reasons: rerunReasons,
     });
   };

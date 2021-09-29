@@ -8,11 +8,13 @@ const updateExperimentInfo = produce((draft, action) => {
     experimentId,
     experimentName,
     sampleIds,
+    paramsHash,
   } = action.payload;
 
   draft.info.experimentId = experimentId;
   draft.info.experimentName = experimentName;
   draft.info.sampleIds = sampleIds;
+  draft.info.paramsHash = paramsHash;
 
   // Experiment id was updated so processing config requires reloading
   draft.processing = { meta: metaInitialState };
