@@ -49,7 +49,8 @@
     "comma-spacing": [2, { "before": false, "after": true }],
     "block-spacing": [2, "always"],
     "no-else-return": 2,
-    "no-bitwise": "off"
+    "no-bitwise": "off",
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".ts"] }]
   },
   "extends": [
     "plugin:react/recommended",
