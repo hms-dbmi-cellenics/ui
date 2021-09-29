@@ -186,7 +186,7 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Launch analysis button is disabled if there is no data', () => {
+  it('Process project button is disabled if there is no data', () => {
     render(
       <Provider store={mockStore(noDataState)}>
         <LaunchAnalysisButton />
@@ -198,7 +198,7 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Launch analysis button is disabled if not all data are uploaded', () => {
+  it('Process project button is disabled if not all data are uploaded', () => {
     const notAllDataUploaded = {
       ...withDataState,
       samples: {
@@ -224,7 +224,7 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Launch analysis button is enabled if there is data and all metadata for all samples are uplaoded', () => {
+  it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', () => {
     render(
       <Provider store={mockStore(withDataState)}>
         <LaunchAnalysisButton />
