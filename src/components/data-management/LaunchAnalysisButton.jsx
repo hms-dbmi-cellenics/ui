@@ -22,7 +22,7 @@ const LaunchButtonTemplate = (props) => {
 
   return (
     <Button
-      data-test-id={integrationTestConstants.ids.LAUNCH_ANALYSIS_BUTTON}
+      data-test-id={integrationTestConstants.ids.PROCESS_PROJECT_BUTTON}
       type='primary'
       disabled={disabled}
       onClick={onClick}
@@ -171,10 +171,11 @@ const LaunchAnalysisButton = () => {
       return (
         <Popconfirm
           title={`This project has to be processed because ${gem2sRerunStatus.reasons.join(' and ')}. \
-            This will take several minutes.\
-            Do you want to continue?`}
+        This will take several minutes.\
+        Do you want to continue?`}
           onConfirm={() => launchAnalysis()}
           okText='Yes'
+          okButtonProps={{ 'data-test-id': integrationTestConstants.ids.CONFIRM_PROCESS_PROJECT }}
           cancelText='No'
           placement='bottom'
           overlayStyle={{ maxWidth: '250px' }}
