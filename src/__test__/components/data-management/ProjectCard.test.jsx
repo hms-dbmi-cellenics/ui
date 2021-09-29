@@ -12,9 +12,9 @@ import ProjectCard from '../../../components/data-management/ProjectCard';
 const projectUuid = '12345';
 const projectName = 'Test Project';
 const samplesIdsArray = new Array(13).fill(null).map((_, i) => (`sample-${i}`));
-const createdDate = '2021-09-01T00:00:00.000Z';
-const lastAnalyzed = '2021-09-02T00:00:00.000Z';
-const lastModified = '2021-09-03T00:00:00.000Z';
+const createdDate = moment().subtract(30, 'days').format();
+const lastAnalyzed = moment().subtract(6, 'hours').format();
+const lastModified = moment().subtract(30, 'minutes').format();
 
 const projectState = {
   projects: {
@@ -49,13 +49,13 @@ describe('ProjectCard', () => {
     expect(screen.getByText(samplesIdsArray.length)).toBeInTheDocument();
 
     // Created date is shown
-    expect(screen.getAllByText(moment(createdDate).fromNow())[0]).toBeInTheDocument();
+    expect(screen.getByText(moment(createdDate).fromNow())).toBeInTheDocument();
 
     // Last analyized is shown
-    expect(screen.getAllByText(moment(lastAnalyzed).fromNow())[0]).toBeInTheDocument();
+    expect(screen.getByText(moment(lastAnalyzed).fromNow())).toBeInTheDocument();
 
     // Last modified is shown
-    expect(screen.getAllByText(moment(lastModified).fromNow())[0]).toBeInTheDocument();
+    expect(screen.getByText(moment(lastModified).fromNow())).toBeInTheDocument();
   });
 
   it('Displays the delete project modal when delete project is clicked', async () => {
