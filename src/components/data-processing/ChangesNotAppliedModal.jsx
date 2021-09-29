@@ -5,7 +5,7 @@ import {
   Modal, Typography, Space, Button,
 } from 'antd';
 
-import { getUserFriendlyQCStepName } from '../utils/qcSteps';
+import { getUserFriendlyQCStepName } from '../../utils/qcSteps';
 
 const { Text } = Typography;
 
@@ -47,7 +47,7 @@ const ChangesNotAppliedModal = (props) => {
       <center>
         <Space direction='vertical'>
           Your changes to the settings of these filters are not yet applied:
-          {changedQCFilters.size && (
+          {changedQCFilters.size > 0 && (
             <>
               <br />
               <ul style={{ margin: '0 auto', display: 'table' }}>

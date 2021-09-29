@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { discardChangedQCFilters } from '../../redux/actions/experimentSettings';
 import { runPipeline } from '../../redux/actions/pipeline';
 
-import ChangesNotAppliedModal from '../ChangesNotAppliedModal';
+import ChangesNotAppliedModal from './ChangesNotAppliedModal';
 
 const DataProcessingIntercept = (props) => {
   const {
@@ -15,8 +15,6 @@ const DataProcessingIntercept = (props) => {
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
-
-  console.log('*** inside', experimentId);
 
   const dispatch = useDispatch();
 
