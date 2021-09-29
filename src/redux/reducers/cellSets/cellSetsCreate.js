@@ -20,6 +20,7 @@ const cellSetsCreate = (state, action) => {
     key, name, color, cellIds: new Set(cellIds), type,
   };
 
+  console.log('NEW STATE ', key, newState);
   return newState;
 };
 
