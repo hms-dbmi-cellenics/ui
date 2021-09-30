@@ -52,6 +52,7 @@ const createMetadataTrack = (
 
     const { samples: updatedSamples } = getState();
 
+    // Get updated samples in an object
     const samplesWithMetadata = project.samples.reduce((samplesObject, sampleUuid) => {
       // eslint-disable-next-line no-param-reassign
       samplesObject[sampleUuid] = _.clone(updatedSamples[sampleUuid]);
