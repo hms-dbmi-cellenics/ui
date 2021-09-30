@@ -55,7 +55,6 @@ const LaunchAnalysisButton = () => {
       experimentId,
       experimentName: experiments[experimentId].name,
       sampleIds: experiments[experimentId].sampleIds,
-      paramsHash: gem2sRerunStatus.paramsHash,
     }));
 
     if (gem2sRerunStatus.rerun) {
