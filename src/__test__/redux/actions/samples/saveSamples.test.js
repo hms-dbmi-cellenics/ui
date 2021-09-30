@@ -24,13 +24,24 @@ const mockStore = configureStore([thunk]);
 
 describe('saveSamples action', () => {
   const mockprojectUuid = 'project-123';
-  const mocksampleUuid = 'sample-123';
 
-  const mockSample = {
+  const sample1 = {
     ...sampleTemplate,
-    name: 'sample-test',
+    uuid: 'sample-1',
+    name: 'sample-1',
     projectUuid: mockprojectUuid,
-    uuid: mocksampleUuid,
+  };
+
+  const sample2 = {
+    ...sampleTemplate,
+    uuid: 'sample-2',
+    name: 'sample-2',
+    projectUuid: mockprojectUuid,
+  };
+
+  const updatedSample1 = {
+    ...sample1,
+    name: 'sample-1-updated',
   };
 
   const mockProject = {
@@ -41,7 +52,7 @@ describe('saveSamples action', () => {
     experiments: ['experiment-uuid'],
     createdDate: '2021-01-01T00:00:00.000Z',
     lastModified: null,
-    samples: [mockSample.uuid],
+    samples: [sample1.uuid],
     lastAnalyzed: null,
   };
 
@@ -53,14 +64,8 @@ describe('saveSamples action', () => {
     },
     samples: {
       ...initialSampleState,
-      [mocksampleUuid]: mockSample,
+      [sample1.uuid]: sample1,
     },
-  };
-
-  const newSample = {
-    ...mockSample,
-    uuid: 'sample-2',
-    name: 'sample-2',
   };
 
   beforeEach(() => {
@@ -74,7 +79,7 @@ describe('saveSamples action', () => {
   it('Dispatches fetch correctly', async () => {
     const store = mockStore(initialState);
 
-    await store.dispatch(saveSamples(mockprojectUuid, newSample));
+    await store.dispatch(saveSamples(mockprojectUuid, updatedSample1));
 
     const payload = initialState.samples;
     delete payload.meta;
@@ -87,8 +92,60 @@ describe('saveSamples action', () => {
           experimentId: mockProject.experiments[0],
           samples: {
             ...payload,
-            [newSample.uuid]: newSample,
+            [updatedSample1.uuid]: updatedSample1,
           },
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+      },
+    );
+  });
+
+  it('Adds new samples by default', async () => {
+    const store = mockStore(initialState);
+
+    await store.dispatch(saveSamples(mockprojectUuid, sample2));
+
+    const payload = initialState.samples;
+    delete payload.meta;
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
+      {
+        body: JSON.stringify({
+          projectUuid: mockProject.uuid,
+          experimentId: mockProject.experiments[0],
+          samples: {
+            ...payload,
+            [sample2.uuid]: sample2,
+          },
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+      },
+    );
+  });
+
+  it('correctly update existing samples in database', async () => {
+    const store = mockStore(initialState);
+
+    const newSamplesObject = {
+      [sample2.uuid]: sample2,
+    };
+
+    await store.dispatch(saveSamples(mockprojectUuid, newSamplesObject, false, false));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
+      {
+        body: JSON.stringify({
+          projectUuid: mockProject.uuid,
+          experimentId: mockProject.experiments[0],
+          samples: newSamplesObject,
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -107,7 +164,7 @@ describe('saveSamples action', () => {
     const store = mockStore(initialState);
 
     try {
-      await store.dispatch(saveSamples(mockprojectUuid, newSample));
+      await store.dispatch(saveSamples(mockprojectUuid, updatedSample1));
     } catch (e) {
       expect(e).toEqual(errorMsg);
     }
@@ -126,7 +183,7 @@ describe('saveSamples action', () => {
 
   it('Dispatches samples pre and post actions correctly', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(saveSamples(mockprojectUuid, newSample));
+    await store.dispatch(saveSamples(mockprojectUuid, updatedSample1));
 
     const actions = store.getActions();
 
@@ -138,7 +195,7 @@ describe('saveSamples action', () => {
 
   it('Does not dispatch pre and post actions if disabled', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(saveSamples(mockprojectUuid, newSample, true, false));
+    await store.dispatch(saveSamples(mockprojectUuid, updatedSample1, true, false));
 
     const actions = store.getActions();
     expect(actions.length).toEqual(0);
