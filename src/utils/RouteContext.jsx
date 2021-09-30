@@ -28,7 +28,6 @@ const AppRouteProvider = (props) => {
   const availableIntercepts = {
     DATA_PROCESSING: (nextRoute, refreshPage) => (
       <DataProcessingIntercept
-        experimentId={experimentId}
         onContinueNavigation={() => continueNavigation(nextRoute, refreshPage)}
         onCancelNavigation={() => cancelNavigation()}
         onDismissIntercept={() => setDisplayIntercept(false)}

@@ -28,6 +28,11 @@ const changedSettings = ['step-1', 'step-2'];
 const noChangesState = {
   experimentSettings: {
     ...initialState,
+    info: {
+      ...initialState.info,
+      experimentId: 'mock-experiment-id',
+      paramsHash: 'mock-params-hash',
+    },
     processing: {
       ...initialState.processing,
       meta: {
@@ -35,14 +40,14 @@ const noChangesState = {
       },
     },
   },
-
 };
 
 const withChangesState = {
+  ...noChangesState,
   experimentSettings: {
-    ...initialState,
+    ...noChangesState.experimentSettings,
     processing: {
-      ...initialState.processing,
+      ...noChangesState.experimentSettings.processing,
       meta: {
         ...metaInitialState,
         changedQCFilters: new Set(changedSettings),

@@ -1,9 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Modal, Typography, Space, Button,
 } from 'antd';
+
+import { discardChangedQCFilters } from '../../redux/actions/experimentSettings';
+import { runPipeline } from '../../redux/actions/pipeline';
 
 import { getUserFriendlyQCStepName } from '../../utils/qcSteps';
 
@@ -14,9 +17,15 @@ const ChangesNotAppliedModal = (props) => {
     onRunPipeline, onDiscardChanges, onCloseModal,
   } = props;
 
+  const { experimentId, paramsHash } = useSelector(
+    (state) => state.experimentSettings.info,
+  );
+
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
+
+  const dispatch = useDispatch();
 
   return (
     <Modal
@@ -28,7 +37,11 @@ const ChangesNotAppliedModal = (props) => {
           <Button
             type='primary'
             key='run'
-            onClick={() => onRunPipeline()}
+            onClick={() => {
+              if (!experimentId || !paramsHash) return;
+              dispatch(runPipeline(experimentId, paramsHash));
+              onRunPipeline();
+            }}
             style={{ width: '100px' }}
           >
             Run
@@ -36,7 +49,10 @@ const ChangesNotAppliedModal = (props) => {
           <Button
             type='primary'
             key='discard'
-            onClick={() => onDiscardChanges()}
+            onClick={() => {
+              dispatch(discardChangedQCFilters());
+              onDiscardChanges();
+            }}
             style={{ width: '100px' }}
           >
             Discard

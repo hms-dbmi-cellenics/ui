@@ -5,6 +5,8 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "paramsHash": "",
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "configureEmbedding": Object {
@@ -41,6 +43,8 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "paramsHash": "",
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "configureEmbedding": Object {
@@ -71,6 +75,8 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "paramsHash": "",
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "cellSizeDistribution": Object {
@@ -324,6 +330,8 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "paramsHash": "",
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "configureEmbedding": Object {
@@ -354,6 +362,8 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "paramsHash": "",
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "cellSizeDistribution": Object {
