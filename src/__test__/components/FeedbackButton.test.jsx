@@ -60,13 +60,11 @@ describe('FeedbackButton', () => {
     const feedbackText = 'Some feedback';
 
     const feedbackButton = screen.getByText(/Feedback\\?/i);
-
     fireEvent.click(feedbackButton);
 
     const feedbackInput = screen.getByPlaceholderText(/Feedback\\?/i);
 
     fireEvent.change(feedbackInput, { target: { value: feedbackText } });
-
     expect(feedbackInput).toHaveValue(feedbackText);
 
     const submitButton = screen.getByText(/Send feedback/i).closest('button');
@@ -95,7 +93,7 @@ describe('FeedbackButton', () => {
 
     const feedbackText = 'Some feedback';
 
-    const feedbackButton = await screen.findByText(/Feedback\\?/i);
+    const feedbackButton = screen.getByText(/Feedback\\?/i);
     fireEvent.click(feedbackButton);
 
     const feedbackInput = screen.getByPlaceholderText(/Feedback\\?/i);
