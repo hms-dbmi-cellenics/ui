@@ -60,8 +60,6 @@ const complement = (listOfSets, properties) => {
     (acc, curr) => new Set([...acc, ...curr]),
   );
 
-  console.log('complementSet ', complementSet);
-
   // remove all cells that are selected
   if (selectedCells.size > 0) {
     selectedCells.forEach((x) => { complementSet.delete(x); });

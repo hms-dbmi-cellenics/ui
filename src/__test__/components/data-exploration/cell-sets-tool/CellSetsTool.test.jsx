@@ -446,160 +446,105 @@ describe('CellSetsTool', () => {
     expect(expectedComplement).toEqual(actualComplement);
   });
 
-  // it('selected cell sets show selected in both tabs', async () => {
-  //   // const store = mockStore(
-  //   //   {
-  //   //     ...storeState,
-  //   //     cellSets: {
-  //   //       ...storeState.cellSets,
-  //   //       selected: {
-  //   //         cellSets: ['scratchpad-a', 'cluster-c'],
-  //   //         metadataCategorical: ['cluster-b'],
-  //   //       },
-  //   //     },
-  //   //   },
-  //   // );
+  it('selected cell sets show selected in both tabs', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
 
-  //   await act(async () => {
-  //     render(
-  //       <Provider store={store}>
-  //         <CellSetsTool
-  //           experimentId='1234'
-  //           width={50}
-  //           height={50}
-  //         />
-  //       </Provider>,
-  //     );
-  //   });
+    // select the second sample and first louvain cluster
+    const louvainClusterCellSet = getChildrenInHierarchy('louvain')[0];
+    const sampleClusterCellSet = getChildrenInHierarchy('sample')[1];
 
-  //   await screen.getByText(/3 cells selected/i);
+    await act(async () => {
+      storeState.dispatch(updateCellSetSelected(experimentId, [louvainClusterCellSet], 'cellSets'));
+      storeState.dispatch(updateCellSetSelected(experimentId, [sampleClusterCellSet], 'metadataCategorical'));
+    });
 
-  //   const metadataTabButton = await screen.getByText(/Metadata/i);
+    const actualNumbSelectedLouvainCells = storeState.getState().cellSets.properties[louvainClusterCellSet].cellIds.size;
 
-  //   await act(async () => {
-  //     await fireEvent(
-  //       metadataTabButton,
-  //       new MouseEvent('click', {
-  //         bubbles: true,
-  //         cancelable: true,
-  //       }),
-  //     );
-  //   });
+    await screen.getByText(`${actualNumbSelectedLouvainCells} cells selected`);
 
-  //   await screen.getByText(/4 cells selected/i);
+    const metadataTabButton = await screen.getByText(/Metadata/i);
 
-  //   const cellSetTabButton = await screen.getByText(/Cell sets/i);
+    await act(async () => {
+      await fireEvent(
+        metadataTabButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
-  //   await act(async () => {
-  //     await fireEvent(
-  //       cellSetTabButton,
-  //       new MouseEvent('click', {
-  //         bubbles: true,
-  //         cancelable: true,
-  //       }),
-  //     );
-  //   });
+    const actualNumbSelectedSampleCells = storeState.getState().cellSets.properties[sampleClusterCellSet].cellIds.size;
 
-  //   await screen.getByText(/3 cells selected/i);
-  // });
+    await screen.getByText(`${actualNumbSelectedSampleCells} cells selected`);
 
-  // it('Scratchpad cluster deletion works ', async () => {
-  //   const store = mockStore(storeState);
+    const cellSetTabButton = await screen.getByText(/Cell sets/);
 
-  //   await act(async () => {
-  //     render(
-  //       <Provider store={store}>
-  //         <CellSetsTool
-  //           experimentId='1234'
-  //           width={50}
-  //           height={50}
-  //         />
-  //       </Provider>,
-  //     );
-  //   });
+    await act(async () => {
+      await fireEvent(
+        cellSetTabButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
-  //   // There should be a delete button for the scratchpad cluster.
-  //   const deleteButtons = await screen.getAllByLabelText(/Delete/i);
-  //   expect(deleteButtons.length).toEqual(2);
+    await screen.getByText(`${actualNumbSelectedLouvainCells} cells selected`);
+  });
 
-  //   // Clicking on one of the buttons...
-  //   await act(async () => {
-  //     await fireEvent(
-  //       deleteButtons[0],
-  //       new MouseEvent('click', {
-  //         bubbles: true,
-  //         cancelable: true,
-  //       }),
-  //     );
-  //   });
+  it('Scratchpad cluster deletion works ', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
 
-  //   // ... should trigger a delete
-  //   const deleteActionCount = store.getActions().filter(
-  //     (action) => action.type.includes('delete'),
-  //   ).length;
+    // create a new cluster:
+    await act(async () => {
+      storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1070, 5625, 2854, 5093, 2748])));
+    });
 
-  //   expect(deleteActionCount).toEqual(1);
-  // });
+    let customCellSets = getChildrenInHierarchy('scratchpad');
+    expect(customCellSets.length).toEqual(1);
 
-  // it('shows an accurate cell count when all cell sets selected', async () => {
-  //   const store = mockStore(
-  //     {
-  //       ...storeState,
-  //       cellSets: {
-  //         ...storeState.cellSets,
-  //         selected: {
-  //           cellSets: ['cluster-a', 'cluster-b', 'cluster-c'],
-  //           metadataCategorical: ['sample-a'],
-  //         },
-  //       },
-  //     },
-  //   );
+    // There should be a delete button for the scratchpad cluster.
+    const deleteButtons = await screen.getAllByLabelText(/Delete/);
+    expect(deleteButtons.length).toEqual(1);
 
-  //   await act(async () => {
-  //     render(
-  //       <Provider store={store}>
-  //         <CellSetsTool
-  //           experimentId='1234'
-  //           width={50}
-  //           height={50}
-  //         />
-  //       </Provider>,
-  //     );
-  //   });
+    // Clicking on one of the buttons...
+    await act(async () => {
+      await fireEvent(
+        deleteButtons[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
-  //   await screen.getByText(/5 cells selected/i);
-
-  //   const metadataTabButton = await screen.getByText(/Metadata/i);
-
-  //   await act(async () => {
-  //     await fireEvent(
-  //       metadataTabButton,
-  //       new MouseEvent('click', {
-  //         bubbles: true,
-  //         cancelable: true,
-  //       }),
-  //     );
-  //   });
-
-  //   await screen.getByText(/5 cells selected/i);
-
-  //   const cellSetTabButton = await screen.getByText(/Cell sets/i);
-
-  //   await act(async () => {
-  //     await fireEvent(
-  //       cellSetTabButton,
-  //       new MouseEvent('click', {
-  //         bubbles: true,
-  //         cancelable: true,
-  //       }),
-  //     );
-  //   });
-
-  //   await screen.getByText(/5 cells selected/i);
-  // });
+    customCellSets = getChildrenInHierarchy('scratchpad');
+    expect(customCellSets.length).toEqual(0);
+  });
 
   // it('calculates filtered cell indices correctly', () => {
-  //   expect(generateFilteredCellIndices(storeState.genes.expression.data))
+  //   expect(generateFilteredCellIndices(storeState.getState().genes.expression.data))
   //     .toEqual(new Set([0]));
   // });
 });
