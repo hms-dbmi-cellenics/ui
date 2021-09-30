@@ -19,9 +19,9 @@ const AppRouteProvider = (props) => {
   );
 
   const availableIntercepts = {
-    DATA_PROCESSING: (nextRoute, refreshPage) => (
+    DATA_PROCESSING: (nextRoute, hardNavigate) => (
       <DataProcessingIntercept
-        onContinueNavigation={() => continueNavigation(nextRoute, refreshPage)}
+        onContinueNavigation={() => continueNavigation(nextRoute, hardNavigate)}
         onCancelNavigation={() => cancelNavigation()}
         onDismissIntercept={() => setDisplayIntercept(false)}
       />
@@ -30,22 +30,20 @@ const AppRouteProvider = (props) => {
 
   const cancelNavigation = () => {};
 
-  const continueNavigation = (nextRoute, refreshPage) => {
-    if (refreshPage) window.location.href = nextRoute;
+  const continueNavigation = (nextRoute, hardNavigate) => {
+    // Hard navigate, cusing the page to refresh and fetch data from server
+    if (hardNavigate) window.location.href = nextRoute;
     router.push(nextRoute);
   };
 
-  const handleRouteChange = (previousRoute, nextRoute, refreshPage = false) => {
+  const handleRouteChange = (previousRoute, nextRoute, hardNavigate = false) => {
     if (previousRoute.match('/data-processing') && changedQCFilters.size > 0) {
       setDisplayIntercept(true);
-      setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, refreshPage));
+      setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, hardNavigate));
       return;
     }
 
-    // Hard navigate, cusing the page to refresh and fetch data from server
-    if (refreshPage) window.location.href = nextRoute;
-
-    router.push(nextRoute);
+    continueNavigation(nextRoute, hardNavigate);
   };
 
   const navigateTo = (
@@ -53,14 +51,9 @@ const AppRouteProvider = (props) => {
     refreshPage,
   ) => handleRouteChange(router.pathname, nextRoute, refreshPage);
 
-  const contextObject = {
-    navigateTo,
-  };
-
   return (
-    <AppRouterContext.Provider value={contextObject}>
+    <AppRouterContext.Provider value={navigateTo}>
       {displayIntercept ? renderIntercept : <></>}
-      {/* {renderRouteIntercepts()} */}
       {children}
     </AppRouterContext.Provider>
   );
@@ -72,7 +65,5 @@ AppRouteProvider.propTypes = {
 
 const useAppRouter = () => useContext(AppRouterContext);
 
-export {
-  AppRouteProvider,
-  useAppRouter,
-};
+export { useAppRouter };
+export default AppRouteProvider;

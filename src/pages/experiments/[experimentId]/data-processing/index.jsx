@@ -22,7 +22,7 @@ import _ from 'lodash';
 
 import { getBackendStatus } from 'redux/selectors';
 import Header from '../../../../components/Header';
-import { useAppRouter } from '../../../../utils/RouteContext';
+import { useAppRouter } from '../../../../utils/AppRouteProvider';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
@@ -55,7 +55,7 @@ const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const dispatch = useDispatch();
-  const { navigateTo } = useAppRouter();
+  const navigateTo = useAppRouter();
 
   const completedPath = useMemo(() => {
     const pathAfterQC = '/experiments/[experimentId]/data-exploration';

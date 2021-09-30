@@ -23,7 +23,7 @@ configure({ adapter: new Adapter() });
 jest.mock('localforage');
 jest.mock('../../../../../redux/selectors');
 
-jest.mock('../../../../../utils/RouteContext', () => ({
+jest.mock('../../../../../utils/AppRouteProvider', () => ({
   useAppRouter: jest.fn().mockReturnValue(() => {}),
 }));
 

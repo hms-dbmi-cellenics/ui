@@ -2,8 +2,8 @@ import React from 'react';
 import {
   render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import '@testing-library/jest-dom';
 import 'aws-amplify';
 
 import FeedbackButton from '../../components/FeedbackButton';
@@ -42,7 +42,7 @@ describe('FeedbackButton', () => {
     render(<FeedbackButton />);
 
     const feedbackButton = screen.getByText(/Feedback\\?/i);
-    userEvent.click(feedbackButton);
+    fireEvent.click(feedbackButton);
 
     // There is a textarea
     expect(screen.getByPlaceholderText(/Feedback\\?/i)).toBeDefined();
@@ -60,11 +60,13 @@ describe('FeedbackButton', () => {
     const feedbackText = 'Some feedback';
 
     const feedbackButton = screen.getByText(/Feedback\\?/i);
-    userEvent.click(feedbackButton);
+
+    fireEvent.click(feedbackButton);
 
     const feedbackInput = screen.getByPlaceholderText(/Feedback\\?/i);
 
-    userEvent.type(feedbackInput, feedbackText);
+    fireEvent.change(feedbackInput, { target: { value: feedbackText } });
+
     expect(feedbackInput).toHaveValue(feedbackText);
 
     const submitButton = screen.getByText(/Send feedback/i).closest('button');
@@ -93,12 +95,12 @@ describe('FeedbackButton', () => {
 
     const feedbackText = 'Some feedback';
 
-    const feedbackButton = screen.getByText(/Feedback\\?/i);
-    userEvent.click(feedbackButton);
+    const feedbackButton = await screen.findByText(/Feedback\\?/i);
+    fireEvent.click(feedbackButton);
 
     const feedbackInput = screen.getByPlaceholderText(/Feedback\\?/i);
 
-    userEvent.type(feedbackInput, feedbackText);
+    fireEvent.change(feedbackInput, { target: { value: feedbackText } });
     expect(feedbackInput).toHaveValue(feedbackText);
 
     const submitButton = screen.getByText(/Send feedback/i).closest('button');

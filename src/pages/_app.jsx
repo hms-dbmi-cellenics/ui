@@ -11,7 +11,7 @@ import AWS from 'aws-sdk';
 import { Credentials } from '@aws-amplify/core';
 import { initTracking } from '../utils/tracking';
 import ContentWrapper from '../components/ContentWrapper';
-import { AppRouteProvider } from '../utils/RouteContext';
+import AppRouteProvider from '../utils/AppRouteProvider';
 import TagManager from '../components/TagManager';
 import NotFoundPage from './404';
 import UnauthorizedPage from './401';

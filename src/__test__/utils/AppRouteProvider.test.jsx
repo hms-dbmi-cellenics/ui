@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
 import configureMockstore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { AppRouteProvider, useAppRouter } from '../../utils/RouteContext';
+import AppRouteProvider, { useAppRouter } from '../../utils/AppRouteProvider';
 import DataProcessingIntercept from '../../components/data-processing/DataProcessingIntercept';
 
 import initialExperimentSettingsState, { metaInitialState } from '../../redux/reducers/experimentSettings/initialState';
@@ -61,7 +61,7 @@ const withFiltersChanged = {
 const TestComponent = (props) => {
   // eslint-disable-next-line react/prop-types
   const { path, refreshPage = false } = props;
-  const { navigateTo } = useAppRouter();
+  const navigateTo = useAppRouter();
 
   return (
     <div>

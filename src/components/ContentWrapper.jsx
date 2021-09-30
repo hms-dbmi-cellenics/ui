@@ -28,7 +28,7 @@ import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing
 import PreloadContent from './PreloadContent';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 
-import { useAppRouter } from '../utils/RouteContext';
+import { useAppRouter } from '../utils/AppRouteProvider';
 
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
@@ -47,7 +47,7 @@ const ContentWrapper = (props) => {
   const { experimentId, experimentData, children } = props;
   const router = useRouter();
   const route = router?.route || '';
-  const { navigateTo } = useAppRouter();
+  const navigateTo = useAppRouter();
 
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
