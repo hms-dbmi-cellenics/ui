@@ -5,7 +5,6 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
-    "paramsHash": "",
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -43,7 +42,6 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
-    "paramsHash": "",
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -75,7 +73,6 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
-    "paramsHash": "",
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -330,7 +327,6 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
-    "paramsHash": "",
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -362,7 +358,6 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
-    "paramsHash": "",
     "sampleIds": Array [],
   },
   "originalProcessing": Object {

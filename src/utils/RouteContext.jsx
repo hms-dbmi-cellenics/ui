@@ -8,7 +8,7 @@ import DataProcessingIntercept from '../components/data-processing/DataProcessin
 const AppRouterContext = React.createContext(null);
 
 const AppRouteProvider = (props) => {
-  const { children, experimentId } = props;
+  const { children } = props;
   const router = useRouter();
 
   const [displayIntercept, setDisplayIntercept] = useState(true);
@@ -18,13 +18,6 @@ const AppRouteProvider = (props) => {
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
 
-  const cancelNavigation = () => {};
-
-  const continueNavigation = (nextRoute, refreshPage) => {
-    if (refreshPage) window.location.href = nextRoute;
-    router.push(nextRoute);
-  };
-
   const availableIntercepts = {
     DATA_PROCESSING: (nextRoute, refreshPage) => (
       <DataProcessingIntercept
@@ -33,6 +26,13 @@ const AppRouteProvider = (props) => {
         onDismissIntercept={() => setDisplayIntercept(false)}
       />
     ),
+  };
+
+  const cancelNavigation = () => {};
+
+  const continueNavigation = (nextRoute, refreshPage) => {
+    if (refreshPage) window.location.href = nextRoute;
+    router.push(nextRoute);
   };
 
   const handleRouteChange = (previousRoute, nextRoute, refreshPage = false) => {
@@ -68,11 +68,6 @@ const AppRouteProvider = (props) => {
 
 AppRouteProvider.propTypes = {
   children: propTypes.node.isRequired,
-  experimentId: propTypes.string,
-};
-
-AppRouteProvider.defaultProps = {
-  experimentId: '',
 };
 
 const useAppRouter = () => useContext(AppRouterContext);

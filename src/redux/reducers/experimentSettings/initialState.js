@@ -11,7 +11,6 @@ const initialState = {
     experimentId: null,
     experimentName: null,
     sampleIds: [],
-    paramsHash: '',
   },
   processing: {
     meta: metaInitialState,
