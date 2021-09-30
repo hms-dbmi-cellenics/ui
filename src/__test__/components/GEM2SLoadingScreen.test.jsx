@@ -14,7 +14,7 @@ configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 
-const store = mockStore({});
+const store = mockStore({ experiments: {} });
 
 describe('GEM2SLoadingScreen', () => {
   beforeAll(async () => {

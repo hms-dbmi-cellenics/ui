@@ -14,6 +14,7 @@ Array [
           "type": "10x",
         },
         "name": "updated-experiment",
+        "notifyByEmail": Array [],
         "projectUuid": null,
         "sampleIds": Array [],
       },

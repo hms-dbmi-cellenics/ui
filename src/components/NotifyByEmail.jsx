@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 const { Text } = Typography;
 const NotifyByEmail = (props) => {
   const { experimentId } = props;
-  const experiment = useSelector((state) => state.experiments[experimentId]);
+  const experiment = useSelector((state) => state.experiments[experimentId]) || [];
   const dispatch = useDispatch();
   const changeEmailNotification = (value) => {
     if (value) {
