@@ -17,13 +17,15 @@ const ChangesNotAppliedModal = (props) => {
     onRunPipeline, onDiscardChanges, onCloseModal,
   } = props;
 
-  const { experimentId, paramsHash } = useSelector(
-    (state) => state.experimentSettings.info,
+  const experimentId = useSelector(
+    (state) => state.experimentSettings.info.experimentId,
   );
 
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
+
+  const paramsHash = useSelector((state) => state.backendStatus[experimentId]?.status?.gem2s?.paramsHash);
 
   const dispatch = useDispatch();
 

@@ -6,6 +6,8 @@ import configureStore from 'redux-mock-store';
 import DataProcessingIntercept from '../../../components/data-processing/DataProcessingIntercept';
 import initialExperimentSettingsState, { metaInitialState } from '../../../redux/reducers/experimentSettings/initialState';
 
+import ChangesNotAppliedModal from '../../../components/data-processing/ChangesNotAppliedModal';
+
 const mockStore = configureStore([thunk]);
 
 jest.mock('../../../utils/qcSteps', () => ({
@@ -20,6 +22,8 @@ jest.mock('../../../utils/qcSteps', () => ({
     }
   }),
 }));
+
+jest.mock('../../../components/data-processing/ChangesNotAppliedModal', () => jest.fn(() => <>Changes Not Applied</>));
 
 const changesState = {
   experimentSettings: {
@@ -47,6 +51,7 @@ describe('DataProcessingIntercept', () => {
     );
 
     // Test that the Changes Not Saved Modal is rendered
-    expect(screen.getByText('Changes not applied')).toBeInTheDocument();
+    expect(ChangesNotAppliedModal).toHaveBeenCalled();
+    expect(screen.getByText('Changes Not Applied')).toBeInTheDocument();
   });
 });

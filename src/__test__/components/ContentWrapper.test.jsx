@@ -12,6 +12,7 @@ import { getBackendStatus } from '../../redux/selectors';
 import ContentWrapper from '../../components/ContentWrapper';
 
 jest.mock('../../redux/selectors');
+jest.mock('localforage');
 
 const { Item } = Menu;
 
