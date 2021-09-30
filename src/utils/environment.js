@@ -1,7 +1,6 @@
 const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
 
 // const isBrowser = () => {
-//   console.log('^^^^^ ', process.env.NODE_ENV);
 //   if (process.env.NODE_ENV === 'test') {
 //     return false;
 //   }

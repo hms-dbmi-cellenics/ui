@@ -11,8 +11,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import CellSetsTool, { generateFilteredCellIndices } from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import { makeStore } from '../../../../redux/store';
-// import { CELL_SETS_CREATE } from '../../../../redux/actionTypes/cellSets';
-import { createCellSet } from '../../../../redux/actions/cellSets';
+import { createCellSet, updateCellSetSelected } from '../../../../redux/actions/cellSets';
 
 const cellSetsData = require('../../../data/cell_sets.json');
 
@@ -36,6 +35,23 @@ describe('CellSetsTool', () => {
     fetchMock.doMock();
     fetchMock.mockResponse(JSON.stringify(cellSetsData));
     storeState = makeStore();
+  });
+
+  const getChildrenInHierarchy = (hierarchyKey) => {
+    const hierarchy = storeState.getState().cellSets.hierarchy.filter((h) => h.key === hierarchyKey)[0].children;
+    const children = hierarchy.map((child) => child.key);
+    return children;
+  };
+
+  const selectFirstNCellSets = ((n) => {
+    // get all keys of children in louvain hierarchy
+    const cellSetKeys = getChildrenInHierarchy('louvain');
+
+    // raise an error if we try to select more clusters than we actually have
+    if (cellSetKeys.length < n) {
+      console.error('Something happened with the test data and there are no longer at least n keys in the cell set object');
+    }
+    storeState.dispatch(updateCellSetSelected(experimentId, cellSetKeys.slice(0, n), 'cellSets'));
   });
 
   it('renders correctly cell set tool with no clusters in custom cell sets', async () => {
@@ -78,6 +94,11 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // a different way to create a new cluster by directly calling the actionType
+    // I thought that it is not a good idea, because in order to make it work, I have to
+    // redo the whole createCellSet code in here, which won't be testing the reality and
+    // will need changing every time we change the logic of createCellSet.
+
     // storeState.dispatch({
     //   type: CELL_SETS_CREATE,
     //   payload: {
@@ -89,8 +110,9 @@ describe('CellSetsTool', () => {
     //   },
     // });
 
+    // create a new cluster:
     await act(async () => {
-      storeState.dispatch(createCellSet(experimentId, 'Ivas Cluster', '#3957ff', new Set([1070, 5625, 2854, 5093, 2748])));
+      storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1070, 5625, 2854, 5093, 2748])));
     });
 
     // There should be a tab for cell sets
@@ -123,81 +145,90 @@ describe('CellSetsTool', () => {
     expect(cellSetOperations).toEqual(null);
   });
 
-  // it('cell set operations should render when cell sets are selected', async () => {
-  //   const store = mockStore(
-  //     {
-  //       ...storeState,
-  //       cellSets: {
-  //         ...storeState.cellSets,
-  //         selected: { ...storeState.cellSets.selected, cellSets: ['cluster-a'] },
-  //       },
-  //     },
-  //   );
+  it('cell set operations should render when cell sets are selected', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
 
-  //   await act(async () => {
-  //     render(
-  //       <Provider store={store}>
-  //         <CellSetsTool
-  //           experimentId='1234'
-  //           width={50}
-  //           height={50}
-  //         />
-  //       </Provider>,
-  //     );
-  //   });
+    // select some cells
+    await act(async () => {
+      selectFirstNCellSets(3);
+    });
 
-  //   const cellSetOperations = await screen.getAllByLabelText(/of selected$/i);
+    const cellSetOperations = await screen.getAllByLabelText(/of selected$/i);
 
-  //   // There should be three operations rendered.
-  //   expect(cellSetOperations.length).toEqual(3);
-  // });
+    // There should be three operations rendered.
+    expect(cellSetOperations.length).toEqual(3);
+  });
 
-  // it('cell set operations should work appropriately for unions', async () => {
-  //   const store = mockStore(
-  //     {
-  //       ...storeState,
-  //       cellSets: {
-  //         ...storeState.cellSets,
-  //         selected: { ...storeState.cellSets.selected, cellSets: ['cluster-a', 'cluster-b', 'cluster-c'] },
-  //       },
-  //     },
-  //   );
+  it('can compute a union of 2 cell sets', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          <CellSetsTool
+            experimentId='1234'
+            width={50}
+            height={50}
+          />
+        </Provider>,
+      );
+    });
 
-  //   await act(async () => {
-  //     render(
-  //       <Provider store={store}>
-  //         <CellSetsTool
-  //           experimentId='1234'
-  //           width={50}
-  //           height={50}
-  //         />
-  //       </Provider>,
-  //     );
-  //   });
+    // select some cells
+    await act(async () => {
+      selectFirstNCellSets(2);
+    });
 
-  //   const unionOperation = await screen.getByLabelText(/Union of selected$/i);
-  //   await fireEvent(
-  //     unionOperation,
-  //     new MouseEvent('click', {
-  //       bubbles: true,
-  //       cancelable: true,
-  //     }),
-  //   );
+    // ensure that initially we have 0 custom cell sets
+    const customCellSets = getChildrenInHierarchy('scratchpad');
+    expect(customCellSets.length).toEqual(0);
 
-  //   const saveButton = await screen.getByLabelText(/Save/i);
-  //   await fireEvent(
-  //     saveButton,
-  //     new MouseEvent('click', {
-  //       bubbles: true,
-  //       cancelable: true,
-  //     }),
-  //   );
+    const unionOperation = await screen.getByLabelText(/Union of selected$/i);
+    await act(async () => {
+      await fireEvent(
+        unionOperation,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
-  //   // Should create the appropriate union set.
-  //   const lastAction = store.getActions().length - 1;
-  //   const createAction = store.getActions()[lastAction];
-  //   expect(createAction.payload.cellIds).toEqual(new Set([1, 2, 3, 4, 5]));
-  // });
+    const saveButton = await screen.getByLabelText(/Save/i);
+    await act(async () => {
+      await fireEvent(
+        saveButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    const newClusterIds = getChildrenInHierarchy('scratchpad');
+    expect(newClusterIds.length).toEqual(1);
+
+    // get the ids of the louvain clusters we created a union of
+    const louvainClusters = getChildrenInHierarchy('louvain');
+    const cluster1Ids = storeState.getState().cellSets.properties[louvainClusters[0]].cellIds;
+    const cluster2Ids = storeState.getState().cellSets.properties[louvainClusters[1]].cellIds;
+
+    // compute their union
+    const expectedUnion = new Set([...cluster1Ids, ...cluster2Ids]);
+
+    // get the cell ids of the new cluster that got created as the union of those clusters
+    const actualUnion = storeState.getState().cellSets.properties[newClusterIds].cellIds;
+
+    expect(expectedUnion).toEqual(actualUnion);
+  });
 
   // it('cell set operations should work appropriately for intersections', async () => {
   //   const store = mockStore(

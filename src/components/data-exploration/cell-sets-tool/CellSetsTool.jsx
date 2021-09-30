@@ -231,8 +231,6 @@ const CellSetsTool = (props) => {
     );
   };
 
-  // console.warn(loading, cellSetTreeData, metadataTreeData, allSelected);
-
   if (loading) return <Skeleton active={false} title={false} />;
   if (!cellSetTreeData || !metadataTreeData) return <Skeleton active title={false} avatar />;
 

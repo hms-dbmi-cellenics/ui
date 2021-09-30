@@ -20,7 +20,6 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
   const treeData = composeTree(hierarchy, properties);
   const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
-    console.log('in saveCellSets, calling the API');
     const response = await fetchAPI(
       url,
       {
@@ -36,7 +35,6 @@ const saveCellSets = (experimentId) => async (dispatch, getState) => {
     );
 
     const json = await response.json();
-    console.log('%%%%%%% save ', json);
     throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({

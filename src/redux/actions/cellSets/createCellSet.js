@@ -26,11 +26,6 @@ const createCellSet = (experimentId, name, color, cellIds) => async (dispatch, g
     return;
   }
 
-  console.log('LALALALALALALALALAALAL ', {
-    experimentId,
-    ...data,
-  });
-
   dispatch({
     type: CELL_SETS_CREATE,
     payload: {

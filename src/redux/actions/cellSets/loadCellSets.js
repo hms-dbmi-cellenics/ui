@@ -24,7 +24,6 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
   try {
     const response = await fetchAPI(url);
     const json = await response.json();
-    console.log('%%%%%%% load ', json);
     throwIfRequestFailed(response, json, endUserMessages.ERROR_FETCHING_CELL_SETS);
     dispatch({
       type: CELL_SETS_LOADED,
