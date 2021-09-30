@@ -11,7 +11,8 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import CellSetsTool, { generateFilteredCellIndices } from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
 import { makeStore } from '../../../../redux/store';
-import { CELL_SETS_CREATE } from '../../../../redux/actionTypes/cellSets';
+// import { CELL_SETS_CREATE } from '../../../../redux/actionTypes/cellSets';
+import { createCellSet } from '../../../../redux/actions/cellSets';
 
 const cellSetsData = require('../../../data/cell_sets.json');
 
@@ -60,7 +61,7 @@ describe('CellSetsTool', () => {
     expect(editButtons.length).toEqual(15);
 
     // There should be no delete buttons.
-    const deleteButtons = screen.queryByText(/Delete/i);
+    const deleteButtons = screen.queryByText(/Delete/);
     expect(deleteButtons).toBeNull();
   });
 
@@ -77,15 +78,19 @@ describe('CellSetsTool', () => {
       );
     });
 
-    storeState.dispatch({
-      type: CELL_SETS_CREATE,
-      payload: {
-        cellIds: new Set([1070, 5625, 2854, 5093, 2748]),
-        color: '#3957ff',
-        experimentId: 'cf6be70f5a9ed32f74ac686f18a0d951',
-        key: 'f01a7023-3a48-4085-83be-4567211702a4',
-        name: 'New Cluster',
-      },
+    // storeState.dispatch({
+    //   type: CELL_SETS_CREATE,
+    //   payload: {
+    //     cellIds: new Set([1070, 5625, 2854, 5093, 2748]),
+    //     color: '#3957ff',
+    //     experimentId: 'cf6be70f5a9ed32f74ac686f18a0d951',
+    //     key: 'f01a7023-3a48-4085-83be-4567211702a4',
+    //     name: 'New Cluster',
+    //   },
+    // });
+
+    await act(async () => {
+      storeState.dispatch(createCellSet(experimentId, 'Ivas Cluster', '#3957ff', new Set([1070, 5625, 2854, 5093, 2748])));
     });
 
     // There should be a tab for cell sets
@@ -95,7 +100,7 @@ describe('CellSetsTool', () => {
     await screen.getByText(/Metadata/);
 
     // There should be delete buttons for clusters under Custom cell sets.
-    const deleteButtons = await screen.getAllByLabelText(/Delete/i);
+    const deleteButtons = await screen.getAllByLabelText(/Delete/);
     expect(deleteButtons.length).toEqual(1);
   });
 
