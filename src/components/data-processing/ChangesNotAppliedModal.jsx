@@ -5,10 +5,11 @@ import {
   Modal, Typography, Space, Button,
 } from 'antd';
 
-import { discardChangedQCFilters } from '../../redux/actions/experimentSettings';
-import { runPipeline } from '../../redux/actions/pipeline';
+import { getBackendStatus } from 'redux/selectors';
+import { discardChangedQCFilters } from 'redux/actions/experimentSettings';
+import { runPipeline } from 'redux/actions/pipeline';
 
-import { getUserFriendlyQCStepName } from '../../utils/qcSteps';
+import { getUserFriendlyQCStepName } from 'utils/qcSteps';
 
 const { Text } = Typography;
 
@@ -25,7 +26,11 @@ const ChangesNotAppliedModal = (props) => {
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
 
-  const paramsHash = useSelector((state) => state.backendStatus[experimentId]?.status?.gem2s?.paramsHash);
+  const {
+    status: backendStatus,
+  } = useSelector(getBackendStatus(experimentId));
+
+  const paramsHash = backendStatus.gem2s?.paramsHash;
 
   const dispatch = useDispatch();
 

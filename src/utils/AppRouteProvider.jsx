@@ -11,7 +11,6 @@ const AppRouteProvider = (props) => {
   const { children } = props;
   const router = useRouter();
 
-  const [displayIntercept, setDisplayIntercept] = useState(true);
   const [renderIntercept, setRenderIntercept] = useState(null);
 
   const changedQCFilters = useSelector(
@@ -22,13 +21,10 @@ const AppRouteProvider = (props) => {
     DATA_PROCESSING: (nextRoute, hardNavigate) => (
       <DataProcessingIntercept
         onContinueNavigation={() => continueNavigation(nextRoute, hardNavigate)}
-        onCancelNavigation={() => cancelNavigation()}
-        onDismissIntercept={() => setDisplayIntercept(false)}
+        onDismissIntercept={() => setRenderIntercept(null)}
       />
     ),
   };
-
-  const cancelNavigation = () => {};
 
   const continueNavigation = (nextRoute, hardNavigate) => {
     // Hard navigate, cusing the page to refresh and fetch data from server
@@ -38,7 +34,6 @@ const AppRouteProvider = (props) => {
 
   const handleRouteChange = (previousRoute, nextRoute, hardNavigate = false) => {
     if (previousRoute.match('/data-processing') && changedQCFilters.size > 0) {
-      setDisplayIntercept(true);
       setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, hardNavigate));
       return;
     }
@@ -53,7 +48,7 @@ const AppRouteProvider = (props) => {
 
   return (
     <AppRouterContext.Provider value={navigateTo}>
-      {displayIntercept ? renderIntercept : <></>}
+      {renderIntercept ?? <></>}
       {children}
     </AppRouterContext.Provider>
   );

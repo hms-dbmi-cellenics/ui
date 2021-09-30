@@ -5,9 +5,9 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 
+import { getBackendStatus } from 'redux/selectors';
 import ChangesNotAppliedModal from '../../../components/data-processing/ChangesNotAppliedModal';
 import experimentSettingsInitialState, { metaInitialState } from '../../../redux/reducers/experimentSettings/initialState';
-import backendStatusInitialState from '../../../redux/reducers/backendStatus/initialState';
 
 jest.mock('../../../utils/qcSteps', () => ({
   getUserFriendlyQCStepName: jest.fn().mockImplementation((step) => {
@@ -20,6 +20,16 @@ jest.mock('../../../utils/qcSteps', () => ({
         return '';
     }
   }),
+}));
+
+jest.mock('../../../redux/selectors');
+
+getBackendStatus.mockImplementation(() => () => ({
+  status: {
+    gem2s: {
+      paramsHash: 'mock-params-hash',
+    },
+  },
 }));
 
 const mockStore = configureMockStore([thunk]);
@@ -38,16 +48,6 @@ const noChangesState = {
       ...experimentSettingsInitialState.processing,
       meta: {
         ...metaInitialState,
-      },
-    },
-  },
-  backendStatus: {
-    ...backendStatusInitialState,
-    [experimentId]: {
-      status: {
-        gem2s: {
-          paramsHash: 'mock-params-hash',
-        },
       },
     },
   },
