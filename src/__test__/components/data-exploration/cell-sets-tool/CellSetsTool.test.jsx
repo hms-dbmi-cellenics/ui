@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 
 import {
   render, screen, fireEvent,
@@ -6,7 +7,7 @@ import {
 import { act } from 'react-dom/test-utils';
 
 import preloadAll from 'jest-next-dynamic';
-import { Provider, useDispatch } from 'react-redux';
+import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import CellSetsTool, { generateFilteredCellIndices } from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
@@ -28,6 +29,34 @@ jest.mock('../../../../utils/socketConnection', () => ({
 let storeState;
 const experimentId = '1234';
 
+const getChildrenInHierarchy = (hierarchyKey) => {
+  const hierarchy = storeState.getState().cellSets.hierarchy.filter((h) => h.key === hierarchyKey)[0].children;
+  const children = hierarchy.map((child) => child.key);
+  return children;
+};
+
+const selectFirstNCellSets = ((n) => {
+  // get all keys of children in louvain hierarchy
+  const cellSetKeys = getChildrenInHierarchy('louvain');
+
+  // raise an error if we try to select more clusters than we actually have
+  if (cellSetKeys.length < n) {
+    console.error('Something happened with the test data and there are no longer at least n keys in the cell set object');
+  }
+  storeState.dispatch(updateCellSetSelected(experimentId, cellSetKeys.slice(0, n), 'cellSets'));
+});
+
+const cellSetToolFactory = (override = {}) => {
+  const props = _.merge({
+    experimentId,
+    width: 50,
+    height: 50,
+  }, override);
+
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  return <CellSetsTool {...props} />;
+};
+
 describe('CellSetsTool', () => {
   beforeEach(async () => {
     enableFetchMocks();
@@ -38,32 +67,11 @@ describe('CellSetsTool', () => {
     storeState = makeStore();
   });
 
-  const getChildrenInHierarchy = (hierarchyKey) => {
-    const hierarchy = storeState.getState().cellSets.hierarchy.filter((h) => h.key === hierarchyKey)[0].children;
-    const children = hierarchy.map((child) => child.key);
-    return children;
-  };
-
-  const selectFirstNCellSets = ((n) => {
-    // get all keys of children in louvain hierarchy
-    const cellSetKeys = getChildrenInHierarchy('louvain');
-
-    // raise an error if we try to select more clusters than we actually have
-    if (cellSetKeys.length < n) {
-      console.error('Something happened with the test data and there are no longer at least n keys in the cell set object');
-    }
-    storeState.dispatch(updateCellSetSelected(experimentId, cellSetKeys.slice(0, n), 'cellSets'));
-  });
-
   it('renders correctly cell set tool with no clusters in custom cell sets', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -86,11 +94,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -131,11 +135,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -150,11 +150,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -174,11 +170,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -232,11 +224,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -291,11 +279,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -340,11 +324,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -393,11 +373,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -450,11 +426,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
@@ -507,11 +479,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <CellSetsTool
-            experimentId='1234'
-            width={50}
-            height={50}
-          />
+          {cellSetToolFactory()}
         </Provider>,
       );
     });
