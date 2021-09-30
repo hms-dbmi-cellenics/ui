@@ -8,15 +8,9 @@ const sampleTemplate = {
   lastModified: null,
   complete: false,
   error: false,
-  fileNames: new Set(),
+  fileNames: [],
   files: {},
   metadata: {},
-  toJSON() {
-    return {
-      ...this,
-      fileNames: [...this.fileNames],
-    };
-  },
 };
 
 const sampleFileTemplate = {

@@ -13,6 +13,7 @@ import {
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import endUserMessages from '../../../utils/endUserMessages';
 import saveProject from './saveProject';
+import saveSamples from '../samples/saveSamples';
 
 const createMetadataTrack = (
   name, projectUuid,
@@ -35,21 +36,33 @@ const createMetadataTrack = (
       },
     });
 
-    const { meta, loading, ...onlySamples } = samples;
-
-    await Promise.all(Object.entries(onlySamples).map(([sampleUuid, sample]) => dispatch({
+    await Promise.all(project.samples.map((sampleUuid) => dispatch({
       type: SAMPLES_UPDATE,
       payload: {
         sampleUuid,
         sample: {
           metadata: {
             [metadataKey]: (
-              sample.metadata[metadataKey] || DEFAULT_NA
+              samples[sampleUuid].metadata[metadataKey] || DEFAULT_NA
             ),
           },
         },
       },
     })));
+
+    const { samples: updatedSamples } = getState();
+
+    // Get updated samples in an object
+    const samplesWithMetadata = project.samples.reduce((samplesObject, sampleUuid) => {
+      // eslint-disable-next-line no-param-reassign
+      samplesObject[sampleUuid] = _.clone(updatedSamples[sampleUuid]);
+      return samplesObject;
+    }, {});
+
+    // Temporary fix because right now we send the whole samples object
+    // to the API to update samples. Once we can update with PATCH
+    // action, this has to be redone
+    dispatch(saveSamples(projectUuid, samplesWithMetadata, false, false));
   } catch (e) {
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }

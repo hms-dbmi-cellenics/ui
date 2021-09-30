@@ -11,6 +11,7 @@ import PrettyTime from '../PrettyTime';
 import validateInputs, { rules } from '../../utils/validateInputs';
 import ProjectDeleteModal from './ProjectDeleteModal';
 import { setActiveProject, updateProject } from '../../redux/actions/projects';
+import { updateExperiment } from '../../redux/actions/experiments';
 
 import integrationTestConstants from '../../utils/integrationTestConstants';
 
@@ -45,7 +46,10 @@ const ProjectCard = (props) => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const { activeProjectUuid } = projects.meta;
+  const projectCardStyle = activeProjectUuid === projectUuid ? activeProjectStyle : inactiveProjectStyle;
+
   const project = projects[projectUuid];
+  const projectExperiment = project.experiments[0];
 
   const projectNames = projects.ids.map((uuid) => projects[uuid].name);
 
@@ -54,7 +58,10 @@ const ProjectCard = (props) => {
   };
 
   const updateProjectName = (newName) => {
-    dispatch(updateProject(project.uuid, { name: newName }));
+    dispatch(updateProject(project.uuid, { name: newName.trim() }));
+
+    // Before multiple experiment support, use project name for analysis name
+    dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
   };
 
   const deleteProject = () => {
@@ -75,7 +82,7 @@ const ProjectCard = (props) => {
         data-test-class={integrationTestConstants.classes.PROJECT_CARD}
         key={projectUuid}
         type='primary'
-        style={projectUuid === activeProjectUuid ? activeProjectStyle : inactiveProjectStyle}
+        style={projectCardStyle}
         onClick={() => {
           dispatch(setActiveProject(project.uuid));
         }}
