@@ -345,6 +345,8 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
+    throw new Error('FIXTHIS: remove filterCells from here and also replace filterCells in the spec gen file');
+
     if (selectedPlot === 'sample'
       && !cellSets.loading
       && filterCells(cellSets, selectedConfig.selectedCellSet).length === 0) {
