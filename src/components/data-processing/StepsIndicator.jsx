@@ -27,7 +27,8 @@ const StepsIndicator = (props) => {
           dataTestClass = integrationTestConstants.classes.QC_STEP_NOT_COMPLETED;
         }
         return (
-          <svg width='18' height='10' data-test-class={dataTestClass}>
+          // eslint-disable-next-line react/no-array-index-key
+          <svg key={`progess-indicator-${index}`} width='18' height='10' data-test-class={dataTestClass}>
             <rect width='16' height='8' style={{ fill: color }} />
           </svg>
         );
