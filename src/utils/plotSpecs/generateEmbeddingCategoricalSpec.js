@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config, plotData) => {
+const generateSpec = (config, { plotData, clusterNames }) => {
   let legend = [];
 
   const colorFieldName = plotData[0]?.color ? 'color' : 'col';
@@ -88,9 +88,7 @@ const generateSpec = (config, plotData) => {
       {
         name: 'sampleToName',
         type: 'ordinal',
-        // range: { data: 'values', field: 'clusterName' },
-        range: ['louvain', 'louvain', 'louvain1'],
-        // domain: ['louvain', 'louvain', 'louvain1'],
+        range: clusterNames,
       },
     ],
     axes: [
@@ -183,14 +181,14 @@ const generateSpec = (config, plotData) => {
 };
 
 const filterCells = (cellSets, selectedCellSet) => {
-  let newCellSets = cellSets.hierarchy.find(
+  const newCellSets = cellSets.hierarchy.find(
     (rootNode) => rootNode.key === selectedCellSet,
   )?.children || [];
 
   // Build up the data source based on the properties. Note that the child nodes
   // in the hierarchy are /objects/ with a `key` property, hence the destructuring
   // in the function.
-  newCellSets = newCellSets.flatMap(({ key }) => {
+  const dataPoints = newCellSets.flatMap(({ key }) => {
     const cells = Array.from(cellSets.properties[key].cellIds);
 
     return cells.map((cellId) => ({
@@ -201,14 +199,16 @@ const filterCells = (cellSets, selectedCellSet) => {
     }));
   });
 
-  return newCellSets;
+  const clusterNames = newCellSets.map(({ key }) => cellSets.properties[key].name);
+
+  return { dataPoints, clusterNames };
 };
 
 // Generate dynamic data from redux store
 const generateData = (cellSets, selectedCellSet, embeddingData) => {
-  const newCellSets = filterCells(cellSets, selectedCellSet);
+  const { dataPoints, clusterNames } = filterCells(cellSets, selectedCellSet);
 
-  const test = newCellSets
+  const plotData = dataPoints
     .filter((d) => d.cellId < embeddingData.length)
     .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
     .map((data) => {
@@ -221,7 +221,7 @@ const generateData = (cellSets, selectedCellSet, embeddingData) => {
       };
     });
 
-  return test;
+  return { plotData, clusterNames };
 };
 
 export {
