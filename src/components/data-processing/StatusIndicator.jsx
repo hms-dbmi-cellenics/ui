@@ -156,9 +156,9 @@ const StatusIndicator = (props) => {
 };
 
 StatusIndicator.propTypes = {
-  experimentId: PropTypes.array.isRequired,
+  experimentId: PropTypes.string.isRequired,
   allSteps: PropTypes.array.isRequired,
   currentStep: PropTypes.number.isRequired,
-  completedSteps: PropTypes.number.isRequired,
+  completedSteps: PropTypes.array.isRequired,
 };
 export default StatusIndicator;

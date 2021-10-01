@@ -21,7 +21,6 @@ import { getBackendStatus } from '../redux/selectors';
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
-import { navigateFromProcessingTo } from '../redux/actions/experimentSettings';
 import { loadBackendStatus } from '../redux/actions/backendStatus';
 
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -29,7 +28,7 @@ import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing
 import PreloadContent from './PreloadContent';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 
-import ChangesNotAppliedModal from './ChangesNotAppliedModal';
+import { useAppRouter } from '../utils/AppRouteProvider';
 
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
@@ -48,6 +47,7 @@ const ContentWrapper = (props) => {
   const { experimentId, experimentData, children } = props;
   const router = useRouter();
   const route = router?.route || '';
+  const navigateTo = useAppRouter();
 
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
@@ -69,10 +69,6 @@ const ContentWrapper = (props) => {
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
-
-  const changedQCFilters = useSelector(
-    (state) => state.experimentSettings.processing.meta.changedQCFilters,
-  );
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
@@ -246,14 +242,6 @@ const ContentWrapper = (props) => {
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatus.SUCCEEDED
     && pipelineStatusKey === pipelineStatus.NOT_CREATED;
 
-  const transitionToModule = (path) => {
-    if (changedQCFilters.size) {
-      dispatch(navigateFromProcessingTo(path));
-    } else {
-      router.push(path);
-    }
-  };
-
   const renderContent = () => {
     if (experimentId) {
       if (
@@ -314,7 +302,7 @@ const ContentWrapper = (props) => {
         disabled={noExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
-        onClick={() => transitionToModule(realPath)}
+        onClick={() => navigateTo(realPath)}
       >
         {name}
       </Menu.Item>
@@ -323,8 +311,6 @@ const ContentWrapper = (props) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      {experimentId ? <ChangesNotAppliedModal experimentId={experimentId} /> : <></>}
-
       <Sider
         width={210}
         theme='dark'
