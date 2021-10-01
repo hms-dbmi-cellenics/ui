@@ -267,7 +267,7 @@ const HeatmapPlot = (props) => {
     <div>
       <Heatmap
         uuid='heatmap-0'
-        theme='dark'
+        theme='light'
         width={width - 100}
         height={height - 50}
         colormap='plasma'

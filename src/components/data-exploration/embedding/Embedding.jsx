@@ -287,23 +287,20 @@ const Embedding = (props) => {
           <Scatterplot
             cellOpacity={0.8}
             cellRadius={0.1}
+            theme='light'
             uuid={embeddingType}
             viewState={view}
             cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
             mapping='PCA'
-            selectedCellIds={selectedCellIds}
+            cellSelection={selectedCellIds}
             cellColors={
               (selectedCell)
                 ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
                 : new Map(Object.entries(cellColors))
             }
-            getCellPosition={() => { }}
-            getCellColor
+            setViewState={(newViewState) => newViewState}
+            getExpressionValue={() => { }}
             getCellIsSelected={() => { }}
-            setCellSelection={() => { }}
-            setCellHighlight={() => { }}
-            updateViewInfo={() => { }}
-            onToolChange={() => { }}
 
           />
         ) : ''
