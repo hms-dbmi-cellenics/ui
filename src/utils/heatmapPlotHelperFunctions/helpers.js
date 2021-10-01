@@ -9,8 +9,13 @@ const hexToRgb = (hex) => {
   return null;
 };
 
-// eslint-disable-next-line no-mixed-operators
-const convertRange = (value, r1, r2) => (value - r1[0]) * (r2[1] - r2[0]) / (r1[1] - r1[0]) + r2[0];
+const convertRange = (value, r1, r2) => {
+  // prevent devision by zero
+  if (r1[0] === r1[1]) return value;
+
+  // eslint-disable-next-line no-mixed-operators
+  return (value - r1[0]) * (r2[1] - r2[0]) / (r1[1] - r1[0]) + r2[0];
+};
 
 const listToMatrix = (list, elementsPerSubArray) => {
   const matrix = []; let i; let

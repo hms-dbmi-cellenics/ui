@@ -248,9 +248,6 @@ const HeatmapPlot = (props) => {
     const geneMin = Math.min(...row);
     const geneMax = Math.max(...row);
 
-    if (geneMax === 0) {
-      return row;
-    }
     return row.map((x) => convertRange(x, [geneMin, geneMax], [0, 255]));
   });
 
