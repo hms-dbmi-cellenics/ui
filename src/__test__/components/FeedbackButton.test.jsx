@@ -34,21 +34,21 @@ describe('FeedbackButton', () => {
 
   it('renders a button correctly without any props', () => {
     render(<FeedbackButton />);
-    expect(screen.getByText(/Feedback\\?/i)).toBeDefined();
+    expect(screen.getByText(/Feedback/i)).toBeDefined();
   });
 
   it('Shows a text area input with 2 buttons when opened', () => {
     render(<FeedbackButton />);
 
-    const feedbackButton = screen.getByText(/Feedback\\?/i);
+    const feedbackButton = screen.getByText(/Feedback/i);
     fireEvent.click(feedbackButton);
 
     // There is a textarea
-    expect(screen.getByPlaceholderText(/Feedback\\?/i)).toBeDefined();
+    expect(screen.getByPlaceholderText(/Feedback/i)).toBeDefined();
 
     // With 2 buttons
     expect(screen.getByText(/cancel/i)).toBeDefined();
-    expect(screen.getByText(/Send feedback/i)).toBeDefined();
+    expect(screen.getByText(/Send/i)).toBeDefined();
   });
 
   it('It sends a POST request containing the feedback', async () => {
@@ -58,15 +58,15 @@ describe('FeedbackButton', () => {
 
     const feedbackText = 'Some feedback';
 
-    const feedbackButton = screen.getByText(/Feedback\\?/i);
+    const feedbackButton = screen.getByText(/Feedback/i);
     fireEvent.click(feedbackButton);
 
-    const feedbackInput = screen.getByPlaceholderText(/Feedback\\?/i);
+    const feedbackInput = screen.getByPlaceholderText(/Feedback/i);
 
     fireEvent.change(feedbackInput, { target: { value: feedbackText } });
     expect(feedbackInput).toHaveValue(feedbackText);
 
-    const submitButton = screen.getByText(/Send feedback/i).closest('button');
+    const submitButton = screen.getByText(/Send/i).closest('button');
 
     fireEvent.click(submitButton);
 
@@ -92,15 +92,15 @@ describe('FeedbackButton', () => {
 
     const feedbackText = 'Some feedback';
 
-    const feedbackButton = screen.getByText(/Feedback\\?/i);
+    const feedbackButton = screen.getByText(/Feedback/i);
     fireEvent.click(feedbackButton);
 
-    const feedbackInput = screen.getByPlaceholderText(/Feedback\\?/i);
+    const feedbackInput = screen.getByPlaceholderText(/Feedback/i);
 
     fireEvent.change(feedbackInput, { target: { value: feedbackText } });
     expect(feedbackInput).toHaveValue(feedbackText);
 
-    const submitButton = screen.getByText(/Send feedback/i).closest('button');
+    const submitButton = screen.getByText(/Send/i).closest('button');
 
     fireEvent.click(submitButton);
 
