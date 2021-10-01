@@ -4,13 +4,13 @@ const metaInitialState = {
   loadingSettingsError: false,
   selectedConfigureEmbeddingPlot: 'cellCluster',
   changedQCFilters: new Set(),
-  navigationPath: '',
 };
 
 const initialState = {
   info: {
     experimentId: null,
     experimentName: null,
+    sampleIds: [],
   },
   processing: {
     meta: metaInitialState,

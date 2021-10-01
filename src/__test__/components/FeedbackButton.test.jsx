@@ -3,6 +3,7 @@ import {
   render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import '@testing-library/jest-dom';
 import 'aws-amplify';
 
 import FeedbackButton from '../../components/FeedbackButton';

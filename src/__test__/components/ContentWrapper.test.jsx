@@ -12,6 +12,7 @@ import { getBackendStatus } from '../../redux/selectors';
 import ContentWrapper from '../../components/ContentWrapper';
 
 jest.mock('../../redux/selectors');
+jest.mock('localforage');
 
 const { Item } = Menu;
 
@@ -41,6 +42,10 @@ jest.mock('aws-amplify', () => ({
     currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
     federatedSignIn: jest.fn().mockImplementation(() => console.log('== HELLO ==')),
   },
+}));
+
+jest.mock('../../utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn().mockReturnValue(() => {}),
 }));
 
 configure({ adapter: new Adapter() });
