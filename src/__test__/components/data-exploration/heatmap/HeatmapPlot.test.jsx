@@ -203,7 +203,6 @@ describe('HeatmapPlot', () => {
       </Provider>,
     );
     expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find('VegaHeatmap').length).toEqual(1);
   });
 
   it('renders error state when expression data errors out', () => {
