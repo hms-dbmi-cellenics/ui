@@ -23,7 +23,7 @@ const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
 
 const Heatmap = dynamic(
-  () => import('vitessce/dist/es/production/heatmap.min.js').then((mod) => mod.Heatmap),
+  () => import('vitessce/dist/umd/production/heatmap.min').then((mod) => mod.Heatmap),
   { ssr: false },
 );
 
@@ -267,19 +267,18 @@ const HeatmapPlot = (props) => {
     <div>
       <Heatmap
         uuid='heatmap-0'
-        theme='light'
+        theme='dark'
         width={width - 100}
         height={height - 50}
-        updateStatus={() => { }}
+        colormap='plasma'
+        colormapRange={[0.0, 1.0]}
         expressionMatrix={expressionMatrix}
         cellColors={cellColors}
-        updateCellsHover={updateCellsHover}
-        updateGenesHover={(obj) => obj}
-        updateViewInfo={() => { }}
-        variablesTitle='Genes'
-        observationsTitle='Louvain Clusters'
         transpose
-
+        viewState={{ zoom: 0, target: [0, 0] }}
+        setCellHighlight={() => { }}
+        setGeneHighlight={() => { }}
+        setViewState={(newViewState) => newViewState}
       />
     </div>
   );

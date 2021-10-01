@@ -32,7 +32,7 @@ import PlatformError from '../../PlatformError';
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
 
 const Scatterplot = dynamic(
-  () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
+  () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),
   { ssr: false },
 );
 
@@ -286,9 +286,9 @@ const Embedding = (props) => {
 
           <Scatterplot
             cellOpacity={0.8}
-            cellRadiusScale={0.1}
+            cellRadius={0.1}
             uuid={embeddingType}
-            view={view}
+            viewState={view}
             cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
             mapping='PCA'
             selectedCellIds={selectedCellIds}
@@ -297,11 +297,14 @@ const Embedding = (props) => {
                 ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
                 : new Map(Object.entries(cellColors))
             }
-            updateStatus={updateStatus}
-            updateCellsSelection={updateCellsSelection}
-            updateCellsHover={updateCellsHover}
-            updateViewInfo={updateCellCoordinates}
-            clearPleaseWait={clearPleaseWait}
+            getCellPosition={() => { }}
+            getCellColor
+            getCellIsSelected={() => { }}
+            setCellSelection={() => { }}
+            setCellHighlight={() => { }}
+            updateViewInfo={() => { }}
+            onToolChange={() => { }}
+
           />
         ) : ''
       }
