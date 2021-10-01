@@ -56,7 +56,7 @@ const generateSpec = (config, plotData) => {
         source: 'values',
         transform: [
           {
-            type: 'aggregate', fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
+            type: 'aggregate', groupby: ['clusterKey', 'clusterName'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
           },
         ],
       },
@@ -83,13 +83,14 @@ const generateSpec = (config, plotData) => {
         name: 'cellSetColors',
         type: 'ordinal',
         range: { data: 'values', field: colorFieldName },
-        // domain: { data: 'values', field: 'clusterKey' },
+        domain: { data: 'values', field: 'clusterKey' },
       },
       {
         name: 'sampleToName',
         type: 'ordinal',
-        range: { data: 'values', field: 'clusterName' },
-        // domain: { data: 'values', field: 'clusterKey' },
+        // range: { data: 'values', field: 'clusterName' },
+        range: ['louvain', 'louvain', 'louvain1'],
+        // domain: ['louvain', 'louvain', 'louvain1'],
       },
     ],
     axes: [
@@ -158,7 +159,7 @@ const generateSpec = (config, plotData) => {
           enter: {
             x: { scale: 'x', field: 'meanX' },
             y: { scale: 'y', field: 'meanY' },
-            text: { field: 'clusterKey' },
+            text: { field: 'clusterName' },
             fontSize: { value: config?.labels.size },
             strokeWidth: { value: 1.2 },
             fill: { value: config?.colour.masterColour },
