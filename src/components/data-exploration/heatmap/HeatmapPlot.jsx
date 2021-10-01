@@ -37,6 +37,7 @@ const HeatmapPlot = (props) => {
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
 
+  const [viewState, setViewState] = useState({ zoom: 0, target: [0, 0] });
   const [heatmapData, setHeatmapData] = useState(null);
   const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
   const currentHeatmapSettings = useRef();
@@ -275,10 +276,10 @@ const HeatmapPlot = (props) => {
         expressionMatrix={expressionMatrix}
         cellColors={cellColors}
         transpose
-        viewState={{ zoom: 0, target: [0, 0] }}
+        viewState={viewState}
         setCellHighlight={() => { }}
         setGeneHighlight={() => { }}
-        setViewState={(newViewState) => newViewState}
+        setViewState={({ zoom, target }) => setViewState({ zoom, target })}
       />
     </div>
   );
