@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React from 'react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';

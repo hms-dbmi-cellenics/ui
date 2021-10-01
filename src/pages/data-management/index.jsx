@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -128,7 +127,11 @@ const DataManagementPage = ({ route }) => {
 
   const renderWindow = (tile, width, height) => {
     if (tile && height && width) {
-      return tile(width, height);
+      return (
+        <div style={{ padding: '10px' }}>
+          {height && width ? tile(width, height) : <></>}
+        </div>
+      );
     }
     return <></>;
   };

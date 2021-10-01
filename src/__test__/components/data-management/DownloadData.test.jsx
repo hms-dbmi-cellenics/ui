@@ -8,7 +8,7 @@ import preloadAll from 'jest-next-dynamic';
 
 import { act } from 'react-dom/test-utils';
 import configureMockStore from 'redux-mock-store';
-import DownloadData from '../../../components/data-management/DownloadData';
+import DownloadDataButton from '../../../components/data-management/DownloadDataButton';
 import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 import initialSamplesState from '../../../redux/reducers/samples/initialState';
 import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
@@ -88,7 +88,7 @@ describe('Download data menu', () => {
     const store = mockStore(state);
     render(
       <Provider store={store}>
-        <DownloadData activeProjectUuid={projectUuid} />
+        <DownloadDataButton activeProjectUuid={projectUuid} />
       </Provider>,
     );
   };

@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useState, useEffect } from 'react';
 import {
   Collapse, Select, Space, Button, Radio, InputNumber,
@@ -151,9 +150,9 @@ HeatmapControls.propTypes = {
 };
 HeatmapControls.defaultProps = {
   markerHeatmap: false,
-  onUpdate: () => {},
+  onUpdate: () => { },
   config: {},
-  onReset: () => {},
+  onReset: () => { },
   cellSets: {},
 };
 export default HeatmapControls;
