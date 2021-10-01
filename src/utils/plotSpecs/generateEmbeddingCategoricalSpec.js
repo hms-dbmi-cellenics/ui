@@ -56,7 +56,7 @@ const generateSpec = (config, plotData) => {
         source: 'values',
         transform: [
           {
-            type: 'aggregate', groupby: ['cluster'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
+            type: 'aggregate', fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
           },
         ],
       },
@@ -83,13 +83,13 @@ const generateSpec = (config, plotData) => {
         name: 'cellSetColors',
         type: 'ordinal',
         range: { data: 'values', field: colorFieldName },
-        domain: { data: 'values', field: 'cluster' },
+        // domain: { data: 'values', field: 'clusterKey' },
       },
       {
         name: 'sampleToName',
         type: 'ordinal',
-        range: { data: 'values', field: 'cluster' },
-        domain: { data: 'values', field: 'cluster' },
+        range: { data: 'values', field: 'clusterName' },
+        // domain: { data: 'values', field: 'clusterKey' },
       },
     ],
     axes: [
@@ -144,8 +144,8 @@ const generateSpec = (config, plotData) => {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
             size: { value: config?.marker.size },
-            stroke: { scale: 'cellSetColors', field: 'cluster' },
-            fill: { scale: 'cellSetColors', field: 'cluster' },
+            stroke: { scale: 'cellSetColors', field: 'clusterKey' },
+            fill: { scale: 'cellSetColors', field: 'clusterKey' },
             shape: { value: config?.marker.shape },
             fillOpacity: { value: config?.marker.opacity / 10 },
           },
@@ -158,7 +158,7 @@ const generateSpec = (config, plotData) => {
           enter: {
             x: { scale: 'x', field: 'meanX' },
             y: { scale: 'y', field: 'meanY' },
-            text: { field: 'cluster' },
+            text: { field: 'clusterKey' },
             fontSize: { value: config?.labels.size },
             strokeWidth: { value: 1.2 },
             fill: { value: config?.colour.masterColour },
@@ -194,7 +194,8 @@ const filterCells = (cellSets, selectedCellSet) => {
 
     return cells.map((cellId) => ({
       cellId,
-      cluster: cellSets.properties[key].name,
+      clusterKey: key,
+      clusterName: cellSets.properties[key].name,
       color: cellSets.properties[key].color,
     }));
   });
