@@ -1,14 +1,13 @@
 import React, {
   useRef, useEffect, useState, useCallback,
 } from 'react';
+import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Empty, Typography, Skeleton,
 } from 'antd';
 import _ from 'lodash';
-import spec from '../../../utils/heatmapSpec';
-import VegaHeatmap from './VegaHeatmap';
 import PlatformError from '../../PlatformError';
 import { updateCellInfo } from '../../../redux/actions/cellInfo';
 import { loadGeneExpression, loadMarkerGenes } from '../../../redux/actions/genes';
@@ -18,8 +17,15 @@ import { loadComponentConfig } from '../../../redux/actions/componentConfig';
 import populateHeatmapData from '../../plots/helpers/populateHeatmapData';
 import Loader from '../../Loader';
 
+import { listToMatrix, hexToRgb, convertRange } from '../../../utils/heatmapPlotHelperFunctions/helpers';
+
 const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
+
+const Heatmap = dynamic(
+  () => import('vitessce/dist/es/production/heatmap.min.js').then((mod) => mod.Heatmap),
+  { ssr: false },
+);
 
 const HeatmapPlot = (props) => {
   const {
@@ -31,8 +37,7 @@ const HeatmapPlot = (props) => {
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
 
-  const [vegaData, setVegaData] = useState(null);
-  const [vegaSpec, setVegaSpec] = useState(spec);
+  const [heatmapData, setHeatmapData] = useState(null);
   const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
   const currentHeatmapSettings = useRef();
 
@@ -68,8 +73,8 @@ const HeatmapPlot = (props) => {
 
   const [maxCells, setMaxCells] = useState(1000);
 
-  const setVegaDataWithDebounce = useCallback(_.debounce((data) => {
-    setVegaData(data);
+  const setHeatmapDataWithDebounce = useCallback(_.debounce((data) => {
+    setHeatmapData(data);
   }, 1500, { leading: true }), []);
 
   /**
@@ -101,15 +106,6 @@ const HeatmapPlot = (props) => {
   }, [selectedGenes, loadingGenes, markerGenesLoading]);
 
   useEffect(() => {
-    if (cellSetsLoading || cellSetsHierarchy.length === 0) {
-      return;
-    }
-
-    const legends = legendIsVisible ? spec.legends : [];
-    setVegaSpec({ ...spec, legends });
-  }, [legendIsVisible]);
-
-  useEffect(() => {
     if (!selectedGenes?.length > 0
       || cellSetsHierarchy.length === 0
       || _.isEqual(currentHeatmapSettings, heatmapSettings)
@@ -122,7 +118,8 @@ const HeatmapPlot = (props) => {
     const data = populateHeatmapData(
       cellSets, heatmapSettings, expressionData, selectedGenes, true,
     );
-    setVegaDataWithDebounce(data);
+
+    setHeatmapDataWithDebounce(data);
   }, [
     selectedGenes,
     heatmapSettings,
@@ -219,7 +216,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (!vegaData) {
+  if (!heatmapData) {
     return (
       <center style={{ marginTop: height / 2 }}>
         <Skeleton.Image />
@@ -227,20 +224,65 @@ const HeatmapPlot = (props) => {
     );
   }
 
+  const updateCellsHover = (cell) => {
+    // console.log(cell);
+  };
+
   const signalListeners = {
     mouseOver: handleMouseOver,
   };
 
+  // build expressionMatrix items
+  const cellColors = new Map(heatmapData.trackColorData.map((x) => [`${x.cellId}`, hexToRgb(x.color)]));
+  const cellIds = heatmapData.cellOrder.map((x) => `${x}`);
+  const genes = heatmapData.geneOrder;
+
+  // array with shape [gene_1 cell_1, ..., gene_1 cell_n, gene_2 cell_1, ... ]
+  const geneOrderedExpression = heatmapData.heatmapData.map((x) => x.expression);
+
+  // first convert to cell by gene matrix
+  const cellByGeneMatrix = listToMatrix(geneOrderedExpression, cellIds.length);
+
+  // scale so that each gene has minimum 0 max 255
+  const scaledCellByGeneMatrix = cellByGeneMatrix.map((row) => {
+    const geneMin = Math.min(...row);
+    const geneMax = Math.max(...row);
+
+    if (geneMax === 0) {
+      return row;
+    }
+    return row.map((x) => convertRange(x, [geneMin, geneMax], [0, 255]));
+  });
+
+  // vitesse Heatmap uses:
+  // array with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
+  // accomplish with transpose and flatten
+  const cellOrderedExpression = _.unzip(scaledCellByGeneMatrix).flat();
+
+  // construct expressionMatrix object for vitessce Heatmap
+  const expressionMatrix = {
+    cols: genes,
+    rows: cellIds,
+    matrix: Uint8Array.from(cellOrderedExpression),
+  };
+
   return (
     <div>
-      <VegaHeatmap
-        spec={vegaSpec}
-        data={vegaData}
-        showAxes={selectedGenes?.length <= 30}
-        rowsNumber={selectedGenes.length}
-        signalListeners={signalListeners}
-        width={width}
-        height={height}
+      <Heatmap
+        uuid='heatmap-0'
+        theme='light'
+        width={width - 100}
+        height={height - 50}
+        updateStatus={() => { }}
+        expressionMatrix={expressionMatrix}
+        cellColors={cellColors}
+        updateCellsHover={updateCellsHover}
+        updateGenesHover={(obj) => obj}
+        updateViewInfo={() => { }}
+        variablesTitle='Genes'
+        observationsTitle='Louvain Clusters'
+        transpose
+
       />
     </div>
   );
