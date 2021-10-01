@@ -1,0 +1,57 @@
+{
+    "cellSets": [
+        {
+            "key": "louvain",
+            "name": "fake louvain clusters",
+            "rootNode": true,
+            "type": "cellSets",
+            "children": [
+                {
+                    "key": "louvain-0",
+                    "name": "Cluster 0",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#e377c2",
+                    "cellIds": [
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "key": "louvain-1",
+                    "name": "Cluster 1",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#8c564b",
+                    "cellIds": [
+                        4,
+                        5,
+                        6
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "scratchpad",
+            "name": "Custom cell sets",
+            "rootNode": true,
+            "children": [],
+            "type": "cellSets"
+        },
+        {
+            "key": "sample",
+            "name": "Samples",
+            "rootNode": true,
+            "children": [
+                {
+                    "key": "98c7a0ed-d086-4df8-bf94-a9ee6edb793f",
+                    "name": "WT2",
+                    "color": "#e377c2",
+                    "cellIds": [1, 2, 3, 4, 5, 6]
+                }
+            ],
+            "type": "metadataCategorical"
+        }
+    ]
+}

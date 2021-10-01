@@ -1,11 +1,9 @@
-const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
-
-// const isBrowser = () => {
-//   if (process.env.NODE_ENV === 'test') {
-//     return false;
-//   }
-//   return typeof window !== 'undefined' && typeof window.document !== 'undefined';
-// };
+const isBrowser = () => {
+  if (process.env.NODE_ENV === 'test') {
+    return false;
+  }
+  return typeof window !== 'undefined' && typeof window.document !== 'undefined';
+};
 
 const Environment = {
   DEVELOPMENT: 'development',
@@ -15,6 +13,10 @@ const Environment = {
 
 const ssrGetCurrentEnvironment = () => {
   let currentEnvironment = null;
+
+  if (process.env.NODE_ENV === 'test') {
+    return Environment.DEVELOPMENT;
+  }
 
   if (!process.env) {
     throw new Error('ssrGetCurrentEnvironment must be called on the server side. Refer to `store.networkResources.environment` for the actual environment.');

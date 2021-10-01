@@ -14,11 +14,6 @@ import genesInitialState from '../../../../redux/reducers/genes/initialState';
 import cellSetsInitialState from '../../../../redux/reducers/cellSets/initialState';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/environment', () => ({
-  __esModule: true,
-  isBrowser: () => false,
-}));
-
 const mockStore = configureMockStore([thunk]);
 
 const emptyState = {
