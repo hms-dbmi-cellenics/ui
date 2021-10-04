@@ -1,16 +1,23 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { v4 as uuidv4 } from 'uuid';
-import createProject from '../../../../redux/actions/projects/createProject';
-import initialState from '../../../../redux/reducers/projects';
-import { saveProject } from '../../../../redux/actions/projects';
-import { createExperiment } from '../../../../redux/actions/experiments';
-import { PROJECTS_CREATE } from '../../../../redux/actionTypes/projects';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import createProject from 'redux/actions/projects/createProject';
+import initialProjectsState from 'redux/reducers/projects';
+import { saveProject } from 'redux/actions/projects';
+import { createExperiment } from 'redux/actions/experiments';
+import {
+  PROJECTS_CREATE, PROJECTS_SAVING, PROJECTS_SAVED, PROJECTS_ERROR,
+} from 'redux/actionTypes/projects';
+
+// import endUserMessages from 'utils/endUserMessages';
 
 const mockStore = configureStore([thunk]);
 
-uuidv4.mockImplementation(() => 'random-project-uuid');
 jest.mock('uuid');
+const mockedProjectUuid = 'random-project-uuid';
+uuidv4.mockImplementation(() => mockedProjectUuid);
 
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
@@ -21,52 +28,72 @@ createExperiment.mockImplementation((projectUuid, projectName) => async () => ({
   uuid: projectUuid,
 }));
 
+jest.mock('../../../../utils/pushNotificationMessage');
+pushNotificationMessage.mockImplementation(() => async () => { });
+
+enableFetchMocks();
+
+const response = JSON.stringify({ one: 'one' });
+
 describe('createProject action', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.doMock();
+
+    jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
+
+    fetchMock.resetMocks();
+    fetchMock.doMock();
   });
 
-  const mockProject = {
-    ...initialState,
-    name: 'test project',
-    uuid: '12345',
-    description: 'Test project',
-    createdDate: '01-01-2021',
-    lastModified: '01-01-2021',
-  };
+  const mockProjectName = 'test project';
+  const mockProjectDescription = 'test project description';
+  const mockExperimentName = 'mockExperimentName';
 
-  it('Dispatches event correctly', async () => {
+  const mockFetchErrorMessage = 'someFetchError';
+
+  it('Works correctly when there are no errors', async () => {
     const store = mockStore({
-      projects: {},
+      projects: initialProjectsState,
     });
-    await store.dispatch(createProject(mockProject.name, mockProject));
+
+    fetchMock.mockResponse(() => Promise.resolve(response));
+
+    await store.dispatch(
+      createProject(mockProjectName, mockProjectDescription, mockExperimentName),
+    );
+
+    expect(createExperiment).toHaveBeenCalledWith(mockedProjectUuid, mockExperimentName);
 
     const actions = store.getActions();
 
-    // And then create and save projects
-    expect(actions[0].type).toEqual(PROJECTS_CREATE);
+    expect(actions[0].type).toEqual(PROJECTS_SAVING);
+    expect(actions[1].type).toEqual(PROJECTS_SAVED);
+    expect(actions[2].type).toEqual(PROJECTS_CREATE);
+
+    // Created project is correct
+    expect(actions[2].payload).toMatchSnapshot();
   });
 
-  it('Dispatches call to save project', async () => {
+  it('Shows error message when there was a fetch error', async () => {
     const store = mockStore({
-      projects: {
-        [initialState.uuid]: initialState,
-      },
+      projects: initialProjectsState,
     });
-    await store.dispatch(createProject(mockProject));
 
-    expect(saveProject).toHaveBeenCalled();
-  });
+    fetchMock.mockResponse(JSON.stringify({ message: mockFetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 
-  it('New project creates a new experiment with the same name ', () => {
-    const store = mockStore({
-      projects: {
-        [initialState.uuid]: initialState,
-      },
-    });
-    store.dispatch(createProject(mockProject.name, mockProject.description, mockProject.name));
+    await expect(
+      store.dispatch(
+        createProject(mockProjectName, mockProjectDescription, mockExperimentName),
+      ),
+    ).rejects.toEqual(mockFetchErrorMessage);
 
-    expect(createExperiment).toHaveBeenCalledWith('random-project-uuid', mockProject.name);
+    const actions = store.getActions();
+
+    expect(actions[0].type).toEqual(PROJECTS_SAVING);
+
+    expect(actions[1].type).toEqual(PROJECTS_ERROR);
+
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 });

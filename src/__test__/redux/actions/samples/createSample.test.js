@@ -74,22 +74,21 @@ describe('createSample action', () => {
 
     await store.dispatch(createSample(mockProjectUuid, mockSample.name, mockType));
 
-    // Dispatches create sample action
-    const action1 = store.getActions()[0];
-    expect(action1.type).toEqual(SAMPLES_CREATE);
-
     // Fetch call is made
     const fetchMockFirstCall = fetchMock.mock.calls[0];
 
-    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v1/projects/${mockProjectUuid}/${mockProject.experiments[0]}/samples`);
-
     const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v1/projects/${mockProjectUuid}/${mockProject.experiments[0]}/samples`);
 
     expect(fetchMethod).toEqual('POST');
     expect(JSON.parse(fetchBody)).toEqual(expect.objectContaining({
       name: mockSample.name,
       projectUuid: mockProjectUuid,
     }));
+
+    // Dispatches create sample action
+    const action1 = store.getActions()[0];
+    expect(action1.type).toEqual(SAMPLES_CREATE);
 
     // Calls update experiment on success of fetch
     expect(updateExperiment).toHaveBeenCalled();
