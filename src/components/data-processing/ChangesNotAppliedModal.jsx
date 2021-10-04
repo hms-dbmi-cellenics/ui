@@ -4,38 +4,50 @@ import PropTypes from 'prop-types';
 import {
   Modal, Typography, Space, Button,
 } from 'antd';
-import { useRouter } from 'next/router';
-import { discardChangedQCFilters, navigateFromProcessingTo } from '../redux/actions/experimentSettings';
-import { runPipeline } from '../redux/actions/pipeline';
 
-import { getUserFriendlyQCStepName } from '../utils/qcSteps';
+import { getBackendStatus } from 'redux/selectors';
+import { discardChangedQCFilters } from 'redux/actions/experimentSettings';
+import { runPipeline } from 'redux/actions/pipeline';
+
+import { getUserFriendlyQCStepName } from 'utils/qcSteps';
 
 const { Text } = Typography;
 
 const ChangesNotAppliedModal = (props) => {
-  const { experimentId } = props;
+  const {
+    onRunPipeline, onDiscardChanges, onCloseModal,
+  } = props;
 
-  const router = useRouter();
-  const dispatch = useDispatch();
+  const experimentId = useSelector(
+    (state) => state.experimentSettings.info.experimentId,
+  );
+
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   const {
-    changedQCFilters,
-    navigationPath,
-  } = useSelector((state) => state.experimentSettings.processing.meta);
+    status: backendStatus,
+  } = useSelector(getBackendStatus(experimentId));
+
+  const paramsHash = backendStatus.gem2s?.paramsHash;
+
+  const dispatch = useDispatch();
 
   return (
     <Modal
-      visible={navigationPath}
       title='Changes not applied'
-      onCancel={() => dispatch(navigateFromProcessingTo(''))}
+      onCancel={() => onCloseModal()}
+      visible
       footer={(
         <Space size='large' style={{ display: 'flex', justifyContent: 'center' }}>
           <Button
             type='primary'
             key='run'
             onClick={() => {
-              dispatch(runPipeline(experimentId));
-              dispatch(navigateFromProcessingTo(''));
+              if (!experimentId || !paramsHash) return;
+              dispatch(runPipeline(experimentId, paramsHash));
+              onRunPipeline();
             }}
             style={{ width: '100px' }}
           >
@@ -45,9 +57,8 @@ const ChangesNotAppliedModal = (props) => {
             type='primary'
             key='discard'
             onClick={() => {
-              router.push(navigationPath);
-              dispatch(navigateFromProcessingTo(''));
               dispatch(discardChangedQCFilters());
+              onDiscardChanges();
             }}
             style={{ width: '100px' }}
           >
@@ -59,7 +70,7 @@ const ChangesNotAppliedModal = (props) => {
       <center>
         <Space direction='vertical'>
           Your changes to the settings of these filters are not yet applied:
-          {changedQCFilters.size && (
+          {changedQCFilters.size > 0 && (
             <>
               <br />
               <ul style={{ margin: '0 auto', display: 'table' }}>
@@ -82,12 +93,19 @@ const ChangesNotAppliedModal = (props) => {
         </Space>
       </center>
     </Modal>
-
   );
 };
 
 ChangesNotAppliedModal.propTypes = {
-  experimentId: PropTypes.string.isRequired,
+  onRunPipeline: PropTypes.func,
+  onDiscardChanges: PropTypes.func,
+  onCloseModal: PropTypes.func,
+};
+
+ChangesNotAppliedModal.defaultProps = {
+  onRunPipeline: null,
+  onDiscardChanges: null,
+  onCloseModal: null,
 };
 
 export default ChangesNotAppliedModal;
