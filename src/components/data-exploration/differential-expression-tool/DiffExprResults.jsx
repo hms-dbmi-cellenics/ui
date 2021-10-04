@@ -36,6 +36,7 @@ const DiffExprResults = (props) => {
 
   const columns = [
     {
+      fixed: 'left',
       title: 'logFC',
       key: 'logFC',
       sorter: true,

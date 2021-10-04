@@ -22,7 +22,7 @@ const LaunchButtonTemplate = (props) => {
 
   return (
     <Button
-      data-test-id={integrationTestConstants.ids.LAUNCH_ANALYSIS_BUTTON}
+      data-test-id={integrationTestConstants.ids.PROCESS_PROJECT_BUTTON}
       type='primary'
       disabled={disabled}
       onClick={onClick}
@@ -43,30 +43,29 @@ const LaunchAnalysisButton = () => {
   const projects = useSelector((state) => state.projects);
   const { activeProjectUuid } = projects.meta;
   const activeProject = projects[activeProjectUuid];
+  const experimentId = activeProject.experiments[0];
 
-  const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, hash: null, reasons: [] });
+  const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, paramsHash: null, reasons: [] });
 
   const launchAnalysis = () => {
-    const activeExperimentId = activeProject.experiments[0];
-
     const lastViewed = moment().toISOString();
-    dispatch(updateExperiment(activeExperimentId, { lastViewed }));
+    dispatch(updateExperiment(experimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
     dispatch(updateExperimentInfo({
-      experimentId: activeExperimentId,
-      experimentName: experiments[activeExperimentId].name,
-      sampleIds: experiments[activeExperimentId].sampleIds,
+      experimentId,
+      experimentName: experiments[experimentId].name,
+      sampleIds: experiments[experimentId].sampleIds,
     }));
 
     if (gem2sRerunStatus.rerun) {
-      dispatch(runGem2s(activeExperimentId, gem2sRerunStatus.hash));
+      dispatch(runGem2s(experimentId, gem2sRerunStatus.paramsHash));
     }
 
     const analysisPath = '/experiments/[experimentId]/data-processing';
-    router.push(analysisPath.replace('[experimentId]', activeExperimentId));
+    router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
-  const calculateGem2sRerunStatus = (experimentId, gem2sBackendStatus) => {
+  const calculateGem2sRerunStatus = (gem2sBackendStatus) => {
     const { status: gem2sStatus, paramsHash: existingParamsHash } = gem2sBackendStatus;
 
     const newParamsHash = generateGem2sParamsHash(
@@ -87,23 +86,21 @@ const LaunchAnalysisButton = () => {
 
     return ({
       rerun: !gem2sSuccessful || !projectHashEqual,
-      hash: newParamsHash,
+      paramsHash: newParamsHash,
       reasons: rerunReasons,
     });
   };
 
   useEffect(() => {
-    const experimentId = activeProject.experiments[0];
-
     // The value of backend status is null for new projects that have never run
     const gem2sBackendStatus = backendStatus[experimentId]?.status?.gem2s;
 
     if (
       !gem2sBackendStatus
-      || !experiments[experimentId]?.sampleIds.length > 0
+      || !experiments[experimentId]?.sampleIds?.length > 0
     ) return;
 
-    const gem2sStatus = calculateGem2sRerunStatus(experimentId, gem2sBackendStatus);
+    const gem2sStatus = calculateGem2sRerunStatus(gem2sBackendStatus);
 
     setGem2sRerunStatus(gem2sStatus);
   }, [backendStatus, activeProjectUuid, samples, activeProject]);
@@ -174,10 +171,11 @@ const LaunchAnalysisButton = () => {
       return (
         <Popconfirm
           title={`This project has to be processed because ${gem2sRerunStatus.reasons.join(' and ')}. \
-            This will take several minutes.\
-            Do you want to continue?`}
+        This will take several minutes.\
+        Do you want to continue?`}
           onConfirm={() => launchAnalysis()}
           okText='Yes'
+          okButtonProps={{ 'data-test-id': integrationTestConstants.ids.CONFIRM_PROCESS_PROJECT }}
           cancelText='No'
           placement='bottom'
           overlayStyle={{ maxWidth: '250px' }}

@@ -52,8 +52,12 @@ const createMetadataTrack = (
 
     const { samples: updatedSamples } = getState();
 
-    const samplesWithMetadata = _.clone(updatedSamples);
-    delete samplesWithMetadata.meta;
+    // Get updated samples in an object
+    const samplesWithMetadata = project.samples.reduce((samplesObject, sampleUuid) => {
+      // eslint-disable-next-line no-param-reassign
+      samplesObject[sampleUuid] = _.clone(updatedSamples[sampleUuid]);
+      return samplesObject;
+    }, {});
 
     // Temporary fix because right now we send the whole samples object
     // to the API to update samples. Once we can update with PATCH
