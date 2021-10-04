@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle,
