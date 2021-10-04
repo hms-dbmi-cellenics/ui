@@ -41,6 +41,7 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
+  const hierarchy = useSelector(getCellSetsHierarchy());
   useEffect(() => {
     // try to load the plot configuration.
     dispatch(loadCellSets(experimentId));
@@ -51,8 +52,6 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
     if (cellSets.loading) {
       return [];
     }
-    const hierarchy = getCellSetsHierarchy(cellSets);
-
     return hierarchy.map(({ key, children }) => ({
       value: key,
       label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,

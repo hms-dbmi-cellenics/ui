@@ -1,13 +1,13 @@
-const getCellSetsHierarchy = (cellSets, category = []) => {
-  if (!cellSets || cellSets.loading) {
+const getCellSetsHierarchy = (category = []) => (state) => {
+  if (!state || state.loading) {
     return [];
   }
-  let hierarchy = cellSets.hierarchy.map(
+  let hierarchy = state.hierarchy.map(
     (cellSet) => (
       {
         key: cellSet.key,
-        name: cellSets.properties[cellSet.key]?.name,
-        type: cellSets.properties[cellSet.key]?.type,
+        name: state.properties[cellSet.key]?.name,
+        type: state.properties[cellSet.key]?.type,
         children: cellSet?.children || 0,
       }
     ),

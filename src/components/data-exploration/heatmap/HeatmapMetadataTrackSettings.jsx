@@ -18,14 +18,13 @@ const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
-
-  const cellSets = useSelector(getCellSets());
+  const { properties, hierarchy } = useSelector(getCellSets());
+  const selectedHierarchy = useSelector(getCellSetsHierarchy(['cellSets', 'metadataCategorical']));
   const selectedTracks = useSelector(
     (state) => state.componentConfig[componentType].config.selectedTracks,
   );
 
-  const getTrackData = () => getCellSetsHierarchy(cellSets,
-    ['cellSets', 'metadataCategorical']).map(
+  const getTrackData = () => selectedHierarchy.map(
     (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
   );
 
@@ -49,7 +48,7 @@ const HeatmapMetadataTrackSettings = (props) => {
     if (_.isEqual(trackData, newTrackData)) return;
 
     setTrackData(getUpdatedTrackData());
-  }, [cellSets.hierarchy]);
+  }, [hierarchy]);
 
   const getEnabledTracks = () => trackData.filter((entry) => entry.selected).map((o) => o.key);
 
@@ -98,9 +97,7 @@ const HeatmapMetadataTrackSettings = (props) => {
     />
   );
 
-  const rightItem = (trackDataItem) => (
-    cellSets.properties[trackDataItem.key].name
-  );
+  const rightItem = (trackDataItem) => properties[trackDataItem.key].name;
 
   return (
     <div style={{ padding: '5px' }}>

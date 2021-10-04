@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
-import { getCellSets, getCellSetsHierarchy } from '../../../redux/selectors';
+import { getCellSetsHierarchy } from '../../../redux/selectors';
 
 const HeatmapGroupBySettings = (props) => {
   const dispatch = useDispatch();
@@ -23,11 +23,8 @@ const HeatmapGroupBySettings = (props) => {
   const groupedTracksKeys = useSelector(
     (state) => state.componentConfig[componentType].config.groupedTracks,
   );
-  const cellSets = useSelector(getCellSets());
-
+  const allCellSetsGroupBys = useSelector(getCellSetsHierarchy(['cellSets', 'metadataCategorical']));
   const getCellSetsOrder = () => {
-    const allCellSetsGroupBys = getCellSetsHierarchy(cellSets, ['cellSets', 'metadataCategorical']);
-
     const groupedCellSets = [];
 
     // from the enabled cell sets keys we get, find their corresponding information
@@ -74,11 +71,10 @@ const HeatmapGroupBySettings = (props) => {
 
   // This is so that a click on + or - buttons doesn't close the menu
   const stopPropagationEvent = (e) => e.stopPropagation();
-
   const menu = (
     <Menu>
       {
-        getCellSetsHierarchy(cellSets, ['cellSets', 'metadataCategorical'])
+        allCellSetsGroupBys
           .map((cellSet, indx) => {
             const positionInCellSetOrder = indexOfCellSet(cellSet);
 
