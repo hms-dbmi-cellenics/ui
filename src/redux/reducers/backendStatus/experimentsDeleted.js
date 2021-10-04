@@ -1,7 +1,7 @@
 import produce from 'immer';
 // called when an experiment is deleted - deletes the backend status
 
-const backendStatusDeleted = produce((draft, action) => {
+const experimentsDeleted = produce((draft, action) => {
   const { experimentIds } = action.payload;
 
   experimentIds.forEach((id) => {
@@ -10,4 +10,4 @@ const backendStatusDeleted = produce((draft, action) => {
   });
 });
 
-export default backendStatusDeleted;
+export default experimentsDeleted;

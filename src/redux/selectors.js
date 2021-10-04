@@ -11,7 +11,11 @@ const getBackendStatus = (...params) => (state) => (
 const getCellSets = (...params) => (state) => (
   cellSetsSelectors.getCellSets(...params)(state.cellSets));
 
+const getCellSetsHierarchy = (cellSets, category) => (
+  cellSetsSelectors.getCellSetsHierarchy(cellSets, category));
+
 export {
   getBackendStatus,
   getCellSets,
+  getCellSetsHierarchy,
 };

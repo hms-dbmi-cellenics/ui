@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
-import { getCellSets } from '../../../redux/selectors';
+import { getCellSets, getCellSetsHierarchy } from '../../../redux/selectors';
 
 const HeatmapGroupBySettings = (props) => {
   const dispatch = useDispatch();
@@ -24,22 +24,9 @@ const HeatmapGroupBySettings = (props) => {
     (state) => state.componentConfig[componentType].config.groupedTracks,
   );
   const cellSets = useSelector(getCellSets());
-  const getCellSetsHierarchy = (category) => {
-    if (!cellSets || cellSets.loading) {
-      return [];
-    }
-
-    return cellSets.hierarchy.map(
-      ({ key }) => (
-        { key, name: cellSets.properties[key].name, type: cellSets.properties[key].type }
-      ),
-    ).filter(
-      ({ type }) => category.includes(type),
-    );
-  };
 
   const getCellSetsOrder = () => {
-    const allCellSetsGroupBys = getCellSetsHierarchy(['cellSets', 'metadataCategorical']);
+    const allCellSetsGroupBys = getCellSetsHierarchy(cellSets, ['cellSets', 'metadataCategorical']);
 
     const groupedCellSets = [];
 
@@ -91,7 +78,7 @@ const HeatmapGroupBySettings = (props) => {
   const menu = (
     <Menu>
       {
-        getCellSetsHierarchy(['cellSets', 'metadataCategorical'])
+        getCellSetsHierarchy(cellSets, ['cellSets', 'metadataCategorical'])
           .map((cellSet, indx) => {
             const positionInCellSetOrder = indexOfCellSet(cellSet);
 

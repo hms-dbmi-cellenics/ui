@@ -7,7 +7,7 @@ import {
 } from '../../actionTypes/backendStatus';
 import { EXPERIMENTS_DELETED } from '../../actionTypes/experiments';
 
-import experimentsDelete from './experimentsDelete';
+import experimentsDeleted from './experimentsDeleted';
 import backendStatusLoading from './backendStatusLoading';
 import backendStatusLoaded from './backendStatusLoaded';
 import backendStatusError from './backendStatusError';
@@ -24,7 +24,7 @@ const backendStatusReducer = (state = initialState, action) => {
       return backendStatusError(state, action);
     }
     case EXPERIMENTS_DELETED: {
-      return experimentsDelete(state, action);
+      return experimentsDeleted(state, action);
     }
     default: {
       return state;

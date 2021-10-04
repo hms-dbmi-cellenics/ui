@@ -14,7 +14,7 @@ import {
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
@@ -51,11 +51,8 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
     if (cellSets.loading) {
       return [];
     }
+    const hierarchy = getCellSetsHierarchy(cellSets);
 
-    const hierarchy = cellSets.hierarchy.map((cellSet) => ({
-      key: cellSet.key,
-      children: cellSet.children?.length || 0,
-    }));
     return hierarchy.map(({ key, children }) => ({
       value: key,
       label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
