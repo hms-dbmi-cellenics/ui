@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`samplesCreate returns correct state 1`] = `
+Object {
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+  "uuid": Object {
+    "complete": false,
+    "createdDate": null,
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": null,
+    "metadata": Object {},
+    "name": "sampleName",
+    "projectUuid": "projectUuid",
+    "species": null,
+    "type": "10x",
+    "uuid": "uuid",
+  },
+}
+`;
+
+exports[`samplesCreate returns correct state starting from a preexisting sample 1`] = `
+Object {
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+  "oldUuid": Object {
+    "complete": false,
+    "createdDate": null,
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": null,
+    "metadata": Object {},
+    "name": "oldSampleName",
+    "projectUuid": "projectUuid",
+    "species": null,
+    "type": "10x",
+    "uuid": "oldUuid",
+  },
+  "uuid": Object {
+    "complete": false,
+    "createdDate": null,
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": null,
+    "metadata": Object {},
+    "name": "sampleName",
+    "projectUuid": "projectUuid",
+    "species": null,
+    "type": "10x",
+    "uuid": "uuid",
+  },
+}
+`;
+
+exports[`samplesCreate returns correct state starting from initial state 1`] = `
+Object {
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+  "uuid": Object {
+    "complete": false,
+    "createdDate": null,
+    "error": false,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": null,
+    "metadata": Object {},
+    "name": "sampleName",
+    "projectUuid": "projectUuid",
+    "species": null,
+    "type": "10x",
+    "uuid": "uuid",
+  },
+}
+`;
