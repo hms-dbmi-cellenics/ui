@@ -12,18 +12,17 @@ import {
 
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
-import { getCellSets, getCellSetsHierarchy } from '../../../redux/selectors';
+import { getCellSetsHierarchy } from '../../../redux/selectors';
 
 const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
-  const { properties, hierarchy } = useSelector(getCellSets());
   const selectedHierarchy = useSelector(getCellSetsHierarchy(['cellSets', 'metadataCategorical']));
+  const currentSelectedHierarchy = useRef(selectedHierarchy);
   const selectedTracks = useSelector(
     (state) => state.componentConfig[componentType].config.selectedTracks,
   );
-
   const getTrackData = () => selectedHierarchy.map(
     (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
   );
@@ -36,19 +35,18 @@ const HeatmapMetadataTrackSettings = (props) => {
     trackData,
     'key',
   );
-
   useEffect(() => {
     // Prevent initial dispatch when object appears
-    if (isInitialRenderRef.current) {
+    if (isInitialRenderRef.current
+      || _.isEqual(selectedHierarchy, currentSelectedHierarchy.current)) {
       return;
     }
-
+    currentSelectedHierarchy.current = selectedHierarchy;
     // Do not re-render if visible track data hasn't changed
     const newTrackData = getUpdatedTrackData();
     if (_.isEqual(trackData, newTrackData)) return;
-
-    setTrackData(getUpdatedTrackData());
-  }, [hierarchy]);
+    setTrackData(newTrackData);
+  }, [selectedHierarchy]);
 
   const getEnabledTracks = () => trackData.filter((entry) => entry.selected).map((o) => o.key);
 
@@ -96,8 +94,9 @@ const HeatmapMetadataTrackSettings = (props) => {
       }}
     />
   );
-
-  const rightItem = (trackDataItem) => properties[trackDataItem.key].name;
+  const rightItem = (trackDataItem) => (
+    selectedHierarchy.filter((current) => current.key === trackDataItem.key)[0].name
+  );
 
   return (
     <div style={{ padding: '5px' }}>

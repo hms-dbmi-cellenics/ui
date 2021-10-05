@@ -1,4 +1,4 @@
-const getCellSetsHierarchy = (category = []) => (state) => {
+const getCellSetsHierarchy = (type = []) => (state) => {
   if (!state || state.loading) {
     return [];
   }
@@ -12,9 +12,9 @@ const getCellSetsHierarchy = (category = []) => (state) => {
       }
     ),
   );
-  if (category.length) {
+  if (type.length) {
     hierarchy = hierarchy.filter(
-      ({ type }) => category.includes(type),
+      (child) => type.includes(child.type),
     );
   }
   return hierarchy;
