@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
@@ -7,41 +6,49 @@ import {
 
 import { useSelector, useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
+
 import downloadTypes from 'utils/data-management/downloadTypes';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
-import pipelineStatus from '../../utils/pipelineStatusValues';
-import { exportQCParameters, filterQCParameters } from '../../utils/data-management/exportQCParameters';
-import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
+import pipelineStatus from 'utils/pipelineStatusValues';
+import { exportQCParameters, filterQCParameters } from 'utils/data-management/exportQCParameters';
 
-const DownloadData = () => {
+import { loadBackendStatus } from 'redux/actions/backendStatus/index';
+
+import { getBackendStatus } from 'redux/selectors';
+
+const DownloadDataButton = () => {
   const dispatch = useDispatch();
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const experimentSettings = useSelector((state) => state.experimentSettings);
-  const backendStatus = useSelector((state) => state.backendStatus);
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  // Change if we have more than one experiment per project
+  const experimentId = activeProject?.experiments[0];
+
+  const {
+    status: backendStatuses, loading: backendLoading,
+  } = useSelector(getBackendStatus(experimentId));
+
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
   const [qcHasRun, setQcHasRun] = useState(false);
   const [gem2sHasRun, setGem2sHasRun] = useState(false);
   const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
-  // Change if we have more than one experiment per project
-  const experimentId = activeProject?.experiments[0];
 
   useEffect(() => {
-    if (experimentId && !backendStatus[experimentId]) {
+    if (experimentId && !backendLoading && !backendStatuses) {
       dispatch(loadBackendStatus(experimentId));
     }
   }, [experimentId]);
 
   useEffect(() => {
     setQcHasRun(experimentId
-      && (backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED));
+      && (backendStatuses?.pipeline?.status === pipelineStatus.SUCCEEDED));
     setGem2sHasRun(experimentId
-      && (backendStatus[experimentId]?.status?.gem2s?.status === pipelineStatus.SUCCEEDED));
-  }, [backendStatus]);
+      && (backendStatuses?.gem2s?.status === pipelineStatus.SUCCEEDED));
+  }, [backendStatuses]);
 
   useEffect(() => {
     setAllSamplesAnalysed(getAllSamplesAnalysed());
@@ -58,7 +65,6 @@ const DownloadData = () => {
       // eslint-disable-next-line no-prototype-builtins
       && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
   };
-
   const downloadExperimentData = async (type) => {
     try {
       if (!experimentId) throw new Error('No experimentId specified');
@@ -70,7 +76,6 @@ const DownloadData = () => {
       pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
   };
-
   return (
     <Dropdown
       overlay={() => (
@@ -151,4 +156,4 @@ const DownloadData = () => {
   );
 };
 
-export default React.memo(DownloadData);
+export default React.memo(DownloadDataButton);

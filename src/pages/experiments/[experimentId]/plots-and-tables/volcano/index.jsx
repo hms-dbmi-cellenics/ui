@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable camelcase */
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Row,
@@ -27,6 +25,7 @@ import {
 import PlatformError from 'components/PlatformError';
 import { setComparisonGroup } from 'redux/actions/differentialExpression';
 import Loader from 'components/Loader';
+import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcanoDataPoints';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -44,7 +43,8 @@ const VolcanoPlot = ({ experimentId }) => {
   const comparisonCreated = useRef(false);
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const {
-    loading, data, error, cellSets: plotCellSets, comparisonType: plotComparisonType,
+    loading, data: expressionData, error,
+    cellSets: plotCellSets, comparisonType: plotComparisonType,
   } = useSelector(
     (state) => state.differentialExpression.properties,
   );
@@ -54,22 +54,27 @@ const VolcanoPlot = ({ experimentId }) => {
     spec: null,
     maxNegativeLogpValue: null,
   });
-
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-  }, []);
-
-  useEffect(() => {
-    // Sync plot and settings with last used config
+    if (!config) {
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    }
     setComparisonGroup({
       ...plotCellSets,
       type: plotComparisonType,
     });
-
-    // Show plot using last shown data
-    if (data.length === 0) return;
-    setDataPointStatus();
   }, []);
+
+  useEffect(() => {
+    if (!config || !expressionData.length) return;
+    setPlotData(calculateVolcanoDataPoints(config, expressionData));
+  }, [config, expressionData]);
+
+  useEffect(() => {
+    if (plotData.length === 0) return;
+    const generatedSpec = generateSpec(config, plotData);
+    setSpec(generatedSpec);
+  }, [plotData]);
+
   const plotStylingControlsConfig = [
     {
       panelTitle: 'Main Schema',
@@ -124,85 +129,6 @@ const VolcanoPlot = ({ experimentId }) => {
     },
   ];
 
-  useEffect(() => {
-    if (!config) return;
-    setDataPointStatus();
-    const generatedSpec = generateSpec(config, plotData);
-    setSpec(generatedSpec);
-  }, [config]);
-
-  useEffect(() => {
-    if (data.length === 0) return;
-    setDataPointStatus();
-  }, [data]);
-
-  useEffect(() => {
-    if (plotData.length === 0) return;
-    const generatedSpec = generateSpec(config, plotData);
-    setSpec(generatedSpec);
-  }, [plotData]);
-
-  const setDataPointStatus = () => {
-    const dataPoints = _.cloneDeep(data);
-    dataPoints
-      .filter((datum) => {
-        const { logFC } = datum;
-        const p_val_adj = parseFloat(datum.p_val_adj);
-
-        // Downsample insignificant, not changing genes by the appropriate amount.
-        const isSignificant = (logFC < config.logFoldChangeThreshold * -1
-          || logFC > config.logFoldChangeThreshold)
-          && p_val_adj < config.pvalueThreshold;
-
-        if (isSignificant) {
-          return true;
-        }
-
-        if (Math.random() > config.downsampleRatio) {
-          return true;
-        }
-
-        return false;
-      })
-      .map((datum) => {
-        // Add a status to each gene depending on where they lie in the system.
-        // Note: the numbers in these names are important. In the schema, we
-        // order the colors by the names, and the names are declared sorted,
-        // so they must be alphabetically ordered.
-        let status;
-        const { logFC } = datum;
-        const p_val_adj = parseFloat(datum.p_val_adj);
-
-        const pvalueThreshold = (
-          10
-          ** (-1 * config.negLogpValueThreshold)
-        ).toExponential(3);
-
-        if (
-          p_val_adj <= pvalueThreshold
-          && logFC >= config.logFoldChangeThreshold
-        ) {
-          status = 'Upregulated';
-        } else if (
-          p_val_adj <= pvalueThreshold
-          && logFC <= config.logFoldChangeThreshold * -1
-        ) {
-          status = 'Downregulated';
-        } else if (
-          p_val_adj > pvalueThreshold
-          && datum.logFC >= config.logFoldChangeThreshold
-        ) {
-        } else {
-          status = 'No difference';
-        }
-        // eslint-disable-next-line no-param-reassign
-        datum.status = status;
-
-        return datum;
-      });
-    setPlotData(dataPoints);
-  };
-
   // obj is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -232,7 +158,7 @@ const VolcanoPlot = ({ experimentId }) => {
     const disabled = plotData.length === 0 || loading || _.isEmpty(spec.spec) || error;
 
     return (
-      <CSVLink data={data} filename={fileName}>
+      <CSVLink data={expressionData} filename={fileName}>
         <Button
           disabled={disabled}
           onClick={(e) => e.stopPropagation()}

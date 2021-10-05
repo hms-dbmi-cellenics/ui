@@ -1,4 +1,4 @@
-import getNumberOfCellsInGrouping from '../../../redux/getters/getNumberOfCellsInGrouping';
+import getNumberOfCellsInGrouping from '../../../redux/selectors/getNumberOfCellsInGrouping';
 
 describe('getNumberOfCellsInGrouping', () => {
   const stateMock = {

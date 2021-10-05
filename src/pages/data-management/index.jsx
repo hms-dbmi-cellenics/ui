@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -10,16 +9,15 @@ import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
 import { ClipLoader } from 'react-spinners';
+import NewProjectModal from 'components/data-management/NewProjectModal';
 import { loadProjects } from '../../redux/actions/projects';
 import { loadExperiments } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
-import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
-import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Text } = Typography;
 
@@ -51,7 +49,7 @@ const DataManagementPage = ({ route }) => {
     if (projectsList.ids.length === 0) dispatch(loadProjects());
   }, []);
 
-  const updateRunStatus = async (experimentId) => {
+  const updateRunStatus = (experimentId) => {
     dispatch(loadBackendStatus(experimentId));
   };
 
@@ -95,17 +93,10 @@ const DataManagementPage = ({ route }) => {
           direction='vertical'
           style={{ width: '100%' }}
         >
-          <Button
-            data-test-id={integrationTestConstants.ids.CREATE_NEW_PROJECT_BUTTON}
-            type='primary'
-            block
-            onClick={() => setNewProjectModalVisible(true)}
-          >
-            Create New Project
-          </Button>
-          <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
-            <ProjectsListContainer height={height} />
-          </Space>
+          <ProjectsListContainer
+            height={height}
+            onCreateNewProject={() => setNewProjectModalVisible(true)}
+          />
         </Space>
       ),
     },
@@ -135,7 +126,7 @@ const DataManagementPage = ({ route }) => {
   };
 
   const renderWindow = (tile, width, height) => {
-    if (tile) {
+    if (tile && height && width) {
       return (
         <div style={{ padding: '10px' }}>
           {height && width ? tile(width, height) : <></>}

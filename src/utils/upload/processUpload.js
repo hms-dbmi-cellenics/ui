@@ -117,6 +117,7 @@ const compressAndUploadSingleFile = async (
 
     console.log('uploadErrorResponseData');
     console.log(e.response?.data);
+
     dispatch(
       updateSampleFile(
         sampleUuid,

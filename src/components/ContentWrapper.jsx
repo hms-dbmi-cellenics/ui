@@ -16,10 +16,11 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 
+import { getBackendStatus } from '../redux/selectors';
+
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 
-import { navigateFromProcessingTo } from '../redux/actions/experimentSettings';
 import { loadBackendStatus } from '../redux/actions/backendStatus';
 
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -27,13 +28,11 @@ import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing
 import PreloadContent from './PreloadContent';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 
-import ChangesNotAppliedModal from './ChangesNotAppliedModal';
+import { useAppRouter } from '../utils/AppRouteProvider';
 
 import Error from '../pages/_error';
 import pipelineStatus from '../utils/pipelineStatusValues';
 import integrationTestConstants from '../utils/integrationTestConstants';
-
-import { initialExperimentBackendStatus } from '../redux/reducers/backendStatus/initialState';
 
 const { Sider, Footer } = Layout;
 
@@ -48,6 +47,7 @@ const ContentWrapper = (props) => {
   const { experimentId, experimentData, children } = props;
   const router = useRouter();
   const route = router?.route || '';
+  const navigateTo = useAppRouter();
 
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
@@ -56,21 +56,19 @@ const ContentWrapper = (props) => {
     loading: backendLoading,
     error: backendError,
     status: backendStatus,
-  } = useSelector((state) => state.backendStatus[experimentId] ?? initialExperimentBackendStatus);
+  } = useSelector(getBackendStatus(experimentId));
+
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
-  const pipelineStatusKey = backendStatus.pipeline?.status;
+  const pipelineStatusKey = backendStatus?.pipeline?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
   const pipelineRunningError = backendErrors.includes(pipelineStatusKey);
 
-  const gem2sStatusKey = backendStatus.gem2s?.status;
+  const gem2sStatusKey = backendStatus?.gem2s?.status;
+  const gem2sparamsHash = backendStatus?.gem2s?.paramsHash;
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
-  const completedGem2sSteps = backendStatus.gem2s?.completedSteps;
-
-  const changedQCFilters = useSelector(
-    (state) => state.experimentSettings.processing.meta.changedQCFilters,
-  );
+  const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
@@ -79,11 +77,8 @@ const ContentWrapper = (props) => {
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
 
   useEffect(() => {
-    if (!experimentId) {
-      return;
-    }
-
-    dispatch(loadBackendStatus(experimentId));
+    if (!experimentId) return;
+    if (!backendLoading) dispatch(loadBackendStatus(experimentId));
 
     (async () => {
       const io = await connectionPromise;
@@ -247,14 +242,6 @@ const ContentWrapper = (props) => {
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatus.SUCCEEDED
     && pipelineStatusKey === pipelineStatus.NOT_CREATED;
 
-  const transitionToModule = (path) => {
-    if (changedQCFilters.size) {
-      dispatch(navigateFromProcessingTo(path));
-    } else {
-      router.push(path);
-    }
-  };
-
   const renderContent = () => {
     if (experimentId) {
       if (
@@ -267,7 +254,7 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='error' />;
+        return <GEM2SLoadingScreen paramsHash={gem2sparamsHash} experimentId={experimentId} gem2sStatus='error' />;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
@@ -315,7 +302,7 @@ const ContentWrapper = (props) => {
         disabled={noExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
-        onClick={() => transitionToModule(realPath)}
+        onClick={() => navigateTo(realPath)}
       >
         {name}
       </Menu.Item>
@@ -324,8 +311,6 @@ const ContentWrapper = (props) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <ChangesNotAppliedModal experimentId={experimentId} />
-
       <Sider
         style={{
           overflow: 'auto', height: '100vh', position: 'fixed', left: 0,
@@ -425,9 +410,13 @@ const ContentWrapper = (props) => {
 };
 
 ContentWrapper.propTypes = {
-  experimentId: PropTypes.string.isRequired,
+  experimentId: PropTypes.string,
   experimentData: PropTypes.object.isRequired,
   children: PropTypes.node.isRequired,
+};
+
+ContentWrapper.defaultProps = {
+  experimentId: null,
 };
 
 export default ContentWrapper;
