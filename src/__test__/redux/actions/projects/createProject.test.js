@@ -16,16 +16,16 @@ import {
 const mockStore = configureStore([thunk]);
 
 jest.mock('uuid');
-const mockedProjectUuid = 'random-project-uuid';
-uuidv4.mockImplementation(() => mockedProjectUuid);
+const projectUuid = 'random-project-uuid';
+uuidv4.mockImplementation(() => projectUuid);
 
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
 
 jest.mock('../../../../redux/actions/experiments/createExperiment');
-createExperiment.mockImplementation((projectUuid, projectName) => async () => ({
-  name: projectName,
-  uuid: projectUuid,
+createExperiment.mockImplementation((uuid, name) => async () => ({
+  name,
+  uuid,
 }));
 
 jest.mock('../../../../utils/pushNotificationMessage');
@@ -44,11 +44,11 @@ describe('createProject action', () => {
     fetchMock.doMock();
   });
 
-  const mockProjectName = 'test project';
-  const mockProjectDescription = 'test project description';
-  const mockExperimentName = 'mockExperimentName';
+  const projectName = 'test project';
+  const projectDescription = 'test project description';
+  const experimentName = 'mockExperimentName';
 
-  const mockFetchErrorMessage = 'someFetchError';
+  const fetchErrorMessage = 'someFetchError';
 
   it('Works correctly when there are no errors', async () => {
     const store = mockStore({
@@ -58,10 +58,19 @@ describe('createProject action', () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
     await store.dispatch(
-      createProject(mockProjectName, mockProjectDescription, mockExperimentName),
+      createProject(projectName, projectDescription, experimentName),
     );
 
-    expect(createExperiment).toHaveBeenCalledWith(mockedProjectUuid, mockExperimentName);
+    // Fetch call is made
+    const fetchMockFirstCall = fetchMock.mock.calls[0];
+
+    const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v1/projects/${projectUuid}`);
+
+    expect(fetchMethod).toEqual('POST');
+    expect(JSON.parse(fetchBody)).toMatchSnapshot();
+
+    expect(createExperiment).toHaveBeenCalledWith(projectUuid, experimentName);
 
     const actions = store.getActions();
 
@@ -78,13 +87,13 @@ describe('createProject action', () => {
       projects: initialProjectsState,
     });
 
-    fetchMock.mockResponse(JSON.stringify({ message: mockFetchErrorMessage }), { url: 'mockedUrl', status: 400 });
+    fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 
     await expect(
       store.dispatch(
-        createProject(mockProjectName, mockProjectDescription, mockExperimentName),
+        createProject(projectName, projectDescription, experimentName),
       ),
-    ).rejects.toEqual(mockFetchErrorMessage);
+    ).rejects.toEqual(fetchErrorMessage);
 
     const actions = store.getActions();
 
