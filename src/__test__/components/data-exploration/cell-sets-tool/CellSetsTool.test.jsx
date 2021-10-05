@@ -1,12 +1,12 @@
 import React from 'react';
 import _ from 'lodash';
+import '../../../../setupTests';
 
 import {
   render, screen, fireEvent,
 } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
-import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
@@ -17,16 +17,6 @@ import { complement, intersection, union } from '../../../../utils/cellSetOperat
 
 const cellSetsData = require('../../../data/cell_sets.json');
 
-jest.mock('localforage');
-
-jest.mock('../../../../utils/socketConnection', () => ({
-  __esModule: true,
-  default: new Promise((resolve) => {
-    resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
-  }),
-}));
-
-let storeState;
 const experimentId = '1234';
 
 const getChildrenInHierarchy = (hierarchyKey) => {
@@ -57,10 +47,10 @@ const cellSetToolFactory = (override = {}) => {
   return <CellSetsTool {...props} />;
 };
 
+let storeState;
 describe('CellSetsTool', () => {
   beforeEach(async () => {
     enableFetchMocks();
-    await preloadAll();
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResponse(JSON.stringify(cellSetsData));

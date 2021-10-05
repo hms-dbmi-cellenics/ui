@@ -2,8 +2,7 @@ import React from 'react';
 import { shallow, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import ColorPicker from '../../components/ColorPicker';
-
-configure({ adapter: new Adapter() });
+import '../../../setupTests';
 
 describe('ColorPicker', () => {
   const initialColor = '#ffff00';

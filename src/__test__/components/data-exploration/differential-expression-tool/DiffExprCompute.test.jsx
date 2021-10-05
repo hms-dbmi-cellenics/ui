@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
+import '../../../../setupTests';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -117,11 +116,6 @@ const initialState = {
 };
 
 describe('DiffExprCompute', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
-  configure({ adapter: new Adapter() });
   it('renders correctly with no comparison method', () => {
     const store = mockStore(initialState);
 
