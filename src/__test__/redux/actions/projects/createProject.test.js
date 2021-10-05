@@ -33,8 +33,6 @@ pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
 
-const response = JSON.stringify({ one: 'one' });
-
 describe('createProject action', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -57,7 +55,7 @@ describe('createProject action', () => {
       projects: initialProjectsState,
     });
 
-    fetchMock.mockResponse(() => Promise.resolve(response));
+    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
     await store.dispatch(
       createProject(mockProjectName, mockProjectDescription, mockExperimentName),

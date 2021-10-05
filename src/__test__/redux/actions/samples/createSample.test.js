@@ -93,4 +93,26 @@ describe('createSample action', () => {
     // Calls update experiment on success of fetch
     expect(updateExperiment).toHaveBeenCalled();
   });
+
+  it('Shows error message when there was a fetch error', async () => {
+    const store = mockStore({
+      projects: initialProjectsState,
+    });
+
+    fetchMock.mockResponse(JSON.stringify({ message: mockFetchErrorMessage }), { url: 'mockedUrl', status: 400 });
+
+    await expect(
+      store.dispatch(
+        createProject(mockProjectName, mockProjectDescription, mockExperimentName),
+      ),
+    ).rejects.toEqual(mockFetchErrorMessage);
+
+    const actions = store.getActions();
+
+    expect(actions[0].type).toEqual(PROJECTS_SAVING);
+
+    expect(actions[1].type).toEqual(PROJECTS_ERROR);
+
+    expect(pushNotificationMessage).toHaveBeenCalled();
+  });
 });
