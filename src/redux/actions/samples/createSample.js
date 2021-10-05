@@ -1,21 +1,20 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  SAMPLES_CREATE,
-} from '../../actionTypes/samples';
+  SAMPLES_CREATE, SAMPLES_ERROR, SAMPLES_SAVING,
+} from 'redux/actionTypes/samples';
 
 import {
   DEFAULT_NA,
-} from '../../reducers/projects/initialState';
+} from 'redux/reducers/projects/initialState';
 
-import fetchAPI from '../../../utils/fetchAPI';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import fetchAPI from 'utils/fetchAPI';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 
-import { throwIfRequestFailed } from '../../../utils/fetchErrors';
-
-import { sampleTemplate } from '../../reducers/samples/initialState';
-import updateExperiment from '../experiments/updateExperiment';
+import { sampleTemplate } from 'redux/reducers/samples/initialState';
+import updateExperiment from 'redux/actions/experiments/updateExperiment';
 
 const createSample = (
   projectUuid,
@@ -43,9 +42,16 @@ const createSample = (
       .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
   };
 
-  try {
-    const url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
+  dispatch({
+    type: SAMPLES_SAVING,
+    payload: {
+      message: endUserMessages.SAVING_SAMPLE,
+    },
+  });
 
+  const url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
+
+  try {
     const response = await fetchAPI(
       url,
       {
@@ -73,7 +79,22 @@ const createSample = (
       ),
     );
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.ERROR_SAVING;
+    }
+
+    dispatch({
+      type: SAMPLES_ERROR,
+      payload: {
+        error: message,
+      },
+    });
+
+    pushNotificationMessage('error', message);
+
+    return Promise.reject(message);
   }
 
   return Promise.resolve(newSampleUuid);

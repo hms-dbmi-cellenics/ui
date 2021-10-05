@@ -48,8 +48,6 @@ describe('createProject action', () => {
   const projectDescription = 'test project description';
   const experimentName = 'mockExperimentName';
 
-  const fetchErrorMessage = 'someFetchError';
-
   it('Works correctly when there are no errors', async () => {
     const store = mockStore({
       projects: initialProjectsState,
@@ -83,18 +81,22 @@ describe('createProject action', () => {
   });
 
   it('Shows error message when there was a fetch error', async () => {
+    const fetchErrorMessage = 'someFetchError';
+
     const store = mockStore({
       projects: initialProjectsState,
     });
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 
+    // Fails with error message we sent in response to fetch
     await expect(
       store.dispatch(
         createProject(projectName, projectDescription, experimentName),
       ),
     ).rejects.toEqual(fetchErrorMessage);
 
+    // Sends correct actions
     const actions = store.getActions();
 
     expect(actions[0].type).toEqual(PROJECTS_SAVING);
