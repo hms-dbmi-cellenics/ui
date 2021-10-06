@@ -65,8 +65,6 @@ describe('createSample action', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.doMock();
-
     jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
 
     fetchMock.resetMocks();
