@@ -1,15 +1,14 @@
-import React from 'react';
-import { mount, configure } from 'enzyme';
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
+import { configure, mount } from 'enzyme';
+
 import Adapter from 'enzyme-adapter-react-16';
-import thunk from 'redux-thunk';
-import { Menu } from 'antd';
 import { Auth } from 'aws-amplify';
-
-import { getBackendStatus } from '../../redux/selectors';
-
 import ContentWrapper from '../../components/ContentWrapper';
+import { Menu } from 'antd';
+import { Provider } from 'react-redux';
+import React from 'react';
+import configureMockStore from 'redux-mock-store';
+import { getBackendStatus } from '../../redux/selectors';
+import thunk from 'redux-thunk';
 
 jest.mock('../../redux/selectors');
 jest.mock('localforage');
@@ -146,6 +145,32 @@ describe('ContentWrapper', () => {
 
     // Plots and Tables link is disabled
     expect(menus.at(3).props().disabled).toEqual(true);
+  });
+
+  it('has the correct sider size when opened / closed', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
+      <Provider store={store}>
+        <ContentWrapper backendStatus={{}}>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+
+    await wrapper.update();
+
+    const sider = wrapper.find('Sider');
+    expect(sider.prop('style')).toHaveProperty('width', '240px');
+
+    // const menus = wrapper.find(Menu).children().find(Item);
+
+    // expect(menus.at(3).props().disabled).toEqual(true);
   });
 
   it('View changes if there is a pipeline run underway', async () => {
