@@ -96,6 +96,7 @@ describe('projectsReducer', () => {
     expect(newState[project2.uuid]).toEqual(project2);
     expect(newState).toMatchSnapshot();
   });
+
   it('Loads projects correctly', () => {
     const newState = projectsReducer(initialState, {
       type: PROJECTS_LOADED,

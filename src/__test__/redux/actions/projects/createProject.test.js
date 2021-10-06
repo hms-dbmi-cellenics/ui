@@ -32,12 +32,18 @@ pushNotificationMessage.mockImplementation(() => async () => { });
 enableFetchMocks();
 
 describe('createProject action', () => {
+  let store;
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
 
     fetchMock.resetMocks();
     fetchMock.doMock();
+
+    store = mockStore({
+      projects: initialProjectsState,
+    });
   });
 
   const projectName = 'test project';
@@ -45,10 +51,6 @@ describe('createProject action', () => {
   const experimentName = 'mockExperimentName';
 
   it('Works correctly when there are no errors', async () => {
-    const store = mockStore({
-      projects: initialProjectsState,
-    });
-
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
     await store.dispatch(
@@ -77,10 +79,6 @@ describe('createProject action', () => {
 
   it('Shows error message when there was a fetch error', async () => {
     const fetchErrorMessage = 'someFetchError';
-
-    const store = mockStore({
-      projects: initialProjectsState,
-    });
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 

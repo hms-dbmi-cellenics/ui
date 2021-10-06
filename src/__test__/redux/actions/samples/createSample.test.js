@@ -63,17 +63,19 @@ describe('createSample action', () => {
     },
   };
 
+  let store;
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
 
     fetchMock.resetMocks();
     fetchMock.doMock();
+
+    store = mockStore(initialState);
   });
 
   it('Runs correctly', async () => {
-    const store = mockStore(initialState);
-
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
     await store.dispatch(createSample(projectUuid, sampleName, mockType));
@@ -98,8 +100,6 @@ describe('createSample action', () => {
   });
 
   it('Shows error message when there was a fetch error', async () => {
-    const store = mockStore(initialState);
-
     const fetchErrorMessage = 'someFetchError';
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
