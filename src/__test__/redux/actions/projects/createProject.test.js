@@ -8,7 +8,7 @@ import initialProjectsState from 'redux/reducers/projects';
 import { saveProject } from 'redux/actions/projects';
 import { createExperiment } from 'redux/actions/experiments';
 import {
-  PROJECTS_CREATE, PROJECTS_SAVING, PROJECTS_SAVED, PROJECTS_ERROR,
+  PROJECTS_CREATE, PROJECTS_SAVING, PROJECTS_ERROR,
 } from 'redux/actionTypes/projects';
 
 // import endUserMessages from 'utils/endUserMessages';
@@ -73,11 +73,10 @@ describe('createProject action', () => {
     const actions = store.getActions();
 
     expect(actions[0].type).toEqual(PROJECTS_SAVING);
-    expect(actions[1].type).toEqual(PROJECTS_SAVED);
-    expect(actions[2].type).toEqual(PROJECTS_CREATE);
+    expect(actions[1].type).toEqual(PROJECTS_CREATE);
 
     // Created project is correct
-    expect(actions[2].payload).toMatchSnapshot();
+    expect(actions[1].payload).toMatchSnapshot();
   });
 
   it('Shows error message when there was a fetch error', async () => {

@@ -6,7 +6,6 @@ import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors'
 
 import {
   PROJECTS_ERROR,
-  PROJECTS_SAVED,
   PROJECTS_CREATE,
   PROJECTS_SAVING,
 } from '../../actionTypes/projects';
@@ -63,10 +62,6 @@ const createProject = (
       const json = await response.json();
 
       throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-
-      dispatch({
-        type: PROJECTS_SAVED,
-      });
     } catch (e) {
       let { message } = e;
 
