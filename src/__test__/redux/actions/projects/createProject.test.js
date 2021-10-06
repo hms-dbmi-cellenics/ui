@@ -11,8 +11,6 @@ import {
   PROJECTS_CREATE, PROJECTS_SAVING, PROJECTS_ERROR,
 } from 'redux/actionTypes/projects';
 
-// import endUserMessages from 'utils/endUserMessages';
-
 const mockStore = configureStore([thunk]);
 
 jest.mock('uuid');
@@ -100,6 +98,6 @@ describe('createProject action', () => {
 
     expect(actions[1].type).toEqual(PROJECTS_ERROR);
 
-    expect(pushNotificationMessage).toHaveBeenCalled();
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', fetchErrorMessage);
   });
 });
