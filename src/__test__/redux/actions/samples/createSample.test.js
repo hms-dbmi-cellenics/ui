@@ -117,6 +117,9 @@ describe('createSample action', () => {
     expect(actions[0].type).toEqual(SAMPLES_SAVING);
     expect(actions[1].type).toEqual(SAMPLES_ERROR);
 
+    // Check no other action was sent
+    expect(actions).toHaveLength(2);
+
     expect(pushNotificationMessage).toHaveBeenCalledWith('error', fetchErrorMessage);
   });
 });

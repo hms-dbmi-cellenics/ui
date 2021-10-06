@@ -95,8 +95,10 @@ describe('createProject action', () => {
     const actions = store.getActions();
 
     expect(actions[0].type).toEqual(PROJECTS_SAVING);
-
     expect(actions[1].type).toEqual(PROJECTS_ERROR);
+
+    // Check no other action was sent
+    expect(actions).toHaveLength(2);
 
     expect(pushNotificationMessage).toHaveBeenCalledWith('error', fetchErrorMessage);
   });
