@@ -7,6 +7,8 @@ import { Provider } from 'react-redux';
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import { act } from 'react-dom/test-utils';
+
 import { getBackendStatus } from '../../redux/selectors';
 import ContentWrapper from '../../components/ContentWrapper';
 
@@ -172,15 +174,19 @@ describe('ContentWrapper', () => {
       </Provider>,
     );
 
-    await wrapper.update();
+    wrapper.update();
 
     const expandedWidth = '210px';
     const collapsedWidth = '80px';
 
     siderHasWidth(expandedWidth);
 
-    // When user clicks to collapse the sidebar
-    wrapper.find('.ant-layout-sider-trigger').at(0).simulate('click');
+    // When user collapses the sidebar
+    act(() => {
+      wrapper.find('Sider').props().onCollapse(true);
+    });
+
+    wrapper.update();
 
     siderHasWidth(collapsedWidth);
   });
