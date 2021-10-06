@@ -2,13 +2,13 @@ import { configure, mount } from 'enzyme';
 
 import Adapter from 'enzyme-adapter-react-16';
 import { Auth } from 'aws-amplify';
-import ContentWrapper from '../../components/ContentWrapper';
 import { Menu } from 'antd';
 import { Provider } from 'react-redux';
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
-import { getBackendStatus } from '../../redux/selectors';
 import thunk from 'redux-thunk';
+import { getBackendStatus } from '../../redux/selectors';
+import ContentWrapper from '../../components/ContentWrapper';
 
 jest.mock('../../redux/selectors');
 jest.mock('localforage');
@@ -44,7 +44,7 @@ jest.mock('aws-amplify', () => ({
 }));
 
 jest.mock('../../utils/AppRouteProvider', () => ({
-  useAppRouter: jest.fn().mockReturnValue(() => {}),
+  useAppRouter: jest.fn().mockReturnValue(() => { }),
 }));
 
 configure({ adapter: new Adapter() });
@@ -147,7 +147,16 @@ describe('ContentWrapper', () => {
     expect(menus.at(3).props().disabled).toEqual(true);
   });
 
-  it('has the correct sider size when opened / closed', async () => {
+  it('has the correct sider and layout style when opened / closed', async () => {
+    const siderHasWidth = (expectedWidth) => {
+      const sider = wrapper.find('Sider');
+      const expandedComputedStyle = getComputedStyle(sider.getDOMNode()).getPropertyValue('width');
+      expect(expandedComputedStyle).toEqual(expectedWidth);
+
+      const layout = wrapper.find('Layout Layout');
+      expect(layout.prop('style')).toEqual(expect.objectContaining({ marginLeft: expectedWidth }));
+    };
+
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,
       error: false,
@@ -165,12 +174,15 @@ describe('ContentWrapper', () => {
 
     await wrapper.update();
 
-    const sider = wrapper.find('Sider');
-    expect(sider.prop('style')).toHaveProperty('width', '240px');
+    const expandedWidth = '210px';
+    const collapsedWidth = '80px';
 
-    // const menus = wrapper.find(Menu).children().find(Item);
+    siderHasWidth(expandedWidth);
 
-    // expect(menus.at(3).props().disabled).toEqual(true);
+    // When user clicks to collapse the sidebar
+    wrapper.find('.ant-layout-sider-trigger').at(0).simulate('click');
+
+    siderHasWidth(collapsedWidth);
   });
 
   it('View changes if there is a pipeline run underway', async () => {
