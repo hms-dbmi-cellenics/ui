@@ -56,7 +56,7 @@ const projectsReducer = (state = initialState, action) => {
     }
 
     case PROJECTS_SAVED: {
-      return projectsSaved(state, action);
+      return projectsSaved(state);
     }
 
     case PROJECTS_ERROR: {
@@ -80,7 +80,7 @@ const projectsReducer = (state = initialState, action) => {
     }
 
     case PROJECTS_LOADING: {
-      return projectsLoading(state, action);
+      return projectsLoading(state);
     }
 
     case SAMPLES_CREATE: {
