@@ -57,6 +57,7 @@ const GeneListTool = (props) => {
 
   const columns = [
     {
+      fixed: 'left',
       title: 'Dispersion',
       key: 'dispersions',
       sorter: true,
