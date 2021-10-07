@@ -8,6 +8,7 @@ Object {
   ],
   "meta": Object {
     "activeProjectUuid": "project-2",
+    "saving": false,
   },
   "project-1": Object {
     "createdDate": "01-01-2021",

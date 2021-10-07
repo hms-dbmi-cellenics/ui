@@ -1,90 +1,125 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import createSample from '../../../../redux/actions/samples/createSample';
-import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
-import initialExperimentState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
-import { saveProject } from '../../../../redux/actions/projects';
-import { saveSamples } from '../../../../redux/actions/samples';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { v4 as uuidv4 } from 'uuid';
 
-import { SAMPLES_CREATE } from '../../../../redux/actionTypes/samples';
-import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
+import createSample from 'redux/actions/samples/createSample';
+import initialSampleState from 'redux/reducers/samples/initialState';
+import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
-jest.mock('../../../../redux/actions/projects/saveProject');
-saveProject.mockImplementation(() => async () => { });
+import { SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR } from 'redux/actionTypes/samples';
+import updateExperiment from 'redux/actions/experiments/updateExperiment';
 
-jest.mock('../../../../redux/actions/samples/saveSamples');
-saveSamples.mockImplementation(() => async () => { });
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+
+jest.mock('redux/actions/experiments/updateExperiment');
+updateExperiment.mockImplementation(() => async () => { });
+
+jest.mock('utils/pushNotificationMessage');
+pushNotificationMessage.mockImplementation(() => async () => { });
+
+jest.mock('localforage');
+
+enableFetchMocks();
 
 const mockStore = configureStore([thunk]);
 
+jest.mock('uuid');
+const sampleUuid = 'abc123';
+uuidv4.mockImplementation(() => sampleUuid);
+
+const sampleName = 'test sample';
+
 describe('createSample action', () => {
-  const mockSampleUuid = 'abc123';
-  const mockProjectUuid = 'qwe234';
-  const mockExperimentId = 'exp234';
+  const projectUuid = 'qwe234';
+  const experimentId = 'exp234';
 
   const mockType = '10x Chromium';
-
-  const mockSample = {
-    ...sampleTemplate,
-    name: 'test sample',
-    uuid: mockSampleUuid,
-  };
 
   const mockProject = {
     ...projectTemplate,
     name: 'test project',
-    uuid: mockProjectUuid,
-    experiments: [mockExperimentId],
+    uuid: projectUuid,
+    experiments: [experimentId],
   };
 
   const mockExperiment = {
     ...experimentTemplate,
     name: 'Experiment 1',
-    id: mockExperimentId,
+    id: experimentId,
   };
 
   const initialState = {
-    samples: {
-      ...initialSampleState,
-      [mockSampleUuid]: mockSample,
-    },
+    samples: { ...initialSampleState },
     experiments: {
       ...initialExperimentState,
-      [mockExperimentId]: mockExperiment,
+      [experimentId]: mockExperiment,
     },
     projects: {
       ...initialProjectState,
-      ids: [mockProjectUuid],
-      [mockProjectUuid]: mockProject,
+      ids: [projectUuid],
+      [projectUuid]: mockProject,
     },
   };
 
-  it('Dispatches event correctly', async () => {
-    const store = mockStore(initialState);
-    await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
+  let store;
 
-    // Create sample
-    const action1 = store.getActions()[0];
-    expect(action1.type).toEqual(SAMPLES_CREATE);
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
 
-    // Update project.samples
-    const action2 = store.getActions()[1];
-    expect(action2.type).toEqual(PROJECTS_UPDATE);
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+
+    store = mockStore(initialState);
   });
 
-  it('Dispatches call to save sample', async () => {
-    const store = mockStore(initialState);
+  it('Runs correctly', async () => {
+    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
+    await store.dispatch(createSample(projectUuid, sampleName, mockType));
 
-    expect(saveSamples).toHaveBeenCalled();
+    // Fetch call is made
+    const fetchMockFirstCall = fetchMock.mock.calls[0];
+
+    const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v1/projects/${projectUuid}/${mockProject.experiments[0]}/samples`);
+
+    expect(fetchMethod).toEqual('POST');
+    expect(JSON.parse(fetchBody)).toMatchSnapshot();
+
+    // Sends correct actions
+    const actions = store.getActions();
+
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+    expect(actions[1].type).toEqual(SAMPLES_CREATE);
+
+    // Calls update experiment on success of fetch
+    expect(updateExperiment).toHaveBeenCalledWith(experimentId, { sampleIds: [sampleUuid] });
   });
 
-  it('Dispatches call to save project', async () => {
-    const store = mockStore(initialState);
-    await store.dispatch(createSample(mockProjectUuid, mockSample, mockType));
+  it('Shows error message when there was a fetch error', async () => {
+    const fetchErrorMessage = 'someFetchError';
 
-    expect(saveProject).toHaveBeenCalled();
+    fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
+
+    // Fails with error message we sent in response to fetch
+    await expect(
+      store.dispatch(
+        createSample(projectUuid, sampleName, mockType),
+      ),
+    ).rejects.toEqual(fetchErrorMessage);
+
+    // Sends correct actions
+    const actions = store.getActions();
+
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+    expect(actions[1].type).toEqual(SAMPLES_ERROR);
+
+    // Check no other action was sent
+    expect(actions).toHaveLength(2);
+
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', fetchErrorMessage);
   });
 });

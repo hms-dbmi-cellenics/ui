@@ -1,10 +1,15 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import saveProject from './saveProject';
+
+import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 
 import {
+  PROJECTS_ERROR,
   PROJECTS_CREATE,
+  PROJECTS_SAVING,
 } from '../../actionTypes/projects';
+
 import { projectTemplate } from '../../reducers/projects/initialState';
 import createExperiment from '../experiments/createExperiment';
 import endUserMessages from '../../../utils/endUserMessages';
@@ -23,6 +28,13 @@ const createProject = (
   // required because samples DynamoDB require experimentId
   const newExperiment = await dispatch(createExperiment(newProjectUuid, newExperimentName));
 
+  dispatch({
+    type: PROJECTS_SAVING,
+    payload: {
+      message: endUserMessages.SAVING_PROJECT,
+    },
+  });
+
   const newProject = {
     ...projectTemplate,
     name: projectName,
@@ -33,16 +45,46 @@ const createProject = (
     lastModified: createdDate,
   };
 
+  const url = `/v1/projects/${newProjectUuid}`;
+
   try {
-    await dispatch(saveProject(newProjectUuid, newProject));
+    const response = await fetchAPI(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newProject),
+      },
+    );
+
+    const json = await response.json();
+
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+  } catch (e) {
+    let { message } = e;
+
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.ERROR_SAVING;
+    }
 
     dispatch({
-      type: PROJECTS_CREATE,
-      payload: { project: newProject },
+      type: PROJECTS_ERROR,
+      payload: {
+        error: message,
+      },
     });
-  } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+
+    pushNotificationMessage('error', message);
+    return Promise.reject(message);
   }
+
+  dispatch({
+    type: PROJECTS_CREATE,
+    payload: { project: newProject },
+  });
 };
 
 export default createProject;
