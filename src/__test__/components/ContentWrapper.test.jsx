@@ -2,15 +2,14 @@ import { configure, mount } from 'enzyme';
 
 import Adapter from 'enzyme-adapter-react-16';
 import { Auth } from 'aws-amplify';
+import ContentWrapper from '../../components/ContentWrapper';
 import { Menu } from 'antd';
 import { Provider } from 'react-redux';
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { act } from 'react-dom/test-utils';
-
+import configureMockStore from 'redux-mock-store';
 import { getBackendStatus } from '../../redux/selectors';
-import ContentWrapper from '../../components/ContentWrapper';
+import thunk from 'redux-thunk';
 
 jest.mock('../../redux/selectors');
 jest.mock('localforage');
@@ -173,22 +172,24 @@ describe('ContentWrapper', () => {
         </ContentWrapper>
       </Provider>,
     );
-
     wrapper.update();
 
     const expandedWidth = '210px';
     const collapsedWidth = '80px';
 
-    siderHasWidth(expandedWidth);
-
-    // When user collapses the sidebar
+    // When the side bar is collapsed
     act(() => {
       wrapper.find('Sider').props().onCollapse(true);
     });
-
     wrapper.update();
-
     siderHasWidth(collapsedWidth);
+
+    // When side bar is not collapsed
+    act(() => {
+      wrapper.find('Sider').props().onCollapse(false);
+    });
+    wrapper.update();
+    siderHasWidth(expandedWidth);
   });
 
   it('View changes if there is a pipeline run underway', async () => {
