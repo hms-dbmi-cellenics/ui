@@ -7,11 +7,10 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
 
+import mockCellSets from 'utils/tests/mockStores/cellSets';
 import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
-import initialCellSetsState from '../../../../redux/reducers/cellSets/initialState';
-
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
@@ -81,34 +80,7 @@ describe('DataIntegration', () => {
     await preloadAll();
   });
   beforeEach(() => {
-    getCellSets.mockReturnValue(() => ({
-      ...initialCellSetsState,
-      properties: {
-        test: {
-          name: 'Test',
-          cellIds: new Set(),
-        },
-        'test-1': {
-          name: 'Test-1',
-          cellIds: new Set([1, 2, 3]),
-        },
-        'test-2': {
-          name: 'Test-1',
-          cellIds: new Set([4, 5, 6]),
-        },
-      },
-      hierarchy: [
-        {
-          key: 'test',
-          children: [
-            { key: 'test-1' },
-            { key: 'test-2' },
-          ],
-        },
-      ],
-      loading: false,
-      error: false,
-    }));
+    getCellSets.mockReturnValue(() => (mockCellSets().cellSets));
   });
 
   it('renders correctly', () => {

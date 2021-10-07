@@ -11,22 +11,21 @@ import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 
 import { getBackendStatus, getCellSets } from 'redux/selectors';
-import CalculationConfig from './CalculationConfig';
-import PlotStyling from '../../plots/styling/PlotStyling';
-
-import MiniPlot from '../../plots/MiniPlot';
-import EmptyPlot from '../../plots/helpers/EmptyPlot';
 
 import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-} from '../../../redux/actions/componentConfig';
+} from 'redux/actions/componentConfig';
 
-import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
-import FrequencyPlot from '../../plots/FrequencyPlot';
-import ElbowPlot from '../../plots/ElbowPlot';
-import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
+import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
+import FrequencyPlot from 'components/plots/FrequencyPlot';
+import ElbowPlot from 'components/plots/ElbowPlot';
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import EmptyPlot from 'components/plots/helpers/EmptyPlot';
+import MiniPlot from 'components/plots/MiniPlot';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
