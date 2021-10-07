@@ -88,11 +88,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
   const [inputsList, setInputsList] = useState([]);
 
-  const disabledStepsMessage = {
-    classifier: 'This filter disabled because the one of the sample(s) is pre-filtered. Click \'Next\' to continue processing your data.',
-    // cellSizeDistribution: 'This filter disabled because of the low cell size.', -> Confirm with bioinformaticians
-  };
-
   useEffect(() => {
     // If processingConfig is not loaded then reload
     if (Object.keys(processingConfig).length <= 1) {
@@ -298,6 +293,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     },
   ];
 
+  const currentStep = steps[stepIdx];
+
   // check that the order and identities of the QC steps above match
   // the canonical representation
   console.assert(_.isEqual(qcSteps, steps.map((s) => s.key)));
@@ -361,7 +358,8 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   };
 
   const renderTitle = () => {
-    const stepEnabled = processingConfig[steps[stepIdx].key]?.enabled;
+    const stepEnabled = processingConfig[currentStep.key]?.enabled;
+    const prefiltered = processingConfig[currentStep.key]?.prefiltered || false;
 
     return (
       <>
@@ -450,26 +448,25 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                       )
                     }
                   </Select>
-                  {steps[stepIdx].description && (
-                    <Tooltip title={steps[stepIdx].description}>
+                  {currentStep.description && (
+                    <Tooltip title={currentStep.description}>
                       <Button icon={<InfoCircleOutlined />} />
                     </Tooltip>
                   )}
-                  {steps[stepIdx].multiSample && (
+                  {currentStep.multiSample && (
                     <Tooltip title={`${!stepEnabled ? 'Enable this filter' : 'Disable this filter'}`}>
                       <Button
-                        disabled={!stepEnabled}
+                        disabled={prefiltered}
                         data-testid='enableFilterButton'
                         onClick={() => {
                           dispatch(setQCStepEnabled(
-                            steps[stepIdx].key, !stepEnabled,
+                            currentStep.key, !stepEnabled,
                           ));
-                          dispatch(saveProcessingSettings(experimentId, steps[stepIdx].key));
+                          dispatch(saveProcessingSettings(experimentId, currentStep.key));
                         }}
                       >
                         {
-                          !stepEnabled
-                            ? 'Enable' : 'Disable'
+                          stepEnabled ? 'Disable' : 'Enable'
                         }
                       </Button>
                     </Tooltip>
@@ -508,9 +505,9 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                           const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
                           changeStepId(newStepIdx);
                         }}
-                        disabled={steps[stepIdx + 1]
-                        && pipelineNotFinished
-                        && !isStepComplete(steps[stepIdx + 1].key)}
+                        disabled={steps[stepIdx + 1] !== undefined
+                          && pipelineNotFinished
+                          && !isStepComplete(steps[stepIdx + 1].key)}
                         icon={<RightOutlined />}
                         size='small'
                       />
@@ -539,7 +536,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   };
 
   const renderContent = () => {
-    const { render, key } = steps[stepIdx];
+    const { render, key } = currentStep;
 
     if (pipelineRunning && !isStepComplete(key)) {
       return <div><PipelineRedirectToDataProcessing pipelineStatus='runningStep' /></div>;
@@ -583,15 +580,15 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
     return (
       <Space direction='vertical' style={{ width: '100%' }}>
         {
-          'enabled' in processingConfig[key]
-          && processingConfig[key].enabled === false
-        && (
-          <Alert
-            message={disabledStepsMessage[key] ?? 'This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'}
-            type='info'
-            showIcon
-          />
-        )
+          'enabled' in processingConfig[key] && !processingConfig[key].enabled ? (
+            <Alert
+              message={processingConfig[key]?.prefiltered
+                ? 'This filter is disabled because the one of the sample(s) is pre-filtered. Click \'Next\' to continue processing your data.'
+                : 'This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'}
+              type='info'
+              showIcon
+            />
+          ) : <></>
         }
 
         {render(key, experimentId)}
@@ -610,19 +607,21 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         route={route}
         title='Data Processing'
       />
-      <Modal
-        title='Run data processing with the changed settings'
-        visible={runQCModalVisible}
-        onCancel={() => setRunQCModalVisible(false)}
-        onOk={() => onPipelineRun()}
-        okText='Start'
-      >
-        <p>
-          This will take several minutes.
-          Your navigation within Cellscope will be restricted during this time.
-          Do you want to start?
-        </p>
-      </Modal>
+      {runQCModalVisible && (
+        <Modal
+          title='Run data processing with the changed settings'
+          visible
+          onCancel={() => setRunQCModalVisible(false)}
+          onOk={() => onPipelineRun()}
+          okText='Start'
+        >
+          <p>
+            This will take several minutes.
+            Your navigation within Cellscope will be restricted during this time.
+            Do you want to start?
+          </p>
+        </Modal>
+      )}
       <Card
         title={renderTitle()}
       >

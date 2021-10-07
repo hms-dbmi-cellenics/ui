@@ -14,6 +14,16 @@ const sampleifiedConfig = (sampleIds, configToReplicate) => {
 };
 
 const generateProcessingConfigMock = (sampleIds) => ({
+  classifier: {
+    enabled: true,
+    ...sampleifiedConfig(sampleIds, {
+      auto: true,
+      enabled: true,
+      filterSettings: {
+        FDR: 0.1,
+      },
+    }),
+  },
   cellSizeDistribution: {
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
@@ -38,16 +48,6 @@ const generateProcessingConfigMock = (sampleIds) => ({
             binStep: 200,
           },
         },
-      },
-    }),
-  },
-  classifier: {
-    enabled: true,
-    ...sampleifiedConfig(sampleIds, {
-      auto: true,
-      enabled: true,
-      filterSettings: {
-        FDR: 0.1,
       },
     }),
   },

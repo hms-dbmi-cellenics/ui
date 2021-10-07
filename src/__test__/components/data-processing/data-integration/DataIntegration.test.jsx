@@ -32,14 +32,6 @@ const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: {
-      experimentId: '1234',
-    },
-  })),
-}));
-
 const mockedStore = mockStore({
   cellSets: {
     ...initialCellSetsState,
