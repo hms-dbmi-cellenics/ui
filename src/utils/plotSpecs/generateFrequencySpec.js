@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { intersection } from '../cellSetOperations';
 
-const generateSpec = (config, plotData) => {
+const generateSpec = (config, { yNamesToDisplay, plotData }) => {
   let legend = [];
 
   if (config.legend.enabled) {
@@ -25,7 +25,7 @@ const generateSpec = (config, plotData) => {
           labels: {
             update: {
               text: {
-                scale: 'c', field: 'label',
+                scale: 'yClusterKey', field: 'label',
               },
               fill: { value: config.colour.masterColour },
             },
@@ -69,7 +69,7 @@ const generateSpec = (config, plotData) => {
           {
             type: 'stack',
             groupby: ['x'],
-            sort: { field: 'c' },
+            sort: { field: 'yClusterKey' },
             field: 'y',
           },
         ],
@@ -92,20 +92,15 @@ const generateSpec = (config, plotData) => {
         domain: config.frequencyType === 'proportional' ? [0, 100] : { data: 'plotData', field: 'y1' },
       },
       {
-        name: 'c',
+        name: 'yClusterKey',
         type: 'ordinal',
-        range: {
-          data: 'plotData', field: 'c',
-        },
-        domain: {
-          data: 'plotData', field: 'c',
-        },
+        range: yNamesToDisplay,
       },
       {
         name: 'color',
         type: 'ordinal',
         range: { data: 'plotData', field: 'color' },
-        domain: { data: 'plotData', field: 'c' },
+        domain: { data: 'plotData', field: 'yClusterKey' },
       },
     ],
 
@@ -160,7 +155,7 @@ const generateSpec = (config, plotData) => {
             width: { scale: 'x', band: 1, offset: -1 },
             y: { scale: 'y', field: 'y0' },
             y2: { scale: 'y', field: 'y1' },
-            fill: { scale: 'color', field: 'c' },
+            fill: { scale: 'color', field: 'yClusterKey' },
           },
           update: {
             fillOpacity: 1,
@@ -202,7 +197,7 @@ const generateData = (hierarchy, properties, config) => {
 
   const cellSetCombinations = cartesian(cellSets.x, cellSets.y);
 
-  const data = cellSetCombinations.map(([{ key: xCellSetKey }, { key: yCellSetKey }]) => {
+  const plotData = cellSetCombinations.map(([{ key: xCellSetKey }, { key: yCellSetKey }]) => {
     const xCellSet = properties[xCellSetKey];
     const yCellSet = properties[yCellSetKey];
 
@@ -211,12 +206,14 @@ const generateData = (hierarchy, properties, config) => {
     return {
       x: xCellSet.name,
       y: sum,
-      c: yCellSet.name,
+      yClusterKey: yCellSetKey,
       color: yCellSet.color,
     };
   });
 
-  return data;
+  const yNamesToDisplay = cellSets.y.map(({ key }) => properties[key].name);
+
+  return { yNamesToDisplay, plotData };
 };
 
 export {
