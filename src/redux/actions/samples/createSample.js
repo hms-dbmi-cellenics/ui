@@ -97,7 +97,7 @@ const createSample = (
     return Promise.reject(message);
   }
 
-  return Promise.resolve(newSampleUuid);
+  return newSampleUuid;
 };
 
 export default createSample;

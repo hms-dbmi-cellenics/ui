@@ -45,49 +45,46 @@ const createProject = (
     lastModified: createdDate,
   };
 
+  const url = `/v1/projects/${newProjectUuid}`;
+
   try {
-    const url = `/v1/projects/${newProjectUuid}`;
-    try {
-      const response = await fetchAPI(
-        url,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newProject),
+    const response = await fetchAPI(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(newProject),
+      },
+    );
 
-      const json = await response.json();
+    const json = await response.json();
 
-      throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-    } catch (e) {
-      let { message } = e;
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+  } catch (e) {
+    let { message } = e;
 
-      if (!isServerError(e)) {
-        console.error(`fetch ${url} error ${message}`);
-        message = endUserMessages.ERROR_SAVING;
-      }
-
-      dispatch({
-        type: PROJECTS_ERROR,
-        payload: {
-          error: message,
-        },
-      });
-
-      pushNotificationMessage('error', message);
-      return Promise.reject(message);
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.ERROR_SAVING;
     }
 
     dispatch({
-      type: PROJECTS_CREATE,
-      payload: { project: newProject },
+      type: PROJECTS_ERROR,
+      payload: {
+        error: message,
+      },
     });
-  } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+
+    pushNotificationMessage('error', message);
+    return Promise.reject(message);
   }
+
+  dispatch({
+    type: PROJECTS_CREATE,
+    payload: { project: newProject },
+  });
 };
 
 export default createProject;
