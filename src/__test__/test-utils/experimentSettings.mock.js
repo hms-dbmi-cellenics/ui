@@ -16,6 +16,7 @@ const sampleifiedConfig = (sampleIds, configToReplicate) => {
 const generateProcessingConfigMock = (sampleIds) => ({
   classifier: {
     enabled: true,
+    prefiltred: false,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
       enabled: true,
