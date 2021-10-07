@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { intersection } from '../cellSetOperations';
 
-const generateSpec = (config, { yNamesToDisplay, plotData }) => {
+const generateSpec = (config, { xNamesToDisplay, yNamesToDisplay, plotData }) => {
   let legend = [];
 
   if (config.legend.enabled) {
@@ -78,6 +78,11 @@ const generateSpec = (config, { yNamesToDisplay, plotData }) => {
 
     scales: [
       {
+        name: 'xNames',
+        type: 'ordinal',
+        range: xNamesToDisplay,
+      },
+      {
         name: 'x',
         type: 'band',
         range: 'width',
@@ -124,6 +129,13 @@ const generateSpec = (config, { yNamesToDisplay, plotData }) => {
         domainWidth: config.axes.domainWidth,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        encode: {
+          labels: {
+            update: {
+              text: { signal: 'scale("xNames", datum.value)' },
+            },
+          },
+        },
       },
       {
         orient: 'left',
@@ -198,13 +210,12 @@ const generateData = (hierarchy, properties, config) => {
   const cellSetCombinations = cartesian(cellSets.x, cellSets.y);
 
   const plotData = cellSetCombinations.map(([{ key: xCellSetKey }, { key: yCellSetKey }]) => {
-    const xCellSet = properties[xCellSetKey];
     const yCellSet = properties[yCellSetKey];
 
     const sum = intersection([xCellSetKey, yCellSetKey], properties).size;
 
     return {
-      x: xCellSet.name,
+      x: xCellSetKey,
       y: sum,
       yClusterKey: yCellSetKey,
       color: yCellSet.color,
@@ -212,8 +223,9 @@ const generateData = (hierarchy, properties, config) => {
   });
 
   const yNamesToDisplay = cellSets.y.map(({ key }) => properties[key].name);
+  const xNamesToDisplay = cellSets.x.map(({ key }) => properties[key].name);
 
-  return { yNamesToDisplay, plotData };
+  return { xNamesToDisplay, yNamesToDisplay, plotData };
 };
 
 export {
