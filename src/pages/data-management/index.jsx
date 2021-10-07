@@ -127,7 +127,11 @@ const DataManagementPage = ({ route }) => {
 
   const renderWindow = (tile, width, height) => {
     if (tile && height && width) {
-      return tile(width, height);
+      return (
+        <div style={{ padding: '10px' }}>
+          {height && width ? tile(width, height) : <></>}
+        </div>
+      );
     }
     return <></>;
   };
