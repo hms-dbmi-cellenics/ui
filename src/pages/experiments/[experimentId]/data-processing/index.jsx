@@ -26,35 +26,35 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import { getBackendStatus } from 'redux/selectors';
 import {
   addChangedQCFilter,
   discardChangedQCFilters,
   loadProcessingSettings,
   saveProcessingSettings,
   setQCStepEnabled,
-} from '../../../../redux/actions/experimentSettings';
-import { getUserFriendlyQCStepName, qcSteps } from '../../../../utils/qcSteps';
-import { useDispatch, useSelector } from 'react-redux';
+} from 'redux/actions/experimentSettings';
+import { getUserFriendlyQCStepName, qcSteps } from 'utils/qcSteps';
 
-import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
-import Classifier from '../../../../components/data-processing/Classifier/Classifier';
-import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
-import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
-import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
-import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/GenesVsUMIs';
-import Header from '../../../../components/Header';
-import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
-import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
-import PlatformError from '../../../../components/PlatformError';
-import PropTypes from 'prop-types';
-import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
-import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
-import _ from 'lodash';
-import { getBackendStatus } from 'redux/selectors';
-import { loadCellSets } from '../../../../redux/actions/cellSets';
-import { loadSamples } from '../../../../redux/actions/samples';
-import { runPipeline } from '../../../../redux/actions/pipeline';
-import { useAppRouter } from '../../../../utils/AppRouteProvider';
+import CellSizeDistribution from 'components/data-processing/CellSizeDistribution/CellSizeDistribution';
+import Classifier from 'components/data-processing/Classifier/Classifier';
+import ConfigureEmbedding from 'components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
+import DataIntegration from 'components/data-processing/DataIntegration/DataIntegration';
+import DoubletScores from 'components/data-processing/DoubletScores/DoubletScores';
+import GenesVsUMIs from 'components/data-processing/GenesVsUMIs/GenesVsUMIs';
+import Header from 'components/Header';
+import MitochondrialContent from 'components/data-processing/MitochondrialContent/MitochondrialContent';
+import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
+import PlatformError from 'components/PlatformError';
+import SingleComponentMultipleDataContainer from 'components/SingleComponentMultipleDataContainer';
+import StatusIndicator from 'components/data-processing/StatusIndicator';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { loadSamples } from 'redux/actions/samples';
+import { runPipeline } from 'redux/actions/pipeline';
+import { useAppRouter } from 'utils/AppRouteProvider';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -436,18 +436,20 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                                   </Text>
                                   <span style={{ marginLeft: '0.25rem' }}>{text}</span>
                                 </>
-                              ) : pipelineNotFinished && !pipelineRunning && !isStepComplete(key) ? (
-                                <>
-                                  {/* failed */}
-                                  <Text
-                                    type='danger'
-                                    strong
-                                  >
-                                    <WarningOutlined />
-                                  </Text>
-                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                </>
-                              ) : <></>}
+                              ) : pipelineNotFinished
+                                  && !pipelineRunning
+                                  && !isStepComplete(key) ? (
+                                    <>
+                                      {/* failed */}
+                                      <Text
+                                        type='danger'
+                                        strong
+                                      >
+                                        <WarningOutlined />
+                                      </Text>
+                                      <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                    </>
+                                ) : <></>}
                             </Option>
                           );
                         },

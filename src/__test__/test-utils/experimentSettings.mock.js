@@ -1,4 +1,4 @@
-import initialState from '../../redux/reducers/experimentSettings/initialState';
+import initialState from 'redux/reducers/experimentSettings/initialState';
 
 const sampleifiedConfig = (sampleIds, configToReplicate) => {
   const result = sampleIds.reduce(

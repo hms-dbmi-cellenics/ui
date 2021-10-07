@@ -7,37 +7,37 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
-import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
+import DataProcessingPage from 'pages/experiments/[experimentId]/data-processing/index';
 
-import generateExperimentSettingsMock from '../../../../test-utils/experimentSettings.mock';
-import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
-import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
-import initialSamplesState, { sampleTemplate } from '../../../../../redux/reducers/samples/initialState';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import initialCellSetsState from 'redux/reducers/cellSets/initialState';
+import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 
-import { getBackendStatus } from '../../../../../redux/selectors';
+import { getBackendStatus } from 'redux/selectors';
 
-import { runPipeline } from '../../../../../redux/actions/pipeline';
+import { runPipeline } from 'redux/actions/pipeline';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
-jest.mock('../../../../../components/UserButton', () => () => <></>);
+jest.mock('components/UserButton', () => () => <></>);
 
 // Mock all filter components
-jest.mock('../../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution', () => () => <></>);
-jest.mock('../../../../../components/data-processing/MitochondrialContent/MitochondrialContent', () => () => <></>);
-jest.mock('../../../../../components/data-processing/GenesVsUMIs/GenesVsUMIs', () => () => <></>);
-jest.mock('../../../../../components/data-processing/DoubletScores/DoubletScores', () => () => <></>);
-jest.mock('../../../../../components/data-processing/DataIntegration/DataIntegration', () => () => <></>);
-jest.mock('../../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding', () => () => <></>);
+jest.mock('components/data-processing/CellSizeDistribution/CellSizeDistribution', () => () => <></>);
+jest.mock('components/data-processing/MitochondrialContent/MitochondrialContent', () => () => <></>);
+jest.mock('components/data-processing/GenesVsUMIs/GenesVsUMIs', () => () => <></>);
+jest.mock('components/data-processing/DoubletScores/DoubletScores', () => () => <></>);
+jest.mock('components/data-processing/DataIntegration/DataIntegration', () => () => <></>);
+jest.mock('components/data-processing/ConfigureEmbedding/ConfigureEmbedding', () => () => <></>);
 
 const mockNavigateTo = jest.fn();
 
-jest.mock('../../../../../utils/AppRouteProvider', () => ({
+jest.mock('utils/AppRouteProvider', () => ({
   useAppRouter: jest.fn(() => mockNavigateTo),
 }));
 
 jest.mock('localforage');
-jest.mock('../../../../../redux/selectors');
+jest.mock('redux/selectors');
 
-jest.mock('../../../../../redux/actions/pipeline', () => ({
+jest.mock('redux/actions/pipeline', () => ({
   runPipeline: jest.fn(() => ({ type: 'RUN_PIPELINE' })),
 }));
 
