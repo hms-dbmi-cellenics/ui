@@ -1,54 +1,60 @@
-import React, {
-  useState, useEffect, useMemo, useCallback,
-} from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
 import {
-  Select, Space, Button, Typography, Alert,
-  Row, Col, Card, Skeleton,
-  Tooltip, Modal,
+  Alert,
+  Button,
+  Card,
+  Col,
+  Modal,
+  Row,
+  Select,
+  Skeleton,
+  Space,
+  Tooltip,
+  Typography,
 } from 'antd';
 import {
-  LeftOutlined,
-  RightOutlined,
   CheckOutlined,
   CloseOutlined,
   EllipsisOutlined,
-  WarningOutlined,
   InfoCircleOutlined,
+  LeftOutlined,
+  RightOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
-
-import _ from 'lodash';
-
-import { getBackendStatus } from 'redux/selectors';
-import Header from '../../../../components/Header';
-import { useAppRouter } from '../../../../utils/AppRouteProvider';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  addChangedQCFilter,
+  discardChangedQCFilters,
+  loadProcessingSettings,
+  saveProcessingSettings,
+  setQCStepEnabled,
+} from '../../../../redux/actions/experimentSettings';
+import { getUserFriendlyQCStepName, qcSteps } from '../../../../utils/qcSteps';
+import { useDispatch, useSelector } from 'react-redux';
 
 import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
-import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
 import Classifier from '../../../../components/data-processing/Classifier/Classifier';
-import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/GenesVsUMIs';
-import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
-import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
 import ConfigureEmbedding from '../../../../components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
-
-import PlatformError from '../../../../components/PlatformError';
-
-import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
-
-import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
-
-import { qcSteps, getUserFriendlyQCStepName } from '../../../../utils/qcSteps';
-
-import {
-  loadProcessingSettings, saveProcessingSettings, setQCStepEnabled,
-  addChangedQCFilter, discardChangedQCFilters,
-} from '../../../../redux/actions/experimentSettings';
-
-import { loadSamples } from '../../../../redux/actions/samples';
-import { loadCellSets } from '../../../../redux/actions/cellSets';
-import { runPipeline } from '../../../../redux/actions/pipeline';
+import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
+import DoubletScores from '../../../../components/data-processing/DoubletScores/DoubletScores';
+import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/GenesVsUMIs';
+import Header from '../../../../components/Header';
+import MitochondrialContent from '../../../../components/data-processing/MitochondrialContent/MitochondrialContent';
 import PipelineRedirectToDataProcessing from '../../../../components/PipelineRedirectToDataProcessing';
+import PlatformError from '../../../../components/PlatformError';
+import PropTypes from 'prop-types';
+import SingleComponentMultipleDataContainer from '../../../../components/SingleComponentMultipleDataContainer';
+import StatusIndicator from '../../../../components/data-processing/StatusIndicator';
+import _ from 'lodash';
+import { getBackendStatus } from 'redux/selectors';
+import { loadCellSets } from '../../../../redux/actions/cellSets';
+import { loadSamples } from '../../../../redux/actions/samples';
+import { runPipeline } from '../../../../redux/actions/pipeline';
+import { useAppRouter } from '../../../../utils/AppRouteProvider';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -662,7 +668,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
 
   return (
     <div style={{
-      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', 'min-height': '100vh',
+      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', height: '100vh',
     }}
     >
       <Header
