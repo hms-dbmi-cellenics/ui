@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, PageHeader, Collapse, Alert,
+  Row, Col, Space, PageHeader, Collapse, Alert, Empty,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -296,6 +296,21 @@ const DataIntegration = (props) => {
         <center>
           <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
         </center>
+      );
+    }
+
+    if ((selectedPlot === 'embedding' || selectedPlot === 'frequency')
+      && !cellSets.loading
+      && cellSets.hierarchy.find((rootNode) => rootNode.key === 'sample')?.children?.length === 1
+    ) {
+      return (
+        <center>
+          <Empty
+            style={{ width: selectedConfig.dimensions.width }}
+            description='Your project has only one sample.'
+          />
+        </center>
+
       );
     }
 

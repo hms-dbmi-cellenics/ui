@@ -345,13 +345,17 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    throw new Error('FIXTHIS: remove filterCells from here and also replace filterCells in the spec gen file');
-
     if (selectedPlot === 'sample'
       && !cellSets.loading
-      && filterCells(cellSets, selectedConfig.selectedCellSet).length === 0) {
+      && cellSets.hierarchy.find((rootNode) => rootNode.key === 'sample')?.children?.length === 1
+    ) {
       return (
-        <Empty description='Your project has only one sample.' />
+        <center>
+          <Empty
+            style={{ width: selectedConfig.dimensions.width }}
+            description='Your project has only one sample.'
+          />
+        </center>
       );
     }
 
