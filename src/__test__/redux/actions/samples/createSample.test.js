@@ -13,10 +13,10 @@ import updateExperiment from 'redux/actions/experiments/updateExperiment';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-jest.mock('../../../../redux/actions/experiments/updateExperiment');
+jest.mock('redux/actions/experiments/updateExperiment');
 updateExperiment.mockImplementation(() => async () => { });
 
-jest.mock('../../../../utils/pushNotificationMessage');
+jest.mock('utils/pushNotificationMessage');
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 jest.mock('localforage');

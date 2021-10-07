@@ -17,16 +17,16 @@ jest.mock('uuid');
 const projectUuid = 'random-project-uuid';
 uuidv4.mockImplementation(() => projectUuid);
 
-jest.mock('../../../../redux/actions/projects/saveProject');
+jest.mock('redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
 
-jest.mock('../../../../redux/actions/experiments/createExperiment');
+jest.mock('redux/actions/experiments/createExperiment');
 createExperiment.mockImplementation((uuid, name) => async () => ({
   name,
   uuid,
 }));
 
-jest.mock('../../../../utils/pushNotificationMessage');
+jest.mock('utils/pushNotificationMessage');
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
