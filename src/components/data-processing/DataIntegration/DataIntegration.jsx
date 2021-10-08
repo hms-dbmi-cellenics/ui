@@ -7,25 +7,24 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
 
 import { getBackendStatus } from 'redux/selectors';
-import CalculationConfig from './CalculationConfig';
-import PlotStyling from '../../plots/styling/PlotStyling';
+import PlotStyling from 'components/plots/styling/PlotStyling';
 
-import MiniPlot from '../../plots/MiniPlot';
-import EmptyPlot from '../../plots/helpers/EmptyPlot';
+import MiniPlot from 'components/plots/MiniPlot';
+import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 
 import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-} from '../../../redux/actions/componentConfig';
+} from 'redux/actions/componentConfig';
 
-import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
-import FrequencyPlot from '../../plots/FrequencyPlot';
-import ElbowPlot from '../../plots/ElbowPlot';
-import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
+import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
+import FrequencyPlot from 'components/plots/FrequencyPlot';
+import ElbowPlot from 'components/plots/ElbowPlot';
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
@@ -39,7 +38,6 @@ const DataIntegration = (props) => {
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
 
-  const router = useRouter();
   const dispatch = useDispatch();
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
@@ -244,42 +242,6 @@ const DataIntegration = (props) => {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData, true));
     }
   }, [selectedConfig, cellSets, plotData, calculationConfig]);
-
-  useEffect(() => {
-    const showPopupWhenUnsaved = (url) => {
-      // Only handle if we are navigating away.z
-      const { plotUuid } = plots[selectedPlot];
-      if (router.asPath === url || !outstandingChanges) {
-        return;
-      }
-      // Show a confirmation dialog. Prevent moving away if the user decides not to.
-      // eslint-disable-next-line no-alert
-      if (
-        // eslint-disable-next-line no-alert
-        !window.confirm(
-          'You have unsaved changes. Do you wish to save?',
-        )
-      ) {
-        router.events.emit('routeChangeError');
-        // Following is a hack-ish solution to abort a Next.js route change
-        // as there's currently no official API to do so
-        // See https://github.com/zeit/next.js/issues/2476#issuecomment-573460710
-        // eslint-disable-next-line no-throw-literal
-        throw `Route change to "${url}" was aborted (this error can be safely ignored). See https://github.com/zeit/next.js/issues/2476.`;
-      } else {
-        // if we click 'ok' the config is changed
-        dispatch(savePlotConfig(experimentId, plotUuid));
-      }
-    };
-
-    if (router.events) {
-      router.events.on('routeChangeStart', showPopupWhenUnsaved);
-
-      return () => {
-        router.events.off('routeChangeStart', showPopupWhenUnsaved);
-      };
-    }
-  }, [router.asPath, router.events]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
