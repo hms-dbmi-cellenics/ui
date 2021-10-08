@@ -14,7 +14,7 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
-import updateExperiment from 'redux/actions/experiments/updateExperiment';
+import saveExperiment from 'redux/actions/experiments/saveExperiment';
 
 const createSample = (
   projectUuid,
@@ -26,7 +26,6 @@ const createSample = (
   const createdDate = moment().toISOString();
 
   const experimentId = project.experiments[0];
-  const experiment = getState().experiments[experimentId];
 
   const newSampleUuid = uuidv4();
 
@@ -69,15 +68,10 @@ const createSample = (
 
     dispatch({
       type: SAMPLES_CREATE,
-      payload: { sample: newSample },
+      payload: { sample: newSample, experimentId },
     });
 
-    dispatch(
-      updateExperiment(
-        experimentId,
-        { sampleIds: [...experiment.sampleIds, newSampleUuid] },
-      ),
-    );
+    dispatch(saveExperiment(experimentId));
   } catch (e) {
     let { message } = e;
     if (!isServerError(e)) {
