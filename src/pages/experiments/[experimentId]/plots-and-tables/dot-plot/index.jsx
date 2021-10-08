@@ -96,29 +96,31 @@ const dotPlot = (props) => {
           </Radio.Group>
           {
             !config.markerGenes
-            && (
-              <Space direction='vertical' size='small'>
-                <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
-                <Select
-                  mode='tags'
-                  style={{ width: '100%' }}
-                  placeholder='Select genes...'
-                  onChange={(genes) => updatePlotWithChanges({ genes })}
-                  value={config.genes}
-                  tokenSeparators={[' ']}
-                  notFoundContent='No gene added yet.'
-                />
-              </Space>
-            )
+              ? (
+                <Space direction='vertical' size='small'>
+                  <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
+                  <Select
+                    mode='tags'
+                    style={{ width: '100%' }}
+                    placeholder='Select genes...'
+                    onChange={(genes) => updatePlotWithChanges({ genes })}
+                    value={config.genes}
+                    tokenSeparators={[' ']}
+                    notFoundContent='No gene added yet.'
+                  />
+                </Space>
+              )
+              : (
+                <Space>
+                  <p>Number of genes</p>
+                  <InputNumber
+                    size='small'
+                    value={config.nGenes}
+                    onChange={(value) => updatePlotWithChanges({ nGenes: value })}
+                  />
+                </Space>
+              )
           }
-          <Space>
-            Number of genes
-            <InputNumber
-              size='small'
-              value={config.nGenes}
-              onChange={(value) => updatePlotWithChanges({ nGenes: value })}
-            />
-          </Space>
         </Space>
       </Panel>
     </>
