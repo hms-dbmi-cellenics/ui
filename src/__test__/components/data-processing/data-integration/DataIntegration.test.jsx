@@ -7,18 +7,18 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
 
-import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
-import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
-import initialCellSetsState from '../../../../redux/reducers/cellSets/initialState';
+import DataIntegration from 'components/data-processing/DataIntegration/DataIntegration';
+import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
+import initialCellSetsState from 'redux/reducers/cellSets/initialState';
 
-import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
-import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 
-import { getBackendStatus } from '../../../../redux/selectors';
+import { getBackendStatus } from 'redux/selectors';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
-jest.mock('../../../../redux/selectors');
+jest.mock('redux/selectors');
 
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
@@ -31,14 +31,6 @@ jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
-
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: {
-      experimentId: '1234',
-    },
-  })),
-}));
 
 const mockedStore = mockStore({
   cellSets: {
