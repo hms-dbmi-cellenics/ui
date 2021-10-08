@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config, { plotData, clusterNames }) => {
+const generateSpec = (config, { plotData, cellSetNames }) => {
   let legend = [];
 
   const colorFieldName = plotData[0]?.color ? 'color' : 'col';
@@ -56,7 +56,7 @@ const generateSpec = (config, { plotData, clusterNames }) => {
         source: 'values',
         transform: [
           {
-            type: 'aggregate', groupby: ['clusterKey', 'clusterName'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
+            type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
           },
         ],
       },
@@ -83,12 +83,12 @@ const generateSpec = (config, { plotData, clusterNames }) => {
         name: 'cellSetColors',
         type: 'ordinal',
         range: { data: 'values', field: colorFieldName },
-        domain: { data: 'values', field: 'clusterKey' },
+        domain: { data: 'values', field: 'cellSetKey' },
       },
       {
         name: 'sampleToName',
         type: 'ordinal',
-        range: clusterNames,
+        range: cellSetNames,
       },
     ],
     axes: [
@@ -143,8 +143,8 @@ const generateSpec = (config, { plotData, clusterNames }) => {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
             size: { value: config?.marker.size },
-            stroke: { scale: 'cellSetColors', field: 'clusterKey' },
-            fill: { scale: 'cellSetColors', field: 'clusterKey' },
+            stroke: { scale: 'cellSetColors', field: 'cellSetKey' },
+            fill: { scale: 'cellSetColors', field: 'cellSetKey' },
             shape: { value: config?.marker.shape },
             fillOpacity: { value: config?.marker.opacity / 10 },
           },
@@ -157,7 +157,7 @@ const generateSpec = (config, { plotData, clusterNames }) => {
           enter: {
             x: { scale: 'x', field: 'meanX' },
             y: { scale: 'y', field: 'meanY' },
-            text: { field: 'clusterName' },
+            text: { field: 'cellSetName' },
             fontSize: { value: config?.labels.size },
             strokeWidth: { value: 1.2 },
             fill: { value: config?.colour.masterColour },
@@ -193,20 +193,20 @@ const filterCells = (cellSets, selectedCellSet) => {
 
     return cells.map((cellId) => ({
       cellId,
-      clusterKey: key,
-      clusterName: cellSets.properties[key].name,
+      cellSetKey: key,
+      cellSetName: cellSets.properties[key].name,
       color: cellSets.properties[key].color,
     }));
   });
 
-  const clusterNames = newCellSets.map(({ key }) => cellSets.properties[key].name);
+  const cellSetNames = newCellSets.map(({ key }) => cellSets.properties[key].name);
 
-  return { dataPoints, clusterNames };
+  return { dataPoints, cellSetNames };
 };
 
 // Generate dynamic data from redux store
 const generateData = (cellSets, selectedCellSet, embeddingData) => {
-  const { dataPoints, clusterNames } = filterCells(cellSets, selectedCellSet);
+  const { dataPoints, cellSetNames } = filterCells(cellSets, selectedCellSet);
 
   const plotData = dataPoints
     .filter((d) => d.cellId < embeddingData.length)
@@ -221,7 +221,7 @@ const generateData = (cellSets, selectedCellSet, embeddingData) => {
       };
     });
 
-  return { plotData, clusterNames };
+  return { plotData, cellSetNames };
 };
 
 export {
