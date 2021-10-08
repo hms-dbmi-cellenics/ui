@@ -12,6 +12,7 @@ import heatmap from '../../../../../public/static/media/heatmap.png';
 import embeddingContinuous from '../../../../../public/static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../public/static/media/embeddingCategorical.png';
 import violin from '../../../../../public/static/media/violin.png';
+import dotPlot from '../../../../../public/static/media/violin.png';
 import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
@@ -47,49 +48,30 @@ CardItem.propTypes = {
 };
 
 const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
-  let lastUpdatedVolcano = useSelector(
-    (state) => state.componentConfig.volcanoPlotMain?.lastUpdated,
+  const lastUpdatedVolcano = useSelector(
+    (state) => state.componentConfig.volcanoPlotMain?.lastUpdated || 'never',
   );
-  let lastUpdatedContinuous = useSelector(
-    (state) => state.componentConfig.embeddingContinuousMain?.lastUpdated,
+  const lastUpdatedContinuous = useSelector(
+    (state) => state.componentConfig.embeddingContinuousMain?.lastUpdated || 'never',
   );
-  let lastUpdatedCategorical = useSelector(
-    (state) => state.componentConfig.embeddingCategoricalMain?.lastUpdated,
+  const lastUpdatedCategorical = useSelector(
+    (state) => state.componentConfig.embeddingCategoricalMain?.lastUpdated || 'never',
   );
-  let lastUpdatedHeatmap = useSelector(
-    (state) => state.componentConfig.heatmapPlotMain?.lastUpdated,
+  const lastUpdatedHeatmap = useSelector(
+    (state) => state.componentConfig.heatmapPlotMain?.lastUpdated || 'never',
   );
-  let lastUpdatedFrequency = useSelector(
-    (state) => state.componentConfig.frequencyPlotMain?.lastUpdated,
+  const lastUpdatedFrequency = useSelector(
+    (state) => state.componentConfig.frequencyPlotMain?.lastUpdated || 'never',
   );
-  let lastUpdatedViolin = useSelector(
-    (state) => state.componentConfig.violinPlotMain?.lastUpdated,
+  const lastUpdatedViolin = useSelector(
+    (state) => state.componentConfig.violinPlotMain?.lastUpdated || 'never',
   );
-  let lastUpdatedMarkerHeatmap = useSelector(
-    (state) => state.componentConfig.markerHeatmapPlotMain?.lastUpdated,
+  const lastUpdatedMarkerHeatmap = useSelector(
+    (state) => state.componentConfig.markerHeatmapPlotMain?.lastUpdated || 'never',
   );
-
-  if (!lastUpdatedVolcano) {
-    lastUpdatedVolcano = 'never';
-  }
-  if (!lastUpdatedContinuous) {
-    lastUpdatedContinuous = 'never';
-  }
-  if (!lastUpdatedCategorical) {
-    lastUpdatedCategorical = 'never';
-  }
-  if (!lastUpdatedHeatmap) {
-    lastUpdatedHeatmap = 'never';
-  }
-  if (!lastUpdatedFrequency) {
-    lastUpdatedFrequency = 'never';
-  }
-  if (!lastUpdatedViolin) {
-    lastUpdatedViolin = 'never';
-  }
-  if (!lastUpdatedMarkerHeatmap) {
-    lastUpdatedMarkerHeatmap = 'never';
-  }
+  const lastUpdatedDot = useSelector(
+    (state) => state.componentConfig.dotPlotMain?.lastUpdated || 'never',
+  );
 
   const plots = [
     {
@@ -140,6 +122,13 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       key: 'violin-key',
       link: 'violin',
       description: `Last updated: ${lastUpdatedViolin}`,
+    },
+    {
+      name: 'Dot Plot',
+      image: dotPlot,
+      key: 'dot-key',
+      link: 'dot-plot',
+      description: `Last updated: ${lastUpdatedDot}`,
     },
   ];
 

@@ -215,6 +215,40 @@ const violinConfig = {
   kdeBandwidth: 0.3,
   normalised: 'normalised',
 };
+
+// PLOTS & TABLES - Dot
+const dotPlotConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top',
+    enabled: false,
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    offset: 10,
+    xAxisRotateLabels: true,
+    gridOpacity: 5,
+  },
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  labels: labelBaseState,
+  markerGenes: true,
+  nGenes: 5,
+  genes: [],
+};
+
 // EMBEDDING PREVIEW - Coloured by sample
 const embeddingPreviewBySampleInitialConfig = {
   spec: '1.0.0',
@@ -700,6 +734,7 @@ const initialPlotConfigStates = {
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
+  dotPlot: dotPlotConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
