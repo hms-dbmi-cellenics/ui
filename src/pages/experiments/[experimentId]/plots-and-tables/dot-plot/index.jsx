@@ -85,7 +85,7 @@ const dotPlot = (props) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene Selection' key='1'>
+      <Panel header='Gene selection' key='gene-selection'>
         <Space direction='vertical' size='middle'>
           <Radio.Group
             onChange={(e) => updatePlotWithChanges({ markerGenes: e.target.value })}
@@ -164,6 +164,7 @@ const dotPlot = (props) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
+              defaultActiveKey={['gene-selection']}
             />
           </Space>
         </Col>

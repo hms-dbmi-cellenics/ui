@@ -33,8 +33,6 @@ const FrequencyPlot = (props) => {
     }
   }, [hierarchy, properties, config]);
 
-  console.log('*** spec', plotSpec);
-
   return (
     <center>
       <Vega spec={plotSpec} renderer='canvas' actions={actions} />
