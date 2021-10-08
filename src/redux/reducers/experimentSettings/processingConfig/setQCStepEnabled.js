@@ -7,7 +7,7 @@ const setQCStepEnabled = produce((draft, action) => {
   const { step, enabled } = action.payload;
 
   const {
-    enabled: oldEnable, auto, filterSettings, ...sampleIds
+    enabled: oldEnable, auto, filterSettings, prefiltered, ...sampleIds
   } = draft.processing[step];
 
   draft.processing[step].enabled = enabled;
