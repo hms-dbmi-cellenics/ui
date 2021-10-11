@@ -89,6 +89,7 @@ Object {
     },
     "classifier": Object {
       "enabled": true,
+      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -210,6 +211,7 @@ Object {
     },
     "classifier": Object {
       "enabled": true,
+      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -374,6 +376,7 @@ Object {
     },
     "classifier": Object {
       "enabled": true,
+      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -495,6 +498,7 @@ Object {
     },
     "classifier": Object {
       "enabled": true,
+      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,

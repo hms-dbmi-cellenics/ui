@@ -160,7 +160,6 @@ const withDataState = {
 describe('LaunchAnalysisButton', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.doMock();
   });
 
   it('Process project button is disabled if not all sample metadata are inserted', () => {
