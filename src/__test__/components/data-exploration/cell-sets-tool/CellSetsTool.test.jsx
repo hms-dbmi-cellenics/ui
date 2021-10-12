@@ -14,6 +14,14 @@ import CellSetsTool, { generateFilteredCellIndices } from '../../../../component
 import { makeStore } from '../../../../redux/store';
 import { createCellSet, updateCellSetSelected } from '../../../../redux/actions/cellSets';
 import { complement, intersection, union } from '../../../../utils/cellSetOperations';
+import 'setupTests';
+
+jest.mock('utils/socketConnection', () => ({
+  __esModule: true,
+  default: new Promise((resolve) => {
+    resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
+  }),
+}));
 
 const cellSetsData = require('../../../data/cell_sets.json');
 
