@@ -171,13 +171,16 @@ const Embedding = (props) => {
 
   const updateCellsHover = (cell) => {
     if (cell) {
+      console.log(cell);
+      console.log(cellInfoVisible);
+      console.log(focusData.store);
       if (focusData.store === 'genes') {
         const expressionToDispatch = focusedExpression
-          ? focusedExpression.rawExpression.expression[cell.cellId] : undefined;
+          ? focusedExpression.rawExpression.expression[cell] : undefined;
 
         return dispatch(updateCellInfo({
-          cellName: cell.cellId,
-          cellSets: getContainingCellSets(cell.cellId),
+          cellName: cell,
+          cellSets: getContainingCellSets(cell),
           geneName: focusData.key,
           expression: expressionToDispatch,
           componentType: embeddingType,
@@ -185,8 +188,8 @@ const Embedding = (props) => {
       }
 
       return dispatch(updateCellInfo({
-        cellName: cell.cellId,
-        cellSets: getContainingCellSets(cell.cellId),
+        cellName: cell,
+        cellSets: getContainingCellSets(cell),
         geneName: undefined,
         expression: undefined,
         componentType: embeddingType,
@@ -288,9 +291,12 @@ const Embedding = (props) => {
           <Scatterplot
             cellOpacity={0.8}
             cellRadius={cellRadius}
+            setCellHighlight={updateCellsHover}
+            // setCellSelection={updateCellsHover}
             theme='light'
             uuid={embeddingType}
             viewState={view}
+            updateViewInfo={updateCellCoordinates}
             cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
             mapping='PCA'
             cellSelection={selectedCellIds}
