@@ -267,19 +267,8 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellName: cell }));
-
-  const updateGenesHover = (cell) => {
-    const expressionToDispatch = focusedExpression
-      ? focusedExpression.rawExpression.expression[cell] : undefined;
-
-    return dispatch(updateCellInfo({
-      cellName: cell,
-      cellSets: getContainingCellSets(cell),
-      geneName: focusData.key,
-      expression: expressionToDispatch,
-      componentType: embeddingType,
-    }));
+  const updateCellsHover = (cell) => {
+    dispatch(updateCellInfo({ cellName: cell, componentType: COMPONENT_TYPE }));
   };
 
   return (
@@ -303,7 +292,7 @@ const HeatmapPlot = (props) => {
         observationsTitle={null}
       />
       <CellInfo
-        componentType='umap'
+        componentType={COMPONENT_TYPE}
         coordinates={cellCoordinates}
       />
     </div>
