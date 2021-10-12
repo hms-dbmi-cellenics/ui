@@ -74,8 +74,8 @@ const HeatmapPlot = ({ experimentId }) => {
       return;
     }
 
-    const spec = generateSpec(config, 'Cluster ID');
     const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
+    const spec = generateSpec(config, 'Cluster ID', data.trackGroupData);
     const newVegaSpec = {
       ...spec,
       axes: [...spec.axes, ...displayLabels()],

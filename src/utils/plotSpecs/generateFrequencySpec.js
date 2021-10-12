@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { intersection } from '../cellSetOperations';
 
-const generateSpec = (config, plotData) => {
+const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
   let legend = [];
 
   if (config.legend.enabled) {
@@ -25,7 +25,7 @@ const generateSpec = (config, plotData) => {
           labels: {
             update: {
               text: {
-                scale: 'c', field: 'label',
+                scale: 'yCellSetKey', field: 'label',
               },
               fill: { value: config.colour.masterColour },
             },
@@ -69,7 +69,7 @@ const generateSpec = (config, plotData) => {
           {
             type: 'stack',
             groupby: ['x'],
-            sort: { field: 'c' },
+            sort: { field: 'yCellSetKey' },
             field: 'y',
           },
         ],
@@ -77,6 +77,11 @@ const generateSpec = (config, plotData) => {
     ],
 
     scales: [
+      {
+        name: 'xNames',
+        type: 'ordinal',
+        range: xNamesToDisplay,
+      },
       {
         name: 'x',
         type: 'band',
@@ -92,20 +97,15 @@ const generateSpec = (config, plotData) => {
         domain: config.frequencyType === 'proportional' ? [0, 100] : { data: 'plotData', field: 'y1' },
       },
       {
-        name: 'c',
+        name: 'yCellSetKey',
         type: 'ordinal',
-        range: {
-          data: 'plotData', field: 'c',
-        },
-        domain: {
-          data: 'plotData', field: 'c',
-        },
+        range: yNamesToDisplay,
       },
       {
         name: 'color',
         type: 'ordinal',
         range: { data: 'plotData', field: 'color' },
-        domain: { data: 'plotData', field: 'c' },
+        domain: { data: 'plotData', field: 'yCellSetKey' },
       },
     ],
 
@@ -129,6 +129,13 @@ const generateSpec = (config, plotData) => {
         domainWidth: config.axes.domainWidth,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        encode: {
+          labels: {
+            update: {
+              text: { signal: 'scale("xNames", datum.value)' },
+            },
+          },
+        },
       },
       {
         orient: 'left',
@@ -160,7 +167,7 @@ const generateSpec = (config, plotData) => {
             width: { scale: 'x', band: 1, offset: -1 },
             y: { scale: 'y', field: 'y0' },
             y2: { scale: 'y', field: 'y1' },
-            fill: { scale: 'color', field: 'c' },
+            fill: { scale: 'color', field: 'yCellSetKey' },
           },
           update: {
             fillOpacity: 1,
@@ -202,21 +209,23 @@ const generateData = (hierarchy, properties, config) => {
 
   const cellSetCombinations = cartesian(cellSets.x, cellSets.y);
 
-  const data = cellSetCombinations.map(([{ key: xCellSetKey }, { key: yCellSetKey }]) => {
-    const xCellSet = properties[xCellSetKey];
+  const plotData = cellSetCombinations.map(([{ key: xCellSetKey }, { key: yCellSetKey }]) => {
     const yCellSet = properties[yCellSetKey];
 
     const sum = intersection([xCellSetKey, yCellSetKey], properties).size;
 
     return {
-      x: xCellSet.name,
+      x: xCellSetKey,
       y: sum,
-      c: yCellSet.name,
+      yCellSetKey,
       color: yCellSet.color,
     };
   });
 
-  return data;
+  const yNamesToDisplay = cellSets.y.map(({ key }) => properties[key].name);
+  const xNamesToDisplay = cellSets.x.map(({ key }) => properties[key].name);
+
+  return { xNamesToDisplay, yNamesToDisplay, plotData };
 };
 
 export {
