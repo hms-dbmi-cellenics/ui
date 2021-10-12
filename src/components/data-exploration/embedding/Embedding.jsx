@@ -44,6 +44,8 @@ const Embedding = (props) => {
   const dispatch = useDispatch();
 
   const [view, setView] = useState({ target: [4, -4, 0], zoom: 4.00 });
+  const [cellRadius, setCellRadius] = useState(2);
+
   const selectedCellIds = new Set();
 
   const embeddingSettings = useSelector(
@@ -286,7 +288,7 @@ const Embedding = (props) => {
 
           <Scatterplot
             cellOpacity={0.8}
-            cellRadius={2}
+            cellRadius={cellRadius}
             theme='light'
             uuid={embeddingType}
             viewState={view}
@@ -298,7 +300,10 @@ const Embedding = (props) => {
                 ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
                 : new Map(Object.entries(cellColors))
             }
-            setViewState={({ zoom, target }) => setView({ zoom, target })}
+            setViewState={({ zoom, target }) => {
+              setCellRadius(zoom / 2);
+              setView({ zoom, target });
+            }}
             getExpressionValue={() => { }}
             getCellIsSelected={() => { }}
 
