@@ -20,33 +20,26 @@ import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
 
-const CardItem = React.forwardRef(({ onClick, item, href }, ref) => {
-  // Remove this line when the Dot Plot is ready for release
-  if (item.inDevelopment && process.env.NODE_ENV === 'production') {
-    return <UnderConstruction style={{ padding: '8px', height: '250px' }} />;
-  }
-
-  return (
-    <Card.Grid
-      href={href}
-      ref={ref}
-      onClick={onClick}
-      hoverable={false}
-      style={{ textAlign: 'center', width: '100%', padding: '0' }}
-    >
-      <img
-        alt={item.name}
-        src={item.image}
-        style={{
-          height: '250px', width: '100%', align: 'center', padding: '8px',
-        }}
-      />
-      <div style={{ paddingBottom: '8px' }}>
-        {item.description}
-      </div>
-    </Card.Grid>
-  );
-});
+const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
+  <Card.Grid
+    href={href}
+    ref={ref}
+    onClick={onClick}
+    hoverable={false}
+    style={{ textAlign: 'center', width: '100%', padding: '0' }}
+  >
+    <img
+      alt={item.name}
+      src={item.image}
+      style={{
+        height: '250px', width: '100%', align: 'center', padding: '8px',
+      }}
+    />
+    <div style={{ paddingBottom: '8px' }}>
+      {item.description}
+    </div>
+  </Card.Grid>
+));
 
 CardItem.defaultProps = {};
 
@@ -133,14 +126,12 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       description: `Last updated: ${lastUpdatedViolin}`,
     },
     {
-      name: 'Dot Plot',
-      image: dotPlot,
-      key: 'dot-key',
-      link: 'dot-plot',
-      description: `Last updated: ${lastUpdatedDot}`,
-
-      // Remove this property when the dotplot is ready for release
-      inDevelopment: true,
+      // == Uncomment this configuration when we're ready to show the dot plot
+      // name: 'Dot Plot',
+      // image: dotPlot,
+      // key: 'dot-key',
+      // link: 'dot-plot',
+      // description: `Last updated: ${lastUpdatedDot}`,
     },
   ];
 
