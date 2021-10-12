@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { intersection } from '../cellSetOperations';
 
-const generateSpec = (config, { xNamesToDisplay, yNamesToDisplay, plotData }) => {
+const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
   let legend = [];
 
   if (config.legend.enabled) {

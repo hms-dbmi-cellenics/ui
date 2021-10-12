@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config, { plotData, cellSetNames }) => {
+const generateSpec = (config, plotData, cellSetNames) => {
   let legend = [];
 
   const colorFieldName = plotData[0]?.color ? 'color' : 'col';
