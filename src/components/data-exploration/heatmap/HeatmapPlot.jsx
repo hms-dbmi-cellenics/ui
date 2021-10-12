@@ -18,6 +18,8 @@ import populateHeatmapData from '../../plots/helpers/populateHeatmapData';
 import Loader from '../../Loader';
 import CellInfo from '../CellInfo';
 
+import './Heatmap.module.css';
+
 import { listToMatrix, hexToRgb, convertRange } from '../../../utils/heatmapPlotHelperFunctions/helpers';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
@@ -268,11 +270,11 @@ const HeatmapPlot = (props) => {
   }
 
   const updateCellsHover = (cell) => {
-    dispatch(updateCellInfo({ cellName: cell, componentType: COMPONENT_TYPE }));
+    dispatch(updateCellInfo({ cellName: cell }));
   };
 
   return (
-    <div>
+    <div id='heatmap-container'>
       <Heatmap
         uuid='heatmap-0'
         theme='light'
@@ -291,10 +293,13 @@ const HeatmapPlot = (props) => {
         variablesTitle={null}
         observationsTitle={null}
       />
-      <CellInfo
-        componentType={COMPONENT_TYPE}
-        coordinates={cellCoordinates}
-      />
+      <div className='cell-info-container'>
+
+        <CellInfo
+          componentType='umap'
+          coordinates={cellCoordinates}
+        />
+      </div>
     </div>
   );
 };
