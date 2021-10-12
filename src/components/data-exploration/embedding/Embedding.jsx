@@ -171,9 +171,6 @@ const Embedding = (props) => {
 
   const updateCellsHover = (cell) => {
     if (cell) {
-      console.log(cell);
-      console.log(cellInfoVisible);
-      console.log(focusData.store);
       if (focusData.store === 'genes') {
         const expressionToDispatch = focusedExpression
           ? focusedExpression.rawExpression.expression[cell] : undefined;
@@ -207,7 +204,7 @@ const Embedding = (props) => {
   };
 
   const updateCellsSelection = (selection) => {
-    if (selection.size > 0) {
+    if (selection.length > 0) {
       setCreateClusterPopover(true);
       setSelectedIds(selection);
     }
@@ -312,6 +309,7 @@ const Embedding = (props) => {
             }}
             getExpressionValue={() => { }}
             getCellIsSelected={() => { }}
+            setCellSelection={updateCellsSelection}
 
           />
         ) : ''
