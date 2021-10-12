@@ -44,6 +44,8 @@ const HeatmapPlot = (props) => {
 
   const louvainClustersResolutionRef = useRef(null);
 
+  // const [deckWidth, deckHeight, deckRef] = useDeckCanvasSize();
+
   const expressionData = useSelector((state) => state.genes.expression);
   const {
     loading: markerGenesLoading, error: markerGenesLoadingError,
@@ -73,6 +75,9 @@ const HeatmapPlot = (props) => {
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
   const [maxCells, setMaxCells] = useState(1000);
+
+  const [cellColors, setCellColors] = useState(null);
+  const [expressionMatrix, setExpressionMatrix] = useState(null);
 
   const setHeatmapDataWithDebounce = useCallback(_.debounce((data) => {
     setHeatmapData(data);
@@ -142,6 +147,45 @@ const HeatmapPlot = (props) => {
   useEffect(() => {
     setMaxCells(Math.floor(width * 0.8));
   }, [width]);
+
+  const buildExpressionMatrix = () => {
+    // build expressionMatrix items
+    setCellColors(new Map(heatmapData.trackColorData.map((x) => [`${x.cellId}`, hexToRgb(x.color)])));
+    const cellIds = heatmapData.cellOrder.map((x) => `${x}`);
+    const genes = heatmapData.geneOrder;
+
+    // array with shape [gene_1 cell_1, ..., gene_1 cell_n, gene_2 cell_1, ... ]
+    const geneOrderedExpression = heatmapData.heatmapData.map((x) => x.expression);
+
+    // first convert to cell by gene matrix
+    const cellByGeneMatrix = listToMatrix(geneOrderedExpression, cellIds.length);
+
+    // scale so that each gene has minimum 0 max 255
+    const scaledCellByGeneMatrix = cellByGeneMatrix.map((row) => {
+      const geneMin = Math.min(...row);
+      const geneMax = Math.max(...row);
+
+      return row.map((x) => convertRange(x, [geneMin, geneMax], [0, 255]));
+    });
+
+    // vitesse Heatmap uses:
+    // array with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
+    // accomplish with transpose and flatten
+    const cellOrderedExpression = _.unzip(scaledCellByGeneMatrix).flat();
+
+    // construct expressionMatrix object for vitessce Heatmap
+    setExpressionMatrix({
+      cols: genes,
+      rows: cellIds,
+      matrix: Uint8Array.from(cellOrderedExpression),
+    });
+  };
+
+  useEffect(() => {
+    if (!heatmapData) return;
+
+    buildExpressionMatrix();
+  }, [heatmapData]);
 
   const handleMouseOver = (...args) => {
     if (args.length < 2) {
@@ -233,37 +277,6 @@ const HeatmapPlot = (props) => {
     mouseOver: handleMouseOver,
   };
 
-  // build expressionMatrix items
-  const cellColors = new Map(heatmapData.trackColorData.map((x) => [`${x.cellId}`, hexToRgb(x.color)]));
-  const cellIds = heatmapData.cellOrder.map((x) => `${x}`);
-  const genes = heatmapData.geneOrder;
-
-  // array with shape [gene_1 cell_1, ..., gene_1 cell_n, gene_2 cell_1, ... ]
-  const geneOrderedExpression = heatmapData.heatmapData.map((x) => x.expression);
-
-  // first convert to cell by gene matrix
-  const cellByGeneMatrix = listToMatrix(geneOrderedExpression, cellIds.length);
-
-  // scale so that each gene has minimum 0 max 255
-  const scaledCellByGeneMatrix = cellByGeneMatrix.map((row) => {
-    const geneMin = Math.min(...row);
-    const geneMax = Math.max(...row);
-
-    return row.map((x) => convertRange(x, [geneMin, geneMax], [0, 255]));
-  });
-
-  // vitesse Heatmap uses:
-  // array with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
-  // accomplish with transpose and flatten
-  const cellOrderedExpression = _.unzip(scaledCellByGeneMatrix).flat();
-
-  // construct expressionMatrix object for vitessce Heatmap
-  const expressionMatrix = {
-    cols: genes,
-    rows: cellIds,
-    matrix: Uint8Array.from(cellOrderedExpression),
-  };
-
   return (
     <div>
       <Heatmap
@@ -279,7 +292,8 @@ const HeatmapPlot = (props) => {
         viewState={viewState}
         setCellHighlight={() => { }}
         setGeneHighlight={() => { }}
-        setViewState={({ zoom, target }) => setViewState({ zoom, target })}
+        setViewState={({ zoom, target }) => { setViewState({ zoom, target }); }}
+        updateViewInfo={() => { }}
       />
     </div>
   );

@@ -285,7 +285,6 @@ const Embedding = (props) => {
       {renderExpressionView()}
       {
         data ? (
-
           <Scatterplot
             cellOpacity={0.8}
             cellRadius={cellRadius}
