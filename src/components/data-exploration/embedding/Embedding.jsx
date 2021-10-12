@@ -306,7 +306,9 @@ const Embedding = (props) => {
                 : new Map(Object.entries(cellColors))
             }
             setViewState={({ zoom, target }) => {
-              setCellRadius(zoom / 2);
+              console.log(zoom);
+              setCellRadius(zoom ** 3 / 50);
+
               setView({ zoom, target });
             }}
             getExpressionValue={() => { }}
