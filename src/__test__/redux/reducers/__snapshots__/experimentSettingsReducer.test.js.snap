@@ -5,6 +5,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "configureEmbedding": Object {
@@ -30,7 +31,6 @@ Object {
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
-      "navigationPath": "",
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
   },
@@ -42,6 +42,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "configureEmbedding": Object {
@@ -61,7 +62,6 @@ Object {
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
-      "navigationPath": "",
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
   },
@@ -73,6 +73,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "cellSizeDistribution": Object {
@@ -88,6 +89,7 @@ Object {
     },
     "classifier": Object {
       "enabled": true,
+      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -161,7 +163,6 @@ Object {
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
-      "navigationPath": "",
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
@@ -210,6 +211,7 @@ Object {
     },
     "classifier": Object {
       "enabled": true,
+      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -285,7 +287,6 @@ Object {
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
-      "navigationPath": "",
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
@@ -328,6 +329,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "configureEmbedding": Object {
@@ -347,7 +349,6 @@ Object {
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
-      "navigationPath": "",
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
   },
@@ -359,6 +360,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "cellSizeDistribution": Object {
@@ -374,6 +376,7 @@ Object {
     },
     "classifier": Object {
       "enabled": true,
+      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -447,7 +450,6 @@ Object {
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
-      "navigationPath": "",
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {
@@ -496,6 +498,7 @@ Object {
     },
     "classifier": Object {
       "enabled": true,
+      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -569,7 +572,6 @@ Object {
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
-      "navigationPath": "",
       "selectedConfigureEmbeddingPlot": "cellCluster",
     },
     "mitochondrialContent": Object {

@@ -1,5 +1,7 @@
-import experimentsReducer from '../../../redux/reducers/experiments';
-import initialState, { experimentTemplate } from '../../../redux/reducers/experiments/initialState';
+import { SAMPLES_CREATE } from 'redux/actionTypes/samples';
+import experimentsReducer from 'redux/reducers/experiments';
+import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import {
   EXPERIMENTS_CREATED,
@@ -69,6 +71,12 @@ describe('experimentsReducer', () => {
     meta: experimentTemplate.meta,
   };
 
+  const sampleId = 'testSampleId';
+  const experiment1WithSample = {
+    ...experiment1,
+    sampleIds: [sampleId],
+  };
+
   const updatedExperiment = {
     ...experiment1,
     name: 'updated name',
@@ -86,6 +94,20 @@ describe('experimentsReducer', () => {
     ids: [experimentId1, experimentId2],
     [experimentId1]: experiment1,
     [experimentId2]: experiment2,
+  };
+
+  const oneExperimentWithSampleState = {
+    ...initialState,
+    ids: [experimentId1],
+    [experimentId1]: experiment1WithSample,
+  };
+
+  const sample = {
+    ...sampleTemplate,
+    name: 'test sample',
+    uuid: sampleId,
+    createdDate: '2021-01-01T14:48:00.000Z',
+    lastModified: '2021-01-01T14:48:00.000Z',
   };
 
   it('Reduces identical state on unknown action', () => expect(
@@ -200,6 +222,40 @@ describe('experimentsReducer', () => {
     expect(newState.ids).toEqual([experiment1.id]);
     expect(newState[experiment1.id]).toBe(undefined);
     expect(newState).toEqual(invalidExperimentState);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Adds new sampleId when sample is created', () => {
+    const newState = experimentsReducer(oneExperimentState, {
+      type: SAMPLES_CREATE,
+      payload: {
+        experimentId: experiment1.id,
+        sample,
+      },
+    });
+
+    expect(newState[experiment1.id].sampleIds).toEqual([sample.uuid]);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Adds new sampleId when sample is created and we already have one sample', () => {
+    const anotherSample = {
+      ...sampleTemplate,
+      name: 'another test sample',
+      uuid: 'testAnotherSampleId',
+      createdDate: '2021-01-01T14:48:00.000Z',
+      lastModified: '2021-01-01T14:48:00.000Z',
+    };
+
+    const newState = experimentsReducer(oneExperimentWithSampleState, {
+      type: SAMPLES_CREATE,
+      payload: {
+        experimentId: experiment1.id,
+        sample: anotherSample,
+      },
+    });
+
+    expect(newState[experiment1.id].sampleIds).toEqual([sampleId, anotherSample.uuid]);
     expect(newState).toMatchSnapshot();
   });
 });
