@@ -83,6 +83,18 @@ const HeatmapPlot = (props) => {
     setHeatmapData(data);
   }, 1500, { leading: true }), []);
 
+  const updateCellCoordinates = (newView) => {
+    if (selectedCell && newView.project) {
+      const [x, y] = newView.project(selectedCell);
+      cellCoordintes.current = {
+        x,
+        y,
+        width,
+        height,
+      };
+    }
+  };
+
   /**
    * Loads cell set on initial render if it does not already exist in the store.
    */
@@ -269,13 +281,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  const updateCellsHover = (cell) => {
-    // console.log(cell);
-  };
-
-  const signalListeners = {
-    mouseOver: handleMouseOver,
-  };
+  const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellName: cell }));
 
   return (
     <div>
@@ -290,10 +296,9 @@ const HeatmapPlot = (props) => {
         cellColors={cellColors}
         transpose
         viewState={viewState}
-        setCellHighlight={() => { }}
         setGeneHighlight={() => { }}
         setViewState={({ zoom, target }) => { setViewState({ zoom, target }); }}
-        updateViewInfo={() => { }}
+        setCellHighlight={updateCellsHover}
       />
     </div>
   );
