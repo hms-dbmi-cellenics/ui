@@ -7,6 +7,7 @@ import {
   Row, Col, Space, PageHeader, Collapse, Empty, Alert,
 } from 'antd';
 
+import { isUnisample } from 'utils/experimentPredicates';
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
 
@@ -344,9 +345,7 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (selectedPlot === 'sample'
-      && !cellSets.loading
-      && cellSets.hierarchy.find((rootNode) => rootNode.key === 'sample')?.children?.length === 1
+    if (selectedPlot === 'sample' && !cellSets.loading && isUnisample(cellSets.hierarchy)
     ) {
       return (
         <center>

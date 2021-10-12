@@ -24,6 +24,7 @@ import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot'
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ElbowPlot from 'components/plots/ElbowPlot';
 import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { isUnisample } from 'utils/experimentPredicates';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -261,9 +262,7 @@ const DataIntegration = (props) => {
       );
     }
 
-    if ((selectedPlot === 'embedding' || selectedPlot === 'frequency')
-      && !cellSets.loading
-      && cellSets.hierarchy.find((rootNode) => rootNode.key === 'sample')?.children?.length === 1
+    if ((selectedPlot === 'embedding' || selectedPlot === 'frequency') && !cellSets.loading && isUnisample(cellSets.hierarchy)
     ) {
       return (
         <center>
