@@ -36,6 +36,8 @@ const Scatterplot = dynamic(
   { ssr: false },
 );
 
+const cellRadiusFromZoom = (zoom) => zoom ** 3 / 50;
+
 const Embedding = (props) => {
   const {
     experimentId, height, width,
@@ -44,7 +46,7 @@ const Embedding = (props) => {
   const dispatch = useDispatch();
 
   const [view, setView] = useState({ target: [4, -4, 0], zoom: 4.00 });
-  const [cellRadius, setCellRadius] = useState(2);
+  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(4.00));
 
   const selectedCellIds = new Set();
 
@@ -303,7 +305,7 @@ const Embedding = (props) => {
                 : new Map(Object.entries(cellColors))
             }
             setViewState={({ zoom, target }) => {
-              setCellRadius(zoom ** 3 / 50);
+              setCellRadius(cellRadiusFromZoom(zoom));
 
               setView({ zoom, target });
             }}
