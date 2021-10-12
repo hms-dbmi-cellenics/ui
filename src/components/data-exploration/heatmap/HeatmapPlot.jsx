@@ -278,8 +278,8 @@ const HeatmapPlot = (props) => {
       <Heatmap
         uuid='heatmap-0'
         theme='light'
-        width={width - 50}
-        height={height - 50}
+        width={width}
+        height={height}
         colormap='plasma'
         colormapRange={[0.0, 1.0]}
         expressionMatrix={expressionMatrix}
