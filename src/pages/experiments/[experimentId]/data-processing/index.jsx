@@ -26,10 +26,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
-import { getBackendStatus } from 'redux/selectors';
 import {
   addChangedQCFilter,
   discardChangedQCFilters,
@@ -38,6 +34,7 @@ import {
   setQCStepEnabled,
 } from 'redux/actions/experimentSettings';
 import { getUserFriendlyQCStepName, qcSteps } from 'utils/qcSteps';
+import { useDispatch, useSelector } from 'react-redux';
 
 import CellSizeDistribution from 'components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import Classifier from 'components/data-processing/Classifier/Classifier';
@@ -49,8 +46,11 @@ import Header from 'components/Header';
 import MitochondrialContent from 'components/data-processing/MitochondrialContent/MitochondrialContent';
 import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
 import PlatformError from 'components/PlatformError';
+import PropTypes from 'prop-types';
 import SingleComponentMultipleDataContainer from 'components/SingleComponentMultipleDataContainer';
 import StatusIndicator from 'components/data-processing/StatusIndicator';
+import _ from 'lodash';
+import { getBackendStatus } from 'redux/selectors';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
 import { runPipeline } from 'redux/actions/pipeline';
@@ -625,7 +625,7 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
         >
           <p>
             This will take several minutes.
-            Your navigation within Cellscope will be restricted during this time.
+            Your navigation within Cellenics will be restricted during this time.
             Do you want to start?
           </p>
         </Modal>

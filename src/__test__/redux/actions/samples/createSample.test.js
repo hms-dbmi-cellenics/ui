@@ -9,12 +9,12 @@ import initialProjectState, { projectTemplate } from 'redux/reducers/projects/in
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import { SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR } from 'redux/actionTypes/samples';
-import updateExperiment from 'redux/actions/experiments/updateExperiment';
+import saveExperiment from 'redux/actions/experiments/saveExperiment';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-jest.mock('redux/actions/experiments/updateExperiment');
-updateExperiment.mockImplementation(() => async () => { });
+jest.mock('redux/actions/experiments/saveExperiment');
+saveExperiment.mockImplementation(() => async () => { });
 
 jest.mock('utils/pushNotificationMessage');
 pushNotificationMessage.mockImplementation(() => async () => { });
@@ -96,7 +96,7 @@ describe('createSample action', () => {
     expect(actions[1].type).toEqual(SAMPLES_CREATE);
 
     // Calls update experiment on success of fetch
-    expect(updateExperiment).toHaveBeenCalledWith(experimentId, { sampleIds: [sampleUuid] });
+    expect(saveExperiment).toHaveBeenCalledWith(experimentId);
   });
 
   it('Shows error message when there was a fetch error', async () => {
