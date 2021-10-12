@@ -7,7 +7,10 @@ import {
 import { useSelector } from 'react-redux';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import SearchMenu from '../../../../components/SearchMenu';
+import SearchMenu from 'components/SearchMenu';
+import Header from 'components/Header';
+import UnderConstruction from 'components/UnderConstruction';
+
 import heatmap from '../../../../../public/static/media/heatmap.png';
 import embeddingContinuous from '../../../../../public/static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../public/static/media/embeddingCategorical.png';
@@ -16,28 +19,34 @@ import dotPlot from '../../../../../public/static/media/dotplot.png';
 import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
-import Header from '../../../../components/Header';
 
-const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
-  <Card.Grid
-    href={href}
-    ref={ref}
-    onClick={onClick}
-    hoverable={false}
-    style={{ textAlign: 'center', width: '100%', padding: '0' }}
-  >
-    <img
-      alt={item.name}
-      src={item.image}
-      style={{
-        height: '250px', width: '100%', align: 'center', padding: '8px',
-      }}
-    />
-    <div style={{ paddingBottom: '8px' }}>
-      {item.description}
-    </div>
-  </Card.Grid>
-));
+const CardItem = React.forwardRef(({ onClick, item, href }, ref) => {
+  // Remove this line when the Dot Plot is ready for release
+  if (item.inDevelopment && process.env.NODE_ENV === 'production') {
+    return <UnderConstruction style={{ padding: '8px', height: '250px' }} />;
+  }
+
+  return (
+    <Card.Grid
+      href={href}
+      ref={ref}
+      onClick={onClick}
+      hoverable={false}
+      style={{ textAlign: 'center', width: '100%', padding: '0' }}
+    >
+      <img
+        alt={item.name}
+        src={item.image}
+        style={{
+          height: '250px', width: '100%', align: 'center', padding: '8px',
+        }}
+      />
+      <div style={{ paddingBottom: '8px' }}>
+        {item.description}
+      </div>
+    </Card.Grid>
+  );
+});
 
 CardItem.defaultProps = {};
 
@@ -129,6 +138,9 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       key: 'dot-key',
       link: 'dot-plot',
       description: `Last updated: ${lastUpdatedDot}`,
+
+      // Remove this property when the dotplot is ready for release
+      inDevelopment: true,
     },
   ];
 
