@@ -6,25 +6,26 @@ const generateSpec = (config, plotData) => {
       {
         title: 'Average expression',
         titleColor: config.colour.masterColour,
+        labelColor: config.colour.toggleInvert === '#FFFFFF' ? '#000000' : '#FFFFFF',
         orient: config.legend.position,
         labelFont: config.fontStyle.font,
         titleFont: config.fontStyle.font,
         type: 'gradient',
         fill: 'color',
-        direction: 'horizontal',
+        direction: config.legend.direction,
       },
       {
         title: 'Percent Exp. (%)',
         titleColor: config.colour.masterColour,
+        labelColor: config.colour.toggleInvert === '#FFFFFF' ? '#000000' : '#FFFFFF',
         orient: config.legend.position,
         labelFont: config.fontStyle.font,
         titleFont: config.fontStyle.font,
         size: 'dotSize',
         format: 's',
-        symbolStrokeColor: '#4682b4',
-        symbolStrokeWidth: 2,
-        symbolOpacity: 0.5,
         symbolType: 'circle',
+        symbolFillColor: '#aaaaaa',
+        direction: config.legend.direction,
       },
     ];
   }
@@ -45,7 +46,7 @@ const generateSpec = (config, plotData) => {
           {
             type: 'formula',
             as: 'size',
-            expr: 'datum.cellsFraction * 100',
+            expr: 'datum.cellsFraction * 10',
           },
         ],
       },
@@ -78,7 +79,7 @@ const generateSpec = (config, plotData) => {
         },
         range: [
           0,
-          100,
+          1500,
         ],
       },
       {
@@ -89,7 +90,9 @@ const generateSpec = (config, plotData) => {
           field: 'AvgExpression',
         },
         range: {
-          scheme: 'blues',
+          scheme: config.colour.gradient === 'default'
+            ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
+            : config.colour.gradient,
         },
       },
     ],

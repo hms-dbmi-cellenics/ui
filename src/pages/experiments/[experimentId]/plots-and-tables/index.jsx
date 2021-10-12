@@ -14,7 +14,7 @@ import heatmap from '../../../../../public/static/media/heatmap.png';
 import embeddingContinuous from '../../../../../public/static/media/embeddingContinuous.png';
 import embeddingCategorical from '../../../../../public/static/media/embeddingCategorical.png';
 import violin from '../../../../../public/static/media/violin.png';
-// import dotPlot from '../../../../../public/static/media/dotplot.png';
+import dotPlot from '../../../../../public/static/media/dotplot.png';
 import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
@@ -70,9 +70,9 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
   const lastUpdatedMarkerHeatmap = useSelector(
     (state) => state.componentConfig.markerHeatmapPlotMain?.lastUpdated || 'never',
   );
-  // const lastUpdatedDot = useSelector(
-  //   (state) => state.componentConfig.dotPlotMain?.lastUpdated || 'never',
-  // );
+  const lastUpdatedDot = useSelector(
+    (state) => state.componentConfig.dotPlotMain?.lastUpdated || 'never',
+  );
 
   const plots = [
     {
@@ -126,11 +126,11 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
     },
     {
       // == Uncomment this configuration when we're ready to show the dot plot
-      // name: 'Dot Plot',
-      // image: dotPlot,
-      // key: 'dot-key',
-      // link: 'dot-plot',
-      // description: `Last updated: ${lastUpdatedDot}`,
+      name: 'Dot Plot',
+      image: dotPlot,
+      key: 'dot-key',
+      link: 'dot-plot',
+      description: `Last updated: ${lastUpdatedDot}`,
     },
   ];
 

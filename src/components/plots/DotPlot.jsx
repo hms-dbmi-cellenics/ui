@@ -6,63 +6,25 @@ import { generateSpec } from 'utils/plotSpecs/generateDotPlotSpec';
 const DotPlot = (props) => {
   const { config } = props;
 
-  // Mock data, to be replaced with real data
-  const plotData = [
-    {
-      gene: 'gene1',
-      cluster: 'cluster1',
-      AvgExpression: 1.2,
-      cellsFraction: 1,
-    },
-    {
-      gene: 'gene1',
-      cluster: 'cluster2',
-      AvgExpression: 2.4,
-      cellsFraction: 0.7,
-    },
-    {
-      gene: 'gene1',
-      cluster: 'cluster3',
-      AvgExpression: 9.3,
-      cellsFraction: 0.1,
-    },
-    {
-      gene: 'gene2',
-      cluster: 'cluster1',
-      AvgExpression: 1.2,
-      cellsFraction: 0.43,
-    },
-    {
-      gene: 'gene2',
-      cluster: 'cluster2',
-      AvgExpression: 2.4,
-      cellsFraction: 0.7,
-    },
-    {
-      gene: 'gene2',
-      cluster: 'cluster3',
-      AvgExpression: 9.3,
-      cellsFraction: 0.1,
-    },
-    {
-      gene: 'gene3',
-      cluster: 'cluster1',
-      AvgExpression: 1.2,
-      cellsFraction: 0.43,
-    },
-    {
-      gene: 'gene3',
-      cluster: 'cluster2',
-      AvgExpression: 2.4,
-      cellsFraction: 0.7,
-    },
-    {
-      gene: 'gene3',
-      cluster: 'cluster3',
-      AvgExpression: 9.3,
-      cellsFraction: 0.1,
-    },
-  ];
+  // Mock data, delete this once we have the real data
+  const generateMockData = (numClusters, numGenes) => {
+    const mockPlotData = [];
+
+    for (let i = 0; i < numClusters; i += 1) {
+      for (let j = 0; j < numGenes; j += 1) {
+        mockPlotData.push({
+          gene: `gene${i}`,
+          cluster: `cluster${j}`,
+          AvgExpression: Math.random() * 10,
+          cellsFraction: Math.random(),
+        });
+      }
+    }
+
+    return mockPlotData;
+  };
+
+  const plotData = generateMockData(12, 5);
 
   const actions = {
     export: true,

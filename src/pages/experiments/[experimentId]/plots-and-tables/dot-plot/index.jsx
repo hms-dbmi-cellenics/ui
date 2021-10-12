@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-
 import {
   Row,
   Col,
@@ -13,15 +12,18 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import DotPlot from 'components/plots/DotPlot';
-import Header from '../../../../../components/plots/Header';
+import { loadPaginatedGeneProperties, loadGeneExpression } from 'redux/actions/genes';
+import { loadCellSets } from 'redux/actions/cellSets';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import SelectData from 'components/plots/styling/dot-plot/SelectData';
+import Header from 'components/plots/Header';
 
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig';
+} from 'redux/actions/componentConfig';
 
-import Loader from '../../../../../components/Loader';
+import Loader from 'components/Loader';
 
 const { Panel } = Collapse;
 const plotUuid = 'dotPlotMain';
@@ -51,6 +53,10 @@ const plotStylingControlsConfig = [
     controls: ['axes'],
   },
   {
+    panelTitle: 'Colours',
+    controls: ['colourScheme', 'colourInversion'],
+  },
+  {
     panelTitle: 'Legend',
     controls: [
       {
@@ -70,18 +76,47 @@ const dotPlot = (props) => {
 
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);
+  const cellSets = useSelector((state) => state.cellSets);
+  const highestDispersionGenes = useSelector(
+    (state) => state.genes.properties.views[plotUuid]?.data,
+  );
+
+  const defaultNumberOfGenes = 5;
+
+  const PROPERTIES = ['dispersions'];
+  const tableState = {
+    pagination: {
+      current: 1, pageSize: defaultNumberOfGenes, showSizeChanger: true, total: 0,
+    },
+    geneNamesFilter: null,
+    sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
+  };
 
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+
+    if (cellSets.hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
+  if (config?.genes.length === 0 && !fetching && !highestDispersionGenes) {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+  }
+
+  useEffect(() => {
+    if (config?.genes.length === 0 && highestDispersionGenes?.length > 0) {
+      updatePlotWithChanges({ genes: highestDispersionGenes });
+      dispatch(loadGeneExpression(experimentId, highestDispersionGenes, plotUuid));
+    }
+  }, [highestDispersionGenes, config]);
 
   if (!config) {
     return <Skeleton />;
   }
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
 
   const renderExtraPanels = () => (
     <>
@@ -91,8 +126,8 @@ const dotPlot = (props) => {
             onChange={(e) => updatePlotWithChanges({ markerGenes: e.target.value })}
             value={config.markerGenes}
           >
-            <Radio value>Marker genes</Radio>
             <Radio value={false}>Custom genes</Radio>
+            <Radio value>Marker genes</Radio>
           </Radio.Group>
           {
             !config.markerGenes
@@ -122,6 +157,15 @@ const dotPlot = (props) => {
               )
           }
         </Space>
+      </Panel>
+      <Panel header='Select Data' key='15'>
+        {config && !cellSets.loading && !cellSets.error ? (
+          <SelectData
+            config={config}
+            onUpdate={updatePlotWithChanges}
+            cellSets={cellSets}
+          />
+        ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>
     </>
   );

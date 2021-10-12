@@ -216,13 +216,13 @@ const violinConfig = {
   normalised: 'normalised',
 };
 
-// PLOTS & TABLES - Dot
+// PLOTS & TABLES - Dot Plot
 const dotPlotConfig = {
   spec: '1.0.0',
   legend: {
     ...legendBaseState,
-    position: 'top',
-    enabled: false,
+    position: 'right',
+    enabled: true,
   },
   dimensions: {
     ...dimensionsBaseState,
@@ -233,7 +233,8 @@ const dotPlotConfig = {
     ...axesBaseState,
     offset: 10,
     xAxisRotateLabels: true,
-    gridOpacity: 5,
+    xAxisText: 'Gene names',
+    yAxisText: 'Louvain clusters',
   },
   title: {
     ...titleBaseState,
@@ -244,9 +245,11 @@ const dotPlotConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  markerGenes: true,
+  markerGenes: false,
   nGenes: 5,
   genes: [],
+  selectedCellSet: 'louvain',
+  selectedSample: 'All',
 };
 
 // EMBEDDING PREVIEW - Coloured by sample

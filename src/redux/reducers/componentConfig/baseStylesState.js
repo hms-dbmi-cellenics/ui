@@ -2,6 +2,7 @@ const legendBaseState = {
   enabled: true,
   position: 'top-right',
   colour: '#000000',
+  direction: 'vertical',
 };
 
 const dimensionsBaseState = {

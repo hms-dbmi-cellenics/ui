@@ -44,6 +44,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
   );
+
   const PROPERTIES = ['dispersions'];
   const tableState = {
     pagination: {
@@ -68,15 +69,16 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     }
   }, [loadedGene]);
 
-  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-  }
-
   useEffect(() => {
     if (searchedGene) {
       dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid));
     }
   }, [searchedGene]);
+
+  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+  }
+
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       updatePlotWithChanges({ shownGene: highestDispersionGene });

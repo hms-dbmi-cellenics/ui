@@ -64,7 +64,7 @@ const SelectData = (props) => {
   return (
     <>
       <div>
-        Select the Cell sets or Metadata that cells are grouped by (determines the x-axis):
+        Select the Cell sets or Metadata that cells are grouped by (determines the y-axis):
         {' '}
       </div>
       <Form.Item>
