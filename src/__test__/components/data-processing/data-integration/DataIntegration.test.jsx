@@ -7,14 +7,18 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
 
-import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
-import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
-import initialCellSetsState from '../../../../redux/reducers/cellSets/initialState';
+import DataIntegration from 'components/data-processing/DataIntegration/DataIntegration';
+import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
+import initialCellSetsState from 'redux/reducers/cellSets/initialState';
 
-import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
-import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+
+import { getBackendStatus } from 'redux/selectors';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
+
+jest.mock('redux/selectors');
 
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
@@ -28,16 +32,7 @@ const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: {
-      experimentId: '1234',
-    },
-  })),
-}));
-
-const createStore = (completedSteps) => mockStore({
-  backendStatus: { 1234: { status: { pipeline: { completedSteps } } } },
+const mockedStore = mockStore({
   cellSets: {
     ...initialCellSetsState,
     properties: {
@@ -108,7 +103,13 @@ describe('DataIntegration', () => {
   configure({ adapter: new Adapter() });
 
   it('renders correctly', () => {
-    const store = createStore(['ConfigureEmbedding']);
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
+    }));
+
+    const store = mockedStore;
 
     const component = mount(
       <Provider store={store}>
@@ -132,7 +133,42 @@ describe('DataIntegration', () => {
   });
 
   it('doesnt show plots that depend on configure embedding if it hasnt finished running yet', () => {
-    const store = createStore([]);
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { completedSteps: [] } },
+    }));
+    const store = mockedStore;
+
+    const component = mount(
+      <Provider store={store}>
+        <DataIntegration
+          experimentId='1234'
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
+
+    const dataIntegration = component.find(DataIntegration).at(0);
+    const calculationConfig = dataIntegration.find(CalculationConfig);
+
+    // There is a config element
+    expect(calculationConfig.length).toEqual(1);
+
+    // Only elbow plot is shown
+    expect(dataIntegration.find('ElbowPlot')).toHaveLength(1);
+    expect(dataIntegration.find('CategoricalEmbeddingPlot')).toHaveLength(0);
+    expect(dataIntegration.find('FrequencyPlot')).toHaveLength(0);
+  });
+
+  it('doesnt crash if backend status is null', () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+    const store = mockedStore;
 
     const component = mount(
       <Provider store={store}>

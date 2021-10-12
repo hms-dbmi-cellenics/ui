@@ -56,7 +56,7 @@ const CalculationConfig = (props) => {
     {
       value: 'fastmnn',
       text: 'Fast MNN',
-      disabled: false,
+      disabled: true,
     },
     {
       value: 'unisample',

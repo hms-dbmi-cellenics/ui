@@ -9,13 +9,19 @@ import {
   EMBEDDINGS_LOADING,
 } from '../../../../redux/actionTypes/embeddings';
 
-import sendWork from '../../../../utils/sendWork';
+import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
 
 jest.mock('localforage');
 
-jest.mock('../../../../utils/sendWork', () => ({
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
-  default: jest.fn(),
+  default: () => 60,
+}));
+
+jest.mock('../../../../utils/work/seekWorkResponse', () => ({
+  __esModule: true, // this property makes it work
+  seekFromAPI: jest.fn(),
+  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
 }));
 
 const mockStore = configureStore([thunk]);
@@ -32,6 +38,7 @@ const initialPipelineState = {
 
 describe('loadEmbedding action', () => {
   const experimentId = '1234';
+
   const experimentSettings = {
     ...initialExperimentState,
   };
@@ -102,7 +109,7 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on a previously unseen embedding', async () => {
-    sendWork.mockImplementation(() => {
+    seekFromAPI.mockImplementation(() => {
       // We are resolving with two identical results, because in the transition period
       // the worker will return both types of results. TODO: reduce this to just one
       // result when the initial version of the UI is pushed.
@@ -121,6 +128,9 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         backendStatus,
+        networkResources: {
+          environment: 'testing',
+        },
         embeddings: {},
         experimentSettings,
       },
@@ -141,7 +151,7 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on a previous error condition', async () => {
-    sendWork.mockImplementation(() => {
+    seekFromAPI.mockImplementation(() => {
       // We are resolving with two identical results, because in the transition period
       // the worker will return both types of results. TODO: reduce this to just one
       // result when the initial version of the UI is pushed.
@@ -160,6 +170,9 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         backendStatus,
+        networkResources: {
+          environment: 'testing',
+        },
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, error: true, loading: false } },
         experimentSettings,
@@ -184,12 +197,15 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         backendStatus,
+        networkResources: {
+          environment: 'testing',
+        },
         embeddings: {},
         experimentSettings,
       },
     );
 
-    sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    seekFromAPI.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     await store.dispatch(loadEmbedding(experimentId, embeddingType));
 
@@ -209,6 +225,9 @@ describe('loadEmbedding action', () => {
     const store = mockStore(
       {
         backendStatus,
+        networkResources: {
+          environment: 'testing',
+        },
         embeddings: {},
         experimentSettings: {
           ...experimentSettings,
@@ -233,6 +252,9 @@ describe('loadEmbedding action', () => {
             status: {},
           },
         },
+        networkResources: {
+          environment: 'testing',
+        },
         embeddings: {},
         experimentSettings: {
           ...experimentSettings,
@@ -248,7 +270,7 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on if forceReload is set to true', async () => {
-    sendWork.mockImplementation(() => {
+    seekFromAPI.mockImplementation(() => {
       // We are resolving with two identical results, because in the transition period
       // the worker will return both types of results. TODO: reduce this to just one
       // result when the initial version of the UI is pushed.
@@ -266,6 +288,9 @@ describe('loadEmbedding action', () => {
 
     const store = mockStore(
       {
+        networkResources: {
+          environment: 'testing',
+        },
         backendStatus,
         embeddings:
           { [embeddingType]: { ...initialEmbeddingState, error: false, loading: false } },

@@ -3,10 +3,15 @@ import thunk from 'redux-thunk';
 import loadMarkerGenes from '../../../../redux/actions/genes/loadMarkerGenes';
 import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from '../../../../redux/actionTypes/genes';
 import initialState from '../../../../redux/reducers/genes/initialState';
-import { fetchCachedWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/cacheRequest');
+jest.mock('../../../../utils/work/fetchWork');
+
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
 
 const mockStore = configureStore([thunk]);
 
@@ -85,7 +90,7 @@ describe('loadMarkerGenes action', () => {
 
     const mockResult = { order, data };
 
-    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHeatmap'));
 
@@ -109,7 +114,7 @@ describe('loadMarkerGenes action', () => {
       backendStatus,
     });
 
-    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     await store.dispatch(loadMarkerGenes(experimentId, 10));
 
@@ -120,5 +125,27 @@ describe('loadMarkerGenes action', () => {
     const loadedAction = store.getActions()[1];
     expect(loadedAction.type).toEqual(MARKER_GENES_ERROR);
     expect(loadedAction).toMatchSnapshot();
+  });
+
+  it('Defaults to louvain cluster if selected cell set is not provided', async () => {
+    const store = mockStore({
+      genes: {
+        ...initialState,
+      },
+      experimentSettings,
+      backendStatus,
+    });
+
+    const defaultCellSetKey = 'louvain';
+
+    const workRequestBody = { cellSetKey: defaultCellSetKey, nGenes: 5, name: 'MarkerHeatmap' };
+
+    await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHearmap', 5));
+
+    expect(fetchWork).toHaveBeenCalled();
+
+    const functionArgs = fetchWork.mock.calls[0];
+
+    expect(functionArgs[1]).toEqual(workRequestBody);
   });
 });

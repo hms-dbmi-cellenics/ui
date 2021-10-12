@@ -2,12 +2,11 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialExperimentsState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
-import initialProjectsState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 import loadBackendStatus from '../../../../redux/actions/backendStatus/loadBackendStatus';
+import initialBackendState from '../../../../redux/reducers/backendStatus';
 
 import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
-  EXPERIMENT_SETTINGS_INFO_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
 
 import {
@@ -25,6 +24,7 @@ jest.mock('../../../../redux/actions/backendStatus/loadBackendStatus',
 
 const experimentId = 'experiment-id';
 const projectId = 'project-id';
+const oldParamsHash = 'old-gem2s-hash';
 
 const initialState = {
   experiments: {
@@ -37,12 +37,14 @@ const initialState = {
       sampleIds: ['sample-1', 'sample-2'],
     },
   },
-  projects: {
-    ...initialProjectsState,
-    [projectId]: {
-      ...projectTemplate,
-      name: 'Mock project',
-      samples: ['sample-1', 'sample-2'],
+  backendStatus: {
+    [experimentId]: {
+      ...initialBackendState,
+      status: {
+        gem2s: {
+          paramsHash: oldParamsHash,
+        },
+      },
     },
   },
 };
@@ -70,7 +72,6 @@ describe('runGem2s action', () => {
     expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
     expect(loadBackendStatus).toHaveBeenCalled();
 
-    expect(actions[2].type).toEqual(EXPERIMENT_SETTINGS_INFO_UPDATE);
     expect(actions).toMatchSnapshot();
   });
 
@@ -88,5 +89,12 @@ describe('runGem2s action', () => {
     expect(actions[1].type).toEqual(BACKEND_STATUS_ERROR);
 
     expect(actions).toMatchSnapshot();
+  });
+
+  it('Dispatches properly without project data', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(runGem2s(experimentId));
+
+    expect(fetchMock).toHaveBeenCalled();
   });
 });

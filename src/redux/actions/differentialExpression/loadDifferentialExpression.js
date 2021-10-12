@@ -2,15 +2,14 @@ import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
 } from '../../actionTypes/differentialExpression';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 
 const loadDifferentialExpression = (
   experimentId, cellSets, comparisonType, tableState,
 ) => async (dispatch, getState) => {
-  const { status } = getState().backendStatus[experimentId];
-
   dispatch({
     type: DIFF_EXPR_LOADING,
     payload: {
@@ -50,9 +49,11 @@ const loadDifferentialExpression = (
     pagination = { pagination };
   }
 
+  const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
+
   try {
-    const data = await fetchCachedWork(
-      experimentId, body, status, { extras: pagination },
+    const data = await fetchWork(
+      experimentId, body, getState, { timeout, extras: pagination },
     );
 
     let { total } = data;

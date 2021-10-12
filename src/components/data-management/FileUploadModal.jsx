@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-
 import {
   Modal,
   Button,
@@ -20,11 +19,13 @@ import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import { bundleToFile } from '../../utils/upload/processUpload';
 
+import integrationTestConstants from '../../utils/integrationTestConstants';
+
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
 const FileUploadModal = (props) => {
-  const { visible, onUpload, onCancel } = props;
+  const { onUpload, onCancel } = props;
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
@@ -120,11 +121,12 @@ const FileUploadModal = (props) => {
   return (
     <Modal
       title=''
-      visible={visible}
+      visible
       onCancel={onCancel}
       width='50%'
       footer={(
         <Button
+          data-test-id={integrationTestConstants.ids.FILE_UPLOAD_BUTTON}
           type='primary'
           key='create'
           block
@@ -165,8 +167,13 @@ const FileUploadModal = (props) => {
         <Col span={24}>
           <Dropzone onDrop={onDrop} multiple>
             {({ getRootProps, getInputProps }) => (
-              <div style={{ border: '1px solid #ccc', padding: '2rem 0' }} {...getRootProps({ className: 'dropzone' })} id='dropzone'>
-                <input {...getInputProps()} webkitdirectory='' />
+              <div
+                data-test-id={integrationTestConstants.ids.FILE_UPLOAD_DROPZONE}
+                style={{ border: '1px solid #ccc', padding: '2rem 0' }}
+                {...getRootProps({ className: 'dropzone' })}
+                id='dropzone'
+              >
+                <input data-test-id={integrationTestConstants.ids.FILE_UPLOAD_INPUT} {...getInputProps()} webkitdirectory='' />
                 <Empty description='Drag and drop folders here or click to browse.' image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             )}
@@ -221,13 +228,11 @@ const FileUploadModal = (props) => {
 };
 
 FileUploadModal.propTypes = {
-  visible: PropTypes.bool,
   onUpload: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
 FileUploadModal.defaultProps = {
-  visible: true,
   onUpload: null,
   onCancel: null,
 };

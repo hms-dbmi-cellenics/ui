@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { Empty } from 'antd';
 import waitForActions from 'redux-mock-store-await-actions';
 import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
-import { fetchCachedWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 
 import Loader from '../../../../components/Loader';
 
@@ -18,8 +18,13 @@ import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../
 
 jest.mock('localforage');
 
-jest.mock('../../../../utils/cacheRequest', () => ({
-  fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
+
+jest.mock('../../../../utils/work/fetchWork', () => ({
+  fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [{
       gene_names: 'R3ALG3N3',
       dispersions: 12.3131,
@@ -154,7 +159,7 @@ describe('GeneListTool', () => {
     // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(store, [GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED]);
 
-    expect(fetchCachedWork).toHaveBeenCalledWith(
+    expect(fetchWork).toHaveBeenCalledWith(
       experimentId,
       {
         limit: 4,
@@ -164,7 +169,8 @@ describe('GeneListTool', () => {
         orderDirection: 'ASC',
         selectFields: ['gene_names', 'dispersions'],
       },
-      backendStatus[experimentId].status,
+      store.getState,
+      { timeout: 60 },
     );
 
     expect(store.getActions()[0]).toMatchSnapshot();

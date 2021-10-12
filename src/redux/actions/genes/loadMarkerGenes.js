@@ -2,30 +2,20 @@ import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from '../../actionTypes/genes';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadMarkerGenes = (
-  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSets = false,
+  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
 ) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
   if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
 
-  const { backendStatus, experimentSettings } = getState();
-  const { processing } = experimentSettings;
-  const { status } = backendStatus[experimentId];
-  const { hierarchy } = getState().cellSets || [];
-  const clusters = hierarchy?.filter((node) => node.key === selectedCellSets)[0]?.children;
-  const { method } = processing.configureEmbedding.clusteringSettings;
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    type: method,
-    config: {
-      resolution,
-    },
-    typeOfSets: selectedCellSets || 'louvain',
-    clusters,
+    cellSetKey: selectedCellSet,
   };
 
   dispatch({
@@ -33,7 +23,8 @@ const loadMarkerGenes = (
   });
 
   try {
-    const data = await fetchCachedWork(experimentId, body, status, { timeout: 5 * 60 });
+    const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
+    const data = await fetchWork(experimentId, body, getState, { timeout });
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({

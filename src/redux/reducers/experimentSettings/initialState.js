@@ -10,6 +10,7 @@ const initialState = {
   info: {
     experimentId: null,
     experimentName: null,
+    sampleIds: [],
   },
   processing: {
     meta: metaInitialState,

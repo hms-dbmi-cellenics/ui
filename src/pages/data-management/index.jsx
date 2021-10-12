@@ -1,23 +1,25 @@
-/* eslint-disable import/no-unresolved */
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import { Button, Space } from 'antd';
+import {
+  Button, Space, Empty, Typography,
+} from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
-import { validate } from 'uuid';
-import { createProject, loadProjects } from '../../redux/actions/projects';
+import { ClipLoader } from 'react-spinners';
+import NewProjectModal from 'components/data-management/NewProjectModal';
+import { loadProjects } from '../../redux/actions/projects';
 import { loadExperiments } from '../../redux/actions/experiments';
 
 import Header from '../../components/Header';
-import NewProjectModal from '../../components/data-management/NewProjectModal';
 import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
 import ProjectDetails from '../../components/data-management/ProjectDetails';
-import LoadingModal from '../../components/LoadingModal';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
+
+const { Text } = Typography;
 
 const DataManagementPage = ({ route }) => {
   const dispatch = useDispatch();
@@ -27,9 +29,7 @@ const DataManagementPage = ({ route }) => {
     saving: projectSaving,
   } = projectsList.meta;
 
-  const {
-    saving: sampleSaving,
-  } = useSelector((state) => state.samples.meta);
+  const sampleSaving = useSelector((state) => state.samples.meta.saving);
 
   const {
     activeProjectUuid,
@@ -41,42 +41,20 @@ const DataManagementPage = ({ route }) => {
   const [justLoggedIn, setJustLoggedIn] = useState(true);
   const activeProject = projectsList[activeProjectUuid];
 
-  const existingExperiments = activeProject?.experiments
-    .map((experimentId) => experiments[experimentId]);
-
   const experimentIds = new Set(experiments.ids);
   const experimentsAreLoaded = activeProject?.experiments
     .every((experimentId) => experimentIds.has(experimentId));
-  const isUuid = (uuid) => {
-    const substrings = uuid.split('-');
 
-    // If UUID is prefixed with sandbox_id, remove prefix
-    const projectUuid = substrings.length > 5 ? substrings.slice(-5).join('-') : uuid;
-
-    return validate(projectUuid);
-  };
-
-  // const experimentsAreLoaded = (project, experiments) => {}
   useEffect(() => {
     if (projectsList.ids.length === 0) dispatch(loadProjects());
   }, []);
 
-  const updateRunStatus = async (experimentId) => {
+  const updateRunStatus = (experimentId) => {
     dispatch(loadBackendStatus(experimentId));
   };
 
   useEffect(() => {
-    // old experiments don't have a project so the activeProjectUuid will actually be an experiment
-    // ID so the experiments load will fail this should be addressed by migrating experiments.
-    // However, for now, if the activeProjectUuid is not a Uuid it means that it's an old experiment
-    // and we should not try to load the experiments with it
-
-    if (
-      !activeProjectUuid
-      || !isUuid(activeProjectUuid)
-      || !projectsList[activeProjectUuid]?.experiments
-      || !projectsList[activeProjectUuid]?.experiments[0]
-    ) return;
+    if (!activeProjectUuid) return;
 
     // Right now we have one experiment per project, so we can just load the experiment
     // This has to be changed when we have more than one experiment
@@ -104,17 +82,6 @@ const DataManagementPage = ({ route }) => {
     }
   }, [projectsList, projectsLoading]);
 
-  const unnamedExperimentName = 'Unnamed Analysis';
-
-  const createNewProject = (newProjectName, newProjectDescription) => {
-    const numUnnamedExperiments = !existingExperiments?.[0] ? 0
-      : existingExperiments.filter((experiment) => experiment.name.match(`${unnamedExperimentName} `)).length;
-    const newExperimentName = `${unnamedExperimentName} ${numUnnamedExperiments + 1}`;
-
-    dispatch(createProject(newProjectName, newProjectDescription, newExperimentName));
-    setNewProjectModalVisible(false);
-  };
-
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
 
@@ -126,25 +93,28 @@ const DataManagementPage = ({ route }) => {
           direction='vertical'
           style={{ width: '100%' }}
         >
-          <Button
-            data-test-id='create-new-project-button'
-            type='primary'
-            block
-            onClick={() => setNewProjectModalVisible(true)}
-          >
-            Create New Project
-          </Button>
-          <Space direction='vertical' style={{ width: '100%', overflowY: 'scroll' }}>
-            <ProjectsListContainer height={height} />
-          </Space>
+          <ProjectsListContainer
+            height={height}
+            onCreateNewProject={() => setNewProjectModalVisible(true)}
+          />
         </Space>
       ),
     },
     [PROJECT_DETAILS]: {
       toolbarControls: [],
-      component: (width, height) => (
-        <ProjectDetails width={width} height={height} />
-      ),
+      component: (width, height) => {
+        if (!activeProjectUuid) {
+          return (
+            <Empty
+              description='You have no projects yet.'
+            >
+              <Button type='primary' onClick={() => setNewProjectModalVisible(true)}>Get started</Button>
+            </Empty>
+          );
+        }
+
+        return (<ProjectDetails width={width} height={height} />);
+      },
     },
   };
 
@@ -156,7 +126,7 @@ const DataManagementPage = ({ route }) => {
   };
 
   const renderWindow = (tile, width, height) => {
-    if (tile) {
+    if (tile && height && width) {
       return (
         <div style={{ padding: '10px' }}>
           {height && width ? tile(width, height) : <></>}
@@ -172,18 +142,25 @@ const DataManagementPage = ({ route }) => {
         route={route}
         title='Data Management'
       />
-      <LoadingModal
-        visible={Boolean(projectSaving || sampleSaving)}
-        message={projectSaving ?? sampleSaving ?? ''}
-      />
-
-      <NewProjectModal
-        visible={newProjectModalVisible}
-        firstTimeFlow={projectsList.ids.length === 0}
-        onCancel={() => { setNewProjectModalVisible(false); }}
-        onCreate={createNewProject}
-        projects={projectsList}
-      />
+      {projectSaving || sampleSaving ? (
+        <center>
+          <Space direction='vertical'>
+            <ClipLoader
+              size={50}
+              color='#8f0b10'
+            />
+            <Text>
+              Loading...
+            </Text>
+          </Space>
+        </center>
+      ) : (<></>)}
+      {newProjectModalVisible ? (
+        <NewProjectModal
+          onCancel={() => { setNewProjectModalVisible(false); }}
+          onCreate={() => { setNewProjectModalVisible(false); }}
+        />
+      ) : (<></>)}
       <div style={{ height: '100%', width: '100%', margin: 0 }}>
         <Mosaic
           renderTile={(id, path) => (

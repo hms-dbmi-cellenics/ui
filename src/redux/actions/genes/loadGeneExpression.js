@@ -2,8 +2,10 @@ import _ from 'lodash';
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from '../../actionTypes/genes';
+
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadGeneExpression = (
   experimentId, genes, componentUuid, forceReloadAll = false,
@@ -16,8 +18,6 @@ const loadGeneExpression = (
   if (loading.length > 0) {
     return null;
   }
-
-  const { status } = getState().backendStatus[experimentId];
 
   const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
 
@@ -61,9 +61,11 @@ const loadGeneExpression = (
     genes: genesToFetch,
   };
 
+  const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
+
   try {
-    const data = await fetchCachedWork(
-      experimentId, body, status,
+    const data = await fetchWork(
+      experimentId, body, getState, { timeout },
     );
     if (data[genesToFetch[0]]?.error) {
       pushNotificationMessage('error', data[genesToFetch[0]].message);

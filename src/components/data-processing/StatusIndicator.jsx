@@ -15,9 +15,12 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons';
 
+import { getBackendStatus } from '../../redux/selectors';
+
 import PrettyTime from '../PrettyTime';
 import StepsIndicator from './StepsIndicator';
 import pipelineStatus from '../../utils/pipelineStatusValues';
+import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Text, Paragraph } = Typography;
 
@@ -28,7 +31,7 @@ const StatusIndicator = (props) => {
 
   const {
     status: { pipeline },
-  } = useSelector((state) => state.backendStatus[experimentId]);
+  } = useSelector(getBackendStatus(experimentId));
 
   const {
     startDate, stopDate, status, error,
@@ -36,14 +39,14 @@ const StatusIndicator = (props) => {
 
   const statusIndicators = {
     [pipelineStatus.NOT_CREATED]: {
-      icon: <Text strong type='secondary'>to be started</Text>,
+      icon: <Text strong type='secondary' data-test-id={integrationTestConstants.ids.QC_STATUS_TEXT}>to be started</Text>,
       title: 'to be started',
       description: (
         <Text>You have never submitted your analysis to data processing.</Text>
       ),
     },
     [pipelineStatus.RUNNING]: {
-      icon: <Text strong type='warning'>running</Text>,
+      icon: <Text strong type='warning' data-test-id={integrationTestConstants.ids.QC_STATUS_TEXT}>running</Text>,
       title: <Text strong type='warning'>running</Text>,
       description: (
         <Text>
@@ -56,7 +59,7 @@ const StatusIndicator = (props) => {
       ),
     },
     [pipelineStatus.FAILED]: {
-      icon: <Text strong type='danger'>failed</Text>,
+      icon: <Text strong type='danger' data-test-id={integrationTestConstants.ids.QC_STATUS_TEXT}>failed</Text>,
       title: <Text strong type='danger'>failing</Text>,
       description: (
         <Text>
@@ -76,7 +79,7 @@ const StatusIndicator = (props) => {
       ),
     },
     [pipelineStatus.ABORTED]: {
-      icon: <Text strong type='secondary'>stopped</Text>,
+      icon: <Text strong type='secondary' data-test-id={integrationTestConstants.ids.QC_STATUS_TEXT}>stopped</Text>,
       title: <Text strong type='secondary'>stopped</Text>,
       description: (
         <Text>
@@ -92,7 +95,7 @@ const StatusIndicator = (props) => {
       ),
     },
     [pipelineStatus.SUCCEEDED]: {
-      icon: <Text strong type='success' style={{ fontSize: '1.2rem' }}><CheckCircleOutlined /></Text>,
+      icon: <Text strong type='success' style={{ fontSize: '1.2rem' }} data-test-id={integrationTestConstants.ids.QC_STATUS_TEXT}><CheckCircleOutlined /></Text>,
       title: <Text strong type='success'>finished</Text>,
       description: (
         <Text>
@@ -153,9 +156,9 @@ const StatusIndicator = (props) => {
 };
 
 StatusIndicator.propTypes = {
-  experimentId: PropTypes.array.isRequired,
+  experimentId: PropTypes.string.isRequired,
   allSteps: PropTypes.array.isRequired,
   currentStep: PropTypes.number.isRequired,
-  completedSteps: PropTypes.number.isRequired,
+  completedSteps: PropTypes.array.isRequired,
 };
 export default StatusIndicator;

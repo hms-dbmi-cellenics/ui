@@ -8,7 +8,6 @@ import updateFilterSettings from './processingConfig/updateFilterSettings';
 import addChangedQCFilter from './processingConfig/addChangedQCFilter';
 import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
 import updateProcessingSettingsFromQC from './processingConfig/updateProcessingSettingsFromQC';
-
 import updateExperimentInfo from './updateExperimentInfo';
 
 export {

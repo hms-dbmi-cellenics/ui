@@ -4,13 +4,13 @@ import {
   CELL_META_ERROR,
 } from '../../actionTypes/cellMeta';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadCellMeta = (
   experimentId, metaName,
 ) => async (dispatch, getState) => {
   const { loading, error } = getState().cellMeta[metaName];
-  const { status } = getState().backendStatus[experimentId];
 
   if (!loading && !error) {
     return null;
@@ -33,9 +33,11 @@ const loadCellMeta = (
     name: plotWorkName[metaName],
   };
 
+  const timeout = getTimeoutForWorkerTask(getState(), plotWorkName[metaName]);
+
   try {
-    const data = await fetchCachedWork(
-      experimentId, body, status,
+    const data = await fetchWork(
+      experimentId, body, getState, { timeout },
     );
     dispatch({
       type: CELL_META_LOADED,

@@ -37,6 +37,7 @@ const DiffExprResults = (props) => {
 
   const columns = [
     {
+      fixed: 'left',
       title: 'logFC',
       key: 'logFC',
       sorter: true,
@@ -73,8 +74,6 @@ const DiffExprResults = (props) => {
       setDataShown(data);
     }
   }, [data, properties]);
-
-  const isTableLoading = () => data.length === 0 || loading;
 
   const onUpdate = (newState, reason) => {
     // We handle `loading` and `loaded` in the HOC, no need to react to these.
@@ -182,7 +181,7 @@ const DiffExprResults = (props) => {
         }}
         onUpdate={onUpdate}
         columns={columns}
-        loading={isTableLoading()}
+        loading={loading}
         onExportCSV={() => { setExportAlert(true); }}
         error={error}
         width={width}

@@ -6,6 +6,7 @@ const projectsCreate = (state, action) => {
     meta: {
       ...state.meta,
       activeProjectUuid: project.uuid,
+      saving: false,
     },
     [project.uuid]: project,
   };

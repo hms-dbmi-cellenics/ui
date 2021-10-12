@@ -23,7 +23,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "runtimeExecutable": "npm",
-            "runtimeArgs": ["run-script", "test"]
+            "runtimeArgs": ["test"]
         },
     ]
 }

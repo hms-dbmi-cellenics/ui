@@ -1,12 +1,18 @@
-import React from 'react';
-import { mount, configure } from 'enzyme';
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
+import { configure, mount } from 'enzyme';
+
 import Adapter from 'enzyme-adapter-react-16';
-import thunk from 'redux-thunk';
-import { Menu } from 'antd';
 import { Auth } from 'aws-amplify';
 import ContentWrapper from '../../components/ContentWrapper';
+import { Menu } from 'antd';
+import { Provider } from 'react-redux';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
+import configureMockStore from 'redux-mock-store';
+import { getBackendStatus } from '../../redux/selectors';
+import thunk from 'redux-thunk';
+
+jest.mock('../../redux/selectors');
+jest.mock('localforage');
 
 const { Item } = Menu;
 
@@ -38,18 +44,14 @@ jest.mock('aws-amplify', () => ({
   },
 }));
 
+jest.mock('../../utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn().mockReturnValue(() => { }),
+}));
+
 configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({
-  backendStatus: {
-    [experimentId]: {
-      loading: false,
-      error: false,
-      status: {},
-    },
-  },
-
   notifications: {},
   experimentSettings: {
     processing: {
@@ -67,6 +69,12 @@ const store = mockStore({
 
 describe('ContentWrapper', () => {
   it('renders correctly', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: {},
+    }));
+
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
@@ -75,6 +83,7 @@ describe('ContentWrapper', () => {
         </ContentWrapper>
       </Provider>,
     );
+
     await wrapper.update();
 
     const sider = wrapper.find('Sider');
@@ -98,6 +107,12 @@ describe('ContentWrapper', () => {
   });
 
   it('links are disabled if there is no experimentId', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
@@ -106,6 +121,7 @@ describe('ContentWrapper', () => {
         </ContentWrapper>
       </Provider>,
     );
+
     await wrapper.update();
 
     const sider = wrapper.find('Sider');
@@ -132,20 +148,63 @@ describe('ContentWrapper', () => {
     expect(menus.at(3).props().disabled).toEqual(true);
   });
 
+  it('has the correct sider and layout style when opened / closed', async () => {
+    const siderHasWidth = (expectedWidth) => {
+      const sider = wrapper.find('Sider');
+      const expandedComputedStyle = getComputedStyle(sider.getDOMNode()).getPropertyValue('width');
+      expect(expandedComputedStyle).toEqual(expectedWidth);
+
+      const layout = wrapper.find('Layout Layout');
+      expect(layout.prop('style')).toEqual(expect.objectContaining({ marginLeft: expectedWidth }));
+    };
+
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
+      <Provider store={store}>
+        <ContentWrapper backendStatus={{}}>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+    wrapper.update();
+
+    const expandedWidth = '210px';
+    const collapsedWidth = '80px';
+
+    // When the side bar is collapsed
+    act(() => {
+      wrapper.find('Sider').props().onCollapse(true);
+    });
+    wrapper.update();
+    siderHasWidth(collapsedWidth);
+
+    // When side bar is not collapsed
+    act(() => {
+      wrapper.find('Sider').props().onCollapse(false);
+    });
+    wrapper.update();
+    siderHasWidth(expandedWidth);
+  });
+
   it('View changes if there is a pipeline run underway', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { status: 'RUNNING' } },
+    }));
+
     const info = {
       experimentId,
       experimentName: 'test experiment',
     };
 
     const testStore = mockStore({
-      backendStatus: {
-        [experimentId]: {
-          loading: false,
-          error: false,
-          status: { pipeline: { status: 'RUNNING' } },
-        },
-      },
       notifications: {},
       experimentSettings: {
         processing: {
@@ -187,6 +246,14 @@ describe('ContentWrapper', () => {
   });
 
   it('Redirects to login if the user is unauthenticated', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      [experimentId]: {
+        loading: false,
+        error: false,
+        status: {},
+      },
+    }));
+
     Auth.currentAuthenticatedUser
       .mockImplementationOnce(
         async () => { throw new Error('user not signed in'); },

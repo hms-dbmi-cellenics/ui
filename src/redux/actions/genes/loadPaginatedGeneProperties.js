@@ -6,13 +6,13 @@ import {
   GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
 } from '../../actionTypes/genes';
 
-import { fetchCachedWork } from '../../../utils/cacheRequest';
+import { fetchWork } from '../../../utils/work/fetchWork';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadPaginatedGeneProperties = (
   experimentId, properties, componentUuid, tableState,
 ) => async (dispatch, getState) => {
   const { loading } = getState().genes.properties;
-  const { status } = getState().backendStatus[experimentId];
 
   if (_.intersection(loading, properties).length > 0) {
     return null;
@@ -42,9 +42,11 @@ const loadPaginatedGeneProperties = (
     body.geneNamesFilter = tableState.geneNamesFilter;
   }
 
+  const timeout = getTimeoutForWorkerTask(getState(), 'ListGenes');
+
   try {
-    const { rows, total } = await fetchCachedWork(
-      experimentId, body, status,
+    const { rows, total } = await fetchWork(
+      experimentId, body, getState, { timeout },
     );
 
     const loadedProperties = {};

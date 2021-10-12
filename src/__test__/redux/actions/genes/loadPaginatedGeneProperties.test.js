@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import loadPaginatedGeneProperties from '../../../../redux/actions/genes/loadPaginatedGeneProperties';
 import initialState from '../../../../redux/reducers/genes/initialState';
 
-import sendWork from '../../../../utils/sendWork';
+import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
 
 import {
   GENES_PROPERTIES_LOADING,
@@ -12,9 +12,15 @@ import {
 } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/sendWork', () => ({
+jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  default: jest.fn(),
+  seekFromAPI: jest.fn(),
+  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
+}));
+
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
 }));
 
 const mockStore = configureStore([thunk]);
@@ -59,9 +65,12 @@ describe('loadPaginatedGeneProperties action', () => {
         ...initialState,
       },
       backendStatus,
+      networkResources: {
+        environment: 'testing',
+      },
     });
 
-    sendWork.mockImplementation(() => {
+    seekFromAPI.mockImplementation(() => {
       // No need to mock the result accurately.
 
       const resolveWith = {
@@ -103,17 +112,17 @@ describe('loadPaginatedGeneProperties action', () => {
       loadPaginatedGeneProperties(experimentId, properties, componentUuid, tableState),
     );
 
-    expect(sendWork).toMatchSnapshot();
-
     expect(store.getActions().length).toEqual(2);
 
     const loadingAction = store.getActions()[0];
-    expect(loadingAction.type).toEqual(GENES_PROPERTIES_LOADING);
     expect(loadingAction).toMatchSnapshot();
+    expect(loadingAction.type).toEqual(GENES_PROPERTIES_LOADING);
 
     const loadedAction = store.getActions()[1];
-    expect(loadedAction.type).toEqual(GENES_PROPERTIES_LOADED_PAGINATED);
     expect(loadedAction).toMatchSnapshot();
+    expect(loadedAction.type).toEqual(GENES_PROPERTIES_LOADED_PAGINATED);
+
+    expect(seekFromAPI).toMatchSnapshot();
   });
 
   it('Dispatches appropriately on error condition', async () => {
@@ -123,9 +132,12 @@ describe('loadPaginatedGeneProperties action', () => {
         ...initialState,
       },
       backendStatus,
+      networkResources: {
+        environment: 'testing',
+      },
     });
 
-    sendWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    seekFromAPI.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
     const tableState = {
       sorter: {

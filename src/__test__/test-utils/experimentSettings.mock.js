@@ -1,4 +1,4 @@
-import initialState from '../../redux/reducers/experimentSettings/initialState';
+import initialState from 'redux/reducers/experimentSettings/initialState';
 
 const sampleifiedConfig = (sampleIds, configToReplicate) => {
   const result = sampleIds.reduce(
@@ -14,10 +14,22 @@ const sampleifiedConfig = (sampleIds, configToReplicate) => {
 };
 
 const generateProcessingConfigMock = (sampleIds) => ({
+  classifier: {
+    enabled: true,
+    prefiltred: false,
+    ...sampleifiedConfig(sampleIds, {
+      auto: true,
+      enabled: true,
+      filterSettings: {
+        FDR: 0.1,
+      },
+    }),
+  },
   cellSizeDistribution: {
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
+      enabled: true,
       filterSettings: {
         minCellSize: 10800,
         binStep: 200,
@@ -28,6 +40,7 @@ const generateProcessingConfigMock = (sampleIds) => ({
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
+      enabled: true,
       filterSettings: {
         method: 'absolute_threshold',
         methodSettings: {
@@ -39,19 +52,11 @@ const generateProcessingConfigMock = (sampleIds) => ({
       },
     }),
   },
-  classifier: {
-    enabled: true,
-    ...sampleifiedConfig(sampleIds, {
-      auto: true,
-      filterSettings: {
-        FDR: 0.1,
-      },
-    }),
-  },
   numGenesVsNumUmis: {
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
+      enabled: true,
       filterSettings: {
         regressionType: 'gam',
         regressionTypeSettings: {
@@ -66,6 +71,7 @@ const generateProcessingConfigMock = (sampleIds) => ({
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
+      enabled: true,
       filterSettings: {
         probabilityThreshold: 0.2,
         binStep: 0.05,
@@ -123,12 +129,17 @@ const generateProcessingConfigMock = (sampleIds) => ({
   },
 });
 
-const generateExperimentSettingsMock = (sampleIds) => ({
-  ...initialState,
-  processing: {
+const generateExperimentSettingsMock = (sampleIds) => {
+  const mockedProcessingConfig = {
     ...initialState.processing,
     ...generateProcessingConfigMock(sampleIds),
-  },
-});
+  };
+
+  return {
+    ...initialState,
+    processing: mockedProcessingConfig,
+    originalProcessing: mockedProcessingConfig,
+  };
+};
 
 export default generateExperimentSettingsMock;

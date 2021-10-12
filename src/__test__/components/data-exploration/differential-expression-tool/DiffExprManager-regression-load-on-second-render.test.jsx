@@ -11,6 +11,8 @@ import DiffExprManager from '../../../../components/data-exploration/differentia
 import DiffExprCompute from '../../../../components/data-exploration/differential-expression-tool/DiffExprCompute';
 import DiffExprResults from '../../../../components/data-exploration/differential-expression-tool/DiffExprResults';
 import initialState from '../../../../redux/reducers/differentialExpression/initialState';
+import genesInitialState from '../../../../redux/reducers/genes/initialState';
+import cellSetsInitialState from '../../../../redux/reducers/cellSets/initialState';
 
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from '../../../../redux/actionTypes/differentialExpression';
 
@@ -22,9 +24,9 @@ jest.mock('../../../../utils/environment', () => ({
   isBrowser: () => true,
 }));
 
-jest.mock('../../../../utils/cacheRequest', () => ({
+jest.mock('../../../../utils/work/fetchWork', () => ({
   __esModule: true, // this property makes it work
-  fetchCachedWork: jest.fn(() => new Promise((resolve) => resolve({
+  fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [
       {
         p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, logFC: -1.4274754343649423, gene_names: 'A',
@@ -52,10 +54,12 @@ const experimentId = '1234';
 
 const storeState = {
   cellSets: {
+    ...cellSetsInitialState,
     hierarchy: [],
     properties: {},
   },
   genes: {
+    ...genesInitialState,
     focused: undefined,
   },
   differentialExpression: {

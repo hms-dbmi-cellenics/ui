@@ -7,23 +7,23 @@ import initialState from '../initialState';
 const loadedProcessingConfig = produce((draft, action) => {
   const { data } = action.payload;
 
-  const dataToSet = _.cloneDeep(data);
+  const newConfig = _.cloneDeep(data);
 
-  const currentOriginalProcessing = current(draft.processing);
+  const oldConfig = current(draft.processing);
 
-  dataToSet.meta = {
-    ...currentOriginalProcessing.meta,
-    ...data.meta,
+  newConfig.meta = {
+    ...oldConfig.meta,
+    ...newConfig.meta,
     loading: false,
     loadingSettingsError: false,
-    stepsDone: new Set(currentOriginalProcessing.meta?.stepsDone ?? []),
+    stepsDone: new Set(oldConfig.meta?.stepsDone ?? []),
   };
 
-  const { meta, ...dataToSetWithoutMeta } = dataToSet;
+  const { meta, ...newConfigWithoutMeta } = newConfig;
 
-  draft.originalProcessing = _.cloneDeep(dataToSetWithoutMeta);
+  draft.originalProcessing = _.cloneDeep(newConfigWithoutMeta);
 
-  draft.processing = dataToSet;
+  draft.processing = newConfig;
 }, initialState);
 
 export default loadedProcessingConfig;

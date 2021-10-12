@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
@@ -6,44 +5,50 @@ import {
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
 import { saveAs } from 'file-saver';
+
 import downloadTypes from 'utils/data-management/downloadTypes';
 import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
-import pipelineStatus from '../../utils/pipelineStatusValues';
-import { exportQCParameters, filterQCParameters } from '../../utils/data-management/exportQCParameters';
-import { loadBackendStatus } from '../../redux/actions/backendStatus/index';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import pipelineStatus from 'utils/pipelineStatusValues';
+import { exportQCParameters, filterQCParameters } from 'utils/data-management/exportQCParameters';
 
-const DownloadData = (props) => {
-  const {
-    activeProjectUuid,
-  } = props;
+import { loadBackendStatus } from 'redux/actions/backendStatus/index';
+
+import { getBackendStatus } from 'redux/selectors';
+
+const DownloadDataButton = () => {
   const dispatch = useDispatch();
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const experimentSettings = useSelector((state) => state.experimentSettings);
-  const backendStatus = useSelector((state) => state.backendStatus);
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  // Change if we have more than one experiment per project
+  const experimentId = activeProject?.experiments[0];
+
+  const {
+    status: backendStatuses, loading: backendLoading,
+  } = useSelector(getBackendStatus(experimentId));
+
   const samples = useSelector((state) => state.samples);
   const projects = useSelector((state) => state.projects);
   const [qcHasRun, setQcHasRun] = useState(false);
   const [gem2sHasRun, setGem2sHasRun] = useState(false);
   const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
-  // Change if we have more than one experiment per project
-  const experimentId = activeProject?.experiments[0];
 
   useEffect(() => {
-    if (experimentId && !backendStatus[experimentId]) {
+    if (experimentId && !backendLoading && !backendStatuses) {
       dispatch(loadBackendStatus(experimentId));
     }
   }, [experimentId]);
 
   useEffect(() => {
     setQcHasRun(experimentId
-      && (backendStatus[experimentId]?.status.pipeline?.status === pipelineStatus.SUCCEEDED));
+      && (backendStatuses?.pipeline?.status === pipelineStatus.SUCCEEDED));
     setGem2sHasRun(experimentId
-      && (backendStatus[experimentId]?.status?.gem2s?.status === pipelineStatus.SUCCEEDED));
-  }, [backendStatus]);
+      && (backendStatuses?.gem2s?.status === pipelineStatus.SUCCEEDED));
+  }, [backendStatuses]);
 
   useEffect(() => {
     setAllSamplesAnalysed(getAllSamplesAnalysed());
@@ -60,29 +65,17 @@ const DownloadData = (props) => {
       // eslint-disable-next-line no-prototype-builtins
       && activeProject?.samples?.every((s) => steps[0].hasOwnProperty(s));
   };
-
   const downloadExperimentData = async (type) => {
     try {
       if (!experimentId) throw new Error('No experimentId specified');
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
       const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
-      const link = document.createElement('a');
-      link.style.display = 'none';
-      link.href = signedUrl;
-
-      document.body.appendChild(link);
-      link.click();
-
-      setTimeout(() => {
-        URL.revokeObjectURL(link.href);
-        link.parentNode.removeChild(link);
-      }, 0);
+      downloadFromUrl(signedUrl);
     } catch (e) {
       pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
   };
-
   return (
     <Dropdown
       overlay={() => (
@@ -152,7 +145,7 @@ const DownloadData = (props) => {
       placement='bottomRight'
       disabled={
         projects.ids.length === 0
-            || activeProject?.samples?.length === 0
+        || activeProject.samples.length === 0
       }
     >
       <Button>
@@ -163,7 +156,4 @@ const DownloadData = (props) => {
   );
 };
 
-DownloadData.propTypes = {
-  activeProjectUuid: PropTypes.string.isRequired,
-};
-export default React.memo(DownloadData);
+export default React.memo(DownloadDataButton);

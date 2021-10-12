@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import loadGeneExpression from '../../../../redux/actions/genes/loadGeneExpression';
 import initialState from '../../../../redux/reducers/genes/initialState';
-import { fetchCachedWork } from '../../../../utils/cacheRequest';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 
 import pipelineStatusValues from '../../../../utils/pipelineStatusValues';
 
@@ -12,7 +12,12 @@ import {
 } from '../../../../redux/actionTypes/genes';
 
 jest.mock('localforage');
-jest.mock('../../../../utils/cacheRequest');
+jest.mock('../../../../utils/work/fetchWork');
+
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+  __esModule: true, // this property makes it work
+  default: () => 60,
+}));
 
 const mockStore = configureStore([thunk]);
 
@@ -61,16 +66,16 @@ describe('loadGeneExpression action', () => {
       backendStatus,
     });
 
-    fetchCachedWork.mockImplementationOnce(() => (
+    fetchWork.mockImplementationOnce(() => (
       // No need to mock the result accurately.
       new Promise((resolve) => resolve({}))));
 
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid));
 
-    const firstCall = fetchCachedWork.mock.calls[0];
+    const firstCall = fetchWork.mock.calls[0];
 
     expect(firstCall[1].genes).toEqual(['b', 'c']);
-    expect(fetchCachedWork).toMatchSnapshot();
+    expect(fetchWork).toMatchSnapshot();
   });
 
   it('Sends work for already loaded expression data if forced to do so.', async () => {
@@ -92,7 +97,7 @@ describe('loadGeneExpression action', () => {
       backendStatus,
     });
 
-    fetchCachedWork.mockImplementationOnce(() => (
+    fetchWork.mockImplementationOnce(() => (
       // No need to mock the result accurately.
       new Promise((resolve) => resolve({}))));
 
@@ -100,9 +105,9 @@ describe('loadGeneExpression action', () => {
       loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
     );
 
-    const firstCall = fetchCachedWork.mock.calls[1];
+    const firstCall = fetchWork.mock.calls[1];
     expect(firstCall[1].genes).toEqual(['a', 'b', 'c']);
-    expect(fetchCachedWork).toMatchSnapshot();
+    expect(fetchWork).toMatchSnapshot();
   });
 
   it('Dispatches appropriately on success', async () => {
@@ -122,7 +127,7 @@ describe('loadGeneExpression action', () => {
       },
     };
 
-    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(
       loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
@@ -146,7 +151,7 @@ describe('loadGeneExpression action', () => {
       backendStatus,
     });
 
-    fetchCachedWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
     await store.dispatch(
       loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
     );
@@ -177,7 +182,7 @@ describe('loadGeneExpression action', () => {
       },
     });
 
-    fetchCachedWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
 
     const loadingAction = store.getActions()[0];

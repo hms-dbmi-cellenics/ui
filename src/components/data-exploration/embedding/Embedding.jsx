@@ -47,7 +47,7 @@ const Embedding = (props) => {
   const selectedCellIds = new Set();
 
   const embeddingSettings = useSelector(
-    (state) => state.experimentSettings?.processing?.configureEmbedding?.embeddingSettings,
+    (state) => state.experimentSettings?.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
   const embeddingType = embeddingSettings?.method;
 
@@ -217,8 +217,8 @@ const Embedding = (props) => {
   // To make sure that the gene is really loading, we have to check if it exists in the loading array
   // and is not present in the data array
   if (focusData.store === 'genes'
-      && !loadedGenes.includes(focusData.key)
-      && expressionLoading.includes(focusData.key)) {
+    && !loadedGenes.includes(focusData.key)
+    && expressionLoading.includes(focusData.key)) {
     return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
 

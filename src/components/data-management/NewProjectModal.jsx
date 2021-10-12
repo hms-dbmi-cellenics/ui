@@ -1,29 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import {
-  Modal, Button, Input, Space, Typography, Form,
+  Button,
+  Form,
+  Input,
+  Modal,
+  Space,
+  Typography,
 } from 'antd';
-import { ClipLoader } from 'react-spinners';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import validateInputs, { rules } from '../../utils/validateInputs';
+
+import { ClipLoader } from 'react-spinners';
+import PropTypes from 'prop-types';
+import { createProject } from '../../redux/actions/projects';
+import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
 const NewProjectModal = (props) => {
   const {
-    visible,
     onCreate,
     onCancel,
-    firstTimeFlow,
-    projects,
   } = props;
 
+  const dispatch = useDispatch();
   const [projectNames, setProjectNames] = useState(new Set());
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isValidName, setIsValidName] = useState(false);
+  const projects = useSelector(((state) => state.projects));
 
+  const firstTimeFlow = projects.ids.length === 0;
   const validationChecks = [
     rules.MIN_8_CHARS,
     rules.MIN_2_SEQUENTIAL_CHARS,
@@ -38,6 +46,7 @@ const NewProjectModal = (props) => {
   useEffect(() => {
     setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
   }, [projects.ids]);
+
   useEffect(() => {
     setIsValidName(validateInputs(projectName, validationChecks, validationParams).isValid);
   }, [projectName, projectNames]);
@@ -48,19 +57,20 @@ const NewProjectModal = (props) => {
   } = useSelector((state) => state.projects.meta);
 
   const submit = () => {
-    const newProject = projectName;
     setProjectName('');
-    onCreate(newProject, projectDescription);
+
+    dispatch(createProject(projectName, projectDescription, projectName));
+    onCreate(projectName, projectDescription);
   };
 
   return (
     <Modal
-      className='data-test-new-project-modal'
+      className={integrationTestConstants.classes.NEW_PROJECT_MODAL}
       title='Create a new project'
-      visible={visible}
+      visible
       footer={(
         <Button
-          data-test-id='confirm-create-new-project'
+          data-test-id={integrationTestConstants.ids.CONFIRM_CREATE_NEW_PROJECT}
           type='primary'
           key='create'
           block
@@ -79,13 +89,13 @@ const NewProjectModal = (props) => {
           {firstTimeFlow && (
             <Title level={3} style={{ textAlign: 'center' }}>
               Create a project to start analyzing
-              your data in Cellscope
+              your data in Cellenics
             </Title>
           )}
           <Paragraph>
             Projects are where you can organize your data into
             samples, assign metadata, and start your analysis
-            in Cellscope. Name it after the experiment
+            in Cellenics. Name it after the experiment
             you&apos;re working on.
           </Paragraph>
 
@@ -114,7 +124,7 @@ const NewProjectModal = (props) => {
               name='requiredMark'
             >
               <Input
-                data-test-id='project-name'
+                data-test-id={integrationTestConstants.ids.PROJECT_NAME}
                 onChange={(e) => {
                   setProjectName(e.target.value.trim());
                 }}
@@ -134,7 +144,7 @@ const NewProjectModal = (props) => {
               label='Project description'
             >
               <TextArea
-                data-test-id='project-description'
+                data-test-id={integrationTestConstants.ids.PROJECT_DESCRIPTION}
                 onChange={(e) => { setProjectDescription(e.target.value); }}
                 placeholder='Type description'
                 autoSize={{ minRows: 3, maxRows: 5 }}
@@ -173,19 +183,8 @@ const NewProjectModal = (props) => {
 };
 
 NewProjectModal.propTypes = {
-  visible: PropTypes.bool,
-  onCreate: PropTypes.func,
-  onCancel: PropTypes.func,
-  firstTimeFlow: PropTypes.bool,
-  projects: PropTypes.object,
-};
-
-NewProjectModal.defaultProps = {
-  visible: true,
-  onCreate: () => null,
-  onCancel: () => null,
-  firstTimeFlow: false,
-  projects: { ids: [] },
+  onCreate: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default NewProjectModal;

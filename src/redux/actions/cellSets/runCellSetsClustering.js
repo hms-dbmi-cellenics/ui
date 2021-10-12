@@ -1,23 +1,20 @@
+import { fetchWork } from '../../../utils/work/fetchWork';
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from '../../actionTypes/cellSets';
-import sendWork from '../../../utils/sendWork';
-
-const REQUEST_TIMEOUT = 5 * 60;
+import updateCellSetsClustering from './updateCellSetsClustering';
+import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
-    loading, error,
+    error, updatingClustering, loading,
   } = getState().cellSets;
 
-  const { backendStatus, experimentSettings } = getState();
-
+  const { experimentSettings } = getState();
   const { processing } = experimentSettings;
-  const { status } = backendStatus[experimentId];
-
   const { method } = processing.configureEmbedding.clusteringSettings;
 
-  if (loading || error) {
+  if ((loading && updatingClustering) || error) {
     return null;
   }
 
@@ -35,8 +32,19 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
     type: CELL_SETS_CLUSTERING_UPDATING,
   });
 
+  const timeout = getTimeoutForWorkerTask(getState(), 'ClusterCells');
+
   try {
-    await sendWork(experimentId, REQUEST_TIMEOUT, body, status);
+    await fetchWork(experimentId, body, getState, {
+      timeout,
+      eventCallback: (err) => {
+        if (err) {
+          throw err;
+        }
+
+        dispatch(updateCellSetsClustering(experimentId));
+      },
+    });
   } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,
