@@ -60,7 +60,6 @@ const HeatmapPlot = (props) => {
   const cellSetsHierarchy = useSelector((state) => state.cellSets.hierarchy);
   const cellSetsLoading = useSelector((state) => state.cellSets.loading);
   const cellSetsHidden = useSelector((state) => state.cellSets.hidden);
-
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
 
   const heatmapSettings = useSelector(
@@ -288,7 +287,7 @@ const HeatmapPlot = (props) => {
       <Heatmap
         uuid='heatmap-0'
         theme='light'
-        width={width - 100}
+        width={width - 50}
         height={height - 50}
         colormap='plasma'
         colormapRange={[0.0, 1.0]}
@@ -300,6 +299,8 @@ const HeatmapPlot = (props) => {
         setCellHighlight={updateCellsHover}
         setGeneHighlight={setSelectedGene}
         updateViewInfo={updateCellCoordinates}
+        variablesTitle={null}
+        observationsTitle={null}
       />
       <CellInfo
         componentType='umap'
