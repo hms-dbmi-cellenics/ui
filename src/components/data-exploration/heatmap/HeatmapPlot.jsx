@@ -16,6 +16,7 @@ import { loadCellSets } from '../../../redux/actions/cellSets';
 import { loadComponentConfig } from '../../../redux/actions/componentConfig';
 import populateHeatmapData from '../../plots/helpers/populateHeatmapData';
 import Loader from '../../Loader';
+import CellInfo from '../CellInfo';
 
 import { listToMatrix, hexToRgb, convertRange } from '../../../utils/heatmapPlotHelperFunctions/helpers';
 
@@ -42,6 +43,8 @@ const HeatmapPlot = (props) => {
   const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
   const currentHeatmapSettings = useRef();
 
+  const cellCoordinates = useRef({ x: 200, y: 300 });
+
   const louvainClustersResolutionRef = useRef(null);
 
   // const [deckWidth, deckHeight, deckRef] = useDeckCanvasSize();
@@ -51,12 +54,14 @@ const HeatmapPlot = (props) => {
     loading: markerGenesLoading, error: markerGenesLoadingError,
   } = useSelector((state) => state.genes.markers);
 
-  const hoverCoordinates = useRef({});
+  const [selectedGene, setSelectedGene] = useState(null);
 
   const cellSets = useSelector((state) => state.cellSets);
   const cellSetsHierarchy = useSelector((state) => state.cellSets.hierarchy);
   const cellSetsLoading = useSelector((state) => state.cellSets.loading);
   const cellSetsHidden = useSelector((state) => state.cellSets.hidden);
+
+  const selectedCell = useSelector((state) => state.cellInfo.cellName);
 
   const heatmapSettings = useSelector(
     (state) => state.componentConfig[COMPONENT_TYPE]?.config,
@@ -66,6 +71,8 @@ const HeatmapPlot = (props) => {
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   );
+
+  const focusedExpression = useSelector((state) => state.genes.expression.data[selectedGene]);
 
   const {
     legendIsVisible,
@@ -85,8 +92,9 @@ const HeatmapPlot = (props) => {
 
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
-      const [x, y] = newView.project(selectedCell);
-      cellCoordintes.current = {
+      const [x, y] = newView.project(selectedCell, selectedGene);
+
+      cellCoordinates.current = {
         x,
         y,
         width,
@@ -199,27 +207,6 @@ const HeatmapPlot = (props) => {
     buildExpressionMatrix();
   }, [heatmapData]);
 
-  const handleMouseOver = (...args) => {
-    if (args.length < 2) {
-      return;
-    }
-
-    if ('x' in args[1] && 'y' in args[1]) {
-      hoverCoordinates.current = {
-        x: args[1].x,
-        y: args[1].y,
-      };
-    }
-
-    if (!args[1].datum) {
-      return;
-    }
-
-    const { cellId: cellName } = args[1].datum;
-
-    dispatch(updateCellInfo({ cellName }));
-  };
-
   if (markerGenesLoadingError) {
     return (
       <PlatformError
@@ -283,6 +270,19 @@ const HeatmapPlot = (props) => {
 
   const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellName: cell }));
 
+  const updateGenesHover = (cell) => {
+    const expressionToDispatch = focusedExpression
+      ? focusedExpression.rawExpression.expression[cell] : undefined;
+
+    return dispatch(updateCellInfo({
+      cellName: cell,
+      cellSets: getContainingCellSets(cell),
+      geneName: focusData.key,
+      expression: expressionToDispatch,
+      componentType: embeddingType,
+    }));
+  };
+
   return (
     <div>
       <Heatmap
@@ -296,9 +296,14 @@ const HeatmapPlot = (props) => {
         cellColors={cellColors}
         transpose
         viewState={viewState}
-        setGeneHighlight={() => { }}
         setViewState={({ zoom, target }) => { setViewState({ zoom, target }); }}
         setCellHighlight={updateCellsHover}
+        setGeneHighlight={setSelectedGene}
+        updateViewInfo={updateCellCoordinates}
+      />
+      <CellInfo
+        componentType='umap'
+        coordinates={cellCoordinates}
       />
     </div>
   );
