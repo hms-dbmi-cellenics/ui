@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, PageHeader, Collapse, Alert,
+  Row, Col, Space, PageHeader, Collapse, Alert, Empty,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -24,6 +24,7 @@ import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 import MiniPlot from 'components/plots/MiniPlot';
 import PlotStyling from 'components/plots/styling/PlotStyling';
+import { isUnisample } from 'utils/experimentPredicates';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -257,6 +258,19 @@ const DataIntegration = (props) => {
         <center>
           <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
         </center>
+      );
+    }
+
+    if ((selectedPlot === 'embedding' || selectedPlot === 'frequency') && !cellSets.loading && isUnisample(cellSets.hierarchy)
+    ) {
+      return (
+        <center>
+          <Empty
+            style={{ width: selectedConfig.dimensions.width }}
+            description='Your project has only one sample.'
+          />
+        </center>
+
       );
     }
 

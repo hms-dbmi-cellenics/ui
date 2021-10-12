@@ -7,6 +7,7 @@ import {
   Row, Col, Space, PageHeader, Collapse, Empty, Alert,
 } from 'antd';
 
+import { isUnisample } from 'utils/experimentPredicates';
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
 
@@ -20,7 +21,6 @@ import {
 } from '../../../redux/actions/componentConfig';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
-import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { updateFilterSettings } from '../../../redux/actions/experimentSettings';
 import loadCellMeta from '../../../redux/actions/cellMeta';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
@@ -346,11 +346,15 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (selectedPlot === 'sample'
-      && !cellSets.loading
-      && filterCells(cellSets, selectedConfig.selectedCellSet).length === 0) {
+    if (selectedPlot === 'sample' && !cellSets.loading && isUnisample(cellSets.hierarchy)
+    ) {
       return (
-        <Empty description='Your project has only one sample.' />
+        <center>
+          <Empty
+            style={{ width: selectedConfig.dimensions.width }}
+            description='Your project has only one sample.'
+          />
+        </center>
       );
     }
 

@@ -30,7 +30,12 @@ const FrequencyPlot = (props) => {
 
   useEffect(() => {
     if (hierarchy && properties && config) {
-      setPlotSpec(generateSpec(config, generateData(hierarchy, properties, config)));
+      const {
+        xNamesToDisplay,
+        yNamesToDisplay, plotData,
+      } = generateData(hierarchy, properties, config);
+
+      setPlotSpec(generateSpec(config, plotData, xNamesToDisplay, yNamesToDisplay));
     }
   }, [hierarchy, properties, config]);
 

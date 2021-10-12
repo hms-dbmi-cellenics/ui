@@ -1,13 +1,18 @@
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Space,
+  Typography,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
-import {
-  Modal, Button, Input, Space, Typography, Form,
-} from 'antd';
-import { ClipLoader } from 'react-spinners';
-import { createProject } from '../../redux/actions/projects';
-
 import validateInputs, { rules } from '../../utils/validateInputs';
+
+import { ClipLoader } from 'react-spinners';
+import PropTypes from 'prop-types';
+import { createProject } from '../../redux/actions/projects';
 import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Text, Title, Paragraph } = Typography;
@@ -84,13 +89,13 @@ const NewProjectModal = (props) => {
           {firstTimeFlow && (
             <Title level={3} style={{ textAlign: 'center' }}>
               Create a project to start analyzing
-              your data in Cellscope
+              your data in Cellenics
             </Title>
           )}
           <Paragraph>
             Projects are where you can organize your data into
             samples, assign metadata, and start your analysis
-            in Cellscope. Name it after the experiment
+            in Cellenics. Name it after the experiment
             you&apos;re working on.
           </Paragraph>
 

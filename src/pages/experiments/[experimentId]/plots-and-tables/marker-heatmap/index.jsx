@@ -179,8 +179,10 @@ const MarkerHeatmap = ({ experimentId }) => {
     ) {
       return;
     }
-    const spec = generateSpec(config, 'Cluster ID', plotUuid);
     const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes, true);
+
+    const spec = generateSpec(config, 'Cluster ID', data.trackGroupData, plotUuid);
+
     const newVegaSpec = {
       ...spec,
       axes: [...spec.axes, ...displayLabels()],
@@ -320,7 +322,7 @@ const MarkerHeatmap = ({ experimentId }) => {
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
                 <center>
-                  {renderPlot() }
+                  {renderPlot()}
                 </center>
               </Panel>
             </Collapse>

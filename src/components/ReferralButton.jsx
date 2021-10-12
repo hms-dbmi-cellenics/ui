@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
 import {
-  Button, Dropdown, Card, Input, Space, Tooltip,
+  Button,
+  Card,
+  Dropdown,
+  Input,
+  Space,
+  Tooltip,
 } from 'antd';
-import { ShareAltOutlined, DownOutlined } from '@ant-design/icons';
+import { DownOutlined, ShareAltOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import validateInput, { rules } from '../utils/validateInputs';
+
 import { Auth } from 'aws-amplify';
 import endUserMessages from '../utils/endUserMessages';
 import pushNotificationMessage from '../utils/pushNotificationMessage';
-import validateInput, { rules } from '../utils/validateInputs';
 
 const { TextArea } = Input;
 
-const initialMessage = 'Hi,\n\nCheck out Cellscope from Biomage. It will make your single-cell analysis easier.';
+const initialMessage = 'Hi,\n\nCheck out Cellenics from Biomage. It will make your single-cell analysis easier.';
 
 const ReferralButton = () => {
   const [visible, setVisible] = useState(false);
