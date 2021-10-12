@@ -25,13 +25,14 @@ import { updateFilterSettings } from '../../../redux/actions/experimentSettings'
 import loadCellMeta from '../../../redux/actions/cellMeta';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 import Loader from '../../Loader';
+import { getCellSets } from '../../../redux/selectors';
 
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
   const { experimentId, onConfigChange } = props;
   const [plot, setPlot] = useState(null);
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
   const cellMeta = useSelector((state) => state.cellMeta);
 
   const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector(

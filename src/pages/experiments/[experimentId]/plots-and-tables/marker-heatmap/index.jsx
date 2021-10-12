@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Row, Col, Space, Collapse, Skeleton, Empty, Typography,
@@ -8,6 +9,7 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
+import { getCellSets } from 'redux/selectors';
 import loadProcessingSettings from '../../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
@@ -36,7 +38,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const louvainClustersResolutionRef = useRef(null);
@@ -68,7 +70,8 @@ const MarkerHeatmap = ({ experimentId }) => {
       louvainClustersResolutionRef.current = louvainClustersResolution;
       if (selectedClustersAvailable(config.selectedCellSet)) {
         dispatch(loadMarkerGenes(
-          experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+          experimentId, louvainClustersResolution,
+          plotUuid, config.numGenes, config.selectedCellSet,
         ));
       } else {
         pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
@@ -77,7 +80,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [config?.selectedCellSet, config?.numGenes, hierarchy]);
 
   useEffect(() => {
-    if (louvainClustersResolution && louvainClustersResolutionRef.current !== louvainClustersResolution
+    if (louvainClustersResolution
+      && louvainClustersResolutionRef.current !== louvainClustersResolution
       && config && hierarchy?.length) {
       louvainClustersResolutionRef.current = louvainClustersResolution;
       dispatch(loadMarkerGenes(

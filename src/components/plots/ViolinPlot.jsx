@@ -9,6 +9,7 @@ import { generateSpec, generateData } from '../../utils/plotSpecs/generateViolin
 import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/actions/genes';
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
+import { getCellSets } from '../../redux/selectors';
 
 const geneDispersionsKey = 'dispersions';
 
@@ -19,7 +20,8 @@ const ViolinPlot = (props) => {
   const dispatch = useDispatch();
 
   const geneExpression = useSelector((state) => state.genes.expression);
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
+
   const [plotSpec, setPlotSpec] = useState({});
   const highestDispersionLoading = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.fetching,

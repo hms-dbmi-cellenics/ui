@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, {
   useState, useEffect, useRef, useCallback,
 } from 'react';
@@ -8,11 +9,7 @@ import {
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-import { getBackendStatus } from 'redux/selectors';
-import PlotStyling from 'components/plots/styling/PlotStyling';
-
-import MiniPlot from 'components/plots/MiniPlot';
-import EmptyPlot from 'components/plots/helpers/EmptyPlot';
+import { getBackendStatus, getCellSets } from 'redux/selectors';
 
 import {
   updatePlotConfig,
@@ -24,6 +21,9 @@ import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot'
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ElbowPlot from 'components/plots/ElbowPlot';
 import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import EmptyPlot from 'components/plots/helpers/EmptyPlot';
+import MiniPlot from 'components/plots/MiniPlot';
+import PlotStyling from 'components/plots/styling/PlotStyling';
 import { isUnisample } from 'utils/experimentPredicates';
 import CalculationConfig from './CalculationConfig';
 
@@ -34,8 +34,7 @@ const DataIntegration = (props) => {
   } = props;
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
-  const cellSets = useSelector((state) => state.cellSets);
-
+  const cellSets = useSelector(getCellSets());
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
 

@@ -29,6 +29,7 @@ import endUserMessages from '../../../utils/endUserMessages';
 import PlatformError from '../../PlatformError';
 import CellSetOperation from './CellSetOperation';
 import { complement, intersection, union } from '../../../utils/cellSetOperations';
+import { getCellSets } from '../../../redux/selectors';
 
 const { Text } = Typography;
 
@@ -49,13 +50,11 @@ const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
 
   const dispatch = useDispatch();
+  const cellSets = useSelector(getCellSets());
+  const {
+    loading, error, hierarchy, properties, hidden, selected: allSelected,
+  } = cellSets;
 
-  const loading = useSelector((state) => state.cellSets.loading);
-  const error = useSelector((state) => state.cellSets.error);
-  const hierarchy = useSelector((state) => state.cellSets.hierarchy);
-  const properties = useSelector((state) => state.cellSets.properties);
-  const hidden = useSelector((state) => state.cellSets.hidden);
-  const allSelected = useSelector((state) => state.cellSets.selected);
   const notifications = useSelector((state) => state.notifications);
 
   const genes = useSelector(
