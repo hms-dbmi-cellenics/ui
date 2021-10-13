@@ -12,8 +12,6 @@ import {
   DIFF_EXPR_COMPARISON_TYPE_SET,
 } from '../../../../redux/actionTypes/differentialExpression';
 
-jest.mock('localforage');
-
 const { Item } = Form;
 
 const mockStore = configureMockStore([thunk]);

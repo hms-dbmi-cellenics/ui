@@ -14,10 +14,9 @@ import {
   SAMPLES_SAVING,
 } from '../../../../redux/actionTypes/samples';
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../../../utils/pushNotificationMessage');
-
-jest.mock('localforage');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

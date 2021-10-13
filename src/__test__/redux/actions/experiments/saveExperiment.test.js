@@ -11,7 +11,7 @@ import {
 
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../../../utils/pushNotificationMessage');
 

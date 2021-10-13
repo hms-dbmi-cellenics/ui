@@ -13,13 +13,13 @@ import saveExperiment from 'redux/actions/experiments/saveExperiment';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
+import '__test__/test-utils/setupTests';
+
 jest.mock('redux/actions/experiments/saveExperiment');
 saveExperiment.mockImplementation(() => async () => { });
 
 jest.mock('utils/pushNotificationMessage');
 pushNotificationMessage.mockImplementation(() => async () => { });
-
-jest.mock('localforage');
 
 enableFetchMocks();
 
