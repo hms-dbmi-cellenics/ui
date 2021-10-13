@@ -16,6 +16,7 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
 import HeatmapControls from 'components/plots/styling/heatmap/HeatmapControls';
+import { getCellSets } from 'redux/selectors';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -35,7 +36,7 @@ const HeatmapPlot = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
@@ -74,8 +75,8 @@ const HeatmapPlot = ({ experimentId }) => {
       return;
     }
 
-    const spec = generateSpec(config, 'Cluster ID');
     const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
+    const spec = generateSpec(config, 'Cluster ID', data.trackGroupData);
     const newVegaSpec = {
       ...spec,
       axes: [...spec.axes, ...displayLabels()],

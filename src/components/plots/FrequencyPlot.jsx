@@ -4,7 +4,7 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 
 import loadCellSets from '../../redux/actions/cellSets/loadCellSets';
-
+import { getCellSets } from '../../redux/selectors';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateFrequencySpec';
 
 const FrequencyPlot = (props) => {
@@ -14,7 +14,8 @@ const FrequencyPlot = (props) => {
 
   const dispatch = useDispatch();
 
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
+
   const [plotSpec, setPlotSpec] = useState({});
 
   const {
@@ -29,7 +30,12 @@ const FrequencyPlot = (props) => {
 
   useEffect(() => {
     if (hierarchy && properties && config) {
-      setPlotSpec(generateSpec(config, generateData(hierarchy, properties, config)));
+      const {
+        xNamesToDisplay,
+        yNamesToDisplay, plotData,
+      } = generateData(hierarchy, properties, config);
+
+      setPlotSpec(generateSpec(config, plotData, xNamesToDisplay, yNamesToDisplay));
     }
   }, [hierarchy, properties, config]);
 

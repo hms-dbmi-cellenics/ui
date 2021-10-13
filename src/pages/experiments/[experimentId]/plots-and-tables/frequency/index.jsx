@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import Link from 'next/link';
@@ -12,20 +13,20 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import SelectCellSets from '../../../../../components/plots/styling/frequency/SelectCellSets';
-import Header from '../../../../../components/plots/Header';
+import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
+import Header from 'components/plots/Header';
 
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
+import PlotStyling from 'components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig';
-import PlatformError from '../../../../../components/PlatformError';
-import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
+} from 'redux/actions/componentConfig';
+import PlatformError from 'components/PlatformError';
+import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
-import FrequencyPlot from '../../../../../components/plots/FrequencyPlot';
-
-import Loader from '../../../../../components/Loader';
+import FrequencyPlot from 'components/plots/FrequencyPlot';
+import Loader from 'components/Loader';
 
 const { Panel } = Collapse;
 const plotUuid = 'frequencyPlotMain';
@@ -38,8 +39,9 @@ const route = {
 const frequencyPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const cellSets = useSelector((state) => state.cellSets);
-
+  const cellSets = useSelector(getCellSets());
+  const optionsMetadata = useSelector(getCellSetsHierarchy(['metadataCategorical']));
+  const optionsCellSets = useSelector(getCellSetsHierarchy(['cellSets']));
   const {
     loading, error, hierarchy, properties,
   } = cellSets;
@@ -49,18 +51,6 @@ const frequencyPlot = ({ experimentId }) => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
-  const getCellOptions = (type) => {
-    const filteredOptions = hierarchy.filter((element) => (
-      properties[element.key].type === type
-    ));
-    if (!filteredOptions.length) {
-      return [];
-    }
-    return filteredOptions;
-  };
-
-  const optionsMetadata = getCellOptions('metadataCategorical');
-  const optionsCellSets = getCellOptions('cellSets');
   const dataExplorationPath = '/experiments/[experimentId]/data-exploration';
 
   useEffect(() => {
