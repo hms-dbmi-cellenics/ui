@@ -130,6 +130,7 @@ const CellSetsTool = (props) => {
   }, [experimentId]);
 
   const onCheck = useCallback((keys) => {
+    console.log('CHECKED ', keys);
     dispatch(updateCellSetSelected(experimentId, keys, activeTab));
   }, [experimentId, activeTab]);
 

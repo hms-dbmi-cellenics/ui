@@ -85,10 +85,6 @@ const storeState = {
 let store = null;
 
 describe('DiffExprManager regression test -- diff exp would not reload after `go back` was hit and a new cluster selected', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   beforeEach(() => {
     store = mockStore(storeState);
   });

@@ -233,7 +233,7 @@ const HeatmapPlot = (props) => {
 
   return (
     <div>
-      <VegaHeatmap
+      {/* <VegaHeatmap
         spec={vegaSpec}
         data={vegaData}
         showAxes={selectedGenes?.length <= 30}
@@ -241,7 +241,7 @@ const HeatmapPlot = (props) => {
         signalListeners={signalListeners}
         width={width}
         height={height}
-      />
+      /> */}
     </div>
   );
 };

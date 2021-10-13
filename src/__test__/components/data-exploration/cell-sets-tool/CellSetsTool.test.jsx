@@ -16,6 +16,7 @@ import { createCellSet, updateCellSetSelected } from '../../../../redux/actions/
 import { complement, intersection, union } from '../../../../utils/cellSetOperations';
 import 'setupTests';
 
+jest.mock('localforage');
 jest.mock('utils/socketConnection', () => ({
   __esModule: true,
   default: new Promise((resolve) => {

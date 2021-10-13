@@ -1,6 +1,6 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import '../../../../setupTests';
+import { mount } from 'enzyme';
+import 'setupTests';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';

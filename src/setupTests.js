@@ -4,11 +4,12 @@ import preloadAll from 'jest-next-dynamic';
 
 configure({ adapter: new Adapter() });
 
+// Add stuff that needs to run once, before all tests
 beforeAll(async () => {
-  console.log('starting the tests ******');
   await preloadAll();
 });
 
+// Add stuff that needs to run before each test
 beforeEach(async () => {
   console.log('HELLO WORLD ++++++++++');
 });
