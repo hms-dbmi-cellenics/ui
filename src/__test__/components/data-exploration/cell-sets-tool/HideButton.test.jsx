@@ -1,7 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -26,10 +24,6 @@ const store = mockStore({
 });
 
 describe('HideButton', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   test('renders correctly', () => {
     const component = mount(
       <Provider store={store}>
