@@ -12,7 +12,6 @@ import {
 import { BlockOutlined, MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
 
 import { animateScroll, Element } from 'react-scroll';
-import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
 import {
   createCellSet,
   deleteCellSet,
@@ -21,14 +20,15 @@ import {
   updateCellSetHierarchy,
   updateCellSetProperty,
   updateCellSetSelected,
-} from '../../../redux/actions/cellSets';
-import { loadGeneExpression } from '../../../redux/actions/genes';
-import composeTree from '../../../utils/composeTree';
-import { isBrowser } from '../../../utils/environment';
-import endUserMessages from '../../../utils/endUserMessages';
-import PlatformError from '../../PlatformError';
+} from 'redux/actions/cellSets';
+import { loadGeneExpression } from 'redux/actions/genes';
+import composeTree from 'utils/composeTree';
+import { isBrowser } from 'utils/environment';
+import endUserMessages from 'utils/endUserMessages';
+import PlatformError from 'components/PlatformError';
+import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
+import { complement, intersection, union } from 'utils/cellSetOperations';
 import CellSetOperation from './CellSetOperation';
-import { complement, intersection, union } from '../../../utils/cellSetOperations';
 
 const { Text } = Typography;
 
@@ -130,7 +130,6 @@ const CellSetsTool = (props) => {
   }, [experimentId]);
 
   const onCheck = useCallback((keys) => {
-    console.log('CHECKED ', keys);
     dispatch(updateCellSetSelected(experimentId, keys, activeTab));
   }, [experimentId, activeTab]);
 
