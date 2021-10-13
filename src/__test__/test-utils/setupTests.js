@@ -5,6 +5,7 @@ import preloadAll from 'jest-next-dynamic';
 
 configure({ adapter: new Adapter() });
 jest.mock('localforage');
+jest.mock('utils/pushNotificationMessage');
 
 // Add stuff that needs to run once, before all tests
 beforeAll(async () => {

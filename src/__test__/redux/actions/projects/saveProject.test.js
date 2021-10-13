@@ -11,8 +11,6 @@ import {
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../../../utils/pushNotificationMessage');
-
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 

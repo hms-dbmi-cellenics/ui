@@ -18,7 +18,6 @@ import '__test__/test-utils/setupTests';
 jest.mock('redux/actions/experiments/saveExperiment');
 saveExperiment.mockImplementation(() => async () => { });
 
-jest.mock('utils/pushNotificationMessage');
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
