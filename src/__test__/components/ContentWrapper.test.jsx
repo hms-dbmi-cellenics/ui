@@ -1,4 +1,4 @@
-import { configure, mount } from 'enzyme';
+import { mount } from 'enzyme';
 
 import { Auth } from 'aws-amplify';
 import { Menu } from 'antd';

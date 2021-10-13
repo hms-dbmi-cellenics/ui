@@ -1,7 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import preloadAll from 'jest-next-dynamic';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -17,6 +15,7 @@ import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid
 
 import { getBackendStatus } from 'redux/selectors';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
+import '__test__/test-utils/setupTests';
 
 jest.mock('redux/selectors');
 
@@ -27,7 +26,6 @@ const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;
 const filterName = 'dataIntegration';
 const configureEmbeddingFilterName = 'configureEmbedding';
 
-jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
@@ -96,12 +94,6 @@ const mockedStore = mockStore({
 });
 
 describe('DataIntegration', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
-  configure({ adapter: new Adapter() });
-
   it('renders correctly', () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,

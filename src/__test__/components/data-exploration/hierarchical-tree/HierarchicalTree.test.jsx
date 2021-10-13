@@ -1,12 +1,9 @@
 import React from 'react';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import HierarchicalTree from '../../../../components/data-exploration/hierarchical-tree/HierarchicalTree';
 import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
-
-configure({ adapter: new Adapter() });
 const experimentId = 'asd';
 describe('HierarchicalTree', () => {
   it('tree data can be checked by default by passing defaultCheckedKeys prop', () => {
