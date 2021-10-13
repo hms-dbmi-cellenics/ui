@@ -1,6 +1,5 @@
 import { configure, mount } from 'enzyme';
 
-import Adapter from 'enzyme-adapter-react-16';
 import { Auth } from 'aws-amplify';
 import { Menu } from 'antd';
 import { Provider } from 'react-redux';
@@ -46,8 +45,6 @@ jest.mock('aws-amplify', () => ({
 jest.mock('../../utils/AppRouteProvider', () => ({
   useAppRouter: jest.fn().mockReturnValue(() => { }),
 }));
-
-configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({
