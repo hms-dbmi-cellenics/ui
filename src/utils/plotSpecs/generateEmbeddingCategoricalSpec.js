@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const generateSpec = (config, plotData) => {
+const generateSpec = (config, plotData, cellSetNames) => {
   let legend = [];
 
   const colorFieldName = plotData[0]?.color ? 'color' : 'col';
@@ -56,7 +56,7 @@ const generateSpec = (config, plotData) => {
         source: 'values',
         transform: [
           {
-            type: 'aggregate', groupby: ['cluster'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
+            type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
           },
         ],
       },
@@ -83,13 +83,12 @@ const generateSpec = (config, plotData) => {
         name: 'cellSetColors',
         type: 'ordinal',
         range: { data: 'values', field: colorFieldName },
-        domain: { data: 'values', field: 'cluster' },
+        domain: { data: 'values', field: 'cellSetKey' },
       },
       {
         name: 'sampleToName',
         type: 'ordinal',
-        range: { data: 'values', field: 'cluster' },
-        domain: { data: 'values', field: 'cluster' },
+        range: cellSetNames,
       },
     ],
     axes: [
@@ -144,8 +143,8 @@ const generateSpec = (config, plotData) => {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
             size: { value: config?.marker.size },
-            stroke: { scale: 'cellSetColors', field: 'cluster' },
-            fill: { scale: 'cellSetColors', field: 'cluster' },
+            stroke: { scale: 'cellSetColors', field: 'cellSetKey' },
+            fill: { scale: 'cellSetColors', field: 'cellSetKey' },
             shape: { value: config?.marker.shape },
             fillOpacity: { value: config?.marker.opacity / 10 },
           },
@@ -158,7 +157,7 @@ const generateSpec = (config, plotData) => {
           enter: {
             x: { scale: 'x', field: 'meanX' },
             y: { scale: 'y', field: 'meanY' },
-            text: { field: 'cluster' },
+            text: { field: 'cellSetName' },
             fontSize: { value: config?.labels.size },
             strokeWidth: { value: 1.2 },
             fill: { value: config?.colour.masterColour },
@@ -182,31 +181,34 @@ const generateSpec = (config, plotData) => {
 };
 
 const filterCells = (cellSets, selectedCellSet) => {
-  let newCellSets = cellSets.hierarchy.find(
+  const newCellSets = cellSets.hierarchy.find(
     (rootNode) => rootNode.key === selectedCellSet,
   )?.children || [];
 
   // Build up the data source based on the properties. Note that the child nodes
   // in the hierarchy are /objects/ with a `key` property, hence the destructuring
   // in the function.
-  newCellSets = newCellSets.flatMap(({ key }) => {
+  const dataPoints = newCellSets.flatMap(({ key }) => {
     const cells = Array.from(cellSets.properties[key].cellIds);
 
     return cells.map((cellId) => ({
       cellId,
-      cluster: cellSets.properties[key].name,
+      cellSetKey: key,
+      cellSetName: cellSets.properties[key].name,
       color: cellSets.properties[key].color,
     }));
   });
 
-  return newCellSets;
+  const cellSetNames = newCellSets.map(({ key }) => cellSets.properties[key].name);
+
+  return { dataPoints, cellSetNames };
 };
 
 // Generate dynamic data from redux store
 const generateData = (cellSets, selectedCellSet, embeddingData) => {
-  const newCellSets = filterCells(cellSets, selectedCellSet);
+  const { dataPoints, cellSetNames } = filterCells(cellSets, selectedCellSet);
 
-  const test = newCellSets
+  const plotData = dataPoints
     .filter((d) => d.cellId < embeddingData.length)
     .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
     .map((data) => {
@@ -219,7 +221,7 @@ const generateData = (cellSets, selectedCellSet, embeddingData) => {
       };
     });
 
-  return test;
+  return { plotData, cellSetNames };
 };
 
 export {

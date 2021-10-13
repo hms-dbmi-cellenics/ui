@@ -1,4 +1,6 @@
-const generateSpec = (config, groupName, plotUuid = false) => {
+const generateSpec = (config, groupName, trackGroupData, plotUuid = false) => {
+  const cellSetNames = trackGroupData.map(({ name }) => name);
+
   let legend = [
     {
       fill: 'color',
@@ -24,7 +26,7 @@ const generateSpec = (config, groupName, plotUuid = false) => {
       encode: {
         labels: {
           update: {
-            text: { scale: 'cellSetIDToName', field: 'label' },
+            text: { scale: 'cellSetNames', field: 'label' },
           },
         },
       },
@@ -56,7 +58,7 @@ const generateSpec = (config, groupName, plotUuid = false) => {
         encode: {
           labels: {
             update: {
-              text: { scale: 'cellSetIDToName', field: 'label' },
+              text: { scale: 'cellSetNames', field: 'label' },
             },
           },
         },
@@ -142,7 +144,6 @@ const generateSpec = (config, groupName, plotUuid = false) => {
           field: 'data',
         },
         range: 'width',
-
       },
       {
         name: 'y',
@@ -193,16 +194,9 @@ const generateSpec = (config, groupName, plotUuid = false) => {
         },
       },
       {
-        name: 'cellSetIDToName',
+        name: 'cellSetNames',
         type: 'ordinal',
-        range: {
-          data: 'trackGroupData',
-          field: 'name',
-        },
-        domain: {
-          data: 'trackGroupData',
-          field: 'key',
-        },
+        range: cellSetNames,
       },
       {
         name: 'yTrack',

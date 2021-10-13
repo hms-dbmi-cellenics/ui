@@ -9,6 +9,7 @@ import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbedd
 import { loadEmbedding } from '../../redux/actions/embedding';
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
+import { getCellSets } from '../../redux/selectors';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
@@ -16,7 +17,7 @@ const CategoricalEmbeddingPlot = (props) => {
   } = props;
   const dispatch = useDispatch();
 
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
@@ -54,7 +55,12 @@ const CategoricalEmbeddingPlot = (props) => {
     }
 
     if (embeddingData?.length) {
-      setPlotSpec(generateSpec(config, generateData(cellSets, config.selectedCellSet, embeddingData)));
+      const {
+        plotData,
+        cellSetNames,
+      } = generateData(cellSets, config.selectedCellSet, embeddingData);
+
+      setPlotSpec(generateSpec(config, plotData, cellSetNames));
     }
   }, [config, cellSets, embeddingData, config]);
 
@@ -71,7 +77,7 @@ const CategoricalEmbeddingPlot = (props) => {
     if (cellSets.loading || !embeddingData || embeddingLoading || !config) {
       return (
         <center>
-          { fastLoad()}
+          {fastLoad()}
         </center>
       );
     }
