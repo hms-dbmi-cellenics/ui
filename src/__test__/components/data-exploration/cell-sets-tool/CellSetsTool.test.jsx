@@ -64,7 +64,7 @@ describe('CellSetsTool', () => {
     storeState = makeStore();
   });
 
-  it.only('renders correctly cell set tool with no clusters in custom cell sets', async () => {
+  it('renders correctly cell set tool with no clusters in custom cell sets', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
