@@ -9,9 +9,7 @@ import thunk from 'redux-thunk';
 import HideButton from '../../../../components/data-exploration/cell-sets-tool/HideButton';
 import { CELL_SETS_HIDE, CELL_SETS_UNHIDE } from '../../../../redux/actionTypes/cellSets';
 import initialState from '../../../../redux/reducers/cellSets/initialState';
-
-jest.mock('localforage');
-configure({ adapter: new Adapter() });
+import '__test__/test-utils/setupTests';
 
 const eventStub = {
   stopPropagation: () => { },

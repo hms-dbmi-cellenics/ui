@@ -7,9 +7,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import FocusButton from '../../components/FocusButton';
 import { CELL_INFO_FOCUS, CELL_INFO_UNFOCUS } from '../../redux/actionTypes/cellInfo';
-
-jest.mock('localforage');
-configure({ adapter: new Adapter() });
+import '__test__/test-utils/setupTests';
 
 const eventStub = {
   stopPropagation: () => { },

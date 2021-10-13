@@ -2,23 +2,22 @@ import { configure, mount } from 'enzyme';
 
 import Adapter from 'enzyme-adapter-react-16';
 import { Auth } from 'aws-amplify';
-import ContentWrapper from '../../components/ContentWrapper';
 import { Menu } from 'antd';
 import { Provider } from 'react-redux';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import configureMockStore from 'redux-mock-store';
-import { getBackendStatus } from '../../redux/selectors';
 import thunk from 'redux-thunk';
+import { getBackendStatus } from '../../redux/selectors';
+import ContentWrapper from '../../components/ContentWrapper';
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../redux/selectors');
-jest.mock('localforage');
 
 const { Item } = Menu;
 
 const experimentId = '1234';
 
-jest.mock('localforage');
 jest.mock('next/router', () => ({
   useRouter: jest.fn()
     .mockImplementationOnce(() => ({ // test 1

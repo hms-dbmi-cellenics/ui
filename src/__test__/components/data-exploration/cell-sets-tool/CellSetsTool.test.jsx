@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import '../../../../setupTests';
+import '__test__/test-utils/setupTests';
 
 import {
   render, screen, fireEvent,
@@ -14,9 +14,7 @@ import CellSetsTool, { generateFilteredCellIndices } from '../../../../component
 import { makeStore } from '../../../../redux/store';
 import { createCellSet, updateCellSetSelected } from '../../../../redux/actions/cellSets';
 import { complement, intersection, union } from '../../../../utils/cellSetOperations';
-import 'setupTests';
 
-jest.mock('localforage');
 jest.mock('utils/socketConnection', () => ({
   __esModule: true,
   default: new Promise((resolve) => {
