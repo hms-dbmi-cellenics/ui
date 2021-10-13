@@ -208,13 +208,20 @@ describe('CellSetsTool', () => {
 
     // get the ids of the louvain clusters we created a union of
     const louvainClusters = getChildrenInHierarchy('louvain');
-    // compute their union
+
+    // compute their union using the union function
     const expectedUnion = union(louvainClusters.slice(0, 2), storeState.getState().cellSets.properties);
+
+    // test the union cellSet function
+    const hardcodedUnion = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
     // get the cell ids of the new cluster that got created as the union of those clusters
     const actualUnion = storeState.getState().cellSets.properties[newClusterIds].cellIds;
 
-    expect(expectedUnion).toEqual(actualUnion);
+    expect(actualUnion).toEqual(expectedUnion);
+
+    // WARN: if you change the test cellSet dataset or which 2 clusters you select, this will fail
+    expect(actualUnion).toEqual(hardcodedUnion);
   });
 
   it('New cluster is created when the intersection of two sets contains cells', async () => {
@@ -269,7 +276,13 @@ describe('CellSetsTool', () => {
       console.error('This test will fail because your dataset does not contain common cells between the chosen clusters.');
     }
     const actualIntersection = storeState.getState().cellSets.properties[newClusterIds].cellIds;
-    expect(expectedIntersection).toEqual(actualIntersection);
+    expect(actualIntersection).toEqual(expectedIntersection);
+
+    // test the intersection cellSet function
+    const hardcodedIntersection = new Set([1, 2, 3, 4, 5, 6]);
+
+    // WARN: if you change the test cellSet dataset or which 2 clusters you select, this will fail
+    expect(actualIntersection).toEqual(hardcodedIntersection);
   });
 
   it('New cluster is not created when cancel is clicked', async () => {
@@ -375,7 +388,7 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // select the first first louvain cluster
+    // select the first louvain cluster
     const louvainClusterCellSet = getChildrenInHierarchy('louvain')[0];
 
     await act(async () => {
@@ -409,14 +422,25 @@ describe('CellSetsTool', () => {
     expect(newClusterIds.length).toEqual(1);
 
     // compute their complement
-    const expectedComplement = complement([louvainClusterCellSet], storeState.getState().cellSets.properties);
+    const expectedComplement = complement(
+      [louvainClusterCellSet],
+      storeState.getState().cellSets.properties,
+    );
 
     if (expectedComplement.size === 0) {
       console.error('This test will fail because your dataset does not contain common cells between the chosen clusters.');
     }
     const actualComplement = storeState.getState().cellSets.properties[newClusterIds].cellIds;
 
-    expect(expectedComplement).toEqual(actualComplement);
+    expect(actualComplement).toEqual(expectedComplement);
+
+    // test the complement cellSet function
+    const hardcodedComplement = new Set(
+      [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+    );
+
+    // WARN: if you change the test cellSet dataset or which 2 clusters you select, this will fail
+    expect(actualComplement).toEqual(hardcodedComplement);
   });
 
   it('selected cell sets show selected in both tabs', async () => {
