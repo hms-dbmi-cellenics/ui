@@ -23,7 +23,6 @@ import {
 } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import composeTree from 'utils/composeTree';
-import { isBrowser } from 'utils/environment';
 import endUserMessages from 'utils/endUserMessages';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
@@ -81,9 +80,7 @@ const CellSetsTool = (props) => {
   const FOCUS_TYPE = 'cellSets';
 
   useEffect(() => {
-    if (isBrowser) {
-      dispatch(loadCellSets(experimentId));
-    }
+    dispatch(loadCellSets(experimentId));
   }, []);
 
   useEffect(() => {

@@ -9,6 +9,7 @@ const Environment = {
 const ssrGetCurrentEnvironment = () => {
   let currentEnvironment = null;
 
+  console.log('*******k8s  ', process.env.K8S_ENV);
   if (process.env.NODE_ENV === 'test') {
     return Environment.DEVELOPMENT;
   }
