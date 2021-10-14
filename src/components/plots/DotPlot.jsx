@@ -34,7 +34,7 @@ const DotPlot = (props) => {
 
   const [numClusters, setNumClusters] = useState(0);
 
-  const { loading, error, hierarchy } = useSelector(getCellSets());
+  const { loading: cellSetsLoading, error: cellSetsError, hierarchy } = useSelector(getCellSets());
 
   useEffect(() => {
     if (Object.keys(hierarchy).length === 0) return;
@@ -51,14 +51,15 @@ const DotPlot = (props) => {
     export: true,
     source: false,
     compiled: false,
-    editor: true,
+    editor: false,
   };
 
   const render = () => {
-    if (error) {
+    if (cellSetsError) {
       return (
         <PlatformError
-          error={error}
+          error={cellSetsError}
+          reason={cellSetsError.message}
           onClick={() => {
             // This needs to be implemented when implementing the backend
             // reloadPlotData();
@@ -67,7 +68,7 @@ const DotPlot = (props) => {
       );
     }
 
-    if (loading || numClusters === 0) {
+    if (cellSetsLoading) {
       return (
         <center>
           {fastLoad()}

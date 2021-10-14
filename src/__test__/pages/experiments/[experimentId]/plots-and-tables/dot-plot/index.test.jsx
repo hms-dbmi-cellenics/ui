@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import '@testing-library/jest-dom';
@@ -12,6 +11,8 @@ import { Skeleton } from 'antd';
 import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import initialCellSetsState from 'redux/reducers/cellSets/initialState';
+import initialGenesState from 'redux/reducers/genes/initialState';
 
 configure({ adapter: new Adapter() });
 
@@ -24,7 +25,7 @@ jest.mock('swr', () => () => ({
 
 const mockStore = configureMockStore([thunk]);
 
-const dotPlotPageFactory = (experimentId, store) => (
+const dotPlotPageFactory = (store, experimentId) => (
   <Provider store={store}>
     <DotPlotPage experimentId={experimentId} />
   </Provider>
@@ -39,12 +40,18 @@ const initialState = {
       config: initialPlotConfigStates.dotPlot,
     },
   },
+  cellSets: {
+    ...initialCellSetsState,
+  },
+  genes: {
+    ...initialGenesState,
+  },
 };
 
 describe('Dot plot page', () => {
   it('Renders the plot correctly', () => {
     const store = mockStore(initialState);
-    render(dotPlotPageFactory(experimentId, store));
+    render(dotPlotPageFactory(store, experimentId));
 
     // There is the text Dot plot show in the breadcrumbs
     expect(screen.getByText('Dot plot')).toBeInTheDocument();
@@ -58,11 +65,12 @@ describe('Dot plot page', () => {
 
   it('Shows a skeleton screen if config is not loaded', () => {
     const noConfigState = {
+      ...initialState,
       componentConfig: {},
     };
 
     const store = mockStore(noConfigState);
-    const component = mount(dotPlotPageFactory(experimentId, store));
+    const component = mount(dotPlotPageFactory(store, experimentId));
 
     // There is Dot plot for the bread crumbs
     expect(component.find(Skeleton)).toHaveLength(1);
