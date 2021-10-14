@@ -71,6 +71,8 @@ const plotStylingControlsConfig = [
   },
 ];
 
+const defaultNGenes = 5;
+
 const dotPlot = (props) => {
   const { experimentId } = props;
 
@@ -82,12 +84,10 @@ const dotPlot = (props) => {
     (state) => state.genes.properties.views[plotUuid]?.data,
   );
 
-  const defaultNumberOfGenes = 5;
-
   const PROPERTIES = ['dispersions'];
   const tableState = {
     pagination: {
-      current: 1, pageSize: defaultNumberOfGenes, showSizeChanger: true, total: 0,
+      current: 1, pageSize: config?.nMarkerGenes ?? defaultNGenes, showSizeChanger: true, total: 0,
     },
     geneNamesFilter: null,
     sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
@@ -150,8 +150,8 @@ const dotPlot = (props) => {
                   <p>Number of genes</p>
                   <InputNumber
                     size='small'
-                    value={config.nGenes}
-                    onChange={(value) => updatePlotWithChanges({ nGenes: value })}
+                    value={config.nMarkerGenes}
+                    onChange={(value) => updatePlotWithChanges({ nMarkerGenes: value })}
                   />
                 </Space>
               )

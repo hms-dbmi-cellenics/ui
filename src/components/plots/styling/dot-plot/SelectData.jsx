@@ -30,17 +30,19 @@ const SelectData = (props) => {
 
   const handleChangeRootNode = (value) => {
     const rootNodeKey = config.selectedPoints.split('/')[0];
+
     if (rootNodeKey === value) {
       // This is to avoid having an invalid state like
       // selectedCellSet: 'louvain' and selectedPoints: 'louvain/louvain-0'
       const fallBackCellSetKey = getDefaultCellSetNotIn(value);
-      onUpdate({ selectedCellSet: value, selectedPoints: fallBackCellSetKey });
+      onUpdate({ selectedRootNode: value, selectedPoints: fallBackCellSetKey });
 
       return;
     }
 
-    onUpdate({ selectedCellSet: value });
+    onUpdate({ selectedRootNode: value });
   };
+
   const handleChangePoints = (value) => {
     onUpdate({ selectedPoints: value });
   };

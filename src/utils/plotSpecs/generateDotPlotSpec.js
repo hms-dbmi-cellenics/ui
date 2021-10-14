@@ -1,4 +1,29 @@
-const generateSpec = (config, plotData) => {
+// The goal is to minimize space with the largest possible dot size along the larger axis
+const getDotDimensions = (config, numClusters) => {
+  const plotWidth = config.dimensions.width;
+  const plotHeight = config.dimensions.height;
+  const padding = 1;
+
+  const numGenes = config.markerGenes ? config.nMarkerGenes : config.genes.length;
+
+  // + 1 because there is padding the size of half plots on the left and right
+  const heightPerDot = plotHeight / (numClusters + 1);
+  const widthPerDot = plotWidth / (numGenes + 1);
+
+  // Use the smaller of the two dimensions to determine the max dot size
+  const radius = Math.floor(Math.min(heightPerDot, widthPerDot) / 2) - padding;
+
+  // We have to calculate the area because that is the limit
+  const area = Math.PI * (radius ** 2);
+
+  // The expected return value is the area of the circle
+  return {
+    radius,
+    area,
+  };
+};
+
+const generateSpec = (config, plotData, numClusters) => {
   let legend = [];
 
   if (config.legend.enabled) {
@@ -30,6 +55,8 @@ const generateSpec = (config, plotData) => {
     ];
   }
 
+  const { radius, area } = getDotDimensions(config, numClusters);
+
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
@@ -46,7 +73,7 @@ const generateSpec = (config, plotData) => {
           {
             type: 'formula',
             as: 'size',
-            expr: 'datum.cellsFraction * 10',
+            expr: 'datum.cellsFraction * 100',
           },
         ],
       },
@@ -58,13 +85,13 @@ const generateSpec = (config, plotData) => {
         type: 'point',
         range: 'width',
         domain: { data: 'plotData', field: 'gene' },
-        padding: 0.2,
+        padding: radius / 2,
       },
       {
         name: 'y',
         type: 'point',
         range: 'height',
-        padding: 0.2,
+        padding: radius / 2,
         domain: {
           data: 'plotData',
           field: 'cluster',
@@ -72,14 +99,15 @@ const generateSpec = (config, plotData) => {
       },
       {
         name: 'dotSize',
-        type: 'linear',
+        type: 'pow',
+        exponent: 2,
         domain: {
           data: 'plotData',
           field: 'size',
         },
         range: [
           0,
-          1500,
+          area,
         ],
       },
       {

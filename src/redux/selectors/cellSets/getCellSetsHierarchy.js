@@ -1,4 +1,4 @@
-const getCellSetsHierarchy = (type = []) => (state) => {
+const getCellSetsHierarchy = (type = [], searchBy = 'type') => (state) => {
   if (!state || state.loading) {
     return [];
   }
@@ -14,7 +14,7 @@ const getCellSetsHierarchy = (type = []) => (state) => {
   );
   if (type.length) {
     hierarchy = hierarchy.filter(
-      (child) => type.includes(child.type),
+      (child) => type.includes(child[searchBy]),
     );
   }
   return hierarchy;

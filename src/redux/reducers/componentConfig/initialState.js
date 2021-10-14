@@ -231,7 +231,7 @@ const dotPlotConfig = {
   },
   axes: {
     ...axesBaseState,
-    offset: 10,
+    tickOffset: 10,
     xAxisRotateLabels: true,
     xAxisText: 'Gene names',
     yAxisText: 'Louvain clusters',
@@ -246,9 +246,9 @@ const dotPlotConfig = {
   marker: markerBaseState,
   labels: labelBaseState,
   markerGenes: false,
-  nGenes: 5,
+  nMarkerGenes: 3,
   genes: [],
-  selectedCellSet: 'louvain',
+  selectedRootNode: 'louvain',
   selectedSample: 'All',
 };
 
