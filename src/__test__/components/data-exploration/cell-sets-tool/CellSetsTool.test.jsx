@@ -9,11 +9,15 @@ import { act } from 'react-dom/test-utils';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { fetchWork } from 'utils/work/fetchWork';
 
-import CellSetsTool, { generateFilteredCellIndices } from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
-import { makeStore } from '../../../../redux/store';
-import { createCellSet, updateCellSetSelected } from '../../../../redux/actions/cellSets';
-import { complement, intersection, union } from '../../../../utils/cellSetOperations';
+import CellSetsTool, { generateFilteredCellIndices } from 'components/data-exploration/cell-sets-tool/CellSetsTool';
+import { createCellSet, updateCellSetSelected } from 'redux/actions/cellSets';
+import { loadGeneExpression } from 'redux/actions/genes';
+import { complement, intersection, union } from 'utils/cellSetOperations';
+import { makeStore } from 'redux/store';
+
+jest.mock('utils/work/fetchWork');
 
 jest.mock('utils/socketConnection', () => ({
   __esModule: true,
@@ -22,7 +26,8 @@ jest.mock('utils/socketConnection', () => ({
   }),
 }));
 
-const cellSetsData = require('../../../data/cell_sets.json');
+const cellSetsData = require('__test__/data/cell_sets.json');
+const geneExpressionData = require('__test__/data/gene_expression.json');
 
 const experimentId = '1234';
 
@@ -507,7 +512,7 @@ describe('CellSetsTool', () => {
 
     // create a new cluster:
     await act(async () => {
-      storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1070, 5625, 2854, 5093, 2748])));
+      storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
     });
 
     let customCellSets = getChildrenInHierarchy('scratchpad');
@@ -532,8 +537,23 @@ describe('CellSetsTool', () => {
     expect(customCellSets.length).toEqual(0);
   });
 
-  // it('calculates filtered cell indices correctly', () => {
-  //   expect(generateFilteredCellIndices(storeState.getState().genes.expression.data))
-  //     .toEqual(new Set([0]));
-  // });
+  it('calculates filtered cell indices correctly', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetToolFactory()}
+        </Provider>,
+      );
+    });
+
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(geneExpressionData)));
+
+    await act(async () => {
+      storeState.dispatch(loadGeneExpression(experimentId, ['TestGene'], '1234'));
+    });
+    const actualFilteredCellIndices = generateFilteredCellIndices(storeState.getState().genes.expression.data);
+    const expectedFilteredCellIndices = new Set([4, 5, 12, 13, 14, 23]);
+
+    expect(actualFilteredCellIndices).toEqual(expectedFilteredCellIndices);
+  });
 });
