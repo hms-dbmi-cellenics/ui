@@ -1,5 +1,5 @@
 import React from 'react';
-import * as rtl from '@testing-library/react';
+import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
@@ -9,28 +9,28 @@ import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import {
   initialPlotConfigStates,
-} from '../../../redux/reducers/componentConfig/initialState';
+} from 'redux/reducers/componentConfig/initialState';
 
-import { loadGeneExpression } from '../../../redux/actions/genes/index';
-import * as markerGenesLoaded from '../../../redux/reducers/genes/markerGenesLoaded';
-import * as configUpdated from '../../../redux/reducers/componentConfig/updateConfig';
-import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
-import rootReducer from '../../../redux/reducers/index';
-import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
-import MarkerHeatmap from '../../../pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
-import * as cellSetsLoaded from '../../../redux/actions/cellSets/loadCellSets';
-import * as loadedProcessingConfig from '../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
+import { loadGeneExpression } from 'redux/actions/genes/index';
+import * as markerGenesLoaded from 'redux/reducers/genes/markerGenesLoaded';
+import * as configUpdated from 'redux/reducers/componentConfig/updateConfig';
+import initialExperimentState from 'redux/reducers/experimentSettings/initialState';
+import rootReducer from 'redux/reducers/index';
+import * as loadConfig from 'redux/reducers/componentConfig/loadConfig';
+import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
+import * as cellSetsLoaded from 'redux/actions/cellSets/loadCellSets';
+import * as loadedProcessingConfig from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 
 enableFetchMocks();
 jest.mock('localforage');
-jest.mock('../../../components/plots/Header', () => () => <div />);
-jest.mock('../../../utils/socketConnection', () => ({
+jest.mock('components/plots/Header', () => () => <div />);
+jest.mock('utils/socketConnection', () => ({
   __esModule: true,
   default: new Promise((resolve) => {
     resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
   }),
 }));
-jest.mock('../../../utils/work/fetchWork', () => ({
+jest.mock('utils/work/fetchWork', () => ({
   fetchWork: jest.fn().mockImplementation((expId, body) => {
     if (body.name === 'ListGenes') {
       return new Promise((resolve) => resolve({
@@ -182,14 +182,14 @@ let loadedProcessingConfigSpy;
 const renderHeatmapPage = async (newStore) => {
   store = createStore(rootReducer, _.cloneDeep(newStore), applyMiddleware(thunk));
 
-  rtl.render(
+  render(
     <Provider store={store}>
       <MarkerHeatmap
         experimentId={experimentId}
       />
     </Provider>,
   );
-  await rtl.waitFor(() => expect(loadConfigSpy).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(loadConfigSpy).toHaveBeenCalledTimes(1));
 };
 
 describe('Marker heatmap plot', () => {
@@ -217,31 +217,31 @@ describe('Marker heatmap plot', () => {
   it('loads marker genes on selecting', async () => {
     await renderHeatmapPage(defaultStore);
 
-    const geneSelection = rtl.screen.getByText('Gene selection');
-    userEvent.click(geneSelection);
-    const nGenesInput = rtl.getByTestId(geneSelection.parentElement, 'num-genes');
+    const markerGenes = screen.getByText('Marker genes');
+
+    userEvent.click(markerGenes);
+    const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
     userEvent.type(nGenesInput, 10);
 
-    const runButton = rtl.getByText(geneSelection.parentElement, 'Run');
-    userEvent.click(runButton);
+    userEvent.click(screen.getByText('Run'));
 
-    await rtl.waitFor(() => expect(loadMarkersSpy).toHaveBeenCalled());
+    await waitFor(() => expect(loadMarkersSpy).toHaveBeenCalled());
   });
 
   it('sorts genes properly when adding a gene', async () => {
     await renderHeatmapPage(defaultStore);
-    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
+    await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
     store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene1', 'gene3', 'gene2'], plotUuid));
-    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(4));
+    await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(4));
     expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene1', 'gene2', 'gene3']);
     expect(loadMarkersSpy).toHaveBeenCalledTimes(1);
   });
 
   it('removing a gene keeps the sorted order without re-sorting', async () => {
     await renderHeatmapPage(defaultStore);
-    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
+    await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
     store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene3'], plotUuid));
-    await rtl.waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(4));
+    await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(4));
     expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene3']);
     expect(loadMarkersSpy).toHaveBeenCalledTimes(1);
   });
@@ -249,16 +249,16 @@ describe('Marker heatmap plot', () => {
   it('loads cellsets if not available', async () => {
     const newStore = { ...defaultStore, cellSets: { loading: true } };
     store = createStore(rootReducer, _.cloneDeep(newStore), applyMiddleware(thunk));
-    rtl.render(
+    render(
       <Provider store={store}>
         <MarkerHeatmap
           experimentId={experimentId}
         />
       </Provider>,
     );
-    const skeleton = rtl.screen.queryAllByRole('list');
+    const skeleton = screen.queryAllByRole('list');
     expect(skeleton.length).toBe(1);
-    await rtl.waitFor(() => expect(cellSetsLoadedSpy).toHaveBeenCalled());
+    await waitFor(() => expect(cellSetsLoadedSpy).toHaveBeenCalled());
   });
 
   it('loads processing settings if louvainresolution is not available', async () => {
@@ -281,6 +281,6 @@ describe('Marker heatmap plot', () => {
       },
     };
     await renderHeatmapPage(newStore);
-    await rtl.waitFor(() => expect(loadedProcessingConfigSpy).toHaveBeenCalled());
+    await waitFor(() => expect(loadedProcessingConfigSpy).toHaveBeenCalled());
   });
 });

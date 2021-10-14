@@ -170,7 +170,7 @@ const DataIntegration = (props) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     ...plotSpecificStylingControl[selectedPlot],

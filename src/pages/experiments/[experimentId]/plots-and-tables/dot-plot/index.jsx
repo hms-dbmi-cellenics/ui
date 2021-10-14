@@ -5,9 +5,6 @@ import {
   Space,
   Collapse,
   Skeleton,
-  Radio,
-  InputNumber,
-  Select,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -16,6 +13,7 @@ import { loadPaginatedGeneProperties, loadGeneExpression } from 'redux/actions/g
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import SelectData from 'components/plots/styling/SelectData';
+import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import Header from 'components/plots/Header';
 
 import {
@@ -49,7 +47,7 @@ const plotStylingControlsConfig = [
     ],
   },
   {
-    panelTitle: 'Axes and Margins',
+    panelTitle: 'Axes and margins',
     controls: ['axes'],
   },
   {
@@ -71,8 +69,6 @@ const plotStylingControlsConfig = [
   },
 ];
 
-const defaultNGenes = 5;
-
 const dotPlot = (props) => {
   const { experimentId } = props;
 
@@ -87,7 +83,7 @@ const dotPlot = (props) => {
   const PROPERTIES = ['dispersions'];
   const tableState = {
     pagination: {
-      current: 1, pageSize: config?.nMarkerGenes ?? defaultNGenes, showSizeChanger: true, total: 0,
+      current: 1, pageSize: config?.nMarkerGenes ?? 3, showSizeChanger: true, total: 0,
     },
     geneNamesFilter: null,
     sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
@@ -99,13 +95,15 @@ const dotPlot = (props) => {
     if (cellSets.hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
-  if (config?.genes.length === 0 && !fetching && !highestDispersionGenes) {
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-  }
+  useEffect(() => {
+    if (config?.selectedGenes.length === 0 && !fetching && !highestDispersionGenes) {
+      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+    }
+  }, [highestDispersionGenes, config, fetching]);
 
   useEffect(() => {
-    if (config?.genes.length === 0 && highestDispersionGenes?.length > 0) {
-      updatePlotWithChanges({ genes: highestDispersionGenes });
+    if (config?.selectedGenes.length === 0 && highestDispersionGenes?.length > 0) {
+      updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
       dispatch(loadGeneExpression(experimentId, highestDispersionGenes, plotUuid));
     }
   }, [highestDispersionGenes, config]);
@@ -121,44 +119,13 @@ const dotPlot = (props) => {
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
-        <Space direction='vertical' size='middle'>
-          <Radio.Group
-            onChange={(e) => updatePlotWithChanges({ markerGenes: e.target.value })}
-            value={config.markerGenes}
-          >
-            <Radio value={false}>Custom genes</Radio>
-            <Radio value>Marker genes</Radio>
-          </Radio.Group>
-          {
-            !config.markerGenes
-              ? (
-                <Space direction='vertical' size='small'>
-                  <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
-                  <Select
-                    mode='tags'
-                    style={{ width: '100%' }}
-                    placeholder='Select genes...'
-                    onChange={(genes) => updatePlotWithChanges({ genes })}
-                    value={config.genes}
-                    tokenSeparators={[' ']}
-                    notFoundContent='No gene added yet.'
-                  />
-                </Space>
-              )
-              : (
-                <Space>
-                  <p>Number of genes</p>
-                  <InputNumber
-                    size='small'
-                    value={config.nMarkerGenes}
-                    onChange={(value) => updatePlotWithChanges({ nMarkerGenes: value })}
-                  />
-                </Space>
-              )
-          }
-        </Space>
+        <MarkerGeneSelection
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          onReset={() => updatePlotWithChanges({ selectedGenes: [] })}
+        />
       </Panel>
-      <Panel header='Select Data' key='15'>
+      <Panel header='Select data' key='15'>
         {config && !cellSets.loading && !cellSets.error ? (
           <SelectData
             config={config}

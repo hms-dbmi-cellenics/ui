@@ -59,7 +59,7 @@ describe('Dot plot page', () => {
     // It has 4 options
     expect(screen.getByText('Gene selection')).toBeInTheDocument();
     expect(screen.getByText('Main schema')).toBeInTheDocument();
-    expect(screen.getByText('Axes and Margins')).toBeInTheDocument();
+    expect(screen.getByText('Axes and margins')).toBeInTheDocument();
     expect(screen.getByText('Legend')).toBeInTheDocument();
   });
 

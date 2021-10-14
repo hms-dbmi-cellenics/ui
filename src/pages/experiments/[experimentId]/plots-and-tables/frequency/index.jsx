@@ -82,7 +82,7 @@ const frequencyPlot = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     {
@@ -148,7 +148,7 @@ const frequencyPlot = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Select Data' key='20'>
+      <Panel header='Select data' key='20'>
         <SelectCellSets
           config={config}
           onUpdate={updatePlotWithChanges}

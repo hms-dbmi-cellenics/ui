@@ -72,7 +72,7 @@ const ViolinIndex = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     {

@@ -112,7 +112,7 @@ describe('ViolinIndex', () => {
   it('loads by default the gene with the highest dispersion, allows another to be selected, and updates the plot\'s title', async () => {
     await renderViolinIndex();
 
-    const geneSelection = rtl.screen.getByText('Gene Selection');
+    const geneSelection = rtl.screen.getByText('Gene selection');
     const panelContainer = geneSelection.parentElement;
 
     userEvent.click(geneSelection);
@@ -135,7 +135,7 @@ describe('ViolinIndex', () => {
   it('allows selection of the grouping/points, defaulting to louvain and All', async () => {
     await renderViolinIndex();
 
-    const dataSelection = rtl.screen.getByText('Select Data');
+    const dataSelection = rtl.screen.getByText('Select data');
     const panelContainer = dataSelection.parentElement;
 
     userEvent.click(dataSelection);
@@ -273,7 +273,7 @@ describe('ViolinIndex', () => {
     await expectStringInVegaCanvas('MockGeneWithHighestDispersion', 1);
     await expectStringInVegaCanvas(titleOverride, 1);
 
-    const geneSelection = rtl.screen.getByText('Gene Selection');
+    const geneSelection = rtl.screen.getByText('Gene selection');
     panelContainer = geneSelection.parentNode;
     userEvent.click(geneSelection);
     const geneInput = rtl.getByRole(panelContainer, 'textbox');
@@ -291,7 +291,7 @@ describe('ViolinIndex', () => {
     await renderViolinIndex();
 
     const tabs = rtl.screen.getAllByRole('tab');
-    const markers = tabs.find((tab) => tab.textContent === 'Axes and Margins');
+    const markers = tabs.find((tab) => tab.textContent === 'Axes and margins');
     const panelContainer = markers.parentElement;
     userEvent.click(markers);
 

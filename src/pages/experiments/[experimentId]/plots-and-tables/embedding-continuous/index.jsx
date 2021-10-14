@@ -94,7 +94,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
 
   const plotStylingControlsConfig = [
     {
-      panelTitle: 'Expression Values',
+      panelTitle: 'Expression values',
       controls: ['expressionValuesCapping'],
     },
     {
@@ -112,7 +112,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     {
@@ -131,13 +131,13 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene Selection' key='666'>
+      <Panel header='Gene selection' key='666'>
         <SingleGeneSelection
           config={config}
           setSearchedGene={setSearchedGene}
         />
       </Panel>
-      <Panel header='Select Data' key='15'>
+      <Panel header='Select data' key='15'>
         {config && !cellSets.loading && !cellSets.error ? (
           <SelectData
             config={config}

@@ -6,13 +6,13 @@ import {
   Tooltip,
 } from 'antd';
 import getSelectOptions from 'utils/plots/getSelectOptions';
+import _ from 'lodash'
 
 const SelectCellSets = (props) => {
   const {
     onUpdate, config, optionsMetadata, optionsCellSets,
   } = props;
 
-  const firstLetterUppercase = (word) => word?.charAt(0).toUpperCase() + word?.slice(1);
   const changeClusters = (val) => {
     const newValue = val.key.toLowerCase();
     onUpdate({ proportionGrouping: newValue });
@@ -32,7 +32,7 @@ const SelectCellSets = (props) => {
     disabled = true;
     toolTipText = 'The x-axis cannot be changed as this dataset has only a single sample.';
   } else {
-    menuValue = firstLetterUppercase(config.xAxisGrouping);
+    menuValue = _.upperFirst(config.xAxisGrouping);
   }
   return (
     <>
@@ -64,7 +64,7 @@ const SelectCellSets = (props) => {
         <Select
           aria-label='cell sets'
           value={{
-            key: firstLetterUppercase(config.proportionGrouping),
+            key: _.upperFirst(config.proportionGrouping),
           }}
           onChange={changeClusters}
           labelInValue
