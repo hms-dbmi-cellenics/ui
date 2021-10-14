@@ -63,16 +63,20 @@ const LegendEditor = (props) => {
                 }
               </Radio.Group>
             </Form.Item>
-            <p><strong>Direction</strong></p>
-            <Form.Item>
-              <Radio.Group
-                onChange={(e) => onUpdate({ legend: { direction: e.target.value } })}
-                value={config.legend.direction}
-              >
-                <Radio key='direction-vertical' value='vertical'>Vertical</Radio>
-                <Radio key='direction-horizontal' value='horizontal'>Horizontal</Radio>
-              </Radio.Group>
-            </Form.Item>
+            { config?.direction ? (
+              <>
+                <p><strong>Direction</strong></p>
+                <Form.Item>
+                  <Radio.Group
+                    onChange={(e) => onUpdate({ legend: { direction: e.target.value } })}
+                    value={config.legend.direction}
+                  >
+                    <Radio key='direction-vertical' value='vertical'>Vertical</Radio>
+                    <Radio key='direction-horizontal' value='horizontal'>Horizontal</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </>
+            ) : <></>}
           </>
         )
       }
