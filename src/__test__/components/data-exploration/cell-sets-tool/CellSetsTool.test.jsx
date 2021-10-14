@@ -12,7 +12,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { fetchWork } from 'utils/work/fetchWork';
 
 import CellSetsTool, { generateFilteredCellIndices } from 'components/data-exploration/cell-sets-tool/CellSetsTool';
-import { createCellSet, updateCellSetSelected } from 'redux/actions/cellSets';
+import { createCellSet, updateCellSetSelected, setCellSetHiddenStatus } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { complement, intersection, union } from 'utils/cellSetOperations';
 import { makeStore } from 'redux/store';
@@ -555,5 +555,104 @@ describe('CellSetsTool', () => {
     const expectedFilteredCellIndices = new Set([4, 5, 12, 13, 14, 23]);
 
     expect(actualFilteredCellIndices).toEqual(expectedFilteredCellIndices);
+  });
+
+  it('Displays a cell set hidden message when cluster is hidden', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetToolFactory()}
+        </Provider>,
+      );
+    });
+
+    // hide a cluster
+    const clusterToHide = 'louvain-0';
+    await act(async () => {
+      storeState.dispatch(setCellSetHiddenStatus(experimentId, clusterToHide));
+    });
+
+    expect(storeState.getState().cellSets.hidden).toEqual(new Set([clusterToHide]));
+
+    await screen.getByText(/1 cell set is currently hidden./);
+    await screen.getAllByText(/Unhide all/);
+  });
+
+  it('Unhides clusters when the unhide button is presssed', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetToolFactory()}
+        </Provider>,
+      );
+    });
+
+    // hide clusters
+    const clustersToHide = ['louvain-0', 'louvain-1'];
+    await act(async () => {
+      storeState.dispatch(setCellSetHiddenStatus(experimentId, clustersToHide[0]));
+      storeState.dispatch(setCellSetHiddenStatus(experimentId, clustersToHide[1]));
+    });
+
+    expect(storeState.getState().cellSets.hidden).toEqual(new Set(clustersToHide));
+
+    await screen.getByText(/2 cell sets are currently hidden./);
+
+    let unhideButton = await screen.getAllByText('Unhide');
+    expect(unhideButton.length).toEqual(2);
+
+    // now unhide the first cluster
+    await act(async () => {
+      await fireEvent(
+        unhideButton[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    expect(storeState.getState().cellSets.hidden).toEqual(new Set([clustersToHide[1]]));
+    unhideButton = await screen.getAllByText('Unhide');
+    expect(unhideButton.length).toEqual(1);
+  });
+
+  it('Unhides everything when the unhide all button is presssed', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetToolFactory()}
+        </Provider>,
+      );
+    });
+
+    // hide clusters
+    const clustersToHide = ['louvain-0', 'louvain-1'];
+    await act(async () => {
+      storeState.dispatch(setCellSetHiddenStatus(experimentId, clustersToHide[0]));
+      storeState.dispatch(setCellSetHiddenStatus(experimentId, clustersToHide[1]));
+    });
+
+    expect(storeState.getState().cellSets.hidden).toEqual(new Set(clustersToHide));
+
+    await screen.getByText(/2 cell sets are currently hidden./);
+
+    const unhideAllButton = await screen.getAllByText('Unhide all');
+    const unhideButtons = await screen.getAllByText('Unhide');
+    expect(unhideButtons.length).toEqual(2);
+
+    // now unhide the first cluster
+    await act(async () => {
+      await fireEvent(
+        unhideAllButton[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    expect(storeState.getState().cellSets.hidden).toEqual(new Set([]));
+    expect(screen.queryByText('Unhide')).toBeNull();
   });
 });
