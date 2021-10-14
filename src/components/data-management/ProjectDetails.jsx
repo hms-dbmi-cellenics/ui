@@ -6,6 +6,7 @@ import {
   Space, Col, Row, Typography, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
+import NotifyByEmail from 'components/NotifyByEmail';
 import SamplesTable from './SamplesTable';
 import ProjectMenu from './ProjectMenu';
 import {
@@ -36,6 +37,9 @@ const ProjectDetails = ({ width, height }) => {
             </Button>
             <ProjectMenu />
           </Space>
+          <NotifyByEmail
+            experimentId={activeProject.experiments[0]}
+          />
         </Row>
         <Row>
           <Col>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Switch, Typography, Space } from 'antd';
-import { Auth } from 'aws-amplify';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateExperiment } from 'redux/actions/experiments';
 import PropTypes from 'prop-types';
@@ -12,21 +11,16 @@ const NotifyByEmail = (props) => {
   const dispatch = useDispatch();
   const changeEmailNotification = (value) => {
     if (value) {
-      Auth.currentAuthenticatedUser()
-        .then((userData) => {
-          const { email } = userData.attributes;
-          dispatch(updateExperiment(experimentId, { notifyByEmail: [email] }));
-        })
-        .catch((e) => console.log('error during getuser', e));
+      dispatch(updateExperiment(experimentId, { notifyByEmail: true }));
     } else {
-      dispatch(updateExperiment(experimentId, { notifyByEmail: [] }));
+      dispatch(updateExperiment(experimentId, { notifyByEmail: false }));
     }
   };
   return (
     <Space direction='horizontal'>
       <Text>Get notified about your pipeline status via email  </Text>
       <Switch
-        checked={experiment?.notifyByEmail?.length}
+        checked={experiment?.notifyByEmail}
         onChange={(value) => changeEmailNotification(value)}
       />
     </Space>

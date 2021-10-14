@@ -5,7 +5,7 @@ const experimentTemplate = {
   id: null,
   createdDate: null,
   lastViewed: null,
-  notifyByEmail: [],
+  notifyByEmail: false,
   meta: { organism: null, type: '10x' },
   sampleIds: [],
 };
