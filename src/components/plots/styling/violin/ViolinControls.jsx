@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Collapse, Radio, Form, Slider, Skeleton,
 } from 'antd';
-import SelectData from 'components/plots/styling/violin/SelectData';
+import SelectData from 'components/plots/styling/SelectData';
 import SingleGeneSelection from '../SingleGeneSelection';
 
 const { Panel } = Collapse;

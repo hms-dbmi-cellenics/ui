@@ -249,8 +249,8 @@ const dotPlotConfig = {
   markerGenes: false,
   nMarkerGenes: 3,
   genes: [],
-  selectedRootNode: 'louvain',
-  selectedSample: 'All',
+  selectedCellSet: 'louvain',
+  selectedPoints: 'All',
 };
 
 // EMBEDDING PREVIEW - Coloured by sample

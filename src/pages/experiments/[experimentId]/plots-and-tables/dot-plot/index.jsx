@@ -15,7 +15,7 @@ import DotPlot from 'components/plots/DotPlot';
 import { loadPaginatedGeneProperties, loadGeneExpression } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlotStyling from 'components/plots/styling/PlotStyling';
-import SelectData from 'components/plots/styling/dot-plot/SelectData';
+import SelectData from 'components/plots/styling/SelectData';
 import Header from 'components/plots/Header';
 
 import {

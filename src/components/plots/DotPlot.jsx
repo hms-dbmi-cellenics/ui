@@ -41,7 +41,7 @@ const DotPlot = (props) => {
 
     const clusters = _.find(
       hierarchy,
-      (rootNode) => rootNode.key === config.selectedRootNode,
+      (rootNode) => rootNode.key === config.selectedCellSet,
     ).children.length;
 
     setNumClusters(clusters);

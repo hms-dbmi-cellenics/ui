@@ -7,7 +7,7 @@ import {
   Select,
 } from 'antd';
 
-import composeTree from '../../../../utils/composeTree';
+import composeTree from '../../../utils/composeTree';
 
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
