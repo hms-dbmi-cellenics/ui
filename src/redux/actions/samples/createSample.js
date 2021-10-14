@@ -1,21 +1,20 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  SAMPLES_CREATE,
-} from '../../actionTypes/samples';
-import {
-  PROJECTS_UPDATE,
-} from '../../actionTypes/projects';
+  SAMPLES_CREATE, SAMPLES_ERROR, SAMPLES_SAVING,
+} from 'redux/actionTypes/samples';
+
 import {
   DEFAULT_NA,
-} from '../../reducers/projects/initialState';
-import saveSamples from './saveSamples';
-import { saveProject } from '../projects';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+} from 'redux/reducers/projects/initialState';
 
-import { sampleTemplate } from '../../reducers/samples/initialState';
-import updateExperiment from '../experiments/updateExperiment';
+import fetchAPI from 'utils/fetchAPI';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+
+import { sampleTemplate } from 'redux/reducers/samples/initialState';
+import saveExperiment from 'redux/actions/experiments/saveExperiment';
 
 const createSample = (
   projectUuid,
@@ -27,7 +26,6 @@ const createSample = (
   const createdDate = moment().toISOString();
 
   const experimentId = project.experiments[0];
-  const experiment = getState().experiments[experimentId];
 
   const newSampleUuid = uuidv4();
 
@@ -43,41 +41,57 @@ const createSample = (
       .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
   };
 
-  const newProject = {
-    uuid: projectUuid,
-    ...project || {},
-    samples: project?.samples.includes(newSampleUuid) ? project.samples
-      : [...project?.samples || [], newSampleUuid],
-  };
+  dispatch({
+    type: SAMPLES_SAVING,
+    payload: {
+      message: endUserMessages.SAVING_SAMPLE,
+    },
+  });
+
+  const url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
 
   try {
-    dispatch(saveSamples(projectUuid, newSample));
-    dispatch(saveProject(projectUuid, newProject));
+    const response = await fetchAPI(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newSample),
+      },
+    );
+
+    const json = await response.json();
+
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: SAMPLES_CREATE,
-      payload: { sample: newSample },
+      payload: { sample: newSample, experimentId },
     });
 
+    dispatch(saveExperiment(experimentId));
+  } catch (e) {
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.ERROR_SAVING;
+    }
+
     dispatch({
-      type: PROJECTS_UPDATE,
+      type: SAMPLES_ERROR,
       payload: {
-        projectUuid,
-        project: newProject,
+        error: message,
       },
     });
 
-    dispatch(
-      updateExperiment(
-        experimentId,
-        { sampleIds: [...experiment.sampleIds, newSampleUuid] },
-      ),
-    );
-  } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    pushNotificationMessage('error', message);
+
+    return Promise.reject(message);
   }
 
-  return Promise.resolve(newSampleUuid);
+  return newSampleUuid;
 };
 
 export default createSample;

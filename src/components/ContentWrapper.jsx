@@ -1,38 +1,34 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useEffect } from 'react';
-
-import PropTypes from 'prop-types';
-
 import {
-  Layout, Menu, Typography, Space, Tooltip,
-} from 'antd';
-import { useRouter } from 'next/router';
-import { useSelector, useDispatch } from 'react-redux';
-import { Auth } from 'aws-amplify';
-import {
-  DatabaseOutlined,
-  FundViewOutlined,
   BuildOutlined,
+  DatabaseOutlined,
   FolderOpenOutlined,
+  FundViewOutlined,
 } from '@ant-design/icons';
+import {
+  Layout,
+  Menu,
+  Space,
+  Tooltip,
+  Typography,
+} from 'antd';
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { getBackendStatus } from '../redux/selectors';
-
+import { Auth } from 'aws-amplify';
+import Error from '../pages/_error';
+import GEM2SLoadingScreen from './GEM2SLoadingScreen';
+import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
+import PreloadContent from './PreloadContent';
+import PropTypes from 'prop-types';
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
-
-import { loadBackendStatus } from '../redux/actions/backendStatus';
-
-import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
-
-import PreloadContent from './PreloadContent';
-import GEM2SLoadingScreen from './GEM2SLoadingScreen';
-
-import { useAppRouter } from '../utils/AppRouteProvider';
-
-import Error from '../pages/_error';
-import pipelineStatus from '../utils/pipelineStatusValues';
+import { getBackendStatus } from '../redux/selectors';
 import integrationTestConstants from '../utils/integrationTestConstants';
+import { loadBackendStatus } from '../redux/actions/backendStatus';
+import pipelineStatus from '../utils/pipelineStatusValues';
+import { useAppRouter } from '../utils/AppRouteProvider';
+import { useRouter } from 'next/router';
 
 const { Sider, Footer } = Layout;
 
@@ -138,7 +134,7 @@ const ContentWrapper = (props) => {
             fontSize='25.00px'
             textAnchor='start'
           >
-            Cellscope
+            Cellenics
           </text>
           <text
             stroke='none'
@@ -312,6 +308,9 @@ const ContentWrapper = (props) => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider
+        style={{
+          overflow: 'auto', height: '100vh', position: 'fixed', left: 0,
+        }}
         width={210}
         theme='dark'
         mode='inline'
@@ -395,7 +394,9 @@ const ContentWrapper = (props) => {
         </div>
 
       </Sider>
-      <Layout>
+      <Layout
+        style={!collapsed ? { marginLeft: '210px' } : { marginLeft: '80px' }} // this is the collapsed width for our sider
+      >
         {renderContent()}
       </Layout>
     </Layout>

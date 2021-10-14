@@ -6,20 +6,21 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
+import mockCellSets from 'utils/tests/mockStores/cellSets';
 
-import DataIntegration from '../../../../components/data-processing/DataIntegration/DataIntegration';
-import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
-import initialCellSetsState from '../../../../redux/reducers/cellSets/initialState';
+import DataIntegration from 'components/data-processing/DataIntegration/DataIntegration';
+import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
 
-import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
-import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 
-import { getBackendStatus } from '../../../../redux/selectors';
+import { getBackendStatus, getCellSets } from 'redux/selectors';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
+jest.mock('redux/selectors');
 jest.mock('../../../../redux/selectors');
-
+configure({ adapter: new Adapter() });
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
 const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;
@@ -32,43 +33,7 @@ const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: {
-      experimentId: '1234',
-    },
-  })),
-}));
-
 const mockedStore = mockStore({
-  cellSets: {
-    ...initialCellSetsState,
-    properties: {
-      test: {
-        name: 'Test',
-        cellIds: new Set(),
-      },
-      'test-1': {
-        name: 'Test-1',
-        cellIds: new Set([1, 2, 3]),
-      },
-      'test-2': {
-        name: 'Test-1',
-        cellIds: new Set([4, 5, 6]),
-      },
-    },
-    hierarchy: [
-      {
-        key: 'test',
-        children: [
-          { key: 'test-1' },
-          { key: 'test-2' },
-        ],
-      },
-    ],
-    loading: false,
-    error: false,
-  },
   embeddings: {
     ...initialEmbeddingState,
     umap: {
@@ -107,18 +72,18 @@ describe('DataIntegration', () => {
   beforeAll(async () => {
     await preloadAll();
   });
-
-  configure({ adapter: new Adapter() });
+  beforeEach(() => {
+    getCellSets.mockReturnValue(() => (mockCellSets().cellSets));
+  });
 
   it('renders correctly', () => {
-    getBackendStatus.mockImplementation(() => () => ({
+    getBackendStatus.mockReturnValue(() => ({
       loading: false,
       error: false,
       status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
     }));
 
     const store = mockedStore;
-
     const component = mount(
       <Provider store={store}>
         <DataIntegration
@@ -141,7 +106,7 @@ describe('DataIntegration', () => {
   });
 
   it('doesnt show plots that depend on configure embedding if it hasnt finished running yet', () => {
-    getBackendStatus.mockImplementation(() => () => ({
+    getBackendStatus.mockReturnValue(() => ({
       loading: false,
       error: false,
       status: { pipeline: { completedSteps: [] } },
@@ -171,7 +136,7 @@ describe('DataIntegration', () => {
   });
 
   it('doesnt crash if backend status is null', () => {
-    getBackendStatus.mockImplementation(() => () => ({
+    getBackendStatus.mockReturnValue(() => ({
       loading: false,
       error: false,
       status: null,

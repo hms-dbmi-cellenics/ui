@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import {
@@ -13,6 +14,7 @@ import {
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
@@ -38,7 +40,8 @@ const route = {
 const EmbeddingCategoricalIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
+  const hierarchy = useSelector(getCellSetsHierarchy());
   useEffect(() => {
     // try to load the plot configuration.
     dispatch(loadCellSets(experimentId));
@@ -49,11 +52,6 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
     if (cellSets.loading) {
       return [];
     }
-
-    const hierarchy = cellSets.hierarchy.map((cellSet) => ({
-      key: cellSet.key,
-      children: cellSet.children?.length || 0,
-    }));
     return hierarchy.map(({ key, children }) => ({
       value: key,
       label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
