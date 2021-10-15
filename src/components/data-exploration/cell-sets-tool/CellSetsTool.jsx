@@ -110,7 +110,6 @@ const CellSetsTool = (props) => {
 
     const numSelectedUnfiltered = new Set([...selectedCells]
       .filter((cellIndex) => !filteredCells.current.has(cellIndex)));
-    console.log('**** numSelectedUnfiltered ', numSelectedUnfiltered.size);
     setNumSelected(numSelectedUnfiltered.size);
   }, [activeTab, allSelected, properties]);
 

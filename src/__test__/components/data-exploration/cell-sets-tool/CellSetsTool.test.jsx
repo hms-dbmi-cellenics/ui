@@ -13,9 +13,8 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { fetchWork } from 'utils/work/fetchWork';
 
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
-import { createCellSet, updateCellSetSelected } from 'redux/actions/cellSets';
+import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
-import { complement, intersection, union } from 'utils/cellSetOperations';
 import { makeStore } from 'redux/store';
 
 jest.mock('utils/work/fetchWork');
@@ -37,17 +36,6 @@ const getChildrenInHierarchy = (hierarchyKey) => {
   const children = hierarchy.map((child) => child.key);
   return children;
 };
-
-const selectFirstNCellSets = ((n) => {
-  // get all keys of children in louvain hierarchy
-  const cellSetKeys = getChildrenInHierarchy('louvain');
-
-  // raise an error if we try to select more clusters than we actually have
-  if (cellSetKeys.length < n) {
-    console.error('Something happened with the test data and there are no longer at least n keys in the cell set object');
-  }
-  storeState.dispatch(updateCellSetSelected(experimentId, cellSetKeys.slice(0, n), 'cellSets'));
-});
 
 const cellSetToolFactory = (customProps = {}) => {
   const props = _.merge({
@@ -142,12 +130,11 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // select some cells
-    await act(async () => {
-      selectFirstNCellSets(3);
-    });
+    // select the third louvain cluster
+    const louvain3Cluster = screen.getByText('Cluster 3');
+    userEvent.click(louvain3Cluster);
 
-    const cellSetOperations = await screen.getAllByLabelText(/of selected$/i);
+    const cellSetOperations = screen.getAllByLabelText(/of selected$/i);
 
     // There should be three operations rendered.
     expect(cellSetOperations.length).toEqual(3);
@@ -162,10 +149,13 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // select some cells
-    await act(async () => {
-      selectFirstNCellSets(2);
-    });
+    // select the third louvain cluster
+    const louvain3Cluster = screen.getByText('Cluster 3');
+    userEvent.click(louvain3Cluster);
+
+    // select the fourth louvain cluster
+    const louvain4Cluster = screen.getByText('Cluster 4');
+    userEvent.click(louvain4Cluster);
 
     // ensure that initially we have 0 custom cell sets
     const customCellSets = getChildrenInHierarchy('scratchpad');
@@ -176,7 +166,7 @@ describe('CellSetsTool', () => {
 
     const saveButton = await screen.getByLabelText(/Save/i);
     await act(async () => {
-      await fireEvent(
+      fireEvent(
         saveButton,
         new MouseEvent('click', {
           bubbles: true,
@@ -189,7 +179,7 @@ describe('CellSetsTool', () => {
     expect(newClusterIds.length).toEqual(1);
 
     // test the union cellSet function
-    const hardcodedUnion = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    const hardcodedUnion = new Set([12, 13, 14, 15]);
 
     // get the cell ids of the new cluster that got created as the union of those clusters
     const actualUnion = storeState.getState().cellSets.properties[newClusterIds].cellIds;
@@ -222,17 +212,19 @@ describe('CellSetsTool', () => {
     const louvain0Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain0Cluster);
 
-    const intersectOperation = await screen.getByLabelText(/Intersection of selected$/i);
+    const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
     userEvent.click(intersectOperation);
 
-    const saveButton = await screen.getByLabelText(/Save/i);
-    await fireEvent(
-      saveButton,
-      new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+    const saveButton = screen.getByLabelText(/Save/i);
+    await act(async () => {
+      fireEvent(
+        saveButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
     const newClusterKeys = getChildrenInHierarchy('scratchpad');
     expect(newClusterKeys.length).toEqual(2);
@@ -309,13 +301,15 @@ describe('CellSetsTool', () => {
     userEvent.click(intersectOperation);
 
     const saveButton = await screen.getByLabelText(/Save/i);
-    await fireEvent(
-      saveButton,
-      new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+    await act(async () => {
+      fireEvent(
+        saveButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
     const newClusterIds = getChildrenInHierarchy('scratchpad');
     expect(newClusterIds.length).toEqual(0);
@@ -340,13 +334,15 @@ describe('CellSetsTool', () => {
 
     // save the new cluster
     const saveButton = await screen.findByLabelText(/Save/i);
-    await fireEvent(
-      saveButton,
-      new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+    await act(async () => {
+      await fireEvent(
+        saveButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
     const newClusterIds = getChildrenInHierarchy('scratchpad');
     expect(newClusterIds.length).toEqual(1);
@@ -370,49 +366,22 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // select the second sample and first louvain cluster
-    const louvainClusterCellSet = getChildrenInHierarchy('louvain')[0];
-    const sampleClusterCellSet = getChildrenInHierarchy('sample')[1];
+    // select the first louvain cluster
+    const louvain0Cluster = screen.getByText('Cluster 0');
+    userEvent.click(louvain0Cluster);
 
-    // TODO: look at how to select them through the UI interface
-    await act(async () => {
-      storeState.dispatch(updateCellSetSelected(experimentId, [louvainClusterCellSet], 'cellSets'));
-      storeState.dispatch(updateCellSetSelected(experimentId, [sampleClusterCellSet], 'metadataCategorical'));
-    });
+    screen.getByText('6 cells selected');
 
-    const actualNumbSelectedLouvainCells = storeState.getState().cellSets.properties[louvainClusterCellSet].cellIds.size;
+    const metadataTabButton = screen.getByText(/Metadata/i);
+    userEvent.click(metadataTabButton);
 
-    await screen.getByText(`${actualNumbSelectedLouvainCells} cells selected`);
+    // select some sample clusters
+    const wt1Cluster = screen.getByText('WT1');
+    userEvent.click(wt1Cluster);
+    const wt2Cluster = screen.getByText('WT2');
+    userEvent.click(wt2Cluster);
 
-    const metadataTabButton = await screen.getByText(/Metadata/i);
-
-    await act(async () => {
-      await fireEvent(
-        metadataTabButton,
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
-
-    const actualNumbSelectedSampleCells = storeState.getState().cellSets.properties[sampleClusterCellSet].cellIds.size;
-
-    await screen.getByText(`${actualNumbSelectedSampleCells} cells selected`);
-
-    const cellSetTabButton = await screen.getByText(/Cell sets/);
-
-    await act(async () => {
-      await fireEvent(
-        cellSetTabButton,
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
-
-    await screen.getByText(`${actualNumbSelectedLouvainCells} cells selected`);
+    screen.getByText('20 cells selected');
   });
 
   it('Scratchpad cluster deletion works ', async () => {
@@ -433,19 +402,11 @@ describe('CellSetsTool', () => {
     expect(customCellSets.length).toEqual(1);
 
     // There should be a delete button for the scratchpad cluster.
-    const deleteButtons = await screen.getAllByLabelText(/Delete/);
+    const deleteButtons = screen.getAllByLabelText(/Delete/);
     expect(deleteButtons.length).toEqual(1);
 
     // Clicking on one of the buttons...
-    await act(async () => {
-      await fireEvent(
-        deleteButtons[0],
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
+    userEvent.click(deleteButtons[0]);
 
     customCellSets = getChildrenInHierarchy('scratchpad');
     expect(customCellSets.length).toEqual(0);
@@ -466,13 +427,11 @@ describe('CellSetsTool', () => {
       storeState.dispatch(loadGeneExpression(experimentId, ['TestGene'], '1234'));
     });
 
-    // TODO: do this via rtl from UI
-    // select some cells
-    await act(async () => {
-      selectFirstNCellSets(1);
-    });
+    // select the first louvain cluster
+    const louvain0Cluster = screen.getByText('Cluster 0');
+    userEvent.click(louvain0Cluster);
 
-    await screen.getByText(/4 cells selected/);
+    screen.getByText(/4 cells selected/);
   });
 
   it('Displays a cell set hidden message when cluster is hidden', async () => {
@@ -484,21 +443,12 @@ describe('CellSetsTool', () => {
       );
     });
 
-    const hideButtons = screen.getAllByText('Hide');
-
     // hide the first cluster
-    await act(async () => {
-      await fireEvent(
-        hideButtons[0],
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
+    const hideButtons = screen.getAllByText('Hide');
+    userEvent.click(hideButtons[0]);
 
-    await screen.getByText(/1 cell set is currently hidden./);
-    await screen.getAllByText(/Unhide all/);
+    screen.getByText(/1 cell set is currently hidden./);
+    screen.getAllByText(/Unhide all/);
   });
 
   it('Unhides clusters when the unhide button is presssed', async () => {
@@ -510,51 +460,25 @@ describe('CellSetsTool', () => {
       );
     });
 
-    let hideButtons = screen.getAllByText('Hide');
-
     // hide the first cluster
-    await act(async () => {
-      await fireEvent(
-        hideButtons[0],
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
-
-    hideButtons = screen.getAllByText('Hide');
+    let hideButtons = screen.getAllByText('Hide');
+    userEvent.click(hideButtons[0]);
 
     // hide the second cluster
-    await act(async () => {
-      await fireEvent(
-        hideButtons[0],
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
+    hideButtons = screen.getAllByText('Hide');
+    userEvent.click(hideButtons[0]);
 
-    await screen.getByText(/2 cell sets are currently hidden./);
+    screen.getByText(/2 cell sets are currently hidden./);
 
-    const unhideButton = await screen.getAllByText('Unhide');
+    const unhideButton = screen.getAllByText('Unhide');
     expect(unhideButton.length).toEqual(2);
 
     // now unhide the first cluster
-    await act(async () => {
-      await fireEvent(
-        unhideButton[0],
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
+    userEvent.click(unhideButton[0]);
 
-    await screen.getByText('Unhide');
-    await screen.getByText(/1 cell set is currently hidden./);
-    await screen.getAllByText(/Unhide all/);
+    screen.getByText('Unhide');
+    screen.getByText(/1 cell set is currently hidden./);
+    screen.getAllByText(/Unhide all/);
   });
 
   it('Unhides everything when the unhide all button is presssed', async () => {
@@ -570,48 +494,24 @@ describe('CellSetsTool', () => {
     expect(hideButtons.length).toEqual(14);
 
     // hide the first cluster
-    await act(async () => {
-      await fireEvent(
-        hideButtons[0],
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
+    userEvent.click(hideButtons[0]);
 
     hideButtons = screen.getAllByText('Hide');
     expect(hideButtons.length).toEqual(13);
 
     // hide the second cluster
-    await act(async () => {
-      await fireEvent(
-        hideButtons[0],
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
+    userEvent.click(hideButtons[0]);
 
-    await screen.getByText(/2 cell sets are currently hidden./);
+    screen.getByText(/2 cell sets are currently hidden./);
 
-    const unhideAllButton = await screen.getAllByText('Unhide all');
+    const unhideAllButton = screen.getAllByText('Unhide all');
     expect(unhideAllButton.length).toEqual(1);
 
-    const unhideButtons = await screen.getAllByText('Unhide');
+    const unhideButtons = screen.getAllByText('Unhide');
     expect(unhideButtons.length).toEqual(2);
 
-    // now unhide the first cluster
-    await act(async () => {
-      await fireEvent(
-        unhideAllButton[0],
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
+    // now unhide all clusters
+    userEvent.click(unhideAllButton[0]);
 
     expect(screen.queryByText(/2 cell sets are currently hidden./)).toBeNull();
     expect(screen.queryByText('Unhide')).toBeNull();
