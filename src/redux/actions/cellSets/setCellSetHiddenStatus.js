@@ -5,6 +5,7 @@ import {
 const setCellSetHiddenStatus = (
   experimentId, key,
 ) => (dispatch, getState) => {
+  console.log('****** & ', key);
   if (getState().cellSets.hidden.has(key)) {
     dispatch({
       type: CELL_SETS_UNHIDE,

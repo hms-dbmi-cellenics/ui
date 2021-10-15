@@ -11,8 +11,8 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { fetchWork } from 'utils/work/fetchWork';
 
-import CellSetsTool, { generateFilteredCellIndices } from 'components/data-exploration/cell-sets-tool/CellSetsTool';
-import { createCellSet, updateCellSetSelected, setCellSetHiddenStatus } from 'redux/actions/cellSets';
+import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
+import { createCellSet, updateCellSetSelected } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { complement, intersection, union } from 'utils/cellSetOperations';
 import { makeStore } from 'redux/store';
@@ -48,12 +48,12 @@ const selectFirstNCellSets = ((n) => {
   storeState.dispatch(updateCellSetSelected(experimentId, cellSetKeys.slice(0, n), 'cellSets'));
 });
 
-const cellSetToolFactory = (override = {}) => {
+const cellSetToolFactory = (customProps = {}) => {
   const props = _.merge({
     experimentId,
     width: 50,
     height: 50,
-  }, override);
+  }, customProps);
 
   // eslint-disable-next-line react/jsx-props-no-spreading
   return <CellSetsTool {...props} />;
@@ -101,25 +101,9 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // a different way to create a new cluster by directly calling the actionType
-    // I thought that it is not a good idea, because in order to make it work, I have to
-    // redo the whole createCellSet code in here, which won't be testing the reality and
-    // will need changing every time we change the logic of createCellSet.
-
-    // storeState.dispatch({
-    //   type: CELL_SETS_CREATE,
-    //   payload: {
-    //     cellIds: new Set([1070, 5625, 2854, 5093, 2748]),
-    //     color: '#3957ff',
-    //     experimentId: 'cf6be70f5a9ed32f74ac686f18a0d951',
-    //     key: 'f01a7023-3a48-4085-83be-4567211702a4',
-    //     name: 'New Cluster',
-    //   },
-    // });
-
     // create a new cluster:
     await act(async () => {
-      storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1070, 5625, 2854, 5093, 2748])));
+      storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
     });
 
     // There should be a tab for cell sets
@@ -214,6 +198,7 @@ describe('CellSetsTool', () => {
     // get the ids of the louvain clusters we created a union of
     const louvainClusters = getChildrenInHierarchy('louvain');
 
+    // TODO remove this and make a ticket for moving it to its own file
     // compute their union using the union function
     const expectedUnion = union(louvainClusters.slice(0, 2), storeState.getState().cellSets.properties);
 
@@ -272,6 +257,7 @@ describe('CellSetsTool', () => {
     const newClusterIds = getChildrenInHierarchy('scratchpad');
     expect(newClusterIds.length).toEqual(1);
 
+    // TODO: move this in a separate test
     const expectedIntersection = intersection(
       [louvainClusterCellSet, sampleClusterCellSet],
       storeState.getState().cellSets.properties,
@@ -376,6 +362,7 @@ describe('CellSetsTool', () => {
 
     const louvainClusters = getChildrenInHierarchy('louvain');
 
+    // TODO: move this away to its own unit test
     // compute their intersection
     const expectedIntersection = intersection(
       [louvainClusters.slice(0, 2)],
@@ -426,6 +413,7 @@ describe('CellSetsTool', () => {
     const newClusterIds = getChildrenInHierarchy('scratchpad');
     expect(newClusterIds.length).toEqual(1);
 
+    // TODO: move this to its own test
     // compute their complement
     const expectedComplement = complement(
       [louvainClusterCellSet],
@@ -461,6 +449,7 @@ describe('CellSetsTool', () => {
     const louvainClusterCellSet = getChildrenInHierarchy('louvain')[0];
     const sampleClusterCellSet = getChildrenInHierarchy('sample')[1];
 
+    // TODO: look at how to select them through the UI interface
     await act(async () => {
       storeState.dispatch(updateCellSetSelected(experimentId, [louvainClusterCellSet], 'cellSets'));
       storeState.dispatch(updateCellSetSelected(experimentId, [sampleClusterCellSet], 'metadataCategorical'));
@@ -551,10 +540,14 @@ describe('CellSetsTool', () => {
     await act(async () => {
       storeState.dispatch(loadGeneExpression(experimentId, ['TestGene'], '1234'));
     });
-    const actualFilteredCellIndices = generateFilteredCellIndices(storeState.getState().genes.expression.data);
-    const expectedFilteredCellIndices = new Set([4, 5, 12, 13, 14, 23]);
 
-    expect(actualFilteredCellIndices).toEqual(expectedFilteredCellIndices);
+    // TODO: do this via rtl from UI
+    // select some cells
+    await act(async () => {
+      selectFirstNCellSets(1);
+    });
+
+    await screen.getByText(/4 cells selected/);
   });
 
   it('Displays a cell set hidden message when cluster is hidden', async () => {
@@ -566,13 +559,18 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // hide a cluster
-    const clusterToHide = 'louvain-0';
-    await act(async () => {
-      storeState.dispatch(setCellSetHiddenStatus(experimentId, clusterToHide));
-    });
+    const hideButtons = screen.getAllByText('Hide');
 
-    expect(storeState.getState().cellSets.hidden).toEqual(new Set([clusterToHide]));
+    // hide the first cluster
+    await act(async () => {
+      await fireEvent(
+        hideButtons[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
     await screen.getByText(/1 cell set is currently hidden./);
     await screen.getAllByText(/Unhide all/);
@@ -587,18 +585,35 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // hide clusters
-    const clustersToHide = ['louvain-0', 'louvain-1'];
+    let hideButtons = screen.getAllByText('Hide');
+
+    // hide the first cluster
     await act(async () => {
-      storeState.dispatch(setCellSetHiddenStatus(experimentId, clustersToHide[0]));
-      storeState.dispatch(setCellSetHiddenStatus(experimentId, clustersToHide[1]));
+      await fireEvent(
+        hideButtons[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
     });
 
-    expect(storeState.getState().cellSets.hidden).toEqual(new Set(clustersToHide));
+    hideButtons = screen.getAllByText('Hide');
+
+    // hide the second cluster
+    await act(async () => {
+      await fireEvent(
+        hideButtons[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
     await screen.getByText(/2 cell sets are currently hidden./);
 
-    let unhideButton = await screen.getAllByText('Unhide');
+    const unhideButton = await screen.getAllByText('Unhide');
     expect(unhideButton.length).toEqual(2);
 
     // now unhide the first cluster
@@ -612,9 +627,9 @@ describe('CellSetsTool', () => {
       );
     });
 
-    expect(storeState.getState().cellSets.hidden).toEqual(new Set([clustersToHide[1]]));
-    unhideButton = await screen.getAllByText('Unhide');
-    expect(unhideButton.length).toEqual(1);
+    await screen.getByText('Unhide');
+    await screen.getByText(/1 cell set is currently hidden./);
+    await screen.getAllByText(/Unhide all/);
   });
 
   it('Unhides everything when the unhide all button is presssed', async () => {
@@ -626,18 +641,39 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // hide clusters
-    const clustersToHide = ['louvain-0', 'louvain-1'];
+    let hideButtons = screen.getAllByText('Hide');
+    expect(hideButtons.length).toEqual(14);
+
+    // hide the first cluster
     await act(async () => {
-      storeState.dispatch(setCellSetHiddenStatus(experimentId, clustersToHide[0]));
-      storeState.dispatch(setCellSetHiddenStatus(experimentId, clustersToHide[1]));
+      await fireEvent(
+        hideButtons[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
     });
 
-    expect(storeState.getState().cellSets.hidden).toEqual(new Set(clustersToHide));
+    hideButtons = screen.getAllByText('Hide');
+    expect(hideButtons.length).toEqual(13);
+
+    // hide the second cluster
+    await act(async () => {
+      await fireEvent(
+        hideButtons[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
     await screen.getByText(/2 cell sets are currently hidden./);
 
     const unhideAllButton = await screen.getAllByText('Unhide all');
+    expect(unhideAllButton.length).toEqual(1);
+
     const unhideButtons = await screen.getAllByText('Unhide');
     expect(unhideButtons.length).toEqual(2);
 
@@ -652,7 +688,7 @@ describe('CellSetsTool', () => {
       );
     });
 
-    expect(storeState.getState().cellSets.hidden).toEqual(new Set([]));
+    expect(screen.queryByText(/2 cell sets are currently hidden./)).toBeNull();
     expect(screen.queryByText('Unhide')).toBeNull();
   });
 });
