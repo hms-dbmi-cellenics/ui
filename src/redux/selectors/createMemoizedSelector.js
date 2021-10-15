@@ -3,6 +3,7 @@ import memoize from 'lru-memoize';
 
 import _ from 'lodash';
 
+// based on https://www.aarongreenwald.com/blog/redux-reselect-parameters
 const createMemoizedSelector = (
   selector, inputSelectors = [(state) => state], maxCachedKeys = 1,
 ) => {
