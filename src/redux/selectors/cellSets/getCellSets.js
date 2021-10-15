@@ -1,5 +1,12 @@
+import { createSelector } from 'reselect';
+
 import initialState from '../../reducers/cellSets/initialState';
 
-const getCellSets = () => (state) => (Object.keys(state).length ? state : initialState);
+const outputGetCellSets = (cellSets) => (Object.keys(cellSets).length ? cellSets : initialState);
+
+const getCellSets = () => createSelector(
+  (cellSets) => cellSets,
+  outputGetCellSets,
+);
 
 export default getCellSets;
