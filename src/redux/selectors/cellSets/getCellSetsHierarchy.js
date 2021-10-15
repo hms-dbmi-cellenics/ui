@@ -1,9 +1,6 @@
-import { createSelector } from 'reselect';
-import memoize from 'lru-memoize';
+import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
 
-import _ from 'lodash';
-
-const combiner = (type) => (state) => {
+const getCellSetsHierarchy = (type) => (state) => {
   if (!state || state.loading) {
     return [];
   }
@@ -25,10 +22,4 @@ const combiner = (type) => (state) => {
   return hierarchy;
 };
 
-const makeGetCellSetsHierarchy = (type = []) => createSelector(
-  (state) => state,
-  combiner(type),
-);
-
-// Based on https://www.aarongreenwald.com/blog/redux-reselect-parameters
-export default memoize(1, _.isEqual)(makeGetCellSetsHierarchy);
+export default createMemoizedSelector(getCellSetsHierarchy);

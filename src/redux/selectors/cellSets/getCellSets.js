@@ -1,12 +1,7 @@
-import { createSelector } from 'reselect';
+import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
 
 import initialState from '../../reducers/cellSets/initialState';
 
-const outputGetCellSets = (cellSets) => (Object.keys(cellSets).length ? cellSets : initialState);
+const getCellSets = () => (state) => (Object.keys(state).length ? state : initialState);
 
-const getCellSets = () => createSelector(
-  (cellSets) => cellSets,
-  outputGetCellSets,
-);
-
-export default getCellSets;
+export default createMemoizedSelector(getCellSets);

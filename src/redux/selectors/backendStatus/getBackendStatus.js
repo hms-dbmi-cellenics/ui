@@ -1,15 +1,9 @@
-import { createSelector } from 'reselect';
-import memoize from 'lru-memoize';
+import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
 
 import { initialExperimentBackendStatus } from '../../reducers/backendStatus/initialState';
 
-const combiner = (experimentId) => (state) => (
+const getBackendStatus = (experimentId) => (state) => (
   state[experimentId] ?? initialExperimentBackendStatus
 );
 
-const makeGetBakendStatus = (experimentId) => createSelector(
-  (state) => state,
-  combiner(experimentId),
-);
-
-export default memoize()(makeGetBakendStatus);
+export default createMemoizedSelector(getBackendStatus);
