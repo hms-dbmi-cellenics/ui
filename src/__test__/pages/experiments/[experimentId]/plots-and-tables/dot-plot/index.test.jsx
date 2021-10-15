@@ -11,6 +11,8 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 import initialCellSetsState from 'redux/reducers/cellSets/initialState';
 import initialGenesState from 'redux/reducers/genes/initialState';
 
+jest.mock('localforage');
+
 jest.mock('swr', () => () => ({
   data: {
     experimentId: '1234ABC',
@@ -66,12 +68,18 @@ describe('Dot plot page', () => {
     };
 
     const { container } = render(dotPlotPageFactory(noConfigState, experimentId));
-    const loadingElement = container.getElementsByClassName('ant-skeleton');
+    const loadingElement = container.querySelectorAll('div[class*="skeleton"]');
 
     // There is Dot plot for the bread crumbs
-    expect(loadingElement.length).toEqual(1);
+    expect(loadingElement.length).toBeGreaterThan(0);
 
     // It doesn't show the plot
+    expect(screen.queryByText('Gene selection')).toBeNull();
+    expect(screen.queryByText('Select data')).toBeNull();
+    expect(screen.queryByText('Main schema')).toBeNull();
+    expect(screen.queryByText('Axes and margins')).toBeNull();
+    expect(screen.queryByText('Colours')).toBeNull();
+    expect(screen.queryByText('Legend')).toBeNull();
     expect(screen.queryByRole('graphics-document')).toBeNull();
   });
 });

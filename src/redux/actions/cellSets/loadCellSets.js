@@ -19,8 +19,6 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     });
   }
 
-  const sampleIds = { sample: getState().experimentSettings.info.sampleIds };
-
   const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
     const response = await fetchAPI(url);
@@ -31,7 +29,6 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
       payload: {
         experimentId,
         data: json.cellSets,
-        order: sampleIds,
       },
     });
   } catch (e) {

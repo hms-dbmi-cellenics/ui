@@ -98,14 +98,14 @@ PlotStyling.propTypes = {
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
   renderExtraPanels: PropTypes.func,
-  defaultActiveKey: PropTypes.string,
+  defaultActiveKey: PropTypes.array,
 };
 
 PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
   renderExtraPanels: () => { },
-  defaultActiveKey: '',
+  defaultActiveKey: [],
 };
 
 export default PlotStyling;
