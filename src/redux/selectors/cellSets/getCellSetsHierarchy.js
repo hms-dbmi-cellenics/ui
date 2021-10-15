@@ -1,8 +1,11 @@
 import { createSelector } from 'reselect';
+import memoize from 'lru-memoize';
+
+import _ from 'lodash';
 
 const cellSetsSelector = (cellSets) => cellSets;
 
-const getCellSetsHierarchy = (type) => (cellSets) => {
+const outputGetCellSetsHierarchy = (type) => (cellSets) => {
   if (!cellSets || cellSets.loading) {
     return [];
   }
@@ -24,9 +27,9 @@ const getCellSetsHierarchy = (type) => (cellSets) => {
   return hierarchy;
 };
 
-const getCellSetsHierarchyMemoized = (type = []) => createSelector(
+const createGetCellSetsHierarchy = (type = []) => createSelector(
   cellSetsSelector,
-  getCellSetsHierarchy(type),
+  outputGetCellSetsHierarchy(type),
 );
 
-export default _.memoize(getCellSetsHierarchyMemoized);
+export default memoize(1, _.isEqual)(createGetCellSetsHierarchy);
