@@ -1,9 +1,10 @@
 import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
 
-const getCellSetsHierarchy = (type) => (state) => {
+const getCellSetsHierarchy = (type = []) => (state) => {
   if (!state || state.loading) {
     return [];
   }
+
   let hierarchy = state.hierarchy.map(
     (cellSet) => (
       {
