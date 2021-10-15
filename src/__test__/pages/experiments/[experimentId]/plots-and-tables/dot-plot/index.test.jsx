@@ -1,20 +1,15 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import { Skeleton } from 'antd';
 import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import initialCellSetsState from 'redux/reducers/cellSets/initialState';
 import initialGenesState from 'redux/reducers/genes/initialState';
-
-configure({ adapter: new Adapter() });
 
 jest.mock('swr', () => () => ({
   data: {
@@ -25,8 +20,8 @@ jest.mock('swr', () => () => ({
 
 const mockStore = configureMockStore([thunk]);
 
-const dotPlotPageFactory = (store, experimentId) => (
-  <Provider store={store}>
+const dotPlotPageFactory = (state, experimentId) => (
+  <Provider store={mockStore(state)}>
     <DotPlotPage experimentId={experimentId} />
   </Provider>
 );
@@ -50,16 +45,17 @@ const initialState = {
 
 describe('Dot plot page', () => {
   it('Renders the plot correctly', () => {
-    const store = mockStore(initialState);
-    render(dotPlotPageFactory(store, experimentId));
+    render(dotPlotPageFactory(initialState, experimentId));
 
     // There is the text Dot plot show in the breadcrumbs
     expect(screen.getByText('Dot plot')).toBeInTheDocument();
 
     // It has 4 options
     expect(screen.getByText('Gene selection')).toBeInTheDocument();
+    expect(screen.getByText('Select data')).toBeInTheDocument();
     expect(screen.getByText('Main schema')).toBeInTheDocument();
     expect(screen.getByText('Axes and margins')).toBeInTheDocument();
+    expect(screen.getByText('Colours')).toBeInTheDocument();
     expect(screen.getByText('Legend')).toBeInTheDocument();
   });
 
@@ -69,10 +65,13 @@ describe('Dot plot page', () => {
       componentConfig: {},
     };
 
-    const store = mockStore(noConfigState);
-    const component = mount(dotPlotPageFactory(store, experimentId));
+    const { container } = render(dotPlotPageFactory(noConfigState, experimentId));
+    const loadingElement = container.getElementsByClassName('ant-skeleton');
 
     // There is Dot plot for the bread crumbs
-    expect(component.find(Skeleton)).toHaveLength(1);
+    expect(loadingElement.length).toEqual(1);
+
+    // It doesn't show the plot
+    expect(screen.queryByRole('graphics-document')).toBeNull();
   });
 });
