@@ -1,13 +1,18 @@
-const getCellSetsHierarchy = (type = []) => (state) => {
-  if (!state || state.loading) {
+import _ from 'lodash';
+import { createSelector } from 'reselect';
+
+const cellSetsSelector = (cellSets) => cellSets;
+
+const getCellSetsHierarchy = (type) => (cellSets) => {
+  if (!cellSets || cellSets.loading) {
     return [];
   }
-  let hierarchy = state.hierarchy.map(
+  let hierarchy = cellSets.hierarchy.map(
     (cellSet) => (
       {
         key: cellSet.key,
-        name: state.properties[cellSet.key]?.name,
-        type: state.properties[cellSet.key]?.type,
+        name: cellSets.properties[cellSet.key]?.name,
+        type: cellSets.properties[cellSet.key]?.type,
         children: cellSet?.children || 0,
       }
     ),
@@ -19,4 +24,10 @@ const getCellSetsHierarchy = (type = []) => (state) => {
   }
   return hierarchy;
 };
-export default getCellSetsHierarchy;
+
+const getCellSetsHierarchyMemoized = (type = []) => createSelector(
+  cellSetsSelector,
+  getCellSetsHierarchy(type),
+);
+
+export default _.memoize(getCellSetsHierarchyMemoized);

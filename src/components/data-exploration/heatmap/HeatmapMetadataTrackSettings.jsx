@@ -20,14 +20,17 @@ const HeatmapMetadataTrackSettings = (props) => {
   const { componentType } = props;
   const selectedHierarchy = useSelector(getCellSetsHierarchy(['cellSets', 'metadataCategorical']));
   const currentSelectedHierarchy = useRef(selectedHierarchy);
+
   const selectedTracks = useSelector(
     (state) => state.componentConfig[componentType].config.selectedTracks,
   );
+
   const getTrackData = () => selectedHierarchy.map(
     (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
   );
 
   const isInitialRenderRef = useRef(true);
+
   const [trackData, setTrackData] = useState(getTrackData());
 
   const getUpdatedTrackData = () => _.unionBy(
@@ -35,12 +38,19 @@ const HeatmapMetadataTrackSettings = (props) => {
     trackData,
     'key',
   );
+
   useEffect(() => {
     // Prevent initial dispatch when object appears
+    // if (isInitialRenderRef.current) return;
+    console.log('QTAL');
+
     if (isInitialRenderRef.current
       || _.isEqual(selectedHierarchy, currentSelectedHierarchy.current)) {
       return;
     }
+
+    console.log('HOLA');
+
     currentSelectedHierarchy.current = selectedHierarchy;
     // Do not re-render if visible track data hasn't changed
     const newTrackData = getUpdatedTrackData();
