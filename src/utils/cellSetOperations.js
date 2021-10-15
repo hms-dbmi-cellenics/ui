@@ -15,6 +15,7 @@ const union = (listOfSets, properties) => {
 };
 
 const intersection = (listOfSets, properties) => {
+  console.log('****** &&&& ', listOfSets, properties);
   if (!listOfSets) {
     return new Set();
   }

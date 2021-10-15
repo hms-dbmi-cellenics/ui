@@ -5,6 +5,7 @@ import '__test__/test-utils/setupTests';
 import {
   render, screen, fireEvent,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 
 import { Provider } from 'react-redux';
@@ -107,13 +108,13 @@ describe('CellSetsTool', () => {
     });
 
     // There should be a tab for cell sets
-    await screen.getByText(/Cell sets/);
+    screen.getByText(/Cell sets/);
 
     // // There should be a tab for metadata
-    await screen.getByText(/Metadata/);
+    screen.getByText(/Metadata/);
 
     // There should be delete buttons for clusters under Custom cell sets.
-    const deleteButtons = await screen.getAllByLabelText(/Delete/);
+    const deleteButtons = screen.getAllByLabelText(/Delete/);
     expect(deleteButtons.length).toEqual(1);
   });
 
@@ -171,15 +172,7 @@ describe('CellSetsTool', () => {
     expect(customCellSets.length).toEqual(0);
 
     const unionOperation = await screen.getByLabelText(/Union of selected$/i);
-    await act(async () => {
-      await fireEvent(
-        unionOperation,
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
+    userEvent.click(unionOperation);
 
     const saveButton = await screen.getByLabelText(/Save/i);
     await act(async () => {
@@ -195,26 +188,16 @@ describe('CellSetsTool', () => {
     const newClusterIds = getChildrenInHierarchy('scratchpad');
     expect(newClusterIds.length).toEqual(1);
 
-    // get the ids of the louvain clusters we created a union of
-    const louvainClusters = getChildrenInHierarchy('louvain');
-
-    // TODO remove this and make a ticket for moving it to its own file
-    // compute their union using the union function
-    const expectedUnion = union(louvainClusters.slice(0, 2), storeState.getState().cellSets.properties);
-
     // test the union cellSet function
     const hardcodedUnion = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
     // get the cell ids of the new cluster that got created as the union of those clusters
     const actualUnion = storeState.getState().cellSets.properties[newClusterIds].cellIds;
 
-    expect(actualUnion).toEqual(expectedUnion);
-
-    // WARN: if you change the test cellSet dataset or which 2 clusters you select, this will fail
     expect(actualUnion).toEqual(hardcodedUnion);
   });
 
-  it('New cluster is created when the intersection of two sets contains cells', async () => {
+  it('can compute an intersection of 2 cell sets', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -223,27 +206,24 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // select the first sample and first louvain cluster and hope that they will share cell ids
-    // and the intersection will not be empty
-    const louvainClusterCellSet = getChildrenInHierarchy('louvain')[0];
-    const sampleClusterCellSet = getChildrenInHierarchy('sample')[0];
-
-    await act(async () => {
-      storeState.dispatch(updateCellSetSelected(experimentId, [louvainClusterCellSet, sampleClusterCellSet], 'cellSets'));
-    });
-
     // ensure that initially we have 0 custom cell sets
     const customCellSets = getChildrenInHierarchy('scratchpad');
     expect(customCellSets.length).toEqual(0);
 
+    // create a new cluster with some cells that will overlap:
+    await act(async () => {
+      storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4])));
+    });
+    // select the newly created cluster
+    const scratchpadCluster = screen.getByText('test cluster');
+    userEvent.click(scratchpadCluster);
+
+    // select the first louvain cluster
+    const louvain0Cluster = screen.getByText('Cluster 0');
+    userEvent.click(louvain0Cluster);
+
     const intersectOperation = await screen.getByLabelText(/Intersection of selected$/i);
-    await fireEvent(
-      intersectOperation,
-      new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+    userEvent.click(intersectOperation);
 
     const saveButton = await screen.getByLabelText(/Save/i);
     await fireEvent(
@@ -254,26 +234,15 @@ describe('CellSetsTool', () => {
       }),
     );
 
-    const newClusterIds = getChildrenInHierarchy('scratchpad');
-    expect(newClusterIds.length).toEqual(1);
+    const newClusterKeys = getChildrenInHierarchy('scratchpad');
+    expect(newClusterKeys.length).toEqual(2);
 
-    // TODO: move this in a separate test
-    const expectedIntersection = intersection(
-      [louvainClusterCellSet, sampleClusterCellSet],
-      storeState.getState().cellSets.properties,
-    );
+    // relies on the fact that when we create a new cluster, we add it after the existing ones
+    const unionScratchpadCluster = newClusterKeys[1];
+    const actualIntersection = storeState.getState().cellSets.properties[unionScratchpadCluster].cellIds;
+    const expectedIntersection = new Set([1, 2, 3, 4]);
 
-    if (expectedIntersection.size === 0) {
-      console.error('This test will fail because your dataset does not contain common cells between the chosen clusters.');
-    }
-    const actualIntersection = storeState.getState().cellSets.properties[newClusterIds].cellIds;
     expect(actualIntersection).toEqual(expectedIntersection);
-
-    // test the intersection cellSet function
-    const hardcodedIntersection = new Set([1, 2, 3, 4, 5, 6]);
-
-    // WARN: if you change the test cellSet dataset or which 2 clusters you select, this will fail
-    expect(actualIntersection).toEqual(hardcodedIntersection);
   });
 
   it('New cluster is not created when cancel is clicked', async () => {
@@ -285,28 +254,24 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // select the first sample and first louvain cluster and hope that they will share cell ids
-    // and the intersection will not be empty
-    const louvainClusterCellSet = getChildrenInHierarchy('louvain')[0];
-    const sampleClusterCellSet = getChildrenInHierarchy('sample')[0];
-
-    await act(async () => {
-      storeState.dispatch(updateCellSetSelected(experimentId, [louvainClusterCellSet], 'cellSets'));
-      storeState.dispatch(updateCellSetSelected(experimentId, [sampleClusterCellSet], 'metadataCategorical'));
-    });
-
     // ensure that initially we have 0 custom cell sets
     const customCellSets = getChildrenInHierarchy('scratchpad');
     expect(customCellSets.length).toEqual(0);
 
+    // create a new cluster with some cells that will overlap:
+    await act(async () => {
+      storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4])));
+    });
+    // select the newly created cluster
+    const scratchpadCluster = screen.getByText('test cluster');
+    userEvent.click(scratchpadCluster);
+
+    // select the first louvain cluster
+    const louvain0Cluster = screen.getByText('Cluster 0');
+    userEvent.click(louvain0Cluster);
+
     const intersectOperation = await screen.getByLabelText(/Intersection of selected$/i);
-    await fireEvent(
-      intersectOperation,
-      new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+    userEvent.click(intersectOperation);
 
     const cancelButton = await screen.getByLabelText(/Cancel/i);
     await fireEvent(
@@ -316,9 +281,7 @@ describe('CellSetsTool', () => {
         cancelable: true,
       }),
     );
-
-    const newClusterIds = getChildrenInHierarchy('scratchpad');
-    expect(newClusterIds.length).toEqual(0);
+    expect(screen.queryByText('New Cluster')).toBeNull();
   });
 
   it('New cluster is not created if it will contain no cells', async () => {
@@ -330,23 +293,20 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // select some cells
-    await act(async () => {
-      selectFirstNCellSets(2);
-    });
+    // select the first louvain cluster
+    const louvain0Cluster = screen.getByText('Cluster 0');
+    userEvent.click(louvain0Cluster);
+
+    // select the second louvain cluster
+    const louvain1Cluster = screen.getByText('Cluster 1');
+    userEvent.click(louvain1Cluster);
 
     // ensure that initially we have 0 custom cell sets
     const customCellSets = getChildrenInHierarchy('scratchpad');
     expect(customCellSets.length).toEqual(0);
 
     const intersectOperation = await screen.getByLabelText(/Intersection of selected$/i);
-    await fireEvent(
-      intersectOperation,
-      new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+    userEvent.click(intersectOperation);
 
     const saveButton = await screen.getByLabelText(/Save/i);
     await fireEvent(
@@ -359,16 +319,6 @@ describe('CellSetsTool', () => {
 
     const newClusterIds = getChildrenInHierarchy('scratchpad');
     expect(newClusterIds.length).toEqual(0);
-
-    const louvainClusters = getChildrenInHierarchy('louvain');
-
-    // TODO: move this away to its own unit test
-    // compute their intersection
-    const expectedIntersection = intersection(
-      [louvainClusters.slice(0, 2)],
-      storeState.getState().cellSets.properties,
-    );
-    expect(expectedIntersection.size).toEqual(0);
   });
 
   it('cell set operations should work appropriately for complement', async () => {
@@ -381,27 +331,15 @@ describe('CellSetsTool', () => {
     });
 
     // select the first louvain cluster
-    const louvainClusterCellSet = getChildrenInHierarchy('louvain')[0];
+    const louvain0Cluster = screen.getByText('Cluster 0');
+    userEvent.click(louvain0Cluster);
 
-    await act(async () => {
-      storeState.dispatch(updateCellSetSelected(experimentId, [louvainClusterCellSet], 'cellSets'));
-    });
+    // compute the complement
+    const complementOperation = await screen.findByLabelText(/Complement of selected$/i);
+    userEvent.click(complementOperation);
 
-    // ensure that initially we have 0 custom cell sets
-    const customCellSets = getChildrenInHierarchy('scratchpad');
-    expect(customCellSets.length).toEqual(0);
-
-    const complementOperation = await screen.getByLabelText(/Complement of selected$/i);
-    await fireEvent(
-      complementOperation,
-      new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
-
-    const saveButton = await screen.getByLabelText(/Save/i);
-
+    // save the new cluster
+    const saveButton = await screen.findByLabelText(/Save/i);
     await fireEvent(
       saveButton,
       new MouseEvent('click', {
@@ -413,26 +351,13 @@ describe('CellSetsTool', () => {
     const newClusterIds = getChildrenInHierarchy('scratchpad');
     expect(newClusterIds.length).toEqual(1);
 
-    // TODO: move this to its own test
-    // compute their complement
-    const expectedComplement = complement(
-      [louvainClusterCellSet],
-      storeState.getState().cellSets.properties,
-    );
-
-    if (expectedComplement.size === 0) {
-      console.error('This test will fail because your dataset does not contain common cells between the chosen clusters.');
-    }
     const actualComplement = storeState.getState().cellSets.properties[newClusterIds].cellIds;
 
-    expect(actualComplement).toEqual(expectedComplement);
-
-    // test the complement cellSet function
     const hardcodedComplement = new Set(
       [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
     );
 
-    // WARN: if you change the test cellSet dataset or which 2 clusters you select, this will fail
+    // complement = the whole dataset - first cluster
     expect(actualComplement).toEqual(hardcodedComplement);
   });
 
