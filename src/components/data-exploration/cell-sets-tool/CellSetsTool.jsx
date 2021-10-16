@@ -156,7 +156,7 @@ const CellSetsTool = (props) => {
               );
             }}
             ariaLabel='Intersection of selected'
-            helpTitle='Create new cell set from intersection of selected sets in the current tab'
+            helpTitle='Create new cell set from intersection of selected sets in the current tab.'
           />
           <CellSetOperation
             icon={<SplitCellsOutlined />}
@@ -164,7 +164,7 @@ const CellSetsTool = (props) => {
               dispatch(createCellSet(experimentId, name, color, complement(selected, properties)));
             }}
             ariaLabel='Complement of selected'
-            helpTitle='Create new cell set from the complement of the selected sets in the current tab'
+            helpTitle='Create new cell set from the complement of the selected sets in the current tab.'
           />
           <Text type='primary' id='selectedCellSets'>
             {`${numSelected} cell${numSelected === 1 ? '' : 's'} selected`}

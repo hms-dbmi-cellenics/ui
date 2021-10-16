@@ -68,12 +68,12 @@ describe('CellSetsTool', () => {
     });
 
     // There should be a tab for cell sets
-    await screen.getByText(/Cell sets/);
+    screen.getByText(/Cell sets/);
 
     // // There should be a tab for metadata
-    await screen.getByText(/Metadata/i);
+    screen.getByText(/Metadata/i);
 
-    const editButtons = await screen.getAllByLabelText(/Edit/);
+    const editButtons = screen.getAllByLabelText(/Edit/);
     expect(editButtons.length).toEqual(15);
 
     // There should be no delete buttons.
@@ -115,7 +115,7 @@ describe('CellSetsTool', () => {
       );
     });
 
-    const cellSetOperations = await screen.queryByLabelText(/of selected$/i);
+    const cellSetOperations = screen.queryByLabelText(/of selected$/i);
 
     // There should be no operations rendered
     expect(cellSetOperations).toEqual(null);
@@ -157,14 +157,15 @@ describe('CellSetsTool', () => {
     const louvain4Cluster = screen.getByText('Cluster 4');
     userEvent.click(louvain4Cluster);
 
+    // TODO rewrite this to rtl
     // ensure that initially we have 0 custom cell sets
     const customCellSets = getChildrenInHierarchy('scratchpad');
     expect(customCellSets.length).toEqual(0);
 
-    const unionOperation = await screen.getByLabelText(/Union of selected$/i);
+    const unionOperation = screen.getByLabelText(/Union of selected$/i);
     userEvent.click(unionOperation);
 
-    const saveButton = await screen.getByLabelText(/Save/i);
+    const saveButton = screen.getByLabelText(/Save/i);
     await act(async () => {
       fireEvent(
         saveButton,
@@ -175,16 +176,17 @@ describe('CellSetsTool', () => {
       );
     });
 
-    const newClusterIds = getChildrenInHierarchy('scratchpad');
-    expect(newClusterIds.length).toEqual(1);
+    // TODO rewrite this to rtl
+    const newClusterKeys = getChildrenInHierarchy('scratchpad');
+    expect(newClusterKeys.length).toEqual(1);
 
     // test the union cellSet function
-    const hardcodedUnion = new Set([12, 13, 14, 15]);
+    const expecteddUnion = new Set([12, 13, 14, 15]);
 
     // get the cell ids of the new cluster that got created as the union of those clusters
-    const actualUnion = storeState.getState().cellSets.properties[newClusterIds].cellIds;
+    const actualUnion = storeState.getState().cellSets.properties[newClusterKeys].cellIds;
 
-    expect(actualUnion).toEqual(hardcodedUnion);
+    expect(actualUnion).toEqual(expecteddUnion);
   });
 
   it('can compute an intersection of 2 cell sets', async () => {
@@ -262,17 +264,19 @@ describe('CellSetsTool', () => {
     const louvain0Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain0Cluster);
 
-    const intersectOperation = await screen.getByLabelText(/Intersection of selected$/i);
+    const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
     userEvent.click(intersectOperation);
 
-    const cancelButton = await screen.getByLabelText(/Cancel/i);
-    await fireEvent(
-      cancelButton,
-      new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+    const cancelButton = screen.getByLabelText(/Cancel/i);
+    await act(async () => {
+      fireEvent(
+        cancelButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
     expect(screen.queryByText('New Cluster')).toBeNull();
   });
 
@@ -297,10 +301,10 @@ describe('CellSetsTool', () => {
     const customCellSets = getChildrenInHierarchy('scratchpad');
     expect(customCellSets.length).toEqual(0);
 
-    const intersectOperation = await screen.getByLabelText(/Intersection of selected$/i);
+    const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
     userEvent.click(intersectOperation);
 
-    const saveButton = await screen.getByLabelText(/Save/i);
+    const saveButton = screen.getByLabelText(/Save/i);
     await act(async () => {
       fireEvent(
         saveButton,
@@ -329,13 +333,13 @@ describe('CellSetsTool', () => {
     userEvent.click(louvain0Cluster);
 
     // compute the complement
-    const complementOperation = await screen.findByLabelText(/Complement of selected$/i);
+    const complementOperation = screen.getByLabelText(/Complement of selected$/i);
     userEvent.click(complementOperation);
 
     // save the new cluster
-    const saveButton = await screen.findByLabelText(/Save/i);
+    const saveButton = screen.getByLabelText(/Save/i);
     await act(async () => {
-      await fireEvent(
+      fireEvent(
         saveButton,
         new MouseEvent('click', {
           bubbles: true,
@@ -356,6 +360,8 @@ describe('CellSetsTool', () => {
     // complement = the whole dataset - first cluster
     expect(actualComplement).toEqual(hardcodedComplement);
   });
+
+  // TODO: add a unit test that you can compute cell set operations from selected from both tabs
 
   it('selected cell sets show selected in both tabs', async () => {
     await act(async () => {
