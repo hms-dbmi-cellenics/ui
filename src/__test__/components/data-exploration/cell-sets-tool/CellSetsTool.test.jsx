@@ -31,10 +31,13 @@ const geneExpressionData = require('__test__/data/gene_expression.json');
 
 const experimentId = '1234';
 
-const getChildrenInHierarchy = (hierarchyKey) => {
-  const hierarchy = storeState.getState().cellSets.hierarchy.filter((h) => h.key === hierarchyKey)[0].children;
-  const children = hierarchy.map((child) => child.key);
-  return children;
+const getClusterByName = (clusterName) => {
+  const clusterKey = Object.keys(storeState.getState().cellSets.properties).filter((key) => {
+    if (storeState.getState().cellSets.properties[key].name === clusterName) {
+      return key;
+    }
+  });
+  return clusterKey;
 };
 
 const cellSetToolFactory = (customProps = {}) => {
@@ -157,10 +160,8 @@ describe('CellSetsTool', () => {
     const louvain4Cluster = screen.getByText('Cluster 4');
     userEvent.click(louvain4Cluster);
 
-    // TODO rewrite this to rtl
     // ensure that initially we have 0 custom cell sets
-    const customCellSets = getChildrenInHierarchy('scratchpad');
-    expect(customCellSets.length).toEqual(0);
+    expect(screen.queryByText('New Cluster')).toBeNull();
 
     const unionOperation = screen.getByLabelText(/Union of selected$/i);
     userEvent.click(unionOperation);
@@ -176,15 +177,14 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // TODO rewrite this to rtl
-    const newClusterKeys = getChildrenInHierarchy('scratchpad');
-    expect(newClusterKeys.length).toEqual(1);
+    screen.getByText('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster');
 
     // test the union cellSet function
     const expecteddUnion = new Set([12, 13, 14, 15]);
 
     // get the cell ids of the new cluster that got created as the union of those clusters
-    const actualUnion = storeState.getState().cellSets.properties[newClusterKeys].cellIds;
+    const actualUnion = storeState.getState().cellSets.properties[newClusterKey].cellIds;
 
     expect(actualUnion).toEqual(expecteddUnion);
   });
@@ -199,8 +199,7 @@ describe('CellSetsTool', () => {
     });
 
     // ensure that initially we have 0 custom cell sets
-    const customCellSets = getChildrenInHierarchy('scratchpad');
-    expect(customCellSets.length).toEqual(0);
+    expect(screen.queryByText('New Cluster')).toBeNull();
 
     // create a new cluster with some cells that will overlap:
     await act(async () => {
@@ -228,14 +227,11 @@ describe('CellSetsTool', () => {
       );
     });
 
-    const newClusterKeys = getChildrenInHierarchy('scratchpad');
-    expect(newClusterKeys.length).toEqual(2);
+    screen.getByText('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster');
+    const actualIntersection = storeState.getState().cellSets.properties[newClusterKey].cellIds;
 
-    // relies on the fact that when we create a new cluster, we add it after the existing ones
-    const unionScratchpadCluster = newClusterKeys[1];
-    const actualIntersection = storeState.getState().cellSets.properties[unionScratchpadCluster].cellIds;
     const expectedIntersection = new Set([1, 2, 3, 4]);
-
     expect(actualIntersection).toEqual(expectedIntersection);
   });
 
@@ -249,8 +245,7 @@ describe('CellSetsTool', () => {
     });
 
     // ensure that initially we have 0 custom cell sets
-    const customCellSets = getChildrenInHierarchy('scratchpad');
-    expect(customCellSets.length).toEqual(0);
+    expect(screen.queryByText('New Cluster')).toBeNull();
 
     // create a new cluster with some cells that will overlap:
     await act(async () => {
@@ -298,8 +293,7 @@ describe('CellSetsTool', () => {
     userEvent.click(louvain1Cluster);
 
     // ensure that initially we have 0 custom cell sets
-    const customCellSets = getChildrenInHierarchy('scratchpad');
-    expect(customCellSets.length).toEqual(0);
+    expect(screen.queryByText('New Cluster')).toBeNull();
 
     const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
     userEvent.click(intersectOperation);
@@ -315,8 +309,7 @@ describe('CellSetsTool', () => {
       );
     });
 
-    const newClusterIds = getChildrenInHierarchy('scratchpad');
-    expect(newClusterIds.length).toEqual(0);
+    expect(screen.queryByText('New Cluster')).toBeNull();
   });
 
   it('cell set operations should work appropriately for complement', async () => {
@@ -348,11 +341,10 @@ describe('CellSetsTool', () => {
       );
     });
 
-    const newClusterIds = getChildrenInHierarchy('scratchpad');
-    expect(newClusterIds.length).toEqual(1);
+    screen.getByText('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster');
 
-    const actualComplement = storeState.getState().cellSets.properties[newClusterIds].cellIds;
-
+    const actualComplement = storeState.getState().cellSets.properties[newClusterKey].cellIds;
     const hardcodedComplement = new Set(
       [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
     );
@@ -404,8 +396,7 @@ describe('CellSetsTool', () => {
       storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
     });
 
-    let customCellSets = getChildrenInHierarchy('scratchpad');
-    expect(customCellSets.length).toEqual(1);
+    screen.getByText('New Cluster');
 
     // There should be a delete button for the scratchpad cluster.
     const deleteButtons = screen.getAllByLabelText(/Delete/);
@@ -414,8 +405,7 @@ describe('CellSetsTool', () => {
     // Clicking on one of the buttons...
     userEvent.click(deleteButtons[0]);
 
-    customCellSets = getChildrenInHierarchy('scratchpad');
-    expect(customCellSets.length).toEqual(0);
+    expect(screen.queryByText('New Cluster')).toBeNull();
   });
 
   it('calculates filtered cell indices correctly', async () => {
