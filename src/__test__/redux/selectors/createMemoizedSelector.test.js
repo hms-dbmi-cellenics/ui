@@ -72,7 +72,7 @@ describe('createMemoizedSelector', () => {
 
     createMemoizedSelector(() => returnOfSelector, { comparisonOperator });
 
-    // Maintains default value if not specified (4)
+    // Maintains default value if not specified (4) but calls with custom comparisonOperator
     expect(memoize).toHaveBeenCalledWith(4, comparisonOperator);
 
     expect(returnOfMemoize).toHaveBeenCalledTimes(1);
