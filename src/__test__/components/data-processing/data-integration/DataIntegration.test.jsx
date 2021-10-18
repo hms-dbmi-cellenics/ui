@@ -19,7 +19,6 @@ import { getBackendStatus, getCellSets } from 'redux/selectors';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
 jest.mock('redux/selectors');
-jest.mock('../../../../redux/selectors');
 configure({ adapter: new Adapter() });
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
