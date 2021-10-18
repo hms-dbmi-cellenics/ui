@@ -35,13 +35,28 @@ describe('createMemoizedSelector', () => {
     expect(createSelector).toHaveBeenCalledWith(expect.anything(), returnOfSelector);
   });
 
-  it('memoizes correctly with custom values if specified', () => {
-    const inputSelectors = [];
-
-    createMemoizedSelector(() => returnOfSelector, { maxCachedKeys: 10, inputSelectors });
+  it('memoizes correctly with custom maxCachedKeys if specified', () => {
+    createMemoizedSelector(() => returnOfSelector, { maxCachedKeys: 10 });
 
     // Maintains default value if not specified (_.isEqual)
     expect(memoize).toHaveBeenCalledWith(10, _.isEqual);
+
+    expect(returnOfMemoize).toHaveBeenCalledTimes(1);
+
+    // If we call the memoized function
+    returnOfMemoize.mock.calls[0][0]();
+
+    // A reselect selector is created with the expected parameters (and the custm inputSelectors)
+    expect(createSelector).toHaveBeenCalledWith(expect.anything(), returnOfSelector);
+  });
+
+  it('memoizes correctly with custom inputSelectors if specified', () => {
+    const inputSelectors = [];
+
+    createMemoizedSelector(() => returnOfSelector, { inputSelectors });
+
+    // Maintains default value if not specified (_.isEqual)
+    expect(memoize).toHaveBeenCalledWith(4, _.isEqual);
 
     expect(returnOfMemoize).toHaveBeenCalledTimes(1);
 
