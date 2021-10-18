@@ -345,15 +345,65 @@ describe('CellSetsTool', () => {
     const newClusterKey = getClusterByName('New Cluster');
 
     const actualComplement = storeState.getState().cellSets.properties[newClusterKey].cellIds;
-    const hardcodedComplement = new Set(
+    const expectedComplement = new Set(
       [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
     );
 
     // complement = the whole dataset - first cluster
-    expect(actualComplement).toEqual(hardcodedComplement);
+    expect(actualComplement).toEqual(expectedComplement);
   });
 
-  // TODO: add a unit test that you can compute cell set operations from selected from both tabs
+  it('cell set operations take into an account only clusters that are in the current tab', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetToolFactory()}
+        </Provider>,
+      );
+    });
+
+    // select the first louvain cluster
+    const louvain0Cluster = screen.getByText('Cluster 0');
+    userEvent.click(louvain0Cluster);
+
+    // go to the metadata tab
+    const metadataTabButton = screen.getByText(/Metadata/i);
+    userEvent.click(metadataTabButton);
+
+    // select a sample cluster
+    const wt1Cluster = screen.getByText('WT1');
+    userEvent.click(wt1Cluster);
+
+    // now compute union while still in the metadata tab
+    const unionOperation = screen.getByLabelText(/Union of selected$/i);
+    userEvent.click(unionOperation);
+
+    const saveButton = screen.getByLabelText(/Save/i);
+    await act(async () => {
+      fireEvent(
+        saveButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    // go to the cell sets tab
+    const cellSetsTabButton = screen.getByText('Cell sets');
+    userEvent.click(cellSetsTabButton);
+
+    screen.getByText('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster');
+
+    // test the union cellSet function. It should not include the cluster 0 cells
+    const expectedUnion = new Set([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]);
+
+    // get the cell ids of the new cluster that got created as the union of those clusters
+    const actualUnion = storeState.getState().cellSets.properties[newClusterKey].cellIds;
+
+    expect(actualUnion).toEqual(expectedUnion);
+  });
 
   it('selected cell sets show selected in both tabs', async () => {
     await act(async () => {
@@ -370,6 +420,7 @@ describe('CellSetsTool', () => {
 
     screen.getByText('6 cells selected');
 
+    // go to the metadata tab
     const metadataTabButton = screen.getByText(/Metadata/i);
     userEvent.click(metadataTabButton);
 

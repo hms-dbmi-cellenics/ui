@@ -82,18 +82,6 @@ const CellSetsTool = (props) => {
     dispatch(loadCellSets(experimentId));
   }, []);
 
-  useEffect(() => {
-    if (
-      notifications
-      && notifications.message
-      && notifications.message.message === endUserMessages.NEW_CLUSTER_CREATED
-    ) {
-      animateScroll.scrollTo(height, {
-        containerId: 'cell-set-tool-container',
-      });
-    }
-  }, [notifications]);
-
   const [cellSetTreeData, setCellSetTreeData] = useState(null);
   const [metadataTreeData, setMetadataTreeData] = useState(null);
 
