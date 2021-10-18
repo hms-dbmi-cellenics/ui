@@ -7,13 +7,12 @@ import initialSampleState from '../../../../redux/reducers/samples';
 
 import { saveProject } from '../../../../redux/actions/projects';
 import { saveSamples } from '../../../../redux/actions/samples';
+import '__test__/test-utils/setupTests';
 
 import {
   PROJECTS_METADATA_DELETE,
 } from '../../../../redux/actionTypes/projects';
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
-
-jest.mock('../../../../utils/pushNotificationMessage');
 
 const mockStore = configureStore([thunk]);
 

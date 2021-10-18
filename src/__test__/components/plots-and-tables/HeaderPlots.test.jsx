@@ -8,9 +8,9 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 import Header from '../../../components/plots/Header';
 import { LOAD_CONFIG } from '../../../redux/actionTypes/componentConfig';
+import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
-jest.mock('localforage');
 const mockStore = configureMockStore([thunk]);
 
 describe('Tests for the header in plots and tables ', () => {

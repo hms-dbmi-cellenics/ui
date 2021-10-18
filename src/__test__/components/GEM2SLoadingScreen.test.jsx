@@ -1,8 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { mount, shallow, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
+import { mount, shallow } from 'enzyme';
 import thunk from 'redux-thunk';
 import {
   Result, Button, Progress,
@@ -10,8 +8,7 @@ import {
 import configureMockStore from 'redux-mock-store';
 import GEM2SLoadingScreen from '../../components/GEM2SLoadingScreen';
 import fetchAPI from '../../utils/fetchAPI';
-
-configure({ adapter: new Adapter() });
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 
@@ -21,10 +18,6 @@ jest.mock('../../utils/fetchAPI');
 fetchAPI.mockImplementation(() => Promise.resolve(new Response(JSON.stringify({}))));
 
 describe('GEM2SLoadingScreen', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   it('Does not render without gem2s status', () => {
     expect(() => shallow(<GEM2SLoadingScreen />)).toThrow();
   });

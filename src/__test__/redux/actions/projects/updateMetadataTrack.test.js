@@ -12,8 +12,7 @@ import {
   PROJECTS_METADATA_UPDATE,
 } from '../../../../redux/actionTypes/projects';
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
-
-jest.mock('../../../../utils/pushNotificationMessage');
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });

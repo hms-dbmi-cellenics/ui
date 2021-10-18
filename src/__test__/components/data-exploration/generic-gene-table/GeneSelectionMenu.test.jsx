@@ -1,7 +1,6 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import configureMockStore from 'redux-mock-store';
@@ -9,10 +8,9 @@ import { Select } from 'antd';
 import { act } from 'react-dom/test-utils';
 import GeneSelectionMenu from '../../../../components/data-exploration/generic-gene-table/GeneSelectionMenu';
 import SelectionActions from '../../../../components/data-exploration/generic-gene-table/SelectionActions';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
-jest.mock('localforage');
-configure({ adapter: new Adapter() });
 
 let component;
 const experimentId = '1234';

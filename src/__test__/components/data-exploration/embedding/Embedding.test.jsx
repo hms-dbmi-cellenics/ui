@@ -3,8 +3,7 @@ import {
   Provider,
 } from 'react-redux';
 import { act } from 'react-dom/test-utils';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -18,8 +17,7 @@ import { CELL_SETS_CREATE } from '../../../../redux/actionTypes/cellSets';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import { CELL_INFO_UPDATE } from '../../../../redux/actionTypes/cellInfo';
-
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 let component;
@@ -94,8 +92,6 @@ describe('Embedding', () => {
   afterEach(() => {
     component.unmount();
   });
-
-  configure({ adapter: new Adapter() });
 
   it('renders correctly a PCA embedding', () => {
     const scatterplot = component.find(Scatterplot);

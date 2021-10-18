@@ -15,7 +15,6 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
 
   const url = getApiEndpoint(extras.uiUrl) + path;
   const result = await fetch(url, parameters);
-
   return result;
 };
 export default fetchAPI;

@@ -9,7 +9,8 @@ import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
 } from '../../../../redux/actionTypes/differentialExpression';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
+
 jest.mock('../../../../utils/work/fetchWork');
 
 jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({

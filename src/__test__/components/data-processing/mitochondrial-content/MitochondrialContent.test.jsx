@@ -1,7 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import preloadAll from 'jest-next-dynamic';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -16,7 +14,8 @@ import { initialPlotConfigStates } from '../../../../redux/reducers/componentCon
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import filterStatisticsMock from '../../../test-utils/plotData.mock';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
+
 const mockStore = configureStore([thunk]);
 
 const sampleId = 'sample-WT';
@@ -91,12 +90,6 @@ const withData = {
 };
 
 describe('MitochondrialContent', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
-  configure({ adapter: new Adapter() });
-
   it('renders correctly with no data', () => {
     const store = mockStore(noData);
 
