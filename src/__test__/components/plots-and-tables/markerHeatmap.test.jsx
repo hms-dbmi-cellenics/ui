@@ -1,7 +1,6 @@
 import React from 'react';
 import * as rtl from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -20,9 +19,9 @@ import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig'
 import MarkerHeatmap from '../../../pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
 import * as cellSetsLoaded from '../../../redux/actions/cellSets/loadCellSets';
 import * as loadedProcessingConfig from '../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
+import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
-jest.mock('localforage');
 jest.mock('../../../components/plots/Header', () => () => <div />);
 jest.mock('../../../utils/socketConnection', () => ({
   __esModule: true,
@@ -193,9 +192,6 @@ const renderHeatmapPage = async (newStore) => {
 };
 
 describe('Marker heatmap plot', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
   beforeEach(() => {
     jest.clearAllMocks();
     fetchMock.resetMocks();

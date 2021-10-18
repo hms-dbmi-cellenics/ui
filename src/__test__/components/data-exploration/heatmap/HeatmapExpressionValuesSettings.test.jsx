@@ -1,18 +1,15 @@
 import React from 'react';
-import { configure, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { Radio } from 'antd';
 import HeatmapExpressionValuesSettings from '../../../../components/data-exploration/heatmap/HeatmapExpressionValuesSettings';
 
 import { UPDATE_CONFIG } from '../../../../redux/actionTypes/componentConfig';
-
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
-configure({ adapter: new Adapter() });
 
 let component;
 

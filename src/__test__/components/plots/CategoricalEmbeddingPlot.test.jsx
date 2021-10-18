@@ -1,6 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
@@ -14,7 +13,8 @@ import initialCellSetsState from '../../../redux/reducers/cellSets/initialState'
 import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
+
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
@@ -78,8 +78,6 @@ describe('Categorical embedding', () => {
       ...initialExperimentState,
     },
   };
-
-  configure({ adapter: new Adapter() });
 
   const config = initialPlotConfigStates.embeddingCategorical;
 

@@ -11,7 +11,7 @@ import {
 
 import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work

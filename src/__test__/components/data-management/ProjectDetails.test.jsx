@@ -18,6 +18,7 @@ import initialExperimentsState from '../../../redux/reducers/experiments/initial
 import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
 import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
 import UploadStatus from '../../../utils/upload/UploadStatus';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureStore([thunk]);
 const width = 600;

@@ -13,6 +13,7 @@ import initialCellSetsState from 'redux/reducers/cellSets/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import { getBackendStatus } from 'redux/selectors';
+import '__test__/test-utils/setupTests';
 
 import { runPipeline } from 'redux/actions/pipeline';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
@@ -33,7 +34,6 @@ jest.mock('utils/AppRouteProvider', () => ({
   useAppRouter: jest.fn(() => mockNavigateTo),
 }));
 
-jest.mock('localforage');
 jest.mock('redux/selectors');
 
 jest.mock('redux/actions/pipeline', () => ({

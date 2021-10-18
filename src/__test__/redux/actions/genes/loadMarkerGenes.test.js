@@ -5,7 +5,8 @@ import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from '.
 import initialState from '../../../../redux/reducers/genes/initialState';
 import { fetchWork } from '../../../../utils/work/fetchWork';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
+
 jest.mock('../../../../utils/work/fetchWork');
 
 jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({

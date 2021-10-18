@@ -1,7 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
+import { mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -10,20 +8,19 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 
 import { Empty } from 'antd';
-import DiffExprResults from '../../../../components/data-exploration/differential-expression-tool/DiffExprResults';
-import { fetchWork } from '../../../../utils/work/fetchWork';
-import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from '../../../../redux/actionTypes/differentialExpression';
+import DiffExprResults from 'components/data-exploration/differential-expression-tool/DiffExprResults';
+import { fetchWork } from 'utils/work/fetchWork';
+import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from 'redux/actionTypes/differentialExpression';
+import '__test__/test-utils/setupTests';
 
-import Loader from '../../../../components/Loader';
+import Loader from 'components/Loader';
 
-jest.mock('localforage');
-
-jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
 }));
 
-jest.mock('../../../../utils/work/fetchWork', () => ({
+jest.mock('utils/work/fetchWork', () => ({
   __esModule: true, // this property makes it work
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [
@@ -175,11 +172,6 @@ const withResultStore = mockStore(resultState);
 const noResultStore = mockStore(noResultState);
 
 describe('DiffExprResults', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
-  configure({ adapter: new Adapter() });
   it('renders correctly', () => {
     const component = mount(
       <Provider store={withResultStore}>

@@ -7,7 +7,7 @@ import { createExperiment, saveExperiment } from '../../../../redux/actions/expe
 import initialExperimentState from '../../../../redux/reducers/experiments/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../../../redux/actions/experiments/saveExperiment');
 saveExperiment.mockImplementation(() => async () => { });
