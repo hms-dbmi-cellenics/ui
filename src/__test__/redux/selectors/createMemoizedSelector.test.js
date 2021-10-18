@@ -55,7 +55,7 @@ describe('createMemoizedSelector', () => {
 
     createMemoizedSelector(() => returnOfSelector, { inputSelectors });
 
-    // Maintains default value if not specified (_.isEqual)
+    // Maintains default values on memoize
     expect(memoize).toHaveBeenCalledWith(4, _.isEqual);
 
     expect(returnOfMemoize).toHaveBeenCalledTimes(1);
@@ -65,5 +65,22 @@ describe('createMemoizedSelector', () => {
 
     // A reselect selector is created with the expected parameters (and the custm inputSelectors)
     expect(createSelector).toHaveBeenCalledWith(inputSelectors, returnOfSelector);
+  });
+
+  it('memoizes correctly with custom comparisonOperator if specified', () => {
+    const comparisonOperator = () => { };
+
+    createMemoizedSelector(() => returnOfSelector, { comparisonOperator });
+
+    // Maintains default value if not specified (4)
+    expect(memoize).toHaveBeenCalledWith(4, comparisonOperator);
+
+    expect(returnOfMemoize).toHaveBeenCalledTimes(1);
+
+    // If we call the memoized function
+    returnOfMemoize.mock.calls[0][0]();
+
+    // A reselect selector is created with the expected parameters (and the custm inputSelectors)
+    expect(createSelector).toHaveBeenCalledWith(expect.anything(), returnOfSelector);
   });
 });
