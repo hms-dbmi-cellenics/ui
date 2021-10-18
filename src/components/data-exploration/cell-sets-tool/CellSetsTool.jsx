@@ -11,7 +11,7 @@ import {
 
 import { BlockOutlined, MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
 
-import { animateScroll, Element } from 'react-scroll';
+import { Element } from 'react-scroll';
 import {
   createCellSet,
   deleteCellSet,
@@ -23,7 +23,6 @@ import {
 } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import composeTree from 'utils/composeTree';
-import endUserMessages from 'utils/endUserMessages';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
 import { complement, intersection, union } from 'utils/cellSetOperations';
@@ -53,8 +52,6 @@ const CellSetsTool = (props) => {
   const {
     loading, error, hierarchy, properties, hidden, selected: allSelected,
   } = cellSets;
-
-  const notifications = useSelector((state) => state.notifications);
 
   const genes = useSelector(
     (state) => state.genes,
