@@ -11,14 +11,14 @@ import {
 } from 'redux/reducers/componentConfig/initialState';
 
 import { loadGeneExpression } from '../../../redux/actions/genes/index';
-import markerGenesLoaded from '../../../redux/reducers/genes/markerGenesLoaded';
-import configUpdated from '../../../redux/reducers/componentConfig/updateConfig';
+import * as markerGenesLoaded from '../../../redux/reducers/genes/markerGenesLoaded';
+import * as configUpdated from '../../../redux/reducers/componentConfig/updateConfig';
 import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
 import rootReducer from '../../../redux/reducers/index';
-import loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
+import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
 import MarkerHeatmap from '../../../pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
-import cellSetsLoaded from '../../../redux/actions/cellSets/loadCellSets';
-import loadedProcessingConfig from '../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
+import * as cellSetsLoaded from '../../../redux/actions/cellSets/loadCellSets';
+import * as loadedProcessingConfig from '../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
@@ -29,48 +29,26 @@ jest.mock('../../../utils/socketConnection', () => ({
     resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
   }),
 }));
-
-const rawGeneExpressionData = [1, 2, 3, 4, 5];
-const meanGeneExpressionData = 3;
-const stdevExpressionData = 1.414213562;
-
-const generateMockGeneData = ([geneNames]) => {
-  const geneDataTemplate = {
-    rawExpression: {
-      expression: rawGeneExpressionData,
-      mean: meanGeneExpressionData,
-      stdev: stdevExpressionData,
-    },
-    truncatedExpression: {
-      expression: rawGeneExpressionData,
-      mean: meanGeneExpressionData,
-      stdev: stdevExpressionData,
-    },
-    zScore: rawGeneExpressionData,
-  };
-
-  const data = geneNames.reduce((acc, geneName) => {
-    acc[geneName] = geneDataTemplate;
-    return acc;
-  }, {});
-
-  return {
-    data,
-    order: geneNames,
-  };
-};
-
 jest.mock('utils/work/fetchWork', () => ({
   fetchWork: jest.fn().mockImplementation((expId, body) => {
+    if (body.name === 'ListGenes') {
+      return new Promise((resolve) => resolve({
+        rows: [{ gene_names: 'MockGeneWithHighestDispersion', dispersions: 54.0228 }],
+      }));
+    }
     if (body.name === 'MarkerHeatmap') {
-      return Promise.resolve(
-        generateMockGeneData(['GENE0', 'GENE1', 'GENE2', 'GENE3', 'GENE4']),
-      );
+      return new Promise((resolve) => {
+        resolve('resolved');
+      });
     }
     if (body.name === 'GeneExpression') {
-      return Promise.resolve(
-        generateMockGeneData(['GENE0', 'GENE1', 'GENE2', 'GENE3', 'GENE4']),
-      );
+      return new Promise((resolve) => {
+        const requestedExpression = {};
+        requestedExpression.gene2 = {
+          rawExpression: { expression: [0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 5, 0, 0, 0, 0] },
+        };
+        resolve(requestedExpression);
+      });
     }
   }),
 }));
@@ -200,10 +178,10 @@ let configUpdatedSpy;
 let cellSetsLoadedSpy;
 let loadedProcessingConfigSpy;
 
-const heatmapPageFactory = (state, experimentId) => {
-  store = createStore(rootReducer, _.cloneDeep(state), applyMiddleware(thunk));
+const renderHeatmapPage = async (newStore) => {
+  store = createStore(rootReducer, _.cloneDeep(newStore), applyMiddleware(thunk));
 
-  return(
+  render(
     <Provider store={store}>
       <MarkerHeatmap
         experimentId={experimentId}
@@ -216,34 +194,89 @@ const heatmapPageFactory = (state, experimentId) => {
 describe('Marker heatmap plot', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResponse(JSON.stringify({}), { status: 404, statusText: '404 Not Found' });
+    loadConfigSpy = jest.spyOn(loadConfig, 'default');
+    loadMarkersSpy = jest.spyOn(markerGenesLoaded, 'default');
+    configUpdatedSpy = jest.spyOn(configUpdated, 'default');
+    cellSetsLoadedSpy = jest.spyOn(cellSetsLoaded, 'default');
+    loadedProcessingConfigSpy = jest.spyOn(loadedProcessingConfig, 'default');
   });
 
-  it('Loads properly with all the option components', () => {
-
-
-
-  })
-
-  it('Initial load fetches genes', async () => {
+  it('loads initially', async () => {
     await renderHeatmapPage(defaultStore);
     expect(loadMarkersSpy).toHaveBeenCalled();
     expect(configUpdatedSpy).toHaveBeenCalled();
   });
 
-  it('Adding a new gene to the list adds the gene', () => {
+  it('loads marker genes on selecting', async () => {
+    await renderHeatmapPage(defaultStore);
 
+    const markerGenes = screen.getByText('Marker genes');
 
-  })
+    userEvent.click(markerGenes);
+    const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
+    userEvent.type(nGenesInput, 10);
 
-  it('Removing a gene from the list removes the gene from the plot', () => {
+    userEvent.click(screen.getByText('Run'));
 
-  })
+    await waitFor(() => expect(loadMarkersSpy).toHaveBeenCalled());
+  });
 
-  it("Using marker genes load the correct number of genes", () => {
+  it('sorts genes properly when adding a gene', async () => {
+    await renderHeatmapPage(defaultStore);
+    await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
+    store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene1', 'gene3', 'gene2'], plotUuid));
+    await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(4));
+    expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene1', 'gene2', 'gene3']);
+    expect(loadMarkersSpy).toHaveBeenCalledTimes(1);
+  });
 
-  })
+  it('removing a gene keeps the sorted order without re-sorting', async () => {
+    await renderHeatmapPage(defaultStore);
+    await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
+    store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene3'], plotUuid));
+    await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(4));
+    expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene3']);
+    expect(loadMarkersSpy).toHaveBeenCalledTimes(1);
+  });
 
-  it("", () => {
+  it('loads cellsets if not available', async () => {
+    const newStore = { ...defaultStore, cellSets: { loading: true } };
+    store = createStore(rootReducer, _.cloneDeep(newStore), applyMiddleware(thunk));
+    render(
+      <Provider store={store}>
+        <MarkerHeatmap
+          experimentId={experimentId}
+        />
+      </Provider>,
+    );
+    const skeleton = screen.queryAllByRole('list');
+    expect(skeleton.length).toBe(1);
+    await waitFor(() => expect(cellSetsLoadedSpy).toHaveBeenCalled());
+  });
 
-  })
+  it('loads processing settings if louvainresolution is not available', async () => {
+    const newStore = {
+      ...defaultStore,
+      experimentSettings: {
+        ...defaultStore.experimentSettings,
+        processing: {
+          configureEmbedding: {
+            clusteringSettings: {
+              methodSettings: {
+                louvain: {
+                  resolution: false,
+                },
+              },
+            },
+          },
+          meta: { loading: true, loadingSettingsError: false },
+        },
+      },
+    };
+    await renderHeatmapPage(newStore);
+    await waitFor(() => expect(loadedProcessingConfigSpy).toHaveBeenCalled());
+  });
 });
