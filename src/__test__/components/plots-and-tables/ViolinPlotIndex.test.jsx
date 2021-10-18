@@ -1,7 +1,6 @@
 import React from 'react';
 import * as rtl from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -21,8 +20,8 @@ import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec
 import { fetchWork } from '../../../utils/work/fetchWork';
 import { mockCellSets1 as cellSets } from '../../test-utils/cellSets.mock';
 import { expectStringInVegaCanvas } from '../../test-utils/vega-utils';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
 enableFetchMocks();
 jest.mock('../../../components/plots/Header', () => () => <div />);
 jest.mock('../../../utils/socketConnection', () => ({
@@ -82,10 +81,6 @@ describe('ViolinIndex', () => {
   let store = null;
   let loadConfigSpy = null;
   let generateSpecSpy = null;
-
-  beforeAll(async () => {
-    await preloadAll();
-  });
 
   beforeEach(() => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!

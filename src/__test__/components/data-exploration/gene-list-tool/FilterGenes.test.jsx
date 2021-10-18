@@ -1,20 +1,13 @@
 import React from 'react';
 import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
 import { act } from 'react-dom/test-utils';
 import { Input, Select } from 'antd';
 import FilterGenes from '../../../../components/data-exploration/generic-gene-table/FilterGenes';
-
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 const { Search } = Input;
 
 describe('FilterGenes', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   test('renders correctly', () => {
     const component = mount(<FilterGenes onFilter={jest.fn()} />);
     const select = component.find(Select);
@@ -56,6 +49,4 @@ describe('FilterGenes', () => {
     expect(mockFilter).toHaveBeenNthCalledWith(1, { filterOption: 'Starts with', text: null });
     expect(mockFilter).toHaveBeenNthCalledWith(2, { filterOption: 'Starts with', text: 'tgf' });
   });
-
-  configure({ adapter: new Adapter() });
 });

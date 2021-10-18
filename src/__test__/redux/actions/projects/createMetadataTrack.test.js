@@ -9,10 +9,9 @@ import {
 import { saveProject } from '../../../../redux/actions/projects';
 import { saveSamples } from '../../../../redux/actions/samples';
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureStore([thunk]);
-
-jest.mock('../../../../utils/pushNotificationMessage');
 
 jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });

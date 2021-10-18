@@ -1,6 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
@@ -15,7 +14,7 @@ import generateExperimentSettingsMock from '../../test-utils/experimentSettings.
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
 import { mockCellSets1 } from '../../test-utils/cellSets.mock';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 const mockCellSets = {
   ...mockCellSets1,
@@ -77,8 +76,6 @@ describe('Continuous embedding plot', () => {
       ...initialExperimentState,
     },
   };
-
-  configure({ adapter: new Adapter() });
 
   it('shows spinner when data is still loading', () => {
     const store = mockStore(mockedStore);

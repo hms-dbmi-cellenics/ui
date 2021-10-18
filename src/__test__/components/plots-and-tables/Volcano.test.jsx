@@ -9,6 +9,7 @@ import VolcanoPlot from '../../../pages/experiments/[experimentId]/plots-and-tab
 import {
   initialPlotConfigStates,
 } from '../../../redux/reducers/componentConfig/initialState';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 const experimentId = 'insaneExperiment';

@@ -13,6 +13,12 @@
 # Definition of DONE
 Your changes will be ready for merging after each of the steps below have been completed:
 
+### Code updates
+Have best practices and ongoing refactors being observed in this PR
+
+- [ ] Migrated any selector / reducer used to the new format
+- [ ] Validated that current unit tests work as expected and are enough
+
 ### Testing
 - [ ] Unit tests written
 - [ ] Tested locally with Inframock (with latest production data downloaded with biomage experiment pull)

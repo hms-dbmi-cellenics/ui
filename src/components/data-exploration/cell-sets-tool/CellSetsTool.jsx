@@ -11,8 +11,7 @@ import {
 
 import { BlockOutlined, MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
 
-import { animateScroll, Element } from 'react-scroll';
-import HierarchicalTree from '../hierarchical-tree/HierarchicalTree';
+import { Element } from 'react-scroll';
 import {
   createCellSet,
   deleteCellSet,
@@ -21,15 +20,14 @@ import {
   updateCellSetHierarchy,
   updateCellSetProperty,
   updateCellSetSelected,
-} from '../../../redux/actions/cellSets';
-import { loadGeneExpression } from '../../../redux/actions/genes';
-import composeTree from '../../../utils/composeTree';
-import { isBrowser } from '../../../utils/environment';
-import endUserMessages from '../../../utils/endUserMessages';
-import PlatformError from '../../PlatformError';
+} from 'redux/actions/cellSets';
+import { loadGeneExpression } from 'redux/actions/genes';
+import composeTree from 'utils/composeTree';
+import PlatformError from 'components/PlatformError';
+import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
+import { complement, intersection, union } from 'utils/cellSetOperations';
+import { getCellSets } from 'redux/selectors';
 import CellSetOperation from './CellSetOperation';
-import { complement, intersection, union } from '../../../utils/cellSetOperations';
-import { getCellSets } from '../../../redux/selectors';
 
 const { Text } = Typography;
 
@@ -55,8 +53,6 @@ const CellSetsTool = (props) => {
     loading, error, hierarchy, properties, hidden, selected: allSelected,
   } = cellSets;
 
-  const notifications = useSelector((state) => state.notifications);
-
   const genes = useSelector(
     (state) => state.genes,
   );
@@ -80,22 +76,8 @@ const CellSetsTool = (props) => {
   const FOCUS_TYPE = 'cellSets';
 
   useEffect(() => {
-    if (isBrowser) {
-      dispatch(loadCellSets(experimentId));
-    }
+    dispatch(loadCellSets(experimentId));
   }, []);
-
-  useEffect(() => {
-    if (
-      notifications
-      && notifications.message
-      && notifications.message.message === endUserMessages.NEW_CLUSTER_CREATED
-    ) {
-      animateScroll.scrollTo(height, {
-        containerId: 'cell-set-tool-container',
-      });
-    }
-  }, [notifications]);
 
   const [cellSetTreeData, setCellSetTreeData] = useState(null);
   const [metadataTreeData, setMetadataTreeData] = useState(null);
@@ -149,7 +131,7 @@ const CellSetsTool = (props) => {
               dispatch(createCellSet(experimentId, name, color, union(selected, properties)));
             }}
             ariaLabel='Union of selected'
-            helpTitle='Create new cell set by combining selected sets'
+            helpTitle='Create new cell set by combining selected sets in the current tab.'
           />
           <CellSetOperation
             icon={<BlockOutlined />}
@@ -159,7 +141,7 @@ const CellSetsTool = (props) => {
               );
             }}
             ariaLabel='Intersection of selected'
-            helpTitle='Create new cell set from intersection of selected sets'
+            helpTitle='Create new cell set from intersection of selected sets in the current tab.'
           />
           <CellSetOperation
             icon={<SplitCellsOutlined />}
@@ -167,7 +149,7 @@ const CellSetsTool = (props) => {
               dispatch(createCellSet(experimentId, name, color, complement(selected, properties)));
             }}
             ariaLabel='Complement of selected'
-            helpTitle='Create new cell set from the complement of the selected sets'
+            helpTitle='Create new cell set from the complement of the selected sets in the current tab.'
           />
           <Text type='primary' id='selectedCellSets'>
             {`${numSelected} cell${numSelected === 1 ? '' : 's'} selected`}
@@ -230,8 +212,6 @@ const CellSetsTool = (props) => {
     );
   };
 
-  // console.warn(loading, cellSetTreeData, metadataTreeData, allSelected);
-
   if (loading) return <Skeleton active={false} title={false} />;
   if (!cellSetTreeData || !metadataTreeData) return <Skeleton active title={false} avatar />;
 
@@ -280,4 +260,3 @@ CellSetsTool.propTypes = {
 };
 
 export default CellSetsTool;
-export { generateFilteredCellIndices };

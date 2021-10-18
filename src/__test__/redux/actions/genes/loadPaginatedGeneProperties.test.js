@@ -11,7 +11,8 @@ import {
   GENES_PROPERTIES_ERROR,
 } from '../../../../redux/actionTypes/genes';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
+
 jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   seekFromAPI: jest.fn(),

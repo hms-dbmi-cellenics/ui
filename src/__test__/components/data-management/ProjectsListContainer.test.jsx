@@ -1,18 +1,14 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import preloadAll from 'jest-next-dynamic';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import Adapter from 'enzyme-adapter-react-16';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Skeleton } from 'antd';
 import ProjectsListContainer from '../../../components/data-management/ProjectsListContainer';
+import '__test__/test-utils/setupTests';
 
-configure({ adapter: new Adapter() });
-
-jest.mock('localforage');
 const mockStore = configureMockStore([thunk]);
 
 const loadingState = {
@@ -33,10 +29,6 @@ const loadedState = {
 };
 
 describe('ProjectsList', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   it('Contains loaders when loading', () => {
     const component = mount(
       <Provider store={mockStore(loadingState)}>

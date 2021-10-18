@@ -4,10 +4,10 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import runCellSetsClustering from '../../../../redux/actions/cellSets/runCellSetsClustering';
 import initialState from '../../../../redux/reducers/cellSets/initialState';
 import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
+import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
-jest.mock('localforage');
 
 jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work

@@ -1,7 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -9,9 +7,7 @@ import thunk from 'redux-thunk';
 import HideButton from '../../../../components/data-exploration/cell-sets-tool/HideButton';
 import { CELL_SETS_HIDE, CELL_SETS_UNHIDE } from '../../../../redux/actionTypes/cellSets';
 import initialState from '../../../../redux/reducers/cellSets/initialState';
-
-jest.mock('localforage');
-configure({ adapter: new Adapter() });
+import '__test__/test-utils/setupTests';
 
 const eventStub = {
   stopPropagation: () => { },
@@ -28,10 +24,6 @@ const store = mockStore({
 });
 
 describe('HideButton', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   test('renders correctly', () => {
     const component = mount(
       <Provider store={store}>

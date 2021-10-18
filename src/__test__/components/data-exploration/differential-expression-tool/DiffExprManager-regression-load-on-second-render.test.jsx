@@ -1,7 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
+import { mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -16,13 +14,7 @@ import cellSetsInitialState from '../../../../redux/reducers/cellSets/initialSta
 
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from '../../../../redux/actionTypes/differentialExpression';
 
-jest.mock('localforage');
-
-// ensure isBrowser is `true`
-jest.mock('../../../../utils/environment', () => ({
-  __esModule: true,
-  isBrowser: () => true,
-}));
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../../../utils/work/fetchWork', () => ({
   __esModule: true, // this property makes it work
@@ -92,15 +84,9 @@ const storeState = {
 let store = null;
 
 describe('DiffExprManager regression test -- diff exp would not reload after `go back` was hit and a new cluster selected', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   beforeEach(() => {
     store = mockStore(storeState);
   });
-
-  configure({ adapter: new Adapter() });
 
   it('on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions', async () => {
     const component = mount(

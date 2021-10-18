@@ -1,7 +1,6 @@
 import React from 'react';
 import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -11,20 +10,20 @@ import {
   initialPlotConfigStates,
 } from 'redux/reducers/componentConfig/initialState';
 
-import { loadGeneExpression } from 'redux/actions/genes/index';
-import * as markerGenesLoaded from 'redux/reducers/genes/markerGenesLoaded';
-import * as configUpdated from 'redux/reducers/componentConfig/updateConfig';
-import initialExperimentState from 'redux/reducers/experimentSettings/initialState';
-import rootReducer from 'redux/reducers/index';
-import * as loadConfig from 'redux/reducers/componentConfig/loadConfig';
-import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
-import * as cellSetsLoaded from 'redux/actions/cellSets/loadCellSets';
-import * as loadedProcessingConfig from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
+import { loadGeneExpression } from '../../../redux/actions/genes/index';
+import * as markerGenesLoaded from '../../../redux/reducers/genes/markerGenesLoaded';
+import * as configUpdated from '../../../redux/reducers/componentConfig/updateConfig';
+import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
+import rootReducer from '../../../redux/reducers/index';
+import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
+import MarkerHeatmap from '../../../pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
+import * as cellSetsLoaded from '../../../redux/actions/cellSets/loadCellSets';
+import * as loadedProcessingConfig from '../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
+import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
-jest.mock('localforage');
-jest.mock('components/plots/Header', () => () => <div />);
-jest.mock('utils/socketConnection', () => ({
+jest.mock('../../../components/plots/Header', () => () => <div />);
+jest.mock('../../../utils/socketConnection', () => ({
   __esModule: true,
   default: new Promise((resolve) => {
     resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
@@ -193,9 +192,6 @@ const renderHeatmapPage = async (newStore) => {
 };
 
 describe('Marker heatmap plot', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
   beforeEach(() => {
     jest.clearAllMocks();
     fetchMock.resetMocks();
