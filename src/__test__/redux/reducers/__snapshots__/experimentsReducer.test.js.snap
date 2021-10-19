@@ -12,6 +12,7 @@ Object {
       "type": "10x",
     },
     "name": "experiment 1",
+    "notifyByEmail": false,
     "projectUuid": "project-1",
     "sampleIds": Array [
       "testSampleId",
@@ -40,6 +41,7 @@ Object {
       "type": "10x",
     },
     "name": "experiment 1",
+    "notifyByEmail": false,
     "projectUuid": "project-1",
     "sampleIds": Array [
       "testSampleId",
