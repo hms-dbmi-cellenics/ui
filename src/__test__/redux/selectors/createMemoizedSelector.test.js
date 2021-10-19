@@ -31,7 +31,7 @@ describe('createMemoizedSelector', () => {
     // If we call the memoized function
     returnOfMemoize.mock.calls[0][0]();
 
-    // A reselect selector is created with the expected parameters
+    // A reselect selector is created with returnOfSelector
     expect(createSelector).toHaveBeenCalledWith(expect.anything(), returnOfSelector);
   });
 
@@ -46,7 +46,7 @@ describe('createMemoizedSelector', () => {
     // If we call the memoized function
     returnOfMemoize.mock.calls[0][0]();
 
-    // A reselect selector is created with the expected parameters (and the custm inputSelectors)
+    // A reselect selector is created with returnOfSelector
     expect(createSelector).toHaveBeenCalledWith(expect.anything(), returnOfSelector);
   });
 
@@ -63,7 +63,7 @@ describe('createMemoizedSelector', () => {
     // If we call the memoized function
     returnOfMemoize.mock.calls[0][0]();
 
-    // A reselect selector is created with the expected parameters (and the custm inputSelectors)
+    // A reselect selector is created with returnOfSelector and custom inputSelectors
     expect(createSelector).toHaveBeenCalledWith(inputSelectors, returnOfSelector);
   });
 
@@ -80,7 +80,7 @@ describe('createMemoizedSelector', () => {
     // If we call the memoized function
     returnOfMemoize.mock.calls[0][0]();
 
-    // A reselect selector is created with the expected parameters (and the custm inputSelectors)
+    // A reselect selector is created with returnOfSelector
     expect(createSelector).toHaveBeenCalledWith(expect.anything(), returnOfSelector);
   });
 });
