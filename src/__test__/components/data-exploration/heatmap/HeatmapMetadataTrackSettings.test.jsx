@@ -153,25 +153,4 @@ describe('HeatmapGroupBySettings', () => {
     expect(reorderAction.type).toBe(UPDATE_CONFIG);
     expect(reorderAction).toMatchSnapshot();
   });
-
-  it('order of tracks is not changed when the buttons of lower tracks that are pressed', () => {
-    const store = mockStore({
-      ...initialState,
-    });
-
-    component = mount(
-      <Provider store={store}>
-        <HeatmapMetadataTrackSettings componentType='interactiveHeatmap' experimentId='123' />
-      </Provider>,
-    );
-
-    // Get buttons.
-    const buttons = component.find('Button');
-
-    // Press the down button in the first row.
-    buttons.at(0).simulate('click');
-
-    // The store should update.
-    expect(store.getActions().length).toEqual(0);
-  });
 });
