@@ -43,20 +43,23 @@ const route = {
 };
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
+
+  const [vegaSpec, setVegaSpec] = useState();
+
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
-  const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
+  const loadedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const louvainClustersResolutionRef = useRef(null);
 
   const {
     loading: loadingMarkerGenes,
     error: errorMarkerGenes,
   } = useSelector((state) => state.genes.markers);
-  const [vegaSpec, setVegaSpec] = useState();
+
   const louvainClustersResolution = useSelector(
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
@@ -66,7 +69,9 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!louvainClustersResolution) {
       dispatch(loadProcessingSettings(experimentId));
     }
+
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+
     if (!cellSets?.hierarchy?.length) {
       dispatch(loadCellSets(experimentId));
     }
@@ -74,6 +79,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const selectedClustersAvailable = (node) => hierarchy.filter((cluster) => (
     cluster.key === node))[0]?.children.length;
+
   useEffect(() => {
     if (louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length) {
       louvainClustersResolutionRef.current = louvainClustersResolution;
@@ -107,6 +113,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!config) {
       return;
     }
+
     // grouping and metadata tracks should change when data is changed
     updatePlotWithChanges(
       { selectedTracks: [config.selectedCellSet], groupedTracks: [config.selectedCellSet] },
@@ -158,41 +165,50 @@ const MarkerHeatmap = ({ experimentId }) => {
     return newOrder;
   };
 
+  const reSortGenes = () => {
+    const newGenes = _.difference(loadedGenes, config.selectedGenes);
+    let newOrder;
+    if (newGenes.length > 0) {
+      // gene was removed instead of added - no need to sort
+      const removedGenes = _.difference(config.selectedGenes, loadedGenes);
+      newOrder = _.cloneDeep(config.selectedGenes);
+      newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
+    } else if (newGenes.length === 1) {
+      // single gene difference - added manually by user
+      newOrder = sortGenes(newGenes);
+    } else {
+      // selected data was changed
+      newOrder = loadedGenes;
+    }
+
+    return newOrder;
+  };
+
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
       return;
     }
-    if (selectedGenes.length && !config.selectedGenes.length) {
-      updatePlotWithChanges({ selectedGenes });
+    if (loadedGenes.length && !config.selectedGenes.length) {
+      updatePlotWithChanges({ selectedGenes: loadedGenes });
       return;
     }
-    if (selectedGenes.length !== config.selectedGenes.length) {
-      const newGenes = _.difference(selectedGenes, config.selectedGenes);
-      let newOrder;
-      if (!newGenes.length) {
-        // gene was removed instead of added - no need to sort
-        const removedGenes = _.difference(config.selectedGenes, selectedGenes);
-        newOrder = _.cloneDeep(config.selectedGenes);
-        newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
-      } else if (newGenes.length === 1) {
-        // single gene difference - added manually by user
-        newOrder = sortGenes(newGenes);
-      } else {
-        // selected data was changed
-        newOrder = selectedGenes;
-      }
+
+    if (!_.isEqual(loadedGenes, config.selectedGenes)) {
+      const newOrder = reSortGenes();
       updatePlotWithChanges({ selectedGenes: newOrder });
     }
-  }, [selectedGenes, config?.selectedGenes]);
+  }, [loadedGenes]);
+
   useEffect(() => {
     if (cellSets.loading
       || _.isEmpty(expressionData)
-      || _.isEmpty(selectedGenes)
+      || _.isEmpty(loadedGenes)
       || !loading
       || !hierarchy?.length
     ) {
       return;
     }
+
     const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes, true);
 
     const spec = generateSpec(config, 'Cluster ID', data.trackGroupData, plotUuid);
@@ -228,9 +244,11 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
   };
 
-  const onGeneEnter = (genes) => {
-    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
-  };
+  useEffect(() => {
+    if (config?.selectedGenes && config.selectedGenes.length > 0) {
+      dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid));
+    }
+  }, [config?.selectedGenes.length]);
 
   const renderPlot = () => {
     if (!config
@@ -266,7 +284,7 @@ const MarkerHeatmap = ({ experimentId }) => {
         />
       );
     }
-    if (selectedGenes.length === 0) {
+    if (loadedGenes.length === 0) {
       return (
         <Empty description={(
           <Text>Add some genes to this heatmap to get started.</Text>
@@ -278,8 +296,8 @@ const MarkerHeatmap = ({ experimentId }) => {
       return <Vega spec={vegaSpec} renderer='canvas' />;
     }
   };
+
   const onReset = () => {
-    onGeneEnter([]);
     dispatch(loadMarkerGenes(
       experimentId,
       louvainClustersResolution,
@@ -340,8 +358,10 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
     return filteredOptions;
   };
-  const changeClusters = (val) => {
-    const newValue = val.key.toLowerCase();
+  const changeClusters = (option) => {
+    const newValue = option.value.toLowerCase();
+    console.log('*** newValue', newValue);
+
     updatePlotWithChanges({ selectedCellSet: newValue });
   };
 
@@ -375,7 +395,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           <p>Select the cell sets to show markers for:</p>
           <Select
             value={{
-              key: _.upperFirst(config.selectedCellSet),
+              value: config.selectedCellSet,
             }}
             onChange={changeClusters}
             labelInValue

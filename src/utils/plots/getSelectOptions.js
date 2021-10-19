@@ -8,7 +8,8 @@ const getSelectOptions = (options) => {
   }
   Array.from(options).forEach((option) => {
     selectOptions.push({
-      value: _.upperFirst(option.key),
+      value: option.key,
+      label: _.upperFirst(option.key),
     });
   });
   return selectOptions;

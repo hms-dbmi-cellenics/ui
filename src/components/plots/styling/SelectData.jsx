@@ -10,6 +10,7 @@ import {
 import composeTree from '../../../utils/composeTree';
 
 const { Option, OptGroup } = Select;
+
 const SelectData = (props) => {
   const {
     onUpdate, config, cellSets,
@@ -64,8 +65,7 @@ const SelectData = (props) => {
   return (
     <>
       <div>
-        Select the Cell sets or Metadata that cells are grouped by (determines the x-axis):
-        {' '}
+        Select the Cell sets or Metadata that cells are grouped by (determines the y-axis):
       </div>
       <Form.Item>
         <Select
@@ -86,7 +86,6 @@ const SelectData = (props) => {
       </Form.Item>
       <div>
         Select the Cell sets or Metadata to be shown as points:
-        {' '}
       </div>
       <Form.Item>
         <Select

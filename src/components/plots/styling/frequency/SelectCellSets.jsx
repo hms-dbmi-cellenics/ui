@@ -6,15 +6,15 @@ import {
   Tooltip,
 } from 'antd';
 import getSelectOptions from 'utils/plots/getSelectOptions';
-import _ from 'lodash'
+import _ from 'lodash';
 
 const SelectCellSets = (props) => {
   const {
     onUpdate, config, optionsMetadata, optionsCellSets,
   } = props;
 
-  const changeClusters = (val) => {
-    const newValue = val.key.toLowerCase();
+  const changeClusters = (option) => {
+    const newValue = option.value.toLowerCase();
     onUpdate({ proportionGrouping: newValue });
   };
   let disabled = false;
@@ -34,6 +34,7 @@ const SelectCellSets = (props) => {
   } else {
     menuValue = _.upperFirst(config.xAxisGrouping);
   }
+
   return (
     <>
       <div>
@@ -46,7 +47,7 @@ const SelectCellSets = (props) => {
           <Select
             aria-label='metadata'
             value={{
-              key: menuValue,
+              value: menuValue,
             }}
             onChange={changeMetadata}
             labelInValue
@@ -64,7 +65,7 @@ const SelectCellSets = (props) => {
         <Select
           aria-label='cell sets'
           value={{
-            key: _.upperFirst(config.proportionGrouping),
+            value: config.proportionGrouping,
           }}
           onChange={changeClusters}
           labelInValue
