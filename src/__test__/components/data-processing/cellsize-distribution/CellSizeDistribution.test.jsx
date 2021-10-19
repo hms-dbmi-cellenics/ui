@@ -1,7 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import preloadAll from 'jest-next-dynamic';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -15,8 +13,8 @@ import generateExperimentSettingsMock from '../../../test-utils/experimentSettin
 import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import filterStatisticsMock from '../../../test-utils/plotData.mock';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
 const mockStore = configureStore([thunk]);
 
 const sampleId = 'sample-KO';
@@ -94,12 +92,6 @@ const withData = {
 };
 
 describe('CellSizeDistribution', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
-  configure({ adapter: new Adapter() });
-
   it('renders correctly with no data', () => {
     const store = mockStore(noData);
 

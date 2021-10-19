@@ -1,10 +1,9 @@
 import React from 'react';
 import {
-  shallow, configure, mount,
+  shallow, mount,
 } from 'enzyme';
 import { Provider } from 'react-redux';
 import waitForActions from 'redux-mock-store-await-actions';
-import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import { act } from 'react-dom/test-utils';
 
@@ -14,12 +13,11 @@ import {
 } from 'antd';
 import HeatmapGroupBySettings from '../../../../components/data-exploration/heatmap/HeatmapGroupBySettings';
 import { UPDATE_CONFIG } from '../../../../redux/actionTypes/componentConfig';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
 jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
 
 const mockStore = configureMockStore([thunk]);
-configure({ adapter: new Adapter() });
 
 let component;
 

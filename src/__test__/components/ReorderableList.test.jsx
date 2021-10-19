@@ -1,10 +1,8 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import ReorderableList from '../../components/ReorderableList';
-
-configure({ adapter: new Adapter() });
+import '__test__/test-utils/setupTests';
 
 describe('ReorderableList', () => {
   let onChangeCount;

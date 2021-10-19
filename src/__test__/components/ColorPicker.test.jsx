@@ -1,9 +1,7 @@
 import React from 'react';
-import { shallow, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { shallow } from 'enzyme';
 import ColorPicker from '../../components/ColorPicker';
-
-configure({ adapter: new Adapter() });
+import '__test__/test-utils/setupTests';
 
 describe('ColorPicker', () => {
   const initialColor = '#ffff00';
@@ -11,7 +9,7 @@ describe('ColorPicker', () => {
 
   const eventStub = { stopPropagation: () => null };
 
-  test('renders correctly', () => {
+  it('renders correctly', () => {
     const component = shallow(<ColorPicker color={initialColor} />);
     const button = component.find('Button');
     expect(component.find('Popover').getElement().props.trigger).toEqual('click');
@@ -20,7 +18,7 @@ describe('ColorPicker', () => {
     expect(button.find('Tooltip').length).toEqual(1);
   });
 
-  test('color picker updates but callback does not get called on temporary color change', () => {
+  it('color picker updates but callback does not get called on temporary color change', () => {
     const mockOnColorChange = jest.fn();
 
     const wrapper = shallow(<ColorPicker color={initialColor} onColorChange={mockOnColorChange} />);
@@ -38,7 +36,7 @@ describe('ColorPicker', () => {
     expect(mockOnColorChange).toHaveBeenCalledTimes(0);
   });
 
-  test('color picker callback gets called on final color change', () => {
+  it('color picker callback gets called on final color change', () => {
     const mockOnColorChange = jest.fn();
 
     const wrapper = shallow(<ColorPicker color={initialColor} onColorChange={mockOnColorChange} />);

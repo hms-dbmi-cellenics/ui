@@ -11,9 +11,7 @@ import generateExperimentSettingsMock from '../../../test-utils/experimentSettin
 
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
-jest.mock('localforage');
-
-jest.mock('../../../../utils/pushNotificationMessage');
+import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

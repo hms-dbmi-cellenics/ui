@@ -9,10 +9,7 @@ import {
   PROJECTS_SAVING,
 } from '../../../../redux/actionTypes/projects';
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
-
-jest.mock('../../../../utils/pushNotificationMessage');
-
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

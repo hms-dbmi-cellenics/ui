@@ -26,7 +26,6 @@ import {
   colorByGeneExpression,
   colorInterpolator,
 } from '../../../utils/embeddingPlotHelperFunctions/helpers';
-import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
 
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
@@ -104,11 +103,8 @@ const Embedding = (props) => {
 
       // Cell sets are easy, just return the appropriate color and set them up.
       case 'cellSets': {
-        if (isBrowser) {
-          setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
-          setCellInfoVisible(false);
-        }
-
+        setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
+        setCellInfoVisible(false);
         return;
       }
 

@@ -9,9 +9,7 @@ import {
 import { loadExperiments } from '../../../../redux/actions/experiments';
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
-jest.mock('localforage');
-
-jest.mock('../../../../utils/pushNotificationMessage');
+import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
 

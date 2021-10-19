@@ -1,7 +1,6 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
+import { mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
-import Adapter from 'enzyme-adapter-react-16';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
@@ -15,8 +14,7 @@ import { fetchWork } from '../../../../utils/work/fetchWork';
 import Loader from '../../../../components/Loader';
 
 import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../../../../redux/actionTypes/genes';
-
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
@@ -111,7 +109,6 @@ describe('GeneListTool', () => {
     component.unmount();
   });
 
-  configure({ adapter: new Adapter() });
   it('renders correctly', () => {
     const table = component.find('Table Table');
     const spin = component.find('Table').find(Loader);

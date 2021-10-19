@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -12,7 +11,8 @@ import { initialPlotConfigStates } from '../../../../redux/reducers/componentCon
 import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import filterStatisticsMock from '../../../test-utils/plotData.mock';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
+
 const mockStore = configureStore([thunk]);
 
 const sampleId = 'sample-WT';
@@ -73,10 +73,6 @@ const withData = {
 };
 
 describe('GenesVsUMIs', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   const renderGeneVsUMIs = (store) => {
     render(
       <Provider store={store}>

@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 import { fetchWork } from '../../../utils/work/fetchWork';
+import '__test__/test-utils/setupTests';
 
 const {
   mockData, mockCacheKeyMappings, mockCacheGet, mockCacheSet, mockSeekFromAPI, mockReduxState,

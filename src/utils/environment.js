@@ -9,6 +9,10 @@ const Environment = {
 const ssrGetCurrentEnvironment = () => {
   let currentEnvironment = null;
 
+  if (process.env.NODE_ENV === 'test') {
+    return Environment.DEVELOPMENT;
+  }
+
   if (!process.env) {
     throw new Error('ssrGetCurrentEnvironment must be called on the server side. Refer to `store.networkResources.environment` for the actual environment.');
   }

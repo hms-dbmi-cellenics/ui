@@ -3,11 +3,9 @@ import _ from 'lodash';
 import {
   Form, Select,
 } from 'antd';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 
@@ -19,8 +17,8 @@ import generateDataProcessingPlotUuid from '../../../../utils/generateDataProces
 import {
   EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
 } from '../../../../redux/actionTypes/experimentSettings';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
@@ -29,7 +27,7 @@ const initialExperimentState = generateExperimentSettingsMock([]);
 describe('Data Integration Calculation Config', () => {
   const filterName = 'dataIntegration';
 
-  const onConfigChange = jest.fn(() => {});
+  const onConfigChange = jest.fn(() => { });
 
   const PCObject = () => ({ PC: 1, percent: 0.02, percentVariance: 0.02 });
   const storeState = {
@@ -44,11 +42,7 @@ describe('Data Integration Calculation Config', () => {
     },
   };
 
-  configure({ adapter: new Adapter() });
-
   beforeEach(async () => {
-    await preloadAll();
-
     const response = new Response(
       JSON.stringify(
         {

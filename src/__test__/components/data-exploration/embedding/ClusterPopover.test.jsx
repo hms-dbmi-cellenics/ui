@@ -1,12 +1,8 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import ClusterPopover from '../../../../components/data-exploration/embedding/ClusterPopover';
-import EditableField from '../../../../components/EditableField';
-
-jest.mock('localforage');
-
-configure({ adapter: new Adapter() });
+import { mount } from 'enzyme';
+import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
+import EditableField from 'components/EditableField';
+import '__test__/test-utils/setupTests';
 
 let mockCreate;
 let mockCancel;

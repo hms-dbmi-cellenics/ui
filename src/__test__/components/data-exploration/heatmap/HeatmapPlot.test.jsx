@@ -1,7 +1,6 @@
 import React from 'react';
-import { configure, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 import configureStore from 'redux-mock-store';
@@ -16,8 +15,8 @@ import VegaHeatmap from '../../../../components/data-exploration/heatmap/VegaHea
 import { getFromApiExpectOK } from '../../../../utils/getDataExpectOK';
 
 import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
 jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
 jest.mock('../../../../utils/getDataExpectOK');
 
@@ -27,7 +26,6 @@ enableFetchMocks();
 getFromApiExpectOK.mockImplementation(() => ({ worker: { started: true, ready: true } }));
 
 const mockStore = configureStore([thunk]);
-configure({ adapter: new Adapter() });
 
 let component;
 
