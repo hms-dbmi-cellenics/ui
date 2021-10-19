@@ -30,7 +30,7 @@ const ViolinControls = (props) => {
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>
-      <Panel header='Data Transformation' key='16'>
+      <Panel header='Data transformation' key='16'>
         {config ? (
           <div>
             <Form.Item>

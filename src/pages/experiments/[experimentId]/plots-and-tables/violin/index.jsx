@@ -137,12 +137,12 @@ const ViolinIndex = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-
             <PlotStyling
               formConfig={plotStylingControlsConfig}
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
+              defaultActiveKey={['gene-selection']}
             />
           </Space>
         </Col>
