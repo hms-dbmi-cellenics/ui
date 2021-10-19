@@ -1,19 +1,17 @@
 import React from 'react';
 import { Input, Button, Typography } from 'antd';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { ClipLoader } from 'react-spinners';
 import NewProjectModal from '../../../components/data-management/NewProjectModal';
+import '__test__/test-utils/setupTests';
 
 const { TextArea } = Input;
 
 const { Text } = Typography;
-
-configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 

@@ -3,11 +3,9 @@ import _ from 'lodash';
 import {
   Select, Form, Alert,
 } from 'antd';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 
@@ -16,8 +14,8 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import CalculationConfig from '../../../../components/data-processing/ConfigureEmbedding/CalculationConfig';
 import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
@@ -41,11 +39,7 @@ describe('Data Processing CalculationConfig', () => {
   const mockOnConfigChange = jest.fn(() => { });
   const mockOnPipelineRun = jest.fn(() => { });
 
-  configure({ adapter: new Adapter() });
-
   beforeEach(async () => {
-    await preloadAll();
-
     const response = new Response(
       JSON.stringify(
         {

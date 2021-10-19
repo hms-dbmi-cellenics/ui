@@ -4,7 +4,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import createCellSet from '../../../../redux/actions/cellSets/createCellSet';
 import initialState from '../../../../redux/reducers/cellSets/initialState';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

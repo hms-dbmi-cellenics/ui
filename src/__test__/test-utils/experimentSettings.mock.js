@@ -1,4 +1,4 @@
-import initialState from '../../redux/reducers/experimentSettings/initialState';
+import initialState from 'redux/reducers/experimentSettings/initialState';
 
 const sampleifiedConfig = (sampleIds, configToReplicate) => {
   const result = sampleIds.reduce(
@@ -14,6 +14,17 @@ const sampleifiedConfig = (sampleIds, configToReplicate) => {
 };
 
 const generateProcessingConfigMock = (sampleIds) => ({
+  classifier: {
+    enabled: true,
+    prefiltred: false,
+    ...sampleifiedConfig(sampleIds, {
+      auto: true,
+      enabled: true,
+      filterSettings: {
+        FDR: 0.1,
+      },
+    }),
+  },
   cellSizeDistribution: {
     enabled: true,
     ...sampleifiedConfig(sampleIds, {
@@ -38,16 +49,6 @@ const generateProcessingConfigMock = (sampleIds) => ({
             binStep: 200,
           },
         },
-      },
-    }),
-  },
-  classifier: {
-    enabled: true,
-    ...sampleifiedConfig(sampleIds, {
-      auto: true,
-      enabled: true,
-      filterSettings: {
-        FDR: 0.1,
       },
     }),
   },

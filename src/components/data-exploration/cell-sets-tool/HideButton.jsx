@@ -7,14 +7,14 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import { setCellSetHiddenStatus } from '../../../redux/actions/cellSets';
+import { getCellSets } from '../../../redux/selectors';
 
 const HideButton = (props) => {
   const { experimentId, cellSetKey } = props;
 
   const dispatch = useDispatch();
   const buttonRef = useRef(null);
-
-  const hiddenCellSets = useSelector((state) => state.cellSets.hidden);
+  const { hidden: hiddenCellSets } = useSelector(getCellSets());
 
   const buttonString = (hiddenCellSets.has(cellSetKey)) ? 'Unhide' : 'Hide';
   const style = {};

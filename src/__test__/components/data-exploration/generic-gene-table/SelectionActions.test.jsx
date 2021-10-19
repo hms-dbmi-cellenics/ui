@@ -1,7 +1,6 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
+import { mount } from 'enzyme';
 import _ from 'lodash';
-import Adapter from 'enzyme-adapter-react-16';
 import preloadAll from 'jest-next-dynamic';
 import { Button, Typography } from 'antd';
 import { Provider } from 'react-redux';
@@ -9,10 +8,9 @@ import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import SelectionActions from '../../../../components/data-exploration/generic-gene-table/SelectionActions';
 import { GENES_DESELECT } from '../../../../redux/actionTypes/genes';
+import '__test__/test-utils/setupTests';
 
 const { Text } = Typography;
-
-jest.mock('localforage');
 
 const initialState = {
   genes: {
@@ -41,10 +39,6 @@ const initialState = {
 const mockStore = configureMockStore([thunk]);
 
 describe('SelectionIndicator', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   test('renders correctly with no selected genes and no export ability', () => {
     const store = mockStore(initialState);
     const component = mount(
@@ -236,6 +230,4 @@ describe('SelectionIndicator', () => {
     expect(mockOnListSelected.mock.calls[1]).toEqual([false]);
     expect(listSelectedButton.childAt(0).text()).toEqual('List');
   });
-
-  configure({ adapter: new Adapter() });
 });

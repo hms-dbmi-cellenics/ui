@@ -11,7 +11,7 @@ module.exports = {
     '<rootDir>/src/__test__/test-utils/matchMedia.mock.js',
   ],
   setupFilesAfterEnv: [
-    '<rootDir>/setupTests.js',
+    '<rootDir>/src/__test__/test-utils/setupTests.js',
   ],
   testMatch: [
     '<rootDir>/src/**/__test__/**/*.{js,jsx,ts,tsx}',

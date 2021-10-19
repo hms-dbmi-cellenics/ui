@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -45,6 +44,7 @@ const SelectCellSets = (props) => {
       <Form.Item>
         <Tooltip title={toolTipText}>
           <Select
+            aria-label='metadata'
             value={{
               key: menuValue,
             }}
@@ -62,6 +62,7 @@ const SelectCellSets = (props) => {
       </div>
       <Form.Item>
         <Select
+          aria-label='cell sets'
           value={{
             key: firstLetterUppercase(config.proportionGrouping),
           }}

@@ -9,6 +9,11 @@ import {
   EXPERIMENTS_SAVING,
   EXPERIMENTS_DELETED,
 } from '../../actionTypes/experiments';
+
+import {
+  SAMPLES_CREATE,
+} from '../../actionTypes/samples';
+
 import experimentsCreate from './experimentsCreate';
 import experimentsUpdate from './experimentsUpdate';
 import experimentsDelete from './experimentsDelete';
@@ -17,6 +22,7 @@ import experimentsLoaded from './experimentsLoaded';
 import experimentsError from './experimentsError';
 import experimentsSaving from './experimentsSaving';
 import exprimentsSaved from './experimentsSaved';
+import samplesCreate from './samplesCreate';
 
 const experimentsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -50,6 +56,10 @@ const experimentsReducer = (state = initialState, action) => {
 
     case EXPERIMENTS_SAVED: {
       return exprimentsSaved(state, action);
+    }
+
+    case SAMPLES_CREATE: {
+      return samplesCreate(state, action);
     }
 
     default: {

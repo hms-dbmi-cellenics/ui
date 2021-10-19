@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { createStore, applyMiddleware } from 'redux';
 import _ from 'lodash';
 import { fireEvent } from '@testing-library/dom';
+import PipelineStatus from '../../../utils/pipelineStatusValues';
 import rootReducer from '../../../redux/reducers/index';
 import * as createMetadataTrack from '../../../redux/actions/projects/createMetadataTrack';
 import ProjectDetails from '../../../components/data-management/ProjectDetails';
@@ -15,9 +16,9 @@ import initialProjectState, { projectTemplate } from '../../../redux/reducers/pr
 import initialSamplesState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
 import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
-import UploadStatus from '../../../utils/upload/UploadStatus';
-
 import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
+import UploadStatus from '../../../utils/upload/UploadStatus';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureStore([thunk]);
 const width = 600;
@@ -29,6 +30,7 @@ const sample1Name = 'Sample 1';
 const sample1Uuid = 'sample-1';
 const sample2Name = 'Sample 2';
 const sample2Uuid = 'sample-2';
+const experiment1id = 'experiment-1';
 
 const noDataState = {
   backendStatus: {
@@ -44,6 +46,7 @@ const noDataState = {
     ids: [projectUuid],
     [projectUuid]: {
       ...projectTemplate,
+      experiments: [experiment1id],
       uuid: projectUuid,
       name: projectName,
       description: projectDescription,
@@ -51,13 +54,26 @@ const noDataState = {
   },
   experiments: {
     ...initialExperimentsState,
-    ids: ['experiment-1'],
+    ids: [experiment1id],
   },
   experimentSettings: {
     ...initialExperimentSettingsState,
   },
   samples: {
     ...initialSamplesState,
+  },
+  backendStatus: {
+    [experiment1id]: {
+      ...initialExperimentBackendStatus,
+      status: {
+        gem2s: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+        pipeline: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+      },
+    },
   },
 };
 
@@ -103,6 +119,20 @@ const withDataState = {
       },
     },
   },
+  backendStatus: {
+    [experiment1id]: {
+      ...initialExperimentBackendStatus,
+      status: {
+        gem2s: {
+          paramsHash: 'old-params-hash',
+          status: PipelineStatus.SUCCEEDED,
+        },
+        pipeline: {
+          status: PipelineStatus.SUCCEEDED,
+        },
+      },
+    },
+  },
 };
 
 describe('ProjectDetails', () => {
@@ -138,7 +168,7 @@ describe('ProjectDetails', () => {
     expect(screen.getByText('Add samples')).toBeDefined();
     expect(screen.getByText('Add metadata')).toBeDefined();
     expect(screen.getByText('Download')).toBeDefined();
-    expect(screen.getByText('Launch analysis')).toBeDefined();
+    expect(screen.getByText('Process project')).toBeDefined();
   });
 
   it('Add metadata button is disabled if there is no data', () => {
@@ -165,67 +195,6 @@ describe('ProjectDetails', () => {
     expect(metadataButton).not.toBeDisabled();
   });
 
-  it('Launch analysis button is disabled if there is no data', () => {
-    render(
-      <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
-
-    const metadataButton = screen.getByText('Launch analysis').closest('button');
-
-    expect(metadataButton).toBeDisabled();
-  });
-
-  it('Launch analysis button is disabled if not all data are uploaded', () => {
-    const notAllDataUploaded = {
-      ...withDataState,
-      samples: {
-        ...withDataState.samples,
-        [sample1Uuid]: {
-          ...withDataState.samples[sample1Uuid],
-          files: {
-            ...withDataState.samples[sample1Uuid].files,
-            'features.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADING } },
-          },
-        },
-      },
-    };
-
-    render(
-      <Provider store={mockStore(notAllDataUploaded)}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
-
-    const metadataButton = screen.getByText('Launch analysis').closest('button');
-
-    expect(metadataButton).toBeDisabled();
-  });
-
-  it('Launch analysis button is disabled if not all sample metadata are inserted', () => {
-    const notAllMetadataInserted = {
-      ...withDataState,
-      samples: {
-        ...withDataState.samples,
-        [sample1Uuid]: {
-          ...withDataState.samples[sample1Uuid],
-          metadata: [''],
-        },
-      },
-    };
-
-    render(
-      <Provider store={mockStore(notAllMetadataInserted)}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
-
-    const metadataButton = screen.getByText('Launch analysis').closest('button');
-
-    expect(metadataButton).toBeDisabled();
-  });
-
   it('Download dropdown is disabled if there are no samples', () => {
     const store = createStore(rootReducer, _.cloneDeep(noDataState), applyMiddleware(thunk));
     render(
@@ -235,18 +204,6 @@ describe('ProjectDetails', () => {
     );
     const downloadDropdown = screen.getByText('Download').closest('button');
     expect(downloadDropdown).toBeDisabled();
-  });
-
-  it('Launch analysis button is enabled if there is data and all metadata for all samples are uplaoded', () => {
-    render(
-      <Provider store={mockStore(withDataState)}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
-
-    const metadataButton = screen.getByText('Launch analysis').closest('button');
-
-    expect(metadataButton).not.toBeDisabled();
   });
 
   it('Shows all the samples that are uploaded', () => {

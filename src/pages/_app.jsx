@@ -1,25 +1,27 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { DefaultSeo } from 'next-seo';
-import PropTypes from 'prop-types';
-import Router, { useRouter } from 'next/router';
-import NProgress from 'nprogress';
-import Amplify, { Storage, withSSRContext } from 'aws-amplify';
-import _ from 'lodash';
-import AWS from 'aws-sdk';
-import { Credentials } from '@aws-amplify/core';
-import { initTracking } from '../utils/tracking';
-import ContentWrapper from '../components/ContentWrapper';
-import TagManager from '../components/TagManager';
-import NotFoundPage from './404';
-import UnauthorizedPage from './401';
-import Error from './_error';
-import { wrapper } from '../redux/store';
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
+import Amplify, { Storage, withSSRContext } from 'aws-amplify';
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { useEffect, useState } from 'react';
+import Router, { useRouter } from 'next/router';
+
+import AWS from 'aws-sdk';
+import AppRouteProvider from '../utils/AppRouteProvider';
+import ContentWrapper from '../components/ContentWrapper';
+import { Credentials } from '@aws-amplify/core';
 import CustomError from '../utils/customError';
+import { DefaultSeo } from 'next-seo';
+import Error from './_error';
+import NProgress from 'nprogress';
+import NotFoundPage from './404';
+import PropTypes from 'prop-types';
+import TagManager from '../components/TagManager';
+import UnauthorizedPage from './401';
+import _ from 'lodash';
+import { initTracking } from '../utils/tracking';
+import { useSelector } from 'react-redux';
+import { wrapper } from '../redux/store';
 
 const mockCredentialsForInframock = () => {
   Credentials.get = async () => (
@@ -128,26 +130,28 @@ const WrappedApp = ({ Component, pageProps }) => {
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <ContentWrapper
-        experimentId={experimentId}
-        experimentData={experimentData}
-      >
-        <Component
+      <AppRouteProvider>
+        <ContentWrapper
           experimentId={experimentId}
           experimentData={experimentData}
-          route={router.route}
-          {...pageProps}
-        />
-      </ContentWrapper>
+        >
+          <Component
+            experimentId={experimentId}
+            experimentData={experimentData}
+            route={router.route}
+            {...pageProps}
+          />
+        </ContentWrapper>
+      </AppRouteProvider>
     );
   };
 
   return (
     <>
       <DefaultSeo
-        titleTemplate='%s &middot; Cellscope'
-        defaultTitle='Cellscope'
-        description='Cellscope by Biomage turns your single cell datasets into meaningful biology. It’s free for academic researchers, and you get world-class quality analytical insight: simple data upload, data integration for batch effect correction, beautiful publication-quality figures, and much more.'
+        titleTemplate='%s &middot; Cellenics'
+        defaultTitle='Cellenics'
+        description='Cellenics by Biomage turns your single cell datasets into meaningful biology. It’s free for academic researchers, and you get world-class quality analytical insight: simple data upload, data integration for batch effect correction, beautiful publication-quality figures, and much more.'
         twitter={{
           site: '@BiomageLtd',
           cardType: 'summary',
@@ -155,7 +159,7 @@ const WrappedApp = ({ Component, pageProps }) => {
         openGraph={{
           type: 'website',
           locale: 'en_US',
-          site_name: 'Biomage Cellscope',
+          site_name: 'Biomage Cellenics',
         }}
       />
       <TagManager

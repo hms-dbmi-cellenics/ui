@@ -1,26 +1,23 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { mount, shallow, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
+import { mount, shallow } from 'enzyme';
 import thunk from 'redux-thunk';
 import {
   Result, Button, Progress,
 } from 'antd';
 import configureMockStore from 'redux-mock-store';
 import GEM2SLoadingScreen from '../../components/GEM2SLoadingScreen';
-
-configure({ adapter: new Adapter() });
+import fetchAPI from '../../utils/fetchAPI';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({});
 
-describe('GEM2SLoadingScreen', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
+jest.mock('../../utils/fetchAPI');
+fetchAPI.mockImplementation(() => Promise.resolve(new Response(JSON.stringify({}))));
 
+describe('GEM2SLoadingScreen', () => {
   it('Does not render without gem2s status', () => {
     expect(() => shallow(<GEM2SLoadingScreen />)).toThrow();
   });
@@ -54,6 +51,27 @@ describe('GEM2SLoadingScreen', () => {
     // Button 2 : Re-launch This Experiment
     expect(display.find(Button).length).toEqual(2);
     expect(display.find(Progress).length).toEqual(0);
+  });
+
+  it('Clicking re-launch analysis re-runs GEM2S', () => {
+    const mockParamsHash = 'mockParamsHash';
+
+    const component = mount(
+      <Provider store={store}>
+        <GEM2SLoadingScreen experimentId='experimentId' paramsHash={mockParamsHash} gem2sStatus='error' />
+      </Provider>,
+    );
+
+    const relaunchButton = component.find(Button).at(1);
+    relaunchButton.simulate('click');
+
+    expect(fetchAPI).toHaveBeenCalled();
+
+    const fetchAPIParams = fetchAPI.mock.calls[0];
+    const requestBody = JSON.parse(fetchAPIParams[1].body);
+
+    // Check that the body of the request is correct
+    expect(requestBody.paramsHash).toMatch(mockParamsHash);
   });
 
   it('Renders running state correctly', () => {

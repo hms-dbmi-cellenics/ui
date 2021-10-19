@@ -9,7 +9,7 @@ import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const { TextArea } = Input;
 
-const FeedbackButton = (props) => {
+const FeedbackButton = () => {
   const [visible, setVisible] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
 
@@ -110,7 +110,7 @@ const FeedbackButton = (props) => {
               setFeedbackText(e.target.value);
             }}
             rows={4}
-            placeholder='Feedback?'
+            placeholder={'Please write your feedback/issues here. We\'ll get back to you ASAP'}
             bordered={false}
             ref={(ref) => { if (ref) { ref.focus(); } }}
             style={{
@@ -119,7 +119,7 @@ const FeedbackButton = (props) => {
           />
           <Space>
             <Button size='small' onClick={() => setVisible(false)}>Cancel</Button>
-            <Button size='small' type='primary' onClick={submitFeedback}>Send feedback</Button>
+            <Button size='small' type='primary' onClick={submitFeedback}>Send</Button>
           </Space>
         </Space>
       </Card>
@@ -135,7 +135,7 @@ const FeedbackButton = (props) => {
       trigger='click'
     >
       <Button type='dashed' icon={<CommentOutlined />}>
-        Feedback?
+        Feedback or issues?
         <DownOutlined />
       </Button>
     </Dropdown>

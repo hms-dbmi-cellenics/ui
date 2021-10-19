@@ -44,6 +44,7 @@ const FilterResultTable = (props) => {
 
     const columns = [
       {
+        fixed: 'left',
         title: 'Statistics',
         dataIndex: 'title',
         key: 'title',

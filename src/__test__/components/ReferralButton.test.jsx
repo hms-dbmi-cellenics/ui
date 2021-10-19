@@ -9,8 +9,7 @@ import 'aws-amplify';
 import ReferralButton from '../../components/ReferralButton';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import endUserMessages from '../../utils/endUserMessages';
-
-jest.mock('../../utils/pushNotificationMessage');
+import '__test__/test-utils/setupTests';
 
 jest.mock('aws-amplify', () => ({
   Auth: {

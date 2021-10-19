@@ -3,7 +3,6 @@ import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors'
 import endUserMessages from '../../../utils/endUserMessages';
 import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
-  EXPERIMENT_SETTINGS_INFO_UPDATE,
 } from '../../actionTypes/experimentSettings';
 
 import {
@@ -13,9 +12,7 @@ import {
 
 import loadBackendStatus from '../backendStatus/loadBackendStatus';
 
-const runGem2s = (experimentId) => async (dispatch, getState) => {
-  const { experiments } = getState();
-
+const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
   dispatch({
     type: BACKEND_STATUS_LOADING,
     payload: {
@@ -32,6 +29,7 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ paramsHash }),
       },
     );
 
@@ -44,15 +42,6 @@ const runGem2s = (experimentId) => async (dispatch, getState) => {
     });
 
     dispatch(loadBackendStatus(experimentId));
-
-    dispatch({
-      type: EXPERIMENT_SETTINGS_INFO_UPDATE,
-      payload: {
-        experimentId,
-        experimentName: experiments[experimentId].name,
-        sampleIds: experiments[experimentId].sampleIds,
-      },
-    });
   } catch (e) {
     let { message } = e;
     if (!isServerError(e)) {

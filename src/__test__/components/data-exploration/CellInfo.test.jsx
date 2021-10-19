@@ -1,16 +1,15 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Card } from 'antd';
 import CellInfo from '../../../components/data-exploration/CellInfo';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 
 describe('CellInfo', () => {
-  configure({ adapter: new Adapter() });
   test('renders correctly when hovering over the same component', () => {
     const store = mockStore({
       cellInfo: {

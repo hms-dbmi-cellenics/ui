@@ -1,15 +1,15 @@
-import React from 'react';
-import { mount, configure } from 'enzyme';
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import Adapter from 'enzyme-adapter-react-16';
-import thunk from 'redux-thunk';
-import { Menu } from 'antd';
+import { mount } from 'enzyme';
+
 import { Auth } from 'aws-amplify';
-
+import { Menu } from 'antd';
+import { Provider } from 'react-redux';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import { getBackendStatus } from '../../redux/selectors';
-
 import ContentWrapper from '../../components/ContentWrapper';
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../redux/selectors');
 
@@ -17,7 +17,6 @@ const { Item } = Menu;
 
 const experimentId = '1234';
 
-jest.mock('localforage');
 jest.mock('next/router', () => ({
   useRouter: jest.fn()
     .mockImplementationOnce(() => ({ // test 1
@@ -43,7 +42,9 @@ jest.mock('aws-amplify', () => ({
   },
 }));
 
-configure({ adapter: new Adapter() });
+jest.mock('../../utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn().mockReturnValue(() => { }),
+}));
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({
@@ -141,6 +142,50 @@ describe('ContentWrapper', () => {
 
     // Plots and Tables link is disabled
     expect(menus.at(3).props().disabled).toEqual(true);
+  });
+
+  it('has the correct sider and layout style when opened / closed', async () => {
+    const siderHasWidth = (expectedWidth) => {
+      const sider = wrapper.find('Sider');
+      const expandedComputedStyle = getComputedStyle(sider.getDOMNode()).getPropertyValue('width');
+      expect(expandedComputedStyle).toEqual(expectedWidth);
+
+      const layout = wrapper.find('Layout Layout');
+      expect(layout.prop('style')).toEqual(expect.objectContaining({ marginLeft: expectedWidth }));
+    };
+
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
+      <Provider store={store}>
+        <ContentWrapper backendStatus={{}}>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+    wrapper.update();
+
+    const expandedWidth = '210px';
+    const collapsedWidth = '80px';
+
+    // When the side bar is collapsed
+    act(() => {
+      wrapper.find('Sider').props().onCollapse(true);
+    });
+    wrapper.update();
+    siderHasWidth(collapsedWidth);
+
+    // When side bar is not collapsed
+    act(() => {
+      wrapper.find('Sider').props().onCollapse(false);
+    });
+    wrapper.update();
+    siderHasWidth(expandedWidth);
   });
 
   it('View changes if there is a pipeline run underway', async () => {

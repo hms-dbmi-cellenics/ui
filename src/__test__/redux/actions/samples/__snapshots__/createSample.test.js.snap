@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createSample action Runs correctly 1`] = `
+Object {
+  "complete": false,
+  "createdDate": "2020-01-01T00:00:00.000Z",
+  "error": false,
+  "fileNames": Array [],
+  "files": Object {},
+  "lastModified": "2020-01-01T00:00:00.000Z",
+  "metadata": Object {},
+  "name": "test sample",
+  "projectUuid": "qwe234",
+  "species": null,
+  "type": "10x Chromium",
+  "uuid": "abc123",
+}
+`;
