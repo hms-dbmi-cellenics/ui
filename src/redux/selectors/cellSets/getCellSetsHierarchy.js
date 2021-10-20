@@ -1,7 +1,10 @@
+import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
+
 const getCellSetsHierarchy = (type = []) => (state) => {
   if (!state || state.loading) {
     return [];
   }
+
   let hierarchy = state.hierarchy.map(
     (cellSet) => (
       {
@@ -19,4 +22,5 @@ const getCellSetsHierarchy = (type = []) => (state) => {
   }
   return hierarchy;
 };
-export default getCellSetsHierarchy;
+
+export default createMemoizedSelector(getCellSetsHierarchy);
