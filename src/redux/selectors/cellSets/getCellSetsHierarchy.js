@@ -1,11 +1,11 @@
 import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
 
-const getCellSetsHierarchy = (type = []) => (state) => {
+const getCellSetsHierarchy = () => (state) => {
   if (!state || state.loading) {
     return [];
   }
 
-  let hierarchy = state.hierarchy.map(
+  const hierarchy = state.hierarchy.map(
     (cellSet) => (
       {
         key: cellSet.key,
@@ -15,11 +15,7 @@ const getCellSetsHierarchy = (type = []) => (state) => {
       }
     ),
   );
-  if (type.length) {
-    hierarchy = hierarchy.filter(
-      (child) => type.includes(child.type),
-    );
-  }
+
   return hierarchy;
 };
 
