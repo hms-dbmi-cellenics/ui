@@ -11,7 +11,7 @@ const getCellSetsHierarchy = () => (state) => {
         key: cellSet.key,
         name: state.properties[cellSet.key]?.name,
         type: state.properties[cellSet.key]?.type,
-        children: cellSet?.children || 0,
+        children: cellSet?.children || [],
       }
     ),
   );
