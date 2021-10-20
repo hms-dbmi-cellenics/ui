@@ -3,13 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import Loader from '../Loader';
-import PlatformError from '../PlatformError';
-import { generateSpec, generateData } from '../../utils/plotSpecs/generateViolinSpec';
-import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/actions/genes';
-import { loadCellSets } from '../../redux/actions/cellSets';
-import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
-import { getCellSets } from '../../redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
+
+import { generateSpec, generateData } from 'utils/plotSpecs/generateViolinSpec';
+import { loadGeneExpression, loadPaginatedGeneProperties } from 'redux/actions/genes';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { updatePlotConfig } from 'redux/actions/componentConfig/index';
+import PlatformError from 'components/PlatformError';
+import Loader from 'components/Loader';
 
 const geneDispersionsKey = 'dispersions';
 
@@ -21,6 +22,8 @@ const ViolinPlot = (props) => {
 
   const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector(getCellSets());
+
+  const selectedCellSetHierarchy = useSelector(getCellSetsHierarchyByKey([config.selectedCellSet]));
 
   const [plotSpec, setPlotSpec] = useState({});
   const highestDispersionLoading = useSelector(
@@ -93,9 +96,7 @@ const ViolinPlot = (props) => {
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
 
-  const clustersAvailable = () => (
-    cellSets.hierarchy.find((hierarchy) => hierarchy.key === config.selectedCellSet)
-  );
+  const clustersAvailable = () => selectedCellSetHierarchy.length;
 
   useEffect(() => {
     if (config
@@ -106,7 +107,7 @@ const ViolinPlot = (props) => {
       const geneExpressionData = config.normalised === 'normalised'
         ? geneExpression.data[config.shownGene].zScore
         : geneExpression.data[config.shownGene].rawExpression.expression;
-      if (clustersAvailable()) {
+      if (clustersAvailable) {
         const generatedPlotData = generateData(
           cellSets,
           geneExpressionData,
