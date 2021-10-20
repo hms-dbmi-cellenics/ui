@@ -1,51 +1,53 @@
 import React from 'react';
-import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { Skeleton } from 'antd';
-import ProjectsListContainer from '../../../components/data-management/ProjectsListContainer';
+
+import { act } from 'react-dom/test-utils';
+
+import { makeStore } from 'redux/store';
+
+import ProjectsListContainer from 'components/data-management/ProjectsListContainer';
+
 import '__test__/test-utils/setupTests';
 
-const mockStore = configureMockStore([thunk]);
-
-const loadingState = {
-  projects: {
-    meta: {
-      loading: true,
-    },
-  },
-};
-
-const loadedState = {
-  projects: {
-    ids: [],
-    meta: {
-      loading: false,
-    },
-  },
-};
-
 describe('ProjectsList', () => {
-  it('Contains loaders when loading', () => {
-    const component = mount(
-      <Provider store={mockStore(loadingState)}>
-        <ProjectsListContainer />
-      </Provider>,
-    );
+  let storeState;
 
-    expect(component.find(Skeleton).length).toBeGreaterThan(0);
+  beforeEach(() => {
+    storeState = makeStore();
   });
 
-  it('Contains the input box when not loading', () => {
+  it('Contains the input box and create project button', async () => {
     render(
-      <Provider store={mockStore(loadedState)}>
+      <Provider store={storeState}>
         <ProjectsListContainer />
       </Provider>,
     );
 
     expect(screen.getByPlaceholderText(/Filter by project name/i)).toBeDefined();
+    expect(screen.getByText(/Create New Project/)).toBeDefined();
+  });
+
+  it('triggers onCreateNewProject on clicking create new project button', () => {
+    const onCreateNewProjectMock = jest.fn(() => { });
+
+    render(
+      <Provider store={storeState}>
+        <ProjectsListContainer onCreateNewProject={onCreateNewProjectMock} />
+      </Provider>,
+    );
+
+    const createNewProjectButton = screen.getByText(/Create New Project/);
+
+    expect(onCreateNewProjectMock).toHaveBeenCalledTimes(0);
+
+    act(() => {
+      userEvent.click(createNewProjectButton);
+    });
+
+    expect(onCreateNewProjectMock).toHaveBeenCalledTimes(1);
   });
 });
