@@ -36,10 +36,12 @@ const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
+  const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
 
-  const { expression: expressionData } = useSelector((state) => state.genes);
-  const { hierarchy, properties } = useSelector(getCellSets());
+  const cellSets = useSelector(getCellSets());
+  const { hierarchy, properties } = cellSets;
+
   const selectedCellSetClassAvailable = useSelector(
     getCellSetsHierarchyByKey([config.selectedCellSet]),
   ).length;
